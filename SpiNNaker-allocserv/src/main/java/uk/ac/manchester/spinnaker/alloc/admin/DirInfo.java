@@ -20,15 +20,13 @@ import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
@@ -112,15 +110,12 @@ public final class DirInfo extends SQLQueries {
 		return z ^ dir.hashCode();
 	}
 
-	static void load(Connection conn) throws SQLException {
+	static void load(Connection conn) {
 		if (MAP.isEmpty()) {
 			try (Query di = query(conn, LOAD_DIR_INFO)) {
-				for (Row row : di.call()) {
-					new DirInfo(row.getInt("z"),
-							row.getEnum("direction", Direction.class),
-							row.getInt("dx"), row.getInt("dy"),
-							row.getInt("dz"));
-				}
+				di.call().forEach(row -> new DirInfo(row.getInt("z"),
+						row.getEnum("direction", Direction.class),
+						row.getInt("dx"), row.getInt("dy"), row.getInt("dz")));
 			}
 			log.debug("created {} DirInfo instances",
 					MAP.values().stream().mapToInt(Map::size).sum());

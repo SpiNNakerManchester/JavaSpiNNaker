@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
@@ -44,9 +43,7 @@ public interface TransceiverFactoryAPI<T extends BMPTransceiverInterface> {
 	 *             If low-level things go wrong.
 	 * @throws SpinnmanException
 	 *             If the transceiver can't be built.
-	 * @throws SQLException
-	 *             If the database can't be talked to.
 	 */
 	T getTransciever(Machine machineDescription)
-			throws IOException, SQLException, SpinnmanException;
+			throws IOException, SpinnmanException;
 }

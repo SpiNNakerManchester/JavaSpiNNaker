@@ -226,21 +226,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The user's quota, in board-seconds.
 		 * @return True if the user was created, false if the user already
 		 *         existed.
-		 * @throws SQLException
-		 *             If anything goes wrong (including trying to create an
-		 *             existing user).
 		 */
 		@PreAuthorize(IS_ADMIN)
 		boolean createUser(String username, String password,
-				TrustLevel trustLevel, long quota) throws SQLException;
+				TrustLevel trustLevel, long quota);
 
 		/**
 		 * Unlock any locked users whose lock period has expired.
-		 *
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		void unlockLockedUsers() throws SQLException;
+		void unlockLockedUsers();
 
 		// TODO what other operations should there be?
 	}
@@ -656,12 +650,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *
 		 * @return A handle that will de-authorize the thread when closed.
 		 */
-		public AutoCloseable authorizeCurrentThread() {
+		public QuietCloseable authorizeCurrentThread() {
 			SecurityContext c = SecurityContextHolder.getContext();
 			c.setAuthentication(new TempAuth());
 			return () -> {
 				c.setAuthentication(null);
 			};
+		}
+
+		/**
+		 * An auto-closeable that guarantees that it doesn't throw when closed.
+		 */
+		public interface QuietCloseable extends AutoCloseable {
+			@Override
+			void close();
 		}
 
 		/**

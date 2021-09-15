@@ -29,8 +29,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +43,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
@@ -87,7 +86,7 @@ class AllocatorTest extends SQLQueries {
 	@Autowired
 	private BMPController bmpCtrl;
 
-	void doTest(Transacted action) throws SQLException {
+	void doTest(Transacted action) {
 		try (Connection c = db.getConnection()) {
 			transaction(c, () -> {
 				try {
@@ -110,7 +109,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@BeforeEach
-	void checkSetup() throws SQLException {
+	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			setupDB(c);
@@ -125,7 +124,7 @@ class AllocatorTest extends SQLQueries {
 
 	private static final int USER = 4000;
 
-	private void setupDB(Connection c) throws SQLException {
+	private void setupDB(Connection c) {
 		// A simple machine
 		try (Update u = update(c,
 				"INSERT OR IGNORE INTO machines("
@@ -180,7 +179,7 @@ class AllocatorTest extends SQLQueries {
 	 *            Length of time (seconds)
 	 * @return Job ID
 	 */
-	private int makeJob(int time) throws SQLException {
+	private int makeJob(int time) {
 		try (Update u = update(conn,
 				"INSERT INTO jobs(machine_id, owner, job_state, "
 						+ "create_timestamp, keepalive_interval, "
@@ -194,7 +193,7 @@ class AllocatorTest extends SQLQueries {
 		throw new RuntimeException("failed to insert job");
 	}
 
-	private void makeAllocBySizeRequest(int job, int size) throws SQLException {
+	private void makeAllocBySizeRequest(int job, int size) {
 		try (Update u =
 				update(conn, "INSERT INTO job_request(job_id, num_boards) "
 						+ "VALUES (?, ?)")) {
@@ -203,7 +202,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	private void makeAllocByDimensionsRequest(int job, int width, int height,
-			int allowedDead) throws SQLException {
+			int allowedDead) {
 		try (Update u =
 				update(conn, "INSERT INTO job_request(job_id, width, height, "
 						+ "max_dead_boards) VALUES (?, ?, ?, ?)")) {
@@ -211,8 +210,7 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
-	private void makeAllocByBoardIdRequest(int job, int board)
-			throws SQLException {
+	private void makeAllocByBoardIdRequest(int job, int board) {
 		try (Update u =
 				update(conn, "INSERT INTO job_request(job_id, board_id) "
 						+ "VALUES (?, ?)")) {
@@ -220,20 +218,20 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
-	private JobState getJobState(int job) throws SQLException {
+	private JobState getJobState(int job) {
 		try (Query q = query(conn, GET_JOB)) {
 			Row r = q.call1(job).get();
 			return r.getEnum("job_state", JobState.class);
 		}
 	}
 
-	private int getJobRequestCount() throws SQLException {
+	private int getJobRequestCount() {
 		try (Query q = query(conn, "SELECT COUNT(*) AS cnt FROM job_request")) {
 			return q.call1().get().getInt("cnt");
 		}
 	}
 
-	private int getPendingPowerChanges() throws SQLException {
+	private int getPendingPowerChanges() {
 		try (Query q =
 				query(conn, "SELECT COUNT(*) AS cnt FROM pending_changes")) {
 			return q.call1().get().getInt("cnt");
@@ -241,14 +239,14 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	private void assertState(int jobId, JobState state, int requestCount,
-			int powerCount) throws SQLException {
+			int powerCount) {
 		assertEquals(state, getJobState(jobId));
 		assertEquals(requestCount, getJobRequestCount());
 		assertEquals(powerCount, getPendingPowerChanges());
 	}
 
 	private void assumeState(int jobId, JobState state, int requestCount,
-			int powerCount) throws SQLException {
+			int powerCount) {
 		JobState js = getJobState(jobId);
 		assumeTrue(state == js, () -> "expected " + state + " but got " + js);
 		int c1 = getJobRequestCount();
@@ -260,7 +258,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testDoAllocBySize1() throws SQLException {
+	void testDoAllocBySize1() {
 		doTest(() -> {
 			int job = makeJob(100);
 			alloc.allocate(conn);
@@ -286,7 +284,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testDoAllocBySize3() throws SQLException {
+	void testDoAllocBySize3() {
 		doTest(() -> {
 			int job = makeJob(100);
 			alloc.allocate(conn);
@@ -312,7 +310,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testDoAllocByDimensions() throws SQLException {
+	void testDoAllocByDimensions() {
 		doTest(() -> {
 			int job = makeJob(100);
 			alloc.allocate(conn);
@@ -338,7 +336,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testDoAllocByDimensions1x2() throws SQLException {
+	void testDoAllocByDimensions1x2() {
 		doTest(() -> {
 			int job = makeJob(100);
 			alloc.allocate(conn);
@@ -365,7 +363,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testDoAllocByBoardId() throws SQLException {
+	void testDoAllocByBoardId() {
 		doTest(() -> {
 			int job = makeJob(100);
 			alloc.allocate(conn);
@@ -391,8 +389,8 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	/**
-	 * Expiry tests need a two second sleep to get things to tick over
-	 * to *past* the expiration timestamp.
+	 * Expiry tests need a two second sleep to get things to tick over to *past*
+	 * the expiration timestamp.
 	 */
 	private static void snooze() {
 		try {
@@ -403,7 +401,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testExpireInitial() throws SQLException {
+	void testExpireInitial() {
 		doTest(() -> {
 			int job = makeJob(1);
 			snooze();
@@ -417,7 +415,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testExpireQueued1() throws SQLException {
+	void testExpireQueued1() {
 		doTest(() -> {
 			int job = makeJob(1);
 			alloc.allocate(conn);
@@ -432,7 +430,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testExpireQueued2() throws SQLException {
+	void testExpireQueued2() {
 		doTest(() -> {
 			int job = makeJob(1);
 			alloc.allocate(conn);
@@ -448,7 +446,7 @@ class AllocatorTest extends SQLQueries {
 	}
 
 	@Test
-	void testExpirePower() throws SQLException {
+	void testExpirePower() {
 		doTest(() -> {
 			int job = makeJob(1);
 			makeAllocBySizeRequest(job, 1);

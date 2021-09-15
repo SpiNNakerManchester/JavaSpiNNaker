@@ -16,10 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
@@ -49,66 +49,64 @@ public class StubMachine implements SpallocAPI.Machine {
 	}
 
 	@Override
-	public List<String> getTags() throws SQLException {
+	public Set<String> getTags() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int getWidth() throws SQLException {
+	public int getWidth() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int getHeight() throws SQLException {
+	public int getHeight() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<BoardCoords> getDeadBoards() throws SQLException {
+	public List<BoardCoords> getDeadBoards() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<DownLink> getDownLinks() throws SQLException {
+	public List<DownLink> getDownLinks() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<BoardLocation> getBoardByChip(int x, int y)
-			throws SQLException {
+	public Optional<BoardLocation> getBoardByChip(int x, int y) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet,
-			int frame, int board) throws SQLException {
+			int frame, int board) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z)
-			throws SQLException {
+	public Optional<BoardLocation> getBoardByLogicalCoords(int x, int y,
+			int z) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Optional<BoardLocation> getBoardByIPAddress(String address)
-			throws SQLException {
+	public Optional<BoardLocation> getBoardByIPAddress(String address) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String getRootBoardBMPAddress() throws SQLException {
+	public String getRootBoardBMPAddress() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<Integer> getBoardNumbers() throws SQLException {
+	public List<Integer> getBoardNumbers() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<Integer> getAvailableBoards() throws SQLException {
+	public List<Integer> getAvailableBoards() {
 		throw new UnsupportedOperationException();
 	}
 }

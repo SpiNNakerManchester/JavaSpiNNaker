@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +92,7 @@ public class TransceiverFactory
 
 	@Override
 	public BMPTransceiverInterface getTransciever(Machine machineDescription)
-			throws IOException, SQLException, SpinnmanException {
+			throws IOException, SpinnmanException {
 		// Can't use Map.computeIfAbsent(); checked exceptions in the way
 		synchronized (txrxMap) {
 			BMPTransceiverInterface t =
@@ -114,7 +113,7 @@ public class TransceiverFactory
 	}
 
 	private BMPConnectionData makeConnectionData(Machine machine)
-			throws SQLException, IOException {
+			throws IOException {
 		String address = machine.getRootBoardBMPAddress();
 		List<Integer> boards = machine.getBoardNumbers();
 		return new BMPConnectionData(0, 0, getByName(address), boards,
@@ -134,11 +133,9 @@ public class TransceiverFactory
 	 *             If network access fails
 	 * @throws SpinnmanException
 	 *             If transceiver building fails
-	 * @throws SQLException
-	 *             If database access fails
 	 */
 	private Transceiver makeTransceiver(BMPConnectionData data)
-			throws IOException, SpinnmanException, SQLException {
+			throws IOException, SpinnmanException {
 		return new Transceiver(null, asList(new BMPConnection(data)), null,
 				null, null, null, null);
 	}
@@ -164,8 +161,7 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	private Map<Integer, Boolean> status;
 
-	DummyTransceiver(String machineName, BMPConnectionData data)
-			throws SQLException {
+	DummyTransceiver(String machineName, BMPConnectionData data) {
 		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
 				data.ipAddress, data.boards);
 		version = new VersionInfo(syntheticVersionData());

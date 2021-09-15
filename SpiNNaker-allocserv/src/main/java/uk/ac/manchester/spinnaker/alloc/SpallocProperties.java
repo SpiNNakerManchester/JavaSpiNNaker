@@ -267,7 +267,7 @@ public class SpallocProperties {
 
 		public HistoricalDataProperties(
 				@DefaultValue("spalloc-history.sqlite3") File path,
-				@DefaultValue("P14D") Duration gracePeriod,
+				@DefaultValue("14d") Duration gracePeriod,
 				@DefaultValue("0 0 2 * * *") String schedule) {
 			this.path = path;
 			this.gracePeriod = gracePeriod;
@@ -314,10 +314,7 @@ public class SpallocProperties {
 	/** How to handle keepalive messages. */
 	public static class KeepaliveProperties {
 		/**
-		 * Time between runs of the keepalive-expiry algorithm. Note that this
-		 * must be given as either a true {@code Duration} or a count of
-		 * milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * Time between runs of the keepalive-expiry algorithm.
 		 */
 		private Duration expiryPeriod;
 
@@ -328,7 +325,7 @@ public class SpallocProperties {
 		private Duration max;
 
 		public KeepaliveProperties(//
-				@DefaultValue("PT30S") Duration expiryPeriod,
+				@DefaultValue("30s") Duration expiryPeriod,
 				@DefaultValue("30s") Duration min,
 				@DefaultValue("300s") Duration max) {
 			this.expiryPeriod = expiryPeriod;
@@ -337,10 +334,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * Time between runs of the keepalive-expiry algorithm. Note that this
-		 * must be given as either a true {@code Duration} or a count of
-		 * milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * Time between runs of the keepalive-expiry algorithm.
 		 *
 		 * @return Time between runs of the keepalive-expiry algorithm.
 		 */
@@ -377,10 +371,7 @@ public class SpallocProperties {
 	/** Configuration of the main resource allocation engine. */
 	public static class AllocatorProperties {
 		/**
-		 * Time between runs of the main allocation algorithm. Note that this
-		 * must be given as either a true {@code Duration} or a count of
-		 * milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * Time between runs of the main allocation algorithm.
 		 */
 		private Duration period;
 
@@ -402,7 +393,7 @@ public class SpallocProperties {
 		/** Properties relating to board issue reporting. */
 		private ReportProperties reportEmail;
 
-		public AllocatorProperties(@DefaultValue("PT5S") Duration period,
+		public AllocatorProperties(@DefaultValue("5s") Duration period,
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
@@ -415,10 +406,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * Time between runs of the main allocation algorithm. Note that this
-		 * must be given as either a true {@code Duration} or a count of
-		 * milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * Time between runs of the main allocation algorithm.
 		 *
 		 * @return Time between runs of the main allocation algorithm.
 		 */
@@ -653,10 +641,7 @@ public class SpallocProperties {
 		private Duration accountLockDuration;
 
 		/**
-		 * How often do we look for users to end their lock-out? Note that this
-		 * must be given as either a true {@code Duration} or a count of
-		 * milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * How often do we look for users to end their lock-out?
 		 */
 		private Duration unlockPeriod;
 
@@ -674,8 +659,8 @@ public class SpallocProperties {
 				@DefaultValue("true") boolean dummyRandomPass,
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("3") int maxLoginFailures,
-				@DefaultValue("PT24H") Duration accountLockDuration,
-				@DefaultValue("PT60S") Duration unlockPeriod,
+				@DefaultValue("24h") Duration accountLockDuration,
+				@DefaultValue("60s") Duration unlockPeriod,
 				@DefaultValue OpenIDProperties openid) {
 			this.basic = basic;
 			this.localForm = localForm;
@@ -774,10 +759,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * How often do we look for users to end their lock-out? Note that this
-		 * must be given as either a true {@code Duration} or a count of
-		 * milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * How often do we look for users to end their lock-out?
 		 *
 		 * @return How often do we look for users to end their lock-out?
 		 */
@@ -954,10 +936,7 @@ public class SpallocProperties {
 	/** Controls how Spalloc talks to BMPs on machines. */
 	public static class TxrxProperties {
 		/**
-		 * How long between when we send requests to the BMP control tasks. Note
-		 * that this must be given as either a true {@code Duration} or a count
-		 * of milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * How long between when we send requests to the BMP control tasks.
 		 */
 		private Duration period;
 
@@ -973,7 +952,7 @@ public class SpallocProperties {
 		/** Whether to use a dummy transceiver. Useful for testing only. */
 		private boolean dummy;
 
-		public TxrxProperties(@DefaultValue("PT10S") Duration period,
+		public TxrxProperties(@DefaultValue("10s") Duration period,
 				@DefaultValue("15s") Duration probeInterval,
 				@DefaultValue("2") int powerAttempts,
 				@DefaultValue("3") int fpgaAttempts,
@@ -986,10 +965,7 @@ public class SpallocProperties {
 		}
 
 		/**
-		 * How long between when we send requests to the BMP control tasks. Note
-		 * that this must be given as either a true {@code Duration} or a count
-		 * of milliseconds, but <em>not</em> as an abbreviated form duration.
-		 * That's a Spring bug.
+		 * How long between when we send requests to the BMP control tasks.
 		 *
 		 * @return How long between when we send requests to the BMP control
 		 *         tasks.

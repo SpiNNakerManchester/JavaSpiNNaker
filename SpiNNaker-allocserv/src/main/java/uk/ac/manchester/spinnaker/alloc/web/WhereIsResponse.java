@@ -22,7 +22,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
 
 import java.net.URI;
-import java.sql.SQLException;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -74,7 +73,7 @@ public class WhereIsResponse {
 	/** The physical (BMP+board) coordinates of the board. */
 	public final BoardPhysicalCoordinates physicalBoardCoordinates;
 
-	WhereIsResponse(BoardLocation location, UriInfo ui) throws SQLException {
+	WhereIsResponse(BoardLocation location, UriInfo ui) {
 		UriBuilder minter = ui.getBaseUriBuilder().path("{major}/{minor}");
 		machine = location.getMachine();
 		machineRef = minter.build(MACH, machine);

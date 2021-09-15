@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,8 +37,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
+import org.springframework.dao.DataAccessException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,7 +53,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
-import uk.ac.manchester.spinnaker.alloc.compat.Utils.CheckedFunction;
+import uk.ac.manchester.spinnaker.alloc.compat.Utils.Function;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -147,7 +148,7 @@ class ServiceImpl extends V1CompatService.Task {
 		js.setPower(job.getMachine().map(m -> {
 			try {
 				return m.getPower().equals(PowerState.ON);
-			} catch (SQLException e) {
+			} catch (DataAccessException e) {
 				log.warn("problem getting job power state", e);
 				return false;
 			}
@@ -197,8 +198,8 @@ class ServiceImpl extends V1CompatService.Task {
 		Integer maxDead = (Integer) kwargs.get("max_dead_boards");
 		Number keepalive = (Number) kwargs.get("keepalive");
 		String machineName = (String) kwargs.get("machine");
-		Job job = spalloc.createJob(srv.props.getServiceUser(),
-				create, machineName, tags(kwargs.get("tags")),
+		Job job = spalloc.createJob(srv.props.getServiceUser(), create,
+				machineName, tags(kwargs.get("tags")),
 				isNull(keepalive) ? DEFAULT_KEEPALIVE
 						: Duration.ofSeconds(keepalive.intValue()),
 				maxDead, mapper.writeValueAsBytes(cmd));
@@ -229,9 +230,9 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected JobDescription[] listJobs() throws SQLException {
+	protected JobDescription[] listJobs() {
 		// Messy; hits the database many times
-		return mapArrayTx(spalloc.getJobs(false, LOTS, 0).jobs(),
+		return mapArrayTx(() -> spalloc.getJobs(false, LOTS, 0).jobs(),
 				JobDescription.class, (job, jd) -> {
 					jd.setJobID(job.getId());
 					jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
@@ -261,12 +262,12 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected Machine[] listMachines() throws SQLException {
+	protected Machine[] listMachines() {
 		// Messy; hits the database many times
-		return mapArrayTx(spalloc.getMachines().values(), Machine.class,
+		return mapArrayTx(() -> spalloc.getMachines().values(), Machine.class,
 				(m, md) -> {
 					md.setName(m.getName());
-					md.setTags(m.getTags());
+					md.setTags(new ArrayList<>(m.getTags()));
 					md.setWidth(m.getWidth());
 					md.setHeight(m.getHeight());
 					md.setDeadBoards(m.getDeadBoards().stream()
@@ -330,7 +331,7 @@ class ServiceImpl extends V1CompatService.Task {
 				() -> new Exception("no boards currently allocated")));
 	}
 
-	private WhereIs whereis(BoardLocation bl) throws SQLException {
+	private WhereIs whereis(BoardLocation bl) {
 		WhereIs wi = new WhereIs();
 		wi.setMachine(bl.getMachine());
 		wi.setLogical(bl.getLogical());
@@ -368,9 +369,26 @@ class ServiceImpl extends V1CompatService.Task {
 
 	// instance-aware utilities
 
-	private <T, U> U[] mapArrayTx(Collection<T> a1, Class<U> b1,
-			CheckedFunction<T, U> c1) throws SQLException {
-		return srv.db.execute(c -> mapToArray(a1, b1, c1));
+	/**
+	 * Map a collection of items to an array within a transaction.
+	 *
+	 * @param <T>
+	 *            The type of source items.
+	 * @param <U>
+	 *            The type of target items.
+	 * @param srcItems
+	 *            How to get the collection of source items.
+	 * @param targetCls
+	 *            The type of target items created. Needed so we can make them
+	 *            and make an array of them.
+	 * @param itemMapper
+	 *            How to fill out a target item given a source item.
+	 * @return Array of items of target type.
+	 */
+	private <T, U> U[] mapArrayTx(Supplier<Collection<T>> srcItems,
+			Class<U> targetCls, Function<T, U> itemMapper) {
+		return srv.db.execute(
+				c -> mapToArray(srcItems.get(), targetCls, itemMapper));
 	}
 
 	private Job getJob(int jobId) throws Exception {
@@ -397,7 +415,7 @@ class ServiceImpl extends V1CompatService.Task {
 		}
 	}
 
-	private Optional<Command> getCommand(Job job) throws SQLException {
+	private Optional<Command> getCommand(Job job) {
 		Optional<byte[]> origReq = job.getOriginalRequest();
 		if (origReq.isPresent()) {
 			try {

@@ -21,7 +21,6 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
@@ -44,7 +43,7 @@ public final class ListJobsResponse {
 
 	private URI next;
 
-	ListJobsResponse(Jobs jc, UriInfo ui) throws SQLException {
+	ListJobsResponse(Jobs jc, UriInfo ui) {
 		UriBuilder b = ui.getAbsolutePathBuilder().path("{id}");
 		jobs = unmodifiableList(
 				jc.ids().stream().map(id -> b.build(id)).collect(toList()));

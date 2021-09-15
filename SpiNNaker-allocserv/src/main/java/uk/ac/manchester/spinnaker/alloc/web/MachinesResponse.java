@@ -19,11 +19,11 @@ package uk.ac.manchester.spinnaker.alloc.web;
 import static java.util.Collections.unmodifiableList;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -67,13 +67,13 @@ public final class MachinesResponse {
 		public final List<DownLink> deadLinks;
 
 		private BriefMachineDescription(String name, URI uri, int width,
-				int height, List<String> tags, List<BoardCoords> deadBoards,
+				int height, Set<String> tags, List<BoardCoords> deadBoards,
 				List<DownLink> deadLinks) {
 			this.name = name;
 			this.uri = uri;
 			this.width = width;
 			this.height = height;
-			this.tags = unmodifiableList(tags);
+			this.tags = unmodifiableList(new ArrayList<>(tags));
 			this.deadBoards = unmodifiableList(deadBoards);
 			this.deadLinks = unmodifiableList(deadLinks);
 		}
@@ -82,8 +82,7 @@ public final class MachinesResponse {
 	/** The list of machines known to the service. */
 	public final List<BriefMachineDescription> machines;
 
-	MachinesResponse(Map<String, Machine> machines, UriInfo ui)
-			throws SQLException {
+	MachinesResponse(Map<String, Machine> machines, UriInfo ui) {
 		List<BriefMachineDescription> mlist = new ArrayList<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
 		for (Entry<String, Machine> ment : machines.entrySet()) {

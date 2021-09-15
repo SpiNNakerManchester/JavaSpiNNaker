@@ -28,7 +28,7 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
-import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
@@ -39,8 +39,6 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,13 +55,14 @@ import org.slf4j.Logger;
 import org.slf4j.MDC.MDCCloseable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
@@ -341,15 +340,15 @@ public class BMPController extends SQLQueries {
 
 	@Scheduled(fixedDelayString = "#{txrxProperties.period}",
 			initialDelayString = "#{txrxProperties.period}")
-	void mainSchedule() throws SQLException, IOException, SpinnmanException {
+	void mainSchedule() throws IOException, SpinnmanException {
 		if (serviceControl.isPaused()) {
 			return;
 		}
 
 		try {
 			processRequests();
-		} catch (SQLiteException e) {
-			if (e.getResultCode().equals(SQLITE_BUSY)) {
+		} catch (DataAccessException e) {
+			if (isBusy(e)) {
 				log.info("database is busy; will try power processing later");
 				return;
 			}
@@ -363,8 +362,6 @@ public class BMPController extends SQLQueries {
 	 * The core of {@link #mainSchedule()}.
 	 *
 	 * @deprecated Only {@code public} for testing purposes.
-	 * @throws SQLException
-	 *             If DB access fails
 	 * @throws IOException
 	 *             If talking to the network fails
 	 * @throws SpinnmanException
@@ -373,8 +370,8 @@ public class BMPController extends SQLQueries {
 	 *             If the wait for workers to spawn fails.
 	 */
 	@Deprecated
-	public void processRequests() throws SQLException, IOException,
-			SpinnmanException, InterruptedException {
+	public void processRequests()
+			throws IOException, SpinnmanException, InterruptedException {
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
@@ -385,12 +382,10 @@ public class BMPController extends SQLQueries {
 	 * active requests that are being processed.
 	 *
 	 * @return The number of requests in the database queue.
-	 * @throws SQLException
-	 *             If anything goes wrong with the DB access.
 	 */
 	@ManagedAttribute(
 			description = "An estimate of the number of requests " + "pending.")
-	public int getPendingRequestLoading() throws SQLException {
+	public int getPendingRequestLoading() {
 		try (Connection conn = db.getConnection();
 				Query countChanges = query(conn, COUNT_PENDING_CHANGES)) {
 			Optional<Row> row = countChanges.call1();
@@ -548,28 +543,28 @@ public class BMPController extends SQLQueries {
 	private abstract class AbstractSQL implements AutoCloseable {
 		final Connection conn;
 
-		AbstractSQL() throws SQLException {
+		AbstractSQL() {
 			conn = db.getConnection();
 		}
 
-		void transaction(Transacted action) throws SQLException {
+		void transaction(Transacted action) {
 			DatabaseEngine.transaction(conn, action);
 		}
 
-		protected Query query(String sql) throws SQLException {
+		protected Query query(String sql) {
 			return DatabaseEngine.query(conn, sql);
 		}
 
-		protected Query query(Resource sql) throws SQLException {
+		protected Query query(Resource sql) {
 			return DatabaseEngine.query(conn, sql);
 		}
 
-		protected Update update(String sql) throws SQLException {
+		protected Update update(String sql) {
 			return DatabaseEngine.update(conn, sql);
 		}
 
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			conn.close();
 		}
 	}
@@ -584,29 +579,25 @@ public class BMPController extends SQLQueries {
 
 		private final Update setInProgress = update(SET_IN_PROGRESS);
 
-		TakeReqsSQL() throws SQLException {
-			// TODO can some of these be combined with RETURNING?
-			// NB: Have to declare this constructor!
-		}
+		// TODO can some of these be combined with RETURNING?
 
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			getJobIdsWithChanges.close();
 			getPowerChangesToDo.close();
 			setInProgress.close();
 			super.close();
 		}
 
-		Iterable<Row> jobsWithChanges(Integer machineId) throws SQLException {
+		Iterable<Row> jobsWithChanges(Integer machineId) {
 			return getJobIdsWithChanges.call(machineId);
 		}
 
-		Iterable<Row> getPowerChangesToDo(Integer jobId) throws SQLException {
+		Iterable<Row> getPowerChangesToDo(Integer jobId) {
 			return getPowerChangesToDo.call(jobId);
 		}
 
-		int setInProgress(boolean inProgress, Integer changeId)
-				throws SQLException {
+		int setInProgress(boolean inProgress, Integer changeId) {
 			return setInProgress.call(inProgress, changeId);
 		}
 	}
@@ -616,10 +607,8 @@ public class BMPController extends SQLQueries {
 	 * remember they are being worked on.
 	 *
 	 * @return List of requests to pass to the {@link WorkerThread}s.
-	 * @throws SQLException
-	 *             If DB access fails
 	 */
-	private List<Request> takeRequests() throws SQLException {
+	private List<Request> takeRequests() {
 		List<Request> requestCollector = new ArrayList<>();
 		List<Machine> machines =
 				new ArrayList<>(spallocCore.getMachines().values());
@@ -638,8 +627,7 @@ public class BMPController extends SQLQueries {
 	}
 
 	private void takeRequestsForJob(Machine machine, Integer jobId,
-			TakeReqsSQL sql, List<Request> requestCollector)
-			throws SQLException {
+			TakeReqsSQL sql, List<Request> requestCollector) {
 		List<Integer> changeIds = new ArrayList<>();
 		List<Integer> boardsOn = new ArrayList<>();
 		List<Integer> boardsOff = new ArrayList<>();
@@ -696,11 +684,8 @@ public class BMPController extends SQLQueries {
 
 		private final Update deleteChange = update(FINISHED_PENDING);
 
-		AfterSQL() throws SQLException {
-		}
-
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			deleteChange.close();
 			deallocateBoards.close();
 			setInProgress.close();
@@ -711,25 +696,23 @@ public class BMPController extends SQLQueries {
 
 		// What follows are type-safe wrappers
 
-		int setBoardState(boolean state, Integer boardId) throws SQLException {
+		int setBoardState(boolean state, Integer boardId) {
 			return setBoardState.call(state, boardId);
 		}
 
-		int setJobState(JobState state, int pending, Integer jobId)
-				throws SQLException {
+		int setJobState(JobState state, int pending, Integer jobId) {
 			return setJobState.call(state, pending, jobId);
 		}
 
-		int setInProgress(boolean progress, Integer changeId)
-				throws SQLException {
+		int setInProgress(boolean progress, Integer changeId) {
 			return setInProgress.call(progress, changeId);
 		}
 
-		int deallocateBoards(Integer jobId) throws SQLException {
+		int deallocateBoards(Integer jobId) {
 			return deallocateBoards.call(jobId);
 		}
 
-		int deleteChange(Integer changeId) throws SQLException {
+		int deleteChange(Integer changeId) {
 			return deleteChange.call(changeId);
 		}
 	}
@@ -748,7 +731,7 @@ public class BMPController extends SQLQueries {
 	private void processAfterChange(Request request, boolean fail) {
 		try (AfterSQL sql = new AfterSQL()) {
 			sql.transaction(() -> processAfterChange(request, fail, sql));
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			log.error("problem with database", e);
 		} finally {
 			epochs.nextJobsEpoch();
@@ -768,11 +751,9 @@ public class BMPController extends SQLQueries {
 	 *            supposed to be in.
 	 * @param sql
 	 *            How to access the DB
-	 * @throws SQLException
-	 *             if something goes badly wrong
 	 */
 	private void processAfterChange(Request request, boolean failed,
-			AfterSQL sql) throws SQLException {
+			AfterSQL sql) {
 		int turnedOn = 0, turnedOff = 0, jobChange = 0, moved = 0,
 				deallocated = 0, killed = 0;
 		if (failed) {
@@ -807,8 +788,8 @@ public class BMPController extends SQLQueries {
 				jobChange, moved, deallocated, killed);
 	}
 
-	private void addRequestToBMPQueue(Request request) throws IOException,
-			SpinnmanException, SQLException, InterruptedException {
+	private void addRequestToBMPQueue(Request request)
+			throws IOException, SpinnmanException, InterruptedException {
 		requireNonNull(request, "request must not be null");
 		/*
 		 * Ensure that the transceiver for the machine exists while we're still
@@ -998,7 +979,7 @@ public class BMPController extends SQLQueries {
 		BMPTransceiverInterface txrx;
 		try {
 			txrx = txrxFactory.getTransciever(request.machine);
-		} catch (IOException | SpinnmanException | SQLException e) {
+		} catch (IOException | SpinnmanException e) {
 			// Shouldn't ever happen; the transceiver ought to be pre-built
 			log.error("could not get transceiver", e);
 			return;

@@ -19,14 +19,12 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BASE_PATH;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -76,12 +74,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 			MachineDefinitionLoader.Configuration definitions) {
 		log.warn("CALLED importMachinesByContent({})", definitions.getMachines()
 				.stream().map(Machine::getName).collect(toList()));
-		try {
-			loader.loadMachineDefinitions(definitions);
-		} catch (SQLException e) {
-			throw new WebApplicationException(
-					"failed to load machine definitions", e, BAD_REQUEST);
-		}
+		loader.loadMachineDefinitions(definitions);
 	}
 
 	private static WebApplicationException noBoard() {
@@ -93,8 +86,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public boolean getBoardStateXYZ(String name, int x, int y, int z)
-			throws SQLException {
+	public boolean getBoardStateXYZ(String name, int x, int y, int z) {
 		log.info("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
 		BoardState board = machineController.findTriad(name, x, y, z)
 				.orElseThrow(AdminImpl::noBoard);
@@ -104,7 +96,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	@ManagedOperation
 	public boolean setBoardStateXYZ(String name, int x, int y, int z,
-			boolean enabled) throws SQLException {
+			boolean enabled) {
 		log.warn("CALLED boardState({}:XYZ=({},{},{})) := {}", name, x, y, z,
 				enabled);
 		BoardState board = machineController.findTriad(name, x, y, z)
@@ -114,8 +106,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public boolean getBoardStateCFB(String name, int c, int f, int b)
-			throws SQLException {
+	public boolean getBoardStateCFB(String name, int c, int f, int b) {
 		log.info("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
 		BoardState board = machineController.findPhysical(name, c, f, b)
 				.orElseThrow(AdminImpl::noBoard);
@@ -125,7 +116,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	@ManagedOperation
 	public boolean setBoardStateCFB(String name, int c, int f, int b,
-			boolean enabled) throws SQLException {
+			boolean enabled) {
 		log.warn("CALLED boardState({}:CFB=({},{},{})) := {}", name, c, f, b,
 				enabled);
 		BoardState board = machineController.findPhysical(name, c, f, b)
@@ -135,8 +126,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public boolean getBoardStateAddress(String name, String address)
-			throws SQLException {
+	public boolean getBoardStateAddress(String name, String address) {
 		log.info("CALLED boardState({}:IP=({}))", name, address);
 		BoardState board = machineController.findIP(name, address)
 				.orElseThrow(AdminImpl::noBoard);
@@ -146,7 +136,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	@Override
 	@ManagedOperation
 	public boolean setBoardStateAddress(String name, String address,
-			boolean enabled) throws SQLException {
+			boolean enabled) {
 		log.warn("CALLED boardState({}:IP=({})) := {}", name, address, enabled);
 		BoardState board = machineController.findIP(name, address)
 				.orElseThrow(AdminImpl::noBoard);
@@ -155,7 +145,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public Map<String, URI> listUsers(UriInfo ui) throws SQLException {
+	public Map<String, URI> listUsers(UriInfo ui) {
 		log.info("CALLED listUsers()");
 		Map<String, URI> result = new TreeMap<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
@@ -166,8 +156,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public Response createUser(UserRecord providedUser, UriInfo ui)
-			throws SQLException {
+	public Response createUser(UserRecord providedUser, UriInfo ui) {
 		log.warn("CALLED createUser({})", providedUser.getUserName());
 		providedUser.initCreationDefaults();
 		UserRecord realUser = userController.createUser(providedUser)
@@ -180,7 +169,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public UserRecord describeUser(int id) throws SQLException {
+	public UserRecord describeUser(int id) {
 		log.info("CALLED describeUser({})", id);
 		return userController.getUser(id).orElseThrow(AdminImpl::noUser)
 				.sanitise();
@@ -188,7 +177,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 
 	@Override
 	public UserRecord updateUser(int id, UserRecord providedUser,
-			SecurityContext security) throws SQLException {
+			SecurityContext security) {
 		log.warn("CALLED updateUser({})", providedUser.getUserName());
 		String adminUser = security.getUserPrincipal().getName();
 		providedUser.setUserId(null);
@@ -197,8 +186,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 	}
 
 	@Override
-	public Response deleteUser(int id, SecurityContext security)
-			throws SQLException {
+	public Response deleteUser(int id, SecurityContext security) {
 		log.warn("CALLED deleteUser({})", id);
 		String adminUser = security.getUserPrincipal().getName();
 		userController.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
