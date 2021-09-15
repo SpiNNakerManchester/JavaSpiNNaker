@@ -78,20 +78,20 @@ spalloc:
     path: spalloc-history.sqlite3
     # How long before we move old jobs to the historical data
     # Defaults to 14 days (or thereabouts)
-    grace-period: P14D
+    grace-period: 14d
     # Cron-like expression to say when to run the migration task.
     # Defaults to overnight at 02:00 every day
     schedule: "0 0 2 * * *"
   keepalive:
     # How long between runs of the keepalive-expiry algorithm
-    expiry-period: PT30S
+    expiry-period: 30s
     # Minimum keepalive period
     min: 30s
     # Maximum keepalive period
     max: 300s
   allocator:
     # How long between runs of the allocator algorithm
-    period: PT5S
+    period: 5s
     # What span of importance will be considered when allocating jobs
     importance-span: 10000
     # Priority is the rate at which importance is accrued
@@ -128,9 +128,9 @@ spalloc:
     # Number of login failures before lock-out
     max-login-failures: 3
     # Duration of automatic log-out
-    account-lock-duration: PT24H
+    account-lock-duration: 24h
     # How often do we look for users to unlock
-    unlock-period: PT60S
+    unlock-period: 60s
   quota:
     # Default user quota in board-seconds
     default-quota: 130
@@ -138,7 +138,7 @@ spalloc:
     consolidation-schedule: "0 0 * * * *"
   transceiver:
     # How long between when we send requests to the BMP control tasks
-    period: PT10S
+    period: 10s
     # The basic wait time used by the BMP control tasks
     probe-interval: 15s
     # Number of attempts that will be made to switch on a board
