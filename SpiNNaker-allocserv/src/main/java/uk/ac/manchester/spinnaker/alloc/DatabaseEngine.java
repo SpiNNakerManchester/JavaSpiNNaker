@@ -459,8 +459,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * If placed on a bean of type {@link Function}, specifies that the function
 	 * may be used in schema structures.
 	 *
-	 * @see DatabaseEngine#SQLITE_DIRECTONLY
-	 * @see DatabaseEngine#SQLITE_INNOCUOUS
+	 * @see DatabaseEngine#SQLITE_DIRECTONLY SQLITE_DIRECTONLY
+	 * @see DatabaseEngine#SQLITE_INNOCUOUS SQLITE_INNOCUOUS
 	 * @author Donal Fellows
 	 * @deprecated Consult the SQLite documentation on innocuous functions very
 	 *             carefully before enabling this. Only disable the deprecation
@@ -474,19 +474,27 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public @interface Innocuous {
 	}
 
+	/**
+	 * The prefix of bean names that may be removed to generate the SQLite
+	 * function name.
+	 */
 	private static final String FUN_NAME_PREFIX = "function.";
 
 	/**
 	 * Flag direct from SQLite.
 	 * <p>
-	 * <blockquote>The SQLITE_DIRECTONLY flag means that the function may only
-	 * be invoked from top-level SQL, and cannot be used in VIEWs or TRIGGERs
-	 * nor in schema structures such as CHECK constraints, DEFAULT clauses,
-	 * expression indexes, partial indexes, or generated columns. The
-	 * SQLITE_DIRECTONLY flags is a security feature which is recommended for
-	 * all application-defined SQL functions, and especially for functions that
-	 * have side-effects or that could potentially leak sensitive
+	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
+	 * may only be invoked from top-level SQL, and cannot be used in
+	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
+	 * <em>CHECK</em> constraints, <em>DEFAULT</em> clauses, expression indexes,
+	 * partial indexes, or generated columns. The {@code SQLITE_DIRECTONLY}
+	 * flags is a security feature which is recommended for all
+	 * application-defined SQL functions, and especially for functions that have
+	 * side-effects or that could potentially leak sensitive
 	 * information.</blockquote>
+	 * <p>
+	 * Note that the password-related functions we install are definitely
+	 * examples of functions that are only usable directly.
 	 *
 	 * @see <a href=
 	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
@@ -496,26 +504,27 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	/**
 	 * Flag direct from SQLite.
 	 * <p>
-	 * <blockquote>The SQLITE_INNOCUOUS flag means that the function is unlikely
-	 * to cause problems even if misused. An innocuous function should have no
-	 * side effects and should not depend on any values other than its input
-	 * parameters. The abs() function is an example of an innocuous function.
-	 * The load_extension() SQL function is not innocuous because of its side
-	 * effects.
+	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
+	 * unlikely to cause problems even if misused. An innocuous function should
+	 * have no side effects and should not depend on any values other than its
+	 * input parameters. The {@code abs()} function is an example of an
+	 * innocuous function. The {@code load_extension()} SQL function is not
+	 * innocuous because of its side effects.
 	 * <p>
-	 * SQLITE_INNOCUOUS is similar to SQLITE_DETERMINISTIC, but is not exactly
-	 * the same. The random() function is an example of a function that is
-	 * innocuous but not deterministic.
+	 * {@code SQLITE_INNOCUOUS} is similar to {@code SQLITE_DETERMINISTIC}, but
+	 * is not exactly the same. The {@code random()} function is an example of a
+	 * function that is innocuous but not deterministic.
 	 * <p>
-	 * Some heightened security settings (SQLITE_DBCONFIG_TRUSTED_SCHEMA and
-	 * PRAGMA trusted_schema=OFF) disable the use of SQL functions inside views
-	 * and triggers and in schema structures such as CHECK constraints, DEFAULT
-	 * clauses, expression indexes, partial indexes, and generated columns
-	 * unless the function is tagged with SQLITE_INNOCUOUS. Most built-in
-	 * functions are innocuous. Developers are advised to avoid using the
-	 * SQLITE_INNOCUOUS flag for application-defined functions unless the
-	 * function has been carefully audited and found to be free of potentially
-	 * security-adverse side-effects and information-leaks. </blockquote>
+	 * Some heightened security settings ({@code SQLITE_DBCONFIG_TRUSTED_SCHEMA}
+	 * and {@code PRAGMA trusted_schema=OFF}) disable the use of SQL functions
+	 * inside views and triggers and in schema structures such as <em>CHECK</em>
+	 * constraints, <em>DEFAULT</em> clauses, expression indexes, partial
+	 * indexes, and generated columns unless the function is tagged with
+	 * {@code SQLITE_INNOCUOUS}. Most built-in functions are innocuous.
+	 * Developers are advised to avoid using the {@code SQLITE_INNOCUOUS} flag
+	 * for application-defined functions unless the function has been carefully
+	 * audited and found to be free of potentially security-adverse side-effects
+	 * and information-leaks. </blockquote>
 	 * <p>
 	 * Note that this engine marks non-innocuous functions as
 	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
@@ -548,18 +557,26 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		if (name.isEmpty()) {
 			throw new UncategorizedScriptException("crazy function name");
 		}
+
 		int nArgs = -1;
 		ArgumentCount c = findAnnotation(func.getClass(), ArgumentCount.class);
 		if (nonNull(c)) {
 			nArgs = c.value();
 		}
-		boolean deterministic =
-				nonNull(findAnnotation(func.getClass(), Deterministic.class));
-		boolean innocuous =
-				nonNull(findAnnotation(func.getClass(), Innocuous.class));
-		Function.create(conn, name, func, nArgs,
-				(deterministic ? FLAG_DETERMINISTIC : 0)
-						| (innocuous ? SQLITE_INNOCUOUS : SQLITE_DIRECTONLY));
+
+		int flags;
+		if (nonNull(findAnnotation(func.getClass(), Innocuous.class))) {
+			flags = SQLITE_INNOCUOUS;
+		} else {
+			flags = SQLITE_DIRECTONLY;
+		}
+		if (nonNull(findAnnotation(func.getClass(), Deterministic.class))) {
+			flags |= FLAG_DETERMINISTIC;
+		}
+
+		// Call into the driver to actually bind the function
+		Function.create(conn, name, func, nArgs, flags);
+
 		if (nArgs >= 0) {
 			log.debug("installed function {} ({} argument(s)) in connection {}",
 					name, nArgs, conn);
@@ -665,18 +682,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Get a connection. This connection is thread-bound; it <em>must not</em>
-	 * be passed to other threads. They should get their own connections
-	 * instead.
+	 * Get a connection. This connection is thread-bound and pooled; it <em>must
+	 * not</em> be passed to other threads. They should get their own
+	 * connections instead.
 	 * <p>
-	 * Note that if an in-memory database is used (see the
-	 * {@linkplain #DatabaseEngine(DatabaseEngine) alternate constructor}, that
-	 * DB can <em>only</em> be accessed from the connection returned from this
-	 * method; the next call to this method (whether from the current thread or
-	 * another one) will get an independent database. Such in-memory databases
-	 * are not subject to thread-bound cleanup actions; they're simply deleted
-	 * from memory when no longer used (but the connection should be
-	 * {@code close()}d after use for efficiency nonetheless).
+	 * Note that if an in-memory database is used (see
+	 * {@link #getInMemoryDB()}), that DB can <em>only</em> be accessed from the
+	 * connection returned from this method; the next call to this method
+	 * (whether from the current thread or another one) will get an independent
+	 * database. Such in-memory databases are not subject to thread-bound
+	 * cleanup actions; they're simply deleted from memory when no longer used
+	 * (but the connection should be {@code close()}d after use for efficiency
+	 * nonetheless).
 	 *
 	 * @return A configured initialised connection to the database.
 	 */
