@@ -22,7 +22,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
@@ -65,7 +64,7 @@ public class SubMachineResponse {
 	@JsonInclude(NON_NULL)
 	public final URI machineRef;
 
-	SubMachineResponse(SubMachine m, UriInfo ui) throws SQLException {
+	SubMachineResponse(SubMachine m, UriInfo ui) {
 		width = m.getWidth();
 		height = m.getHeight();
 		depth = m.getDepth();

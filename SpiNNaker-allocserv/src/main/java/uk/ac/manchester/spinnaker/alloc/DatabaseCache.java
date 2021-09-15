@@ -59,6 +59,17 @@ abstract class DatabaseCache<Conn extends Connection> {
 	abstract Conn openDatabaseConnection() throws SQLException;
 
 	/**
+	 * Some threads persist a long time and need special treatment in order to
+	 * clean up at the end. Identify them.
+	 *
+	 * @return Whether the current thread needs a full shutdown hook.
+	 */
+	private static boolean isLongTermThread() {
+		// Special case for the main thread
+		return currentThread().getName().equals("main");
+	}
+
+	/**
 	 * Sets up a cacheable database connection for a particular thread. Used to
 	 * initialise a thread local ({@link #connectionCache}) that does the
 	 * caching.
@@ -73,7 +84,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 			throw new RuntimeException("problem opening database connection",
 					e);
 		}
-		if (currentThread().getName().equals("main")) {
+		if (isLongTermThread()) {
 			// Special case for the main thread
 			getRuntime().addShutdownHook(new Thread(() -> {
 				closeDatabaseConnection(connection);

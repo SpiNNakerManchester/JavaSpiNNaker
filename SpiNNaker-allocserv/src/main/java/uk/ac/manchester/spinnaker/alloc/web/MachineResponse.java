@@ -24,7 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH_BOARD_BY_PHYSICAL;
 
 import java.net.URI;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.UriBuilder;
@@ -83,13 +83,10 @@ public final class MachineResponse {
 	 *            The machine being described.
 	 * @param ui
 	 *            How to manufacture URIs. May be {@code null}.
-	 * @throws SQLException
-	 *             If anything goes wrong with machine property access.
 	 */
-	public MachineResponse(SpallocAPI.Machine machine, UriInfo ui)
-			throws SQLException {
+	public MachineResponse(SpallocAPI.Machine machine, UriInfo ui) {
 		name = machine.getName();
-		tags = machine.getTags();
+		tags = new ArrayList<>(machine.getTags());
 		width = machine.getWidth();
 		height = machine.getHeight();
 		downBoards = machine.getDeadBoards();

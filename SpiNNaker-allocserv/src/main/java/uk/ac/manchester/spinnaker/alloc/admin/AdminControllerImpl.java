@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +41,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -58,6 +57,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
@@ -112,7 +112,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 				Query listMachines = query(conn, LIST_MACHINE_NAMES)) {
 			return rowsAsList(listMachines.call(),
 					row -> row.getString("machine_name"));
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
 			return emptyList();
 		}
@@ -203,7 +203,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 				result.put(user.getUserName(),
 						uri(SELF.showUserForm(user.getUserId())));
 			}
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 
@@ -232,7 +232,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 		Optional<UserRecord> realUser;
 		try {
 			realUser = userController.createUser(user);
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 		if (!realUser.isPresent()) {
@@ -254,7 +254,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 			if (!user.isPresent()) {
 				return errors("no such user");
 			}
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 		mav.addObject(USER_OBJ, user.get().sanitise());
@@ -276,7 +276,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 		try {
 			log.info("updating user ID={}", id);
 			updatedUser = userController.updateUser(id, user, adminUser);
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 		if (!updatedUser.isPresent()) {
@@ -304,7 +304,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 					deletedUsername.get());
 			// Not sure that these are the correct place
 			mav.addObject("notice", "deleted " + deletedUsername.get());
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 		mav.addObject(USER_OBJ, new UserRecord());
@@ -346,7 +346,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 				// unreachable because of validation
 				throw new UnsupportedOperationException("bad address");
 			}
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 		if (isNull(bs)) {
@@ -373,7 +373,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 						bs.x, bs.y, bs.z, board.isEnabled());
 				bs.setState(board.isEnabled());
 			}
-		} catch (SQLException e) {
+		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}
 		model.put(BOARD_OBJ, bs);
@@ -399,7 +399,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 				machineDefiner.loadMachineDefinition(m);
 				log.info("defined machine {}", m.getName());
 			}
-		} catch (IOException | SQLException e) {
+		} catch (IOException | DataAccessException e) {
 			return errors("problem with processing file: " + e.getMessage());
 		}
 		ModelAndView mav = new ModelAndView(MACHINE_VIEW);

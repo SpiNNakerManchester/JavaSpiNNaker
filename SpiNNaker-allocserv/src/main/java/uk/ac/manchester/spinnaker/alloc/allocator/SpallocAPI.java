@@ -18,12 +18,12 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.security.access.prepost.PostFilter;
 
@@ -52,19 +52,15 @@ public interface SpallocAPI {
 	 * List the machines.
 	 *
 	 * @return A mapping from names to machines (which are live objects).
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
-	Map<String, Machine> getMachines() throws SQLException;
+	Map<String, Machine> getMachines();
 
 	/**
 	 * List the machines.
 	 *
 	 * @return A description of all the machines.
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
-	List<MachineListEntryRecord> listMachines() throws SQLException;
+	List<MachineListEntryRecord> listMachines();
 
 	/**
 	 * Get a specific machine.
@@ -72,10 +68,8 @@ public interface SpallocAPI {
 	 * @param name
 	 *            The name of the machine to get.
 	 * @return A machine, on which more operations can be done.
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
-	Optional<Machine> getMachine(String name) throws SQLException;
+	Optional<Machine> getMachine(String name);
 
 	/**
 	 * Get info about a specific machine.
@@ -85,11 +79,8 @@ public interface SpallocAPI {
 	 * @param permit
 	 *            Encodes what the caller may do.
 	 * @return A machine description model.
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
-	Optional<MachineDescription> getMachineInfo(String machine, Permit permit)
-			throws SQLException;
+	Optional<MachineDescription> getMachineInfo(String machine, Permit permit);
 
 	/**
 	 * List the jobs.
@@ -101,10 +92,8 @@ public interface SpallocAPI {
 	 * @param start
 	 *            How many jobs to skip past. Used for paging.
 	 * @return A list of jobs.
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
-	Jobs getJobs(boolean deleted, int limit, int start) throws SQLException;
+	Jobs getJobs(boolean deleted, int limit, int start);
 
 	/**
 	 * List the active jobs.
@@ -112,10 +101,8 @@ public interface SpallocAPI {
 	 * @param permit
 	 *            Encodes what the caller may do.
 	 * @return A description of all the active jobs.
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
-	List<JobListEntryRecord> listJobs(Permit permit) throws SQLException;
+	List<JobListEntryRecord> listJobs(Permit permit);
 
 	/**
 	 * Get a specific job. Only owners or admins can see full job details or
@@ -127,11 +114,9 @@ public interface SpallocAPI {
 	 *            The identifier of the job.
 	 * @return A job object on which more operations can be done, or empty if
 	 *         the job isn't there or isn't available to you.
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
 	@PostFilter(MAY_SEE_JOB_DETAILS)
-	Optional<Job> getJob(Permit permit, int id) throws SQLException;
+	Optional<Job> getJob(Permit permit, int id);
 
 	/**
 	 * Get a specific job. Only owners or admins can see full job details or
@@ -143,12 +128,9 @@ public interface SpallocAPI {
 	 *            The identifier of the job.
 	 * @return A job description, or empty if the job isn't there (or isn't
 	 *         available to you).
-	 * @throws SQLException
-	 *             If something goes wrong
 	 */
 	@PostFilter(MAY_SEE_JOB_DETAILS)
-	Optional<JobDescription> getJobInfo(Permit permit, int id)
-			throws SQLException;
+	Optional<JobDescription> getJobInfo(Permit permit, int id);
 
 	/**
 	 * Create a job.
@@ -173,12 +155,10 @@ public interface SpallocAPI {
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
 	 * @return Handle to the job.
-	 * @throws SQLException
-	 *             If anything goes wrong at the database level.
 	 */
 	Job createJob(String owner, CreateDescriptor descriptor, String machineName,
 			List<String> tags, Duration keepaliveInterval,
-			Integer maxDeadBoards, byte[] originalRequest) throws SQLException;
+			Integer maxDeadBoards, byte[] originalRequest);
 
 	/**
 	 * Describes what sort of request to create a job this is.
@@ -351,10 +331,8 @@ public interface SpallocAPI {
 		 *
 		 * @param keepaliveAddress
 		 *            Where was the access from.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		void access(String keepaliveAddress) throws SQLException;
+		void access(String keepaliveAddress);
 
 		/**
 		 * Mark the job as destroyed. To do this to an already destroyed job is
@@ -362,75 +340,55 @@ public interface SpallocAPI {
 		 *
 		 * @param reason
 		 *            Why the job is being destroyed.
-		 * @throws SQLException
-		 *             If anything goes wrong.
 		 */
-		void destroy(String reason) throws SQLException;
+		void destroy(String reason);
 
 		/**
 		 * @return The state of the job.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		JobState getState() throws SQLException;
+		JobState getState();
 
 		/**
 		 * @return When the job started.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Instant getStartTime() throws SQLException;
+		Instant getStartTime();
 
 		/**
 		 * @return Host address that issued last keepalive event, if any.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<String> getKeepaliveHost() throws SQLException;
+		Optional<String> getKeepaliveHost();
 
 		/**
 		 * @return Time of the last keepalive event, if any.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Instant getKeepaliveTimestamp() throws SQLException;
+		Instant getKeepaliveTimestamp();
 
 		/**
 		 * @return The creator of the job.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<String> getOwner() throws SQLException;
+		Optional<String> getOwner();
 
 		/**
 		 * @return The serialized original request to create the job.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<byte[]> getOriginalRequest() throws SQLException;
+		Optional<byte[]> getOriginalRequest();
 
 		/**
 		 * @return When the job finished.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<Instant> getFinishTime() throws SQLException;
+		Optional<Instant> getFinishTime();
 
 		/**
 		 * @return Why the job died. Might be {@code null} if this isn't known
 		 *         (including if the job is alive).
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<String> getReason() throws SQLException;
+		Optional<String> getReason();
 
 		/**
 		 * @return The (sub-)machine allocated to the job. {@code null} if no
 		 *         resources allocated.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<SubMachine> getMachine() throws SQLException;
+		Optional<SubMachine> getMachine();
 
 		/**
 		 * Locate a board within the allocation.
@@ -440,43 +398,33 @@ public interface SpallocAPI {
 		 * @param y
 		 *            The Y coordinate of a chip on the board of interest.
 		 * @return The location, if resources allocated and the location maps.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<BoardLocation> whereIs(int x, int y) throws SQLException;
+		Optional<BoardLocation> whereIs(int x, int y);
 
 		/**
 		 * @return The absolute location of root chip. {@code null} if no
 		 *         resources allocated.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<ChipLocation> getRootChip() throws SQLException;
+		Optional<ChipLocation> getRootChip();
 
 		/**
 		 * @return the allocated width of the job's rectangle, or {@code null}
 		 *         if not allocated (or not known).
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<Integer> getWidth() throws SQLException;
+		Optional<Integer> getWidth();
 
 		/**
 		 * @return the allocated height of the job's rectangle, or {@code null}
 		 *         if not allocated (or not known).
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<Integer> getHeight() throws SQLException;
+		Optional<Integer> getHeight();
 
 		/**
 		 * @return the allocated depth of this sub-machine, or {@code null} if
 		 *         not allocated (or not known). When supplied, will be 1
 		 *         (single board) or 3 (by triad)
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<Integer> getDepth() throws SQLException;
+		Optional<Integer> getDepth();
 
 		/**
 		 * Report an issue with some boards in the job.
@@ -486,11 +434,8 @@ public interface SpallocAPI {
 		 * @param permit
 		 *            Who is actually reporting this?
 		 * @return The text part of the response
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		String reportIssue(IssueReportRequest reqBody, Permit permit)
-				throws SQLException;
+		String reportIssue(IssueReportRequest reqBody, Permit permit);
 	}
 
 	/**
@@ -501,18 +446,14 @@ public interface SpallocAPI {
 	interface Jobs extends Waitable {
 		/**
 		 * @return The job IDs.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<Integer> ids() throws SQLException;
+		List<Integer> ids();
 
 		/**
 		 * @return The jobs. Simplified view only. (No keepalive host or owner
 		 *         information.)
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<Job> jobs() throws SQLException;
+		List<Job> jobs();
 	}
 
 	/**
@@ -530,33 +471,25 @@ public interface SpallocAPI {
 
 		/**
 		 * @return The tags associated with the machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<String> getTags() throws SQLException;
+		Set<String> getTags();
 
 		/**
 		 * @return The width of the machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getWidth() throws SQLException;
+		int getWidth();
 
 		/**
 		 * @return The height of the machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getHeight() throws SQLException;
+		int getHeight();
 
 		/**
 		 * The IDs of boards marked as dead or otherwise taken out of service.
 		 *
 		 * @return A list of boards. Not modifiable.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<BoardCoords> getDeadBoards() throws SQLException;
+		List<BoardCoords> getDeadBoards();
 
 		/**
 		 * The links within the machine that are marked as dead or otherwise
@@ -564,10 +497,8 @@ public interface SpallocAPI {
 		 * out of the machine.
 		 *
 		 * @return A list of links. Not modifiable.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<DownLink> getDownLinks() throws SQLException;
+		List<DownLink> getDownLinks();
 
 		/**
 		 * Get a description of the location of a board given the global
@@ -578,11 +509,8 @@ public interface SpallocAPI {
 		 * @param y
 		 *            Global chip Y coordinate.
 		 * @return Board location description
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<BoardLocation> getBoardByChip(int x, int y)
-				throws SQLException;
+		Optional<BoardLocation> getBoardByChip(int x, int y);
 
 		/**
 		 * Get a description of the location of a board given the physical
@@ -595,11 +523,9 @@ public interface SpallocAPI {
 		 * @param board
 		 *            Board number
 		 * @return Board location description
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
 		Optional<BoardLocation> getBoardByPhysicalCoords(int cabinet, int frame,
-				int board) throws SQLException;
+				int board);
 
 		/**
 		 * Get a description of the location of a board given the triad
@@ -612,11 +538,8 @@ public interface SpallocAPI {
 		 * @param z
 		 *            Triad Z coordinate.
 		 * @return Board location description
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z)
-				throws SQLException;
+		Optional<BoardLocation> getBoardByLogicalCoords(int x, int y, int z);
 
 		/**
 		 * Get a description of the location of a board given the address of its
@@ -626,32 +549,23 @@ public interface SpallocAPI {
 		 *            IP address of the board (in {@code 0.0.0.0} form; will be
 		 *            matched exactly by the values in the DB).
 		 * @return Board location description
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Optional<BoardLocation> getBoardByIPAddress(String address)
-				throws SQLException;
+		Optional<BoardLocation> getBoardByIPAddress(String address);
 
 		/**
 		 * @return The IP address of the BMP of the root board of the machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		String getRootBoardBMPAddress() throws SQLException;
+		String getRootBoardBMPAddress();
 
 		/**
 		 * @return The boards supported by the machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<Integer> getBoardNumbers() throws SQLException;
+		List<Integer> getBoardNumbers();
 
 		/**
 		 * @return The IDs of boards currently available to be allocated.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<Integer> getAvailableBoards() throws SQLException;
+		List<Integer> getAvailableBoards();
 	}
 
 	/**
@@ -706,74 +620,54 @@ public interface SpallocAPI {
 	interface SubMachine {
 		/**
 		 * @return The machine that this sub-machine is part of.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		Machine getMachine() throws SQLException;
+		Machine getMachine();
 
 		/**
 		 * @return The root X coordinate of this sub-machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getRootX() throws SQLException;
+		int getRootX();
 
 		/**
 		 * @return The root Y coordinate of this sub-machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getRootY() throws SQLException;
+		int getRootY();
 
 		/**
 		 * @return The root Z coordinate of this sub-machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getRootZ() throws SQLException;
+		int getRootZ();
 
 		/**
 		 * @return The width of this sub-machine, in triads.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getWidth() throws SQLException;
+		int getWidth();
 
 		/**
 		 * @return The height of this sub-machine, in triads.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getHeight() throws SQLException;
+		int getHeight();
 
 		/**
 		 * @return The depth of this sub-machine. 1 (single board) or 3 (by
 		 *         triad)
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		int getDepth() throws SQLException;
+		int getDepth();
 
 		/**
 		 * @return The connection details of this sub-machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<ConnectionInfo> getConnections() throws SQLException;
+		List<ConnectionInfo> getConnections();
 
 		/**
 		 * @return The board locations of this sub-machine.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		List<BoardCoordinates> getBoards() throws SQLException;
+		List<BoardCoordinates> getBoards();
 
 		/**
 		 * @return Whether this sub-machine is switched on.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		PowerState getPower() throws SQLException;
+		PowerState getPower();
 
 		/**
 		 * Set whether this sub-machine is switched on. Note that actually
@@ -781,9 +675,7 @@ public interface SpallocAPI {
 		 *
 		 * @param powerState
 		 *            What to set the power state to.
-		 * @throws SQLException
-		 *             If something goes wrong
 		 */
-		void setPower(PowerState powerState) throws SQLException;
+		void setPower(PowerState powerState);
 	}
 }

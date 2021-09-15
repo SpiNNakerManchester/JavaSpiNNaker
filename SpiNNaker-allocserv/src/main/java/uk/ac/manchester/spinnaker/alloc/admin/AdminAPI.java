@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.USER;
 
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -157,8 +156,6 @@ public interface AdminAPI {
 	 * @param address
 	 *            The IP address of the board (dotted quad)
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 * @throws RequestFailedException
 	 *             If bad query combinations are supplied
 	 */
@@ -172,7 +169,7 @@ public interface AdminAPI {
 			@QueryParam("x") Integer x, @QueryParam("y") Integer y,
 			@QueryParam("z") Integer z, @QueryParam("cabinet") Integer c,
 			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
-			@QueryParam("address") String address) throws SQLException {
+			@QueryParam("address") String address) {
 		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return getBoardStateXYZ(machineName, x, y, z);
 		}
@@ -199,11 +196,9 @@ public interface AdminAPI {
 	 * @param z
 	 *            The Z coordinate
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 */
 	boolean getBoardStateXYZ(String name, @PositiveOrZero int x,
-			@PositiveOrZero int y, @PositiveOrZero int z) throws SQLException;
+			@PositiveOrZero int y, @PositiveOrZero int z);
 
 	/**
 	 * Find board by physical coordinates and return its state.
@@ -217,11 +212,9 @@ public interface AdminAPI {
 	 * @param b
 	 *            The board number
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 */
 	boolean getBoardStateCFB(String name, @PositiveOrZero int c,
-			@PositiveOrZero int f, @PositiveOrZero int b) throws SQLException;
+			@PositiveOrZero int f, @PositiveOrZero int b);
 
 	/**
 	 * Find board by IP address and return its state.
@@ -231,11 +224,8 @@ public interface AdminAPI {
 	 * @param address
 	 *            The IP address of the board (dotted quad)
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 */
-	boolean getBoardStateAddress(String name, @IPAddress String address)
-			throws SQLException;
+	boolean getBoardStateAddress(String name, @IPAddress String address);
 
 	/**
 	 * Enable or disable a board.
@@ -259,8 +249,6 @@ public interface AdminAPI {
 	 * @param enabled
 	 *            Whether the board should be set to the enabled state
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 * @throws RequestFailedException
 	 *             If bad query combinations are supplied
 	 */
@@ -275,8 +263,7 @@ public interface AdminAPI {
 			@QueryParam("x") Integer x, @QueryParam("y") Integer y,
 			@QueryParam("z") Integer z, @QueryParam("cabinet") Integer c,
 			@QueryParam("frame") Integer f, @QueryParam("board") Integer b,
-			@QueryParam("address") String address, boolean enabled)
-			throws SQLException {
+			@QueryParam("address") String address, boolean enabled) {
 		if (nonNull(x) && nonNull(y) && nonNull(z)) {
 			return setBoardStateXYZ(machineName, x, y, z, enabled);
 		}
@@ -305,13 +292,10 @@ public interface AdminAPI {
 	 * @param enabled
 	 *            Whether the board should be set to the enabled state
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 */
 	boolean setBoardStateXYZ(@NotBlank String name,
 			@NotNull @PositiveOrZero int x, @NotNull @PositiveOrZero int y,
-			@NotNull @PositiveOrZero int z, boolean enabled)
-			throws SQLException;
+			@NotNull @PositiveOrZero int z, boolean enabled);
 
 	/**
 	 * Enable or disable a board. Find by physical coordinates.
@@ -327,13 +311,10 @@ public interface AdminAPI {
 	 * @param enabled
 	 *            Whether the board should be set to the enabled state
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 */
 	boolean setBoardStateCFB(@NotBlank String name,
 			@NotNull @PositiveOrZero int c, @NotNull @PositiveOrZero int f,
-			@NotNull @PositiveOrZero int b, boolean enabled)
-			throws SQLException;
+			@NotNull @PositiveOrZero int b, boolean enabled);
 
 	/**
 	 * Enable or disable a board. Find by IP address.
@@ -345,11 +326,9 @@ public interface AdminAPI {
 	 * @param enabled
 	 *            Whether the board should be set to the enabled state
 	 * @return Whether the board is enabled
-	 * @throws SQLException
-	 *             On a serious problem
 	 */
 	boolean setBoardStateAddress(@NotBlank String name,
-			@IPAddress String address, boolean enabled) throws SQLException;
+			@IPAddress String address, boolean enabled);
 
 	/**
 	 * List the usernames and the URIs used to describe and manipulate them.
@@ -357,13 +336,11 @@ public interface AdminAPI {
 	 * @param ui
 	 *            For building URIs.
 	 * @return A sorted map from username to details-handling URI
-	 * @throws SQLException
-	 *             If DB access fails.
 	 */
 	@GET
 	@Path(USER)
 	@Produces(APPLICATION_JSON)
-	Map<String, URI> listUsers(@Context UriInfo ui) throws SQLException;
+	Map<String, URI> listUsers(@Context UriInfo ui);
 
 	/**
 	 * Create a new user.
@@ -373,15 +350,12 @@ public interface AdminAPI {
 	 * @param ui
 	 *            For building URIs.
 	 * @return REST response (CREATED on success)
-	 * @throws SQLException
-	 *             If DB access fails.
 	 */
 	@POST
 	@Path(USER)
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
-	Response createUser(@Valid UserRecord user, @Context UriInfo ui)
-			throws SQLException;
+	Response createUser(@Valid UserRecord user, @Context UriInfo ui);
 
 	/**
 	 * Read a particular user's details.
@@ -389,13 +363,11 @@ public interface AdminAPI {
 	 * @param id
 	 *            The ID of the user
 	 * @return Description of the user.
-	 * @throws SQLException
-	 *             If DB access fails.
 	 */
 	@GET
 	@Path(USER + "/{id}")
 	@Produces(APPLICATION_JSON)
-	UserRecord describeUser(@PathParam("id") int id) throws SQLException;
+	UserRecord describeUser(@PathParam("id") int id);
 
 	/**
 	 * Update a particular user's details.
@@ -407,15 +379,13 @@ public interface AdminAPI {
 	 * @param security
 	 *            Used to check who the current user actually is.
 	 * @return The updated user details.
-	 * @throws SQLException
-	 *             If DB access fails.
 	 */
 	@PUT
 	@Path(USER + "/{id}")
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
 	UserRecord updateUser(@PathParam("id") int id, @Valid UserRecord user,
-			@Context SecurityContext security) throws SQLException;
+			@Context SecurityContext security);
 
 	/**
 	 * Delete a user.
@@ -425,11 +395,9 @@ public interface AdminAPI {
 	 * @param security
 	 *            Used to check who the current user actually is.
 	 * @return REST response
-	 * @throws SQLException
-	 *             If DB access fails.
 	 */
 	@DELETE
 	@Path(USER + "/{id}")
 	Response deleteUser(@PathParam("id") int id,
-			@Context SecurityContext security) throws SQLException;
+			@Context SecurityContext security);
 }

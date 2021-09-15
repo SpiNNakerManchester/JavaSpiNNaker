@@ -22,7 +22,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.sql.SQLException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +33,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
+import org.springframework.dao.DataAccessException;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -66,7 +67,7 @@ abstract class Utils {
 	 *            calling {@link Class#newInstance()}.
 	 */
 	@FunctionalInterface
-	interface CheckedFunction<T, U> {
+	interface Function<T, U> {
 		/**
 		 * Convert a value from one type to another.
 		 *
@@ -75,10 +76,8 @@ abstract class Utils {
 		 * @param receiver
 		 *            The object to write the value into. This will have been
 		 *            instantiated using the no-argument constructor.
-		 * @throws SQLException
-		 *             If database access fails.
 		 */
-		void call(T value, U receiver) throws SQLException;
+		void call(T value, U receiver);
 	}
 
 	/**
@@ -96,7 +95,7 @@ abstract class Utils {
 				while (!interrupted()) {
 					waitAndNotify();
 				}
-			} catch (SQLException e) {
+			} catch (DataAccessException e) {
 				log.error("SQL failure", e);
 			} catch (IOException e) {
 				log.warn("failed to notify", e);
@@ -113,13 +112,13 @@ abstract class Utils {
 		 *
 		 * @throws InterruptedException
 		 *             If the wait is interrupted.
-		 * @throws SQLException
+		 * @throws DataAccessException
 		 *             If database access fails.
 		 * @throws IOException
 		 *             If network access fails.
 		 */
 		void waitAndNotify()
-				throws InterruptedException, SQLException, IOException;
+				throws InterruptedException, DataAccessException, IOException;
 	}
 
 	/**
@@ -185,10 +184,8 @@ abstract class Utils {
 	 * @param job
 	 *            The job.
 	 * @return The converted state.
-	 * @throws SQLException
-	 *             If database access fails.
 	 */
-	static State state(Job job) throws SQLException {
+	static State state(Job job) {
 		switch (job.getState()) {
 		case QUEUED:
 			return State.QUEUED;
@@ -255,24 +252,28 @@ abstract class Utils {
 	 * @param fun
 	 *            The element conversion function.
 	 * @return The array of converted elements.
-	 * @throws SQLException
-	 *             If database access fails.
 	 */
 	@SuppressWarnings("unchecked")
 	static <T, U> U[] mapToArray(Collection<T> src, Class<U> cls,
-			CheckedFunction<T, U> fun) throws SQLException {
+			Function<T, U> fun) {
 		List<U> dst = new ArrayList<>();
 		for (T val : src) {
 			U target;
 			try {
-				target = cls.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
+				target = cls.getConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException
+					| IllegalArgumentException | NoSuchMethodException
+					| SecurityException e) {
 				log.error("unexpected failure", e);
+				break;
+			} catch (InvocationTargetException e) {
+				log.error("unexpected failure", e.getCause());
 				break;
 			}
 			fun.call(val, target);
 			dst.add(target);
 		}
+		// This is why we can't use a Supplier
 		return dst.toArray((U[]) Array.newInstance(cls, 0));
 	}
 }

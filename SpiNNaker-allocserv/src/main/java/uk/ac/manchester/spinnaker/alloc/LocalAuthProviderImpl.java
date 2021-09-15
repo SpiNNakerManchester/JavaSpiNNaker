@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
@@ -27,8 +27,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +36,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,8 +49,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.sqlite.SQLiteException;
 
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.TransactedWithResult;
@@ -122,7 +121,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	}
 
 	@PostConstruct
-	private void initUserIfNecessary() throws SQLException {
+	private void initUserIfNecessary() {
 		if (authProps.isAddDummyUser()) {
 			String pass = DUMMY_PASSWORD;
 			if (authProps.isDummyRandomPass()) {
@@ -141,7 +140,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Override
 	@PreAuthorize(IS_ADMIN)
 	public boolean createUser(String username, String password,
-			TrustLevel trustLevel, long quota) throws SQLException {
+			TrustLevel trustLevel, long quota) {
 		String name = username.trim();
 		if (name.isEmpty()) {
 			// Won't touch the DB if the username is empty
@@ -198,7 +197,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			}
 			return new UsernamePasswordAuthenticationToken(name, password,
 					authorities);
-		} catch (SQLException e) {
+		} catch (RuntimeException e) {
 			throw new InternalAuthenticationServiceException(
 					"database access problem", e);
 		}
@@ -223,11 +222,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 		/**
 		 * Make an instance.
-		 *
-		 * @throws SQLException
-		 *             If DB access fails (e.g., due to schema mismatches).
 		 */
-		AuthQueries() throws SQLException {
+		AuthQueries() {
 			conn = db.getConnection();
 			getUserBlocked = query(conn, IS_USER_LOCKED);
 			userAuthorities = query(conn, GET_USER_AUTHORITIES);
@@ -236,12 +232,12 @@ public class LocalAuthProviderImpl extends SQLQueries
 			loginFailure = query(conn, MARK_LOGIN_FAILURE);
 		}
 
-		<T> T transact(TransactedWithResult<T> code) throws SQLException {
+		<T> T transact(TransactedWithResult<T> code) {
 			return transaction(conn, code);
 		}
 
 		@Override
-		public void close() throws SQLException {
+		public void close() {
 			loginFailure.close();
 			loginSuccess.close();
 			isUserPassMatched.close();
@@ -257,10 +253,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 *            Who are we fetching for?
 		 * @return The DB row describing them. Includes {@code user_id},
 		 *         {@code disabled} and {@code locked}.
-		 * @throws SQLException
-		 *             If DB access fails.
 		 */
-		Optional<Row> getUser(String username) throws SQLException {
+		Optional<Row> getUser(String username) {
 			return getUserBlocked.call1(username);
 		}
 
@@ -271,10 +265,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 *            Who are we fetching for?
 		 * @return The DB row describing them. Includes {@code has_password} and
 		 *         {@code trust_level}.
-		 * @throws SQLException
-		 *             If DB access fails.
 		 */
-		Row getUserAuthorities(int userId) throws SQLException {
+		Row getUserAuthorities(int userId) {
 			/*
 			 * I believe the NoSuchElementException can never be thrown; caller
 			 * checks the password, we just got the userId from the DB, and
@@ -283,8 +275,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			return userAuthorities.call1(userId).get();
 		}
 
-		boolean isUserPassMatched(int userId, String password)
-				throws SQLException {
+		boolean isUserPassMatched(int userId, String password) {
 			return isUserPassMatched.call1(password, userId)
 					.orElseThrow(
 							() -> new BadCredentialsException("bad password"))
@@ -297,10 +288,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 *
 		 * @param userId
 		 *            Who logged in?
-		 * @throws SQLException
-		 *             If DB access fails.
 		 */
-		void noteLoginSuccessForUser(int userId) throws SQLException {
+		void noteLoginSuccessForUser(int userId) {
 			loginSuccess.call(userId);
 		}
 
@@ -313,18 +302,16 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 * @param username
 		 *            Who logged in? For the logging message when the account
 		 *            gets a temporary lock applied.
-		 * @throws SQLException
-		 *             If DB access fails.
 		 */
-		void noteLoginFailureForUser(int userId, String username)
-				throws SQLException {
-			for (Row row : loginFailure.call(authProps.getMaxLoginFailures(),
-					userId)) {
-				if (row.getBoolean("locked")) {
-					log.warn("automatically locking user {} for {}", username,
-							authProps.getAccountLockDuration());
-				}
-			}
+		void noteLoginFailureForUser(int userId, String username) {
+			loginFailure.call1(authProps.getMaxLoginFailures(), userId)
+					.ifPresent(row -> {
+						if (row.getBoolean("locked")) {
+							log.warn("automatically locking user {} for {}",
+									username,
+									authProps.getAccountLockDuration());
+						}
+					});
 		}
 	}
 
@@ -341,8 +328,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 *            How to access the database.
 	 * @return Whether the user is known. If {@code false}, the database cannot
 	 *         authenticate the user and some other auth method should be tried.
-	 * @throws SQLException
-	 *             If DB access fails.
 	 * @throws UsernameNotFoundException
 	 *             If no account exists.
 	 * @throws DisabledException
@@ -354,7 +339,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 */
 	private boolean authenticateAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities,
-			LocalAuthProviderImpl.AuthQueries queries) throws SQLException {
+			LocalAuthProviderImpl.AuthQueries queries) {
 		Optional<Row> r = queries.getUser(username);
 		if (!r.isPresent()) {
 			// No such user
@@ -408,14 +393,14 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	@Override
 	@Scheduled(fixedDelayString = "#{authProperties.unlockPeriod}")
-	public void unlockLockedUsers() throws SQLException {
+	public void unlockLockedUsers() {
 		try {
 			if (!control.isPaused()) {
 				log.debug("running user unlock task");
 				unlock();
 			}
-		} catch (SQLiteException e) {
-			if (e.getResultCode().equals(SQLITE_BUSY)) {
+		} catch (DataAccessException e) {
+			if (isBusy(e)) {
 				log.info("database is busy; "
 						+ "will try user unlock processing later");
 				return;
@@ -424,13 +409,12 @@ public class LocalAuthProviderImpl extends SQLQueries
 		}
 	}
 
-	void unlock() throws SQLException {
+	void unlock() {
 		try (Connection conn = db.getConnection();
 				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
-			for (Row row : unlock.call(authProps.getAccountLockDuration())) {
-				log.info("automatically unlocked user {}",
-						row.getString("user_name"));
-			}
+			unlock.call(authProps.getAccountLockDuration())
+					.forEach(row -> log.info("automatically unlocked user {}",
+							row.getString("user_name")));
 		}
 	}
 }

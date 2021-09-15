@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import java.sql.SQLException;
-
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
 
 /**
@@ -89,11 +87,8 @@ public final class BoardCoords {
 	 *            Database row
 	 * @param shroudAddress
 	 *            Whether the {@link #address} should be shrouded.
-	 * @throws SQLException
-	 *             If the row lacks the entry needed or this is otherwise
-	 *             misused.
 	 */
-	public BoardCoords(Row row, boolean shroudAddress) throws SQLException {
+	public BoardCoords(Row row, boolean shroudAddress) {
 		x = row.getInt("x");
 		y = row.getInt("y");
 		z = row.getInt("z");
