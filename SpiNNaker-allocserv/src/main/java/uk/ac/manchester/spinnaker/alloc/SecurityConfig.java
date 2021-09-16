@@ -173,7 +173,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
-		// FIXME Need to add OpenID support
 		auth.authenticationProvider(localAuthProvider);
 	}
 

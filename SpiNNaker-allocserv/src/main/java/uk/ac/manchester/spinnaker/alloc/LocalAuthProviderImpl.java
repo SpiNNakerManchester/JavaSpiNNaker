@@ -43,6 +43,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -52,8 +53,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken;
+import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationProvider;
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
@@ -96,9 +101,27 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	private static final String DUMMY_PASSWORD = "user1Pass";
 
+	private static final int PASSWORD_LENGTH = 16;
+
 	private Random rng = null;
 
-	private static final int PASSWORD_LENGTH = 16;
+	@Autowired
+	private DefaultAuthorizationCodeTokenResponseClient tokenClient;
+
+	@Autowired
+	private DefaultOAuth2UserService userService;
+
+	private AuthenticationProvider tokenProvider;
+
+	private AuthenticationProvider loginProvider;
+
+	@PostConstruct
+	void initSupportBeans() {
+		tokenProvider =
+				new OAuth2AuthorizationCodeAuthenticationProvider(tokenClient);
+		loginProvider =
+				new OAuth2LoginAuthenticationProvider(tokenClient, userService);
+	}
 
 	/**
 	 * Generate a random password.
@@ -231,20 +254,24 @@ public class LocalAuthProviderImpl extends SQLQueries
 	private Authentication
 			authenticateOpenId(OAuth2LoginAuthenticationToken auth) {
 		log.info("authenticating OpenID Login {}", auth.toString());
+		auth = (OAuth2LoginAuthenticationToken) loginProvider
+				.authenticate(auth);
 		// FIXME how to get username from login token?
-		return authenticateOpenId(authProps.getOpenid().getUsernamePrefix()
+		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
 				+ auth.getPrincipal().getAttribute("preferred_username"));
 	}
 
 	private Authentication authenticateOpenId(
 			OAuth2AuthorizationCodeAuthenticationToken auth) {
 		log.info("authenticating OpenID Token {}", auth.toString());
+		auth = (OAuth2AuthorizationCodeAuthenticationToken) tokenProvider
+				.authenticate(auth);
 		// FIXME how to get username from auth code token?
-		return authenticateOpenId(authProps.getOpenid().getUsernamePrefix()
+		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
 				+ auth.getPrincipal());
 	}
 
-	private AuthenticationToken authenticateOpenId(String name) {
+	private AuthenticationToken authorizeOpenId(String name) {
 		if (name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
 			log.warn("failed to handle OpenID user with no real user name");
