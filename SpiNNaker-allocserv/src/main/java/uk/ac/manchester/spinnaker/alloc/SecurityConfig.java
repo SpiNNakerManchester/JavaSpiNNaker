@@ -291,7 +291,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(LOGIN_ERROR_PAGE)
 					.failureHandler(authenticationFailureHandler)
 					//
-					.and().oauth2ResourceServer();
+					.and().oauth2ResourceServer(oauth2 -> oauth2.jwt());
 		}
 		/*
 		 * Logging out is common code, but pretty pointless for Basic Auth as

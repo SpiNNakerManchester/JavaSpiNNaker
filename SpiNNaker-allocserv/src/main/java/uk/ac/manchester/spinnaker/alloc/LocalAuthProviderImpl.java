@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -105,22 +106,19 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	private Random rng = null;
 
-	@Autowired
-	private DefaultAuthorizationCodeTokenResponseClient tokenClient;
-
-	@Autowired
-	private DefaultOAuth2UserService userService;
-
 	private AuthenticationProvider tokenProvider;
 
 	private AuthenticationProvider loginProvider;
 
 	@PostConstruct
-	void initSupportBeans() {
+	void initOpenIdAuthProviders() {
+		DefaultOAuth2UserService userService = new DefaultOAuth2UserService();
+		DefaultAuthorizationCodeTokenResponseClient client =
+				new DefaultAuthorizationCodeTokenResponseClient();
 		tokenProvider =
-				new OAuth2AuthorizationCodeAuthenticationProvider(tokenClient);
+				new OAuth2AuthorizationCodeAuthenticationProvider(client);
 		loginProvider =
-				new OAuth2LoginAuthenticationProvider(tokenClient, userService);
+				new OAuth2LoginAuthenticationProvider(client, userService);
 	}
 
 	/**
@@ -256,6 +254,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 		log.info("authenticating OpenID Login {}", auth.toString());
 		auth = (OAuth2LoginAuthenticationToken) loginProvider
 				.authenticate(auth);
+		auth.getPrincipal().getAttributes();
 		// FIXME how to get username from login token?
 		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
 				+ auth.getPrincipal().getAttribute("preferred_username"));
@@ -267,12 +266,14 @@ public class LocalAuthProviderImpl extends SQLQueries
 		auth = (OAuth2AuthorizationCodeAuthenticationToken) tokenProvider
 				.authenticate(auth);
 		// FIXME how to get username from auth code token?
+		auth.getAdditionalParameters().get("preferred_username");
 		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
 				+ auth.getPrincipal());
 	}
 
 	private AuthenticationToken authorizeOpenId(String name) {
-		if (name.equals(authProps.getOpenid().getUsernamePrefix())) {
+		if (isNull(name)
+				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
 			log.warn("failed to handle OpenID user with no real user name");
 			return null;

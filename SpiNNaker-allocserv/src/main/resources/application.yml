@@ -64,6 +64,7 @@ spring:
             - profile
             - team
             - group
+            authorization-grant-type: client_credentials
         provider:
           hbp-ebrains:
             authorization-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
