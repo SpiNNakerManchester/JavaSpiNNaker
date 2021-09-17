@@ -149,9 +149,8 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 		log.info("CALLED listUsers()");
 		Map<String, URI> result = new TreeMap<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
-		for (UserRecord user : userController.listUsers()) {
-			result.put(user.getUserName(), ub.build(user.getUserId()));
-		}
+		userController.listUsers().forEach(user -> result
+				.put(user.getUserName(), ub.build(user.getUserId())));
 		return unmodifiableMap(result);
 	}
 

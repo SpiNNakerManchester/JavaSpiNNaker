@@ -445,13 +445,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private int insertJob(Connection conn, MachineImpl m, int owner,
 			Duration keepaliveInterval, byte[] req) {
-		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
-			for (int key : makeJob.keys(m.id, owner, keepaliveInterval, req)) {
-				pk = key;
-			}
+			return makeJob.key(m.id, owner, keepaliveInterval, req).orElse(-1);
 		}
-		return pk;
 	}
 
 	private Optional<MachineImpl> selectMachine(Connection conn,

@@ -149,18 +149,15 @@ public class LocalAuthProviderImpl extends SQLQueries
 		try (Connection conn = db.getConnection();
 				Update createUser = update(conn, CREATE_USER);
 				Update addQuota = update(conn, ADD_QUOTA_FOR_ALL_MACHINES)) {
-			return transaction(conn, () -> {
-				for (int userId : createUser.keys(username, password,
-						trustLevel, false)) {
-					addQuota.call(userId, quota);
-					log.info(
-							"added user {} with trust level {} "
-									+ "and quota {} board-seconds",
-							username, trustLevel, quota);
-					return true;
-				}
-				return false;
-			});
+			return transaction(conn, () -> createUser
+					.key(username, password, trustLevel, false).map(userId -> {
+						addQuota.call(userId, quota);
+						log.info(
+								"added user {} with trust level {} "
+										+ "and quota {} board-seconds",
+								username, trustLevel, quota);
+						return userId;
+					}).isPresent());
 		}
 	}
 

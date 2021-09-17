@@ -26,7 +26,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,11 +125,9 @@ public class UserControl extends SQLQueries {
 					if (isNull(user.getQuota())) {
 						sql.makeDefaultQuotas.call(userId);
 					} else {
-						for (Entry<String, Long> quotaInfo : user.getQuota()
-								.entrySet()) {
-							sql.makeQuotas.call(userId, quotaInfo.getValue(),
-									quotaInfo.getKey());
-						}
+						user.getQuota()
+								.forEach((machineName, quota) -> sql.makeQuotas
+										.call(userId, quota, machineName));
 					}
 					return sql.getUserDetails.call1(userId)
 							.map(row -> getUser(c, row));
@@ -167,12 +164,10 @@ public class UserControl extends SQLQueries {
 			user.setLastFailedLogin(row.getInstant("last_fail_timestamp"));
 			HashMap<String, Long> quotas = new HashMap<>();
 			try (Query getQuotas = query(c, GET_QUOTA_DETAILS)) {
-				getQuotas.call(user.getUserId()).forEach(qrow -> {
-					Number quotaInfo = (Number) qrow.getObject("quota");
-					Long quota =
-							isNull(quotaInfo) ? null : quotaInfo.longValue();
-					quotas.put(qrow.getString("machine_name"), quota);
-				});
+				getQuotas.call(user.getUserId())
+						.forEach(qrow -> quotas.put(
+								qrow.getString("machine_name"),
+								qrow.getLong("quota")));
 			}
 			user.setQuota(quotas);
 		} finally {
@@ -283,9 +278,8 @@ public class UserControl extends SQLQueries {
 		}
 
 		if (nonNull(user.getQuota())) {
-			for (Entry<String, Long> quota : user.getQuota().entrySet()) {
-				sql.setUserQuota.call(quota.getValue(), id, quota.getKey());
-			}
+			user.getQuota().forEach((machineName, quota) -> sql.setUserQuota
+					.call(quota, id, machineName));
 		}
 
 		return sql.getUserDetails.call1(id).map(row -> getUser(c, row));

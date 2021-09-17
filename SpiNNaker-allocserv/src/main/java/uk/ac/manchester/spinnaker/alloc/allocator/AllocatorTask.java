@@ -36,6 +36,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -408,14 +409,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			List<Integer> jobIds = transaction(conn,
 					() -> rowsAsList(copy.call(historyProps.getGracePeriod()),
 							row -> row.getInteger("job_id")));
-			transaction(conn, () -> {
-				for (Integer jobId : jobIds) {
-					// I don't think a NULL jobId is possible
-					if (nonNull(jobId)) {
-						delete.call(jobId);
-					}
-				}
-			});
+			transaction(conn, () -> jobIds.stream().filter(Objects::nonNull)
+					.forEach(delete::call));
 		}
 	}
 

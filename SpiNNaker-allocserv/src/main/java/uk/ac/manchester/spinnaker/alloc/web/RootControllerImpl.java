@@ -59,7 +59,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
-import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 
@@ -164,9 +163,8 @@ public class RootControllerImpl implements RootController {
 	public ModelAndView getMachineList() {
 		try {
 			List<MachineListEntryRecord> table = spallocCore.listMachines();
-			for (MachineListEntryRecord entry : table) {
-				entry.setDetailsUrl(uri(SELF.getMachineInfo(entry.getName())));
-			}
+			table.forEach(rec -> rec
+					.setDetailsUrl(uri(SELF.getMachineInfo(rec.getName()))));
 			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
@@ -182,12 +180,9 @@ public class RootControllerImpl implements RootController {
 			MachineDescription mach =
 					spallocCore.getMachineInfo(machine, permit).orElseThrow(
 							() -> new ResponseStatusException(NOT_FOUND));
-			for (JobInfo j : mach.getJobs()) {
-				// Owners and admins may drill down further into jobs
-				if (j.getOwner().isPresent()) {
-					j.setUrl(uri(SELF.getJobInfo(j.getId())));
-				}
-			}
+			// Owners and admins may drill down further into jobs
+			mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
+					.forEach(j -> j.setUrl(uri(SELF.getJobInfo(j.getId()))));
 			return new ModelAndView(MACHINE_VIEW, "machine", mach);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
@@ -201,11 +196,11 @@ public class RootControllerImpl implements RootController {
 		Permit permit = new Permit(getContext());
 		try {
 			List<JobListEntryRecord> table = spallocCore.listJobs(permit);
-			for (JobListEntryRecord entry : table) {
+			table.forEach(entry -> {
 				entry.setDetailsUrl(uri(SELF.getJobInfo(entry.getId())));
 				entry.setMachineUrl(
 						uri(SELF.getMachineInfo(entry.getMachineName())));
-			}
+			});
 			return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
