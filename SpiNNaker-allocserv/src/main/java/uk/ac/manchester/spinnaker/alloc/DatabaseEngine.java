@@ -1515,7 +1515,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public Optional<Integer> key(Object... arguments) {
 			closeResults();
-			runUpdate(s, arguments);
+			int numRows = runUpdate(s, arguments);
+			if (numRows < 1) {
+				return Optional.empty();
+			}
 			try {
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {
