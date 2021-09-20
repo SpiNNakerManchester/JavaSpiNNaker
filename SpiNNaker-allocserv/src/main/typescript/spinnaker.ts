@@ -336,56 +336,54 @@ function drawMachine(
 	}
 
 	var current : BoardTriad = undefined;
-	function motion(e: MouseEvent) {
-		const x = e.offsetX, y = e.offsetY;
-		const triad = inside(x, y, tloc);
-		if (triad !== undefined) {
-			if (current !== undefined) {
-				if (current === triad) {
-					return;
-				}
-				ctx.strokeStyle = 'black';
-				drawTriadBoard(ctx, rootX, rootY, scale, current);
-			}
-			ctx.strokeStyle = 'red';
-			drawTriadBoard(ctx, rootX, rootY, scale, triad);
-			setTooltip(triad, triadDescription(triad));
-		} else if (current !== undefined) {
-			ctx.strokeStyle = 'black';
-			drawTriadBoard(ctx, rootX, rootY, scale, current);
-			setTooltip();
-		}
+	function clearCurrent() {
+		ctx.strokeStyle = 'black';
+		drawTriadBoard(ctx, rootX, rootY, scale, current);
+		setTooltip();
+		current = undefined;
+	}
+	function setCurrent(triad : BoardTriad) {
+		ctx.strokeStyle = 'red';
+		drawTriadBoard(ctx, rootX, rootY, scale, triad);
+		setTooltip(triad, triadDescription(triad));
 		current = triad;
 	}
-	function enter(e: MouseEvent) {
-		const x = e.offsetX, y = e.offsetY;
-		const triad = inside(x, y, tloc);
+
+	canv.addEventListener('mousemove', (e: MouseEvent) => {
+		const triad = inside(e.offsetX, e.offsetY, tloc);
+		if (current === triad) {
+			return;
+		}
 		if (triad !== undefined) {
 			if (current !== undefined) {
-				/* Should be unreachable... */
-				if (current === triad) {
-					return;
-				}
-				ctx.strokeStyle = 'black';
-				drawTriadBoard(ctx, rootX, rootY, scale, current);
+				clearCurrent();
 			}
-			ctx.strokeStyle = 'red';
-			drawTriadBoard(ctx, rootX, rootY, scale, triad);
-			setTooltip(triad, triadDescription(triad));
+			setCurrent(triad);
+		} else if (current !== undefined) {
+			clearCurrent();
 		}
-	}
-	function leave(e: MouseEvent) {
-		e.offsetX;
+	});
+	canv.addEventListener('mouseenter', (e: MouseEvent) => {
+		const triad = inside(e.offsetX, e.offsetY, tloc);
+		if (current === triad) {
+			return;
+		}
+		if (triad !== undefined) {
+			if (current !== undefined) {
+				// I don't think this should be reachable
+				clearCurrent();
+			}
+			setCurrent(triad);
+		} else if (current !== undefined) {
+			clearCurrent();
+		}
+	});
+	canv.addEventListener('mouseleave', (e: MouseEvent) => {
+		e.offsetX; // Use to shut up IDE warnings
 		if (current !== undefined) {
-			ctx.strokeStyle = 'black';
-			drawTriadBoard(ctx, rootX, rootY, scale, current);
-			setTooltip();
+			clearCurrent();
 		}
-	}
-
-	canv.addEventListener('mousemove', motion);
-	canv.addEventListener('mouseenter', enter);
-	canv.addEventListener('mouseleave', leave);
+	});
 };
 
 function drawJob(
@@ -400,14 +398,13 @@ function drawJob(
 	const scaleY : number = (rect.height - 10) / (descriptor.triad_height * 3 + 1);
 	const scale = (scaleX < scaleY) ? scaleX : scaleY;
 	const ctx = canv.getContext("2d");
-	//FIXME define tooltips and bindings for the job view
 	const tooltipCtx = tooltip.getContext("2d");
 
 	const allocated = boardMap(descriptor.boards);
 
 	ctx.strokeStyle = 'black';
 	const {x: rx, y: ry} = descriptor.boards[0].triad;
-	drawLayout(ctx, rootX, rootY, scale,
+	const tloc = drawLayout(ctx, rootX, rootY, scale,
 			descriptor.triad_width, descriptor.triad_height, 3,
 			triadCoord => {
 				const [x, y, z] = triadCoord;
@@ -419,4 +416,70 @@ function drawJob(
 				const [x, y, z] = triadCoord;
 				return `(${x},${y},${z})`;
 			});
+	function location(triad: BoardTriad) : HexCoords {
+		const t = tloc.get(tuplekey(triad));
+		return t == undefined ? undefined : t[1];
+	}
+
+	function setTooltip(triad?: BoardTriad, message?: string) {
+		setTooltipCore(canv, tooltip, tooltipCtx, location, scale, triad,
+				message);
+	}
+
+	function triadDescription(triad: BoardTriad) : string {
+		const [x, y, z] = triad;
+		// FIXME define what should go in the tooltip
+		var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
+		return s;
+	}
+
+	var current : BoardTriad = undefined;
+	function clearCurrent() {
+		ctx.strokeStyle = 'black';
+		drawTriadBoard(ctx, rootX, rootY, scale, current);
+		setTooltip();
+		current = undefined;
+	}
+	function setCurrent(triad : BoardTriad) {
+		ctx.strokeStyle = 'green';
+		drawTriadBoard(ctx, rootX, rootY, scale, triad);
+		setTooltip(triad, triadDescription(triad));
+		current = triad;
+	}
+
+	canv.addEventListener('mousemove', (e: MouseEvent) => {
+		const triad = inside(e.offsetX, e.offsetY, tloc);
+		if (current === triad) {
+			return;
+		}
+		if (triad !== undefined) {
+			if (current !== undefined) {
+				clearCurrent();
+			}
+			setCurrent(triad);
+		} else if (current !== undefined) {
+			clearCurrent();
+		}
+	});
+	canv.addEventListener('mouseenter', (e: MouseEvent) => {
+		const triad = inside(e.offsetX, e.offsetY, tloc);
+		if (current === triad) {
+			return;
+		}
+		if (triad !== undefined) {
+			if (current !== undefined) {
+				// I don't think this should be reachable
+				clearCurrent();
+			}
+			setCurrent(triad);
+		} else if (current !== undefined) {
+			clearCurrent();
+		}
+	});
+	canv.addEventListener('mouseleave', (e: MouseEvent) => {
+		e.offsetX; // Use to shut up IDE warnings
+		if (current !== undefined) {
+			clearCurrent();
+		}
+	});
 }
