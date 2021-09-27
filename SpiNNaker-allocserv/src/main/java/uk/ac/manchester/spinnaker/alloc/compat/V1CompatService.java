@@ -325,7 +325,9 @@ public class V1CompatService {
 				ReturnResponse rr = new ReturnResponse();
 				// Yes, this is ghastly!
 				rr.setReturnValue(mapper.writeValueAsString(response));
-				out.println(mapper.writeValueAsString(rr));
+				String actualMessage = mapper.writeValueAsString(rr);
+				log.info("composed response: {}", actualMessage);
+				out.println(actualMessage);
 			}
 		}
 
@@ -341,7 +343,9 @@ public class V1CompatService {
 			if (!sock.isClosed()) {
 				ExceptionResponse er = new ExceptionResponse();
 				er.setException(exn.toString());
-				out.println(mapper.writeValueAsString(er));
+				String actualMessage = mapper.writeValueAsString(er);
+				log.info("composed response: {}", actualMessage);
+				out.println(actualMessage);
 			}
 		}
 
