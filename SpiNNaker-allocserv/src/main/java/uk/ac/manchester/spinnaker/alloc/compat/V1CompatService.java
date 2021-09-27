@@ -395,9 +395,11 @@ public class V1CompatService {
 			try {
 				c = readMessage();
 				if (isNull(c)) {
+					log.info("null message");
 					return false;
 				}
 			} catch (SocketTimeoutException e) {
+				log.info("timeout");
 				// Message was not read by time timeout expired
 				return !currentThread().isInterrupted();
 			} catch (JsonMappingException | JsonParseException e) {
@@ -409,10 +411,12 @@ public class V1CompatService {
 			try {
 				r = callOperation(c);
 			} catch (Exception e) {
+				log.info("responded with {}", e);
 				writeException(e);
 				return true;
 			}
 
+			log.info("responded with {}", r);
 			writeResponse(r);
 			return true;
 		}
