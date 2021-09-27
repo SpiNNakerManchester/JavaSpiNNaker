@@ -145,7 +145,7 @@ public class V1CompatService {
 
 		if (props.isEnable()) {
 			InetSocketAddress addr =
-					new InetSocketAddress("0.0.0.0", props.getPort());
+					new InetSocketAddress(props.getHost(), props.getPort());
 			serv = new ServerSocket();
 			serv.bind(addr);
 			servThread = new Thread(GROUP, this::acceptConnections);

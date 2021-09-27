@@ -162,6 +162,8 @@ spalloc:
     # The number of threads to use for the API (including notification handlers)
     # Use 0 for no hard limit.
     thread-pool-size: 0
+    # What host to run the service on
+    host: 0.0.0.0
     # What port to run the service on
     port: 22244
     # What user to run as; recommended that this user exists but is disabled

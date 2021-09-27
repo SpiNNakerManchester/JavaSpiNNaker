@@ -987,6 +987,8 @@ public class SpallocProperties {
 		 */
 		private int threadPoolSize;
 
+		private String host;
+
 		/** What port to run the spalloc v1 compatibility service on. */
 		private int port;
 
@@ -999,10 +1001,12 @@ public class SpallocProperties {
 
 		public CompatibilityProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("0") int threadPoolSize,
+				@DefaultValue("0.0.0.0") String host,
 				@DefaultValue("22244") int port,
 				@DefaultValue("") String serviceUser) {
 			this.enable = enable;
 			this.threadPoolSize = threadPoolSize;
+			this.host = host;
 			this.port = port;
 			this.serviceUser = serviceUser;
 		}
@@ -1030,6 +1034,19 @@ public class SpallocProperties {
 
 		public void setThreadPoolSize(int threadPoolSize) {
 			this.threadPoolSize = threadPoolSize;
+		}
+
+		/**
+		 * @return What host address to run the spalloc v1 compatibility service
+		 *         on.
+		 */
+		@NotBlank
+		public String getHost() {
+			return host;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
 		}
 
 		/** @return What port to run the spalloc v1 compatibility service on. */
