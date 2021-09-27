@@ -235,6 +235,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
 					<version>3.2.4</version>
+					<configuration>
+						<filters>
+							<filter>
+								<artifact>*:*</artifact>
+								<excludes>
+									<!-- Strip unwanted junk -->
+									<exclude>META-INF/MANIFEST.MF</exclude>
+									<exclude>META-INF/LICENSE</exclude>
+									<exclude>META-INF/LICENSE.txt</exclude>
+									<exclude>META-INF/NOTICE</exclude>
+									<exclude>META-INF/NOTICE.txt</exclude>
+									<exclude>META-INF/DEPENDENCIES</exclude>
+									<exclude>META-INF/*.SF</exclude>
+									<exclude>META-INF/*.DSA</exclude>
+									<exclude>META-INF/*.RSA</exclude>
+								</excludes>
+							</filter>
+						</filters>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
