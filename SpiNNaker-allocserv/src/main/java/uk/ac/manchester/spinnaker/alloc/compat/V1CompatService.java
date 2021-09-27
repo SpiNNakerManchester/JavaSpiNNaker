@@ -277,6 +277,7 @@ public class V1CompatService {
 			} catch (InterruptedException e) {
 				// ignored
 			} finally {
+				log.info("closing down connection from {}", sock);
 				closeNotifiers();
 				try {
 					sock.close();
