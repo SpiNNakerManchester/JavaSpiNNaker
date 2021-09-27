@@ -426,6 +426,7 @@ public class V1CompatService {
 		 *             If things go wrong
 		 */
 		private Object callOperation(Command c) throws Exception {
+			log.info("calling operation '{}'", c.getCommand());
 			switch (c.getCommand()) {
 			case "create_job":
 				// This is three operations really
