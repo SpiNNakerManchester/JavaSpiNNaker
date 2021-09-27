@@ -325,9 +325,7 @@ public class V1CompatService {
 				ReturnResponse rr = new ReturnResponse();
 				// Yes, this is ghastly!
 				rr.setReturnValue(mapper.writeValueAsString(response));
-				String actualMessage = mapper.writeValueAsString(rr);
-				log.info("composed response: {}", actualMessage);
-				out.println(actualMessage);
+				out.println(mapper.writeValueAsString(rr));
 				out.flush();
 			}
 		}
@@ -344,9 +342,7 @@ public class V1CompatService {
 			if (!sock.isClosed()) {
 				ExceptionResponse er = new ExceptionResponse();
 				er.setException(exn.toString());
-				String actualMessage = mapper.writeValueAsString(er);
-				log.info("composed response: {}", actualMessage);
-				out.println(actualMessage);
+				out.println(mapper.writeValueAsString(er));
 				out.flush();
 			}
 		}
@@ -403,11 +399,11 @@ public class V1CompatService {
 			try {
 				c = readMessage();
 				if (isNull(c)) {
-					log.info("null message");
+					log.debug("null message");
 					return false;
 				}
 			} catch (SocketTimeoutException e) {
-				log.info("timeout");
+				log.debug("timeout");
 				// Message was not read by time timeout expired
 				return !currentThread().isInterrupted();
 			} catch (JsonMappingException | JsonParseException e) {
@@ -419,12 +415,12 @@ public class V1CompatService {
 			try {
 				r = callOperation(c);
 			} catch (Exception e) {
-				log.info("responded with {}", e);
+				log.debug("responded with {}", e);
 				writeException(e);
 				return true;
 			}
 
-			log.info("responded with {}", r);
+			log.debug("responded with {}", r);
 			writeResponse(r);
 			return true;
 		}
@@ -439,7 +435,7 @@ public class V1CompatService {
 		 *             If things go wrong
 		 */
 		private Object callOperation(Command c) throws Exception {
-			log.info("calling operation '{}'", c.getCommand());
+			log.debug("calling operation '{}'", c.getCommand());
 			switch (c.getCommand()) {
 			case "create_job":
 				// This is three operations really
