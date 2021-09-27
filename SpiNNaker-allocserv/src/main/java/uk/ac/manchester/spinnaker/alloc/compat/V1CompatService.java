@@ -328,6 +328,7 @@ public class V1CompatService {
 				String actualMessage = mapper.writeValueAsString(rr);
 				log.info("composed response: {}", actualMessage);
 				out.println(actualMessage);
+				out.flush();
 			}
 		}
 
@@ -346,6 +347,7 @@ public class V1CompatService {
 				String actualMessage = mapper.writeValueAsString(er);
 				log.info("composed response: {}", actualMessage);
 				out.println(actualMessage);
+				out.flush();
 			}
 		}
 
@@ -363,6 +365,7 @@ public class V1CompatService {
 				JobNotifyMessage jnm = new JobNotifyMessage();
 				jnm.setJobsChanged(jobIds);
 				out.println(mapper.writeValueAsString(jnm));
+				out.flush();
 			}
 		}
 
@@ -381,6 +384,7 @@ public class V1CompatService {
 				MachineNotifyMessage mnm = new MachineNotifyMessage();
 				mnm.setMachinesChanged(machineNames);
 				out.println(mapper.writeValueAsString(mnm));
+				out.flush();
 			}
 		}
 
