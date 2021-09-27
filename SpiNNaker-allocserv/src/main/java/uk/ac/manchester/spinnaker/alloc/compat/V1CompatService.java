@@ -146,6 +146,8 @@ public class V1CompatService {
 			serv = new ServerSocket(props.getPort());
 			servThread = new Thread(GROUP, this::acceptConnections);
 			servThread.setName("service-master");
+			log.info("launching listener thread {} on port {}", servThread,
+					props.getPort());
 			servThread.start();
 		}
 	}
@@ -153,6 +155,7 @@ public class V1CompatService {
 	@PreDestroy
 	private void close() throws IOException, InterruptedException {
 		if (nonNull(serv)) {
+			log.info("shutting down listener thread {}", servThread);
 			// Shut down the server socket first; no new clients
 			servThread.interrupt();
 			serv.close();
@@ -262,6 +265,7 @@ public class V1CompatService {
 		}
 
 		final void handleConnection() {
+			log.info("waiting for commands from {}", sock);
 			try {
 				while (!interrupted()) {
 					if (!communicate()) {
