@@ -144,12 +144,14 @@ public class V1CompatService {
 		}
 
 		if (props.isEnable()) {
+			InetSocketAddress addr =
+					new InetSocketAddress("0.0.0.0", props.getPort());
 			serv = new ServerSocket();
-			serv.bind(new InetSocketAddress("0.0.0.0", props.getPort()));
+			serv.bind(addr);
 			servThread = new Thread(GROUP, this::acceptConnections);
 			servThread.setName("service-master");
-			log.info("launching listener thread {} on port {}", servThread,
-					props.getPort());
+			log.info("launching listener thread {} on address {}", servThread,
+					addr);
 			servThread.start();
 		}
 	}
