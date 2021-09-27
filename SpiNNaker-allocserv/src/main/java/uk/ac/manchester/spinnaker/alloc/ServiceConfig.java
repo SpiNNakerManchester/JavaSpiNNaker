@@ -271,6 +271,8 @@ public class ServiceConfig extends Application {
 	 *            Command line arguments.
 	 */
 	public static void main(String[] args) {
+		// DISABLE IPv6 SUPPORT; SpiNNaker can't use it and it's a pain
+		System.setProperty("java.net.preferIPv4Stack", "false");
 		SpringApplication.run(ServiceConfig.class, args);
 	}
 }
