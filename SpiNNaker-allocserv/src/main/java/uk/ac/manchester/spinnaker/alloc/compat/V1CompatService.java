@@ -401,7 +401,7 @@ public class V1CompatService {
 			Command c;
 			try {
 				c = readMessage();
-				if (isNull(c)) {
+				if (isNull(c) || isNull(c.getCommand())) {
 					log.debug("null message");
 					return false;
 				}
@@ -418,7 +418,8 @@ public class V1CompatService {
 			try {
 				r = callOperation(c);
 			} catch (Exception e) {
-				log.debug("responded with {}", e);
+				log.warn("unexpected exception from {} operation",
+						c.getCommand(), e);
 				writeException(e);
 				return true;
 			}
