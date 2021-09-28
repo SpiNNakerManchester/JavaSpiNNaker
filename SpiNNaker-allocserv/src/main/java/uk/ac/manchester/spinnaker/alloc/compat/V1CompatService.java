@@ -327,8 +327,7 @@ public class V1CompatService {
 		protected final void writeResponse(Object response) throws IOException {
 			if (!sock.isClosed()) {
 				ReturnResponse rr = new ReturnResponse();
-				// Yes, this is ghastly!
-				rr.setReturnValue(mapper.writeValueAsString(response));
+				rr.setReturnValue(response);
 				out.println(mapper.writeValueAsString(rr));
 				out.flush();
 			}
@@ -818,16 +817,15 @@ public class V1CompatService {
 	}
 
 	private static final class ReturnResponse {
-		private String returnValue;
+		private Object returnValue;
 
 		@JsonProperty("return")
-		public String getReturnValue() {
+		public Object getReturnValue() {
 			return returnValue;
 		}
 
-		public void setReturnValue(String returnValue) {
-			this.returnValue =
-					isNull(returnValue) ? "" : returnValue.toString();
+		public void setReturnValue(Object returnValue) {
+			this.returnValue = returnValue;
 		}
 	}
 
