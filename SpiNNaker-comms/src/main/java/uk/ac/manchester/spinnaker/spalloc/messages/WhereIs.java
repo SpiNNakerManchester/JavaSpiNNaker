@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 public class WhereIs {
 	private ChipLocation jobChip;
 
-	private int jobId;
+	private Integer jobId;
 
 	private ChipLocation chip;
 
@@ -97,7 +97,7 @@ public class WhereIs {
 	 *
 	 * @return the job id
 	 */
-	public int getJobId() {
+	public Integer getJobId() {
 		return jobId;
 	}
 
@@ -107,7 +107,7 @@ public class WhereIs {
 	 * @param jobId
 	 *            the job id to set
 	 */
-	public void setJobId(int jobId) {
+	public void setJobId(Integer jobId) {
 		this.jobId = jobId;
 	}
 
