@@ -128,14 +128,20 @@ abstract class Utils {
 	 * @param value
 	 *            The value to parse (must actually be a string or a number).
 	 * @return The decimal value.
+	 * @throws IllegalArgumentException
+	 *             If the object can't be converted to a number.
 	 */
 	static int parseDec(Object value) {
 		if (value instanceof Integer) {
 			return (Integer) value;
 		} else if (value instanceof Number) {
 			return ((Number) value).intValue();
+		} else if (value instanceof String) {
+			return parseInt((String) value, BASE_TEN);
+		} else {
+			throw new IllegalArgumentException(
+					"needed a number, got a " + value.getClass().getName());
 		}
-		return parseInt((String) value, BASE_TEN);
 	}
 
 	/**
@@ -149,7 +155,7 @@ abstract class Utils {
 	 * @return The decimal value.
 	 */
 	static int parseDec(List<Object> args, int index) {
-		return parseDec((String) args.get(index));
+		return parseDec(args.get(index));
 	}
 
 	/**
@@ -163,7 +169,7 @@ abstract class Utils {
 	 * @return The decimal value.
 	 */
 	static int parseDec(Map<String, Object> kwargs, String index) {
-		return parseDec((String) kwargs.get(index));
+		return parseDec(kwargs.get(index));
 	}
 
 	/**
