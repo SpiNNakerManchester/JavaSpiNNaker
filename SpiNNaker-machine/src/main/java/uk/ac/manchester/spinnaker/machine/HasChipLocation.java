@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * The interface supported by any object that is associated with a chip.
  *
@@ -51,6 +53,7 @@ public interface HasChipLocation {
 	 *
 	 * @return The location of the SC&amp;MP core.
 	 */
+	@JsonIgnore
 	default HasCoreLocation getScampCore() {
 		// SCAMP always runs on core 0 or we can't talk to the chip at all
 		return new CoreLocation(getX(), getY(), 0);

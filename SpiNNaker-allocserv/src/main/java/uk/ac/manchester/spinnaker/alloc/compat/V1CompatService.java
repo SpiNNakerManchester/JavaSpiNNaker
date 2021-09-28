@@ -440,97 +440,93 @@ public class V1CompatService {
 		 */
 		private Object callOperation(Command c) throws Exception {
 			log.debug("calling operation '{}'", c.getCommand());
+			List<Object> args = c.getArgs();
+			Map<String, Object> kwargs = c.getKwargs();
 			switch (c.getCommand()) {
 			case "create_job":
 				// This is three operations really
-				switch (c.getArgs().size()) {
+				switch (args.size()) {
 				case 0:
-					return createJobNumBoards(1, c.getKwargs(), c);
+					return createJobNumBoards(1, kwargs, c);
 				case 1:
-					return createJobNumBoards(parseDec(c.getArgs(), 0),
-							c.getKwargs(), c);
+					return createJobNumBoards(parseDec(args, 0), kwargs, c);
 				case 2:
-					return createJobRectangle(parseDec(c.getArgs(), 0),
-							parseDec(c.getArgs(), 1), c.getKwargs(), c);
+					return createJobRectangle(parseDec(args, 0),
+							parseDec(args, 1), kwargs, c);
 				case TRIAD:
-					return createJobSpecificBoard(new TriadCoords(
-							parseDec(c.getArgs(), 0), parseDec(c.getArgs(), 1),
-							parseDec(c.getArgs(), 2)), c.getKwargs(), c);
+					return createJobSpecificBoard(
+							new TriadCoords(parseDec(args, 0),
+									parseDec(args, 1), parseDec(args, 2)),
+							kwargs, c);
 				default:
-					throw new Oops("unsupported number of arguments: "
-							+ c.getArgs().size());
+					throw new Oops(
+							"unsupported number of arguments: " + args.size());
 				}
 			case "destroy_job":
-				destroyJob(parseDec(c.getArgs(), 0),
-						(String) c.getKwargs().get("reason"));
+				destroyJob(parseDec(args, 0), (String) kwargs.get("reason"));
 				break;
 			case "get_board_at_position":
 				return getBoardAtPhysicalPosition(
-						(String) c.getKwargs().get("machine_name"),
-						parseDec(c.getKwargs(), "x"),
-						parseDec(c.getKwargs(), "y"),
-						parseDec(c.getKwargs(), "z"));
+						(String) kwargs.get("machine_name"),
+						parseDec(kwargs, "x"), parseDec(kwargs, "y"),
+						parseDec(kwargs, "z"));
 			case "get_board_position":
 				return getBoardAtLogicalPosition(
-						(String) c.getKwargs().get("machine_name"),
-						parseDec(c.getKwargs(), "x"),
-						parseDec(c.getKwargs(), "y"),
-						parseDec(c.getKwargs(), "z"));
+						(String) kwargs.get("machine_name"),
+						parseDec(kwargs, "x"), parseDec(kwargs, "y"),
+						parseDec(kwargs, "z"));
 			case "get_job_machine_info":
-				return getJobMachineInfo(parseDec(c.getArgs(), 0));
+				return getJobMachineInfo(parseDec(args, 0));
 			case "get_job_state":
-				return getJobState(parseDec(c.getArgs(), 0));
+				return getJobState(parseDec(args, 0));
 			case "job_keepalive":
-				jobKeepalive(parseDec(c.getArgs(), 0));
+				jobKeepalive(parseDec(args, 0));
 				break;
 			case "list_jobs":
 				return listJobs();
 			case "list_machines":
 				return listMachines();
 			case "no_notify_job":
-				notifyJob(optInt(c.getArgs()), false);
+				notifyJob(optInt(args), false);
 				break;
 			case "no_notify_machine":
-				notifyMachine(optStr(c.getArgs()), false);
+				notifyMachine(optStr(args), false);
 				break;
 			case "notify_job":
-				notifyJob(optInt(c.getArgs()), true);
+				notifyJob(optInt(args), true);
 				break;
 			case "notify_machine":
-				notifyMachine(optStr(c.getArgs()), true);
+				notifyMachine(optStr(args), true);
 				break;
 			case "power_off_job_boards":
-				powerJobBoards(parseDec(c.getArgs(), 0), OFF);
+				powerJobBoards(parseDec(args, 0), OFF);
 				break;
 			case "power_on_job_boards":
-				powerJobBoards(parseDec(c.getArgs(), 0), ON);
+				powerJobBoards(parseDec(args, 0), ON);
 				break;
 			case "version":
 				return version();
 			case "where_is":
 				// This is four operations in a trench coat
-				if (c.getKwargs().containsKey("job_id")) {
-					return whereIsJobChip(parseDec(c.getKwargs(), "job_id"),
-							parseDec(c.getKwargs(), "chip_x"),
-							parseDec(c.getKwargs(), "chip_y"));
-				} else if (!c.getKwargs().containsKey("machine")) {
+				if (kwargs.containsKey("job_id")) {
+					return whereIsJobChip(parseDec(kwargs, "job_id"),
+							parseDec(kwargs, "chip_x"),
+							parseDec(kwargs, "chip_y"));
+				} else if (!kwargs.containsKey("machine")) {
 					throw new Oops("missing parameter");
 				}
-				String m = (String) c.getKwargs().get("machine");
-				if (c.getKwargs().containsKey("chip_x")) {
-					return whereIsMachineChip(m,
-							parseDec(c.getKwargs(), "chip_x"),
-							parseDec(c.getKwargs(), "chip_y"));
-				} else if (c.getKwargs().containsKey("x")) {
-					return whereIsMachineLogicalBoard(m,
-							parseDec(c.getKwargs(), "x"),
-							parseDec(c.getKwargs(), "y"),
-							parseDec(c.getKwargs(), "z"));
-				} else if (c.getKwargs().containsKey("cabinet")) {
+				String m = (String) kwargs.get("machine");
+				if (kwargs.containsKey("chip_x")) {
+					return whereIsMachineChip(m, parseDec(kwargs, "chip_x"),
+							parseDec(kwargs, "chip_y"));
+				} else if (kwargs.containsKey("x")) {
+					return whereIsMachineLogicalBoard(m, parseDec(kwargs, "x"),
+							parseDec(kwargs, "y"), parseDec(kwargs, "z"));
+				} else if (kwargs.containsKey("cabinet")) {
 					return whereIsMachinePhysicalBoard(m,
-							parseDec(c.getKwargs(), "cabinet"),
-							parseDec(c.getKwargs(), "frame"),
-							parseDec(c.getKwargs(), "board"));
+							parseDec(kwargs, "cabinet"),
+							parseDec(kwargs, "frame"),
+							parseDec(kwargs, "board"));
 				} else {
 					throw new Oops("missing parameter");
 				}
