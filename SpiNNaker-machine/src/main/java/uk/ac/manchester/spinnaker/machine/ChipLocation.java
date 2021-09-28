@@ -16,10 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -31,6 +32,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author dkf
  */
 @JsonFormat(shape = ARRAY)
+/*
+ * This is needed in Java 8, but not by Java 10 (which can find the @JsonIgnore
+ * annotation on the default property all by itself.
+ */
+@JsonIgnoreProperties({"scamp-core", "scamp_core", "scampCore"})
 public final class ChipLocation
 		implements HasChipLocation, Comparable<ChipLocation> {
 	private final int x;
