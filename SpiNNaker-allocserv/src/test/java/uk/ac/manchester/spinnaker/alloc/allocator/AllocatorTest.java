@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
 import static java.time.Instant.now;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
@@ -29,6 +29,8 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -496,5 +498,31 @@ class AllocatorTest extends SQLQueries {
 	private void processBMPRequests() throws Exception {
 		bmpCtrl.processRequests();
 		snooze();
+	}
+
+	@Test
+	void tombstone() throws Exception {
+		try (Connection c = db.getConnection()) {
+			this.conn = c;
+			int job = makeJob(1);
+			try (Statement s = c.createStatement()) {
+				s.execute(
+						"UPDATE jobs SET job_state = 4 WHERE job_id = " + job);
+				s.execute("UPDATE jobs SET death_timestamp = 0 WHERE job_id = "
+						+ job);
+				alloc.tombstone(c);
+				try (ResultSet rs = s.executeQuery(
+						"SELECT COUNT(*) FROM jobs WHERE job_id = " + job)) {
+					rs.next();
+					assertEquals(0, rs.getInt(1));
+				}
+				try (ResultSet rs = s.executeQuery(
+						"SELECT COUNT(*) FROM tombstone.jobs WHERE job_id = "
+								+ job)) {
+					rs.next();
+					assertEquals(1, rs.getInt(1));
+				}
+			}
+		}
 	}
 }

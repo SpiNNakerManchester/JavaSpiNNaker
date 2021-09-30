@@ -403,7 +403,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * @param conn
 	 *            The DB connection
 	 */
-	private void tombstone(Connection conn) {
+	void tombstone(Connection conn) {
 		try (Query copy = query(conn, copyToHistoricalData);
 				Update delete = update(conn, DELETE_JOB_RECORD)) {
 			List<Integer> jobIds = transaction(conn,

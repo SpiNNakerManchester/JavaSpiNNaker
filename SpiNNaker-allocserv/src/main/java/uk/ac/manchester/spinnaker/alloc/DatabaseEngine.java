@@ -613,8 +613,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private void initDBConn(SQLiteConnection conn) {
 		try {
-			log.info("initalising DB ({}) schema from {}", conn.libversion(),
-					sqlDDLFile);
+			log.info("initalising main DB ({}) schema from {}",
+					conn.libversion(), sqlDDLFile);
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
@@ -628,6 +628,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		transaction(wrapper, () -> {
 			log.info("initalising DB static data from {}", sqlInitDataFile);
 			exec(wrapper, sqlInitDataFile);
+		});
+		transaction(wrapper, () -> {
+			log.info("verifying main DB integrity");
+			exec(wrapper, "SELECT COUNT(*) FROM jobs");
+			log.info("verifying historical DB integrity");
+			exec(wrapper, "SELECT COUNT(*) FROM tombstone.jobs");
 		});
 	}
 
