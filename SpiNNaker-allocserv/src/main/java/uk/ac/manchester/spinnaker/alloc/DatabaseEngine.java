@@ -621,9 +621,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		// Note that we don't close the wrapper
 		Connection wrapper = new Connection(conn);
 		exec(wrapper, sqlDDLFile);
-		log.info("attaching historical job DB ({}) schema from {}",
-				tombstoneFile, tombstoneDDLFile);
-		update(wrapper, "ATTACH DATABASE ? AS tombstone").call(tombstoneFile);
+		log.info("initalising historical DB from schema {}", tombstoneDDLFile);
 		exec(wrapper, tombstoneDDLFile);
 		transaction(wrapper, () -> {
 			log.info("initalising DB static data from {}", sqlInitDataFile);
@@ -643,9 +641,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try {
 			SQLiteConnection conn =
 					(SQLiteConnection) config.createConnection(dbConnectionUrl);
-			// Has to be done for every connection; can't be cached
+			/*
+			 * Perform some actions immediately as they have to be done for
+			 * every connection and can't be cached.
+			 */
 			for (String s : functions.keySet()) {
 				installFunction(conn, s, functions.get(s));
+			}
+			log.info("attaching historical job DB ({})", tombstoneFile);
+			try (PreparedStatement s =
+					conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
+				s.setString(1, tombstoneFile);
+				s.execute();
 			}
 			return conn;
 		} catch (SQLException e) {

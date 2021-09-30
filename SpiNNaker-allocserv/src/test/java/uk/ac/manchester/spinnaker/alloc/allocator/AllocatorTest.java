@@ -29,8 +29,6 @@ import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +58,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + AllocatorTest.DB,
+	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB,
 	// Stop scheduled tasks from running
 	"spalloc.master.pause=true",
 	// Ensure that no real BMP is talked to
@@ -71,6 +70,9 @@ class AllocatorTest extends SQLQueries {
 
 	/** The name of the database file. */
 	static final String DB = "alloc_test.sqlite3";
+
+	/** The name of the database file. */
+	static final String HIST_DB = "alloc_test-hist.sqlite3";
 
 	@Configuration
 	@ComponentScan(basePackageClasses = DatabaseEngine.class)
@@ -502,27 +504,31 @@ class AllocatorTest extends SQLQueries {
 
 	@Test
 	void tombstone() throws Exception {
-		try (Connection c = db.getConnection()) {
-			this.conn = c;
+		doTest(() -> {
 			int job = makeJob(1);
-			try (Statement s = c.createStatement()) {
-				s.execute(
-						"UPDATE jobs SET job_state = 4 WHERE job_id = " + job);
-				s.execute("UPDATE jobs SET death_timestamp = 0 WHERE job_id = "
-						+ job);
-				alloc.tombstone(c);
-				try (ResultSet rs = s.executeQuery(
-						"SELECT COUNT(*) FROM jobs WHERE job_id = " + job)) {
-					rs.next();
-					assertEquals(0, rs.getInt(1));
-				}
-				try (ResultSet rs = s.executeQuery(
-						"SELECT COUNT(*) FROM tombstone.jobs WHERE job_id = "
-								+ job)) {
-					rs.next();
-					assertEquals(1, rs.getInt(1));
-				}
-			}
-		}
+			update(conn, "UPDATE jobs SET job_state = 4 WHERE job_id = :job")
+					.call(job);
+			update(conn,
+					"UPDATE jobs SET death_timestamp = 0 WHERE job_id = :job")
+							.call(job);
+			int preMain = query(conn,
+					"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
+							.call1(job).get().getInt("c");
+			assertTrue(preMain > 0,
+					() -> "must have created a job we can tombstone");
+			int preTomb = query(conn,
+					"SELECT COUNT(*) AS c FROM tombstone.jobs "
+							+ "WHERE job_id = :job").call1(job).get()
+									.getInt("c");
+			alloc.tombstone(conn);
+			assertEquals(preMain - 1, query(conn,
+					"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
+							.call1(job).get().getInt("c"));
+			assertEquals(preTomb + 1,
+					query(conn,
+							"SELECT COUNT(*) AS c FROM tombstone.jobs "
+									+ "WHERE job_id = :job").call1(job).get()
+											.getInt("c"));
+		});
 	}
 }
