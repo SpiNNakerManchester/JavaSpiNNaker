@@ -25,7 +25,6 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
@@ -38,6 +37,7 @@ import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseable
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -66,6 +66,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1112,10 +1113,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				return QUERY_CACHE.get(resource);
 			}
 		}
-		try {
-			log.debug("{} is {}", resource,
-					resource.getFile().getAbsoluteFile());
-			String s = readFileToString(resource.getFile(), UTF_8);
+		try (InputStream is = resource.getInputStream()) {
+			String s = IOUtils.toString(is, UTF_8);
 			synchronized (QUERY_CACHE) {
 				// Not really a problem if it is put in twice
 				QUERY_CACHE.put(resource, s);
