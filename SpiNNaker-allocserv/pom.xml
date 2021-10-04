@@ -34,8 +34,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<npm_plugin.version>1.12.0</npm_plugin.version>
 		<node.version>v14.17.6</node.version>
-		<jetty.port>8080</jetty.port>
-		<jetty.root>/</jetty.root>
+		<closure-compiler.version>2.21.0</closure-compiler.version>
+		<build-helper.version>3.2.0</build-helper.version>
+
+		<!-- These ought to be one, but of course they aren't. -->
+		<typescript-language.version>ES6</typescript-language.version>
+		<javascript-language.version>ECMASCRIPT_2015</javascript-language.version>
+
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<start.class>uk.ac.manchester.spinnaker.alloc.ServiceConfig</start.class>
 	</properties>
@@ -49,37 +54,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<directory>src/main/resources-filtered</directory>
 				<filtering>true</filtering>
 			</resource>
-			<resource>
-				<directory>${project.build.directory}/js</directory>
-				<targetPath>META-INF/public-web-resources</targetPath>
-			</resource>
 		</resources>
 		<finalName>spalloc</finalName>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<annotationProcessorPaths>
-						<annotationProcessorPath>
-							<groupId>org.springframework.boot</groupId>
-							<artifactId>spring-boot-configuration-processor</artifactId>
-							<version>${spring.boot.version}</version>
-						</annotationProcessorPath>
-					</annotationProcessorPaths>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${spring.boot.version}</version>
 				<executions>
 					<execution>
 						<id>repackage</id>
@@ -89,26 +69,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</execution>
 				</executions>
 				<configuration>
-					<systemPropertyVariables>
-						<java.util.logging.manager>org.apache.logging.log4j.jul.LogManager</java.util.logging.manager>
-					</systemPropertyVariables>
 					<mainClass>${start.class}</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
+				<!-- Typescript compiler -->
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
-				<version>${npm_plugin.version}</version>
 				<executions>
 					<execution>
-						<id>install node and npm</id>
+						<id>install-node-and-npm</id>
 						<goals>
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<phase>initialize</phase>
 					</execution>
 					<execution>
-						<id>npm install</id>
+						<id>npm-install</id>
 						<goals>
 							<goal>npm</goal>
 						</goals>
@@ -116,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<phase>generate-resources</phase>
 					</execution>
 					<execution>
-						<id>npm run build</id>
+						<id>npm-run-build</id>
 						<goals>
 							<goal>npm</goal>
 						</goals>
@@ -125,25 +102,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<arguments>run build</arguments>
 							<environmentVariables>
 								<TYPESCRIPT_SRC_DIR>${project.basedir}/src/main/typescript</TYPESCRIPT_SRC_DIR>
-								<TYPESCRIPT_TARGET>ES6</TYPESCRIPT_TARGET>
+								<TYPESCRIPT_TARGET>${typescript-language.version}</TYPESCRIPT_TARGET>
 							</environmentVariables>
 						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<nodeVersion>${node.version}</nodeVersion>
-					<installDirectory>${project.build.directory}</installDirectory>
-					<workingDirectory>${project.basedir}/src/main/frontend</workingDirectory>
-					<environmentVariables>
-						<MAVEN_PROJECT_DIR>${project.basedir}</MAVEN_PROJECT_DIR>
-						<MAVEN_BUILD_DIR>${project.build.directory}</MAVEN_BUILD_DIR>
-					</environmentVariables>
-				</configuration>
+			</plugin>
+			<plugin>
+				<!-- Javascript minifier -->
+				<groupId>com.github.blutorange</groupId>
+				<artifactId>closure-compiler-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>minify-js</id>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<sourceDir>js</sourceDir>
+							<targetDir>META-INF/public-web-resources</targetDir>
+							<includes>*.js</includes>
+							<skipMerge>true</skipMerge>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>add-source</id>
@@ -160,6 +147,72 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				</executions>
 			</plugin>
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<annotationProcessorPaths>
+							<annotationProcessorPath>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-configuration-processor</artifactId>
+								<version>${spring.boot.version}</version>
+							</annotationProcessorPath>
+						</annotationProcessorPaths>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<configuration>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>${spring.boot.version}</version>
+					<configuration>
+						<systemPropertyVariables>
+							<java.util.logging.manager>org.apache.logging.log4j.jul.LogManager</java.util.logging.manager>
+						</systemPropertyVariables>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.github.eirslett</groupId>
+					<artifactId>frontend-maven-plugin</artifactId>
+					<version>${npm_plugin.version}</version>
+					<configuration>
+						<nodeVersion>${node.version}</nodeVersion>
+						<installDirectory>${project.build.directory}</installDirectory>
+						<workingDirectory>${project.basedir}/src/main/frontend</workingDirectory>
+						<environmentVariables>
+							<MAVEN_PROJECT_DIR>${project.basedir}</MAVEN_PROJECT_DIR>
+							<MAVEN_BUILD_DIR>${project.build.directory}</MAVEN_BUILD_DIR>
+						</environmentVariables>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>${build-helper.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>com.github.blutorange</groupId>
+					<artifactId>closure-compiler-maven-plugin</artifactId>
+					<version>${closure-compiler.version}</version>
+					<configuration>
+						<baseSourceDir>${project.build.directory}</baseSourceDir>
+						<baseTargetDir>${project.build.buildDirectory}</baseTargetDir>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<outputFilename>#{basename}.#{extension}</outputFilename>
+						<closureLanguageOut>${javascript-language.version}</closureLanguageOut>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<dependencyManagement>
