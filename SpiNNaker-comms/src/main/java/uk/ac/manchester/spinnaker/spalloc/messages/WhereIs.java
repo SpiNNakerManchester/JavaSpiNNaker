@@ -61,7 +61,7 @@ public class WhereIs {
 	 * @param physical
 	 *            the physical coordinates of the board
 	 */
-	public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip,
+	public WhereIs(ChipLocation jobChip, Integer jobId, ChipLocation chip,
 			BoardCoordinates logical, String machine, ChipLocation boardChip,
 			BoardPhysicalCoordinates physical) {
 		this.jobChip = jobChip;
@@ -211,7 +211,8 @@ public class WhereIs {
 		if (o instanceof WhereIs) {
 			WhereIs other = (WhereIs) o;
 			return Objects.equals(jobChip, other.jobChip)
-					&& jobId == other.jobId && Objects.equals(chip, other.chip)
+					&& Objects.equals(jobId, other.jobId)
+					&& Objects.equals(chip, other.chip)
 					&& Objects.equals(logical, other.logical)
 					&& Objects.equals(machine, other.machine)
 					&& Objects.equals(boardChip, other.boardChip)
