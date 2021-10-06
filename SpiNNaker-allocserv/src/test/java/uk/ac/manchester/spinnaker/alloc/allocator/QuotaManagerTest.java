@@ -43,6 +43,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -73,7 +74,7 @@ class QuotaManagerTest extends SQLQueries {
 	private static final Logger log = getLogger(QuotaManagerTest.class);
 
 	@Configuration
-	@ComponentScan(basePackageClasses = DatabaseEngine.class)
+	@ComponentScan(basePackageClasses = SpallocProperties.class)
 	static class Config {
 	}
 

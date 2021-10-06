@@ -43,6 +43,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -75,7 +76,7 @@ class AllocatorTest extends SQLQueries {
 	static final String HIST_DB = "alloc_test-hist.sqlite3";
 
 	@Configuration
-	@ComponentScan(basePackageClasses = DatabaseEngine.class)
+	@ComponentScan(basePackageClasses = SpallocProperties.class)
 	static class Config {
 	}
 
