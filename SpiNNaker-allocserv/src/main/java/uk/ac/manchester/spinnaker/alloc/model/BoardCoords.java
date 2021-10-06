@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 
 /**
  * Basic coordinates of a board.

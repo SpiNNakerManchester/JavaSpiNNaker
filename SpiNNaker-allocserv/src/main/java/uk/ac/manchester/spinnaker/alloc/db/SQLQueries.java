@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc;
+package uk.ac.manchester.spinnaker.alloc.db;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
+import uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;

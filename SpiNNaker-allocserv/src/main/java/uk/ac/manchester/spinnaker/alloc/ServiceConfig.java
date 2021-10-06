@@ -74,6 +74,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
+import uk.ac.manchester.spinnaker.alloc.db.TerminationNotifyingThreadFactory;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 /**
