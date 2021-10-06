@@ -32,28 +32,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 		<slf4j.version>1.7.32</slf4j.version>
 		<log4j.version>2.14.1</log4j.version>
-		<junit.version>5.8.0</junit.version>
-		<checkstyle.version>9.0</checkstyle.version>
+		<junit.version>5.8.1</junit.version>
+		<checkstyle.version>9.0.1</checkstyle.version>
 
 		<testing.version>3.0.0-M5</testing.version>
 		<jacoco.version>0.8.7</jacoco.version>
 		<javadoc.version>3.3.1</javadoc.version>
 		<cxf.version>3.4.3</cxf.version>
 		<spring.version>5.2.13.RELEASE</spring.version>
-		<jackson.version>2.12.5</jackson.version>
+		<jackson.version>2.13.0</jackson.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-api</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-engine</artifactId>
+				<artifactId>junit-jupiter</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -241,6 +235,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
 					<version>3.2.4</version>
+					<configuration>
+						<filters>
+							<filter>
+								<artifact>*:*</artifact>
+								<excludes>
+									<!-- Strip unwanted junk -->
+									<exclude>META-INF/MANIFEST.MF</exclude>
+									<exclude>META-INF/LICENSE</exclude>
+									<exclude>META-INF/LICENSE.txt</exclude>
+									<exclude>META-INF/NOTICE</exclude>
+									<exclude>META-INF/NOTICE.txt</exclude>
+									<exclude>META-INF/DEPENDENCIES</exclude>
+									<exclude>META-INF/*.SF</exclude>
+									<exclude>META-INF/*.DSA</exclude>
+									<exclude>META-INF/*.RSA</exclude>
+								</excludes>
+							</filter>
+						</filters>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -426,7 +439,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.commonjava.maven.plugins</groupId>
 				<artifactId>directory-maven-plugin</artifactId>
-				<version>0.3.1</version>
+				<version>1.0</version>
 				<executions>
 					<execution>
 						<id>find-root</id>

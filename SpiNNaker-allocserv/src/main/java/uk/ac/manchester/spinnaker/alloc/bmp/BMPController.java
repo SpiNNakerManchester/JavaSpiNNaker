@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
@@ -388,12 +387,8 @@ public class BMPController extends SQLQueries {
 	public int getPendingRequestLoading() {
 		try (Connection conn = db.getConnection();
 				Query countChanges = query(conn, COUNT_PENDING_CHANGES)) {
-			Optional<Row> row = countChanges.call1();
-			if (row.isPresent()) {
-				return row.get().getInt("c");
-			}
+			return countChanges.call1().map(row -> row.getInt("c")).orElse(0);
 		}
-		return 0;
 	}
 
 	/**
@@ -616,10 +611,10 @@ public class BMPController extends SQLQueries {
 			sql.transaction(() -> {
 				// The outer loop is always over a small set, fortunately
 				for (Machine machine : machines) {
-					for (Row jobIds : sql.jobsWithChanges(machine.getId())) {
-						takeRequestsForJob(machine, jobIds.getInteger("job_id"),
-								sql, requestCollector);
-					}
+					sql.jobsWithChanges(machine.getId())
+							.forEach(jobIds -> takeRequestsForJob(machine,
+									jobIds.getInteger("job_id"), sql,
+									requestCollector));
 				}
 			});
 		}
@@ -646,14 +641,16 @@ public class BMPController extends SQLQueries {
 			to = row.getEnum("to_state", JobState.class);
 			if (switchOn) {
 				boardsOn.add(board);
+				/*
+				 * Decode a collection of boolean columns to say which links to
+				 * switch back off
+				 */
+				asList(Direction.values()).stream()
+						.filter(link -> !row.getBoolean(link.columnName))
+						.map(link -> new Link(board, link))
+						.forEach(linksOff::add);
 			} else {
 				boardsOff.add(board);
-			}
-			// Decode a collection of boolean columns
-			for (Direction link : Direction.values()) {
-				if (switchOn && !row.getBoolean(link.columnName)) {
-					linksOff.add(new Link(board, link));
-				}
 			}
 		}
 
@@ -757,29 +754,26 @@ public class BMPController extends SQLQueries {
 		int turnedOn = 0, turnedOff = 0, jobChange = 0, moved = 0,
 				deallocated = 0, killed = 0;
 		if (failed) {
-			for (Integer changeId : request.changeIds) {
-				moved += sql.setInProgress(false, changeId);
-			}
-			jobChange += sql.setJobState(request.from, 0, request.jobId);
+			moved = request.changeIds.stream()
+					.mapToInt(changeId -> sql.setInProgress(false, changeId))
+					.sum();
+			jobChange = sql.setJobState(request.from, 0, request.jobId);
 			// TODO what else should happen here?
 		} else {
-			for (Integer board : request.powerOnBoards) {
-				turnedOn += sql.setBoardState(true, board);
-			}
-			for (Integer board : request.powerOffBoards) {
-				turnedOff += sql.setBoardState(false, board);
-			}
-			jobChange += sql.setJobState(request.to, 0, request.jobId);
+			turnedOn = request.powerOnBoards.stream()
+					.mapToInt(board -> sql.setBoardState(true, board)).sum();
+			turnedOn = request.powerOffBoards.stream()
+					.mapToInt(board -> sql.setBoardState(false, board)).sum();
+			jobChange = sql.setJobState(request.to, 0, request.jobId);
 			if (request.to == DESTROYED) {
 				/*
 				 * Need to mark the boards as not allocated; can't do that until
 				 * they've been switched off.
 				 */
-				deallocated += sql.deallocateBoards(request.jobId);
+				deallocated = sql.deallocateBoards(request.jobId);
 			}
-			for (Integer changeId : request.changeIds) {
-				killed += sql.deleteChange(changeId);
-			}
+			killed = request.changeIds.stream()
+					.mapToInt(changeId -> sql.deleteChange(changeId)).sum();
 		}
 		log.debug(
 				"post-switch ({}:{}->{}): up:{} down:{} jobChanges:{} "

@@ -97,6 +97,7 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
+@org.junit.jupiter.api.Tag("integration")
 @NotThreadSafe
 public class TransceiverITCase {
 	private static final Logger log = getLogger(TransceiverITCase.class);

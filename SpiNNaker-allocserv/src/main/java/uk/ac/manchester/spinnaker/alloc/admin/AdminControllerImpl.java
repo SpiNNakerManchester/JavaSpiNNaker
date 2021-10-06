@@ -199,10 +199,9 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	public ModelAndView listUsers() {
 		Map<String, URI> result = new TreeMap<>();
 		try {
-			for (UserRecord user : userController.listUsers()) {
-				result.put(user.getUserName(),
-						uri(SELF.showUserForm(user.getUserId())));
-			}
+			userController.listUsers()
+					.forEach(user -> result.put(user.getUserName(),
+							uri(SELF.showUserForm(user.getUserId()))));
 		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
 		}

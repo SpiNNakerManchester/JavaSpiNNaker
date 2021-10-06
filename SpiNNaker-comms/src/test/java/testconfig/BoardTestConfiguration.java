@@ -29,7 +29,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opentest4j.TestAbortedException;
 
@@ -166,11 +168,15 @@ public class BoardTestConfiguration {
 				() -> "unreachable host (" + remotehost + ") appears to be up");
 	}
 
+	private static final Map<Object, Boolean> REACHABLE = new HashMap<>();
+
 	private static boolean hostIsReachable(String remotehost) {
-		return ping(remotehost) == 0;
+		return REACHABLE.computeIfAbsent(remotehost,
+				r -> ping(remotehost) == 0);
 	}
 
 	private static boolean hostIsReachable(InetAddress remotehost) {
-		return ping(remotehost) == 0;
+		return REACHABLE.computeIfAbsent(remotehost,
+				r -> ping(remotehost) == 0);
 	}
 }

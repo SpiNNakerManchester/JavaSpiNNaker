@@ -25,7 +25,6 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.apache.commons.io.FileUtils.readFileToString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
@@ -38,6 +37,7 @@ import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseable
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -66,6 +66,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -344,6 +345,25 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				throw mapException(e, null);
 			}
 		}
+
+		/**
+		 * Get the contents of the named column.
+		 *
+		 * @param columnLabel
+		 *            The name of the column.
+		 * @return A long value, or {@code null} on {@code NULL}.
+		 */
+		public Long getLong(String columnLabel) {
+			try {
+				Number value = (Number) rs.getObject(columnLabel);
+				if (rs.wasNull()) {
+					return null;
+				}
+				return value.longValue();
+			} catch (SQLException e) {
+				throw mapException(e, null);
+			}
+		}
 	}
 
 	@PostConstruct
@@ -594,21 +614,25 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private void initDBConn(SQLiteConnection conn) {
 		try {
-			log.info("initalising DB ({}) schema from {}", conn.libversion(),
-					sqlDDLFile);
+			log.info("initalising main DB ({}) schema from {}",
+					conn.libversion(), sqlDDLFile);
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
 		// Note that we don't close the wrapper
 		Connection wrapper = new Connection(conn);
 		exec(wrapper, sqlDDLFile);
-		log.info("attaching historical job DB ({}) schema from {}",
-				tombstoneFile, tombstoneDDLFile);
-		update(wrapper, "ATTACH DATABASE ? AS tombstone").call(tombstoneFile);
+		log.info("initalising historical DB from schema {}", tombstoneDDLFile);
 		exec(wrapper, tombstoneDDLFile);
 		transaction(wrapper, () -> {
 			log.info("initalising DB static data from {}", sqlInitDataFile);
 			exec(wrapper, sqlInitDataFile);
+		});
+		transaction(wrapper, () -> {
+			log.info("verifying main DB integrity");
+			exec(wrapper, "SELECT COUNT(*) FROM jobs");
+			log.info("verifying historical DB integrity");
+			exec(wrapper, "SELECT COUNT(*) FROM tombstone.jobs");
 		});
 	}
 
@@ -618,9 +642,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try {
 			SQLiteConnection conn =
 					(SQLiteConnection) config.createConnection(dbConnectionUrl);
-			// Has to be done for every connection; can't be cached
+			/*
+			 * Perform some actions immediately as they have to be done for
+			 * every connection and can't be cached.
+			 */
 			for (String s : functions.keySet()) {
 				installFunction(conn, s, functions.get(s));
+			}
+			log.info("attaching historical job DB ({})", tombstoneFile);
+			try (PreparedStatement s =
+					conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
+				s.setString(1, tombstoneFile);
+				s.execute();
 			}
 			return conn;
 		} catch (SQLException e) {
@@ -1080,10 +1113,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				return QUERY_CACHE.get(resource);
 			}
 		}
-		try {
-			log.debug("{} is {}", resource,
-					resource.getFile().getAbsoluteFile());
-			String s = readFileToString(resource.getFile(), UTF_8);
+		try (InputStream is = resource.getInputStream()) {
+			String s = IOUtils.toString(is, UTF_8);
 			synchronized (QUERY_CACHE) {
 				// Not really a problem if it is put in twice
 				QUERY_CACHE.put(resource, s);
@@ -1235,6 +1266,36 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
+	 * Extends iterable with the ability to be mapped to different values.
+	 *
+	 * @param <T> The type of elements returned by the iterator
+	 * @author Donal Fellows
+	 */
+	public interface MappableIterable<T> extends Iterable<T> {
+		default <TT> MappableIterable<TT>
+				map(java.util.function.Function<T, TT> mapper) {
+			MappableIterable<T> src = this;
+			return new MappableIterable<TT>() {
+				@Override
+				public Iterator<TT> iterator() {
+					Iterator<T> srcit = src.iterator();
+					return new Iterator<TT>() {
+						@Override
+						public boolean hasNext() {
+							return srcit.hasNext();
+						}
+
+						@Override
+						public TT next() {
+							return mapper.apply(srcit.next());
+						}
+					};
+				}
+			};
+		}
+	}
+
+	/**
 	 * Wrapping a prepared query to be more suitable for Java 8 onwards.
 	 *
 	 * @author Donal Fellows
@@ -1254,7 +1315,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         retained by callers; they may share state and might not
 		 *         outlive the iteration.
 		 */
-		public Iterable<Row> call(Object... arguments) {
+		public MappableIterable<Row> call(Object... arguments) {
 			closeResults();
 			rs = runQuery(s, arguments);
 			return () -> new Iterator<Row>() {
@@ -1395,7 +1456,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *            Positional arguments to the query
 		 * @return The integer primary keys generated by the update.
 		 */
-		public Iterable<Integer> keys(Object... arguments) {
+		public MappableIterable<Integer> keys(Object... arguments) {
 			/*
 			 * In theory, the statement should have been prepared with the
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
@@ -1466,7 +1527,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public Optional<Integer> key(Object... arguments) {
 			closeResults();
-			runUpdate(s, arguments);
+			int numRows = runUpdate(s, arguments);
+			if (numRows < 1) {
+				return Optional.empty();
+			}
 			try {
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {

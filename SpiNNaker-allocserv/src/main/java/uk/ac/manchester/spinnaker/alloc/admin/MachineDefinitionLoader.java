@@ -35,7 +35,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -979,19 +978,16 @@ public class MachineDefinitionLoader extends SQLQueries {
 				machine.getWidth(), machine.getHeight(), machine.getDepth())
 				.orElseThrow(() -> new InsertFailedException("machines"));
 		// The above will blow up if the machine with that name exists
-		for (String tag : machine.getTags()) {
-			sql.makeTag.key(machineId, tag);
-		}
+		machine.getTags().forEach(tag -> sql.makeTag.key(machineId, tag));
 		return machineId;
 	}
 
 	private Map<BMPCoords, Integer> makeBMPs(Updates sql, Machine machine,
 			int machineId) {
 		Map<BMPCoords, Integer> bmpIds = new HashMap<>();
-		for (BMPCoords bmp : machine.bmpIPs.keySet()) {
-			sql.makeBMP.key(machineId, machine.bmpIPs.get(bmp), bmp.c, bmp.f)
-					.ifPresent(id -> bmpIds.put(bmp, id));
-		}
+		machine.bmpIPs.forEach(
+				(bmp, ip) -> sql.makeBMP.key(machineId, ip, bmp.c, bmp.f)
+						.ifPresent(id -> bmpIds.put(bmp, id)));
 		return bmpIds;
 	}
 
@@ -1041,14 +1037,13 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 	private void makeLinks(Updates sql, Machine machine,
 			Map<TriadCoords, Integer> boardIds) {
-		for (Entry<TriadCoords, Integer> b : boardIds.entrySet()) {
-			TriadCoords here = b.getKey();
+		for (TriadCoords here : boardIds.keySet()) {
 			for (Direction d : Direction.values()) {
 				TriadCoords there = here.move(d, machine);
-				if (!boardIds.containsKey(there)) {
-					continue;
+				if (boardIds.containsKey(there)) {
+					makeLink(sql, machine, boardIds, here, d, there,
+							d.opposite());
 				}
-				makeLink(sql, machine, boardIds, here, d, there, d.opposite());
 			}
 		}
 	}

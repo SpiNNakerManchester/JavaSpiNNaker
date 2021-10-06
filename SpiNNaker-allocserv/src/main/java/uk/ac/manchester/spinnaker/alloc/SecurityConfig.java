@@ -112,9 +112,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger log = getLogger(SecurityConfig.class);
 
-	// TODO application security model (in progress)
-	// https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/342
-
 	/** How to assert that a user must be an admin. */
 	public static final String IS_ADMIN = "hasRole('ADMIN')";
 
@@ -234,8 +231,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Unlock any locked users whose lock period has expired.
 		 */
 		void unlockLockedUsers();
-
-		// TODO what other operations should there be?
 	}
 
 	private static final String MAIN_PAGE = "/system";
@@ -607,10 +602,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The originating security context.
 		 */
 		public Permit(SecurityContext context) {
-			for (GrantedAuthority ga : context.getAuthentication()
-					.getAuthorities()) {
-				authorities.add(ga.getAuthority());
-			}
+			context.getAuthentication().getAuthorities().stream()
+					.map(GrantedAuthority::getAuthority)
+					.forEach(authorities::add);
 			admin = authorities.contains(GRANT_ADMIN);
 			name = context.getAuthentication().getName();
 		}

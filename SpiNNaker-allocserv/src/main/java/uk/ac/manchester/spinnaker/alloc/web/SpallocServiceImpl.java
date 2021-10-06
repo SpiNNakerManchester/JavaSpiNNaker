@@ -16,8 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.created;
@@ -32,7 +35,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -379,14 +381,9 @@ public class SpallocServiceImpl extends BackgroundSupport
 			links.put("next", next);
 		}
 		if (!links.isEmpty()) {
-			StringBuilder sb = new StringBuilder();
-			String sep = "";
-			for (Entry<String, URI> e : links.entrySet()) {
-				sb.append("<").append(e.getValue()).append(">; rel=\"")
-						.append(e.getKey()).append("\"").append(sep);
-				sep = ", ";
-			}
-			r.header("Link", sb.toString());
+			r.header("Link", join(", ", links.entrySet().stream().map(
+					e -> format("<%s>; rel=\"%s\"", e.getValue(), e.getKey()))
+					.collect(toList())));
 		}
 		return r.build();
 	}

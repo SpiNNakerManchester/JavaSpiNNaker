@@ -172,19 +172,37 @@ public class LocalAuthProviderImpl extends SQLQueries
 		}
 	}
 
+	/**
+	 * Create a user. A transaction <em>must</em> be held open when calling
+	 * this.
+	 *
+	 * @param username
+	 *            The username to create
+	 * @param password
+	 *            The password to use; {@code null} for a user that needs to
+	 *            authenticate by another mechanism.
+	 * @param trustLevel
+	 *            What level of permissions to grant
+	 * @param quota
+	 *            How much quota to allocate
+	 * @param createUser
+	 *            SQL statement
+	 * @param addQuota
+	 *            SQL statement
+	 * @return Whether the user was successfully created.
+	 */
 	private Boolean createUser(String username, String password,
 			TrustLevel trustLevel, long quota, Update createUser,
 			Update addQuota) {
-		for (int userId : createUser.keys(username, password, trustLevel,
-				false)) {
-			addQuota.call(userId, quota);
-			log.info(
-					"added user {} with trust level {} and "
-							+ "quota {} board-seconds",
-					username, trustLevel, quota);
-			return true;
-		}
-		return false;
+		return createUser.key(username, password, trustLevel, false)
+				.map(userId -> {
+					addQuota.call(userId, quota);
+					log.info(
+							"added user {} with trust level {} and "
+									+ "quota {} board-seconds",
+							username, trustLevel, quota);
+					return userId;
+				}).isPresent();
 	}
 
 	@Override
@@ -572,8 +590,8 @@ public class LocalAuthProviderImpl extends SQLQueries
 		try (Connection conn = db.getConnection();
 				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
 			unlock.call(authProps.getAccountLockDuration())
-					.forEach(row -> log.info("automatically unlocked user {}",
-							row.getString("user_name")));
+					.map(row -> row.getString("user_name")).forEach(user -> log
+							.info("automatically unlocked user {}", user));
 		}
 	}
 }

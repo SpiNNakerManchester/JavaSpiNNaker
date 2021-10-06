@@ -22,6 +22,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -127,14 +128,20 @@ abstract class Utils {
 	 * @param value
 	 *            The value to parse (must actually be a string or a number).
 	 * @return The decimal value.
+	 * @throws IllegalArgumentException
+	 *             If the object can't be converted to a number.
 	 */
 	static int parseDec(Object value) {
 		if (value instanceof Integer) {
 			return (Integer) value;
 		} else if (value instanceof Number) {
 			return ((Number) value).intValue();
+		} else if (value instanceof String) {
+			return parseInt((String) value, BASE_TEN);
+		} else {
+			throw new IllegalArgumentException(
+					"needed a number, got a " + value.getClass().getName());
 		}
-		return parseInt((String) value, BASE_TEN);
 	}
 
 	/**
@@ -148,7 +155,7 @@ abstract class Utils {
 	 * @return The decimal value.
 	 */
 	static int parseDec(List<Object> args, int index) {
-		return parseDec((String) args.get(index));
+		return parseDec(args.get(index));
 	}
 
 	/**
@@ -162,7 +169,7 @@ abstract class Utils {
 	 * @return The decimal value.
 	 */
 	static int parseDec(Map<String, Object> kwargs, String index) {
-		return parseDec((String) kwargs.get(index));
+		return parseDec(kwargs.get(index));
 	}
 
 	/**
@@ -252,28 +259,38 @@ abstract class Utils {
 	 * @param fun
 	 *            The element conversion function.
 	 * @return The array of converted elements.
+	 * @throws UnsupportedOperationException
+	 *             If the class lacks a no-argument constructor.
 	 */
-	@SuppressWarnings("unchecked")
 	static <T, U> U[] mapToArray(Collection<T> src, Class<U> cls,
 			Function<T, U> fun) {
-		List<U> dst = new ArrayList<>();
-		for (T val : src) {
-			U target;
-			try {
-				target = cls.getConstructor().newInstance();
-			} catch (InstantiationException | IllegalAccessException
-					| IllegalArgumentException | NoSuchMethodException
-					| SecurityException e) {
-				log.error("unexpected failure", e);
-				break;
-			} catch (InvocationTargetException e) {
-				log.error("unexpected failure", e.getCause());
-				break;
-			}
-			fun.call(val, target);
-			dst.add(target);
+		// No expected exceptions, so use input size as capacity
+		int projectedSize = src.size();
+		List<U> dst = new ArrayList<>(projectedSize);
+
+		Constructor<U> con;
+		try {
+			con = cls.getConstructor();
+		} catch (NoSuchMethodException e) {
+			throw new UnsupportedOperationException(e);
 		}
+
 		// This is why we can't use a Supplier
-		return dst.toArray((U[]) Array.newInstance(cls, 0));
+		@SuppressWarnings("unchecked")
+		U[] ary = (U[]) Array.newInstance(cls, projectedSize);
+
+		try {
+			for (T val : src) {
+				U target = con.newInstance();
+				fun.call(val, target);
+				dst.add(target);
+			}
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException e) {
+			log.error("unexpected failure", e);
+		} catch (InvocationTargetException e) {
+			log.error("unexpected failure", e.getCause());
+		}
+		return dst.toArray(ary);
 	}
 }

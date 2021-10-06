@@ -10,6 +10,6 @@
 	},
 	"browser": "Chrome",
 	"scripts": {
-		"build": "tsc ${TYPESCRIPT_SRC_DIR:=../typescript}/*.ts --target ${TYPESCRIPT_TARGET:=ES6} --outFile ${MAVEN_BUILD_DIR:=../../../target}/js/spinnaker.js"
+		"build": "tsc ${TYPESCRIPT_SRC_DIR:=../typescript}/*.ts --target ${TYPESCRIPT_TARGET:=ES6} --removeComments --outFile ${MAVEN_BUILD_DIR:=../../../target}/js/spinnaker.js"
 	}
 }

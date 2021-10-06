@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.lang.String.format;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
@@ -445,13 +446,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private int insertJob(Connection conn, MachineImpl m, int owner,
 			Duration keepaliveInterval, byte[] req) {
-		int pk = -1;
 		try (Update makeJob = update(conn, INSERT_JOB)) {
-			for (int key : makeJob.keys(m.id, owner, keepaliveInterval, req)) {
-				pk = key;
-			}
+			return makeJob.key(m.id, owner, keepaliveInterval, req).orElse(-1);
 		}
-		return pk;
 	}
 
 	private Optional<MachineImpl> selectMachine(Connection conn,
@@ -904,7 +901,12 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 		}
 
+		// -------------------------------------------------------------
+		// Bad board report handling
+
 		private final class BoardReportSQL implements AutoCloseable {
+			final Connection conn;
+
 			final Query findBoardByChip;
 
 			final Query findBoardByTriad;
@@ -920,6 +922,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			final Update setFunctioning;
 
 			BoardReportSQL(Connection conn) {
+				this.conn = conn;
 				findBoardByChip = query(conn, findBoardByJobChip);
 				findBoardByTriad = query(conn, findBoardByLogicalCoords);
 				findBoardPhys = query(conn, findBoardByPhysicalCoords);
@@ -939,9 +942,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				insertReport.close();
 				getReported.close();
 				setFunctioning.close();
+				conn.close();
 			}
 		}
 
+		/** Used to assemble an issue-report email for sending. */
 		private final class EmailBuilder {
 			/**
 			 * More efficient than several String.format() calls, and much
@@ -995,6 +1000,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 						r.getString("address"), r.getInt("numReports"));
 			}
 
+			/** @return The assembled message body. */
 			@Override
 			public String toString() {
 				return b.toString();
@@ -1006,49 +1012,82 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					BoardReportSQL q = new BoardReportSQL(conn)) {
 				EmailBuilder email = new EmailBuilder();
-				email.header(report.issue, report.boards.size(), permit.name);
-
-				String result = transaction(conn, () -> {
-					int userId = getUser(conn, permit.name)
-							.orElseThrow(() -> new RuntimeException(
-									"no such user: " + permit.name));
-					for (ReportedBoard board : report.boards) {
-						int boardId = getJobBoardForReport(q, board, email);
-						addIssueReport(q, boardId, report.issue, userId, email);
-					}
-					int acted = takeBoardsOutOfService(q, email);
-					if (acted > 0) {
-						email.footer(acted);
-						return String.format("%d boards taken out of service",
-								acted);
-					}
-					return "report noted";
-				});
-
-				// NB: email sending is OUTSIDE the transaction
-				ReportProperties mail = props.getReportEmail();
-				if (nonNull(emailSender) && nonNull(mail.getTo())
-						&& mail.isSend()) {
-					SimpleMailMessage message = new SimpleMailMessage();
-					if (nonNull(mail.getFrom())) {
-						message.setFrom(mail.getFrom());
-					}
-					message.setTo(mail.getTo());
-					if (nonNull(mail.getSubject())) {
-						message.setSubject(mail.getSubject());
-					}
-					message.setText(email.toString());
-					try {
-						if (!mail.getTo().isEmpty()) {
-							emailSender.send(message);
-						}
-					} catch (MailException e) {
-						log.warn("problem when sending email", e);
-					}
-				}
+				String result = transaction(conn,
+						() -> reportIssue(report, permit, email, q));
+				sendBoardServiceMail(email);
 				return result;
 			} catch (ReportRollbackExn e) {
 				return e.getMessage();
+			}
+		}
+
+		/**
+		 * Report an issue with some boards and assemble the email to send. This
+		 * may result in boards being taken out of service (i.e., no longer
+		 * being available to be allocated; their current allocation will
+		 * continue).
+		 * <p>
+		 * <strong>NB:</strong> The sending of the email sending is
+		 * <em>outside</em> the transaction that this code is executed in.
+		 *
+		 * @param report
+		 *            The report from the user.
+		 * @param permit
+		 *            Who the user is.
+		 * @param email
+		 *            The email we're assembling.
+		 * @param q
+		 *            SQL access queries.
+		 * @return Summary of action taken message, to go to user.
+		 * @throws ReportRollbackExn
+		 *             If the report is bad somehow.
+		 */
+		private String reportIssue(IssueReportRequest report, Permit permit,
+				EmailBuilder email, BoardReportSQL q) throws ReportRollbackExn {
+			//
+			email.header(report.issue, report.boards.size(), permit.name);
+			int userId = getUser(q.conn, permit.name)
+					.orElseThrow(() -> new ReportRollbackExn(
+							"no such user: " + permit.name));
+			for (ReportedBoard board : report.boards) {
+				addIssueReport(q, getJobBoardForReport(q, board, email),
+						report.issue, userId, email);
+			}
+			return takeBoardsOutOfService(q, email).map(acted -> {
+				email.footer(acted);
+				return format("%d boards taken out of service", acted);
+			}).orElse("report noted");
+		}
+
+		/**
+		 * Send an assembled message if the service is configured to do so.
+		 * <p>
+		 * <strong>NB:</strong>This call may take some time; do not hold a
+		 * transaction open when calling this.
+		 *
+		 * @param email
+		 *            The message contents to send.
+		 */
+		private void sendBoardServiceMail(EmailBuilder email) {
+			ReportProperties properties = props.getReportEmail();
+			if (nonNull(emailSender) && nonNull(properties.getTo())
+					&& properties.isSend()) {
+				SimpleMailMessage message = new SimpleMailMessage();
+				if (nonNull(properties.getFrom())) {
+					message.setFrom(properties.getFrom());
+				}
+				message.setTo(properties.getTo());
+				if (nonNull(properties.getSubject())) {
+					message.setSubject(properties.getSubject());
+				}
+				message.setText(email.toString());
+				try {
+					if (!properties.getTo().isEmpty()) {
+						emailSender.send(message);
+					}
+				} catch (MailException e) {
+					log.warn("problem when sending email", e);
+				}
 			}
 		}
 
@@ -1147,7 +1186,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		 *            The email we are building.
 		 * @return The number of boards taken out of service
 		 */
-		private int takeBoardsOutOfService(BoardReportSQL u,
+		private Optional<Integer> takeBoardsOutOfService(BoardReportSQL u,
 				EmailBuilder email) {
 			int acted = 0;
 			for (Row r : u.getReported.call(props.getReportActionThreshold())) {
@@ -1157,8 +1196,14 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					acted++;
 				}
 			}
-			return acted;
+			if (acted > 0) {
+				// TODO purge the cache of what boards are down
+				epochs.nextMachineEpoch();
+			}
+			return acted > 0 ? Optional.of(acted) : Optional.empty();
 		}
+
+		// -------------------------------------------------------------
 
 		@Override
 		public Optional<ChipLocation> getRootChip() {

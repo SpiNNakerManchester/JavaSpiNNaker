@@ -44,3 +44,14 @@ updates:
     reviewers:
       - "Christian-B"
       - "rowleya"
+  - package-ecosystem: maven
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "spalloc-server"
+    labels:
+      - "bug"
+      - "dependabot"
+      - "spalloc server"
+    assignees:
+      - "dkfellows"
