@@ -526,8 +526,7 @@ function drawMachine(
 			clearCurrent();
 		}
 	});
-	canv.addEventListener('mouseleave', (e: MouseEvent) => {
-		e.offsetX; // Use to shut up IDE warnings
+	canv.addEventListener('mouseleave', (_: MouseEvent) => {
 		if (current !== undefined) {
 			clearCurrent();
 		}
@@ -664,8 +663,7 @@ function drawJob(
 			clearCurrent();
 		}
 	});
-	canv.addEventListener('mouseleave', (e: MouseEvent) => {
-		e.offsetX; // Use to shut up IDE warnings
+	canv.addEventListener('mouseleave', (_: MouseEvent) => {
 		if (current !== undefined) {
 			clearCurrent();
 		}
