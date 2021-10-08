@@ -21,6 +21,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
@@ -39,13 +40,23 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
+import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
@@ -69,7 +80,9 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  *
  * @author Donal Fellows
  */
-class ServiceImpl extends V1CompatService.Task {
+@Component
+@Scope(SCOPE_PROTOTYPE)
+class V1TaskImpl extends V1CompatTask {
 	private static final int ONE_MINUTE = 60;
 
 	private static final int LOTS = 10000;
@@ -82,29 +95,47 @@ class ServiceImpl extends V1CompatService.Task {
 
 	private static final Logger log = getLogger(V1CompatService.class);
 
-	private Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
+	private final Map<Integer, Future<Void>> jobNotifiers = new HashMap<>();
 
-	private Map<String, Future<Void>> machNotifiers = new HashMap<>();
+	private final Map<String, Future<Void>> machNotifiers = new HashMap<>();
 
-	private final V1CompatService srv;
+	/** The service version information. */
+	@Autowired
+	private ServiceVersion version;
 
-	private final SpallocAPI spalloc;
+	/** The overall service properties. */
+	@Autowired
+	private SpallocProperties mainProps;
 
-	private final ObjectMapper mapper;
+	/** The core spalloc service. */
+	@Autowired
+	private SpallocAPI spalloc;
+
+	/** The epoch manager. */
+	@Autowired
+	private Epochs epochs;
+
+	/** The database. */
+	@Autowired
+	private DatabaseEngine db;
+
+	private CompatibilityProperties props;
 
 	/** Encoded form of our special permissions token. */
-	private final Permit serviceUserPermit;
+	private Permit serviceUserPermit;
 
-	ServiceImpl(V1CompatService srv, Socket sock) throws IOException {
-		srv.super(sock);
-		this.srv = srv;
-		this.spalloc = srv.spalloc;
-		this.mapper = srv.mapper;
-		serviceUserPermit = new Permit(srv.props.getServiceUser());
+	V1TaskImpl(V1CompatService srv, Socket sock) throws IOException {
+		super(srv, sock);
+	}
+
+	@PostConstruct
+	void initUser() {
+		props = mainProps.getCompat();
+		serviceUserPermit = new Permit(props.getServiceUser());
 	}
 
 	@Override
-	protected void closeNotifiers() {
+	protected final void closeNotifiers() {
 		for (Future<Void> n : jobNotifiers.values()) {
 			n.cancel(true);
 		}
@@ -114,16 +145,17 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected String version() {
-		return srv.version.toString();
+	protected final String version() {
+		return version.getVersion().toString();
 	}
 
 	@Override
-	protected JobMachineInfo getJobMachineInfo(int jobId) throws Exception {
+	protected final JobMachineInfo getJobMachineInfo(int jobId)
+			throws TaskException {
 		Job job = getJob(jobId);
 		job.access(host());
 		SubMachine machine = job.getMachine()
-				.orElseThrow(() -> new Exception("boards not allocated"));
+				.orElseThrow(() -> new TaskException("boards not allocated"));
 		JobMachineInfo jmi = new JobMachineInfo();
 		jmi.setMachineName(machine.getMachine().getName());
 		jmi.setBoards(machine.getBoards());
@@ -139,7 +171,7 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected JobState getJobState(int jobId) throws Exception {
+	protected final JobState getJobState(int jobId) throws TaskException {
 		Job job = getJob(jobId);
 		job.access(host());
 		JobState js = new JobState();
@@ -160,7 +192,7 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected void jobKeepalive(int jobId) throws Exception {
+	protected final void jobKeepalive(int jobId) throws TaskException {
 		getJob(jobId).access(host());
 	}
 
@@ -175,62 +207,67 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected Integer createJobNumBoards(int numBoards,
-			Map<String, Object> kwargs, Object cmd) throws Exception {
+	protected final Integer createJobNumBoards(int numBoards,
+			Map<String, Object> kwargs, Object cmd)
+			throws JsonProcessingException {
 		return createJob(new CreateNumBoards(numBoards), kwargs, cmd);
 	}
 
 	@Override
-	protected Integer createJobRectangle(int width, int height,
-			Map<String, Object> kwargs, Object cmd) throws Exception {
+	protected final Integer createJobRectangle(int width, int height,
+			Map<String, Object> kwargs, Object cmd)
+			throws JsonProcessingException {
 		return createJob(new CreateDimensions(width, height), kwargs, cmd);
 	}
 
 	@Override
-	protected Integer createJobSpecificBoard(TriadCoords coords,
-			Map<String, Object> kwargs, Object cmd) throws Exception {
+	protected final Integer createJobSpecificBoard(TriadCoords coords,
+			Map<String, Object> kwargs, Object cmd)
+			throws JsonProcessingException {
 		return createJob(CreateBoard.triad(coords.x, coords.y, coords.z),
 				kwargs, cmd);
 	}
 
 	private Integer createJob(SpallocAPI.CreateDescriptor create,
-			Map<String, Object> kwargs, Object cmd) throws Exception {
+			Map<String, Object> kwargs, Object cmd)
+			throws JsonProcessingException {
 		Integer maxDead = (Integer) kwargs.get("max_dead_boards");
 		Number keepalive = (Number) kwargs.get("keepalive");
 		String machineName = (String) kwargs.get("machine");
-		Job job = spalloc.createJob(srv.props.getServiceUser(), create,
-				machineName, tags(kwargs.get("tags")),
+		Job job = spalloc.createJob(props.getServiceUser(), create, machineName,
+				tags(kwargs.get("tags")),
 				isNull(keepalive) ? DEFAULT_KEEPALIVE
 						: Duration.ofSeconds(keepalive.intValue()),
-				maxDead, mapper.writeValueAsBytes(cmd));
+				maxDead, getJsonMapper().writeValueAsBytes(cmd));
 		return job.getId();
 	}
 
 	@Override
-	protected void destroyJob(int jobId, String reason) throws Exception {
+	protected final void destroyJob(int jobId, String reason)
+			throws TaskException {
 		getJob(jobId).destroy(reason);
 	}
 
 	@Override
-	protected BoardCoordinates getBoardAtPhysicalPosition(String machineName,
-			int cabinet, int frame, int board) throws Exception {
-		BoardLocation loc = getMachine(machineName)
+	protected final BoardCoordinates getBoardAtPhysicalPosition(
+			String machineName, int cabinet, int frame, int board)
+			throws TaskException {
+		return getMachine(machineName)
 				.getBoardByPhysicalCoords(cabinet, frame, board)
-				.orElseThrow(() -> new Exception("no such board"));
-		return loc.getLogical();
+				.orElseThrow(() -> new TaskException("no such board"))
+				.getLogical();
 	}
 
 	@Override
-	protected BoardPhysicalCoordinates getBoardAtLogicalPosition(
-			String machineName, int x, int y, int z) throws Exception {
-		BoardLocation loc =
-				getMachine(machineName).getBoardByLogicalCoords(x, y, z)
-						.orElseThrow(() -> new Exception("no such board"));
-		return loc.getPhysical();
+	protected final BoardPhysicalCoordinates getBoardAtLogicalPosition(
+			String machineName, int x, int y, int z) throws TaskException {
+		return getMachine(machineName).getBoardByLogicalCoords(x, y, z)
+				.orElseThrow(() -> new TaskException("no such board"))
+				.getPhysical();
 	}
 
 	@Override
-	protected JobDescription[] listJobs() {
+	protected final JobDescription[] listJobs() {
 		// Messy; hits the database many times
 		return mapArrayTx(() -> spalloc.getJobs(false, LOTS, 0).jobs(),
 				JobDescription.class, (job, jd) -> {
@@ -250,19 +287,16 @@ class ServiceImpl extends V1CompatService.Task {
 						jd.setArgs(args);
 						jd.setKwargs(cmd.getKwargs());
 					});
-
-					Optional<SubMachine> osm = job.getMachine();
-					if (osm.isPresent()) {
-						SubMachine sm = osm.get();
+					job.getMachine().ifPresent(sm -> {
 						jd.setMachine(sm.getMachine().getName());
 						jd.setBoards(sm.getBoards());
 						jd.setPower(sm.getPower() == ON);
-					}
+					});
 				});
 	}
 
 	@Override
-	protected Machine[] listMachines() {
+	protected final Machine[] listMachines() {
 		// Messy; hits the database many times
 		return mapArrayTx(() -> spalloc.getMachines().values(), Machine.class,
 				(m, md) -> {
@@ -278,8 +312,8 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected void notifyJob(Integer jobId, boolean wantNotify)
-			throws Exception {
+	protected final void notifyJob(Integer jobId, boolean wantNotify)
+			throws TaskException {
 		if (nonNull(jobId)) {
 			Job job = getJob(jobId);
 			job.access(host());
@@ -295,14 +329,14 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected void notifyMachine(String machine, boolean wantNotify)
-			throws Exception {
+	protected final void notifyMachine(String machine, boolean wantNotify)
+			throws TaskException {
 		if (nonNull(machine)) {
 			// Validate
 			getMachine(machine);
 		}
 		manageNotifier(machNotifiers, machine, wantNotify, () -> {
-			srv.epochs.getMachineEpoch().waitForChange(NOTIFIER_WAIT_TIME);
+			epochs.getMachineEpoch().waitForChange(NOTIFIER_WAIT_TIME);
 			List<String> actual =
 					new ArrayList<String>(spalloc.getMachines().keySet());
 			if (nonNull(machine)) {
@@ -313,22 +347,22 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected void powerJobBoards(int jobId, PowerState switchOn)
-			throws Exception {
+	protected final void powerJobBoards(int jobId, PowerState switchOn)
+			throws TaskException {
 		Job job = getJob(jobId);
 		job.access(host());
-		job.getMachine()
-				.orElseThrow(
-						() -> new Exception("no boards currently allocated"))
+		job.getMachine().orElseThrow(
+				() -> new TaskException("no boards currently allocated"))
 				.setPower(switchOn);
 	}
 
 	@Override
-	protected WhereIs whereIsJobChip(int jobId, int x, int y) throws Exception {
+	protected final WhereIs whereIsJobChip(int jobId, int x, int y)
+			throws TaskException {
 		Job job = getJob(jobId);
 		job.access(host());
 		return whereis(job.whereIs(x, y).orElseThrow(
-				() -> new Exception("no boards currently allocated")));
+				() -> new TaskException("no boards currently allocated")));
 	}
 
 	private WhereIs whereis(BoardLocation bl) {
@@ -347,24 +381,24 @@ class ServiceImpl extends V1CompatService.Task {
 	}
 
 	@Override
-	protected WhereIs whereIsMachineChip(String machineName, int x, int y)
-			throws Exception {
+	protected final WhereIs whereIsMachineChip(String machineName, int x, int y)
+			throws TaskException {
 		return whereis(getMachine(machineName).getBoardByChip(x, y)
-				.orElseThrow(() -> new Exception("no such board")));
+				.orElseThrow(() -> new TaskException("no such board")));
 	}
 
 	@Override
-	protected WhereIs whereIsMachineLogicalBoard(String machineName, int x,
-			int y, int z) throws Exception {
+	protected final WhereIs whereIsMachineLogicalBoard(String machineName,
+			int x, int y, int z) throws TaskException {
 		return whereis(getMachine(machineName).getBoardByLogicalCoords(x, y, z)
-				.orElseThrow(() -> new Exception("no such board")));
+				.orElseThrow(() -> new TaskException("no such board")));
 	}
 
 	@Override
-	protected WhereIs whereIsMachinePhysicalBoard(String machineName, int c,
-			int f, int b) throws Exception {
+	protected final WhereIs whereIsMachinePhysicalBoard(String machineName,
+			int c, int f, int b) throws TaskException {
 		return whereis(getMachine(machineName).getBoardByPhysicalCoords(c, f, b)
-				.orElseThrow(() -> new Exception("no such board")));
+				.orElseThrow(() -> new TaskException("no such board")));
 	}
 
 	// instance-aware utilities
@@ -387,25 +421,26 @@ class ServiceImpl extends V1CompatService.Task {
 	 */
 	private <T, U> U[] mapArrayTx(Supplier<Collection<T>> srcItems,
 			Class<U> targetCls, Function<T, U> itemMapper) {
-		return srv.db.execute(
+		return db.execute(
 				c -> mapToArray(srcItems.get(), targetCls, itemMapper));
 	}
 
-	private Job getJob(int jobId) throws Exception {
+	private Job getJob(int jobId) throws TaskException {
 		return spalloc.getJob(serviceUserPermit, jobId)
-				.orElseThrow(() -> new Exception("no such job"));
+				.orElseThrow(() -> new TaskException("no such job"));
 	}
 
-	private SpallocAPI.Machine getMachine(String machineName) throws Exception {
+	private SpallocAPI.Machine getMachine(String machineName)
+			throws TaskException {
 		return spalloc.getMachine(machineName)
-				.orElseThrow(() -> new Exception("no such machine"));
+				.orElseThrow(() -> new TaskException("no such machine"));
 	}
 
 	private <T> void manageNotifier(Map<T, Future<Void>> notifiers, T key,
 			boolean wantNotify, Utils.Notifier notifier) {
 		if (wantNotify) {
 			if (!notifiers.containsKey(key)) {
-				notifiers.put(key, srv.executor.submit(notifier));
+				notifiers.put(key, getExecutor().submit(notifier));
 			}
 		} else {
 			Future<Void> n = notifiers.remove(key);
@@ -419,12 +454,25 @@ class ServiceImpl extends V1CompatService.Task {
 		Optional<byte[]> origReq = job.getOriginalRequest();
 		if (origReq.isPresent()) {
 			try {
-				return Optional.ofNullable(
-						mapper.readValue(origReq.get(), Command.class));
+				return Optional.ofNullable(getJsonMapper()
+						.readValue(origReq.get(), Command.class));
 			} catch (IOException e) {
 				log.error("unexpected failure parsing JSON", e);
 			}
 		}
 		return Optional.empty();
+	}
+
+	/**
+	 * An exception that a task operation may throw.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static final class TaskException extends java.lang.Exception {
+		private static final long serialVersionUID = 1L;
+
+		TaskException(String msg) {
+			super(msg);
+		}
 	}
 }

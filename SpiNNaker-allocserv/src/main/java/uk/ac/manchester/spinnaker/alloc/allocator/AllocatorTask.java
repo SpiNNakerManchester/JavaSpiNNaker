@@ -362,7 +362,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			for (Row row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
 				int machineId = row.getInt("machine_id");
 				int jobId = row.getInt("job_id");
-				if (!quotaManager.hasQuotaRemaining(machineId, jobId)) {
+				if (!quotaManager.mayLetJobContinue(machineId, jobId)) {
 					toKill.add(jobId);
 				}
 			}
