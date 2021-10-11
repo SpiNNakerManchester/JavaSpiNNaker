@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -47,8 +48,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
@@ -64,7 +63,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
-import uk.ac.manchester.spinnaker.alloc.compat.Utils.Function;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -76,7 +74,10 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
- * Concrete implementation of a task handling a single client connection.
+ * Concrete implementation of a task handling a single client connection. This
+ * is a <em>prototype bean</em>; Spring will instantiate it whenever needed.
+ * It's consumed by {@link V1CompatService}, which uses it to implement the
+ * handler for a particular connection.
  *
  * @author Donal Fellows
  */
@@ -119,7 +120,7 @@ class V1TaskImpl extends V1CompatTask {
 	@Autowired
 	private DatabaseEngine db;
 
-	private CompatibilityProperties props;
+	private String serviceUser;
 
 	/** Encoded form of our special permissions token. */
 	private Permit serviceUserPermit;
@@ -130,7 +131,8 @@ class V1TaskImpl extends V1CompatTask {
 
 	@PostConstruct
 	void initUser() {
-		props = mainProps.getCompat();
+		CompatibilityProperties props = mainProps.getCompat();
+		serviceUser = props.getServiceUser();
 		serviceUserPermit = new Permit(props.getServiceUser());
 	}
 
@@ -208,37 +210,33 @@ class V1TaskImpl extends V1CompatTask {
 
 	@Override
 	protected final Integer createJobNumBoards(int numBoards,
-			Map<String, Object> kwargs, Object cmd)
-			throws JsonProcessingException {
+			Map<String, Object> kwargs, byte[] cmd) {
 		return createJob(new CreateNumBoards(numBoards), kwargs, cmd);
 	}
 
 	@Override
 	protected final Integer createJobRectangle(int width, int height,
-			Map<String, Object> kwargs, Object cmd)
-			throws JsonProcessingException {
+			Map<String, Object> kwargs, byte[] cmd) {
 		return createJob(new CreateDimensions(width, height), kwargs, cmd);
 	}
 
 	@Override
 	protected final Integer createJobSpecificBoard(TriadCoords coords,
-			Map<String, Object> kwargs, Object cmd)
-			throws JsonProcessingException {
+			Map<String, Object> kwargs, byte[] cmd) {
 		return createJob(CreateBoard.triad(coords.x, coords.y, coords.z),
 				kwargs, cmd);
 	}
 
 	private Integer createJob(SpallocAPI.CreateDescriptor create,
-			Map<String, Object> kwargs, Object cmd)
-			throws JsonProcessingException {
+			Map<String, Object> kwargs, byte[] cmd) {
 		Integer maxDead = (Integer) kwargs.get("max_dead_boards");
 		Number keepalive = (Number) kwargs.get("keepalive");
 		String machineName = (String) kwargs.get("machine");
-		Job job = spalloc.createJob(props.getServiceUser(), create, machineName,
+		Job job = spalloc.createJob(serviceUser, create, machineName,
 				tags(kwargs.get("tags")),
 				isNull(keepalive) ? DEFAULT_KEEPALIVE
 						: Duration.ofSeconds(keepalive.intValue()),
-				maxDead, getJsonMapper().writeValueAsBytes(cmd));
+				maxDead, cmd);
 		return job.getId();
 	}
 
@@ -420,7 +418,7 @@ class V1TaskImpl extends V1CompatTask {
 	 * @return Array of items of target type.
 	 */
 	private <T, U> U[] mapArrayTx(Supplier<Collection<T>> srcItems,
-			Class<U> targetCls, Function<T, U> itemMapper) {
+			Class<U> targetCls, BiConsumer<T, U> itemMapper) {
 		return db.execute(
 				c -> mapToArray(srcItems.get(), targetCls, itemMapper));
 	}
@@ -451,28 +449,13 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	private Optional<Command> getCommand(Job job) {
-		Optional<byte[]> origReq = job.getOriginalRequest();
-		if (origReq.isPresent()) {
+		return job.getOriginalRequest().map(req -> {
 			try {
-				return Optional.ofNullable(getJsonMapper()
-						.readValue(origReq.get(), Command.class));
+				return getJsonMapper().readValue(req, Command.class);
 			} catch (IOException e) {
 				log.error("unexpected failure parsing JSON", e);
+				return null;
 			}
-		}
-		return Optional.empty();
-	}
-
-	/**
-	 * An exception that a task operation may throw.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static final class TaskException extends java.lang.Exception {
-		private static final long serialVersionUID = 1L;
-
-		TaskException(String msg) {
-			super(msg);
-		}
+		});
 	}
 }

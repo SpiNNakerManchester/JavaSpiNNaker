@@ -18,19 +18,16 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static java.lang.Thread.interrupted;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.PostConstruct;
@@ -41,7 +38,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
@@ -124,12 +120,12 @@ public class V1CompatService {
 			servThread.interrupt();
 			serv.close();
 			servThread.join();
-
-			// Shut down the clients
-			executor.shutdown();
-			executor.shutdownNow();
-			executor.awaitTermination(SHUTDOWN_TIMEOUT, SECONDS);
 		}
+
+		// Shut down the clients
+		executor.shutdown();
+		executor.shutdownNow();
+		executor.awaitTermination(SHUTDOWN_TIMEOUT, SECONDS);
 	}
 
 	private void acceptConnections() {
@@ -157,81 +153,6 @@ public class V1CompatService {
 			} catch (IOException e) {
 				log.warn("IO error", e);
 			}
-		}
-	}
-
-	static Integer optInt(List<Object> args) {
-		return args.isEmpty() ? null : parseDec(args, 0);
-	}
-
-	static String optStr(List<Object> args) {
-		return args.isEmpty() ? null : args.get(0).toString();
-	}
-
-	/** Indicates a failure to parse a command. */
-	static final class Oops extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		Oops(String msg) {
-			super(msg);
-		}
-	}
-
-	static final class ReturnResponse {
-		private Object returnValue;
-
-		@JsonProperty("return")
-		public Object getReturnValue() {
-			return returnValue;
-		}
-
-		public void setReturnValue(Object returnValue) {
-			this.returnValue = returnValue;
-		}
-	}
-
-	static final class ExceptionResponse {
-		private String exception;
-
-		@JsonProperty("exception")
-		public String getException() {
-			return exception;
-		}
-
-		public void setException(String exception) {
-			this.exception = isNull(exception) ? "" : exception.toString();
-		}
-	}
-
-	static final class JobNotifyMessage {
-		private List<Integer> jobsChanged;
-
-		/**
-		 * @return the jobs changed
-		 */
-		@JsonProperty("jobs_changed")
-		public List<Integer> getJobsChanged() {
-			return jobsChanged;
-		}
-
-		public void setJobsChanged(List<Integer> jobsChanged) {
-			this.jobsChanged = jobsChanged;
-		}
-	}
-
-	static final class MachineNotifyMessage {
-		private List<String> machinesChanged;
-
-		/**
-		 * @return the machines changed
-		 */
-		@JsonProperty("machines_changed")
-		public List<String> getMachinesChanged() {
-			return machinesChanged;
-		}
-
-		public void setMachinesChanged(List<String> machinesChanged) {
-			this.machinesChanged = machinesChanged;
 		}
 	}
 }
