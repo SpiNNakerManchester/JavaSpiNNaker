@@ -451,7 +451,7 @@ class V1TaskImpl extends V1CompatTask {
 	private Optional<Command> getCommand(Job job) {
 		return job.getOriginalRequest().map(req -> {
 			try {
-				return getJsonMapper().readValue(req, Command.class);
+				return parseCommand(req);
 			} catch (IOException e) {
 				log.error("unexpected failure parsing JSON", e);
 				return null;

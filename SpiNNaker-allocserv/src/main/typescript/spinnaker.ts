@@ -33,7 +33,7 @@ interface BoardLocator {
 		board: number;
 	};
 	/** Network address coordinates. */
-	network: {
+	network?: {
 		address: string;
 	};
 };
@@ -607,14 +607,23 @@ function drawJob(
 	 *
 	 * @param {BoardTriad} triad
 	 *		Which board to describe.
-	 * @return {string}
+	 * @return {string | undefined}
 	 *		The multiline description of the board.
 	 */
-	function triadDescription(triad: BoardTriad) : string {
+	function triadDescription(triad: BoardTriad) : string | undefined {
 		const [x, y, z] = triad;
-		// FIXME define what should go in the tooltip
-		var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
-		return s;
+		var board : BoardLocator = undefined;
+		if (allocated.has(tuplekey(triad))) {
+			board = allocated.get(tuplekey(triad));
+		}
+		if (board !== null) {
+			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
+			if (board.network !== undefined) {
+				s += `\nIP: ${board.network.address}`;
+			}
+			return s;
+		}
+		return undefined;
 	}
 
 	/** The current board (i.e., that has the mouse over it). */
