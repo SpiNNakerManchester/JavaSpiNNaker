@@ -352,7 +352,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				return null;
 			}
 			MachineImpl m = mach.get();
-			if (!quotaManager.hasQuotaRemaining(m.id, owner)) {
+			if (!quotaManager.mayCreateJob(m.id, owner)) {
 				// No quota left
 				return null;
 			}

@@ -353,7 +353,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 			List<Integer> toKill =
 					rowsAsList(find.call(), r -> r.getInteger("job_id"));
-			for (int id : toKill) {
+			for (Integer id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
 		}
@@ -362,11 +362,11 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			for (Row row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
 				int machineId = row.getInt("machine_id");
 				int jobId = row.getInt("job_id");
-				if (!quotaManager.hasQuotaRemaining(machineId, jobId)) {
+				if (!quotaManager.mayLetJobContinue(machineId, jobId)) {
 					toKill.add(jobId);
 				}
 			}
-			for (int id : toKill) {
+			for (Integer id : toKill) {
 				changed |= destroyJob(conn, id, "quota exceeded");
 			}
 		}
@@ -668,7 +668,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		if (boardsToAllocate.isEmpty()) {
 			return false;
 		}
-		for (int boardId : boardsToAllocate) {
+		for (Integer boardId : boardsToAllocate) {
 			sql.allocBoard.call(jobId, boardId);
 		}
 
@@ -738,7 +738,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 						.add(row.getEnum("direction", Direction.class));
 			}
 
-			for (int boardId : boards) {
+			for (Integer boardId : boards) {
 				EnumSet<Direction> toChange =
 						perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
 				numPending += sql.issuePowerChange.call(jobId, boardId,
@@ -752,7 +752,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			}
 		} else {
 			// Powering off; all links switch to off so no perimeter check
-			for (int boardId : boards) {
+			for (Integer boardId : boards) {
 				numPending += sql.issuePowerChange.call(jobId, boardId,
 						sourceState, targetState, false, false, false, false,
 						false, false, false);

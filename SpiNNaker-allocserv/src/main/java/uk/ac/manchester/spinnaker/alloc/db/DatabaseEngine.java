@@ -1394,12 +1394,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *     }
 	 * }
 	 * </pre>
+	 * or:
+	 * <pre>
+	 * try (Query q = query(conn, SQL_SELECT)) {
+	 *     u.call(argument1, argument2).forEach(row -> {
+	 *         // Do something with the row
+	 *     });
+	 * }
+	 * </pre>
 	 *
 	 * @param conn
 	 *            The connection.
 	 * @param sql
 	 *            The SQL of the query.
 	 * @return The query object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Query query(Connection conn, String sql) {
@@ -1416,12 +1425,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *     }
 	 * }
 	 * </pre>
+	 * or:
+	 * <pre>
+	 * try (Query q = query(conn, sqlSelectResource)) {
+	 *     u.call(argument1, argument2).forEach(row -> {
+	 *         // Do something with the row
+	 *     });
+	 * }
+	 * </pre>
 	 *
 	 * @param conn
 	 *            The connection.
 	 * @param sqlResource
 	 *            Reference to the SQL of the query.
 	 * @return The query object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Query query(Connection conn, Resource sqlResource) {
@@ -1558,9 +1576,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * or:
 	 * <pre>
 	 * try (Update u = update(conn, SQL_INSERT)) {
-	 *     for (int key : u.keys(argument1, argument2)) {
+	 *     for (Integer key : u.keys(argument1, argument2)) {
 	 *         // Do something with the key
 	 *     }
+	 * }
+	 * </pre>
+	 * or even:
+	 * <pre>
+	 * try (Update u = update(conn, SQL_INSERT)) {
+	 *     u.key(argument1, argument2).ifPresent(key -> {
+	 *         // Do something with the key
+	 *     });
 	 * }
 	 * </pre>
 	 *
@@ -1569,6 +1595,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sql
 	 *            The SQL of the update.
 	 * @return The update object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Update update(Connection conn, String sql) {
@@ -1586,9 +1613,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * or:
 	 * <pre>
 	 * try (Update u = update(conn, sqlInsertResource)) {
-	 *     for (int key : u.keys(argument1, argument2)) {
+	 *     for (Integer key : u.keys(argument1, argument2)) {
 	 *         // Do something with the key
 	 *     }
+	 * }
+	 * </pre>
+	 * or even:
+	 * <pre>
+	 * try (Update u = update(conn, sqlInsertResource)) {
+	 *     u.key(argument1, argument2).ifPresent(key -> {
+	 *         // Do something with the key
+	 *     });
 	 * }
 	 * </pre>
 	 *
@@ -1597,6 +1632,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sqlResource
 	 *            Reference to the SQL of the update.
 	 * @return The update object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Update update(Connection conn, Resource sqlResource) {

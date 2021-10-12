@@ -23,8 +23,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -65,7 +63,7 @@ public class QuotaManager extends SQLQueries {
 	 *            Who wants to create the job.
 	 * @return True if they can make a job. False if they can't.
 	 */
-	public boolean hasQuotaRemaining(int machineId, String user) {
+	public boolean mayCreateJob(int machineId, String user) {
 		try (Connection c = db.getConnection();
 				// These could be combined, but they're complicated enough
 				Query getQuota = query(c, GET_USER_QUOTA);
@@ -77,20 +75,18 @@ public class QuotaManager extends SQLQueries {
 
 	private boolean mayCreateJob(int machineId, String user, Query getQuota,
 			Query getCurrentUsage) {
-		Optional<Row> result = getQuota.call1(machineId, user);
-		if (!result.isPresent()) {
-			return true;
-		}
-		Integer quotaObj = result.get().getInteger("quota");
-		int userId = result.get().getInt("user_id");
-		if (isNull(quotaObj)) {
-			return true;
-		}
-		// Quota is defined; check if current usage exceeds it
-		int quota = quotaObj - getCurrentUsage.call1(machineId, userId)
-				.map(row -> row.getInteger("current_usage")).orElse(0);
-		// If board-seconds are left, we're good to go
-		return (quota > 0);
+		return getQuota.call1(machineId, user).map(result -> {
+			Integer quota = result.getInteger("quota");
+			if (isNull(quota)) {
+				return true;
+			}
+			int userId = result.getInt("user_id");
+			// Quota is defined; check if current usage exceeds it
+			int usage = getCurrentUsage.call1(machineId, userId)
+					.map(row -> row.getInteger("current_usage")).orElse(0);
+			// If board-seconds are left, we're good to go
+			return (quota > usage);
+		}).orElse(true);
 	}
 
 	/**
@@ -104,21 +100,15 @@ public class QuotaManager extends SQLQueries {
 	 *            What job is consuming resources?
 	 * @return True if the job can continue to run. False if it can't.
 	 */
-	public boolean hasQuotaRemaining(int machineId, int jobId) {
+	public boolean mayLetJobContinue(int machineId, int jobId) {
 		try (Connection c = db.getConnection();
 				Query getUsageAndQuota = query(c, GET_JOB_USAGE_AND_QUOTA)) {
-			return transaction(c, () -> mayLetJobContinue(machineId, jobId,
-					getUsageAndQuota));
+			return transaction(c, () -> getUsageAndQuota.call1(machineId, jobId)
+					// If we have an entry, check if usage <= quota
+					.map(row -> row.getInt("usage") <= row.getInt("quota"))
+					// Otherwise, we'll just allow it
+					.orElse(true));
 		}
-	}
-
-	private boolean mayLetJobContinue(int machineId, int jobId,
-			Query getUsageAndQuota) {
-		return getUsageAndQuota.call1(machineId, jobId)
-				// If we have an entry, check if usage <= quota
-				.map(row -> row.getInt("usage") <= row.getInt("quota"))
-				// Otherwise, we'll just allow it
-				.orElse(true);
 	}
 
 	/**
