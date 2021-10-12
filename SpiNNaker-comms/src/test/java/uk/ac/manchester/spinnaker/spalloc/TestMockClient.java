@@ -133,6 +133,7 @@ public class TestMockClient {
 			List<Integer> args = new ArrayList<>();
 			Map<String, Object> kwargs = new HashMap<>();
 			kwargs.put("owner", "Unittest. OK to kill after 1 minute.");
+			@SuppressWarnings("deprecation")
 			int jobId = client.createJob(args, kwargs, timeout);
 			if (client.isActual()) {
 				assertThat("Jobid > 0", jobId, greaterThan(0));
