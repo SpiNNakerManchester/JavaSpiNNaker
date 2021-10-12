@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc;
+package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -31,7 +31,7 @@ import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
-import static uk.ac.manchester.spinnaker.alloc.UncheckedConnection.mapException;
+import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
 import java.io.File;
@@ -81,6 +81,7 @@ import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
 
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
@@ -1393,12 +1394,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *     }
 	 * }
 	 * </pre>
+	 * or:
+	 * <pre>
+	 * try (Query q = query(conn, SQL_SELECT)) {
+	 *     u.call(argument1, argument2).forEach(row -> {
+	 *         // Do something with the row
+	 *     });
+	 * }
+	 * </pre>
 	 *
 	 * @param conn
 	 *            The connection.
 	 * @param sql
 	 *            The SQL of the query.
 	 * @return The query object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Query query(Connection conn, String sql) {
@@ -1415,12 +1425,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *     }
 	 * }
 	 * </pre>
+	 * or:
+	 * <pre>
+	 * try (Query q = query(conn, sqlSelectResource)) {
+	 *     u.call(argument1, argument2).forEach(row -> {
+	 *         // Do something with the row
+	 *     });
+	 * }
+	 * </pre>
 	 *
 	 * @param conn
 	 *            The connection.
 	 * @param sqlResource
 	 *            Reference to the SQL of the query.
 	 * @return The query object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Query query(Connection conn, Resource sqlResource) {
@@ -1557,9 +1576,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * or:
 	 * <pre>
 	 * try (Update u = update(conn, SQL_INSERT)) {
-	 *     for (int key : u.keys(argument1, argument2)) {
+	 *     for (Integer key : u.keys(argument1, argument2)) {
 	 *         // Do something with the key
 	 *     }
+	 * }
+	 * </pre>
+	 * or even:
+	 * <pre>
+	 * try (Update u = update(conn, SQL_INSERT)) {
+	 *     u.key(argument1, argument2).ifPresent(key -> {
+	 *         // Do something with the key
+	 *     });
 	 * }
 	 * </pre>
 	 *
@@ -1568,6 +1595,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sql
 	 *            The SQL of the update.
 	 * @return The update object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Update update(Connection conn, String sql) {
@@ -1585,9 +1613,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * or:
 	 * <pre>
 	 * try (Update u = update(conn, sqlInsertResource)) {
-	 *     for (int key : u.keys(argument1, argument2)) {
+	 *     for (Integer key : u.keys(argument1, argument2)) {
 	 *         // Do something with the key
 	 *     }
+	 * }
+	 * </pre>
+	 * or even:
+	 * <pre>
+	 * try (Update u = update(conn, sqlInsertResource)) {
+	 *     u.key(argument1, argument2).ifPresent(key -> {
+	 *         // Do something with the key
+	 *     });
 	 * }
 	 * </pre>
 	 *
@@ -1596,6 +1632,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param sqlResource
 	 *            Reference to the SQL of the update.
 	 * @return The update object.
+	 * @see SQLQueries
 	 */
 	// @formatter:on
 	public static Update update(Connection conn, Resource sqlResource) {

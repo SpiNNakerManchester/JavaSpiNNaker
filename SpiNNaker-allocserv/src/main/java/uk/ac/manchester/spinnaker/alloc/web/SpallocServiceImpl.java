@@ -31,7 +31,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +47,6 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -58,7 +56,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
+import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor;
@@ -73,7 +73,6 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.EmptyResponse;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.ItsGone;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
-import uk.ac.manchester.spinnaker.messages.model.Version;
 
 @Service("service")
 @Path(SERV)
@@ -81,19 +80,17 @@ public class SpallocServiceImpl extends BackgroundSupport
 		implements SpallocServiceAPI {
 	private static final Logger log = getLogger(SpallocServiceImpl.class);
 
-	private final Version v;
+	@Autowired
+	private ServiceVersion version;
+
+	@Autowired
+	private SpallocProperties properties;
 
 	@Autowired
 	private SpallocAPI core;
 
 	@Autowired
 	private JsonMapper mapper;
-
-	private Duration waitTimeout;
-
-	private Duration minKeepalive;
-
-	private Duration maxKeepalive;
 
 	/**
 	 * Factory for {@linkplain MachineAPI machines}.
@@ -106,23 +103,6 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 */
 	@Autowired
 	private ObjectProvider<JobAPI> jobFactory;
-
-	/**
-	 * Create a service bean.
-	 *
-	 * @param version
-	 *            The service version, injected from build configuration.
-	 * @param properties
-	 *            The service properties.
-	 */
-	@Autowired
-	public SpallocServiceImpl(@Value("${version}") String version,
-			SpallocProperties properties) {
-		v = new Version(version.replaceAll("-.*", ""));
-		waitTimeout = properties.getWait();
-		minKeepalive = properties.getKeepalive().getMin();
-		maxKeepalive = properties.getKeepalive().getMax();
-	}
 
 	/**
 	 * Manufactures instances of {@link MachineAPI} and {@link JobAPI}. This
@@ -320,7 +300,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 	public ServiceDescription describeService(UriInfo ui, SecurityContext sec,
 			HttpServletRequest req) {
 		CsrfToken token = (CsrfToken) req.getAttribute("_csrf");
-		return new ServiceDescription(v, ui, sec, token);
+		return new ServiceDescription(version.getVersion(), ui, sec, token);
 	}
 
 	@Override
@@ -401,7 +381,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		if (wait) {
 			bgAction(response, () -> {
 				log.debug("starting wait for change of job list");
-				jc.waitForChange(waitTimeout);
+				jc.waitForChange(properties.getWait());
 				Jobs newJc = core.getJobs(destroyed, limit, start);
 				return wrapPaging(new ListJobsResponse(newJc, ui), ui, start,
 						limit);
@@ -449,14 +429,15 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 		req.owner = req.owner.trim();
 
+		KeepaliveProperties ka = properties.getKeepalive();
 		if (isNull(req.keepaliveInterval) || req.keepaliveInterval
-				.compareTo(minKeepalive) < 0) {
+				.compareTo(ka.getMin()) < 0) {
 			throw new BadArgs("keepalive interval must be at least "
-					+ minKeepalive);
+					+ ka.getMin());
 		}
-		if (req.keepaliveInterval.compareTo(maxKeepalive) > 0) {
+		if (req.keepaliveInterval.compareTo(ka.getMax()) > 0) {
 			throw new BadArgs("keepalive interval must be no more than "
-					+ maxKeepalive);
+					+ ka.getMax());
 		}
 
 		if (isNull(req.tags)) {

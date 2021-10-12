@@ -18,16 +18,16 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
 /**

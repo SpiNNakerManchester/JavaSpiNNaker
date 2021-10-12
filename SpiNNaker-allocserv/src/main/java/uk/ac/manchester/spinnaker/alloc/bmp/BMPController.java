@@ -28,8 +28,8 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
@@ -60,18 +60,18 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
@@ -219,23 +219,22 @@ public class BMPController extends SQLQueries {
 	 *
 	 * @param txrx
 	 *            The transceiver.
-	 * @param board
-	 *            The board.
 	 * @param link
-	 *            The link direction.
+	 *            The link to turn off.
 	 * @throws ProcessException
 	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If network I/O fails.
 	 */
-	private static void setLinkOff(BMPTransceiverInterface txrx, Integer board,
-			Direction link) throws ProcessException, IOException {
+	private static void setLinkOff(BMPTransceiverInterface txrx, Link link)
+			throws ProcessException, IOException {
 		// skip FPGA link configuration if old BMP version
-		if (!canBoardManageFPGAs(txrx, board)) {
+		if (!canBoardManageFPGAs(txrx, link.board)) {
 			return;
 		}
-		txrx.writeFPGARegister(link.fpga.ordinal(), link.bank, STOP, 1,
-				ROOT_BMP, board);
+		Direction d = link.link;
+		txrx.writeFPGARegister(d.fpga.ordinal(), d.bank, STOP, 1, ROOT_BMP,
+				link.board);
 	}
 
 	/**
@@ -298,40 +297,6 @@ public class BMPController extends SQLQueries {
 		throw new IOException("Could not get correct FPGA ID for "
 				+ boardsToPower.size() + " boards after "
 				+ props.getFpgaAttempts() + " tries");
-	}
-
-	/**
-	 * Change the power state of a board.
-	 *
-	 * @param txrx
-	 *            The transceiver to use
-	 * @param request
-	 *            The change to carry out
-	 * @throws ProcessException
-	 *             If the transceiver chokes
-	 * @throws InterruptedException
-	 *             If interrupted
-	 * @throws IOException
-	 *             If network I/O fails
-	 */
-	private void changeBoardPowerState(BMPTransceiverInterface txrx,
-			Request request)
-			throws ProcessException, InterruptedException, IOException {
-		// Send any power on commands
-		if (!request.powerOnBoards.isEmpty()) {
-			powerOnAndCheck(request.machine, txrx, request.powerOnBoards);
-		}
-
-		// Process link requests next
-		for (Link linkReq : request.linkRequests) {
-			// Set the link state, as required
-			setLinkOff(txrx, linkReq.board, linkReq.link);
-		}
-
-		// Finally send any power off commands
-		if (!request.powerOffBoards.isEmpty()) {
-			txrx.power(POWER_OFF, ROOT_BMP, request.powerOffBoards);
-		}
 	}
 
 	// ----------------------------------------------------------------
@@ -476,17 +441,113 @@ public class BMPController extends SQLQueries {
 		}
 
 		/**
+		 * Change the power state of boards in this request.
+		 *
+		 * @param txrx
+		 *            The transceiver to use
+		 * @throws ProcessException
+		 *             If the transceiver chokes
+		 * @throws InterruptedException
+		 *             If interrupted
+		 * @throws IOException
+		 *             If network I/O fails
+		 */
+		private void changeBoardPowerState(BMPTransceiverInterface txrx)
+				throws ProcessException, InterruptedException, IOException {
+			// Send any power on commands
+			if (!powerOnBoards.isEmpty()) {
+				powerOnAndCheck(machine, txrx, powerOnBoards);
+			}
+
+			// Process link requests next
+			for (Link linkReq : linkRequests) {
+				// Set the link state, as required
+				setLinkOff(txrx, linkReq);
+			}
+
+			// Finally send any power off commands
+			if (!powerOffBoards.isEmpty()) {
+				txrx.power(POWER_OFF, ROOT_BMP, powerOffBoards);
+			}
+		}
+
+		/**
 		 * Declare this to be a successful request.
 		 */
 		private void done() {
-			processAfterChange(this, false);
+			try (AfterSQL sql = new AfterSQL()) {
+				sql.transaction(() -> done(sql));
+			} catch (DataAccessException e) {
+				log.error("problem with database", e);
+			} finally {
+				epochs.nextJobsEpoch();
+				epochs.nextMachineEpoch();
+			}
 		}
 
 		/**
 		 * Declare this to be a failed request.
 		 */
 		private void failed() {
-			processAfterChange(this, true);
+			try (AfterSQL sql = new AfterSQL()) {
+				sql.transaction(() -> failed(sql));
+			} catch (DataAccessException e) {
+				log.error("problem with database", e);
+			} finally {
+				epochs.nextJobsEpoch();
+				epochs.nextMachineEpoch();
+			}
+		}
+
+		/**
+		 * Handles the database changes after a set of changes to a BMP complete
+		 * successfully. We will move the job to the state it supposed to be in.
+		 *
+		 * @param sql
+		 *            How to access the DB
+		 */
+		private void done(AfterSQL sql) {
+			int turnedOn = powerOnBoards.stream()
+					.mapToInt(board -> sql.setBoardState(true, board)).sum();
+			int turnedOff = powerOffBoards.stream()
+					.mapToInt(board -> sql.setBoardState(false, board)).sum();
+			int jobChange = sql.setJobState(to, 0, jobId);
+			int deallocated = 0;
+			if (to == DESTROYED) {
+				/*
+				 * Need to mark the boards as not allocated; can't do that until
+				 * they've been switched off.
+				 */
+				deallocated = sql.deallocateBoards(jobId);
+			}
+			int killed = changeIds.stream().mapToInt(sql::deleteChange).sum();
+			log.debug(
+					"BMP ACTION SUCCEEDED ({}:{}->{}): on:{} off:{} "
+							+ "jobChangesApplied:{} boardsDeallocated:{} "
+							+ "bmpTasksBackedOff:{} bmpTasksDone:{}",
+					jobId, from, to, turnedOn, turnedOff, jobChange,
+					deallocated, 0, killed);
+		}
+
+		/**
+		 * Handles the database changes after a set of changes to a BMP complete
+		 * with a failure. We will roll back the job state to what it was
+		 * before.
+		 *
+		 * @param sql
+		 *            How to access the DB
+		 */
+		private void failed(AfterSQL sql) {
+			int backedOff = changeIds.stream()
+					.mapToInt(changeId -> sql.setInProgress(false, changeId))
+					.sum();
+			int jobChange = sql.setJobState(from, 0, jobId);
+			// TODO what else should happen here?
+			log.debug(
+					"BMP ACTION FAILED ({}:{}->{}): on:{} off:{} "
+							+ "jobChangesApplied:{} boardsDeallocated:{} "
+							+ "bmpTasksBackedOff:{} bmpTasksDone:{}",
+					jobId, from, to, 0, 0, jobChange, 0, backedOff, 0, 0);
 		}
 
 		@Override
@@ -714,74 +775,6 @@ public class BMPController extends SQLQueries {
 		}
 	}
 
-	/**
-	 * Handles what happens after a set of changes to a BMP complete,
-	 * successfully or not. Note that this happens on the BMP worker thread.
-	 *
-	 * @param request
-	 *            What did we tell the BMP to do?
-	 * @param fail
-	 *            Was this a failure? On failure, we roll back the job state to
-	 *            what it was before. On success we move to the state it
-	 *            supposed to be in.
-	 */
-	private void processAfterChange(Request request, boolean fail) {
-		try (AfterSQL sql = new AfterSQL()) {
-			sql.transaction(() -> processAfterChange(request, fail, sql));
-		} catch (DataAccessException e) {
-			log.error("problem with database", e);
-		} finally {
-			epochs.nextJobsEpoch();
-			epochs.nextMachineEpoch();
-		}
-	}
-
-	/**
-	 * Handles the database changes after a set of changes to a BMP complete,
-	 * successfully or not.
-	 *
-	 * @param request
-	 *            What did we tell the BMP to do?
-	 * @param fail
-	 *            Was this a failure? On failure, we roll back the job state to
-	 *            what it was before. On success we move to the state it
-	 *            supposed to be in.
-	 * @param sql
-	 *            How to access the DB
-	 */
-	private void processAfterChange(Request request, boolean failed,
-			AfterSQL sql) {
-		int turnedOn = 0, turnedOff = 0, jobChange = 0, moved = 0,
-				deallocated = 0, killed = 0;
-		if (failed) {
-			moved = request.changeIds.stream()
-					.mapToInt(changeId -> sql.setInProgress(false, changeId))
-					.sum();
-			jobChange = sql.setJobState(request.from, 0, request.jobId);
-			// TODO what else should happen here?
-		} else {
-			turnedOn = request.powerOnBoards.stream()
-					.mapToInt(board -> sql.setBoardState(true, board)).sum();
-			turnedOn = request.powerOffBoards.stream()
-					.mapToInt(board -> sql.setBoardState(false, board)).sum();
-			jobChange = sql.setJobState(request.to, 0, request.jobId);
-			if (request.to == DESTROYED) {
-				/*
-				 * Need to mark the boards as not allocated; can't do that until
-				 * they've been switched off.
-				 */
-				deallocated = sql.deallocateBoards(request.jobId);
-			}
-			killed = request.changeIds.stream()
-					.mapToInt(changeId -> sql.deleteChange(changeId)).sum();
-		}
-		log.debug(
-				"post-switch ({}:{}->{}): up:{} down:{} jobChanges:{} "
-						+ "inProgress:{} deallocated:{} bmpTasksDone:{}",
-				request.jobId, request.from, request.to, turnedOn, turnedOff,
-				jobChange, moved, deallocated, killed);
-	}
-
 	private void addRequestToBMPQueue(Request request)
 			throws IOException, SpinnmanException, InterruptedException {
 		requireNonNull(request, "request must not be null");
@@ -998,7 +991,7 @@ public class BMPController extends SQLQueries {
 			throws InterruptedException {
 		Machine machine = request.machine;
 		try {
-			changeBoardPowerState(txrx, request);
+			request.changeBoardPowerState(txrx);
 			request.done();
 			// Exit the retry loop (in caller) if the requests all worked
 			return true;

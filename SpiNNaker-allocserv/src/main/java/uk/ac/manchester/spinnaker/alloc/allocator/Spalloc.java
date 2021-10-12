@@ -23,12 +23,12 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsSet;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.rowsAsList;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.rowsAsSet;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.time.Duration;
@@ -52,17 +52,17 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.ReportProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
@@ -352,7 +352,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				return null;
 			}
 			MachineImpl m = mach.get();
-			if (!quotaManager.hasQuotaRemaining(m.id, owner)) {
+			if (!quotaManager.mayCreateJob(m.id, owner)) {
 				// No quota left
 				return null;
 			}

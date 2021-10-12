@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -56,29 +57,6 @@ abstract class Utils {
 	private static final Logger log = getLogger(V1CompatService.class);
 
 	private Utils() {
-	}
-
-	/**
-	 * A function that converts between values of two types.
-	 *
-	 * @param <T>
-	 *            The type of the value to map from.
-	 * @param <U>
-	 *            The type of the value to map to. Must be instantiatable by
-	 *            calling {@link Class#newInstance()}.
-	 */
-	@FunctionalInterface
-	interface Function<T, U> {
-		/**
-		 * Convert a value from one type to another.
-		 *
-		 * @param value
-		 *            The value to convert from.
-		 * @param receiver
-		 *            The object to write the value into. This will have been
-		 *            instantiated using the no-argument constructor.
-		 */
-		void call(T value, U receiver);
 	}
 
 	/**
@@ -263,7 +241,7 @@ abstract class Utils {
 	 *             If the class lacks a no-argument constructor.
 	 */
 	static <T, U> U[] mapToArray(Collection<T> src, Class<U> cls,
-			Function<T, U> fun) {
+			BiConsumer<T, U> fun) {
 		// No expected exceptions, so use input size as capacity
 		int projectedSize = src.size();
 		List<U> dst = new ArrayList<>(projectedSize);
@@ -282,7 +260,7 @@ abstract class Utils {
 		try {
 			for (T val : src) {
 				U target = con.newInstance();
-				fun.call(val, target);
+				fun.accept(val, target);
 				dst.add(target);
 			}
 		} catch (InstantiationException | IllegalAccessException

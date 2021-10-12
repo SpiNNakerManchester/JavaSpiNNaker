@@ -33,7 +33,7 @@ interface BoardLocator {
 		board: number;
 	};
 	/** Network address coordinates. */
-	network: {
+	network?: {
 		address: string;
 	};
 };
@@ -317,17 +317,42 @@ function inside(
  * Convert a list of board locators into a map using the triad coords as key.
  *
  * @param {BoardLocator[]} boards
- *		The name of the main canvas element.
+ *		The board information list.
  * @return {Map<string,BoardLocator>}
- *		Map from triad coords to full locators,
+ *		Map from triad coords to full locators.
  */
 function boardMap(boards: readonly BoardLocator[]) : Map<string,BoardLocator> {
-	var m : Map<string,BoardLocator> = new Map();
+	const m : Map<string,BoardLocator> = new Map();
 	for (const b of boards) {
 		const {x:x, y:y, z:z} = b.triad;
 		m.set(tuplekey([x,y,z]), b);
 	}
 	return m;
+}
+
+/**
+ * Convert a list of jobs into a map from board locators to .
+ *
+ * @param {BoardLocator[]} jobs
+ *		The job information list.
+ * @return {[Map<string,number>, Map<number,MachineJobDescriptor>]}
+ *		Map from triad coords to job IDs, and map from job ID to job information.
+ */
+function mapOfJobs(jobs: readonly MachineJobDescriptor[]) :
+		[Map<string,number>, Map<number,MachineJobDescriptor>, Map<number,string>] {
+	const m : Map<string,number> = new Map();
+	const m2 : Map<number,MachineJobDescriptor> = new Map();
+	const colours : Map<number,string> = new Map();
+	for (const j of jobs) {
+		m2.set(j.id, j);
+		// TODO derive the hue from the job ID
+		colours.set(j.id, `hsl(${Math.floor(Math.random() * 360)}, 80, 50)`);
+		for (const b of j.boards) {
+			const {x:x, y:y, z:z} = b.triad;
+			m.set(tuplekey([x,y,z]), j.id);
+		}
+	}
+	return [m, m2, colours];
 }
 
 /**
@@ -400,6 +425,7 @@ function drawMachine(
 
 	const live = boardMap(descriptor.live_boards);
 	const dead = boardMap(descriptor.dead_boards);
+	const [jobIdMap, jobMap, colourMap] = mapOfJobs(descriptor.jobs);
 
 	ctx.strokeStyle = 'black';
 
@@ -411,6 +437,8 @@ function drawMachine(
 				const k = tuplekey(key);
 				if (dead.has(k)) {
 					return "#444";
+				} else if (jobIdMap.has(k)) {
+					return colourMap.get(jobIdMap.get(k));
 				} else if (live.has(k)) {
 					return "white";
 				} else {
@@ -469,6 +497,13 @@ function drawMachine(
 		} else if (dead.has(key)) {
 			board = dead.get(key);
 		}
+		if (jobIdMap.has(key)) {
+			const job = jobMap.get(jobIdMap.get(key));
+			s += `\nJob ID: ${job.id}`;
+			if (job.owner !== undefined) {
+				s += `\nOwner: ${job.owner}`;
+			}
+		}
 		if (board !== undefined) {
 			s += `\nPhysical: [C: ${board.physical.cabinet}, F: ${board.physical.frame}, B: ${board.physical.board}]`;
 			if (board.network !== undefined) {
@@ -526,8 +561,7 @@ function drawMachine(
 			clearCurrent();
 		}
 	});
-	canv.addEventListener('mouseleave', (e: MouseEvent) => {
-		e.offsetX; // Use to shut up IDE warnings
+	canv.addEventListener('mouseleave', (_: MouseEvent) => {
 		if (current !== undefined) {
 			clearCurrent();
 		}
@@ -608,14 +642,23 @@ function drawJob(
 	 *
 	 * @param {BoardTriad} triad
 	 *		Which board to describe.
-	 * @return {string}
+	 * @return {string | undefined}
 	 *		The multiline description of the board.
 	 */
-	function triadDescription(triad: BoardTriad) : string {
+	function triadDescription(triad: BoardTriad) : string | undefined {
 		const [x, y, z] = triad;
-		// FIXME define what should go in the tooltip
-		var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
-		return s;
+		var board : BoardLocator = undefined;
+		if (allocated.has(tuplekey(triad))) {
+			board = allocated.get(tuplekey(triad));
+		}
+		if (board !== null) {
+			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
+			if (board.network !== undefined) {
+				s += `\nIP: ${board.network.address}`;
+			}
+			return s;
+		}
+		return undefined;
 	}
 
 	/** The current board (i.e., that has the mouse over it). */
@@ -664,8 +707,7 @@ function drawJob(
 			clearCurrent();
 		}
 	});
-	canv.addEventListener('mouseleave', (e: MouseEvent) => {
-		e.offsetX; // Use to shut up IDE warnings
+	canv.addEventListener('mouseleave', (_: MouseEvent) => {
 		if (current !== undefined) {
 			clearCurrent();
 		}

@@ -22,9 +22,9 @@ import static java.time.Instant.now;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -42,15 +42,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Transacted;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 @SpringBootTest
@@ -75,7 +76,7 @@ class AllocatorTest extends SQLQueries {
 	static final String HIST_DB = "alloc_test-hist.sqlite3";
 
 	@Configuration
-	@ComponentScan(basePackageClasses = DatabaseEngine.class)
+	@ComponentScan(basePackageClasses = SpallocProperties.class)
 	static class Config {
 	}
 

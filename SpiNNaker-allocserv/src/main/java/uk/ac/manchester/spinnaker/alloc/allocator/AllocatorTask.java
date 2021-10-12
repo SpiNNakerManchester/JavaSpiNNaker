@@ -21,11 +21,11 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.isBusy;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.rowsAsList;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.rowsAsList;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
@@ -44,15 +44,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.HistoricalDataProperties;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -353,7 +353,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
 			List<Integer> toKill =
 					rowsAsList(find.call(), r -> r.getInteger("job_id"));
-			for (int id : toKill) {
+			for (Integer id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
 		}
@@ -362,11 +362,11 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			for (Row row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
 				int machineId = row.getInt("machine_id");
 				int jobId = row.getInt("job_id");
-				if (!quotaManager.hasQuotaRemaining(machineId, jobId)) {
+				if (!quotaManager.mayLetJobContinue(machineId, jobId)) {
 					toKill.add(jobId);
 				}
 			}
-			for (int id : toKill) {
+			for (Integer id : toKill) {
 				changed |= destroyJob(conn, id, "quota exceeded");
 			}
 		}
@@ -668,7 +668,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		if (boardsToAllocate.isEmpty()) {
 			return false;
 		}
-		for (int boardId : boardsToAllocate) {
+		for (Integer boardId : boardsToAllocate) {
 			sql.allocBoard.call(jobId, boardId);
 		}
 
@@ -738,7 +738,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 						.add(row.getEnum("direction", Direction.class));
 			}
 
-			for (int boardId : boards) {
+			for (Integer boardId : boards) {
 				EnumSet<Direction> toChange =
 						perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
 				numPending += sql.issuePowerChange.call(jobId, boardId,
@@ -752,7 +752,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			}
 		} else {
 			// Powering off; all links switch to off so no perimeter check
-			for (int boardId : boards) {
+			for (Integer boardId : boards) {
 				numPending += sql.issuePowerChange.call(jobId, boardId,
 						sourceState, targetState, false, false, false, false,
 						false, false, false);

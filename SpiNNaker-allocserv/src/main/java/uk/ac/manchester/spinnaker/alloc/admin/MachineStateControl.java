@@ -16,19 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.DatabaseEngine.update;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 
 /**
  * How to manage the state of a machine and boards in it.
