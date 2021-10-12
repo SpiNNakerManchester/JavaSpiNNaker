@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc;
+package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -31,7 +31,7 @@ import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
-import static uk.ac.manchester.spinnaker.alloc.UncheckedConnection.mapException;
+import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
 import java.io.File;
@@ -81,6 +81,7 @@ import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
 
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 

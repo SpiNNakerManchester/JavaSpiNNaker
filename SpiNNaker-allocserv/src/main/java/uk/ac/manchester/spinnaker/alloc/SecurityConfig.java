@@ -88,9 +88,9 @@ import org.sqlite.Function;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.ArgumentCount;
-import uk.ac.manchester.spinnaker.alloc.DatabaseEngine.Deterministic;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ArgumentCount;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Deterministic;
 
 /**
  * The security and administration configuration of the service.

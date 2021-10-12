@@ -39,6 +39,7 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminController;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.web.RootController;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
