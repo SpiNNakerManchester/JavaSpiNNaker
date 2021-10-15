@@ -856,10 +856,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 * Only non-{@code private} for testing purposes.
 	 */
 	static final class Updates implements AutoCloseable {
-		private final Connection conn;
-
-		private boolean dontClose;
-
 		private final Update makeMachine;
 
 		private final Update makeTag;
@@ -873,7 +869,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 		private final Update setMaxCoords;
 
 		Updates(Connection conn) {
-			this.conn = conn;
 			makeMachine = conn.update(INSERT_MACHINE_SPINN_5);
 			makeTag = conn.update(INSERT_TAG);
 			makeBMP = conn.update(INSERT_BMP);
@@ -890,9 +885,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 			makeBoard.close();
 			makeLink.close();
 			setMaxCoords.close();
-			if (!dontClose) {
-				conn.close();
-			}
 		}
 	}
 
