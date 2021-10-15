@@ -25,8 +25,6 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.rowsAsList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,9 +107,9 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 
 	private List<String> getMachineNames() {
 		try (Connection conn = db.getConnection();
-				Query listMachines = query(conn, LIST_MACHINE_NAMES)) {
-			return rowsAsList(listMachines.call(),
-					row -> row.getString("machine_name"));
+				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
+			return listMachines.call().map(row -> row.getString("machine_name"))
+					.toList();
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
 			return emptyList();

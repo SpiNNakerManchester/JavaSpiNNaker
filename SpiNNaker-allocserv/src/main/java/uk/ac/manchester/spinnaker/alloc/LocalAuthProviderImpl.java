@@ -22,9 +22,6 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -149,9 +146,9 @@ public class LocalAuthProviderImpl extends SQLQueries
 			throw new UsernameNotFoundException("empty user name?");
 		}
 		try (Connection conn = db.getConnection();
-				Update createUser = update(conn, CREATE_USER);
-				Update addQuota = update(conn, ADD_QUOTA_FOR_ALL_MACHINES)) {
-			return transaction(conn, () -> createUser
+				Update createUser = conn.update(CREATE_USER);
+				Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
+			return conn.transaction(() -> createUser
 					.key(username, password, trustLevel, false).map(userId -> {
 						addQuota.call(userId, quota);
 						log.info(
@@ -224,15 +221,15 @@ public class LocalAuthProviderImpl extends SQLQueries
 		 */
 		AuthQueries() {
 			conn = db.getConnection();
-			getUserBlocked = query(conn, IS_USER_LOCKED);
-			userAuthorities = query(conn, GET_USER_AUTHORITIES);
-			isUserPassMatched = query(conn, IS_USER_PASS_MATCHED);
-			loginSuccess = update(conn, MARK_LOGIN_SUCCESS);
-			loginFailure = query(conn, MARK_LOGIN_FAILURE);
+			getUserBlocked = conn.query(IS_USER_LOCKED);
+			userAuthorities = conn.query(GET_USER_AUTHORITIES);
+			isUserPassMatched = conn.query(IS_USER_PASS_MATCHED);
+			loginSuccess = conn.update(MARK_LOGIN_SUCCESS);
+			loginFailure = conn.query(MARK_LOGIN_FAILURE);
 		}
 
 		<T> T transact(TransactedWithResult<T> code) {
-			return transaction(conn, code);
+			return conn.transaction(code);
 		}
 
 		@Override
@@ -410,7 +407,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 	void unlock() {
 		try (Connection conn = db.getConnection();
-				Query unlock = query(conn, UNLOCK_LOCKED_USERS)) {
+				Query unlock = conn.query(UNLOCK_LOCKED_USERS)) {
 			unlock.call(authProps.getAccountLockDuration())
 					.map(row -> row.getString("user_name")).forEach(user -> log
 							.info("automatically unlocked user {}", user));

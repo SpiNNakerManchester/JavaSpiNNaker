@@ -29,7 +29,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
@@ -53,7 +52,6 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.MDC.MDCCloseable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -351,7 +349,7 @@ public class BMPController extends SQLQueries {
 			description = "An estimate of the number of requests " + "pending.")
 	public int getPendingRequestLoading() {
 		try (Connection conn = db.getConnection();
-				Query countChanges = query(conn, COUNT_PENDING_CHANGES)) {
+				Query countChanges = conn.query(COUNT_PENDING_CHANGES)) {
 			return countChanges.call1().map(row -> row.getInt("c")).orElse(0);
 		}
 	}
@@ -604,19 +602,7 @@ public class BMPController extends SQLQueries {
 		}
 
 		void transaction(Transacted action) {
-			DatabaseEngine.transaction(conn, action);
-		}
-
-		protected Query query(String sql) {
-			return DatabaseEngine.query(conn, sql);
-		}
-
-		protected Query query(Resource sql) {
-			return DatabaseEngine.query(conn, sql);
-		}
-
-		protected Update update(String sql) {
-			return DatabaseEngine.update(conn, sql);
+			conn.transaction(action);
 		}
 
 		@Override
@@ -629,13 +615,12 @@ public class BMPController extends SQLQueries {
 	 * Encapsulates several queries for {@link #takeRequests()}.
 	 */
 	private final class TakeReqsSQL extends AbstractSQL {
-		private final Query getJobIdsWithChanges = query(getJobsWithChanges);
+		private final Query getJobIdsWithChanges =
+				conn.query(getJobsWithChanges);
 
-		private final Query getPowerChangesToDo = query(GET_CHANGES);
+		private final Query getPowerChangesToDo = conn.query(GET_CHANGES);
 
-		private final Update setInProgress = update(SET_IN_PROGRESS);
-
-		// TODO can some of these be combined with RETURNING?
+		private final Update setInProgress = conn.update(SET_IN_PROGRESS);
 
 		@Override
 		public void close() {
@@ -643,18 +628,6 @@ public class BMPController extends SQLQueries {
 			getPowerChangesToDo.close();
 			setInProgress.close();
 			super.close();
-		}
-
-		Iterable<Row> jobsWithChanges(Integer machineId) {
-			return getJobIdsWithChanges.call(machineId);
-		}
-
-		Iterable<Row> getPowerChangesToDo(Integer jobId) {
-			return getPowerChangesToDo.call(jobId);
-		}
-
-		int setInProgress(boolean inProgress, Integer changeId) {
-			return setInProgress.call(inProgress, changeId);
 		}
 	}
 
@@ -672,10 +645,10 @@ public class BMPController extends SQLQueries {
 			sql.transaction(() -> {
 				// The outer loop is always over a small set, fortunately
 				for (Machine machine : machines) {
-					sql.jobsWithChanges(machine.getId())
-							.forEach(jobIds -> takeRequestsForJob(machine,
-									jobIds.getInteger("job_id"), sql,
-									requestCollector));
+					sql.getJobIdsWithChanges.call(machine.getId())
+							.map(row -> row.getInteger("job_id"))
+							.forEach(jobId -> takeRequestsForJob(machine, jobId,
+									sql, requestCollector));
 				}
 			});
 		}
@@ -690,7 +663,7 @@ public class BMPController extends SQLQueries {
 		List<Link> linksOff = new ArrayList<>();
 		JobState from = UNKNOWN, to = UNKNOWN;
 
-		for (Row row : sql.getPowerChangesToDo(jobId)) {
+		for (Row row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
 			Integer board = row.getInteger("board_id");
 			boolean switchOn = row.getBoolean("power");
@@ -723,7 +696,7 @@ public class BMPController extends SQLQueries {
 		requestCollector.add(new Request(machine, boardsOn, boardsOff, linksOff,
 				jobId, from, to, changeIds));
 		for (Integer changeId : changeIds) {
-			sql.setInProgress(true, changeId);
+			sql.setInProgress.call(true, changeId);
 		}
 	}
 
@@ -732,15 +705,16 @@ public class BMPController extends SQLQueries {
 	 * {@code processAfterChange()}.
 	 */
 	private final class AfterSQL extends AbstractSQL {
-		private final Update setBoardState = update(SET_BOARD_POWER);
+		private final Update setBoardState = conn.update(SET_BOARD_POWER);
 
-		private final Update setJobState = update(SET_STATE_PENDING);
+		private final Update setJobState = conn.update(SET_STATE_PENDING);
 
-		private final Update setInProgress = update(SET_IN_PROGRESS);
+		private final Update setInProgress = conn.update(SET_IN_PROGRESS);
 
-		private final Update deallocateBoards = update(DEALLOCATE_BOARDS_JOB);
+		private final Update deallocateBoards =
+				conn.update(DEALLOCATE_BOARDS_JOB);
 
-		private final Update deleteChange = update(FINISHED_PENDING);
+		private final Update deleteChange = conn.update(FINISHED_PENDING);
 
 		@Override
 		public void close() {

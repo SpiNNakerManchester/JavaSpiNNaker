@@ -20,9 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.exec;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -76,7 +73,7 @@ class DbBasicTest {
 	void testDbConn() {
 		int rows = 0;
 		try (Query q =
-				query(c, "SELECT COUNT(*) AS c FROM board_model_coords")) {
+				c.query("SELECT COUNT(*) AS c FROM board_model_coords")) {
 			for (Row row : q.call()) {
 				// For v2, v3, v4 and v5 board configs (
 				assertEquals(104, row.getInt("c"));
@@ -94,10 +91,10 @@ class DbBasicTest {
 	void testDbChanges() {
 		assumeWritable(c);
 		int rows;
-		exec(c, "CREATE TEMPORARY TABLE foo(x)");
-		try (Update u = update(c, "INSERT INTO foo(x) VALUES(?)");
-				Query q = query(c, "SELECT x FROM foo WHERE ? = ?");
-				Query q2 = query(c, "SELECT x FROM foo")) {
+		c.exec("CREATE TEMPORARY TABLE foo(x)");
+		try (Update u = c.update("INSERT INTO foo(x) VALUES(?)");
+				Query q = c.query("SELECT x FROM foo WHERE ? = ?");
+				Query q2 = c.query("SELECT x FROM foo")) {
 			rows = 0;
 			for (Row row : q.call(1, 1)) {
 				assertNotNull(row.getObject("x"));

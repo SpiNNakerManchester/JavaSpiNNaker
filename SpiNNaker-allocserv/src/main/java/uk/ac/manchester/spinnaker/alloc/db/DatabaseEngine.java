@@ -50,11 +50,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -373,7 +371,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		setupConfig();
 		// Check that the connection is correct
 		try (Connection conn = getConnection();
-				Query countMovements = query(conn, COUNT_MOVEMENTS)) {
+				Query countMovements = conn.query(COUNT_MOVEMENTS)) {
 			int numMovements = countMovements.call1().get().getInt("c");
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
@@ -620,20 +618,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
-		// Note that we don't close the wrapper
+		// Note that we don't close the wrapper; this is deliberate!
+		@SuppressWarnings("resource")
 		Connection wrapper = new Connection(conn);
-		exec(wrapper, sqlDDLFile);
+		wrapper.exec(sqlDDLFile);
 		log.info("initalising historical DB from schema {}", tombstoneDDLFile);
-		exec(wrapper, tombstoneDDLFile);
-		transaction(wrapper, () -> {
+		wrapper.exec(tombstoneDDLFile);
+		wrapper.transaction(() -> {
 			log.info("initalising DB static data from {}", sqlInitDataFile);
-			exec(wrapper, sqlInitDataFile);
+			wrapper.exec(sqlInitDataFile);
 		});
-		transaction(wrapper, () -> {
+		wrapper.transaction(() -> {
 			log.info("verifying main DB integrity");
-			exec(wrapper, "SELECT COUNT(*) FROM jobs");
+			wrapper.exec("SELECT COUNT(*) FROM jobs");
 			log.info("verifying historical DB integrity");
-			exec(wrapper, "SELECT COUNT(*) FROM tombstone.jobs");
+			wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
 		});
 	}
 
@@ -684,7 +683,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			// NB: Not a standard query! Safe, because we know we have an int
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				exec(conn, String.format(OPTIMIZE_DB, analysisLimit));
+				conn.exec(String.format(OPTIMIZE_DB, analysisLimit));
 			} catch (DataAccessException e) {
 				/*
 				 * If we're busy, just don't bother; it's optional to optimise
@@ -712,6 +711,253 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public static final class Connection extends UncheckedConnection {
 		private Connection(java.sql.Connection c) {
 			super(c);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code operation} completes
+		 * normally (and this isn't a nested use), the transaction commits. If
+		 * an exception is thrown, the transaction is rolled back.
+		 *
+		 * @param operation
+		 *            The operation to run
+		 * @throws DataAccessException
+		 *             If something goes wrong with the database access.
+		 * @throws RuntimeException
+		 *             If something unexpected goes wrong with the contained
+		 *             code.
+		 */
+		public void transaction(Transacted operation) {
+			if (!getAutoCommit()) {
+				// Already in a transaction; just run the operation
+				operation.act();
+				return;
+			}
+			if (log.isDebugEnabled()) {
+				log.debug("start transaction: {}", getCaller());
+			}
+			setAutoCommit(false);
+			boolean done = false;
+			try {
+				operation.act();
+				commit();
+				done = true;
+				return;
+			} catch (RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException("unexpected exception", e);
+			} finally {
+				if (!done) {
+					rollback();
+				}
+				setAutoCommit(true);
+				log.debug("finish transaction");
+			}
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code operation} completes
+		 * normally (and this isn't a nested use), the transaction commits. If
+		 * an exception is thrown, the transaction is rolled back.
+		 *
+		 * @param <T>
+		 *            The type of the result of {@code operation}
+		 * @param operation
+		 *            The operation to run
+		 * @return the value returned by {@code operation}
+		 * @throws DataAccessException
+		 *             If something goes wrong with the database access.
+		 * @throws RuntimeException
+		 *             If something unexpected goes wrong with the contained
+		 *             code.
+		 */
+		public <T> T transaction(TransactedWithResult<T> operation) {
+			if (!getAutoCommit()) {
+				// Already in a transaction; just run the operation
+				return operation.act();
+			}
+			if (log.isDebugEnabled()) {
+				log.debug("start transaction:\n{}", getCaller());
+			}
+			setAutoCommit(false);
+			boolean done = false;
+			try {
+				T result = operation.act();
+				commit();
+				done = true;
+				return result;
+			} catch (RuntimeException e) {
+				throw e;
+			} catch (Exception e) {
+				throw new RuntimeException("unexpected exception", e);
+			} finally {
+				if (!done) {
+					rollback();
+				}
+				setAutoCommit(true);
+				log.debug("finish transaction");
+			}
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new query. Usage pattern:
+		 * <pre>
+		 * try (Query q = conn.query(SQL_SELECT)) {
+		 *     for (Row row : u.call(argument1, argument2)) {
+		 *         // Do something with the row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Query q = conn.query(SQL_SELECT)) {
+		 *     u.call(argument1, argument2).forEach(row -> {
+		 *         // Do something with the row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sql
+		 *            The SQL of the query.
+		 * @return The query object.
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Query query(String sql) {
+			return new Query(this, sql);
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new query.
+		 * <pre>
+		 * try (Query q = conn.query(sqlSelectResource)) {
+		 *     for (Row row : u.call(argument1, argument2)) {
+		 *         // Do something with the row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Query q = conn.query(sqlSelectResource)) {
+		 *     u.call(argument1, argument2).forEach(row -> {
+		 *         // Do something with the row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sqlResource
+		 *            Reference to the SQL of the query.
+		 * @return The query object.
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Query query(Resource sqlResource) {
+			return new Query(this, readSQL(sqlResource));
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new update. Usage pattern:
+		 * <pre>
+		 * try (Update u = conn.update(SQL_UPDATE)) {
+		 *     int numRows = u.call(argument1, argument2);
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Update u = conn.update(SQL_INSERT)) {
+		 *     for (Integer key : u.keys(argument1, argument2)) {
+		 *         // Do something with the key
+		 *     }
+		 * }
+		 * </pre>
+		 * or even:
+		 * <pre>
+		 * try (Update u = conn.update(SQL_INSERT)) {
+		 *     u.key(argument1, argument2).ifPresent(key -> {
+		 *         // Do something with the key
+		 *     });
+		 * }
+		 * </pre>
+		 * <p>
+		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
+		 * you should use a {@link Query}.
+		 *
+		 * @param sql
+		 *            The SQL of the update.
+		 * @return The update object.
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Update update(String sql) {
+			return new Update(this, sql);
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new update.
+		 * <pre>
+		 * try (Update u = conn.update(sqlUpdateResource)) {
+		 *     int numRows = u.call(argument1, argument2);
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Update u = conn.update(sqlInsertResource)) {
+		 *     for (Integer key : u.keys(argument1, argument2)) {
+		 *         // Do something with the key
+		 *     }
+		 * }
+		 * </pre>
+		 * or even:
+		 * <pre>
+		 * try (Update u = conn.update(sqlInsertResource)) {
+		 *     u.key(argument1, argument2).ifPresent(key -> {
+		 *         // Do something with the key
+		 *     });
+		 * }
+		 * </pre>
+		 * <p>
+		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
+		 * you should use a {@link Query}.
+		 *
+		 * @param sqlResource
+		 *            Reference to the SQL of the update.
+		 * @return The update object.
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Update update(Resource sqlResource) {
+			return new Update(this, readSQL(sqlResource));
+		}
+
+		/**
+		 * Run some SQL where the result is of no interest.
+		 *
+		 * @param sql
+		 *            The SQL to run. Probably DDL. This may contain multiple
+		 *            statements.
+		 */
+		public void exec(String sql) {
+			try (Statement s = createStatement()) {
+				// MUST be executeUpdate() to run multiple statements at once!
+				s.executeUpdate(sql);
+			} catch (SQLException e) {
+				throw mapException(e, sql);
+			}
+		}
+
+		/**
+		 * Run some SQL where the result is of no interest.
+		 *
+		 * @param sqlResource
+		 *            Reference to the SQL to run. Probably DDL. This may
+		 *            contain multiple statements.
+		 */
+		public void exec(Resource sqlResource) {
+			exec(readSQL(sqlResource));
 		}
 	}
 
@@ -805,80 +1051,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Set the parameters for a prepared statement.
-	 *
-	 * @param s
-	 *            The statement to set the parameters for.
-	 * @param arguments
-	 *            The values to set the parameters to.
-	 */
-	public static void setParams(PreparedStatement s, Object... arguments) {
-		try {
-			int paramCount = s.getParameterMetaData().getParameterCount();
-			if (paramCount == 0 && arguments.length > 0) {
-				throw new InvalidDataAccessResourceUsageException(
-						"prepared statement takes no arguments");
-			} else if (paramCount != arguments.length) {
-				throw new InvalidDataAccessResourceUsageException(
-						"prepared statement takes " + paramCount
-								+ " arguments, not " + arguments.length);
-			}
-			s.clearParameters();
-
-			int idx = 0;
-			for (Object arg : arguments) {
-				// The classes we augment the DB driver with
-				if (arg instanceof Instant) {
-					arg = ((Instant) arg).getEpochSecond();
-				} else if (arg instanceof Duration) {
-					arg = ((Duration) arg).getSeconds();
-				} else if (arg instanceof Enum) {
-					arg = ((Enum<?>) arg).ordinal();
-				}
-				s.setObject(++idx, arg);
-			}
-		} catch (SQLException e) {
-			throw mapException(e, s.toString());
-		}
-	}
-
-	/**
-	 * Set the arguments and run an SQL "update" (DML) statement.
-	 *
-	 * @param s
-	 *            The statement to run
-	 * @param arguments
-	 *            The arguments to supply to the statement
-	 * @return The number of affected rows
-	 */
-	public static int runUpdate(PreparedStatement s, Object... arguments) {
-		try {
-			setParams(s, arguments);
-			return s.executeUpdate();
-		} catch (SQLException e) {
-			throw mapException(e, s.toString());
-		}
-	}
-
-	/**
-	 * Set the arguments and run an SQL "query" (DQL) statement.
-	 *
-	 * @param s
-	 *            The statement to run
-	 * @param arguments
-	 *            The arguments to supply to the statement
-	 * @return The result set of the query
-	 */
-	public static ResultSet runQuery(PreparedStatement s, Object... arguments) {
-		try {
-			setParams(s, arguments);
-			return s.executeQuery();
-		} catch (SQLException e) {
-			throw mapException(e, s.toString());
-		}
-	}
-
-	/**
 	 * Get the stack frame description of the caller of the of the transaction.
 	 *
 	 * @return The (believed) caller of the transaction. {@code null} if this
@@ -909,95 +1081,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * A nestable transaction runner. If the {@code operation} completes
-	 * normally (and this isn't a nested use), the transaction commits. If an
-	 * exception is thrown, the transaction is rolled back.
-	 *
-	 * @param conn
-	 *            The database connection
-	 * @param operation
-	 *            The operation to run
-	 * @throws DataAccessException
-	 *             If something goes wrong with the database access.
-	 * @throws RuntimeException
-	 *             If something unexpected goes wrong with the contained code.
-	 */
-	public static void transaction(Connection conn, Transacted operation) {
-		if (!conn.getAutoCommit()) {
-			// Already in a transaction; just run the operation
-			operation.act();
-			return;
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("start transaction: {}", getCaller());
-		}
-		conn.setAutoCommit(false);
-		boolean done = false;
-		try {
-			operation.act();
-			conn.commit();
-			done = true;
-			return;
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException("unexpected exception", e);
-		} finally {
-			if (!done) {
-				conn.rollback();
-			}
-			conn.setAutoCommit(true);
-			log.debug("finish transaction");
-		}
-	}
-
-	/**
-	 * A nestable transaction runner. If the {@code operation} completes
-	 * normally (and this isn't a nested use), the transaction commits. If an
-	 * exception is thrown, the transaction is rolled back.
-	 *
-	 * @param <T>
-	 *            The type of the result of {@code operation}
-	 * @param conn
-	 *            The database connection
-	 * @param operation
-	 *            The operation to run
-	 * @return the value returned by {@code operation}
-	 * @throws DataAccessException
-	 *             If something goes wrong with the database access.
-	 * @throws RuntimeException
-	 *             If something unexpected goes wrong with the contained code.
-	 */
-	public static <T> T transaction(Connection conn,
-			TransactedWithResult<T> operation) {
-		if (!conn.getAutoCommit()) {
-			// Already in a transaction; just run the operation
-			return operation.act();
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("start transaction:\n{}", getCaller());
-		}
-		conn.setAutoCommit(false);
-		boolean done = false;
-		try {
-			T result = operation.act();
-			conn.commit();
-			done = true;
-			return result;
-		} catch (RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException("unexpected exception", e);
-		} finally {
-			if (!done) {
-				conn.rollback();
-			}
-			conn.setAutoCommit(true);
-			log.debug("finish transaction");
-		}
-	}
-
-	/**
 	 * A connection manager and transaction runner. If the {@code operation}
 	 * completes normally (and this isn't a nested use), the transaction
 	 * commits. If an exception is thrown, the transaction is rolled back. The
@@ -1011,7 +1094,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public void executeVoid(Connected operation) {
 		try (Connection conn = getConnection()) {
-			transaction(conn, () -> operation.act(conn));
+			conn.transaction(() -> operation.act(conn));
 		}
 	}
 
@@ -1032,7 +1115,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public <T> T execute(ConnectedWithResult<T> operation) {
 		try (Connection conn = getConnection()) {
-			return transaction(conn, () -> operation.act(conn));
+			return conn.transaction(() -> operation.act(conn));
 		}
 	}
 
@@ -1108,7 +1191,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @throws UncategorizedScriptException
 	 *             If the resource can't be loaded.
 	 */
-	public static String readSQL(Resource resource) {
+	private static String readSQL(Resource resource) {
 		synchronized (QUERY_CACHE) {
 			if (QUERY_CACHE.containsKey(resource)) {
 				return QUERY_CACHE.get(resource);
@@ -1130,44 +1213,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	/**
 	 * Run some SQL where the result is of no interest.
 	 *
-	 * @param conn
-	 *            The connection.
-	 * @param sql
-	 *            The SQL to run. Probably DDL. This may contain multiple
-	 *            statements.
-	 */
-	public static void exec(Connection conn, String sql) {
-		try (Statement s = conn.createStatement()) {
-			// MUST be executeUpdate() to run multiple statements at once!
-			s.executeUpdate(sql);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
-	}
-
-	/**
-	 * Run some SQL where the result is of no interest.
-	 *
-	 * @param conn
-	 *            The connection.
-	 * @param sqlResource
-	 *            Reference to the SQL to run. Probably DDL. This may contain
-	 *            multiple statements.
-	 */
-	public static void exec(Connection conn, Resource sqlResource) {
-		exec(conn, readSQL(sqlResource));
-	}
-
-	/**
-	 * Run some SQL where the result is of no interest.
-	 *
 	 * @param sql
 	 *            The SQL to run. Probably DDL. This may contain multiple
 	 *            statements.
 	 */
 	public void exec(String sql) {
 		try (Connection conn = getConnection()) {
-			exec(conn, sql);
+			conn.exec(sql);
 		}
 	}
 
@@ -1180,7 +1232,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public void exec(Resource sqlResource) {
 		try (Connection conn = getConnection()) {
-			exec(conn, sqlResource);
+			conn.exec(sqlResource);
 		}
 	}
 
@@ -1208,6 +1260,42 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				} catch (SQLException ignored) {
 				}
 				rs = null;
+			}
+		}
+
+		/**
+		 * Set the parameters for the prepared statement.
+		 *
+		 * @param arguments
+		 *            The values to set the parameters to.
+		 * @throws SQLException
+		 *             If there's a DB problem.
+		 * @throws InvalidDataAccessResourceUsageException
+		 *             If given a bad number of arguments.
+		 */
+		final void setParams(Object[] arguments) throws SQLException {
+			int paramCount = s.getParameterMetaData().getParameterCount();
+			if (paramCount == 0 && arguments.length > 0) {
+				throw new InvalidDataAccessResourceUsageException(
+						"prepared statement takes no arguments");
+			} else if (paramCount != arguments.length) {
+				throw new InvalidDataAccessResourceUsageException(
+						"prepared statement takes " + paramCount
+								+ " arguments, not " + arguments.length);
+			}
+			s.clearParameters();
+
+			int idx = 0;
+			for (Object arg : arguments) {
+				// The classes we augment the DB driver with
+				if (arg instanceof Instant) {
+					arg = ((Instant) arg).getEpochSecond();
+				} else if (arg instanceof Duration) {
+					arg = ((Duration) arg).getSeconds();
+				} else if (arg instanceof Enum) {
+					arg = ((Enum<?>) arg).ordinal();
+				}
+				s.setObject(++idx, arg);
 			}
 		}
 
@@ -1240,8 +1328,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		@Override
 		public final void close() {
+			closeResults();
 			try {
-				closeResults();
 				s.close();
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
@@ -1267,36 +1355,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Extends iterable with the ability to be mapped to different values.
-	 *
-	 * @param <T> The type of elements returned by the iterator
-	 * @author Donal Fellows
-	 */
-	public interface MappableIterable<T> extends Iterable<T> {
-		default <TT> MappableIterable<TT>
-				map(java.util.function.Function<T, TT> mapper) {
-			MappableIterable<T> src = this;
-			return new MappableIterable<TT>() {
-				@Override
-				public Iterator<TT> iterator() {
-					Iterator<T> srcit = src.iterator();
-					return new Iterator<TT>() {
-						@Override
-						public boolean hasNext() {
-							return srcit.hasNext();
-						}
-
-						@Override
-						public TT next() {
-							return mapper.apply(srcit.next());
-						}
-					};
-				}
-			};
-		}
-	}
-
-	/**
 	 * Wrapping a prepared query to be more suitable for Java 8 onwards.
 	 *
 	 * @author Donal Fellows
@@ -1318,7 +1376,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public MappableIterable<Row> call(Object... arguments) {
 			closeResults();
-			rs = runQuery(s, arguments);
+			try {
+				setParams(arguments);
+				rs = s.executeQuery();
+			} catch (SQLException e) {
+				throw mapException(e, s.toString());
+			}
 			return () -> new Iterator<Row>() {
 				private boolean finished = false;
 				private boolean consumed = true;
@@ -1337,6 +1400,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					try {
 						result = rs.next();
 					} catch (SQLException e) {
+						// ignore
 					} finally {
 						if (result) {
 							consumed = false;
@@ -1370,8 +1434,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public Optional<Row> call1(Object... arguments) {
 			try {
-				setParams(s, arguments);
 				closeResults();
+				setParams(arguments);
 				rs = s.executeQuery();
 				if (rs.next()) {
 					return Optional.of(new Row(rs));
@@ -1382,68 +1446,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				throw mapException(e, s.toString());
 			}
 		}
-	}
-
-	// @formatter:off
-	/**
-	 * Create a new query. Usage pattern:
-	 * <pre>
-	 * try (Query q = query(conn, SQL_SELECT)) {
-	 *     for (Row row : u.call(argument1, argument2)) {
-	 *         // Do something with the row
-	 *     }
-	 * }
-	 * </pre>
-	 * or:
-	 * <pre>
-	 * try (Query q = query(conn, SQL_SELECT)) {
-	 *     u.call(argument1, argument2).forEach(row -> {
-	 *         // Do something with the row
-	 *     });
-	 * }
-	 * </pre>
-	 *
-	 * @param conn
-	 *            The connection.
-	 * @param sql
-	 *            The SQL of the query.
-	 * @return The query object.
-	 * @see SQLQueries
-	 */
-	// @formatter:on
-	public static Query query(Connection conn, String sql) {
-		return new Query(conn, sql);
-	}
-
-	// @formatter:off
-	/**
-	 * Create a new query.
-	 * <pre>
-	 * try (Query q = query(conn, sqlSelectResource)) {
-	 *     for (Row row : u.call(argument1, argument2)) {
-	 *         // Do something with the row
-	 *     }
-	 * }
-	 * </pre>
-	 * or:
-	 * <pre>
-	 * try (Query q = query(conn, sqlSelectResource)) {
-	 *     u.call(argument1, argument2).forEach(row -> {
-	 *         // Do something with the row
-	 *     });
-	 * }
-	 * </pre>
-	 *
-	 * @param conn
-	 *            The connection.
-	 * @param sqlResource
-	 *            Reference to the SQL of the query.
-	 * @return The query object.
-	 * @see SQLQueries
-	 */
-	// @formatter:on
-	public static Query query(Connection conn, Resource sqlResource) {
-		return new Query(conn, readSQL(sqlResource));
 	}
 
 	/**
@@ -1465,7 +1467,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public int call(Object... arguments) {
 			closeResults();
-			return runUpdate(s, arguments);
+			try {
+				setParams(arguments);
+				return s.executeUpdate();
+			} catch (SQLException e) {
+				throw mapException(e, s.toString());
+			}
 		}
 
 		/**
@@ -1482,8 +1489,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 * ignores that flag.
 			 */
 			closeResults();
-			int numRows = runUpdate(s, arguments);
+			int numRows;
 			try {
+				setParams(arguments);
+				numRows = s.executeUpdate();
 				rs = s.getGeneratedKeys();
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
@@ -1546,11 +1555,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public Optional<Integer> key(Object... arguments) {
 			closeResults();
-			int numRows = runUpdate(s, arguments);
-			if (numRows < 1) {
-				return Optional.empty();
-			}
 			try {
+				setParams(arguments);
+				int numRows = s.executeUpdate();
+				if (numRows < 1) {
+					return Optional.empty();
+				}
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {
 					return Optional.ofNullable((Integer) rs.getObject(1));
@@ -1565,80 +1575,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	// @formatter:off
-	/**
-	 * Create a new update. Usage pattern:
-	 * <pre>
-	 * try (Update u = update(conn, SQL_UPDATE)) {
-	 *     int numRows = u.call(argument1, argument2);
-	 * }
-	 * </pre>
-	 * or:
-	 * <pre>
-	 * try (Update u = update(conn, SQL_INSERT)) {
-	 *     for (Integer key : u.keys(argument1, argument2)) {
-	 *         // Do something with the key
-	 *     }
-	 * }
-	 * </pre>
-	 * or even:
-	 * <pre>
-	 * try (Update u = update(conn, SQL_INSERT)) {
-	 *     u.key(argument1, argument2).ifPresent(key -> {
-	 *         // Do something with the key
-	 *     });
-	 * }
-	 * </pre>
-	 *
-	 * @param conn
-	 *            The connection.
-	 * @param sql
-	 *            The SQL of the update.
-	 * @return The update object.
-	 * @see SQLQueries
-	 */
-	// @formatter:on
-	public static Update update(Connection conn, String sql) {
-		return new Update(conn, sql);
-	}
-
-	// @formatter:off
-	/**
-	 * Create a new update.
-	 * <pre>
-	 * try (Update u = update(conn, sqlUpdateResource)) {
-	 *     int numRows = u.call(argument1, argument2);
-	 * }
-	 * </pre>
-	 * or:
-	 * <pre>
-	 * try (Update u = update(conn, sqlInsertResource)) {
-	 *     for (Integer key : u.keys(argument1, argument2)) {
-	 *         // Do something with the key
-	 *     }
-	 * }
-	 * </pre>
-	 * or even:
-	 * <pre>
-	 * try (Update u = update(conn, sqlInsertResource)) {
-	 *     u.key(argument1, argument2).ifPresent(key -> {
-	 *         // Do something with the key
-	 *     });
-	 * }
-	 * </pre>
-	 *
-	 * @param conn
-	 *            The connection.
-	 * @param sqlResource
-	 *            Reference to the SQL of the update.
-	 * @return The update object.
-	 * @see SQLQueries
-	 */
-	// @formatter:on
-	public static Update update(Connection conn, Resource sqlResource) {
-		return new Update(conn, readSQL(sqlResource));
-	}
-
 	/**
 	 * Utility for testing whether an exception was thrown because the database
 	 * was busy.
@@ -1651,51 +1587,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		return e.getMostSpecificCause() instanceof SQLiteException
 				&& ((SQLiteException) e.getMostSpecificCause()).getResultCode()
 						.equals(SQLITE_BUSY);
-	}
-
-	/**
-	 * Convert an iterable of rows (see {@link DatabaseEngine.Query Query}) into
-	 * a list of objects, one per row.
-	 *
-	 * @param <T>
-	 *            The type of elements in the list
-	 * @param rows
-	 *            The rows to convert.
-	 * @param mapper
-	 *            The conversion function.
-	 * @return List of objects mapped from rows. (This list happens to be
-	 *         modifiable, but with no effect on the database.)
-	 */
-	public static <T> List<T> rowsAsList(Iterable<Row> rows,
-			java.util.function.Function<Row, T> mapper) {
-		List<T> result = new ArrayList<>();
-		for (Row row : rows) {
-			result.add(mapper.apply(row));
-		}
-		return result;
-	}
-
-	/**
-	 * Convert an iterable of rows (see {@link DatabaseEngine.Query Query}) into
-	 * a set of objects, one per row.
-	 *
-	 * @param <T>
-	 *            The type of elements in the set
-	 * @param rows
-	 *            The rows to convert.
-	 * @param mapper
-	 *            The conversion function.
-	 * @return Set of objects mapped from rows. (This set happens to be
-	 *         modifiable, but with no effect on the database. The set's natural
-	 *         ordering is the order of the elements in the database.)
-	 */
-	public static <T> Set<T> rowsAsSet(Iterable<Row> rows,
-			java.util.function.Function<Row, T> mapper) {
-		Set<T> result = new LinkedHashSet<>();
-		for (Row row : rows) {
-			result.add(mapper.apply(row));
-		}
-		return result;
 	}
 
 	/**

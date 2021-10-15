@@ -16,9 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,8 +79,8 @@ public class MachineStateControl extends SQLQueries {
 		 * @return The state of the board.
 		 */
 		public boolean getState() {
-			return db.execute(c -> {
-				try (Query q = query(c, GET_FUNCTIONING_FIELD)) {
+			return db.execute(conn -> {
+				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
 					return q.call1(boardId)
 							.map(row -> row.getBoolean("functioning"))
 							.orElse(false);
@@ -92,8 +89,8 @@ public class MachineStateControl extends SQLQueries {
 		}
 
 		public void setState(boolean newValue) {
-			db.executeVoid(c -> {
-				try (Update u = update(c, SET_FUNCTIONING_FIELD)) {
+			db.executeVoid(conn -> {
+				try (Update u = conn.update(SET_FUNCTIONING_FIELD)) {
 					u.call(newValue, boardId);
 				}
 			});
@@ -115,7 +112,7 @@ public class MachineStateControl extends SQLQueries {
 	 */
 	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
 		return db.execute(conn -> {
-			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_XYZ)) {
+			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 				return q.call1(machine, x, y, z).map(BoardState::new);
 			}
 		});
@@ -137,7 +134,7 @@ public class MachineStateControl extends SQLQueries {
 	public Optional<BoardState> findPhysical(String machine, int c, int f,
 			int b) {
 		return db.execute(conn -> {
-			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_CFB)) {
+			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 				return q.call1(machine, c, f, b).map(BoardState::new);
 			}
 		});
@@ -154,7 +151,7 @@ public class MachineStateControl extends SQLQueries {
 	 */
 	public Optional<BoardState> findIP(String machine, String address) {
 		return db.execute(conn -> {
-			try (Query q = query(conn, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
+			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				return q.call1(machine, address).map(BoardState::new);
 			}
 		});

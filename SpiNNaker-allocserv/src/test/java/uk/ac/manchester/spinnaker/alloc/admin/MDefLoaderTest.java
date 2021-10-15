@@ -21,7 +21,6 @@ import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,13 +40,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
+import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
 
 /**
  * Test that the database engine interface works and that the queries are
@@ -139,14 +138,14 @@ class MDefLoaderTest {
 		Machine machine = machines.get(0);
 		assumeTrue(machine != null);
 
-		DatabaseEngine.transaction(c, () -> {
+		c.transaction(() -> {
 			try (MachineDefinitionLoader.Updates q =
 					new MachineDefinitionLoader.Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});
 
-		try (Query q = query(c, "SELECT machine_name FROM machines")) {
+		try (Query q = c.query("SELECT machine_name FROM machines")) {
 			int rows = 0;
 			for (Row row : q.call()) {
 				assertEquals("my-board", row.getString("machine_name"));
@@ -156,17 +155,17 @@ class MDefLoaderTest {
 		}
 
 		// Should be just one BMP
-		try (Query q = query(c, "SELECT COUNT(*) AS c FROM bmp")) {
+		try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
 			assertEquals(1, q.call1().get().getInt("c"));
 		}
 
 		// Should be just one board
-		try (Query q = query(c, COUNT_LIVE_BOARDS)) {
+		try (Query q = c.query(COUNT_LIVE_BOARDS)) {
 			assertEquals(1, q.call1().get().getInt("c"));
 		}
 
 		// Single-board setups have no inter-board links
-		try (Query q = query(c, COUNT_LIVE_LINKS)) {
+		try (Query q = c.query(COUNT_LIVE_LINKS)) {
 			assertEquals(0, q.call1().get().getInt("c"));
 		}
 	}
@@ -180,14 +179,14 @@ class MDefLoaderTest {
 		Machine machine = machines.get(0);
 		assumeTrue(machine != null);
 
-		DatabaseEngine.transaction(c, () -> {
+		c.transaction(() -> {
 			try (MachineDefinitionLoader.Updates q =
 					new MachineDefinitionLoader.Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});
 
-		try (Query q = query(c, "SELECT machine_name FROM machines")) {
+		try (Query q = c.query("SELECT machine_name FROM machines")) {
 			int rows = 0;
 			for (Row row : q.call()) {
 				assertEquals("SpiNNaker3board", row.getString("machine_name"));
@@ -197,17 +196,17 @@ class MDefLoaderTest {
 		}
 
 		// Should be just one BMP
-		try (Query q = query(c, "SELECT COUNT(*) AS c FROM bmp")) {
+		try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
 			assertEquals(1, q.call1().get().getInt("c"));
 		}
 
 		// Should be just one board
-		try (Query q = query(c, COUNT_LIVE_BOARDS)) {
+		try (Query q = c.query(COUNT_LIVE_BOARDS)) {
 			assertEquals(3, q.call1().get().getInt("c"));
 		}
 
 		// Single-board setups have no inter-board links
-		try (Query q = query(c, COUNT_LIVE_LINKS)) {
+		try (Query q = c.query(COUNT_LIVE_LINKS)) {
 			assertEquals(9, q.call1().get().getInt("c"));
 		}
 	}

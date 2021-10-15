@@ -22,10 +22,6 @@ import static java.lang.Math.sqrt;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.rowsAsList;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
@@ -168,11 +164,11 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		private final Update setStatePending;
 
 		PowerSQL(Connection conn) {
-			getJobState = query(conn, GET_JOB);
-			getJobBoards = query(conn, GET_JOB_BOARDS);
-			getPerimeter = query(conn, getPerimeterLinks);
-			issuePowerChange = update(conn, issueChangeForJob);
-			setStatePending = update(conn, SET_STATE_PENDING);
+			getJobState = conn.query(GET_JOB);
+			getJobBoards = conn.query(GET_JOB_BOARDS);
+			getPerimeter = conn.query(getPerimeterLinks);
+			issuePowerChange = conn.update(issueChangeForJob);
+			setStatePending = conn.update(SET_STATE_PENDING);
 		}
 
 		@Override
@@ -209,16 +205,16 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		AllocSQL(Connection conn) {
 			super(conn);
-			bumpImportance = update(conn, BUMP_IMPORTANCE);
-			getTasks = query(conn, getAllocationTasks);
-			delete = update(conn, DELETE_TASK);
-			findFreeBoard = query(conn, FIND_FREE_BOARD);
-			getRectangles = query(conn, findRectangle);
-			countConnectedBoards = query(conn, countConnected);
-			findSpecificBoard = query(conn, findLocation);
-			getConnectedBoardIDs = query(conn, getConnectedBoards);
-			allocBoard = update(conn, ALLOCATE_BOARDS_BOARD);
-			allocJob = update(conn, ALLOCATE_BOARDS_JOB);
+			bumpImportance = conn.update(BUMP_IMPORTANCE);
+			getTasks = conn.query(getAllocationTasks);
+			delete = conn.update(DELETE_TASK);
+			findFreeBoard = conn.query(FIND_FREE_BOARD);
+			getRectangles = conn.query(findRectangle);
+			countConnectedBoards = conn.query(countConnected);
+			findSpecificBoard = conn.query(findLocation);
+			getConnectedBoardIDs = conn.query(getConnectedBoards);
+			allocBoard = conn.update(ALLOCATE_BOARDS_BOARD);
+			allocJob = conn.update(ALLOCATE_BOARDS_JOB);
 		}
 
 		@Override
@@ -249,10 +245,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 		DestroySQL(Connection conn) {
 			super(conn);
-			getJob = query(conn, GET_JOB);
-			markAsDestroyed = update(conn, DESTROY_JOB);
-			killAlloc = update(conn, KILL_JOB_ALLOC_TASK);
-			killPending = update(conn, KILL_JOB_PENDING);
+			getJob = conn.query(GET_JOB);
+			markAsDestroyed = conn.update(DESTROY_JOB);
+			killAlloc = conn.update(KILL_JOB_ALLOC_TASK);
+			killPending = conn.update(KILL_JOB_PENDING);
 		}
 
 		@Override
@@ -350,14 +346,14 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	@Deprecated // INTERNAL
 	boolean expireJobs(Connection conn) {
 		boolean changed = false;
-		try (Query find = query(conn, FIND_EXPIRED_JOBS)) {
+		try (Query find = conn.query(FIND_EXPIRED_JOBS)) {
 			List<Integer> toKill =
-					rowsAsList(find.call(), r -> r.getInteger("job_id"));
+					find.call().map(r -> r.getInteger("job_id")).toList();
 			for (Integer id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
 		}
-		try (Query find = query(conn, GET_LIVE_JOB_IDS)) {
+		try (Query find = conn.query(GET_LIVE_JOB_IDS)) {
 			List<Integer> toKill = new ArrayList<>();
 			for (Row row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
 				int machineId = row.getInt("machine_id");
@@ -404,12 +400,12 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 *            The DB connection
 	 */
 	void tombstone(Connection conn) {
-		try (Query copy = query(conn, copyToHistoricalData);
-				Update delete = update(conn, DELETE_JOB_RECORD)) {
-			List<Integer> jobIds = transaction(conn,
-					() -> rowsAsList(copy.call(historyProps.getGracePeriod()),
-							row -> row.getInteger("job_id")));
-			transaction(conn, () -> jobIds.stream().filter(Objects::nonNull)
+		try (Query copy = conn.query(copyToHistoricalData);
+				Update delete = conn.update(DELETE_JOB_RECORD)) {
+			List<Integer> jobIds = conn
+					.transaction(() -> copy.call(historyProps.getGracePeriod())
+							.map(row -> row.getInteger("job_id")).toList());
+			conn.transaction(() -> jobIds.stream().filter(Objects::nonNull)
 					.forEach(delete::call));
 		}
 	}
@@ -661,10 +657,10 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
 		// TODO Use RETURNING to combine getConnectedBoardIDs and allocBoard
-		List<Integer> boardsToAllocate = rowsAsList(
-				sql.getConnectedBoardIDs.call(machineId, root.x, root.y, root.z,
-						rect.width, rect.height, rect.depth),
-				row -> row.getInteger("board_id"));
+		List<Integer> boardsToAllocate = sql.getConnectedBoardIDs
+				.call(machineId, root.x, root.y, root.z, rect.width,
+						rect.height, rect.depth)
+				.map(row -> row.getInteger("board_id")).toList();
 		if (boardsToAllocate.isEmpty()) {
 			return false;
 		}
@@ -710,8 +706,8 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			JobState targetState) {
 		JobState sourceState = sql.getJobState.call1(jobId).get()
 				.getEnum("job_state", JobState.class);
-		List<Integer> boards = rowsAsList(sql.getJobBoards.call(jobId),
-				row -> row.getInteger("board_id"));
+		List<Integer> boards = sql.getJobBoards.call(jobId)
+				.map(row -> row.getInteger("board_id")).toList();
 		if (boards.isEmpty()) {
 			if (targetState == DESTROYED) {
 				log.info("no boards for {} in destroy", jobId);
