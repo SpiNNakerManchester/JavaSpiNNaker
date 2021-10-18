@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -26,8 +27,10 @@ import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.net.Socket;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -47,6 +50,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
@@ -232,12 +239,14 @@ class V1TaskImpl extends V1CompatTask {
 		Integer maxDead = (Integer) kwargs.get("max_dead_boards");
 		Number keepalive = (Number) kwargs.get("keepalive");
 		String machineName = (String) kwargs.get("machine");
-		Job job = spalloc.createJob(serviceUser, create, machineName,
-				tags(kwargs.get("tags")),
-				isNull(keepalive) ? DEFAULT_KEEPALIVE
-						: Duration.ofSeconds(keepalive.intValue()),
-				maxDead, cmd);
-		return job.getId();
+		return inAuthenticatedContext(() -> {
+			Job job = spalloc.createJob(serviceUser, create, machineName,
+					tags(kwargs.get("tags")),
+					isNull(keepalive) ? DEFAULT_KEEPALIVE
+							: Duration.ofSeconds(keepalive.intValue()),
+					maxDead, cmd);
+			return job.getId();
+		});
 	}
 
 	@Override
@@ -267,7 +276,9 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final JobDescription[] listJobs() {
 		// Messy; hits the database many times
-		return mapArrayTx(() -> spalloc.getJobs(false, LOTS, 0).jobs(),
+		return mapArrayTx(
+				() -> inAuthenticatedContext(
+						() -> spalloc.getJobs(false, LOTS, 0).jobs()),
 				JobDescription.class, (job, jd) -> {
 					jd.setJobID(job.getId());
 					jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
@@ -296,8 +307,10 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final Machine[] listMachines() {
 		// Messy; hits the database many times
-		return mapArrayTx(() -> spalloc.getMachines().values(), Machine.class,
-				(m, md) -> {
+		return mapArrayTx(
+				() -> inAuthenticatedContext(
+						() -> spalloc.getMachines().values()),
+				Machine.class, (m, md) -> {
 					md.setName(m.getName());
 					md.setTags(new ArrayList<>(m.getTags()));
 					md.setWidth(m.getWidth());
@@ -317,8 +330,11 @@ class V1TaskImpl extends V1CompatTask {
 			job.access(host());
 		}
 		manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-			spalloc.getJobs(false, LOTS, 0).waitForChange(NOTIFIER_WAIT_TIME);
-			List<Integer> actual = spalloc.getJobs(false, LOTS, 0).ids();
+			List<Integer> actual = inAuthenticatedContext(() -> {
+				spalloc.getJobs(false, LOTS, 0)
+						.waitForChange(NOTIFIER_WAIT_TIME);
+				return spalloc.getJobs(false, LOTS, 0).ids();
+			});
 			if (nonNull(jobId)) {
 				actual.retainAll(singleton(jobId));
 			}
@@ -335,8 +351,9 @@ class V1TaskImpl extends V1CompatTask {
 		}
 		manageNotifier(machNotifiers, machine, wantNotify, () -> {
 			epochs.getMachineEpoch().waitForChange(NOTIFIER_WAIT_TIME);
-			List<String> actual =
-					new ArrayList<String>(spalloc.getMachines().keySet());
+			List<String> actual = new ArrayList<>(
+					inAuthenticatedContext(() -> spalloc.getMachines())
+							.keySet());
 			if (nonNull(machine)) {
 				actual.retainAll(singleton(machine));
 			}
@@ -424,13 +441,14 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	private Job getJob(int jobId) throws TaskException {
-		return spalloc.getJob(serviceUserPermit, jobId)
-				.orElseThrow(() -> new TaskException("no such job"));
+		return inAuthenticatedContext(
+				() -> spalloc.getJob(serviceUserPermit, jobId))
+						.orElseThrow(() -> new TaskException("no such job"));
 	}
 
 	private SpallocAPI.Machine getMachine(String machineName)
 			throws TaskException {
-		return spalloc.getMachine(machineName)
+		return inAuthenticatedContext(() -> spalloc.getMachine(machineName))
 				.orElseThrow(() -> new TaskException("no such machine"));
 	}
 
@@ -457,5 +475,88 @@ class V1TaskImpl extends V1CompatTask {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * Used to protect access to the spalloc core service.
+	 *
+	 * @param <T>
+	 *            The type of the result of the action.
+	 * @author Donal Fellows
+	 */
+	@FunctionalInterface
+	private interface InContext<T> {
+		/**
+		 * Perform the action.
+		 *
+		 * @return The result of the action.
+		 */
+		T act();
+	}
+
+	/**
+	 * Push our special authentication object for the duration of the inner
+	 * code. Used to satisfy Spring method security.
+	 *
+	 * @param <T>
+	 *            The type of the result
+	 * @param inContext
+	 *            The inner code to run with an authentication object applied.
+	 * @return Whatever the inner code returns
+	 */
+	private <T> T inAuthenticatedContext(InContext<T> inContext) {
+		@SuppressWarnings("serial")
+		final class TempAuth implements Authentication {
+			@Override
+			public String getName() {
+				return serviceUser;
+			}
+
+			@Override
+			public Collection<? extends GrantedAuthority> getAuthorities() {
+				return asList(() -> USER.name());
+			}
+
+			@Override
+			public Object getCredentials() {
+				// Never any credentials; always authenticated if this is in use
+				return null;
+			}
+
+			@Override
+			public Object getDetails() {
+				return serviceUserPermit;
+			}
+
+			@Override
+			public Object getPrincipal() {
+				return serviceUserPermit;
+			}
+
+			@Override
+			public boolean isAuthenticated() {
+				// Never any credentials; always authenticated if this is in use
+				return true;
+			}
+
+			@Override
+			public void setAuthenticated(boolean isAuthenticated) {
+				throw new UnsupportedOperationException();
+			}
+
+			private void writeObject(java.io.ObjectOutputStream out)
+					throws NotSerializableException {
+				throw new NotSerializableException("not actually serializable");
+			}
+		}
+
+		SecurityContext context = SecurityContextHolder.getContext();
+		Authentication old = context.getAuthentication();
+		try {
+			context.setAuthentication(new TempAuth());
+			return inContext.act();
+		} finally {
+			context.setAuthentication(old);
+		}
 	}
 }
