@@ -176,7 +176,7 @@ class V1TaskImpl extends V1CompatTask {
 		}).collect(toList()));
 		jmi.setWidth(job.getWidth().orElse(0));
 		jmi.setHeight(job.getHeight().orElse(0));
-		return null;
+		return jmi;
 	}
 
 	@Override
@@ -371,15 +371,6 @@ class V1TaskImpl extends V1CompatTask {
 				.setPower(switchOn);
 	}
 
-	@Override
-	protected final WhereIs whereIsJobChip(int jobId, int x, int y)
-			throws TaskException {
-		Job job = getJob(jobId);
-		job.access(host());
-		return whereis(job.whereIs(x, y).orElseThrow(
-				() -> new TaskException("no boards currently allocated")));
-	}
-
 	private WhereIs whereis(BoardLocation bl) {
 		WhereIs wi = new WhereIs();
 		wi.setMachine(bl.getMachine());
@@ -393,6 +384,15 @@ class V1TaskImpl extends V1CompatTask {
 			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().get()));
 		}
 		return wi;
+	}
+
+	@Override
+	protected final WhereIs whereIsJobChip(int jobId, int x, int y)
+			throws TaskException {
+		Job job = getJob(jobId);
+		job.access(host());
+		return whereis(job.whereIs(x, y).orElseThrow(
+				() -> new TaskException("no boards currently allocated")));
 	}
 
 	@Override

@@ -228,7 +228,7 @@ public abstract class V1CompatTask {
 	private void sendMessage(Object msg) throws JsonProcessingException {
 		// We go via a string to avoid early closing issues
 		String data = mapper.writeValueAsString(msg);
-		log.info("about to send message: {}", data);
+		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
 			out.println(data);
