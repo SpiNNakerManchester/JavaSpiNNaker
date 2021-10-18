@@ -649,7 +649,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			for (String s : functions.keySet()) {
 				installFunction(conn, s, functions.get(s));
 			}
-			log.info("attaching historical job DB ({})", tombstoneFile);
+			log.debug("attaching historical job DB ({})", tombstoneFile);
 			try (PreparedStatement s =
 					conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
 				s.setString(1, tombstoneFile);
