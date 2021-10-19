@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Hostname:</th>
-	<td>${ job.boards.empty ? 'not yet allocated' : job.boards[0].address }</td>
+	<td>${ empty job.boards ? 'not yet allocated' : job.boards[0].address }</td>
 </tr>
 <tr>
 	<th class="lineTitle">Width:</th>
@@ -93,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Num boards:</th>
-	<td>${ job.boards.size() > 0 ? job.boards.size : 'not yet allocated' }</td>
+	<td>${ empty job.boards ? 'not yet allocated' : job.boards.size() }</td>
 </tr>
 <tr>
 	<th class="lineTitle">Board power:</th>
