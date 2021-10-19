@@ -51,10 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <td class="textColumn"><code>${ job.creationTimestamp }</code></td>
     <td class="textColumn"><code>${ job.keepaliveInterval }</code></td>
     <td class="textColumn">
-    ${ job.owner.getOrElse("") }
-    <c:if test="${ job.host.present }">
-	    (${ job.host.get() })
-    </c:if>
+	    <c:if test="${ job.owner.present }"> ${ job.owner.get() } </c:if>
+	    <c:if test="${ job.host.present }"> (${ job.host.get() }) </c:if>
     </td>
 </tr>
 </c:forEach>
