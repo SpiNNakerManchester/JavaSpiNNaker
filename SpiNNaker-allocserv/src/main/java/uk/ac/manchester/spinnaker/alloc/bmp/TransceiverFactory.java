@@ -164,7 +164,7 @@ class DummyTransceiver implements BMPTransceiverInterface {
 	DummyTransceiver(String machineName, BMPConnectionData data) {
 		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
 				data.ipAddress, data.boards);
-		version = new VersionInfo(syntheticVersionData());
+		version = new VersionInfo(syntheticVersionData(), true);
 		status = new HashMap<>();
 	}
 

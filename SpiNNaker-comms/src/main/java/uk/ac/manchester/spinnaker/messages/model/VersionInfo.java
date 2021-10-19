@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPLocation;
 
 /**
  * Decodes SC&amp;MP/SARK version information as returned by the SVER command.
@@ -77,15 +78,22 @@ public final class VersionInfo {
 	/**
 	 * @param buffer
 	 *            buffer holding an SCP packet containing version information
+	 * @param isBMP
+	 *            Are we really processing the result of a request to get a
+	 *            BMP's version.
 	 * @throws IllegalArgumentException
 	 *             If the buffer contains an unsupported format of data
 	 */
-	public VersionInfo(ByteBuffer buffer) {
+	public VersionInfo(ByteBuffer buffer, boolean isBMP) {
 		int p = toUnsignedInt(buffer.get());
 		physicalCPUID = toUnsignedInt(buffer.get());
 		int y = toUnsignedInt(buffer.get());
 		int x = toUnsignedInt(buffer.get());
-		core = new CoreLocation(x, y, p);
+		if (isBMP) {
+			core = new BMPLocation(x, y, p);
+		} else {
+			core = new CoreLocation(x, y, p);
+		}
 		buffer.getShort(); // Ignore 2 bytes
 		int vn = Short.toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
