@@ -243,23 +243,23 @@ public class JobDescription {
 	 * @return The width of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadWidth() {
-		IntSummaryStatistics stats = boards.stream().map(b -> b.getX())
-				.collect(summarizingInt(Integer::intValue));
+		IntSummaryStatistics stats =
+				boards.stream().collect(summarizingInt(BoardCoords::getX));
 		if (stats.getCount() < 1) {
 			return 0;
 		}
-		return stats.getMax() - stats.getMin();
+		return stats.getMax() - stats.getMin() + 1;
 	}
 
 	/**
 	 * @return The height of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadHeight() {
-		IntSummaryStatistics stats = boards.stream().map(b -> b.getY())
-				.collect(summarizingInt(Integer::intValue));
+		IntSummaryStatistics stats =
+				boards.stream().collect(summarizingInt(BoardCoords::getY));
 		if (stats.getCount() < 1) {
 			return 0;
 		}
-		return stats.getMax() - stats.getMin();
+		return stats.getMax() - stats.getMin() + 1;
 	}
 }
