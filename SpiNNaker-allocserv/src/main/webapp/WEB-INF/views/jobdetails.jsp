@@ -19,13 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
 	<jsp:param value="Spalloc Job" name="title"/>
+	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
 <script>
 <jsp:include page="data/jobdetails_obj.jsp">
 	<jsp:param name="job" value="${ job }"/>
 </jsp:include>
-</script>
-<script src="spalloc.js">
 </script>
 <body>
 
