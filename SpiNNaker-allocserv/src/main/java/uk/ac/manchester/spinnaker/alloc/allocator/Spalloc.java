@@ -125,10 +125,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Override
 	public List<MachineListEntryRecord> listMachines() {
-		return db.execute(this::listMachines);
+		return db.execute(Spalloc::listMachines);
 	}
 
-	private List<MachineListEntryRecord> listMachines(Connection conn) {
+	private static List<MachineListEntryRecord> listMachines(Connection conn) {
 		try (Query listMachines = conn.query(GET_ALL_MACHINES);
 				Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
 				Query getTags = conn.query(GET_TAGS)) {
@@ -138,7 +138,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 	}
 
-	private MachineListEntryRecord makeMachineListEntryRecord(
+	private static MachineListEntryRecord makeMachineListEntryRecord(
 			Query countMachineThings, Query getTags, Row row) {
 		int id = row.getInt("machine_id");
 		MachineListEntryRecord rec = new MachineListEntryRecord();
@@ -204,8 +204,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		});
 	}
 
-	private Optional<MachineDescription> getBasicMachineInfo(String machine,
-			Query namedMachine) {
+	private static Optional<MachineDescription>
+			getBasicMachineInfo(String machine, Query namedMachine) {
 		return namedMachine.call1(machine).map(row -> {
 			MachineDescription md = new MachineDescription();
 			md.setId(row.getInt("machine_id"));
@@ -216,7 +216,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		});
 	}
 
-	private JobInfo getMachineJobInfo(Permit permit, Query getCoords, Row row) {
+	private static JobInfo getMachineJobInfo(Permit permit, Query getCoords,
+			Row row) {
 		int jobId = row.getInt("job_id");
 		String owner = permit.unveilFor(row.getString("owner_name"))
 				? row.getString("owner_name")
@@ -261,7 +262,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		});
 	}
 
-	private JobListEntryRecord makeJobListEntryRecord(Permit permit,
+	private static JobListEntryRecord makeJobListEntryRecord(Permit permit,
 			Query countPoweredBoards, Row row) {
 		JobListEntryRecord rec = new JobListEntryRecord();
 		int id = row.getInt("job_id");
@@ -275,7 +276,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		rec.setMachineName(row.getString("machine_name"));
 		rec.setCreationTimestamp(row.getInstant("create_timestamp"));
 		rec.setKeepaliveInterval(row.getDuration("keepalive_interval"));
-		String owner = row.getString("owner_name");
+		String owner = row.getString("user_name");
 		if (permit.unveilFor(owner)) {
 			rec.setOwner(owner);
 			rec.setHost(row.getString("keepalive_host"));
@@ -311,8 +312,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		});
 	}
 
-	private JobDescription jobDescription(int id, Row job, Query chipDimensions,
-			Query countPoweredBoards, Query getCoords) {
+	private static JobDescription jobDescription(int id, Row job,
+			Query chipDimensions, Query countPoweredBoards, Query getCoords) {
 		/*
 		 * We won't deliver this object to the front end unless they are allowed
 		 * to see it in its entirety.
@@ -367,7 +368,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		});
 	}
 
-	private Optional<Integer> getUser(Connection conn, String userName) {
+	private static Optional<Integer> getUser(Connection conn, String userName) {
 		try (Query getUser = conn.query(GET_USER_ID)) {
 			return getUser.call1(userName).map(row -> row.getInt("user_id"));
 		}
@@ -442,7 +443,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		}
 	}
 
-	private int insertJob(Connection conn, MachineImpl m, int owner,
+	private static int insertJob(Connection conn, MachineImpl m, int owner,
 			Duration keepaliveInterval, byte[] req) {
 		try (Update makeJob = conn.update(INSERT_JOB)) {
 			return makeJob.key(m.id, owner, keepaliveInterval, req).orElse(-1);
@@ -467,6 +468,19 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			}
 		}
 		return Optional.empty();
+	}
+
+	private static DownLink makeDownLinkFromRow(Row row) {
+		BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
+				row.getInt("board_1_y"), row.getInt("board_1_z"),
+				row.getInt("board_1_c"), row.getInt("board_1_f"),
+				row.getInteger("board_1_b"), row.getString("board_1_addr"));
+		BoardCoords board2 = new BoardCoords(row.getInt("board_2_x"),
+				row.getInt("board_2_y"), row.getInt("board_2_z"),
+				row.getInt("board_2_c"), row.getInt("board_2_f"),
+				row.getInteger("board_2_b"), row.getString("board_2_addr"));
+		return new DownLink(board1, row.getEnum("dir_1", Direction.class),
+				board2, row.getEnum("dir_2", Direction.class));
 	}
 
 	private class MachineImpl implements Machine {
@@ -611,7 +625,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query boardNumbers = conn.query(getDeadLinks)) {
 				List<DownLink> downLinks = conn.transaction(() -> boardNumbers
-						.call(id).map(this::makeDownLinkFromRow).toList());
+						.call(id).map(Spalloc::makeDownLinkFromRow).toList());
 				synchronized (this) {
 					if (isNull(downLinksCache)) {
 						downLinksCache = downLinks;
@@ -619,19 +633,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				}
 				return unmodifiableList(downLinks);
 			}
-		}
-
-		private DownLink makeDownLinkFromRow(Row row) {
-			BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
-					row.getInt("board_1_y"), row.getInt("board_1_z"),
-					row.getInt("board_1_c"), row.getInt("board_1_f"),
-					row.getInteger("board_1_b"), row.getString("board_1_addr"));
-			BoardCoords board2 = new BoardCoords(row.getInt("board_2_x"),
-					row.getInt("board_2_y"), row.getInt("board_2_z"),
-					row.getInt("board_2_c"), row.getInt("board_2_f"),
-					row.getInteger("board_2_b"), row.getString("board_2_addr"));
-			return new DownLink(board1, row.getEnum("dir_1", Direction.class),
-					board2, row.getEnum("dir_2", Direction.class));
 		}
 
 		@Override

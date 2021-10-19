@@ -184,9 +184,11 @@ public abstract class SQLQueries {
 	@ResultColumn("keepalive_host")
 	@ResultColumn("user_name")
 	protected static final String LIST_LIVE_JOBS =
-			"SELECT job_id, machine_id, create_timestamp, keepalive_interval, "
-					+ "job_state, allocation_size, keepalive_host, user_name "
+			"SELECT job_id, jobs.machine_id, create_timestamp, "
+					+ "keepalive_interval, job_state, allocation_size, "
+					+ "keepalive_host, user_name, machines.machine_name "
 					+ "FROM jobs "
+					+ "JOIN machines USING (machine_id) "
 					+ "JOIN user_info ON jobs.owner = user_info.user_id "
 					+ "WHERE job_state != 4"; // DESTROYED
 

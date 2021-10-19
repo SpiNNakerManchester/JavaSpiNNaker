@@ -748,9 +748,11 @@ class DQLTest extends SQLQueries {
 	void listLiveJobs() {
 		try (Query q = c.query(LIST_LIVE_JOBS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("allocation_size", "create_timestamp", "job_id",
-					"job_state", "keepalive_host", "keepalive_interval",
-					"machine_id", "user_name"), q.getRowColumnNames());
+			assertSetEquals(
+					set("allocation_size", "create_timestamp", "job_id",
+							"job_state", "keepalive_host", "keepalive_interval",
+							"machine_id", "machine_name", "user_name"),
+					q.getRowColumnNames());
 			// No jobs right now
 			assertFalse(q.call1().isPresent());
 		}
