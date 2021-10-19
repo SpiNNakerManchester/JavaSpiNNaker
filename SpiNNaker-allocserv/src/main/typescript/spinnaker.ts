@@ -500,13 +500,13 @@ function drawMachine(
 		if (jobIdMap.has(key)) {
 			const job = jobMap.get(jobIdMap.get(key));
 			s += `\nJob ID: ${job.id}`;
-			if (job.owner !== undefined) {
+			if (job.hasOwnProperty("owner")) {
 				s += `\nOwner: ${job.owner}`;
 			}
 		}
 		if (board !== undefined) {
 			s += `\nPhysical: [C: ${board.physical.cabinet}, F: ${board.physical.frame}, B: ${board.physical.board}]`;
-			if (board.network !== undefined) {
+			if (board.hasOwnProperty("network")) {
 				s += "\nIP Address: " + board.network.address;
 			}
 		} else {
@@ -653,7 +653,7 @@ function drawJob(
 		}
 		if (board !== null) {
 			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
-			if (board.network !== undefined) {
+			if (board.hasOwnProperty("network")) {
 				s += `\nIP: ${board.network.address}`;
 			}
 			return s;
