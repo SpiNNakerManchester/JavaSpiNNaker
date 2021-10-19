@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
-import static java.time.temporal.ChronoUnit.MILLIS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -926,7 +925,7 @@ public class BMPController extends SQLQueries {
 						numTries == props.getPowerAttempts())) {
 					break;
 				}
-				sleep(props.getProbeInterval().get(MILLIS));
+				sleep(props.getProbeInterval().toMillis());
 			}
 		}
 	}
