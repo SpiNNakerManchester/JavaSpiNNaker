@@ -43,10 +43,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <tbody>
 <c:forEach items="${ jobList }" var="job">
 <tr>
-    <td class="textColumn"><code>${ job.id }</code></td>
+    <td class="textColumn">
+	    <c:if test="${ job.detailsUrl.present }">
+	    	<a href="${ job.detailsUrl.get() }"><code>${ job.id }</code></a>
+	    </c:if>
+	    <c:if test="${ !job.detailsUrl.present }">
+		    <code>${ job.id }</code>
+	    </c:if>
+    </td>
     <td class="textColumn">${ job.state }</td>
     <td class="textColumn">${ job.powered ? "on" : "off" }</td>
-    <td class="numberColumn">${ job.numBoards }</td>
+    <td class="numberColumn">${ job.numBoards.orElse(0) }</td>
     <td class="textColumn"><code>${ job.machineName }</code></td>
     <td class="textColumn"><code>${ job.creationTimestamp }</code></td>
     <td class="textColumn"><code>${ job.keepaliveInterval }</code></td>

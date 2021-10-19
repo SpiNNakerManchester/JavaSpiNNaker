@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 </thead>
 <tbody>
-<c:forEach items="${ machineList}" var="machine">
+<c:forEach items="${ machineList }" var="machine">
 <tr>
     <td class="textColumn">
     <c:if test="${ machine.detailsUrl.present }">
