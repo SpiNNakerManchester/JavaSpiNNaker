@@ -23,7 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -40,7 +40,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		extends SCPRequest<T> {
 	private static SDPHeader bmpHeader(int board) {
-		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board),
+		return new SDPHeader(REPLY_EXPECTED, new BMPLocation(board),
 				DEFAULT_PORT);
 	}
 
@@ -160,6 +160,49 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	BMPRequest(Collection<Integer> boards, SCPCommand command, int argument1,
 			int argument2) {
 		super(bmpHeader(boards), command, argument1, argument2, 0, NO_DATA);
+	}
+
+	/**
+	 * Like a core location, but for BMPs. Note that board numbers are
+	 * <em>not</em> restricted in range like core numbers.
+	 *
+	 * @author Donal Fellows
+	 */
+	private static class BMPLocation implements HasCoreLocation {
+		private final int board;
+
+		BMPLocation(int board) {
+			this.board = board;
+		}
+
+		@Override
+		public int getX() {
+			return 0;
+		}
+
+		@Override
+		public int getY() {
+			return 0;
+		}
+
+		/**
+		 * @return The board number of the board. Not actually a processor ID.
+		 */
+		@Override
+		public int getP() {
+			return board;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return (other instanceof BMPLocation)
+					&& board == ((BMPLocation) other).board;
+		}
+
+		@Override
+		public int hashCode() {
+			return board;
+		}
 	}
 
 	/**
