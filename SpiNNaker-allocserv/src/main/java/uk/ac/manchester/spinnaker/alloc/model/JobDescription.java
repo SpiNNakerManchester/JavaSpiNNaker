@@ -27,8 +27,6 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 
-import uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest;
-
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
  * <pre>
@@ -64,7 +62,7 @@ public class JobDescription {
 
 	private Optional<String> ownerHost = Optional.empty();
 
-	private CreateJobRequest request;
+	private String request;
 
 	private Integer width;
 
@@ -152,11 +150,11 @@ public class JobDescription {
 	/**
 	 * @return the request
 	 */
-	public CreateJobRequest getRequest() {
+	public String getRequest() {
 		return request;
 	}
 
-	public void setRequest(CreateJobRequest request) {
+	public void setRequest(String request) {
 		this.request = request;
 	}
 

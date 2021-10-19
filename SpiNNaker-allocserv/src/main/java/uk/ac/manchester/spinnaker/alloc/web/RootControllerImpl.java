@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -25,7 +26,6 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 
-import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
@@ -50,8 +50,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-
-import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
@@ -99,9 +97,6 @@ public class RootControllerImpl implements RootController {
 
 	@Autowired
 	private UserControl userControl;
-
-	@Autowired
-	private JsonMapper mapper;
 
 	private static URI uri(Object selfCall) {
 		// No template variables in the overall controller, so can factor out
@@ -216,16 +211,12 @@ public class RootControllerImpl implements RootController {
 			JobDescription mach = spallocCore.getJobInfo(permit, id)
 					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 			if (nonNull(mach.getRequestBytes())) {
-				mach.setRequest(mapper.readValue(mach.getRequestBytes(),
-						CreateJobRequest.class));
+				mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
 			}
 			mach.setMachineUrl(uri(SELF.getMachineInfo(mach.getMachine())));
 			return new ModelAndView(JOB_VIEW, "job", mach);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
-			return new ModelAndView(MVC_ERROR);
-		} catch (IOException e) {
-			log.error("deserialization problem", e);
 			return new ModelAndView(MVC_ERROR);
 		}
 	}
