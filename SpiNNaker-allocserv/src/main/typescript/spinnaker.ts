@@ -384,8 +384,8 @@ function setTooltipCore(
 	} else {
 		const rect = canv.getBoundingClientRect();
 		const [x, y] = locmapper(triad)[0];
-		tooltip.style.top = (rect.top + x + scale + 10) + "px";
-        tooltip.style.left = (rect.left + y - scale + 10) + "px";
+		tooltip.style.top = (rect.top + y + scale + 10) + "px";
+        tooltip.style.left = (rect.left + x - scale + 10) + "px";
         tooltipCtx.clearRect(0, 0, tooltip.width, tooltip.height);
         tooltipCtx.textAlign = "center";
 		const tx = tooltip.getBoundingClientRect().width / 2;
