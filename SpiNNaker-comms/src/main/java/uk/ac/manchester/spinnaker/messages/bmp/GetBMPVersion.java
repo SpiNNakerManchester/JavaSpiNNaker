@@ -47,7 +47,7 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_VER, buffer);
+			super("Read Version", CMD_VER, buffer);
 			versionInfo = new VersionInfo(buffer, true);
 		}
 	}
