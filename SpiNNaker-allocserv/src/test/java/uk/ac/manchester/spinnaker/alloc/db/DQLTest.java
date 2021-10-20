@@ -432,8 +432,8 @@ class DQLTest extends SQLQueries {
 			Set<String> colNames = q.getRowColumnNames();
 			assertSetEquals(set("change_id", "job_id", "board_id", "power",
 					"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_nw",
-					"fpga_se", "in_progress", "from_state", "to_state"),
-					colNames);
+					"fpga_se", "in_progress", "from_state", "to_state",
+					"board_num"), colNames);
 			// Ensure that this link is maintained
 			for (Direction d : Direction.values()) {
 				assertTrue(colNames.contains(d.columnName),

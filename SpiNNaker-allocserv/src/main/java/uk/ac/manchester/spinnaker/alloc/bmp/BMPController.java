@@ -20,6 +20,7 @@ import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -63,12 +64,12 @@ import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
@@ -187,8 +188,8 @@ public class BMPController extends SQLQueries {
 		 * @throws IOException
 		 *             If network I/O fails.
 		 */
-		private boolean isGoodFPGA(Integer board,
-				FpgaIdentifiers fpga) throws ProcessException, IOException {
+		private boolean isGoodFPGA(Integer board, FpgaIdentifiers fpga)
+				throws ProcessException, IOException {
 			int flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP,
 					board);
 			// FPGA ID is bottom two bits of FLAG register
@@ -220,6 +221,14 @@ public class BMPController extends SQLQueries {
 			return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
 		}
 
+		private <T, U> List<U> remap(List<T> boardIds, Map<T, U> idToBoard) {
+			List<U> boardNums = new ArrayList<>(boardIds.size());
+			for (T id : boardIds) {
+				boardNums.add(requireNonNull(idToBoard.get(id)));
+			}
+			return boardNums;
+		}
+
 		/**
 		 * {@inheritDoc}
 		 * <p>
@@ -227,20 +236,23 @@ public class BMPController extends SQLQueries {
 		 * on that link. We assume that the other end of the link also behaves.
 		 */
 		@Override
-		public void setLinkOff(Link link) throws ProcessException, IOException {
+		public void setLinkOff(Link link, Map<Integer, Integer> idToBoard)
+				throws ProcessException, IOException {
+			Integer board = requireNonNull(idToBoard.get(link.board));
 			// skip FPGA link configuration if old BMP version
-			if (!canBoardManageFPGAs(link.board)) {
+			if (!canBoardManageFPGAs(board)) {
 				return;
 			}
 			Direction d = link.link;
 			txrx.writeFPGARegister(d.fpga.ordinal(), d.bank, STOP, 1, ROOT_BMP,
-					link.board);
+					board);
 		}
 
 		@Override
-		public void powerOnAndCheck(List<Integer> boards)
+		public void powerOnAndCheck(List<Integer> boards,
+				Map<Integer, Integer> idToBoard)
 				throws ProcessException, InterruptedException, IOException {
-			List<Integer> boardsToPower = boards;
+			List<Integer> boardsToPower = remap(boards, idToBoard);
 			for (int attempt = 1; attempt <= props
 					.getFpgaAttempts(); attempt++) {
 				txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
@@ -283,9 +295,10 @@ public class BMPController extends SQLQueries {
 		}
 
 		@Override
-		public void powerOff(List<Integer> boards)
+		public void powerOff(List<Integer> boards,
+				Map<Integer, Integer> idToBoard)
 				throws ProcessException, InterruptedException, IOException {
-			txrx.power(POWER_OFF, ROOT_BMP, boards);
+			txrx.power(POWER_OFF, ROOT_BMP, remap(boards, idToBoard));
 		}
 	}
 
@@ -384,6 +397,8 @@ public class BMPController extends SQLQueries {
 
 		private final List<Integer> changeIds;
 
+		private final Map<Integer, Integer> idToBoard;
+
 		/**
 		 * Create a request.
 		 *
@@ -391,10 +406,10 @@ public class BMPController extends SQLQueries {
 		 *            What machine are the boards on? <em>Must not</em> be
 		 *            {@code null}.
 		 * @param powerOnBoards
-		 *            What boards (by physical ID) are to be powered on? May be
+		 *            What boards (by DB ID) are to be powered on? May be
 		 *            {@code null}; that's equivalent to the empty list.
 		 * @param powerOffBoards
-		 *            What boards (by physical ID) are to be powered off? May be
+		 *            What boards (by DB ID) are to be powered off? May be
 		 *            {@code null}; that's equivalent to the empty list.
 		 * @param linkRequests
 		 *            Any link power control requests. By default, links are on
@@ -411,12 +426,14 @@ public class BMPController extends SQLQueries {
 		 * @param changeIds
 		 *            The DB ids that describe the change, so we can update
 		 *            those records.
+		 * @param idToBoard
+		 *            How to get the physical ID of a board from its database ID
 		 */
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		Request(Machine machine, List<Integer> powerOnBoards,
 				List<Integer> powerOffBoards, List<Link> linkRequests,
 				Integer jobId, JobState from, JobState to,
-				List<Integer> changeIds) {
+				List<Integer> changeIds, Map<Integer, Integer> idToBoard) {
 			this.machine = requireNonNull(machine);
 			this.powerOnBoards = new ArrayList<>(
 					isNull(powerOnBoards) ? emptyList() : powerOnBoards);
@@ -428,6 +445,8 @@ public class BMPController extends SQLQueries {
 			this.from = from;
 			this.to = to;
 			this.changeIds = changeIds;
+			this.idToBoard =
+					isNull(idToBoard) ? emptyMap() : new HashMap<>(idToBoard);
 		}
 
 		/**
@@ -446,18 +465,18 @@ public class BMPController extends SQLQueries {
 				throws ProcessException, InterruptedException, IOException {
 			// Send any power on commands
 			if (!powerOnBoards.isEmpty()) {
-				controller.powerOnAndCheck(powerOnBoards);
+				controller.powerOnAndCheck(powerOnBoards, idToBoard);
 			}
 
 			// Process perimeter link requests next
 			for (Link linkReq : linkRequests) {
 				// Set the link state, as required
-				controller.setLinkOff(linkReq);
+				controller.setLinkOff(linkReq, idToBoard);
 			}
 
 			// Finally send any power off commands
 			if (!powerOffBoards.isEmpty()) {
-				controller.powerOff(powerOffBoards);
+				controller.powerOff(powerOffBoards, idToBoard);
 			}
 		}
 
@@ -622,10 +641,12 @@ public class BMPController extends SQLQueries {
 		List<Integer> boardsOff = new ArrayList<>();
 		List<Link> linksOff = new ArrayList<>();
 		JobState from = UNKNOWN, to = UNKNOWN;
+		Map<Integer, Integer> idToBoard = new HashMap<>();
 
 		for (Row row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
 			Integer board = row.getInteger("board_id");
+			idToBoard.put(board, row.getInteger("board_num"));
 			boolean switchOn = row.getBoolean("power");
 			/*
 			 * Set these multiple times; we don't care as they should be the
@@ -654,7 +675,7 @@ public class BMPController extends SQLQueries {
 		}
 
 		requestCollector.add(new Request(machine, boardsOn, boardsOff, linksOff,
-				jobId, from, to, changeIds));
+				jobId, from, to, changeIds, idToBoard));
 		for (Integer changeId : changeIds) {
 			sql.setInProgress.call(true, changeId);
 		}

@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -34,6 +35,9 @@ public interface SpiNNakerControl {
 	 *
 	 * @param boards
 	 *            Which boards to switch on.
+	 * @param idToBoard
+	 *            How to get a physical board number from a database ID of the
+	 *            board.
 	 * @throws ProcessException
 	 *             If a BMP sends a failure message.
 	 * @throws IOException
@@ -41,7 +45,7 @@ public interface SpiNNakerControl {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	void powerOnAndCheck(List<Integer> boards)
+	void powerOnAndCheck(List<Integer> boards, Map<Integer, Integer> idToBoard)
 			throws ProcessException, InterruptedException, IOException;
 
 	/**
@@ -50,18 +54,25 @@ public interface SpiNNakerControl {
 	 *
 	 * @param link
 	 *            The link to turn off.
+	 * @param idToBoard
+	 *            How to get a physical board number from a database ID of the
+	 *            board.
 	 * @throws ProcessException
 	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If network I/O fails.
 	 */
-	void setLinkOff(Link link) throws ProcessException, IOException;
+	void setLinkOff(Link link, Map<Integer, Integer> idToBoard)
+			throws ProcessException, IOException;
 
 	/**
 	 * Turn off boards. Turning off a board also turns off its links.
 	 *
 	 * @param boards
 	 *            What boards to turn off.
+	 * @param idToBoard
+	 *            How to get a physical board number from a database ID of the
+	 *            board.
 	 * @throws ProcessException
 	 *             If a BMP sends a failure message.
 	 * @throws IOException
@@ -69,6 +80,6 @@ public interface SpiNNakerControl {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	void powerOff(List<Integer> boards)
+	void powerOff(List<Integer> boards, Map<Integer, Integer> idToBoard)
 			throws ProcessException, InterruptedException, IOException;
 }

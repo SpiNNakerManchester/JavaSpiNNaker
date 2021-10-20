@@ -35,7 +35,7 @@ final class Link {
 	 * Create a request.
 	 *
 	 * @param board
-	 *            The physical ID of the board that the FPGA is located on.
+	 *            The DB ID of the board that the FPGA is located on.
 	 * @param link
 	 *            Which link (and hence which FPGA).
 	 */

@@ -579,8 +579,13 @@ public abstract class SQLQueries {
 	@ResultColumn("in_progress")
 	@ResultColumn("from_state")
 	@ResultColumn("to_state")
-	protected static final String GET_CHANGES = "SELECT * FROM pending_changes "
-			+ "WHERE job_id = :job_id AND NOT in_progress";
+	@ResultColumn("board_num")
+	protected static final String GET_CHANGES =
+			"SELECT change_id, job_id, pending_changes.board_id, power, "
+					+ "fpga_n, fpga_s, fpga_e, fpga_w, fpga_se, fpga_nw, "
+					+ "in_progress, from_state, to_state, board_num "
+					+ "FROM pending_changes JOIN boards USING (board_id) "
+					+ "WHERE job_id = :job_id AND NOT in_progress";
 
 	/**
 	 * Set the progress status of a request to change the power state of a
