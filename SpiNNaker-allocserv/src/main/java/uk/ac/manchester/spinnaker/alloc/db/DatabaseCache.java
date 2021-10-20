@@ -135,7 +135,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 	 */
 	private void closeDatabaseConnection(Conn connection, Thread owner) {
 		try {
-			log.info("closing connection for {}", owner);
+			log.debug("closing connection for {}", owner);
 			connection.close();
 		} catch (SQLException e) {
 			log.warn("problem closing database connection", e);

@@ -651,7 +651,7 @@ function drawJob(
 		if (allocated.has(tuplekey(triad))) {
 			board = allocated.get(tuplekey(triad));
 		}
-		if (board !== null) {
+		if (board !== undefined) {
 			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
 			if (board.hasOwnProperty("network")) {
 				s += `\nIP: ${board.network.address}`;
