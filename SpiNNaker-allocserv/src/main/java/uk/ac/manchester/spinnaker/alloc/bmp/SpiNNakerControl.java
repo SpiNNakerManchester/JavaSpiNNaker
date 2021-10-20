@@ -20,24 +20,33 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
 /**
- * How to tell a SpiNNaker machine to turn on boards, turn them off, and to turn
- * off links on the perimeter of an allocation.
+ * How to tell a SpiNNaker BMP (specifically one that manages a frame) to turn
+ * on boards, turn them off, and to turn off links on the perimeter of an
+ * allocation.
+ * <p>
+ * Implementations of this are expected to be <em>prototype beans</em> that have
+ * a constructor that takes two arguments: <br>
+ * <blockquote> {@code TheCls(}{@link Machine} {@code machine,}
+ * {@link BMPCoords} {@code bmp)} </blockquote>
+ * <p>
+ * Note that SpiNNaker-2 will have a different concrete implementation of this,
+ * and functionality implemented by this might eventually move into the
+ * transceiver.
  */
 public interface SpiNNakerControl {
 	/**
-	 * Switch on a collection of boards on a machine and check that they've come
-	 * up correctly.
+	 * Switch on a collection of boards managed by a BMP on a machine and check
+	 * that they've come up correctly.
 	 * <p>
 	 * Note that this operation can take some time.
 	 *
 	 * @param boards
-	 *            Which boards to switch on.
-	 * @param idToBoard
-	 *            How to get a physical board number from a database ID of the
-	 *            board.
+	 *            The <em>database IDs</em> of the boards to switch on.
 	 * @throws ProcessException
 	 *             If a BMP sends a failure message.
 	 * @throws IOException
@@ -45,7 +54,7 @@ public interface SpiNNakerControl {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	void powerOnAndCheck(List<Integer> boards, Map<Integer, Integer> idToBoard)
+	void powerOnAndCheck(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException;
 
 	/**
@@ -54,25 +63,20 @@ public interface SpiNNakerControl {
 	 *
 	 * @param link
 	 *            The link to turn off.
-	 * @param idToBoard
-	 *            How to get a physical board number from a database ID of the
-	 *            board.
 	 * @throws ProcessException
 	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If network I/O fails.
 	 */
-	void setLinkOff(Link link, Map<Integer, Integer> idToBoard)
+	void setLinkOff(Link link)
 			throws ProcessException, IOException;
 
 	/**
-	 * Turn off boards. Turning off a board also turns off its links.
+	 * Turn off boards managed by a BMP. Turning off a board also turns off its
+	 * links.
 	 *
 	 * @param boards
-	 *            What boards to turn off.
-	 * @param idToBoard
-	 *            How to get a physical board number from a database ID of the
-	 *            board.
+	 *            The <em>database IDs</em> of the boards to turn off.
 	 * @throws ProcessException
 	 *             If a BMP sends a failure message.
 	 * @throws IOException
@@ -80,6 +84,16 @@ public interface SpiNNakerControl {
 	 * @throws InterruptedException
 	 *             If we're interrupted.
 	 */
-	void powerOff(List<Integer> boards, Map<Integer, Integer> idToBoard)
+	void powerOff(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException;
+
+	/**
+	 * Set how to map from database IDs for a board to what to use when talking
+	 * to the BMP.
+	 *
+	 * @param idToBoard
+	 *            How to get a physical board number from a database ID of the
+	 *            board.
+	 */
+	void setIdToBoardMap(Map<Integer, Integer> idToBoard);
 }

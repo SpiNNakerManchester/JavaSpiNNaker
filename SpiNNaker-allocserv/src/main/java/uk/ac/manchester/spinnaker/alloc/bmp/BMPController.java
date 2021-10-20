@@ -31,10 +31,6 @@ import static org.slf4j.MDC.putCloseable;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
-import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
-import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -49,19 +45,18 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.slf4j.MDC.MDCCloseable;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -77,11 +72,8 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
-import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
-import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
-import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 
@@ -314,26 +306,29 @@ public class BMPController extends SQLQueries {
 				throws ProcessException, InterruptedException, IOException {
 			for (Entry<BMPCoords, Map<Integer, Integer>> bmp : idToBoard
 					.entrySet()) {
+				// Init the real controller
 				SpiNNakerControl controller = controllers.get(bmp.getKey());
+				controller.setIdToBoardMap(bmp.getValue());
+
 				// Send any power on commands
 				List<Integer> on =
 						powerOnBoards.getOrDefault(bmp.getKey(), emptyList());
 				if (!on.isEmpty()) {
-					controller.powerOnAndCheck(on, bmp.getValue());
+					controller.powerOnAndCheck(on);
 				}
 
 				// Process perimeter link requests next
 				for (Link linkReq : linkRequests.getOrDefault(bmp.getKey(),
 						emptyList())) {
 					// Set the link state, as required
-					controller.setLinkOff(linkReq, bmp.getValue());
+					controller.setLinkOff(linkReq);
 				}
 
 				// Finally send any power off commands
 				List<Integer> off =
 						powerOffBoards.getOrDefault(bmp.getKey(), emptyList());
 				if (!off.isEmpty()) {
-					controller.powerOff(off, bmp.getValue());
+					controller.powerOff(off);
 				}
 			}
 		}
@@ -821,11 +816,23 @@ public class BMPController extends SQLQueries {
 
 	private Map<BMPCoords, SpiNNakerControl> getControllers(Request request)
 			throws IOException, SpinnmanException {
-		Map<BMPCoords, SpiNNakerControl> map = new HashMap<>();
-		for (BMPCoords bmp : request.idToBoard.keySet()) {
-			map.put(bmp, controllerFactory.getObject(request.machine, bmp));
+		try {
+			Map<BMPCoords, SpiNNakerControl> map =
+					new HashMap<>(request.idToBoard.size());
+			for (BMPCoords bmp : request.idToBoard.keySet()) {
+				map.put(bmp, controllerFactory.getObject(request.machine, bmp));
+			}
+			return map;
+		} catch (BeanInitializationException | BeanCreationException e) {
+			// Smuggle the exception out from the @PostConstruct method
+			Throwable cause = e.getCause();
+			if (cause instanceof IOException) {
+				throw (IOException) cause;
+			} else if (cause instanceof SpinnmanException) {
+				throw (SpinnmanException) cause;
+			}
+			throw e;
 		}
-		return map;
 	}
 
 	private boolean tryChangePowerState(Request request,
@@ -863,183 +870,5 @@ public class BMPController extends SQLQueries {
 			// This is (probably) a permanent failure; stop retry loop
 			return true;
 		}
-	}
-}
-
-// ----------------------------------------------------------------
-// CORE BMP ACCESS FUNCTIONS
-
-/** Implementation of controller for one BMP of one SpiNNaker 1 based system. */
-@Component
-@Scope("prototype")
-class SpiNNaker1 implements SpiNNakerControl {
-	private static final Logger log = getLogger(SpiNNaker1.class);
-
-	private static final int FPGA_FLAG_ID_MASK = 0x3;
-
-	private static final int BMP_VERSION_MIN = 2;
-
-	/**
-	 * We <em>always</em> pretend to talk to the root BMP of a machine (actually
-	 * the root of a frame), and never directly to any others. The BMPs use a
-	 * CAN bus and I<sup>2</sup>C to communicate with each other on our behalf.
-	 */
-	private static final BMPCoords ROOT_BMP = new BMPCoords(0, 0);
-
-	@Autowired
-	private TxrxProperties props;
-
-	@Autowired
-	private TransceiverFactoryAPI<?> txrxFactory;
-
-	private final BMPCoords bmp;
-
-	private final Machine machine;
-
-	/**
-	 * The transceiver for talking to the machine.
-	 */
-	private BMPTransceiverInterface txrx;
-
-	/**
-	 * @param machine
-	 *            The machine hosting the boards and FPGAs.
-	 * @param bmp
-	 *            Which BMP on the machine are we really talking to.
-	 */
-	SpiNNaker1(Machine machine, BMPCoords bmp) {
-		this.machine = machine;
-		this.bmp = bmp;
-	}
-
-	@PostConstruct
-	void initTransceiver() throws IOException, SpinnmanException {
-		this.txrx = txrxFactory.getTransciever(machine, bmp);
-	}
-
-	/**
-	 * Check whether an FPGA has come up in a good state.
-	 *
-	 * @param board
-	 *            Which board is the FPGA on?
-	 * @param fpga
-	 *            Which FPGA (0, 1, or 2) is being tested?
-	 * @return True if the FPGA is in a correct state, false otherwise.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
-	 * @throws IOException
-	 *             If network I/O fails.
-	 */
-	private boolean isGoodFPGA(Integer board, FpgaIdentifiers fpga)
-			throws ProcessException, IOException {
-		int flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
-		// FPGA ID is bottom two bits of FLAG register
-		int fpgaId = flag & FPGA_FLAG_ID_MASK;
-		boolean ok = fpgaId == fpga.ordinal();
-		if (!ok) {
-			log.warn("{} on board {} of {} has incorrect FPGA ID flag {}", fpga,
-					board, machine.getName(), fpgaId);
-		}
-		return ok;
-	}
-
-	/**
-	 * Is a board new enough to be able to manage FPGAs?
-	 *
-	 * @param txrx
-	 *            Transceiver for talking to a BMP in a machine.
-	 * @param board
-	 *            The board number.
-	 * @return True if the board can manage FPGAs.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
-	 * @throws IOException
-	 *             If network I/O fails.
-	 */
-	private boolean canBoardManageFPGAs(Integer board)
-			throws ProcessException, IOException {
-		VersionInfo vi = txrx.readBMPVersion(ROOT_BMP, board);
-		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
-	}
-
-	private <T, U> List<U> remap(List<T> boardIds, Map<T, U> idToBoard) {
-		List<U> boardNums = new ArrayList<>(boardIds.size());
-		for (T id : boardIds) {
-			boardNums.add(requireNonNull(idToBoard.get(id)));
-		}
-		return boardNums;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * Technically, switching a link off just switches off <em>sending</em> on
-	 * that link. We assume that the other end of the link also behaves.
-	 */
-	@Override
-	public void setLinkOff(Link link, Map<Integer, Integer> idToBoard)
-			throws ProcessException, IOException {
-		Integer board = requireNonNull(idToBoard.get(link.board));
-		// skip FPGA link configuration if old BMP version
-		if (!canBoardManageFPGAs(board)) {
-			return;
-		}
-		Direction d = link.link;
-		txrx.writeFPGARegister(d.fpga.ordinal(), d.bank, STOP, 1, ROOT_BMP,
-				board);
-	}
-
-	@Override
-	public void powerOnAndCheck(List<Integer> boards,
-			Map<Integer, Integer> idToBoard)
-			throws ProcessException, InterruptedException, IOException {
-		List<Integer> boardsToPower = remap(boards, idToBoard);
-		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
-			if (attempt > 1) {
-				log.warn("rebooting {} boards in allocation to "
-						+ "get stability", boardsToPower.size());
-			}
-			txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
-
-			/*
-			 * Check whether all the FPGAs on each board have come up correctly.
-			 * If not, we'll need to try booting that board again. The boards
-			 * that have booted correctly need no further action.
-			 */
-
-			List<Integer> retryBoards = new ArrayList<>();
-			for (Integer board : boardsToPower) {
-				// Skip board if old BMP version
-				if (!canBoardManageFPGAs(board)) {
-					continue;
-				}
-
-				for (FpgaIdentifiers fpga : FpgaIdentifiers.values()) {
-					if (!isGoodFPGA(board, fpga)) {
-						retryBoards.add(board);
-						/*
-						 * Stop the INNERMOST loop; we know this board needs
-						 * retrying so there's no point in continuing to look at
-						 * the FPGAs it has.
-						 */
-						break;
-					}
-				}
-			}
-			if (retryBoards.isEmpty()) {
-				// Success!
-				return;
-			}
-			boardsToPower = retryBoards;
-		}
-		throw new IOException("Could not get correct FPGA ID for "
-				+ boardsToPower.size() + " boards after "
-				+ props.getFpgaAttempts() + " tries");
-	}
-
-	@Override
-	public void powerOff(List<Integer> boards, Map<Integer, Integer> idToBoard)
-			throws ProcessException, InterruptedException, IOException {
-		txrx.power(POWER_OFF, ROOT_BMP, remap(boards, idToBoard));
 	}
 }

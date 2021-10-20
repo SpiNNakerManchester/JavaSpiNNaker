@@ -24,12 +24,12 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  *
  * @author Donal Fellows
  */
-final class Link {
-	/** The physical ID of the board that the FPGA is located on. */
-	final int board;
+public final class Link {
+	/** The database ID of the board that the FPGA is located on. */
+	private final int board;
 
 	/** Which link (and hence which FPGA). */
-	final Direction link;
+	private final Direction link;
 
 	/**
 	 * Create a request.
@@ -47,5 +47,15 @@ final class Link {
 	@Override
 	public String toString() {
 		return "Link(" + board + "," + link + ":OFF)";
+	}
+
+	/** @return The database ID of the board that the FPGA is located on. */
+	public int getBoard() {
+		return board;
+	}
+
+	/** @return Which link (and hence which FPGA). */
+	public Direction getLink() {
+		return link;
 	}
 }
