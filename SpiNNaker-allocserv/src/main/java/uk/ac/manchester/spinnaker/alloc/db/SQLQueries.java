@@ -270,6 +270,16 @@ public abstract class SQLQueries {
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND boards.x = 0 AND boards.y = 0 LIMIT 1";
 
+	/** Get the address of the BMP of the root board of the machine. */
+	@Parameter("machine_id")
+	@Parameter("cabinet")
+	@Parameter("frame")
+	@ResultColumn("address")
+	@SingleRowResult
+	protected static final String GET_BMP_ADDRESS =
+			"SELECT address FROM bmp WHERE machine_id = :machine_id "
+					+ "AND cabinet = :cabinet AND frame = :frame LIMIT 1";
+
 	/**
 	 * Get the boards of a machine that can be used. Excludes disabled boards.
 	 */
@@ -277,6 +287,21 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	protected static final String GET_BOARD_NUMBERS =
 			"SELECT board_num FROM boards WHERE machine_id = :machine_id "
+					+ "AND board_num IS NOT NULL "
+					+ "AND (functioning IS NULL OR functioning != 0) "
+					+ "ORDER BY board_num ASC";
+
+	/**
+	 * Get the boards of a BMP that can be used. Excludes disabled boards.
+	 */
+	@Parameter("machine_id")
+	@Parameter("cabinet")
+	@Parameter("frame")
+	@ResultColumn("board_num")
+	protected static final String GET_BMP_BOARD_NUMBERS =
+			"SELECT board_num FROM boards JOIN bmp USING (bmp_id) "
+					+ "WHERE boards.machine_id = :machine_id "
+					+ "AND cabinet = :cabinet AND frame = :frame "
 					+ "AND board_num IS NOT NULL "
 					+ "AND (functioning IS NULL OR functioning != 0) "
 					+ "ORDER BY board_num ASC";
@@ -580,11 +605,16 @@ public abstract class SQLQueries {
 	@ResultColumn("from_state")
 	@ResultColumn("to_state")
 	@ResultColumn("board_num")
+	@ResultColumn("bmp_id")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
 	protected static final String GET_CHANGES =
 			"SELECT change_id, job_id, pending_changes.board_id, power, "
 					+ "fpga_n, fpga_s, fpga_e, fpga_w, fpga_se, fpga_nw, "
-					+ "in_progress, from_state, to_state, board_num "
+					+ "in_progress, from_state, to_state, board_num, "
+					+ "boards.bmp_id, cabinet, frame "
 					+ "FROM pending_changes JOIN boards USING (board_id) "
+					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE job_id = :job_id AND NOT in_progress";
 
 	/**

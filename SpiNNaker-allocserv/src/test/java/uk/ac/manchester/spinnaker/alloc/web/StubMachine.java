@@ -25,6 +25,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 
 /**
  * A machine that just throws {@link UnsupportedOperationException} for every
@@ -107,6 +108,16 @@ public class StubMachine implements SpallocAPI.Machine {
 
 	@Override
 	public List<Integer> getAvailableBoards() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String getBMPAddress(BMPCoords bmp) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public List<Integer> getBoardNumbers(BMPCoords bmp) {
 		throw new UnsupportedOperationException();
 	}
 }

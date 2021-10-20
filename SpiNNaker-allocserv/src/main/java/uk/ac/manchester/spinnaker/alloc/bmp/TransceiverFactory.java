@@ -70,7 +70,29 @@ public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
-	private Map<String, BMPTransceiverInterface> txrxMap = new HashMap<>();
+	private static final class Key {
+		final String machine;
+
+		final BMPCoords bmp;
+
+		Key(String machine, BMPCoords bmp) {
+			this.machine = machine;
+			this.bmp = bmp;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			Key other = (Key) o;
+			return machine.equals(other.machine) && bmp.equals(other.bmp);
+		}
+
+		@Override
+		public int hashCode() {
+			return machine.hashCode() ^ bmp.hashCode() * 7;
+		}
+	}
+
+	private Map<Key, BMPTransceiverInterface> txrxMap = new HashMap<>();
 
 	@Autowired
 	private ServiceMasterControl control;
@@ -91,31 +113,31 @@ public class TransceiverFactory
 	}
 
 	@Override
-	public BMPTransceiverInterface getTransciever(Machine machineDescription)
-			throws IOException, SpinnmanException {
+	public BMPTransceiverInterface getTransciever(Machine machineDescription,
+			BMPCoords bmp) throws IOException, SpinnmanException {
 		// Can't use Map.computeIfAbsent(); checked exceptions in the way
 		synchronized (txrxMap) {
-			BMPTransceiverInterface t =
-					txrxMap.get(machineDescription.getName());
+			Key key = new Key(machineDescription.getName(), bmp);
+			BMPTransceiverInterface t = txrxMap.get(key);
 			if (isNull(t)) {
 				BMPConnectionData connData =
-						makeConnectionData(machineDescription);
+						makeConnectionData(machineDescription, bmp);
 				if (control.isUseDummyBMP()) {
 					t = new DummyTransceiver(machineDescription.getName(),
 							connData);
 				} else {
 					t = makeTransceiver(connData);
 				}
-				txrxMap.put(machineDescription.getName(), t);
+				txrxMap.put(key, t);
 			}
 			return t;
 		}
 	}
 
-	private BMPConnectionData makeConnectionData(Machine machine)
+	private BMPConnectionData makeConnectionData(Machine machine, BMPCoords bmp)
 			throws IOException {
-		String address = machine.getRootBoardBMPAddress();
-		List<Integer> boards = machine.getBoardNumbers();
+		String address = machine.getBMPAddress(bmp);
+		List<Integer> boards = machine.getBoardNumbers(bmp);
 		return new BMPConnectionData(0, 0, getByName(address), boards,
 				SCP_SCAMP_PORT);
 	}

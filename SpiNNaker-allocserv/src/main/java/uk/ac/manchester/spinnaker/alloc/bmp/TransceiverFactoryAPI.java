@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 
@@ -37,6 +38,8 @@ public interface TransceiverFactoryAPI<T extends BMPTransceiverInterface> {
 	 *
 	 * @param machineDescription
 	 *            The machine we're talking about.
+	 * @param bmp
+	 *            Which BMP on the machine are we talking to.
 	 * @return The transceiver. Only operations relating to BMPs are required to
 	 *         be supported.
 	 * @throws IOException
@@ -44,6 +47,6 @@ public interface TransceiverFactoryAPI<T extends BMPTransceiverInterface> {
 	 * @throws SpinnmanException
 	 *             If the transceiver can't be built.
 	 */
-	T getTransciever(Machine machineDescription)
+	T getTransciever(Machine machineDescription, BMPCoords bmp)
 			throws IOException, SpinnmanException;
 }

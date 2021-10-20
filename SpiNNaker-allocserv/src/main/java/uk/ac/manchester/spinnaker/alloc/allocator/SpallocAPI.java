@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
@@ -566,6 +567,24 @@ public interface SpallocAPI {
 		 * @return The IDs of boards currently available to be allocated.
 		 */
 		List<Integer> getAvailableBoards();
+
+		/**
+		 * Get the address of a particular BMP of a machine.
+		 *
+		 * @param bmp
+		 *            The BMP coordinates (cabinet, frame).
+		 * @return The IP address of the BMP.
+		 */
+		String getBMPAddress(BMPCoords bmp);
+
+		/**
+		 * Get the board numbers managed by a particular BMP of a machine.
+		 *
+		 * @param bmp
+		 *            The BMP coordinates( cabinet, frame).
+		 * @return The board numbers managed by that BMP.
+		 */
+		List<Integer> getBoardNumbers(BMPCoords bmp);
 	}
 
 	/**

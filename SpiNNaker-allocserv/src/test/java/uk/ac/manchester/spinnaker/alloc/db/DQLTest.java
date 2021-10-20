@@ -285,11 +285,29 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getBMPAddress() {
+		try (Query q = c.query(GET_BMP_ADDRESS)) {
+			assertEquals(3, q.getNumArguments());
+			assertSetEquals(set("address"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
+		}
+	}
+
+	@Test
 	void getBoardNumbers() {
 		try (Query q = c.query(GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_num"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
+		}
+	}
+
+	@Test
+	void getBmpBoardNumbers() {
+		try (Query q = c.query(GET_BMP_BOARD_NUMBERS)) {
+			assertEquals(3, q.getNumArguments());
+			assertSetEquals(set("board_num"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
 		}
 	}
 
@@ -433,7 +451,7 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(set("change_id", "job_id", "board_id", "power",
 					"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_nw",
 					"fpga_se", "in_progress", "from_state", "to_state",
-					"board_num"), colNames);
+					"board_num", "cabinet", "frame", "bmp_id"), colNames);
 			// Ensure that this link is maintained
 			for (Direction d : Direction.values()) {
 				assertTrue(colNames.contains(d.columnName),

@@ -74,6 +74,7 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
@@ -668,6 +669,26 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public int getHeight() {
 			return height;
+		}
+
+		@Override
+		public String getBMPAddress(BMPCoords bmp) {
+			try (Connection conn = db.getConnection();
+					Query bmpAddr = conn.query(GET_BMP_ADDRESS)) {
+				return conn.transaction(() -> bmpAddr
+						.call1(id, bmp.getCabinet(), bmp.getFrame())
+						.map(row -> row.getString("address")).orElse(null));
+			}
+		}
+
+		@Override
+		public List<Integer> getBoardNumbers(BMPCoords bmp) {
+			try (Connection conn = db.getConnection();
+					Query boardNumbers = conn.query(GET_BMP_BOARD_NUMBERS)) {
+				return conn.transaction(() -> boardNumbers
+						.call(id, bmp.getCabinet(), bmp.getFrame())
+						.map(row -> row.getInteger("board_num")).toList());
+			}
 		}
 	}
 
