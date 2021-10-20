@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.List;
@@ -163,7 +164,8 @@ public abstract class V1CompatTask {
 	 * @return The remote host that this task is serving.
 	 */
 	public final String host() {
-		return sock.getRemoteSocketAddress().toString();
+		return ((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()
+				.getHostAddress();
 	}
 
 	/**
