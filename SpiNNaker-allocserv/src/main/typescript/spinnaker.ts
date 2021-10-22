@@ -650,16 +650,13 @@ function drawJob(
 		if (allocated.has(tuplekey(triad))) {
 			board = allocated.get(tuplekey(triad));
 		}
-		// console.log("triadDescription", triad, board, [allocated])
-		if (board !== undefined) {
-			const [x, y, z] = triad;
-			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
-			if (board.hasOwnProperty("network")) {
-				s += `\nIP: ${board.network.address}`;
-			}
-			return s;
+		console.log("triadDescription", triad, board)
+		const [x, y, z] = triad;
+		var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
+		if (board !== undefined && board.hasOwnProperty("network")) {
+			s += `\nIP: ${board.network.address}`;
 		}
-		return undefined;
+		return s;
 	}
 
 	/** The current board (i.e., that has the mouse over it). */
