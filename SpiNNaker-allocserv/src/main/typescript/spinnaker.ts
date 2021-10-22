@@ -680,6 +680,7 @@ function drawJob(
 
 	canv.addEventListener('mousemove', (e: MouseEvent) => {
 		const triad = inside(e.offsetX, e.offsetY, tloc);
+		console.log("move", current, e, tloc, triad);
 		if (current === triad) {
 			return;
 		}
@@ -694,6 +695,7 @@ function drawJob(
 	});
 	canv.addEventListener('mouseenter', (e: MouseEvent) => {
 		const triad = inside(e.offsetX, e.offsetY, tloc);
+		console.log("enter", current, e, tloc, triad);
 		if (current === triad) {
 			return;
 		}
@@ -708,6 +710,7 @@ function drawJob(
 		}
 	});
 	canv.addEventListener('mouseleave', (_: MouseEvent) => {
+		console.log("leave", current);
 		if (current !== undefined) {
 			clearCurrent();
 		}
