@@ -346,7 +346,7 @@ function mapOfJobs(jobs: readonly MachineJobDescriptor[]) :
 	for (const j of jobs) {
 		m2.set(j.id, j);
 		// TODO derive the hue from the job ID
-		colours.set(j.id, `hsl(${Math.floor(Math.random() * 360)}, 80, 50)`);
+		colours.set(j.id, `hsl(${Math.floor(Math.random() * 360)}, 80%, 50%)`);
 		for (const b of j.boards) {
 			const {x:x, y:y, z:z} = b.triad;
 			m.set(tuplekey([x,y,z]), j.id);
