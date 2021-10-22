@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<td>${ job.ownerHost.orElse('[SHROUDED]') }</td>
 </tr>
 <tr>
-	<th class="lineTitle">Request:</th>
+	<th class="lineTitle">Raw Request:</th>
 	<td>${ job.request }</td>
 </tr>
 <tr>
@@ -76,19 +76,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Hostname:</th>
-	<td>${ empty job.boards ? 'not yet allocated' : job.boards[0].address }</td>
+	<td>${ empty job.boards ? 'not currently allocated' : job.boards[0].address }</td>
 </tr>
 <tr>
-	<th class="lineTitle">Width:</th>
-	<td>${ job.width.present ? job.width.get() : 'not yet allocated' }</td>
-</tr>
-<tr>
-	<th class="lineTitle">Height:</th>
-	<td>${ job.height.present ? job.height.get() : 'not yet allocated' }</td>
+	<th class="lineTitle">Dimensions (chips):</th>
+	<td>
+		<c:if test="${ job.width.present }">
+			${ job.width.get() }&times;${ job.height.get() }
+		</c:if>
+		<c:if test="${ not job.width.present }">
+			not currently allocated
+		</c:if>
+	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Num boards:</th>
-	<td>${ empty job.boards ? 'not yet allocated' : job.boards.size() }</td>
+	<td>${ empty job.boards ? 'not currently allocated' : job.boards.size() }</td>
 </tr>
 <tr>
 	<th class="lineTitle">Board power:</th>
