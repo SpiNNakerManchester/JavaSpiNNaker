@@ -675,12 +675,12 @@ function drawJob(
 		ctx.strokeStyle = 'green';
 		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip(triad, triadDescription(triad));
+		console.log("current", triad, triadDescription(triad))
 		current = triad;
 	}
 
 	canv.addEventListener('mousemove', (e: MouseEvent) => {
 		const triad = inside(e.offsetX, e.offsetY, tloc);
-		console.log("move", current, e, tloc, triad);
 		if (current === triad) {
 			return;
 		}
@@ -695,7 +695,6 @@ function drawJob(
 	});
 	canv.addEventListener('mouseenter', (e: MouseEvent) => {
 		const triad = inside(e.offsetX, e.offsetY, tloc);
-		console.log("enter", current, e, tloc, triad);
 		if (current === triad) {
 			return;
 		}
@@ -710,7 +709,6 @@ function drawJob(
 		}
 	});
 	canv.addEventListener('mouseleave', (_: MouseEvent) => {
-		console.log("leave", current);
 		if (current !== undefined) {
 			clearCurrent();
 		}
