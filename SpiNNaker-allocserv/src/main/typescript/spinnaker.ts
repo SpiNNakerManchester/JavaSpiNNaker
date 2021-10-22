@@ -646,12 +646,13 @@ function drawJob(
 	 *		The multiline description of the board.
 	 */
 	function triadDescription(triad: BoardTriad) : string | undefined {
-		const [x, y, z] = triad;
 		var board : BoardLocator = undefined;
 		if (allocated.has(tuplekey(triad))) {
 			board = allocated.get(tuplekey(triad));
 		}
+		console.log("triadDescription", triad, board, [allocated])
 		if (board !== undefined) {
+			const [x, y, z] = triad;
 			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
 			if (board.hasOwnProperty("network")) {
 				s += `\nIP: ${board.network.address}`;
@@ -675,7 +676,6 @@ function drawJob(
 		ctx.strokeStyle = 'green';
 		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip(triad, triadDescription(triad));
-		console.log("current", triad, triadDescription(triad))
 		current = triad;
 	}
 
