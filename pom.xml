@@ -241,6 +241,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<artifact>*:*</artifact>
 								<excludes>
 									<!-- Strip unwanted junk -->
+									<exclude>module-info.class</exclude>
 									<exclude>META-INF/MANIFEST.MF</exclude>
 									<exclude>META-INF/LICENSE</exclude>
 									<exclude>META-INF/LICENSE.txt</exclude>
