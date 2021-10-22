@@ -20,8 +20,6 @@ import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_E_S;
 import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_N_NE;
 import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_SW_W;
 
-import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
-
 /**
  * Represents link directions of a board.
  * <p>
@@ -33,7 +31,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
  * go straight north (by an offset of 12 chips); {@code a} is vertically north
  * of {@code c}, and {@code f} is vertically north of {@code d}.
  *
- * @see DirInfo
+ * @see uk.ac.manchester.spinnaker.alloc.admin.DirInfo DirInfo
  * @author Donal Fellows
  */
 public enum Direction {

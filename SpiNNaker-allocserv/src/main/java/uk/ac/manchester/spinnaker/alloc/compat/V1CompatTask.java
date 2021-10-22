@@ -20,6 +20,7 @@ import static java.lang.Thread.currentThread;
 import static java.lang.Thread.interrupted;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.List;
@@ -162,7 +164,8 @@ public abstract class V1CompatTask {
 	 * @return The remote host that this task is serving.
 	 */
 	public final String host() {
-		return sock.getRemoteSocketAddress().toString();
+		return ((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()
+				.getHostAddress();
 	}
 
 	/**
@@ -227,6 +230,7 @@ public abstract class V1CompatTask {
 	private void sendMessage(Object msg) throws JsonProcessingException {
 		// We go via a string to avoid early closing issues
 		String data = mapper.writeValueAsString(msg);
+		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
 			out.println(data);
@@ -369,16 +373,19 @@ public abstract class V1CompatTask {
 			byte[] serialCmd = mapper.writeValueAsBytes(cmd);
 			switch (args.size()) {
 			case 0:
-				return createJobNumBoards(1, kwargs, serialCmd);
+				return requireNonNull(createJobNumBoards(1, kwargs, serialCmd));
 			case 1:
-				return createJobNumBoards(parseDec(args, 0), kwargs, serialCmd);
+				return requireNonNull(createJobNumBoards(parseDec(args, 0),
+						kwargs, serialCmd));
 			case 2:
-				return createJobRectangle(parseDec(args, 0), parseDec(args, 1),
-						kwargs, serialCmd);
+				return requireNonNull(createJobRectangle(parseDec(args, 0),
+						parseDec(args, 1), kwargs, serialCmd));
 			case TRIAD:
-				return createJobSpecificBoard(new TriadCoords(parseDec(args, 0),
-						parseDec(args, 1), parseDec(args, 2)), kwargs,
-						serialCmd);
+				return requireNonNull(
+						createJobSpecificBoard(
+								new TriadCoords(parseDec(args, 0),
+										parseDec(args, 1), parseDec(args, 2)),
+								kwargs, serialCmd));
 			default:
 				throw new Oops(
 						"unsupported number of arguments: " + args.size());
@@ -387,24 +394,24 @@ public abstract class V1CompatTask {
 			destroyJob(parseDec(args, 0), (String) kwargs.get("reason"));
 			break;
 		case "get_board_at_position":
-			return getBoardAtPhysicalPosition(
+			return requireNonNull(getBoardAtPhysicalPosition(
 					(String) kwargs.get("machine_name"), parseDec(kwargs, "x"),
-					parseDec(kwargs, "y"), parseDec(kwargs, "z"));
+					parseDec(kwargs, "y"), parseDec(kwargs, "z")));
 		case "get_board_position":
-			return getBoardAtLogicalPosition(
+			return requireNonNull(getBoardAtLogicalPosition(
 					(String) kwargs.get("machine_name"), parseDec(kwargs, "x"),
-					parseDec(kwargs, "y"), parseDec(kwargs, "z"));
+					parseDec(kwargs, "y"), parseDec(kwargs, "z")));
 		case "get_job_machine_info":
-			return getJobMachineInfo(parseDec(args, 0));
+			return requireNonNull(getJobMachineInfo(parseDec(args, 0)));
 		case "get_job_state":
-			return getJobState(parseDec(args, 0));
+			return requireNonNull(getJobState(parseDec(args, 0)));
 		case "job_keepalive":
 			jobKeepalive(parseDec(args, 0));
 			break;
 		case "list_jobs":
-			return listJobs();
+			return requireNonNull(listJobs());
 		case "list_machines":
-			return listMachines();
+			return requireNonNull(listMachines());
 		case "no_notify_job":
 			notifyJob(optInt(args), false);
 			break;
@@ -424,26 +431,29 @@ public abstract class V1CompatTask {
 			powerJobBoards(parseDec(args, 0), ON);
 			break;
 		case "version":
-			return version();
+			return requireNonNull(version());
 		case "where_is":
 			// This is four operations in a trench coat
 			if (kwargs.containsKey("job_id")) {
-				return whereIsJobChip(parseDec(kwargs, "job_id"),
-						parseDec(kwargs, "chip_x"), parseDec(kwargs, "chip_y"));
+				return requireNonNull(whereIsJobChip(parseDec(kwargs, "job_id"),
+						parseDec(kwargs, "chip_x"),
+						parseDec(kwargs, "chip_y")));
 			} else if (!kwargs.containsKey("machine")) {
 				throw new Oops("missing parameter: machine");
 			}
 			String m = (String) kwargs.get("machine");
 			if (kwargs.containsKey("chip_x")) {
-				return whereIsMachineChip(m, parseDec(kwargs, "chip_x"),
-						parseDec(kwargs, "chip_y"));
+				return requireNonNull(
+						whereIsMachineChip(m, parseDec(kwargs, "chip_x"),
+								parseDec(kwargs, "chip_y")));
 			} else if (kwargs.containsKey("x")) {
-				return whereIsMachineLogicalBoard(m, parseDec(kwargs, "x"),
-						parseDec(kwargs, "y"), parseDec(kwargs, "z"));
+				return requireNonNull(
+						whereIsMachineLogicalBoard(m, parseDec(kwargs, "x"),
+								parseDec(kwargs, "y"), parseDec(kwargs, "z")));
 			} else if (kwargs.containsKey("cabinet")) {
-				return whereIsMachinePhysicalBoard(m,
+				return requireNonNull(whereIsMachinePhysicalBoard(m,
 						parseDec(kwargs, "cabinet"), parseDec(kwargs, "frame"),
-						parseDec(kwargs, "board"));
+						parseDec(kwargs, "board")));
 			} else {
 				throw new Oops("missing parameter: chip_x, x, or cabinet");
 			}

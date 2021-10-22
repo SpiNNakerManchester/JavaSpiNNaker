@@ -86,9 +86,10 @@ abstract class DatabaseCache<Conn extends Connection> {
 		}
 		if (isLongTermThread()) {
 			// Special case for the main thread
+			Thread t = currentThread();
 			getRuntime().addShutdownHook(new Thread(() -> {
-				closeDatabaseConnection(connection);
-			}, "database closer for " + currentThread()));
+				closeDatabaseConnection(connection, t);
+			}, "database closer for " + t));
 		} else {
 			closerThreads.add(new CloserThread(connection));
 		}
@@ -121,7 +122,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 			} catch (InterruptedException e) {
 				// thread dying; ignore
 			} finally {
-				closeDatabaseConnection(resource);
+				closeDatabaseConnection(resource, owner);
 			}
 		}
 	}
@@ -132,8 +133,9 @@ abstract class DatabaseCache<Conn extends Connection> {
 	 * @param connection
 	 *            The connection to close.
 	 */
-	void closeDatabaseConnection(Conn connection) {
+	private void closeDatabaseConnection(Conn connection, Thread owner) {
 		try {
+			log.debug("closing connection for {}", owner);
 			connection.close();
 		} catch (SQLException e) {
 			log.warn("problem closing database connection", e);

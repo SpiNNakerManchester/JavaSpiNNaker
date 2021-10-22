@@ -27,8 +27,6 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 
-import uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest;
-
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
  * <pre>
@@ -64,7 +62,7 @@ public class JobDescription {
 
 	private Optional<String> ownerHost = Optional.empty();
 
-	private CreateJobRequest request;
+	private String request;
 
 	private Integer width;
 
@@ -152,11 +150,11 @@ public class JobDescription {
 	/**
 	 * @return the request
 	 */
-	public CreateJobRequest getRequest() {
+	public String getRequest() {
 		return request;
 	}
 
-	public void setRequest(CreateJobRequest request) {
+	public void setRequest(String request) {
 		this.request = request;
 	}
 
@@ -245,23 +243,23 @@ public class JobDescription {
 	 * @return The width of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadWidth() {
-		IntSummaryStatistics stats = boards.stream().map(b -> b.getX())
-				.collect(summarizingInt(Integer::intValue));
+		IntSummaryStatistics stats =
+				boards.stream().collect(summarizingInt(BoardCoords::getX));
 		if (stats.getCount() < 1) {
 			return 0;
 		}
-		return stats.getMax() - stats.getMin();
+		return stats.getMax() - stats.getMin() + 1;
 	}
 
 	/**
 	 * @return The height of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadHeight() {
-		IntSummaryStatistics stats = boards.stream().map(b -> b.getY())
-				.collect(summarizingInt(Integer::intValue));
+		IntSummaryStatistics stats =
+				boards.stream().collect(summarizingInt(BoardCoords::getY));
 		if (stats.getCount() < 1) {
 			return 0;
 		}
-		return stats.getMax() - stats.getMin();
+		return stats.getMax() - stats.getMin() + 1;
 	}
 }

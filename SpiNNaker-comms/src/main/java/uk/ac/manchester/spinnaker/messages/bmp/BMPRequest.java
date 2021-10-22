@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
@@ -40,7 +39,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 		extends SCPRequest<T> {
 	private static SDPHeader bmpHeader(int board) {
-		return new SDPHeader(REPLY_EXPECTED, new CoreLocation(0, 0, board),
+		return new SDPHeader(REPLY_EXPECTED, new BMPLocation(board),
 				DEFAULT_PORT);
 	}
 

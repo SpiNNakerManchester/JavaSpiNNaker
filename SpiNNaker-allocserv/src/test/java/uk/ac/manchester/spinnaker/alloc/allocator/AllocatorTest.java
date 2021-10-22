@@ -22,9 +22,6 @@ import static java.time.Instant.now;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -49,7 +46,6 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
@@ -93,12 +89,13 @@ class AllocatorTest extends SQLQueries {
 
 	void doTest(Transacted action) {
 		try (Connection c = db.getConnection()) {
-			transaction(c, () -> {
+			c.transaction(() -> {
 				try {
 					conn = c;
 					action.act();
 				} finally {
 					c.rollback();
+					conn = null;
 				}
 			});
 		}
@@ -131,20 +128,20 @@ class AllocatorTest extends SQLQueries {
 
 	private void setupDB(Connection c) {
 		// A simple machine
-		try (Update u = update(c,
+		try (Update u = c.update(
 				"INSERT OR IGNORE INTO machines("
 						+ "machine_id, machine_name, width, height, [depth], "
 						+ "default_quota, board_model) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, 5)")) {
 			u.call(MACHINE, "foo", 1, 1, 3, 10000);
 		}
-		try (Update u = update(c,
+		try (Update u = c.update(
 				"INSERT OR IGNORE INTO bmp(bmp_id, machine_id, address, "
 						+ "cabinet, frame) VALUES (?, ?, ?, ?, ?)")) {
 			u.call(BMP, MACHINE, "1.1.1.1", 1, 1);
 		}
 		int b0 = BOARD, b1 = BOARD + 1, b2 = BOARD + 2;
-		try (Update u = update(c,
+		try (Update u = c.update(
 				"INSERT OR IGNORE INTO boards(board_id, address, "
 						+ "bmp_id, board_num, machine_id, x, y, z, "
 						+ "root_x, root_y, board_power) "
@@ -153,7 +150,7 @@ class AllocatorTest extends SQLQueries {
 			u.call(b1, "2.2.2.3", BMP, 1, MACHINE, 0, 0, 1, 8, 4, false);
 			u.call(b2, "2.2.2.4", BMP, 2, MACHINE, 0, 0, 2, 4, 8, false);
 		}
-		try (Update u = update(c,
+		try (Update u = c.update(
 				"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2) "
 						+ "VALUES (?, ?, ?, ?)")) {
 			u.call(b0, 0, b1, 3);
@@ -161,13 +158,13 @@ class AllocatorTest extends SQLQueries {
 			u.call(b1, 2, b2, 5);
 		}
 		// A disabled permission-less user with a quota
-		try (Update u = update(c,
+		try (Update u = c.update(
 				"INSERT OR IGNORE INTO user_info("
 						+ "user_id, user_name, trust_level, disabled) "
 						+ "VALUES (?, ?, ?, ?)")) {
 			u.call(USER, "bar", TrustLevel.BASIC, true);
 		}
-		try (Update u = update(c, "INSERT OR REPLACE INTO quotas("
+		try (Update u = c.update("INSERT OR REPLACE INTO quotas("
 				+ "user_id, machine_id, quota) VALUES (?, ?, ?)")) {
 			u.call(USER, MACHINE, 1024);
 		}
@@ -185,22 +182,20 @@ class AllocatorTest extends SQLQueries {
 	 * @return Job ID
 	 */
 	private int makeJob(int time) {
-		try (Update u = update(conn,
+		try (Update u = conn.update(
 				"INSERT INTO jobs(machine_id, owner, job_state, "
 						+ "create_timestamp, keepalive_interval, "
 						+ "keepalive_timestamp) "
 						+ "VALUES (?, ?, ?, 0, ?, ?)")) {
-			for (Integer k : u.keys(MACHINE, USER, JobState.QUEUED, time,
-					now())) {
-				return k;
-			}
+			return u.key(MACHINE, USER, JobState.QUEUED, time, now())
+					.orElseThrow(
+							() -> new RuntimeException("failed to insert job"));
 		}
-		throw new RuntimeException("failed to insert job");
 	}
 
 	private void makeAllocBySizeRequest(int job, int size) {
 		try (Update u =
-				update(conn, "INSERT INTO job_request(job_id, num_boards) "
+				conn.update("INSERT INTO job_request(job_id, num_boards) "
 						+ "VALUES (?, ?)")) {
 			u.call(job, size);
 		}
@@ -209,7 +204,7 @@ class AllocatorTest extends SQLQueries {
 	private void makeAllocByDimensionsRequest(int job, int width, int height,
 			int allowedDead) {
 		try (Update u =
-				update(conn, "INSERT INTO job_request(job_id, width, height, "
+				conn.update("INSERT INTO job_request(job_id, width, height, "
 						+ "max_dead_boards) VALUES (?, ?, ?, ?)")) {
 			u.call(job, width, height, allowedDead);
 		}
@@ -217,28 +212,27 @@ class AllocatorTest extends SQLQueries {
 
 	private void makeAllocByBoardIdRequest(int job, int board) {
 		try (Update u =
-				update(conn, "INSERT INTO job_request(job_id, board_id) "
+				conn.update("INSERT INTO job_request(job_id, board_id) "
 						+ "VALUES (?, ?)")) {
 			u.call(job, board);
 		}
 	}
 
 	private JobState getJobState(int job) {
-		try (Query q = query(conn, GET_JOB)) {
-			Row r = q.call1(job).get();
-			return r.getEnum("job_state", JobState.class);
+		try (Query q = conn.query(GET_JOB)) {
+			return q.call1(job).get().getEnum("job_state", JobState.class);
 		}
 	}
 
 	private int getJobRequestCount() {
-		try (Query q = query(conn, "SELECT COUNT(*) AS cnt FROM job_request")) {
+		try (Query q = conn.query("SELECT COUNT(*) AS cnt FROM job_request")) {
 			return q.call1().get().getInt("cnt");
 		}
 	}
 
 	private int getPendingPowerChanges() {
 		try (Query q =
-				query(conn, "SELECT COUNT(*) AS cnt FROM pending_changes")) {
+				conn.query("SELECT COUNT(*) AS cnt FROM pending_changes")) {
 			return q.call1().get().getInt("cnt");
 		}
 	}
@@ -484,7 +478,7 @@ class AllocatorTest extends SQLQueries {
 				assertState(job, JobState.DESTROYED, 0, 1);
 
 				// HACK! Allow immediate switch off (OK because not real BMP)
-				update(conn, "UPDATE boards SET "
+				conn.update("UPDATE boards SET "
 						+ "power_on_timestamp = power_on_timestamp - 1000")
 								.call();
 				processBMPRequests();
@@ -492,8 +486,8 @@ class AllocatorTest extends SQLQueries {
 				assertState(job, JobState.DESTROYED, 0, 0);
 			} finally {
 				alloc.destroyJob(job, "test");
-				update(conn, "DELETE FROM job_request").call();
-				update(conn, "DELETE FROM pending_changes").call();
+				conn.update("DELETE FROM job_request").call();
+				conn.update("DELETE FROM pending_changes").call();
 			}
 		}
 	}
@@ -507,29 +501,28 @@ class AllocatorTest extends SQLQueries {
 	void tombstone() throws Exception {
 		doTest(() -> {
 			int job = makeJob(1);
-			update(conn, "UPDATE jobs SET job_state = 4 WHERE job_id = :job")
+			conn.update("UPDATE jobs SET job_state = 4 WHERE job_id = :job")
 					.call(job);
-			update(conn,
+			conn.update(
 					"UPDATE jobs SET death_timestamp = 0 WHERE job_id = :job")
-							.call(job);
-			int preMain = query(conn,
-					"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
-							.call1(job).get().getInt("c");
+					.call(job);
+			int preMain = conn
+					.query("SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
+					.call1(job).get().getInt("c");
 			assertTrue(preMain > 0,
 					() -> "must have created a job we can tombstone");
-			int preTomb = query(conn,
-					"SELECT COUNT(*) AS c FROM tombstone.jobs "
-							+ "WHERE job_id = :job").call1(job).get()
-									.getInt("c");
+			int preTomb = conn
+					.query("SELECT COUNT(*) AS c FROM tombstone.jobs "
+							+ "WHERE job_id = :job")
+					.call1(job).get().getInt("c");
 			alloc.tombstone(conn);
-			assertEquals(preMain - 1, query(conn,
-					"SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
-							.call1(job).get().getInt("c"));
+			assertEquals(preMain - 1, conn
+					.query("SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
+					.call1(job).get().getInt("c"));
 			assertEquals(preTomb + 1,
-					query(conn,
-							"SELECT COUNT(*) AS c FROM tombstone.jobs "
-									+ "WHERE job_id = :job").call1(job).get()
-											.getInt("c"));
+					conn.query("SELECT COUNT(*) AS c FROM tombstone.jobs "
+							+ "WHERE job_id = :job").call1(job).get()
+							.getInt("c"));
 		});
 	}
 }

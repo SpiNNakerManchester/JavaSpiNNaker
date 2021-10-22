@@ -104,9 +104,11 @@ public class SDPMessage extends SpinnakerRequest {
 	 *
 	 * @param buffer
 	 *            The buffer holding the message.
+	 * @param isBMP
+	 *            Whether we're really talking to a BMP
 	 */
-	public SDPMessage(ByteBuffer buffer) {
-		super(new SDPHeader(buffer));
+	public SDPMessage(ByteBuffer buffer, boolean isBMP) {
+		super(new SDPHeader(buffer, isBMP));
 		databuf = buffer.duplicate();
 	}
 

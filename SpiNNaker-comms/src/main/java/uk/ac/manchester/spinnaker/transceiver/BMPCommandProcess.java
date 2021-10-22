@@ -138,6 +138,38 @@ class BMPCommandProcess<R extends BMPResponse> {
 	}
 
 	/**
+	 * Do a synchronous call of a BMP operation, sending the given message and
+	 * completely processing the interaction before returning its response.
+	 *
+	 * @param request
+	 *            The request to send
+	 * @param retries
+	 *            The number of times to retry
+	 * @return The successful response to the request
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 */
+	R execute(BMPRequest<R> request, int retries)
+			throws IOException, ProcessException {
+		ValueHolder<R> holder = new ValueHolder<>();
+		/*
+		 * If no pipeline built yet, build one on the connection selected for
+		 * it.
+		 */
+		RequestPipeline requestPipeline = new RequestPipeline(
+				connectionSelector.getNextConnection(request));
+		requestPipeline.sendRequest(request, retries, holder::setValue);
+		requestPipeline.finish();
+		if (exception != null) {
+			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
+					exception);
+		}
+		return holder.getValue();
+	}
+
+	/**
 	 * Allows a set of BMP requests to be grouped together in a communication
 	 * across a number of channels for a given connection.
 	 * <p>
@@ -181,6 +213,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 				this.request = request;
 				this.requestData = request.getMessageData(connection.getChip());
 				this.callback = callback;
+			}
+
+			private Request(BMPRequest<R> request, int retries,
+					Consumer<R> callback) {
+				this(request, callback);
+				this.retries = retries;
 			}
 
 			private void send() throws IOException {
@@ -248,6 +286,35 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 			// Send the request, keeping track of how many are sent
 			Request req = new Request(request, callback);
+			if (requests.put(sequence, req) != null) {
+				throw new RuntimeException(
+						"duplicate sequence number catastrophe");
+			}
+			req.send();
+		}
+
+		/**
+		 * Add a BMP request to the set to be sent.
+		 *
+		 * @param request
+		 *            The BMP request to be sent
+		 * @param retries
+		 *            The number of times to retry on failure.
+		 * @param callback
+		 *            A callback function to call when the response has been
+		 *            received; takes an SCPResponse as a parameter, or a
+		 *            {@code null} if the response doesn't need to be processed.
+		 * @throws IOException
+		 *             If things go really wrong.
+		 */
+		private void sendRequest(BMPRequest<R> request, int retries,
+				Consumer<R> callback) throws IOException {
+			// Get the next sequence to be used and store it in the header
+			int sequence = request.scpRequestHeader
+					.issueSequenceNumber(requests.keySet());
+
+			// Send the request, keeping track of how many are sent
+			Request req = new Request(request, retries, callback);
 			if (requests.put(sequence, req) != null) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");

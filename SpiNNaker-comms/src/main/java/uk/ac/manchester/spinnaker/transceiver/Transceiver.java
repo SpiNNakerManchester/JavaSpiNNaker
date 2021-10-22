@@ -1614,10 +1614,10 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
-			int timeout, BMPRequest<T> request)
+			int timeout, int retries, BMPRequest<T> request)
 			throws IOException, ProcessException {
 		return new BMPCommandProcess<T>(bmpConnection(bmp), timeout, this)
-				.execute(request);
+				.execute(request, retries);
 	}
 
 	@Override
@@ -1652,8 +1652,8 @@ public class Transceiver extends UDPTransceiver
 		int timeout = (int) (MSEC_PER_SEC
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
-		requireNonNull(
-				bmpCall(bmp, timeout, new SetPower(powerCommand, boards, 0.0)));
+		requireNonNull(bmpCall(bmp, timeout, 0,
+				new SetPower(powerCommand, boards, 0.0)));
 		machineOff = powerCommand == POWER_OFF;
 
 		// Sleep for 5 seconds if the machine has just been powered on

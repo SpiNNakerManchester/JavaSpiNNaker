@@ -50,7 +50,7 @@ class TestVersionInfo {
 
 		ByteBuffer versionData = packVersionData(arg1, arg2, arg3, data);
 
-		VersionInfo vi = new VersionInfo(versionData);
+		VersionInfo vi = new VersionInfo(versionData, false);
 		assertEquals("my", vi.name);
 		assertEquals(new Version(2, 55, 0), vi.versionNumber);
 		assertEquals("spinnaker", vi.hardware);
@@ -75,7 +75,7 @@ class TestVersionInfo {
 		ByteBuffer versionData = packVersionData(arg1, arg2, arg3, data);
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			new VersionInfo(versionData);
+			new VersionInfo(versionData, false);
 		});
 	}
 
@@ -98,7 +98,7 @@ class TestVersionInfo {
 				.flip();
 
 		assertThrows(IllegalArgumentException.class, () -> {
-			new VersionInfo(versionData);
+			new VersionInfo(versionData, false);
 		});
 	}
 }

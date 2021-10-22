@@ -18,10 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.rowsAsList;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -41,6 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
@@ -55,6 +52,102 @@ public class UserControl extends SQLQueries {
 	@Autowired
 	private DatabaseEngine db;
 
+	private abstract class AccessQuotaSQL implements AutoCloseable {
+		final Connection conn = db.getConnection();
+
+		private final Query getQuotas = conn.query(GET_QUOTA_DETAILS);
+
+		private final Query userCheck = conn.query(GET_USER_ID);
+
+		final <T> T transaction(TransactedWithResult<T> action) {
+			return conn.transaction(action);
+		}
+
+		@Override
+		public void close() {
+			getQuotas.close();
+			userCheck.close();
+			conn.close();
+		}
+	}
+
+	private final class CreateSQL extends AccessQuotaSQL {
+		private final Update createUser = conn.update(CREATE_USER);
+
+		private final Update makeQuotas = conn.update(CREATE_QUOTA);
+
+		private final Update makeDefaultQuotas =
+				conn.update(CREATE_QUOTAS_FROM_DEFAULTS);
+
+		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
+
+		@Override
+		public void close() {
+			createUser.close();
+			makeQuotas.close();
+			makeDefaultQuotas.close();
+			getUserDetails.close();
+			super.close();
+		}
+	}
+
+	private final class UpdateSQL extends AccessQuotaSQL {
+		private final Update setUserName = conn.update(SET_USER_NAME);
+
+		private final Update setUserPass = conn.update(SET_USER_PASS);
+
+		private final Update setUserDisabled = conn.update(SET_USER_DISABLED);
+
+		private final Update setUserLocked = conn.update(SET_USER_LOCKED);
+
+		private final Update setUserTrust = conn.update(SET_USER_TRUST);
+
+		private final Update setUserQuota = conn.update(SET_USER_QUOTA);
+
+		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
+
+		@Override
+		public void close() {
+			setUserName.close();
+			setUserPass.close();
+			setUserDisabled.close();
+			setUserLocked.close();
+			setUserTrust.close();
+			setUserQuota.close();
+			getUserDetails.close();
+			super.close();
+		}
+	}
+
+	private final class UpdatePassSQL extends AccessQuotaSQL {
+		private Query getPasswordedUser = conn.query(GET_LOCAL_USER_DETAILS);
+
+		private Query isPasswordMatching = conn.query(IS_USER_PASS_MATCHED);
+
+		private Update setPassword = conn.update(SET_USER_PASS);
+
+		@Override
+		public void close() {
+			getPasswordedUser.close();
+			isPasswordMatching.close();
+			setPassword.close();
+			super.close();
+		}
+	}
+
+	private final class DeleteUserSQL extends AccessQuotaSQL {
+		private final Query getUserName = conn.query(GET_USER_DETAILS);
+
+		private final Update deleteUser = conn.update(DELETE_USER);
+
+		@Override
+		public void close() {
+			getUserName.close();
+			deleteUser.close();
+			super.close();
+		}
+	}
+
 	/**
 	 * List the users in the database.
 	 *
@@ -63,9 +156,9 @@ public class UserControl extends SQLQueries {
 	 */
 	public List<UserRecord> listUsers() {
 		try (Connection c = db.getConnection();
-				Query q = query(c, LIST_ALL_USERS)) {
-			return transaction(c,
-					() -> rowsAsList(q.call(), UserControl::sketchUser));
+				Query q = c.query(LIST_ALL_USERS)) {
+			return c.transaction(
+					() -> q.call().map(UserControl::sketchUser).toList());
 		}
 	}
 
@@ -74,31 +167,6 @@ public class UserControl extends SQLQueries {
 		userSketch.setUserId(row.getInt("user_id"));
 		userSketch.setUserName(row.getString("user_name"));
 		return userSketch;
-	}
-
-	private static final class CreateSQL implements AutoCloseable {
-		private final Update createUser;
-
-		private final Update makeQuotas;
-
-		private final Update makeDefaultQuotas;
-
-		private final Query getUserDetails;
-
-		CreateSQL(Connection c) {
-			createUser = update(c, CREATE_USER);
-			makeQuotas = update(c, CREATE_QUOTA);
-			makeDefaultQuotas = update(c, CREATE_QUOTAS_FROM_DEFAULTS);
-			getUserDetails = query(c, GET_USER_DETAILS);
-		}
-
-		@Override
-		public void close() {
-			createUser.close();
-			makeQuotas.close();
-			makeDefaultQuotas.close();
-			getUserDetails.close();
-		}
 	}
 
 	/**
@@ -110,14 +178,12 @@ public class UserControl extends SQLQueries {
 	 *         the user exists already.
 	 */
 	public Optional<UserRecord> createUser(UserRecord user) {
-		try (Connection c = db.getConnection();
-				CreateSQL sql = new CreateSQL(c)) {
-			return transaction(c, () -> createUser(user, c, sql));
+		try (CreateSQL sql = new CreateSQL()) {
+			return sql.transaction(() -> createUser(user, sql));
 		}
 	}
 
-	private Optional<UserRecord> createUser(UserRecord user, Connection c,
-			CreateSQL sql) {
+	private Optional<UserRecord> createUser(UserRecord user, CreateSQL sql) {
 		return sql.createUser
 				.key(user.getUserName(), user.getPassword(),
 						user.getTrustLevel(), !user.isEnabled())
@@ -130,8 +196,18 @@ public class UserControl extends SQLQueries {
 										.call(userId, quota, machineName));
 					}
 					return sql.getUserDetails.call1(userId)
-							.map(row -> getUser(c, row));
+							.map(row -> getUser(sql, row));
 				});
+	}
+
+	private final class GetUserSQL extends AccessQuotaSQL {
+		Query getUserDetails = conn.query(GET_USER_DETAILS);
+
+		@Override
+		public void close() {
+			getUserDetails.close();
+			super.close();
+		}
 	}
 
 	/**
@@ -143,14 +219,13 @@ public class UserControl extends SQLQueries {
 	 *         user doesn't exist.
 	 */
 	public Optional<UserRecord> getUser(int id) {
-		try (Connection c = db.getConnection();
-				Query getUserDetails = query(c, GET_USER_DETAILS)) {
-			return transaction(c,
-					() -> getUserDetails.call1(id).map(row -> getUser(c, row)));
+		try (GetUserSQL sql = new GetUserSQL()) {
+			return sql.transaction(() -> sql.getUserDetails.call1(id)
+					.map(row -> getUser(sql, row)));
 		}
 	}
 
-	private static UserRecord getUser(Connection c, Row row) {
+	private static UserRecord getUser(AccessQuotaSQL sql, Row row) {
 		UserRecord user = new UserRecord();
 		try {
 			user.setUserId(row.getInt("user_id"));
@@ -163,55 +238,15 @@ public class UserControl extends SQLQueries {
 					row.getInstant("last_successful_login_timestamp"));
 			user.setLastFailedLogin(row.getInstant("last_fail_timestamp"));
 			HashMap<String, Long> quotas = new HashMap<>();
-			try (Query getQuotas = query(c, GET_QUOTA_DETAILS)) {
-				getQuotas.call(user.getUserId())
-						.forEach(qrow -> quotas.put(
-								qrow.getString("machine_name"),
-								qrow.getLong("quota")));
-			}
+			sql.getQuotas.call(user.getUserId())
+					.forEach(qrow -> quotas.put(qrow.getString("machine_name"),
+							qrow.getLong("quota")));
 			user.setQuota(quotas);
 		} finally {
 			// I mean it!
 			user.setPassword(null);
 		}
 		return user;
-	}
-
-	private static final class UpdateSQL implements AutoCloseable {
-		private final Update setUserName;
-
-		private final Update setUserPass;
-
-		private final Update setUserDisabled;
-
-		private final Update setUserLocked;
-
-		private final Update setUserTrust;
-
-		private final Update setUserQuota;
-
-		private final Query getUserDetails;
-
-		UpdateSQL(Connection c) {
-			setUserName = update(c, SET_USER_NAME);
-			setUserPass = update(c, SET_USER_PASS);
-			setUserDisabled = update(c, SET_USER_DISABLED);
-			setUserLocked = update(c, SET_USER_LOCKED);
-			setUserTrust = update(c, SET_USER_TRUST);
-			setUserQuota = update(c, SET_USER_QUOTA);
-			getUserDetails = query(c, GET_USER_DETAILS);
-		}
-
-		@Override
-		public void close() {
-			setUserName.close();
-			setUserPass.close();
-			setUserDisabled.close();
-			setUserLocked.close();
-			setUserTrust.close();
-			setUserQuota.close();
-			getUserDetails.close();
-		}
 	}
 
 	/**
@@ -228,26 +263,22 @@ public class UserControl extends SQLQueries {
 	 */
 	public Optional<UserRecord> updateUser(int id, UserRecord user,
 			String adminUser) {
-		try (Connection c = db.getConnection();
-				UpdateSQL sql = new UpdateSQL(c)) {
-			return transaction(c,
-					() -> updateUser(id, user, adminUser, c, sql));
+		try (UpdateSQL sql = new UpdateSQL()) {
+			return sql.transaction(() -> updateUser(id, user, adminUser, sql));
 		}
 	}
 
 	// Use this for looking up the current user, who should exist!
-	private static int getCurrentUserId(Connection c, String userName) {
-		try (Query userCheck = query(c, GET_USER_ID)) {
-			return userCheck.call1(userName)
-					.orElseThrow(() -> new RuntimeException(
-							"current user has unexpectedly vanshed"))
-					.getInt("user_id");
-		}
+	private static int getCurrentUserId(AccessQuotaSQL sql, String userName) {
+		return sql.userCheck.call1(userName)
+				.orElseThrow(() -> new RuntimeException(
+						"current user has unexpectedly vanshed"))
+				.getInt("user_id");
 	}
 
 	private Optional<UserRecord> updateUser(int id, UserRecord user,
-			String adminUser, Connection c, UpdateSQL sql) {
-		int adminId = getCurrentUserId(c, adminUser);
+			String adminUser, UpdateSQL sql) {
+		int adminId = getCurrentUserId(sql, adminUser);
 
 		if (nonNull(user.getUserName())) {
 			sql.setUserName.call(user.getUserName(), id);
@@ -282,7 +313,7 @@ public class UserControl extends SQLQueries {
 					.call(quota, id, machineName));
 		}
 
-		return sql.getUserDetails.call1(id).map(row -> getUser(c, row));
+		return sql.getUserDetails.call1(id).map(row -> getUser(sql, row));
 	}
 
 	/**
@@ -297,18 +328,16 @@ public class UserControl extends SQLQueries {
 	 *         {@link Optional#empty()} on failure.
 	 */
 	public Optional<String> deleteUser(int id, String adminUser) {
-		try (Connection c = db.getConnection();
-				Query getUserName = query(c, GET_USER_DETAILS);
-				Update deleteUser = update(c, DELETE_USER)) {
-			return transaction(c, () -> {
-				if (getCurrentUserId(c, adminUser) == id) {
+		try (DeleteUserSQL sql = new DeleteUserSQL()) {
+			return sql.transaction(() -> {
+				if (getCurrentUserId(sql, adminUser) == id) {
 					// May not delete yourself!
 					return Optional.empty();
 				}
-				return getUserName.call1(id).flatMap(row -> {
+				return sql.getUserName.call1(id).map(row -> {
+					// Order matters! Get the name before the delete
 					String userName = row.getString("user_name");
-					return Optional.ofNullable(
-							deleteUser.call(id) == 1 ? userName : null);
+					return sql.deleteUser.call(id) == 1 ? userName : null;
 				});
 			});
 		}
@@ -327,8 +356,8 @@ public class UserControl extends SQLQueries {
 	public PasswordChangeRecord getUserForPrincipal(Principal principal)
 			throws AuthenticationException {
 		try (Connection c = db.getConnection();
-				Query q = query(c, GET_LOCAL_USER_DETAILS)) {
-			return transaction(c, () -> q.call1(principal.getName())
+				Query q = c.query(GET_LOCAL_USER_DETAILS)) {
+			return c.transaction(() -> q.call1(principal.getName())
 					.map(row -> new PasswordChangeRecord(
 							row.getInt("user_id"), row.getString("user_name")))
 					.orElseThrow(
@@ -336,27 +365,6 @@ public class UserControl extends SQLQueries {
 							() -> new AuthenticationServiceException(
 									"user is managed externally; "
 											+ "cannot manage password here")));
-		}
-	}
-
-	private static final class UpdatePassSQL implements AutoCloseable {
-		private Query getPasswordedUser;
-
-		private Query isPasswordMatching;
-
-		private Update setPassword;
-
-		UpdatePassSQL(Connection c) {
-			getPasswordedUser = query(c, GET_LOCAL_USER_DETAILS);
-			isPasswordMatching = query(c, IS_USER_PASS_MATCHED);
-			setPassword = update(c, SET_USER_PASS);
-		}
-
-		@Override
-		public void close() {
-			getPasswordedUser.close();
-			isPasswordMatching.close();
-			setPassword.close();
 		}
 	}
 
@@ -375,9 +383,8 @@ public class UserControl extends SQLQueries {
 	 */
 	public PasswordChangeRecord updateUserOfPrincipal(Principal principal,
 			PasswordChangeRecord user) throws AuthenticationException {
-		try (Connection c = db.getConnection();
-				UpdatePassSQL sql = new UpdatePassSQL(c)) {
-			return transaction(c,
+		try (UpdatePassSQL sql = new UpdatePassSQL()) {
+			return sql.transaction(
 					() -> updateUserOfPrincipal(principal, user, sql));
 		}
 	}

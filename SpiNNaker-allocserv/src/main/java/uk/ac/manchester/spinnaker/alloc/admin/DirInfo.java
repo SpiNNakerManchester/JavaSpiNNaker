@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -112,7 +111,7 @@ public final class DirInfo extends SQLQueries {
 
 	static void load(Connection conn) {
 		if (MAP.isEmpty()) {
-			try (Query di = query(conn, LOAD_DIR_INFO)) {
+			try (Query di = conn.query(LOAD_DIR_INFO)) {
 				di.call().forEach(row -> new DirInfo(row.getInt("z"),
 						row.getEnum("direction", Direction.class),
 						row.getInt("dx"), row.getInt("dy"), row.getInt("dz")));

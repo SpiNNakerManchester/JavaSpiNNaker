@@ -25,8 +25,6 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import java.io.File;
 import java.io.IOException;
@@ -871,12 +869,12 @@ public class MachineDefinitionLoader extends SQLQueries {
 		private final Update setMaxCoords;
 
 		Updates(Connection conn) {
-			makeMachine = update(conn, INSERT_MACHINE_SPINN_5);
-			makeTag = update(conn, INSERT_TAG);
-			makeBMP = update(conn, INSERT_BMP);
-			makeBoard = update(conn, INSERT_BOARD);
-			makeLink = update(conn, INSERT_LINK);
-			setMaxCoords = update(conn, SET_MAX_COORDS);
+			makeMachine = conn.update(INSERT_MACHINE_SPINN_5);
+			makeTag = conn.update(INSERT_TAG);
+			makeBMP = conn.update(INSERT_BMP);
+			makeBoard = conn.update(INSERT_BOARD);
+			makeLink = conn.update(INSERT_LINK);
+			setMaxCoords = conn.update(SET_MAX_COORDS);
 		}
 
 		@Override
@@ -909,7 +907,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 		try (Connection conn = db.getConnection();
 				Updates sql = new Updates(conn)) {
 			for (Machine machine : machines) {
-				transaction(conn, () -> loadMachineDefinition(sql, machine));
+				conn.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}
 	}
@@ -924,7 +922,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 		try (Connection conn = db.getConnection();
 				Updates sql = new Updates(conn)) {
 			for (Machine machine : configuration.getMachines()) {
-				transaction(conn, () -> loadMachineDefinition(sql, machine));
+				conn.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}
 	}
@@ -938,7 +936,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	public void loadMachineDefinition(Machine machine) {
 		try (Connection conn = db.getConnection();
 				Updates sql = new Updates(conn)) {
-			transaction(conn, () -> loadMachineDefinition(sql, machine));
+			conn.transaction(() -> loadMachineDefinition(sql, machine));
 		}
 	}
 

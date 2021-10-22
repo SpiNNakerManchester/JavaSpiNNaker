@@ -27,6 +27,7 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPLocation;
 
 /**
  * Represents the header of an SDP message.
@@ -116,8 +117,10 @@ public class SDPHeader implements SerializableMessage {
 	 *
 	 * @param buffer
 	 *            The buffer to read from.
+	 * @param isBMP
+	 *            Whether we're really talking to a BMP.
 	 */
-	public SDPHeader(ByteBuffer buffer) {
+	public SDPHeader(ByteBuffer buffer, boolean isBMP) {
 		// Caller MUST have stripped the leading padding
 		assert buffer.position() == 2 : "leading padding must be skipped";
 		flags = Flag.get(buffer.get());
@@ -130,8 +133,13 @@ public class SDPHeader implements SerializableMessage {
 		int scx = toUnsignedInt(buffer.get());
 		destinationPort = (dpc >> CPU_ADDR_BITS) & PORT_MASK;
 		sourcePort = (spc >> CPU_ADDR_BITS) & PORT_MASK;
-		destination = allocCoreLocation(dcx, dcy, dpc & CPU_MASK);
-		source = allocCoreLocation(scx, scy, spc & CPU_MASK);
+		if (isBMP) {
+			destination = new BMPLocation(dcx, dcy, dpc & CPU_MASK);
+			source = new BMPLocation(scx, scy, spc & CPU_MASK);
+		} else {
+			destination = allocCoreLocation(dcx, dcy, dpc & CPU_MASK);
+			source = allocCoreLocation(scx, scy, spc & CPU_MASK);
+		}
 	}
 
 	private HasCoreLocation allocCoreLocation(int x, int y, int p) {

@@ -19,9 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.transaction;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.update;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +63,9 @@ public class QuotaManager extends SQLQueries {
 	public boolean mayCreateJob(int machineId, String user) {
 		try (Connection c = db.getConnection();
 				// These could be combined, but they're complicated enough
-				Query getQuota = query(c, GET_USER_QUOTA);
-				Query getCurrentUsage = query(c, GET_CURRENT_USAGE)) {
-			return transaction(c, () -> mayCreateJob(machineId, user, getQuota,
+				Query getQuota = c.query(GET_USER_QUOTA);
+				Query getCurrentUsage = c.query(GET_CURRENT_USAGE)) {
+			return c.transaction(() -> mayCreateJob(machineId, user, getQuota,
 					getCurrentUsage));
 		}
 	}
@@ -102,8 +99,8 @@ public class QuotaManager extends SQLQueries {
 	 */
 	public boolean mayLetJobContinue(int machineId, int jobId) {
 		try (Connection c = db.getConnection();
-				Query getUsageAndQuota = query(c, GET_JOB_USAGE_AND_QUOTA)) {
-			return transaction(c, () -> getUsageAndQuota.call1(machineId, jobId)
+				Query getUsageAndQuota = c.query(GET_JOB_USAGE_AND_QUOTA)) {
+			return c.transaction(() -> getUsageAndQuota.call1(machineId, jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
 					// Otherwise, we'll just allow it
@@ -135,10 +132,10 @@ public class QuotaManager extends SQLQueries {
 	final void doConsolidate() {
 		try (Connection c = db.getConnection();
 				Query getConsoldationTargets =
-						query(c, GET_CONSOLIDATION_TARGETS);
-				Update decrementQuota = update(c, DECREMENT_QUOTA);
-				Update markConsolidated = update(c, MARK_CONSOLIDATED)) {
-			transaction(c, () -> consolidate(getConsoldationTargets,
+						c.query(GET_CONSOLIDATION_TARGETS);
+				Update decrementQuota = c.update(DECREMENT_QUOTA);
+				Update markConsolidated = c.update(MARK_CONSOLIDATED)) {
+			c.transaction(() -> consolidate(getConsoldationTargets,
 					decrementQuota, markConsolidated));
 		}
 	}

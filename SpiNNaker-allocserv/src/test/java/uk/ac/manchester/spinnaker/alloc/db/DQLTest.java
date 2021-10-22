@@ -22,7 +22,6 @@ import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,7 +151,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getAllMachines() {
-		try (Query q = query(c, GET_ALL_MACHINES)) {
+		try (Query q = c.query(GET_ALL_MACHINES)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
@@ -163,7 +162,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void listMachineNames() {
-		try (Query q = query(c, LIST_MACHINE_NAMES)) {
+		try (Query q = c.query(LIST_MACHINE_NAMES)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("machine_name"), q.getRowColumnNames());
 			assertFalse(q.call1().isPresent());
@@ -172,7 +171,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getMachineById() {
-		try (Query q = query(c, GET_MACHINE_BY_ID)) {
+		try (Query q = c.query(GET_MACHINE_BY_ID)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
@@ -183,7 +182,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getNamedMachine() {
-		try (Query q = query(c, GET_NAMED_MACHINE)) {
+		try (Query q = c.query(GET_NAMED_MACHINE)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
@@ -194,7 +193,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getMachineJobs() {
-		try (Query q = query(c, GET_MACHINE_JOBS)) {
+		try (Query q = c.query(GET_MACHINE_JOBS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id", "owner_name"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
@@ -203,7 +202,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getJobIds() {
-		try (Query q = query(c, GET_JOB_IDS)) {
+		try (Query q = c.query(GET_JOB_IDS)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
@@ -213,7 +212,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getLiveJobIds() {
-		try (Query q = query(c, GET_LIVE_JOB_IDS)) {
+		try (Query q = c.query(GET_LIVE_JOB_IDS)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
@@ -224,7 +223,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getJob() {
-		try (Query q = query(c, GET_JOB)) {
+		try (Query q = c.query(GET_JOB)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id", "machine_id", "machine_name", "width",
 					"height", "depth", "root_id", "job_state",
@@ -238,7 +237,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getJobBoards() {
-		try (Query q = query(c, GET_JOB_BOARDS)) {
+		try (Query q = c.query(GET_JOB_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_JOB).isPresent());
@@ -247,7 +246,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getJobBoardCoords() {
-		try (Query q = query(c, GET_JOB_BOARD_COORDS)) {
+		try (Query q = c.query(GET_JOB_BOARD_COORDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
 					q.getRowColumnNames());
@@ -257,7 +256,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getJobChipDimensions() {
-		try (Query q = query(c, GET_JOB_CHIP_DIMENSIONS)) {
+		try (Query q = c.query(GET_JOB_CHIP_DIMENSIONS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("width", "height"), q.getRowColumnNames());
 			Row row = q.call1(NO_JOB).get();
@@ -269,7 +268,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getRootOfBoard() {
-		try (Query q = query(c, GET_ROOT_OF_BOARD)) {
+		try (Query q = c.query(GET_ROOT_OF_BOARD)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("root_x", "root_y"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_BOARD).isPresent());
@@ -278,7 +277,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getRootBMPAddress() {
-		try (Query q = query(c, GET_ROOT_BMP_ADDRESS)) {
+		try (Query q = c.query(GET_ROOT_BMP_ADDRESS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("address"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
@@ -286,8 +285,17 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getBMPAddress() {
+		try (Query q = c.query(GET_BMP_ADDRESS)) {
+			assertEquals(3, q.getNumArguments());
+			assertSetEquals(set("address"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
+		}
+	}
+
+	@Test
 	void getBoardNumbers() {
-		try (Query q = query(c, GET_BOARD_NUMBERS)) {
+		try (Query q = c.query(GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_num"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
@@ -295,8 +303,17 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getBmpBoardNumbers() {
+		try (Query q = c.query(GET_BMP_BOARD_NUMBERS)) {
+			assertEquals(3, q.getNumArguments());
+			assertSetEquals(set("board_num"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
+		}
+	}
+
+	@Test
 	void getLiveBoards() {
-		try (Query q = query(c, GET_LIVE_BOARDS)) {
+		try (Query q = c.query(GET_LIVE_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
 					q.getRowColumnNames());
@@ -306,7 +323,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getDeadBoards() {
-		try (Query q = query(c, GET_DEAD_BOARDS)) {
+		try (Query q = c.query(GET_DEAD_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
 					q.getRowColumnNames());
@@ -316,7 +333,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getDeadLinks() {
-		try (Query q = query(c, getDeadLinks)) {
+		try (Query q = c.query(getDeadLinks)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
 					set("board_1_x", "board_1_y", "board_1_z", "board_1_c",
@@ -330,7 +347,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getAvailableBoardNumbers() {
-		try (Query q = query(c, GET_AVAILABLE_BOARD_NUMBERS)) {
+		try (Query q = c.query(GET_AVAILABLE_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_num"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
@@ -339,7 +356,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getTags() {
-		try (Query q = query(c, GET_TAGS)) {
+		try (Query q = c.query(GET_TAGS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("tag"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
@@ -349,7 +366,7 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getBoardPower() {
 		// This query always produces one row
-		try (Query q = query(c, GET_BOARD_POWER)) {
+		try (Query q = c.query(GET_BOARD_POWER)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("total_on"), q.getRowColumnNames());
 			Row row = q.call1(NO_JOB).get();
@@ -359,7 +376,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getBoardConnectInfo() {
-		try (Query q = query(c, GET_BOARD_CONNECT_INFO)) {
+		try (Query q = c.query(GET_BOARD_CONNECT_INFO)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_id", "address", "x", "y", "z", "root_x",
 					"root_y"), q.getRowColumnNames());
@@ -369,7 +386,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getRootCoords() {
-		try (Query q = query(c, GET_ROOT_COORDS)) {
+		try (Query q = c.query(GET_ROOT_COORDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("x", "y", "z", "root_x", "root_y"),
 					q.getRowColumnNames());
@@ -379,7 +396,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getAllocationTasks() {
-		try (Query q = query(c, getAllocationTasks)) {
+		try (Query q = c.query(getAllocationTasks)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("req_id", "job_id", "num_boards", "width",
 					"height", "board_id", "machine_id", "max_dead_boards",
@@ -391,7 +408,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findFreeBoard() {
-		try (Query q = query(c, FIND_FREE_BOARD)) {
+		try (Query q = c.query(FIND_FREE_BOARD)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
@@ -400,7 +417,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getBoardByCoords() {
-		try (Query q = query(c, GET_BOARD_BY_COORDS)) {
+		try (Query q = c.query(GET_BOARD_BY_COORDS)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
@@ -409,7 +426,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findExpiredJobs() {
-		try (Query q = query(c, FIND_EXPIRED_JOBS)) {
+		try (Query q = c.query(FIND_EXPIRED_JOBS)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("job_id"), q.getRowColumnNames());
 			assertFalse(q.call1().isPresent());
@@ -418,7 +435,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void loadDirInfo() {
-		try (Query q = query(c, LOAD_DIR_INFO)) {
+		try (Query q = c.query(LOAD_DIR_INFO)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("z", "direction", "dx", "dy", "dz"),
 					q.getRowColumnNames());
@@ -428,13 +445,13 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getChanges() {
-		try (Query q = query(c, GET_CHANGES)) {
+		try (Query q = c.query(GET_CHANGES)) {
 			assertEquals(1, q.getNumArguments());
 			Set<String> colNames = q.getRowColumnNames();
 			assertSetEquals(set("change_id", "job_id", "board_id", "power",
 					"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_nw",
-					"fpga_se", "in_progress", "from_state", "to_state"),
-					colNames);
+					"fpga_se", "in_progress", "from_state", "to_state",
+					"board_num", "cabinet", "frame", "bmp_id"), colNames);
 			// Ensure that this link is maintained
 			for (Direction d : Direction.values()) {
 				assertTrue(colNames.contains(d.columnName),
@@ -447,7 +464,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findRectangle() {
-		try (Query q = query(c, findRectangle)) {
+		try (Query q = c.query(findRectangle)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(set("id", "x", "y", "z", "available"),
 					q.getRowColumnNames());
@@ -457,7 +474,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findLocation() {
-		try (Query q = query(c, findLocation)) {
+		try (Query q = c.query(findLocation)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, NO_BOARD).isPresent());
@@ -466,7 +483,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void countConnected() {
-		try (Query q = query(c, countConnected)) {
+		try (Query q = c.query(countConnected)) {
 			assertEquals(5, q.getNumArguments());
 			assertSetEquals(set("connected_size"), q.getRowColumnNames());
 			Row row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
@@ -476,7 +493,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void countPendingChanges() {
-		try (Query q = query(c, COUNT_PENDING_CHANGES)) {
+		try (Query q = c.query(COUNT_PENDING_CHANGES)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("c"), q.getRowColumnNames());
 			Row row = q.call1().get();
@@ -486,7 +503,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getPerimeterLinks() {
-		try (Query q = query(c, getPerimeterLinks)) {
+		try (Query q = c.query(getPerimeterLinks)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_id", "direction"),
 					q.getRowColumnNames());
@@ -496,7 +513,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByGlobalChip() {
-		try (Query q = query(c, findBoardByGlobalChip)) {
+		try (Query q = c.query(findBoardByGlobalChip)) {
 			assertEquals(3, q.getNumArguments());
 			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
 					"job_id", "machine_name", "cabinet", "frame", "board_num",
@@ -510,7 +527,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByJobChip() {
-		try (Query q = query(c, findBoardByJobChip)) {
+		try (Query q = c.query(findBoardByJobChip)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(
 					set("board_id", "address", "x", "y", "z", "job_id",
@@ -525,7 +542,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByLogicalCoords() {
-		try (Query q = query(c, findBoardByLogicalCoords)) {
+		try (Query q = c.query(findBoardByLogicalCoords)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
 					"job_id", "machine_name", "cabinet", "frame", "board_num",
@@ -539,7 +556,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByPhysicalCoords() {
-		try (Query q = query(c, findBoardByPhysicalCoords)) {
+		try (Query q = c.query(findBoardByPhysicalCoords)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
 					"job_id", "machine_name", "cabinet", "frame", "board_num",
@@ -553,7 +570,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByIPAddress() {
-		try (Query q = query(c, findBoardByIPAddress)) {
+		try (Query q = c.query(findBoardByIPAddress)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
 					"job_id", "machine_name", "cabinet", "frame", "board_num",
@@ -567,7 +584,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getJobsWithChanges() {
-		try (Query q = query(c, getJobsWithChanges)) {
+		try (Query q = c.query(getJobsWithChanges)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE).isPresent());
@@ -576,7 +593,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getConnectedBoards() {
-		try (Query q = query(c, getConnectedBoards)) {
+		try (Query q = c.query(getConnectedBoards)) {
 			assertEquals(7, q.getNumArguments());
 			assertSetEquals(set("board_id"), q.getRowColumnNames());
 			assertFalse(
@@ -586,7 +603,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByNameAndXYZ() {
-		try (Query q = query(c, FIND_BOARD_BY_NAME_AND_XYZ)) {
+		try (Query q = c.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
@@ -595,7 +612,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByNameAndCFB() {
-		try (Query q = query(c, FIND_BOARD_BY_NAME_AND_CFB)) {
+		try (Query q = c.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
@@ -604,7 +621,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void findBoardByNameAndIPAddress() {
-		try (Query q = query(c, FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
+		try (Query q = c.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			assertFalse(q.call1("gorp", "256.256.256.256").isPresent());
@@ -613,7 +630,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getFunctioningField() {
-		try (Query q = query(c, GET_FUNCTIONING_FIELD)) {
+		try (Query q = c.query(GET_FUNCTIONING_FIELD)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("functioning"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_BOARD).isPresent());
@@ -622,7 +639,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getUserQuota() {
-		try (Query q = query(c, GET_USER_QUOTA)) {
+		try (Query q = c.query(GET_USER_QUOTA)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("quota", "user_id"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, "gorp").isPresent());
@@ -631,7 +648,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getCurrentUsage() {
-		try (Query q = query(c, GET_CURRENT_USAGE)) {
+		try (Query q = c.query(GET_CURRENT_USAGE)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("current_usage"), q.getRowColumnNames());
 			assertNull(q.call1(NO_MACHINE, "gorp").get()
@@ -641,7 +658,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getJobUsageAndQuota() {
-		try (Query q = query(c, GET_JOB_USAGE_AND_QUOTA)) {
+		try (Query q = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("quota", "usage"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_MACHINE, NO_JOB).isPresent());
@@ -650,7 +667,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getConsolidationTargets() {
-		try (Query q = query(c, GET_CONSOLIDATION_TARGETS)) {
+		try (Query q = c.query(GET_CONSOLIDATION_TARGETS)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("job_id", "quota_id", "usage"),
 					q.getRowColumnNames());
@@ -661,7 +678,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void isUserLocked() {
-		try (Query q = query(c, IS_USER_LOCKED)) {
+		try (Query q = c.query(IS_USER_LOCKED)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("disabled", "locked", "user_id"),
 					q.getRowColumnNames());
@@ -672,7 +689,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getUserAuthorities() {
-		try (Query q = query(c, GET_USER_AUTHORITIES)) {
+		try (Query q = c.query(GET_USER_AUTHORITIES)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("trust_level", "has_password"),
 					q.getRowColumnNames());
@@ -682,7 +699,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void listAllUsers() {
-		try (Query q = query(c, LIST_ALL_USERS)) {
+		try (Query q = c.query(LIST_ALL_USERS)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("user_id", "user_name"), q.getRowColumnNames());
 			// Testing DB has no users by default
@@ -692,7 +709,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getUserId() {
-		try (Query q = query(c, GET_USER_ID)) {
+		try (Query q = c.query(GET_USER_ID)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("user_id"), q.getRowColumnNames());
 			// Testing DB has no users by default
@@ -702,7 +719,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getUserDetails() {
-		try (Query q = query(c, GET_USER_DETAILS)) {
+		try (Query q = c.query(GET_USER_DETAILS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
 					set("disabled", "has_password", "last_fail_timestamp",
@@ -715,7 +732,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getQuotaDetails() {
-		try (Query q = query(c, GET_QUOTA_DETAILS)) {
+		try (Query q = c.query(GET_QUOTA_DETAILS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("machine_name", "quota"),
 					q.getRowColumnNames());
@@ -725,7 +742,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void countMachineThings() {
-		try (Query q = query(c, COUNT_MACHINE_THINGS)) {
+		try (Query q = c.query(COUNT_MACHINE_THINGS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_count", "in_use", "num_jobs"),
 					q.getRowColumnNames());
@@ -738,7 +755,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void countPoweredBoards() {
-		try (Query q = query(c, COUNT_POWERED_BOARDS)) {
+		try (Query q = c.query(COUNT_POWERED_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("c"), q.getRowColumnNames());
 			assertEquals(0, q.call1(NO_JOB).get().getInt("c"));
@@ -747,11 +764,13 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void listLiveJobs() {
-		try (Query q = query(c, LIST_LIVE_JOBS)) {
+		try (Query q = c.query(LIST_LIVE_JOBS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("allocation_size", "create_timestamp", "job_id",
-					"job_state", "keepalive_host", "keepalive_interval",
-					"machine_id", "user_name"), q.getRowColumnNames());
+			assertSetEquals(
+					set("allocation_size", "create_timestamp", "job_id",
+							"job_state", "keepalive_host", "keepalive_interval",
+							"machine_id", "machine_name", "user_name"),
+					q.getRowColumnNames());
 			// No jobs right now
 			assertFalse(q.call1().isPresent());
 		}
@@ -759,7 +778,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getLocalUserDetails() {
-		try (Query q = query(c, GET_LOCAL_USER_DETAILS)) {
+		try (Query q = c.query(GET_LOCAL_USER_DETAILS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("user_id", "user_name"), q.getRowColumnNames());
 			assertFalse(q.call1(NO_USER).isPresent());
@@ -768,7 +787,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void isUserPassMatched() {
-		try (Query q = query(c, IS_USER_PASS_MATCHED)) {
+		try (Query q = c.query(IS_USER_PASS_MATCHED)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("matches"), q.getRowColumnNames());
 			assertFalse(q.call1("*", NO_USER).isPresent());
@@ -777,7 +796,7 @@ class DQLTest extends SQLQueries {
 
 	@Test
 	void getReportedBoards() {
-		try (Query q = query(c, getReportedBoards)) {
+		try (Query q = c.query(getReportedBoards)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
 					set("board_id", "num_reports", "x", "y", "z", "address"),
