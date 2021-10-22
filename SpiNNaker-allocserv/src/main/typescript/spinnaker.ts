@@ -619,8 +619,27 @@ function drawJob(
 	 *		The hex coordinates, or `undefined` if the board isn't known.
 	 */
 	function location(triad: BoardTriad) : HexCoords {
-		const t = tloc.get(tuplekey(triad));
+		const [x, y, z] = triad;
+		const t = tloc.get(tuplekey([rx+x, ry+y, z]));
 		return t == undefined ? undefined : t[1];
+	}
+
+	/**
+	 * Get the basic board location description. Wrapper around `allocated`.
+	 *
+	 * @param {BoardTriad} triad
+	 *		Which board to describe.
+	 * @return {BoardLocator | undefined}
+	 *		The machine description of the board, or `undefined` if no board.
+	 */
+	function Board(triad: BoardTriad) : BoardLocator | undefined {
+		const [x, y, z] = triad;
+		const key = tuplekey([rx+x, ry+y, z]);
+		var board : BoardLocator = undefined;
+		if (allocated.has(key)) {
+			board = allocated.get(key);
+		}
+		return board
 	}
 
 	/**
@@ -646,11 +665,7 @@ function drawJob(
 	 *		The multiline description of the board.
 	 */
 	function triadDescription(triad: BoardTriad) : string | undefined {
-		var board : BoardLocator = undefined;
-		if (allocated.has(tuplekey(triad))) {
-			board = allocated.get(tuplekey(triad));
-		}
-		console.log("triadDescription", triad, board)
+		const board = Board(triad);
 		const [x, y, z] = triad;
 		var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
 		if (board !== undefined && board.hasOwnProperty("network")) {
