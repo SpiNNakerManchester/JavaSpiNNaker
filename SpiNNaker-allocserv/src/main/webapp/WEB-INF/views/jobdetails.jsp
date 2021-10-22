@@ -57,15 +57,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Request:</th>
-</tr>
-<tr>
-	<td colspan="2">${ job.request }</td>
+	<td>${ job.request }</td>
 </tr>
 <tr>
 	<th class="lineTitle">Allocation:</th>
-</tr>
-<tr>
-	<td colspan="2">
+	<td>
 		<c:if test="${ not empty job.boards }">
 			<canvas id="board_layout" width="300" height="200"></canvas>
 			<canvas id="tooltip" width="100" height="50"></canvas>

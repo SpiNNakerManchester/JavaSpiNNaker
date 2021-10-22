@@ -650,7 +650,7 @@ function drawJob(
 		if (allocated.has(tuplekey(triad))) {
 			board = allocated.get(tuplekey(triad));
 		}
-		console.log("triadDescription", triad, board, [allocated])
+		// console.log("triadDescription", triad, board, [allocated])
 		if (board !== undefined) {
 			const [x, y, z] = triad;
 			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
