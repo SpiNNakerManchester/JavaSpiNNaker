@@ -927,14 +927,22 @@ public class SpallocProperties {
 		 */
 		private boolean performanceLog;
 
+		/**
+		 * Performance stats not reported for queries with a max less than this
+		 * (in nanoseconds).
+		 */
+		private double performanceThreshold;
+
 		public DBProperties(@DefaultValue("1s") Duration timeout,
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("400") int analysisLimit,
-				@DefaultValue("false") boolean performanceLog) {
+				@DefaultValue("false") boolean performanceLog,
+				@DefaultValue("1e6") double performanceThreshold) {
 			this.timeout = timeout;
 			this.debugFailures = debugFailures;
 			this.analysisLimit = analysisLimit;
 			this.performanceLog = performanceLog;
+			this.performanceThreshold = performanceThreshold;
 		}
 
 		/** @return How long to wait to get a database lock. */
@@ -987,8 +995,20 @@ public class SpallocProperties {
 			return performanceLog;
 		}
 
-		public void setPerformanceLog(boolean performanceLog) {
-			this.performanceLog = performanceLog;
+		public void setPerformanceLog(boolean log) {
+			this.performanceLog = log;
+		}
+
+		/**
+		 * @return Number of nanoseconds where performance stats are not
+		 *         reported for queries with a max less than this.
+		 */
+		public final double getPerformanceThreshold() {
+			return performanceThreshold;
+		}
+
+		public void setPerformanceThreshold(double threshold) {
+			this.performanceThreshold = threshold;
 		}
 	}
 

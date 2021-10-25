@@ -125,6 +125,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private static final int EXPECTED_NUM_MOVEMENTS = 18;
 
+	private static final int TRIM_LENGTH = 80;
+
+	private static final int TRIM_PERF_LOG_LENGTH = 120;
+
 	private final Path dbPath;
 
 	private String tombstoneFile;
@@ -173,6 +177,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
+	private static final double NS_PER_US = 1000.0;
+
 	/**
 	 * Writes the recorded statement execution times to the log if that is
 	 * enabled.
@@ -181,12 +187,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void logStatementExecutionTimes() {
 		if (props.isPerformanceLog()) {
 			synchronized (statementLengths) {
+				double thresh = props.getPerformanceThreshold();
 				for (Entry<String, SummaryStatistics> ent : statementLengths
 						.entrySet()) {
-					log.info(
-							"statement execution time {}ns (max: {}ns) for: {}",
-							ent.getValue().getMean(), ent.getValue().getMax(),
-							trimSQL(ent.getKey()));
+					if (ent.getValue().getMax() >= thresh) {
+						log.info(
+								"statement execution time "
+										+ "{}us (max: {}us) for: {}",
+								ent.getValue().getMean() / NS_PER_US,
+								ent.getValue().getMax() / NS_PER_US,
+								trimSQL(ent.getKey(), TRIM_PERF_LOG_LENGTH));
+					}
 				}
 			}
 		}
@@ -1369,8 +1380,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	private static final int TRIM_LENGTH = 80;
-
 	private static final String ELLIPSIS = "...";
 
 	/**
@@ -1381,11 +1390,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @return The trimmed SQL.
 	 */
 	private static String trimSQL(String sql) {
-		sql = sql.replaceAll("--[^\n]*\n", " ")
-				.replaceAll("\\s+", " ").trim();
+		return trimSQL(sql, TRIM_LENGTH);
+	}
+
+	/**
+	 * Exclude comments and compress whitespace from the SQL of a statement.
+	 *
+	 * @param sql
+	 *            The text of the SQL to trim.
+	 * @param length
+	 *            The point to insert an ellipsis if required.
+	 * @return The trimmed SQL.
+	 */
+	private static String trimSQL(String sql, int length) {
+		sql = sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
 		// Trim long queries to no more than TRIM_LENGTH...
-		String sql2 =
-				sql.replaceAll("^(.{0," + TRIM_LENGTH + "})\\b.*$", "$1");
+		String sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
 		if (sql2 != sql) {
 			// and add an ellipsis if we do the trimming
 			sql = sql2 + ELLIPSIS;
