@@ -591,11 +591,12 @@ function drawJob(
 	const ctx = canv.getContext("2d");
 	const tooltipCtx = tooltip.getContext("2d");
 
+	/** Information about boards. Coordinates are machine-global. */
 	const allocated = boardMap(descriptor.boards);
 
 	ctx.strokeStyle = 'black';
 	const {x: rx, y: ry} = descriptor.boards[0].triad;
-	/** Where all the boards are on the canvas. */
+	/** Where all the boards are on the canvas. Coordinates are job-local. */
 	const tloc = drawLayout(ctx, rootX, rootY, scale,
 			descriptor.triad_width, descriptor.triad_height, 3,
 			triadCoord => {
@@ -619,8 +620,7 @@ function drawJob(
 	 *		The hex coordinates, or `undefined` if the board isn't known.
 	 */
 	function location(triad: BoardTriad) : HexCoords {
-		const [x, y, z] = triad;
-		const t = tloc.get(tuplekey([rx+x, ry+y, z]));
+		const t = tloc.get(tuplekey(triad));
 		return t == undefined ? undefined : t[1];
 	}
 

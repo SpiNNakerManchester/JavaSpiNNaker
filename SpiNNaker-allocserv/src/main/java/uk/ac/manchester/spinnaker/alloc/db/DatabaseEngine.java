@@ -55,7 +55,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -102,10 +101,71 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
 	/**
+	 * Flag direct from SQLite.
+	 * <p>
+	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
+	 * may only be invoked from top-level SQL, and cannot be used in
+	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
+	 * <em>CHECK</em> constraints, <em>DEFAULT</em> clauses, expression indexes,
+	 * partial indexes, or generated columns. The {@code SQLITE_DIRECTONLY}
+	 * flags is a security feature which is recommended for all
+	 * application-defined SQL functions, and especially for functions that have
+	 * side-effects or that could potentially leak sensitive
+	 * information.</blockquote>
+	 * <p>
+	 * Note that the password-related functions we install are definitely
+	 * examples of functions that are only usable directly.
+	 *
+	 * @see <a href=
+	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
+	 */
+	public static final int SQLITE_DIRECTONLY = 0x000080000;
+
+	/**
+	 * Flag direct from SQLite.
+	 * <p>
+	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
+	 * unlikely to cause problems even if misused. An innocuous function should
+	 * have no side effects and should not depend on any values other than its
+	 * input parameters. The {@code abs()} function is an example of an
+	 * innocuous function. The {@code load_extension()} SQL function is not
+	 * innocuous because of its side effects.
+	 * <p>
+	 * {@code SQLITE_INNOCUOUS} is similar to {@code SQLITE_DETERMINISTIC}, but
+	 * is not exactly the same. The {@code random()} function is an example of a
+	 * function that is innocuous but not deterministic.
+	 * <p>
+	 * Some heightened security settings ({@code SQLITE_DBCONFIG_TRUSTED_SCHEMA}
+	 * and {@code PRAGMA trusted_schema=OFF}) disable the use of SQL functions
+	 * inside views and triggers and in schema structures such as <em>CHECK</em>
+	 * constraints, <em>DEFAULT</em> clauses, expression indexes, partial
+	 * indexes, and generated columns unless the function is tagged with
+	 * {@code SQLITE_INNOCUOUS}. Most built-in functions are innocuous.
+	 * Developers are advised to avoid using the {@code SQLITE_INNOCUOUS} flag
+	 * for application-defined functions unless the function has been carefully
+	 * audited and found to be free of potentially security-adverse side-effects
+	 * and information-leaks. </blockquote>
+	 * <p>
+	 * Note that this engine marks non-innocuous functions as
+	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
+	 * correct.
+	 *
+	 * @see <a href=
+	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
+	 */
+	public static final int SQLITE_INNOCUOUS = 0x000200000;
+
+	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
 	 * convention.
 	 */
 	private static final String MAIN_DB_NAME = "main";
+
+	/**
+	 * The prefix of bean names that may be removed to generate the SQLite
+	 * function name.
+	 */
+	private static final String FUN_NAME_PREFIX = "function.";
 
 	@ResultColumn("c")
 	@SingleRowResult
@@ -128,6 +188,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final int TRIM_LENGTH = 80;
 
 	private static final int TRIM_PERF_LOG_LENGTH = 120;
+
+	private static final double NS_PER_US = 1000.0;
+
+	private static final String ELLIPSIS = "...";
 
 	private final Path dbPath;
 
@@ -171,13 +235,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private void statementLength(Statement s, long pre, long post) {
 		if (props.isPerformanceLog()) {
+			SummaryStatistics stats;
 			synchronized (statementLengths) {
-				statementLengths.get(s.toString()).addValue(post - pre);
+				stats = statementLengths.get(s.toString());
+			}
+			synchronized (stats) {
+				stats.addValue(post - pre);
 			}
 		}
 	}
-
-	private static final double NS_PER_US = 1000.0;
 
 	/**
 	 * Writes the recorded statement execution times to the log if that is
@@ -186,21 +252,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@PreDestroy
 	private void logStatementExecutionTimes() {
 		if (props.isPerformanceLog()) {
-			synchronized (statementLengths) {
-				double thresh = props.getPerformanceThreshold();
-				for (Entry<String, SummaryStatistics> ent : statementLengths
-						.entrySet()) {
-					if (ent.getValue().getMax() >= thresh) {
-						log.info(
-								"statement execution time "
-										+ "{}us (max: {}us) for: {}",
-								ent.getValue().getMean() / NS_PER_US,
-								ent.getValue().getMax() / NS_PER_US,
-								trimSQL(ent.getKey(), TRIM_PERF_LOG_LENGTH));
-					}
-				}
-			}
+			statementLengths.entrySet().stream()
+					.filter(e -> e.getValue().getMax() >= props
+							.getPerformanceThreshold())
+					.forEach(DatabaseEngine::logStatementExecutionTime);
 		}
+	}
+
+	private static void
+			logStatementExecutionTime(Map.Entry<String, SummaryStatistics> e) {
+		log.info("statement execution time " + "{}us (max: {}us) for: {}",
+				e.getValue().getMean() / NS_PER_US,
+				e.getValue().getMax() / NS_PER_US,
+				trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
 	}
 
 	private static Set<String> columnNames(ResultSetMetaData md)
@@ -539,67 +603,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Target(ElementType.TYPE)
 	public @interface Innocuous {
 	}
-
-	/**
-	 * The prefix of bean names that may be removed to generate the SQLite
-	 * function name.
-	 */
-	private static final String FUN_NAME_PREFIX = "function.";
-
-	/**
-	 * Flag direct from SQLite.
-	 * <p>
-	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
-	 * may only be invoked from top-level SQL, and cannot be used in
-	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
-	 * <em>CHECK</em> constraints, <em>DEFAULT</em> clauses, expression indexes,
-	 * partial indexes, or generated columns. The {@code SQLITE_DIRECTONLY}
-	 * flags is a security feature which is recommended for all
-	 * application-defined SQL functions, and especially for functions that have
-	 * side-effects or that could potentially leak sensitive
-	 * information.</blockquote>
-	 * <p>
-	 * Note that the password-related functions we install are definitely
-	 * examples of functions that are only usable directly.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_DIRECTONLY = 0x000080000;
-
-	/**
-	 * Flag direct from SQLite.
-	 * <p>
-	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
-	 * unlikely to cause problems even if misused. An innocuous function should
-	 * have no side effects and should not depend on any values other than its
-	 * input parameters. The {@code abs()} function is an example of an
-	 * innocuous function. The {@code load_extension()} SQL function is not
-	 * innocuous because of its side effects.
-	 * <p>
-	 * {@code SQLITE_INNOCUOUS} is similar to {@code SQLITE_DETERMINISTIC}, but
-	 * is not exactly the same. The {@code random()} function is an example of a
-	 * function that is innocuous but not deterministic.
-	 * <p>
-	 * Some heightened security settings ({@code SQLITE_DBCONFIG_TRUSTED_SCHEMA}
-	 * and {@code PRAGMA trusted_schema=OFF}) disable the use of SQL functions
-	 * inside views and triggers and in schema structures such as <em>CHECK</em>
-	 * constraints, <em>DEFAULT</em> clauses, expression indexes, partial
-	 * indexes, and generated columns unless the function is tagged with
-	 * {@code SQLITE_INNOCUOUS}. Most built-in functions are innocuous.
-	 * Developers are advised to avoid using the {@code SQLITE_INNOCUOUS} flag
-	 * for application-defined functions unless the function has been carefully
-	 * audited and found to be free of potentially security-adverse side-effects
-	 * and information-leaks. </blockquote>
-	 * <p>
-	 * Note that this engine marks non-innocuous functions as
-	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
-	 * correct.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_INNOCUOUS = 0x000200000;
 
 	/**
 	 * Install a function into SQLite.
@@ -1379,8 +1382,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			return getClass().getSimpleName() + " : " + trimSQL(s.toString());
 		}
 	}
-
-	private static final String ELLIPSIS = "...";
 
 	/**
 	 * Exclude comments and compress whitespace from the SQL of a statement.
