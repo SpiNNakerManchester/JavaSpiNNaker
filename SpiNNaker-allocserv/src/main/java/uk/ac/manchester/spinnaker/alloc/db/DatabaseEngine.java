@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.lang.System.nanoTime;
 import static java.lang.Thread.currentThread;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -54,17 +55,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,6 +86,7 @@ import org.sqlite.SQLiteException;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * The database engine interface. Based on SQLite. Manages a pool of database
@@ -94,6 +99,9 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 @Component
 public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
+
+	private static final Logger PERF_LOG =
+			getLogger(DatabaseEngine.class + ".performance");
 
 	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
@@ -153,6 +161,50 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
+
+	private Map<String, SummaryStatistics> statementLengths =
+			new DefaultMap<>(SummaryStatistics::new);
+
+	private boolean isRecordingStatementTimes() {
+		return PERF_LOG.isDebugEnabled();
+	}
+
+	/**
+	 * Records the execution time of a statement, at least to first result set.
+	 *
+	 * @param s
+	 *            The statement in question.
+	 * @param pre
+	 *            Nano-timestamp before.
+	 * @param post
+	 *            Nano-timestamp after.
+	 */
+	private void statementLength(Statement s, long pre, long post) {
+		if (isRecordingStatementTimes()) {
+			synchronized (statementLengths) {
+				statementLengths.get(s.toString()).addValue(post - pre);
+			}
+		}
+	}
+
+	/**
+	 * Writes the recorded statement execution times to the log if that is
+	 * enabled.
+	 */
+	@PreDestroy
+	private void logStatementExecutionTimes() {
+		if (isRecordingStatementTimes()) {
+			synchronized (statementLengths) {
+				for (Entry<String, SummaryStatistics> ent : statementLengths
+						.entrySet()) {
+					PERF_LOG.debug(
+							"update execution time {}ns (max: {}ns) for: {}",
+							ent.getValue().getMean(), ent.getValue().getMax(),
+							trimSQL(ent.getKey()));
+				}
+			}
+		}
+	}
 
 	private static Set<String> columnNames(ResultSetMetaData md)
 			throws SQLException {
@@ -708,7 +760,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
-	public static final class Connection extends UncheckedConnection {
+	public final class Connection extends UncheckedConnection {
 		private Connection(java.sql.Connection c) {
 			super(c);
 		}
@@ -821,6 +873,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sql
 		 *            The SQL of the query.
 		 * @return The query object.
+		 * @see #query(Resource)
+		 * @see #update(String)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -850,6 +904,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sqlResource
 		 *            Reference to the SQL of the query.
 		 * @return The query object.
+		 * @see #query(String)
+		 * @see #update(Resource)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -888,6 +944,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sql
 		 *            The SQL of the update.
 		 * @return The update object.
+		 * @see #update(Resource)
+		 * @see #query(String)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -926,6 +984,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sqlResource
 		 *            Reference to the SQL of the update.
 		 * @return The update object.
+		 * @see #update(String)
+		 * @see #query(Resource)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -939,11 +999,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sql
 		 *            The SQL to run. Probably DDL. This may contain multiple
 		 *            statements.
+		 * @see #query(String)
+		 * @see #update(String)
 		 */
 		public void exec(String sql) {
 			try (Statement s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
 				s.executeUpdate(sql);
+				/*
+				 * Note that we do NOT record the execution time here. This is
+				 * expected to be used for non-critical-path statements only
+				 * (setting up connections).
+				 */
 			} catch (SQLException e) {
 				throw mapException(e, sql);
 			}
@@ -955,6 +1022,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sqlResource
 		 *            Reference to the SQL to run. Probably DDL. This may
 		 *            contain multiple statements.
+		 * @see #query(Resource)
+		 * @see #update(Resource)
 		 */
 		public void exec(Resource sqlResource) {
 			exec(readSQL(sqlResource));
@@ -1211,32 +1280,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Run some SQL where the result is of no interest.
-	 *
-	 * @param sql
-	 *            The SQL to run. Probably DDL. This may contain multiple
-	 *            statements.
-	 */
-	public void exec(String sql) {
-		try (Connection conn = getConnection()) {
-			conn.exec(sql);
-		}
-	}
-
-	/**
-	 * Run some SQL where the result is of no interest.
-	 *
-	 * @param sqlResource
-	 *            Reference to the SQL to run. Probably DDL. This may contain
-	 *            multiple statements.
-	 */
-	public void exec(Resource sqlResource) {
-		try (Connection conn = getConnection()) {
-			conn.exec(sqlResource);
-		}
-	}
-
-	/**
 	 * Common shared code between {@link Query} and {@link Update}.
 	 *
 	 * @author Donal Fellows
@@ -1336,22 +1379,34 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		private static final int TRIM_LENGTH = 80;
-
 		@Override
 		public String toString() {
-			// Exclude comments and compress whitespace
-			String sql = s.toString().replaceAll("--[^\n]*\n", " ")
-					.replaceAll("\\s+", " ").trim();
-			// Trim long queries to no more than TRIM_LENGTH...
-			String sql2 =
-					sql.replaceAll("^(.{0," + TRIM_LENGTH + "})\\b.*$", "$1");
-			if (sql2 != sql) {
-				// and add an ellipsis if we do the trimming
-				sql = sql2 + "...";
-			}
-			return getClass().getSimpleName() + " : " + sql;
+			return getClass().getSimpleName() + " : " + trimSQL(s.toString());
 		}
+	}
+
+	private static final int TRIM_LENGTH = 80;
+
+	private static final String ELLIPSIS = "...";
+
+	/**
+	 * Exclude comments and compress whitespace from the SQL of a statement.
+	 *
+	 * @param sql
+	 *            The text of the SQL to trim.
+	 * @return The trimmed SQL.
+	 */
+	private static String trimSQL(String sql) {
+		sql = sql.replaceAll("--[^\n]*\n", " ")
+				.replaceAll("\\s+", " ").trim();
+		// Trim long queries to no more than TRIM_LENGTH...
+		String sql2 =
+				sql.replaceAll("^(.{0," + TRIM_LENGTH + "})\\b.*$", "$1");
+		if (sql2 != sql) {
+			// and add an ellipsis if we do the trimming
+			sql = sql2 + ELLIPSIS;
+		}
+		return sql;
 	}
 
 	/**
@@ -1359,7 +1414,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class Query extends StatementWrapper {
+	public final class Query extends StatementWrapper {
 		private Query(Connection conn, String sql) {
 			super(conn, sql);
 		}
@@ -1377,8 +1432,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public MappableIterable<Row> call(Object... arguments) {
 			closeResults();
 			try {
+				long pre = nanoTime();
 				setParams(arguments);
 				rs = s.executeQuery();
+				long post = nanoTime();
+				statementLength(s, pre, post);
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1436,7 +1494,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				closeResults();
 				setParams(arguments);
+				long pre = nanoTime();
 				rs = s.executeQuery();
+				long post = nanoTime();
+				statementLength(s, pre, post);
 				if (rs.next()) {
 					return Optional.of(new Row(rs));
 				} else {
@@ -1453,7 +1514,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class Update extends StatementWrapper {
+	public final class Update extends StatementWrapper {
 		private Update(Connection conn, String sql) {
 			super(conn, sql);
 		}
@@ -1469,7 +1530,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			closeResults();
 			try {
 				setParams(arguments);
-				return s.executeUpdate();
+				long pre = nanoTime();
+				int result = s.executeUpdate();
+				long post = nanoTime();
+				statementLength(s, pre, post);
+				return result;
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1490,10 +1555,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 */
 			closeResults();
 			int numRows;
+			long pre, post;
 			try {
 				setParams(arguments);
+				pre = nanoTime();
 				numRows = s.executeUpdate();
+				post = nanoTime();
 				rs = s.getGeneratedKeys();
+				statementLength(s, pre, post);
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1557,7 +1626,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			closeResults();
 			try {
 				setParams(arguments);
+				long pre = nanoTime();
 				int numRows = s.executeUpdate();
+				long post = nanoTime();
+				statementLength(s, pre, post);
 				if (numRows < 1) {
 					return Optional.empty();
 				}

@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.utils;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -146,15 +148,73 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * Gets a value from the dictionary, inserting a newly manufactured value if
 	 * the key has no mapping.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public V get(Object key) {
-		V value = super.get(key);
+		@SuppressWarnings("unchecked")
+		K k = (K) key;
+		V value = super.get(k);
 		if (value == null) {
-			value = defaultFactory((K) key);
-			put((K) key, value);
+			value = defaultFactory(k);
+			put(k, value);
 		}
 		return value;
+	}
+
+	// Versions of ops that aren't done quite right by the superclass
+
+	@Override
+	public V compute(K key,
+			BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+		return super.compute(key, (k, v) -> {
+			// Not very efficient, but can't see internals needed to do better
+			if (v == null) {
+				v = defaultFactory(k);
+			}
+			V result = remappingFunction.apply(k, v);
+			if (result == null) {
+				result = defaultFactory(k);
+			}
+			return result;
+		});
+	}
+
+	@Override
+	public V computeIfAbsent(K key,
+			Function<? super K, ? extends V> mappingFunction) {
+		return super.computeIfAbsent(key, k -> {
+			V result = mappingFunction.apply(k);
+			if (result == null) {
+				result = defaultFactory(k);
+			}
+			return result;
+		});
+	}
+
+	@Override
+	public V computeIfPresent(K key,
+            BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+		return super.computeIfPresent(key, (k, v) -> {
+			V result = remappingFunction.apply(k, v);
+			if (result == null) {
+				result = defaultFactory(k);
+			}
+			return result;
+		});
+	}
+
+	@Override
+	public V merge(K key, V value,
+            BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+		if (value == null) {
+			value = defaultFactory(key);
+		}
+		return super.merge(key, value, (v1, v2) -> {
+			V result = remappingFunction.apply(v1, v2);
+			if (result == null) {
+				result = defaultFactory(key);
+			}
+			return result;
+		});
 	}
 
 	/**
