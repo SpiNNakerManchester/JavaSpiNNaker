@@ -921,12 +921,20 @@ public class SpallocProperties {
 		 */
 		private int analysisLimit;
 
+		/**
+		 * Whether to collect and write query performance metrics to the log on
+		 * termination.
+		 */
+		private boolean performanceLog;
+
 		public DBProperties(@DefaultValue("1s") Duration timeout,
 				@DefaultValue("false") boolean debugFailures,
-				@DefaultValue("400") int analysisLimit) {
+				@DefaultValue("400") int analysisLimit,
+				@DefaultValue("false") boolean performanceLog) {
 			this.timeout = timeout;
 			this.debugFailures = debugFailures;
 			this.analysisLimit = analysisLimit;
+			this.performanceLog = performanceLog;
 		}
 
 		/** @return How long to wait to get a database lock. */
@@ -957,6 +965,7 @@ public class SpallocProperties {
 		 *
 		 * @return Amount of effort to spend on DB optimisation on application
 		 *         close.
+		 * @see <a href="https://sqlite.org/lang_analyze.html">SQLite docs</a>
 		 */
 		@Min(MIN_ANALYSIS)
 		@Max(MAX_ANALYSIS)
@@ -966,6 +975,20 @@ public class SpallocProperties {
 
 		public void setAnalysisLimit(int analysisLimit) {
 			this.analysisLimit = analysisLimit;
+		}
+
+		/**
+		 * @return Whether to collect and write query performance metrics to the
+		 *         log on termination. Note that this is checked both when
+		 *         recording performance (on each database query) and when the
+		 *         log writes happen (on termination).
+		 */
+		public final boolean isPerformanceLog() {
+			return performanceLog;
+		}
+
+		public void setPerformanceLog(boolean performanceLog) {
+			this.performanceLog = performanceLog;
 		}
 	}
 

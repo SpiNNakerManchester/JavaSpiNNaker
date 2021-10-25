@@ -154,6 +154,8 @@ spalloc:
     debug-failures: false
     # Amount of effort to spend on DB optimization on application close
     analysis-limit: 400
+    # Whether to record and report statement execution time statistics
+    performance-log: false
   compat:
     # Settings relating to the v1 spalloc compatibility interface
 

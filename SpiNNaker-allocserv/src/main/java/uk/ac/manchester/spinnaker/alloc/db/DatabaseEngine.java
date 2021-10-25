@@ -84,6 +84,7 @@ import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -99,9 +100,6 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 @Component
 public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
-
-	private static final Logger PERF_LOG =
-			getLogger(DatabaseEngine.class + ".performance");
 
 	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
@@ -137,15 +135,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private boolean initialised;
 
-	/**
-	 * Control the amount of resources used for auto-optimisation.
-	 *
-	 * @see <a href="https://sqlite.org/lang_analyze.html">SQLite docs</a>
-	 */
-	private int analysisLimit;
-
-	/** Busy timeout for SQLite. */
-	private Duration busyTimeout = Duration.ofSeconds(1);
+	private DBProperties props;
 
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
@@ -165,10 +155,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private Map<String, SummaryStatistics> statementLengths =
 			new DefaultMap<>(SummaryStatistics::new);
 
-	private boolean isRecordingStatementTimes() {
-		return PERF_LOG.isDebugEnabled();
-	}
-
 	/**
 	 * Records the execution time of a statement, at least to first result set.
 	 *
@@ -180,7 +166,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            Nano-timestamp after.
 	 */
 	private void statementLength(Statement s, long pre, long post) {
-		if (isRecordingStatementTimes()) {
+		if (props.isPerformanceLog()) {
 			synchronized (statementLengths) {
 				statementLengths.get(s.toString()).addValue(post - pre);
 			}
@@ -193,12 +179,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	@PreDestroy
 	private void logStatementExecutionTimes() {
-		if (isRecordingStatementTimes()) {
+		if (props.isPerformanceLog()) {
 			synchronized (statementLengths) {
 				for (Entry<String, SummaryStatistics> ent : statementLengths
 						.entrySet()) {
-					PERF_LOG.debug(
-							"update execution time {}ns (max: {}ns) for: {}",
+					log.info(
+							"statement execution time {}ns (max: {}ns) for: {}",
 							ent.getValue().getMean(), ent.getValue().getMax(),
 							trimSQL(ent.getKey()));
 				}
@@ -437,7 +423,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void setupConfig() {
 		config.enforceForeignKeys(true);
 		config.setSynchronous(NORMAL);
-		config.setBusyTimeout((int) busyTimeout.toMillis());
+		config.setBusyTimeout((int) props.getTimeout().toMillis());
 		config.setTransactionMode(IMMEDIATE);
 		config.setDateClass("INTEGER");
 	}
@@ -456,8 +442,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		tombstoneFile = requireNonNull(properties.getHistoricalData().getPath(),
 				"an historical database file must be given").getAbsolutePath();
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
-		analysisLimit = properties.getSqlite().getAnalysisLimit();
-		busyTimeout = properties.getSqlite().getTimeout();
+		props = properties.getSqlite();
 		log.info("will manage database at {}", dbPath);
 	}
 
@@ -475,8 +460,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		tombstoneFile = ":memory:";
 		dbConnectionUrl = "jdbc:sqlite::memory:";
 		log.info("will manage pure in-memory database");
-		busyTimeout = prototype.busyTimeout;
-		analysisLimit = prototype.analysisLimit;
+		props = prototype.props;
 		sqlDDLFile = prototype.sqlDDLFile;
 		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
@@ -735,7 +719,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			// NB: Not a standard query! Safe, because we know we have an int
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				conn.exec(String.format(OPTIMIZE_DB, analysisLimit));
+				conn.exec(String.format(OPTIMIZE_DB, props.getAnalysisLimit()));
 			} catch (DataAccessException e) {
 				/*
 				 * If we're busy, just don't bother; it's optional to optimise
