@@ -16,11 +16,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -->
 <Configuration status="info" strict="true" name="test-config"
-	packages="org.apache.logging.log4j.test">
+	packages="org.apache.logging.log4j.test"
+	xmlns="http://logging.apache.org/log4j/2.0/config"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ThresholdFilter level="info" />
 
 	<Appenders>
-		<Console name="STDOUT">
+		<Console name="STDOUT" target="System.out">
 			<PatternLayout pattern="%d %p %C{1.} [%t] %m%n" />
 		</Console>
 	</Appenders>
