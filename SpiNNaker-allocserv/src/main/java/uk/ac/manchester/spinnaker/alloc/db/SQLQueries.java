@@ -280,6 +280,13 @@ public abstract class SQLQueries {
 			"SELECT address FROM bmp WHERE machine_id = :machine_id "
 					+ "AND cabinet = :cabinet AND frame = :frame LIMIT 1";
 
+	/** Get the address of the root chip of a board. */
+	@Parameter("board_id")
+	@ResultColumn("address")
+	@SingleRowResult
+	protected static final String GET_BOARD_ADDRESS =
+			"SELECT address FROM boards WHERE board_id = :board_id LIMIT 1";
+
 	/**
 	 * Get the boards of a machine that can be used. Excludes disabled boards.
 	 */

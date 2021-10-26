@@ -76,6 +76,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.utils.Ping;
 
 /**
  * Manages the BMPs of machines controlled by Spalloc.
@@ -406,12 +407,26 @@ public class BMPController extends SQLQueries {
 					.mapToInt(changeId -> sql.setInProgress(false, changeId))
 					.sum();
 			int jobChange = sql.setJobState(from, 0, jobId);
-			// TODO what else should happen here?
 			log.debug(
 					"BMP ACTION FAILED ({}:{}->{}): on:{} off:{} "
 							+ "jobChangesApplied:{} boardsDeallocated:{} "
 							+ "bmpTasksBackedOff:{} bmpTasksDone:{}",
 					jobId, from, to, 0, 0, jobChange, 0, backedOff, 0, 0);
+		}
+
+		private void ping() {
+			if (serviceControl.isUseDummyBMP()) {
+				// Don't bother with pings when the dummy is enabled
+				return;
+			}
+			try (Connection c = db.getConnection();
+					Query q = c.query(GET_BOARD_ADDRESS)) {
+				powerOnBoards.values().stream().flatMap(Collection::stream)
+						.map(boardId -> q.call1(boardId)
+								.map(row -> row.getString("address")))
+						.forEach(address -> address
+								.ifPresent(a -> Ping.ping(a)));
+			}
 		}
 
 		@Override
@@ -841,6 +856,8 @@ public class BMPController extends SQLQueries {
 		Machine machine = request.machine;
 		try {
 			request.changeBoardPowerState(controllers);
+			// We want to ensure the lead board is alive
+			request.ping();
 			request.done();
 			// Exit the retry loop (in caller) if the requests all worked
 			return true;

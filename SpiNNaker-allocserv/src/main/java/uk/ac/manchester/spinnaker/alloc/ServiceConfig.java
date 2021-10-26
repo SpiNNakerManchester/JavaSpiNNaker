@@ -252,8 +252,9 @@ public class ServiceConfig extends Application {
 	 * framework. Useful for debugging!
 	 */
 	private void logBeans() {
-		if (log.isInfoEnabled()) {
-			log.info("beans defined: {}", asList(ctx.getBeanDefinitionNames()));
+		if (log.isDebugEnabled()) {
+			log.debug("beans defined: {}",
+					asList(ctx.getBeanDefinitionNames()));
 		}
 	}
 

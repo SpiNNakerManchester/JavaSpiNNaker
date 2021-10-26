@@ -294,6 +294,15 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getBoardAddress() {
+		try (Query q = c.query(GET_BOARD_ADDRESS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("address"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_BOARD).isPresent());
+		}
+	}
+
+	@Test
 	void getBoardNumbers() {
 		try (Query q = c.query(GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
