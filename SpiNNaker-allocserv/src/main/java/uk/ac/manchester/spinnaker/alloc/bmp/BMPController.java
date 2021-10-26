@@ -429,12 +429,26 @@ public class BMPController extends SQLQueries {
 					jobId, from, to, 0, 0, jobChange, 0, backedOff, 0, 0);
 		}
 
+		/**
+		 * Ping all the boards switched on by this job. We do the pings in
+		 * parallel.
+		 * <p>
+		 * Note that this does <em>not</em> throw if network access fails; it
+		 * just puts a message in the log. That's because the board might start
+		 * working in a little while. What this <em>does</em> do is help to
+		 * clear the ARP cache of its unreachability state so that any VPN
+		 * between here and the client won't propagate it and cause mayhem.
+		 * <p>
+		 * That this hack is needed is awful.
+		 */
 		private void ping() {
 			if (serviceControl.isUseDummyBMP()) {
 				// Don't bother with pings when the dummy is enabled
 				return;
 			}
-			powerOnAddresses.forEach(address -> {
+			log.info("verifying network access to {} boards for job {}",
+					powerOnAddresses.size(), jobId);
+			powerOnAddresses.parallelStream().forEach(address -> {
 				if (Ping.ping(address) != 0) {
 					log.warn(
 							"board with address {} "
