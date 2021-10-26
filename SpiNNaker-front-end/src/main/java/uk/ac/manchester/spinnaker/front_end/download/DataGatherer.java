@@ -760,8 +760,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 		/**
 		 * Process the fact that the message queue was in a timeout state.
+		 *
 		 * @param transactionId
-         *             The transaction id of this stream
+		 *            The transaction id of this stream
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If there are packets outstanding, and the retransmission
