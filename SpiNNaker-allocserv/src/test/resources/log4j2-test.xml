@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<ThresholdFilter level="info" />
 
 	<Appenders>
-		<Console name="STDOUT" target="System.out">
+		<Console name="STDOUT" target="System_out">
 			<PatternLayout pattern="%d %p %C{1.} [%t] %m%n" />
 		</Console>
 	</Appenders>

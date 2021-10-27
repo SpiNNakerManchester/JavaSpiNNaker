@@ -31,6 +31,7 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -51,6 +52,9 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 public class UserControl extends SQLQueries {
 	@Autowired
 	private DatabaseEngine db;
+
+	@Autowired
+	private PasswordServices passServices;
 
 	private abstract class AccessQuotaSQL implements AutoCloseable {
 		final Connection conn = db.getConnection();
@@ -91,7 +95,7 @@ public class UserControl extends SQLQueries {
 		}
 	}
 
-	private final class UpdateSQL extends AccessQuotaSQL {
+	private final class UpdateAllSQL extends AccessQuotaSQL {
 		private final Update setUserName = conn.update(SET_USER_NAME);
 
 		private final Update setUserPass = conn.update(SET_USER_PASS);
@@ -122,14 +126,11 @@ public class UserControl extends SQLQueries {
 	private final class UpdatePassSQL extends AccessQuotaSQL {
 		private Query getPasswordedUser = conn.query(GET_LOCAL_USER_DETAILS);
 
-		private Query isPasswordMatching = conn.query(IS_USER_PASS_MATCHED);
-
 		private Update setPassword = conn.update(SET_USER_PASS);
 
 		@Override
 		public void close() {
 			getPasswordedUser.close();
-			isPasswordMatching.close();
 			setPassword.close();
 			super.close();
 		}
@@ -178,15 +179,18 @@ public class UserControl extends SQLQueries {
 	 *         the user exists already.
 	 */
 	public Optional<UserRecord> createUser(UserRecord user) {
+		// This is a slow operation; don't hold a database transaction
+		String encPass = passServices.encodePassword(user.getPassword());
 		try (CreateSQL sql = new CreateSQL()) {
-			return sql.transaction(() -> createUser(user, sql));
+			return sql.transaction(() -> createUser(user, encPass, sql));
 		}
 	}
 
-	private Optional<UserRecord> createUser(UserRecord user, CreateSQL sql) {
+	private Optional<UserRecord> createUser(UserRecord user, String encPass,
+			CreateSQL sql) {
 		return sql.createUser
-				.key(user.getUserName(), user.getPassword(),
-						user.getTrustLevel(), !user.isEnabled())
+				.key(user.getUserName(), encPass, user.getTrustLevel(),
+						!user.isEnabled())
 				.flatMap(userId -> {
 					if (isNull(user.getQuota())) {
 						sql.makeDefaultQuotas.call(userId);
@@ -263,8 +267,11 @@ public class UserControl extends SQLQueries {
 	 */
 	public Optional<UserRecord> updateUser(int id, UserRecord user,
 			String adminUser) {
-		try (UpdateSQL sql = new UpdateSQL()) {
-			return sql.transaction(() -> updateUser(id, user, adminUser, sql));
+		// Encode the password outside of any transaction; this is a slow op!
+		String encPass = passServices.encodePassword(user.getPassword());
+		try (UpdateAllSQL sql = new UpdateAllSQL()) {
+			return sql.transaction(
+					() -> updateUser(id, user, adminUser, encPass, sql));
 		}
 	}
 
@@ -277,7 +284,7 @@ public class UserControl extends SQLQueries {
 	}
 
 	private Optional<UserRecord> updateUser(int id, UserRecord user,
-			String adminUser, UpdateSQL sql) {
+			String adminUser, String encPass, UpdateAllSQL sql) {
 		int adminId = getCurrentUserId(sql, adminUser);
 
 		if (nonNull(user.getUserName())) {
@@ -285,7 +292,7 @@ public class UserControl extends SQLQueries {
 		}
 
 		if (nonNull(user.getPassword())) {
-			sql.setUserPass.call(user.getPassword(), id);
+			sql.setUserPass.call(encPass, id);
 		} else if (user.isExternallyAuthenticated()) {
 			// Forces external authentication
 			sql.setUserPass.call(null, id);
@@ -384,34 +391,48 @@ public class UserControl extends SQLQueries {
 	public PasswordChangeRecord updateUserOfPrincipal(Principal principal,
 			PasswordChangeRecord user) throws AuthenticationException {
 		try (UpdatePassSQL sql = new UpdatePassSQL()) {
-			return sql.transaction(
-					() -> updateUserOfPrincipal(principal, user, sql));
+			return updateUserOfPrincipal(principal, user, sql);
+		}
+	}
+
+	private static final class GetUserResult {
+		final PasswordChangeRecord baseUser;
+
+		final String oldEncPass;
+
+		GetUserResult(Row row) {
+			baseUser = new PasswordChangeRecord(row.getInt("user_id"),
+					row.getString("user_name"));
+			oldEncPass = row.getString("encrypted_password");
 		}
 	}
 
 	private PasswordChangeRecord updateUserOfPrincipal(Principal principal,
 			PasswordChangeRecord user, UpdatePassSQL sql) {
-		Row row = sql.getPasswordedUser.call1(principal.getName()).orElseThrow(
-				// OpenID-authenticated user; go away
-				() -> new AuthenticationServiceException(
-						"user is managed externally; cannot "
-								+ "change password here"));
-		PasswordChangeRecord baseUser = new PasswordChangeRecord(
-				row.getInt("user_id"), row.getString("user_name"));
-		if (!sql.isPasswordMatching
-				.call1(user.getOldPassword(), baseUser.getUserId()).get()
-				.getBoolean("matches")) {
+		GetUserResult result = sql
+				.transaction(() -> sql.getPasswordedUser
+						.call1(principal.getName()).map(GetUserResult::new))
+				.orElseThrow(
+						// OpenID-authenticated user; go away
+						() -> new AuthenticationServiceException(
+								"user is managed externally; cannot "
+										+ "change password here"));
+		if (!passServices.matchPassword(user.getOldPassword(),
+				result.oldEncPass)) {
 			throw new BadCredentialsException("bad password");
 		}
 		// Validate change; this should never fail but...
 		if (!user.isNewPasswordMatched()) {
 			throw new BadCredentialsException("bad password");
 		}
-		if (sql.setPassword.call(user.getNewPassword(),
-				baseUser.getUserId()) != 1) {
-			throw new InternalAuthenticationServiceException(
-					"failed to update database");
-		}
-		return baseUser;
+		String newEncPass = passServices.encodePassword(user.getNewPassword());
+		return sql.transaction(() -> {
+			if (sql.setPassword.call(newEncPass,
+					result.baseUser.getUserId()) != 1) {
+				throw new InternalAuthenticationServiceException(
+						"failed to update database");
+			}
+			return result.baseUser;
+		});
 	}
 }
