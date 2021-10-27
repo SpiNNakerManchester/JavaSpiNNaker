@@ -74,7 +74,7 @@ public class JobListEntryRecord {
 
 	private boolean powered;
 
-	private int numBoards;
+	private Integer numBoards;
 
 	private int machineId;
 

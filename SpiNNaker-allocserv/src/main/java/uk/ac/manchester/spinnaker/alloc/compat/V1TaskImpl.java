@@ -23,11 +23,11 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 
 import java.io.IOException;
 import java.io.NotSerializableException;
@@ -56,10 +56,10 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -205,12 +205,15 @@ class V1TaskImpl extends V1CompatTask {
 		getJob(jobId).access(host());
 	}
 
-	private List<String> tags(Object src) {
+	private List<String> tags(Object src, boolean mayForceDefault) {
 		List<String> vals = new ArrayList<>();
 		if (src instanceof List) {
 			for (Object o : (List<?>) src) {
 				vals.add(Objects.toString(o));
 			}
+		}
+		if (vals.isEmpty() && mayForceDefault) {
+			vals = asList("default");
 		}
 		return vals;
 	}
@@ -239,9 +242,9 @@ class V1TaskImpl extends V1CompatTask {
 		Integer maxDead = (Integer) kwargs.get("max_dead_boards");
 		Number keepalive = (Number) kwargs.get("keepalive");
 		String machineName = (String) kwargs.get("machine");
+		List<String> ts = tags(kwargs.get("tags"), machineName == null);
 		return inAuthenticatedContext(() -> {
-			Job job = spalloc.createJob(serviceUser, create, machineName,
-					tags(kwargs.get("tags")),
+			Job job = spalloc.createJob(serviceUser, create, machineName, ts,
 					isNull(keepalive) ? DEFAULT_KEEPALIVE
 							: Duration.ofSeconds(keepalive.intValue()),
 					maxDead, cmd);

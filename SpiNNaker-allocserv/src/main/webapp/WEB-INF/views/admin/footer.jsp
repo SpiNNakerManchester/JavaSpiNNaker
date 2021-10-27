@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%--
 Copyright (c) 2021 The University of Manchester
 
@@ -22,9 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 &mdash;
 <a href="${ usersUri }">Users</a>
 <br>
-<a href="/system/">Main page</a>
+<a href='<c:url value="/system/"/>'>Main page</a>
 &mdash;
-<a href="/system/change_password">Change Password</a>
+<a href='<c:url value="/system/change_password"/>'>Change Password</a>
 &mdash;
-<a href="/system/perform_logout">Log out</a>
+<a href='<c:url value="/system/perform_logout"/>'>Log out</a>
 </footer>

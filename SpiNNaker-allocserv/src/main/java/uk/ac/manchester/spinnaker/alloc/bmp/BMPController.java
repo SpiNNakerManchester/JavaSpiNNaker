@@ -26,6 +26,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
@@ -76,6 +77,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.utils.Ping;
 
 /**
  * Manages the BMPs of machines controlled by Spalloc.
@@ -239,19 +241,23 @@ public class BMPController extends SQLQueries {
 
 		private final Map<BMPCoords, Map<Integer, Integer>> idToBoard;
 
+		private List<String> powerOnAddresses;
+
 		/**
 		 * Create a request.
 		 *
+		 * @param sql
+		 *            How to access the database.
 		 * @param machine
 		 *            What machine are the boards on? <em>Must not</em> be
 		 *            {@code null}.
-		 * @param powerOnBoards
+		 * @param powerOn
 		 *            What boards (by DB ID) are to be powered on? May be
 		 *            {@code null}; that's equivalent to the empty list.
-		 * @param powerOffBoards
+		 * @param powerOff
 		 *            What boards (by DB ID) are to be powered off? May be
 		 *            {@code null}; that's equivalent to the empty list.
-		 * @param linkRequests
+		 * @param links
 		 *            Any link power control requests. By default, links are on
 		 *            if their board is on and they are connected; it is
 		 *            <em>useful and relevant</em> to modify the power state of
@@ -270,23 +276,33 @@ public class BMPController extends SQLQueries {
 		 *            How to get the physical ID of a board from its database ID
 		 */
 		@SuppressWarnings("checkstyle:ParameterNumber")
-		Request(Machine machine, Map<BMPCoords, List<Integer>> powerOnBoards,
-				Map<BMPCoords, List<Integer>> powerOffBoards,
-				Map<BMPCoords, List<Link>> linkRequests, Integer jobId,
-				JobState from, JobState to, List<Integer> changeIds,
+		Request(TakeReqsSQL sql, Machine machine,
+				Map<BMPCoords, List<Integer>> powerOn,
+				Map<BMPCoords, List<Integer>> powerOff,
+				Map<BMPCoords, List<Link>> links, Integer jobId, JobState from,
+				JobState to, List<Integer> changeIds,
 				Map<BMPCoords, Map<Integer, Integer>> idToBoard) {
 			this.machine = requireNonNull(machine);
-			this.powerOnBoards =
-					isNull(powerOnBoards) ? emptyMap() : powerOnBoards;
-			this.powerOffBoards =
-					isNull(powerOffBoards) ? emptyMap() : powerOffBoards;
-			this.linkRequests =
-					isNull(linkRequests) ? emptyMap() : linkRequests;
+			powerOnBoards = isNull(powerOn) ? emptyMap() : powerOn;
+			powerOffBoards = isNull(powerOff) ? emptyMap() : powerOff;
+			linkRequests = isNull(links) ? emptyMap() : links;
 			this.jobId = jobId;
 			this.from = from;
 			this.to = to;
 			this.changeIds = changeIds;
 			this.idToBoard = isNull(idToBoard) ? emptyMap() : idToBoard;
+			/*
+			 * Map this now so we keep the DB out of the way of the BMP. This
+			 * mapping is not expected to change during the request's lifetime.
+			 */
+			sql.transaction(() -> {
+				powerOnAddresses = powerOnBoards.values().stream()
+						.flatMap(Collection::stream)
+						.map(boardId -> sql.getBoardAddress.call1(boardId)
+								.map(row -> row.getString("address"))
+								.orElse(null))
+						.collect(toList());
+			});
 		}
 
 		/**
@@ -406,12 +422,40 @@ public class BMPController extends SQLQueries {
 					.mapToInt(changeId -> sql.setInProgress(false, changeId))
 					.sum();
 			int jobChange = sql.setJobState(from, 0, jobId);
-			// TODO what else should happen here?
 			log.debug(
 					"BMP ACTION FAILED ({}:{}->{}): on:{} off:{} "
 							+ "jobChangesApplied:{} boardsDeallocated:{} "
 							+ "bmpTasksBackedOff:{} bmpTasksDone:{}",
 					jobId, from, to, 0, 0, jobChange, 0, backedOff, 0, 0);
+		}
+
+		/**
+		 * Ping all the boards switched on by this job. We do the pings in
+		 * parallel.
+		 * <p>
+		 * Note that this does <em>not</em> throw if network access fails; it
+		 * just puts a message in the log. That's because the board might start
+		 * working in a little while. What this <em>does</em> do is help to
+		 * clear the ARP cache of its unreachability state so that any VPN
+		 * between here and the client won't propagate it and cause mayhem.
+		 * <p>
+		 * That this hack is needed is awful.
+		 */
+		private void ping() {
+			if (serviceControl.isUseDummyBMP()) {
+				// Don't bother with pings when the dummy is enabled
+				return;
+			}
+			log.info("verifying network access to {} boards for job {}",
+					powerOnAddresses.size(), jobId);
+			powerOnAddresses.parallelStream().forEach(address -> {
+				if (Ping.ping(address) != 0) {
+					log.warn(
+							"board with address {} "
+									+ "might not have come up correctly",
+							address);
+				}
+			});
 		}
 
 		@Override
@@ -456,11 +500,14 @@ public class BMPController extends SQLQueries {
 
 		private final Update setInProgress = conn.update(SET_IN_PROGRESS);
 
+		private final Query getBoardAddress = conn.query(GET_BOARD_ADDRESS);
+
 		@Override
 		public void close() {
 			getJobIdsWithChanges.close();
 			getPowerChangesToDo.close();
 			setInProgress.close();
+			getBoardAddress.close();
 			super.close();
 		}
 	}
@@ -537,8 +584,8 @@ public class BMPController extends SQLQueries {
 			return;
 		}
 
-		requestCollector.add(new Request(machine, boardsOn, boardsOff, linksOff,
-				jobId, from, to, changeIds, idToBoard));
+		requestCollector.add(new Request(sql, machine, boardsOn, boardsOff,
+				linksOff, jobId, from, to, changeIds, idToBoard));
 		for (Integer changeId : changeIds) {
 			sql.setInProgress.call(true, changeId);
 		}
@@ -841,6 +888,8 @@ public class BMPController extends SQLQueries {
 		Machine machine = request.machine;
 		try {
 			request.changeBoardPowerState(controllers);
+			// We want to ensure the lead board is alive
+			request.ping();
 			request.done();
 			// Exit the retry loop (in caller) if the requests all worked
 			return true;

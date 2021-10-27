@@ -30,7 +30,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.Principal;
-import java.sql.SQLException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,6 +73,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -86,13 +88,10 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.sqlite.Function;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ArgumentCount;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Deterministic;
 
 /**
  * The security and administration configuration of the service.
@@ -382,68 +381,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	/**
-	 * SQL function ({@code encode_password}) that takes one argument,
-	 * presumably an unencoded password, and returns the encoded form of that
-	 * password.
-	 * <p>
-	 * Note that this is one of the very few beans that ever need to hold a
-	 * {@link PasswordEncoder}; everyone else should use the SQL functions.
-	 *
-	 * @author Donal Fellows
-	 */
-	@ArgumentCount(1)
-	@Component("encode_password")
-	static class EncodePasswordFunction extends Function {
-		@Autowired
-		private PasswordEncoder passwordEncoder;
-
-		// Note that bcrypt is *not* deterministic during encoding
-
-		@Override
-		protected void xFunc() throws SQLException {
-			log.debug("encode_password() called");
-			String pass = value_text(0);
-			// Important: encodes NULL as NULL
-			if (nonNull(pass)) {
-				pass = passwordEncoder.encode(pass);
-			}
-			result(pass);
-		}
-	}
-
-	/**
-	 * SQL function ({@code match_password}) that takes two arguments,
-	 * presumably an unencoded password and the encoded form stored in the DB,
-	 * and returns a boolean (0 for false, 1 for true) saying whether the
-	 * unencoded password matches the encoded one.
-	 * <p>
-	 * Does not actually decode the encoded password.
-	 * <p>
-	 * Note that this is one of the very few beans that ever need to hold a
-	 * {@link PasswordEncoder}; everyone else should use the SQL functions.
-	 *
-	 * @author Donal Fellows
-	 */
-	@ArgumentCount(2)
-	@Deterministic
-	@Component("match_password")
-	static class MatchPasswordFunction extends Function {
-		@Autowired
-		private PasswordEncoder passwordEncoder;
-
-		@Override
-		protected void xFunc() throws SQLException {
-			log.debug("match_password() called");
-			// If either argument is NULL, the result is false
-			String raw = value_text(0);
-			String encoded = value_text(1);
-			boolean m = nonNull(raw) && nonNull(encoded)
-					&& passwordEncoder.matches(raw, encoded);
-			result(m ? 1 : 0);
-		}
-	}
-
 	@Component
 	static class MyAuthenticationFailureHandler
 			implements AuthenticationFailureHandler {
@@ -517,6 +454,75 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/resources/**").addResourceLocations(
 					"classpath:/META-INF/public-web-resources/");
+		}
+	}
+
+	/**
+	 * Misc services related to password handling.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Component
+	public static class PasswordServices {
+		private static final int BCRYPT_STRENGTH = 10;
+
+		private static final int PASSWORD_LENGTH = 16;
+
+		private PasswordEncoder passwordEncoder;
+
+		private SecureRandom rng;
+
+		@PostConstruct
+		private void init() {
+			rng = new SecureRandom();
+			passwordEncoder = new BCryptPasswordEncoder(BCRYPT_STRENGTH, rng);
+		}
+
+		/**
+		 * Generate a random password.
+		 *
+		 * @return A password consisting of 16 random ASCII printable
+		 *         characters.
+		 */
+		public final String generatePassword() {
+			StringBuilder sb = new StringBuilder();
+			rng.ints(PASSWORD_LENGTH, '\u0021', '\u007f')
+					.forEachOrdered(c -> sb.append((char) c));
+			return sb.toString();
+		}
+
+		/**
+		 * Encode a password with bcrypt. <em>This is a slow operation! Do not
+		 * hold a database transaction open when calling this.</em>
+		 *
+		 * @param password
+		 *            The password to encode. May be {@code null}.
+		 * @return The encoded password. Will be {@code null} if the input is
+		 *         {@code null}.
+		 */
+		public final String encodePassword(String password) {
+			return isNull(password) ? null : passwordEncoder.encode(password);
+		}
+
+		/**
+		 * Check using bcrypt if a password matches its encoded form retrieved
+		 * from the database. <em>This is a slow operation! Do not hold a
+		 * database transaction open when calling this.</em>
+		 *
+		 * @param password
+		 *            The password to check. If {@code null}, the encoded form
+		 *            must also be {@code null} for a match to be true.
+		 * @param encodedPassword
+		 *            The encoded form from the database.
+		 * @return True if the password matches, false otherwise.
+		 */
+		public final boolean matchPassword(String password,
+				String encodedPassword) {
+			if (isNull(password)) {
+				return isNull(encodedPassword);
+			}
+			return nonNull(encodedPassword)
+					&& passwordEncoder.matches(password, encodedPassword);
 		}
 	}
 

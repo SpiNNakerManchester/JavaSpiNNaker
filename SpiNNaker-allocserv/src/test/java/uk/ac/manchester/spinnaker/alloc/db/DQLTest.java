@@ -294,6 +294,15 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getBoardAddress() {
+		try (Query q = c.query(GET_BOARD_ADDRESS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("address"), q.getRowColumnNames());
+			assertFalse(q.call1(NO_BOARD).isPresent());
+		}
+	}
+
+	@Test
 	void getBoardNumbers() {
 		try (Query q = c.query(GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
@@ -691,7 +700,7 @@ class DQLTest extends SQLQueries {
 	void getUserAuthorities() {
 		try (Query q = c.query(GET_USER_AUTHORITIES)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("trust_level", "has_password"),
+			assertSetEquals(set("trust_level", "encrypted_password"),
 					q.getRowColumnNames());
 			assertFalse(q.call1(NO_USER).isPresent());
 		}
@@ -780,17 +789,9 @@ class DQLTest extends SQLQueries {
 	void getLocalUserDetails() {
 		try (Query q = c.query(GET_LOCAL_USER_DETAILS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("user_id", "user_name"), q.getRowColumnNames());
+			assertSetEquals(set("user_id", "user_name", "encrypted_password"),
+					q.getRowColumnNames());
 			assertFalse(q.call1(NO_USER).isPresent());
-		}
-	}
-
-	@Test
-	void isUserPassMatched() {
-		try (Query q = c.query(IS_USER_PASS_MATCHED)) {
-			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("matches"), q.getRowColumnNames());
-			assertFalse(q.call1("*", NO_USER).isPresent());
 		}
 	}
 

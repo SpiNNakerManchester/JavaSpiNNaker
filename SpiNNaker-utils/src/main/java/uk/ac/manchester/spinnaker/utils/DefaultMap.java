@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2021 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.utils;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -51,7 +53,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * @param defaultValue
 	 *            The default value to use in the map. This should be an
 	 *            immutable value as it can be potentially inserted for many
-	 *            keys.
+	 *            keys. <em>Must not be {@code null}.</em>
 	 */
 	public <DV extends V> DefaultMap(DV defaultValue) {
 		direct = true;
@@ -62,17 +64,17 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 
 	/**
 	 * Create a new map.
-     * <p>
-     * The defaultFactory can be a method or an Object.
-     * If V is mutable it is HIGHLY recommended to pass in a method and not an
-     *     Object.
-     * For example use ArrayList::new and not new ArrayList() otherwise the
-     *     Single will be used every time and values added after one get will
-     *     be in the default for the next get.
-     *
+	 * <p>
+	 * The {@code defaultFactory} is a method to generate an object. If the
+	 * default value is mutable it is <em>highly</em> recommended to pass in a
+	 * method like this, and not an object. For example use
+	 * {@code ArrayList::new} and not {@code new ArrayList()} otherwise the
+	 * single value will be used every time and values added after one get will
+	 * be in the default for the next get.
+	 *
 	 * @param defaultFactory
-	 *         A method to create a new value/ an Object to insert in the map.
- 	 */
+	 *            A method to create a new value/object to insert in the map.
+	 */
 	public DefaultMap(Supplier<? extends V> defaultFactory) {
 		direct = false;
 		defValue = null;
@@ -87,7 +89,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 *            Just something to make this constructor distinct.
 	 * @param defaultFactory
 	 *            Can be an Object of a Class that implement KeyAwareFactory.
-     *            Can be a method expressed as a lambda.
+	 *            Can be a method expressed as a lambda.
 	 */
 	private DefaultMap(Marker dummy,
 			KeyAwareFactory<? super K, ? extends V> defaultFactory) {
@@ -100,7 +102,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	/**
 	 * A marker used only to differentiate a constructor.
 	 */
-	private static class Marker {
+	private static final class Marker {
 		// Nothing interesting
 		static final Marker INSTANCE = new Marker();
 	}
@@ -110,20 +112,21 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * key from the beginning. This is done through this method because
 	 * otherwise it clashes with the more common case of the unaware factory.
 	 * <p>
-     * The Factory can be a lambda method to create a me value based on the key.
-     * <br>For example:
-     * <p>
-     * {@code DefaultMap.newAdvancedDefaultMap(i -> i*2);}
-     * <p>
-     * The Factory can also be a Object of a class that implements the
-     * KeyAwareFactory interface.
-     *
+	 * The Factory can be a lambda method to create a me value based on the key.
+	 * <br>
+	 * For example:
+	 * <p>
+	 * {@code DefaultMap.newAdvancedDefaultMap(i -> i*2);}
+	 * <p>
+	 * The Factory can also be a Object of a class that implements the
+	 * KeyAwareFactory interface.
+	 *
 	 * @param <K>
 	 *            The type of keys.
 	 * @param <V>
 	 *            The type of values.
 	 * @param keyAwareFactory
-     *            Method or Object to create the default values.
+	 *            Method or Object to create the default values.
 	 *
 	 * @return The new default map.
 	 */
@@ -132,7 +135,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 		return new DefaultMap<>(Marker.INSTANCE, keyAwareFactory);
 	}
 
-	private V defaultFactory(K key) {
+	private V makeDefault(K key) {
 		if (direct) {
 			return defValue;
 		}
@@ -146,15 +149,97 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 * Gets a value from the dictionary, inserting a newly manufactured value if
 	 * the key has no mapping.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public V get(Object key) {
-		V value = super.get(key);
+		@SuppressWarnings("unchecked")
+		K k = (K) key;
+		V value = super.get(k);
 		if (value == null) {
-			value = defaultFactory((K) key);
-			put((K) key, value);
+			value = makeDefault(k);
+			put(k, value);
 		}
 		return value;
+	}
+
+	// Versions of ops that aren't done quite right by the superclass
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <strong>NB:</strong> This converts {@code null}s into the correct default
+	 * value.
+	 */
+	@Override
+	public V compute(K key,
+			BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+		return super.compute(key, (k, v) -> {
+			// Not very efficient, but can't see internals needed to do better
+			if (v == null) {
+				v = makeDefault(k);
+			}
+			V result = remappingFunction.apply(k, v);
+			if (result == null) {
+				result = makeDefault(k);
+			}
+			return result;
+		});
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <strong>NB:</strong> This converts {@code null}s into the correct default
+	 * value.
+	 */
+	@Override
+	public V computeIfAbsent(K key,
+			Function<? super K, ? extends V> mappingFunction) {
+		return super.computeIfAbsent(key, k -> {
+			V result = mappingFunction.apply(k);
+			if (result == null) {
+				result = makeDefault(k);
+			}
+			return result;
+		});
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <strong>NB:</strong> This converts {@code null}s into the correct default
+	 * value.
+	 */
+	@Override
+	public V computeIfPresent(K key,
+			BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+		return super.computeIfPresent(key, (k, v) -> {
+			V result = remappingFunction.apply(k, v);
+			if (result == null) {
+				result = makeDefault(k);
+			}
+			return result;
+		});
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <strong>NB:</strong> This converts {@code null}s into the correct default
+	 * value.
+	 */
+	@Override
+	public V merge(K key, V value,
+			BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+		if (value == null) {
+			value = makeDefault(key);
+		}
+		return super.merge(key, value, (v1, v2) -> {
+			V result = remappingFunction.apply(v1, v2);
+			if (result == null) {
+				result = makeDefault(key);
+			}
+			return result;
+		});
 	}
 
 	/**

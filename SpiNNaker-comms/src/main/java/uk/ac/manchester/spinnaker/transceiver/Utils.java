@@ -95,7 +95,7 @@ public abstract class Utils {
 	 *            The address of the SpiNNaker board to which the message should
 	 *            be sent
 	 * @deprecated Call
-     *             {@link UDPConnection#sendPortTriggerMessage(InetAddress)}
+	 *             {@link UDPConnection#sendPortTriggerMessage(InetAddress)}
 	 *             directly instead.
 	 * @throws IOException
 	 *             If anything goes wrong

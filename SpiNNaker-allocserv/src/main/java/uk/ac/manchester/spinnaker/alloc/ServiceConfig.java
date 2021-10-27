@@ -59,8 +59,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -242,18 +240,14 @@ public class ServiceConfig extends Application {
 		return properties.getAuth();
 	}
 
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
 	/**
 	 * Log what beans are actually there, ignoring the bits and pieces of
 	 * framework. Useful for debugging!
 	 */
 	private void logBeans() {
-		if (log.isInfoEnabled()) {
-			log.info("beans defined: {}", asList(ctx.getBeanDefinitionNames()));
+		if (log.isDebugEnabled()) {
+			log.debug("beans defined: {}",
+					asList(ctx.getBeanDefinitionNames()));
 		}
 	}
 

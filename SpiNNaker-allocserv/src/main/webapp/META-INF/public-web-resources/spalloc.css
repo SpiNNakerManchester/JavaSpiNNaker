@@ -21,6 +21,12 @@ body {
 h1 {
 	font-family: Helvetica, Arial, sans-serif;
 }
+h2 {
+	font-family: Helvetica, Arial, sans-serif;
+}
+h3 {
+	font-family: Helvetica, Arial, sans-serif;
+}
 footer {
 	font-size: small;
 }
@@ -38,6 +44,7 @@ footer {
 }
 .lineTitle {
 	text-align: right;
+	vertical-align: text-top;
 }
 
 #tooltip {

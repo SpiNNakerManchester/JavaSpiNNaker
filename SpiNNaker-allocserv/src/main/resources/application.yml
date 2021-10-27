@@ -188,6 +188,10 @@ spalloc:
     debug-failures: false
     # Amount of effort to spend on DB optimization on application close
     analysis-limit: 400
+    # Whether to record and report statement execution time statistics
+    performance-log: false
+    # Number of nanoseconds below which statement execution time is not important
+    performance-threshold: 1e6
   compat:
     # Settings relating to the v1 spalloc compatibility interface
 

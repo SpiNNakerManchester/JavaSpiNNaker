@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.lang.System.nanoTime;
 import static java.lang.Thread.currentThread;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -60,11 +61,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,8 +83,10 @@ import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * The database engine interface. Based on SQLite. Manages a pool of database
@@ -96,10 +101,71 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 
 	/**
+	 * Flag direct from SQLite.
+	 * <p>
+	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
+	 * may only be invoked from top-level SQL, and cannot be used in
+	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
+	 * <em>CHECK</em> constraints, <em>DEFAULT</em> clauses, expression indexes,
+	 * partial indexes, or generated columns. The {@code SQLITE_DIRECTONLY}
+	 * flags is a security feature which is recommended for all
+	 * application-defined SQL functions, and especially for functions that have
+	 * side-effects or that could potentially leak sensitive
+	 * information.</blockquote>
+	 * <p>
+	 * Note that the password-related functions we install are definitely
+	 * examples of functions that are only usable directly.
+	 *
+	 * @see <a href=
+	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
+	 */
+	public static final int SQLITE_DIRECTONLY = 0x000080000;
+
+	/**
+	 * Flag direct from SQLite.
+	 * <p>
+	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
+	 * unlikely to cause problems even if misused. An innocuous function should
+	 * have no side effects and should not depend on any values other than its
+	 * input parameters. The {@code abs()} function is an example of an
+	 * innocuous function. The {@code load_extension()} SQL function is not
+	 * innocuous because of its side effects.
+	 * <p>
+	 * {@code SQLITE_INNOCUOUS} is similar to {@code SQLITE_DETERMINISTIC}, but
+	 * is not exactly the same. The {@code random()} function is an example of a
+	 * function that is innocuous but not deterministic.
+	 * <p>
+	 * Some heightened security settings ({@code SQLITE_DBCONFIG_TRUSTED_SCHEMA}
+	 * and {@code PRAGMA trusted_schema=OFF}) disable the use of SQL functions
+	 * inside views and triggers and in schema structures such as <em>CHECK</em>
+	 * constraints, <em>DEFAULT</em> clauses, expression indexes, partial
+	 * indexes, and generated columns unless the function is tagged with
+	 * {@code SQLITE_INNOCUOUS}. Most built-in functions are innocuous.
+	 * Developers are advised to avoid using the {@code SQLITE_INNOCUOUS} flag
+	 * for application-defined functions unless the function has been carefully
+	 * audited and found to be free of potentially security-adverse side-effects
+	 * and information-leaks. </blockquote>
+	 * <p>
+	 * Note that this engine marks non-innocuous functions as
+	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
+	 * correct.
+	 *
+	 * @see <a href=
+	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
+	 */
+	public static final int SQLITE_INNOCUOUS = 0x000200000;
+
+	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
 	 * convention.
 	 */
 	private static final String MAIN_DB_NAME = "main";
+
+	/**
+	 * The prefix of bean names that may be removed to generate the SQLite
+	 * function name.
+	 */
+	private static final String FUN_NAME_PREFIX = "function.";
 
 	@ResultColumn("c")
 	@SingleRowResult
@@ -119,6 +185,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private static final int EXPECTED_NUM_MOVEMENTS = 18;
 
+	private static final int TRIM_LENGTH = 80;
+
+	private static final int TRIM_PERF_LOG_LENGTH = 120;
+
+	private static final double NS_PER_US = 1000.0;
+
+	private static final String ELLIPSIS = "...";
+
 	private final Path dbPath;
 
 	private String tombstoneFile;
@@ -129,15 +203,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private boolean initialised;
 
-	/**
-	 * Control the amount of resources used for auto-optimisation.
-	 *
-	 * @see <a href="https://sqlite.org/lang_analyze.html">SQLite docs</a>
-	 */
-	private int analysisLimit;
-
-	/** Busy timeout for SQLite. */
-	private Duration busyTimeout = Duration.ofSeconds(1);
+	private DBProperties props;
 
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
@@ -153,6 +219,53 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
+
+	private Map<String, SummaryStatistics> statementLengths =
+			new DefaultMap<>(SummaryStatistics::new);
+
+	/**
+	 * Records the execution time of a statement, at least to first result set.
+	 *
+	 * @param s
+	 *            The statement in question.
+	 * @param pre
+	 *            Nano-timestamp before.
+	 * @param post
+	 *            Nano-timestamp after.
+	 */
+	private void statementLength(Statement s, long pre, long post) {
+		if (props.isPerformanceLog()) {
+			SummaryStatistics stats;
+			synchronized (statementLengths) {
+				stats = statementLengths.get(s.toString());
+			}
+			synchronized (stats) {
+				stats.addValue(post - pre);
+			}
+		}
+	}
+
+	/**
+	 * Writes the recorded statement execution times to the log if that is
+	 * enabled.
+	 */
+	@PreDestroy
+	private void logStatementExecutionTimes() {
+		if (props.isPerformanceLog()) {
+			statementLengths.entrySet().stream()
+					.filter(e -> e.getValue().getMax() >= props
+							.getPerformanceThreshold())
+					.forEach(DatabaseEngine::logStatementExecutionTime);
+		}
+	}
+
+	private static void
+			logStatementExecutionTime(Map.Entry<String, SummaryStatistics> e) {
+		log.info("statement execution time " + "{}us (max: {}us) for: {}",
+				e.getValue().getMean() / NS_PER_US,
+				e.getValue().getMax() / NS_PER_US,
+				trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
+	}
 
 	private static Set<String> columnNames(ResultSetMetaData md)
 			throws SQLException {
@@ -385,7 +498,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void setupConfig() {
 		config.enforceForeignKeys(true);
 		config.setSynchronous(NORMAL);
-		config.setBusyTimeout((int) busyTimeout.toMillis());
+		config.setBusyTimeout((int) props.getTimeout().toMillis());
 		config.setTransactionMode(IMMEDIATE);
 		config.setDateClass("INTEGER");
 	}
@@ -404,8 +517,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		tombstoneFile = requireNonNull(properties.getHistoricalData().getPath(),
 				"an historical database file must be given").getAbsolutePath();
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
-		analysisLimit = properties.getSqlite().getAnalysisLimit();
-		busyTimeout = properties.getSqlite().getTimeout();
+		props = properties.getSqlite();
 		log.info("will manage database at {}", dbPath);
 	}
 
@@ -423,8 +535,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		tombstoneFile = ":memory:";
 		dbConnectionUrl = "jdbc:sqlite::memory:";
 		log.info("will manage pure in-memory database");
-		busyTimeout = prototype.busyTimeout;
-		analysisLimit = prototype.analysisLimit;
+		props = prototype.props;
 		sqlDDLFile = prototype.sqlDDLFile;
 		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
@@ -492,67 +603,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Target(ElementType.TYPE)
 	public @interface Innocuous {
 	}
-
-	/**
-	 * The prefix of bean names that may be removed to generate the SQLite
-	 * function name.
-	 */
-	private static final String FUN_NAME_PREFIX = "function.";
-
-	/**
-	 * Flag direct from SQLite.
-	 * <p>
-	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
-	 * may only be invoked from top-level SQL, and cannot be used in
-	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
-	 * <em>CHECK</em> constraints, <em>DEFAULT</em> clauses, expression indexes,
-	 * partial indexes, or generated columns. The {@code SQLITE_DIRECTONLY}
-	 * flags is a security feature which is recommended for all
-	 * application-defined SQL functions, and especially for functions that have
-	 * side-effects or that could potentially leak sensitive
-	 * information.</blockquote>
-	 * <p>
-	 * Note that the password-related functions we install are definitely
-	 * examples of functions that are only usable directly.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_DIRECTONLY = 0x000080000;
-
-	/**
-	 * Flag direct from SQLite.
-	 * <p>
-	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
-	 * unlikely to cause problems even if misused. An innocuous function should
-	 * have no side effects and should not depend on any values other than its
-	 * input parameters. The {@code abs()} function is an example of an
-	 * innocuous function. The {@code load_extension()} SQL function is not
-	 * innocuous because of its side effects.
-	 * <p>
-	 * {@code SQLITE_INNOCUOUS} is similar to {@code SQLITE_DETERMINISTIC}, but
-	 * is not exactly the same. The {@code random()} function is an example of a
-	 * function that is innocuous but not deterministic.
-	 * <p>
-	 * Some heightened security settings ({@code SQLITE_DBCONFIG_TRUSTED_SCHEMA}
-	 * and {@code PRAGMA trusted_schema=OFF}) disable the use of SQL functions
-	 * inside views and triggers and in schema structures such as <em>CHECK</em>
-	 * constraints, <em>DEFAULT</em> clauses, expression indexes, partial
-	 * indexes, and generated columns unless the function is tagged with
-	 * {@code SQLITE_INNOCUOUS}. Most built-in functions are innocuous.
-	 * Developers are advised to avoid using the {@code SQLITE_INNOCUOUS} flag
-	 * for application-defined functions unless the function has been carefully
-	 * audited and found to be free of potentially security-adverse side-effects
-	 * and information-leaks. </blockquote>
-	 * <p>
-	 * Note that this engine marks non-innocuous functions as
-	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
-	 * correct.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_INNOCUOUS = 0x000200000;
 
 	/**
 	 * Install a function into SQLite.
@@ -683,7 +733,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			// NB: Not a standard query! Safe, because we know we have an int
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				conn.exec(String.format(OPTIMIZE_DB, analysisLimit));
+				conn.exec(String.format(OPTIMIZE_DB, props.getAnalysisLimit()));
 			} catch (DataAccessException e) {
 				/*
 				 * If we're busy, just don't bother; it's optional to optimise
@@ -708,7 +758,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
-	public static final class Connection extends UncheckedConnection {
+	public final class Connection extends UncheckedConnection {
 		private Connection(java.sql.Connection c) {
 			super(c);
 		}
@@ -821,6 +871,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sql
 		 *            The SQL of the query.
 		 * @return The query object.
+		 * @see #query(Resource)
+		 * @see #update(String)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -850,6 +902,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sqlResource
 		 *            Reference to the SQL of the query.
 		 * @return The query object.
+		 * @see #query(String)
+		 * @see #update(Resource)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -888,6 +942,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sql
 		 *            The SQL of the update.
 		 * @return The update object.
+		 * @see #update(Resource)
+		 * @see #query(String)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -926,6 +982,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sqlResource
 		 *            Reference to the SQL of the update.
 		 * @return The update object.
+		 * @see #update(String)
+		 * @see #query(Resource)
 		 * @see SQLQueries
 		 */
 		// @formatter:on
@@ -939,11 +997,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sql
 		 *            The SQL to run. Probably DDL. This may contain multiple
 		 *            statements.
+		 * @see #query(String)
+		 * @see #update(String)
 		 */
 		public void exec(String sql) {
 			try (Statement s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
 				s.executeUpdate(sql);
+				/*
+				 * Note that we do NOT record the execution time here. This is
+				 * expected to be used for non-critical-path statements only
+				 * (setting up connections).
+				 */
 			} catch (SQLException e) {
 				throw mapException(e, sql);
 			}
@@ -955,6 +1020,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param sqlResource
 		 *            Reference to the SQL to run. Probably DDL. This may
 		 *            contain multiple statements.
+		 * @see #query(Resource)
+		 * @see #update(Resource)
 		 */
 		public void exec(Resource sqlResource) {
 			exec(readSQL(sqlResource));
@@ -1211,32 +1278,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Run some SQL where the result is of no interest.
-	 *
-	 * @param sql
-	 *            The SQL to run. Probably DDL. This may contain multiple
-	 *            statements.
-	 */
-	public void exec(String sql) {
-		try (Connection conn = getConnection()) {
-			conn.exec(sql);
-		}
-	}
-
-	/**
-	 * Run some SQL where the result is of no interest.
-	 *
-	 * @param sqlResource
-	 *            Reference to the SQL to run. Probably DDL. This may contain
-	 *            multiple statements.
-	 */
-	public void exec(Resource sqlResource) {
-		try (Connection conn = getConnection()) {
-			conn.exec(sqlResource);
-		}
-	}
-
-	/**
 	 * Common shared code between {@link Query} and {@link Update}.
 	 *
 	 * @author Donal Fellows
@@ -1336,22 +1377,41 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		private static final int TRIM_LENGTH = 80;
-
 		@Override
 		public String toString() {
-			// Exclude comments and compress whitespace
-			String sql = s.toString().replaceAll("--[^\n]*\n", " ")
-					.replaceAll("\\s+", " ").trim();
-			// Trim long queries to no more than TRIM_LENGTH...
-			String sql2 =
-					sql.replaceAll("^(.{0," + TRIM_LENGTH + "})\\b.*$", "$1");
-			if (sql2 != sql) {
-				// and add an ellipsis if we do the trimming
-				sql = sql2 + "...";
-			}
-			return getClass().getSimpleName() + " : " + sql;
+			return getClass().getSimpleName() + " : " + trimSQL(s.toString());
 		}
+	}
+
+	/**
+	 * Exclude comments and compress whitespace from the SQL of a statement.
+	 *
+	 * @param sql
+	 *            The text of the SQL to trim.
+	 * @return The trimmed SQL.
+	 */
+	private static String trimSQL(String sql) {
+		return trimSQL(sql, TRIM_LENGTH);
+	}
+
+	/**
+	 * Exclude comments and compress whitespace from the SQL of a statement.
+	 *
+	 * @param sql
+	 *            The text of the SQL to trim.
+	 * @param length
+	 *            The point to insert an ellipsis if required.
+	 * @return The trimmed SQL.
+	 */
+	private static String trimSQL(String sql, int length) {
+		sql = sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
+		// Trim long queries to no more than TRIM_LENGTH...
+		String sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
+		if (sql2 != sql) {
+			// and add an ellipsis if we do the trimming
+			sql = sql2 + ELLIPSIS;
+		}
+		return sql;
 	}
 
 	/**
@@ -1359,7 +1419,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class Query extends StatementWrapper {
+	public final class Query extends StatementWrapper {
 		private Query(Connection conn, String sql) {
 			super(conn, sql);
 		}
@@ -1377,8 +1437,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public MappableIterable<Row> call(Object... arguments) {
 			closeResults();
 			try {
+				long pre = nanoTime();
 				setParams(arguments);
 				rs = s.executeQuery();
+				long post = nanoTime();
+				statementLength(s, pre, post);
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1436,7 +1499,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				closeResults();
 				setParams(arguments);
+				long pre = nanoTime();
 				rs = s.executeQuery();
+				long post = nanoTime();
+				statementLength(s, pre, post);
 				if (rs.next()) {
 					return Optional.of(new Row(rs));
 				} else {
@@ -1453,7 +1519,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class Update extends StatementWrapper {
+	public final class Update extends StatementWrapper {
 		private Update(Connection conn, String sql) {
 			super(conn, sql);
 		}
@@ -1469,7 +1535,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			closeResults();
 			try {
 				setParams(arguments);
-				return s.executeUpdate();
+				long pre = nanoTime();
+				int result = s.executeUpdate();
+				long post = nanoTime();
+				statementLength(s, pre, post);
+				return result;
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1490,10 +1560,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 */
 			closeResults();
 			int numRows;
+			long pre, post;
 			try {
 				setParams(arguments);
+				pre = nanoTime();
 				numRows = s.executeUpdate();
+				post = nanoTime();
 				rs = s.getGeneratedKeys();
+				statementLength(s, pre, post);
 			} catch (SQLException e) {
 				throw mapException(e, s.toString());
 			}
@@ -1557,7 +1631,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			closeResults();
 			try {
 				setParams(arguments);
+				long pre = nanoTime();
 				int numRows = s.executeUpdate();
+				long post = nanoTime();
+				statementLength(s, pre, post);
 				if (numRows < 1) {
 					return Optional.empty();
 				}

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
@@ -27,11 +29,9 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
@@ -60,17 +60,18 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.SimpleGrantedAuthority;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 
 /**
  * Does authentication against users defined entirely in the database. This
@@ -97,13 +98,12 @@ public class LocalAuthProviderImpl extends SQLQueries
 	@Autowired
 	private QuotaProperties quotaProps;
 
+	@Autowired
+	private PasswordServices passServices;
+
 	private static final String DUMMY_USER = "user1";
 
 	private static final String DUMMY_PASSWORD = "user1Pass";
-
-	private static final int PASSWORD_LENGTH = 16;
-
-	private Random rng = null;
 
 	private AuthenticationProvider tokenProvider;
 
@@ -120,35 +120,23 @@ public class LocalAuthProviderImpl extends SQLQueries
 				new OAuth2LoginAuthenticationProvider(client, userService);
 	}
 
-	/**
-	 * Generate a random password.
-	 *
-	 * @return A password consisting of 16 random ASCII printable characters.
-	 */
-	private String generatePassword() {
-		synchronized (this) {
-			if (rng == null) {
-				rng = new SecureRandom();
-			}
-		}
-		StringBuilder sb = new StringBuilder();
-		rng.ints(PASSWORD_LENGTH, '\u0021', '\u007f')
-				.forEachOrdered(c -> sb.append((char) c));
-		return sb.toString();
-	}
-
 	@PostConstruct
 	private void initUserIfNecessary() {
 		if (authProps.isAddDummyUser()) {
 			String pass = DUMMY_PASSWORD;
+			boolean poorPassword = true;
 			if (authProps.isDummyRandomPass()) {
-				pass = generatePassword();
+				pass = passServices.generatePassword();
+				poorPassword = false;
 			}
 			if (createUser(DUMMY_USER, pass, ADMIN,
 					quotaProps.getDefaultQuota())) {
 				if (authProps.isDummyRandomPass()) {
 					log.info("admin user {} has password: {}", DUMMY_USER,
 							pass);
+				}
+				if (poorPassword) {
+					log.warn("user {} has default password!", DUMMY_USER);
 				}
 			}
 		}
@@ -163,10 +151,11 @@ public class LocalAuthProviderImpl extends SQLQueries
 			// Won't touch the DB if the username is empty
 			throw new UsernameNotFoundException("empty user name?");
 		}
+		String encPass = passServices.encodePassword(password);
 		try (Connection conn = db.getConnection();
 				Update createUser = conn.update(CREATE_USER);
 				Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
-			return conn.transaction(() -> createUser(username, password,
+			return conn.transaction(() -> createUser(username, encPass,
 					trustLevel, quota, createUser, addQuota));
 		}
 	}
@@ -177,9 +166,9 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 *
 	 * @param username
 	 *            The username to create
-	 * @param password
-	 *            The password to use; {@code null} for a user that needs to
-	 *            authenticate by another mechanism.
+	 * @param encPass
+	 *            The already-encoded password to use; {@code null} for a user
+	 *            that needs to authenticate by another mechanism.
 	 * @param trustLevel
 	 *            What level of permissions to grant
 	 * @param quota
@@ -190,10 +179,10 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 *            SQL statement
 	 * @return Whether the user was successfully created.
 	 */
-	private Boolean createUser(String username, String password,
+	private Boolean createUser(String username, String encPass,
 			TrustLevel trustLevel, long quota, Update createUser,
 			Update addQuota) {
-		return createUser.key(username, password, trustLevel, false)
+		return createUser.key(username, encPass, trustLevel, false)
 				.map(userId -> {
 					addQuota.call(userId, quota);
 					log.info(
@@ -257,8 +246,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 		List<GrantedAuthority> authorities = new ArrayList<>();
 
 		try (AuthQueries queries = new AuthQueries()) {
-			if (!queries.transact(() -> authLocalAgainstDB(name, password,
-					authorities, queries))) {
+			if (!authLocalAgainstDB(name, password, authorities, queries)) {
 				return null;
 			}
 		}
@@ -339,8 +327,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 
 		private final Query userAuthorities;
 
-		private final Query isUserPassMatched;
-
 		private final Update loginSuccess;
 
 		private final Query loginFailure;
@@ -356,7 +342,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 			conn = db.getConnection();
 			getUserBlocked = conn.query(IS_USER_LOCKED);
 			userAuthorities = conn.query(GET_USER_AUTHORITIES);
-			isUserPassMatched = conn.query(IS_USER_PASS_MATCHED);
 			loginSuccess = conn.update(MARK_LOGIN_SUCCESS);
 			loginFailure = conn.query(MARK_LOGIN_FAILURE);
 			createUser = conn.update(CREATE_USER);
@@ -373,7 +358,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 			createUser.close();
 			loginFailure.close();
 			loginSuccess.close();
-			isUserPassMatched.close();
 			userAuthorities.close();
 			getUserBlocked.close();
 			conn.close();
@@ -406,13 +390,6 @@ public class LocalAuthProviderImpl extends SQLQueries
 			 * we're in a transaction so the world won't change under our feet.
 			 */
 			return userAuthorities.call1(userId).get();
-		}
-
-		boolean isUserPassMatched(int userId, String password) {
-			return isUserPassMatched.call1(password, userId)
-					.orElseThrow(
-							() -> new BadCredentialsException("bad password"))
-					.getBoolean("matches");
 		}
 
 		/**
@@ -469,55 +446,107 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 */
 	private boolean authLocalAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities, AuthQueries queries) {
-		Optional<Row> r = queries.getUser(username);
-		if (!r.isPresent()) {
-			// No such user
+		class Result {
+			final boolean success;
+
+			final int userId;
+
+			final TrustLevel trustLevel;
+
+			final String passInfo;
+
+			Result() {
+				success = false;
+				userId = -1;
+				trustLevel = null;
+				passInfo = null;
+			}
+
+			Result(int u, TrustLevel t, String ep) {
+				success = true;
+				userId = u;
+				trustLevel = requireNonNull(t);
+				passInfo = requireNonNull(ep);
+			}
+		}
+
+		Result result = queries.transact(() -> {
+			Optional<Row> r = queries.getUser(username);
+			if (!r.isPresent()) {
+				// No such user
+				return new Result();
+			}
+			Row userInfo = r.get();
+			int userId = userInfo.getInt("user_id");
+			if (userInfo.getBoolean("disabled")) {
+				throw new DisabledException("account is disabled");
+			}
+			try {
+				if (userInfo.getBoolean("locked")) {
+					// Note that this extends the lock!
+					throw new LockedException("account is locked");
+				}
+				Row authInfo = queries.getUserAuthorities(userId);
+				String encPass = authInfo.getString("encrypted_password");
+				if (isNull(encPass)) {
+					/*
+					 * We know this user, but they can't use this authentication
+					 * method. They'll probably have to use OIDC.
+					 */
+					return new Result();
+				}
+				TrustLevel trust =
+						authInfo.getEnum("trust_level", TrustLevel.class);
+				return new Result(userId, trust, encPass);
+			} catch (AuthenticationException e) {
+				queries.noteLoginFailureForUser(userId, username);
+				log.info("login failure for {}", username, e);
+				throw e;
+			}
+		});
+		if (!result.success) {
 			return false;
 		}
-		Row userInfo = r.get();
-		int userId = userInfo.getInt("user_id");
-		if (userInfo.getBoolean("disabled")) {
-			throw new DisabledException("account is disabled");
-		}
 		try {
-			if (userInfo.getBoolean("locked")) {
-				// Note that this extends the lock!
-				throw new LockedException("account is locked");
-			}
-			Row authInfo = queries.getUserAuthorities(userId);
-			if (!authInfo.getBoolean("has_password")) {
-				/*
-				 * We know this user, but they can't use this authentication
-				 * method. They'll probably have to use OIDC.
-				 */
-				return false;
-			}
-			if (!queries.isUserPassMatched(userId, password)) {
+			/*
+			 * This is slow (100ms!) so we make sure we aren't holding a
+			 * transaction open while this step is ongoing.
+			 */
+			if (!passServices.matchPassword(password, result.passInfo)) {
 				throw new BadCredentialsException("bad password");
 			}
-			TrustLevel trust =
-					authInfo.getEnum("trust_level", TrustLevel.class);
-			switch (trust) {
-			case ADMIN:
-				authorities.add(new SimpleGrantedAuthority(GRANT_ADMIN));
-				// fallthrough
-			case USER:
-				authorities.add(new SimpleGrantedAuthority(GRANT_USER));
-				// fallthrough
-			case READER:
-				authorities.add(new SimpleGrantedAuthority(GRANT_READER));
-				// fallthrough
-			default:
-				// Do nothing; no grants of authority made
-			}
-			queries.noteLoginSuccessForUser(userId);
-			log.info("login success for {} at level {}", username, trust);
-			return true;
 		} catch (AuthenticationException e) {
-			queries.noteLoginFailureForUser(userId, username);
-			log.info("login failure for {}", username, e);
-			throw e;
+			queries.transact(() -> {
+				queries.noteLoginFailureForUser(result.userId, username);
+				log.info("login failure for {}", username, e);
+				throw e;
+			});
 		}
+		return queries.transact(() -> {
+			try {
+				queries.noteLoginSuccessForUser(result.userId);
+				switch (result.trustLevel) {
+				case ADMIN:
+					authorities.add(new SimpleGrantedAuthority(GRANT_ADMIN));
+					// fallthrough
+				case USER:
+					authorities.add(new SimpleGrantedAuthority(GRANT_USER));
+					// fallthrough
+				case READER:
+					authorities.add(new SimpleGrantedAuthority(GRANT_READER));
+					// fallthrough
+				default:
+					// Do nothing; no grants of authority made
+				}
+				log.info("login success for {} at level {}", username,
+						result.trustLevel);
+				return true;
+			} catch (AuthenticationException e) {
+				queries.noteLoginFailureForUser(result.userId, username);
+				log.info("login failure for {}", username, e);
+				throw e;
+			}
+		});
 	}
 
 	/**
@@ -558,7 +587,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 				throw new LockedException("account is locked");
 			}
 			Row authInfo = queries.getUserAuthorities(userId);
-			if (authInfo.getBoolean("has_password")) {
+			if (nonNull(authInfo.getString("encrypted_password"))) {
 				/*
 				 * We know this user, but they can't use this authentication
 				 * method. They'll probably have to use username+password.

@@ -346,7 +346,7 @@ function mapOfJobs(jobs: readonly MachineJobDescriptor[]) :
 	for (const j of jobs) {
 		m2.set(j.id, j);
 		// TODO derive the hue from the job ID
-		colours.set(j.id, `hsl(${Math.floor(Math.random() * 360)}, 80, 50)`);
+		colours.set(j.id, `hsl(${Math.floor(Math.random() * 360)}, 80%, 50%)`);
 		for (const b of j.boards) {
 			const {x:x, y:y, z:z} = b.triad;
 			m.set(tuplekey([x,y,z]), j.id);
@@ -591,11 +591,12 @@ function drawJob(
 	const ctx = canv.getContext("2d");
 	const tooltipCtx = tooltip.getContext("2d");
 
+	/** Information about boards. Coordinates are machine-global. */
 	const allocated = boardMap(descriptor.boards);
 
 	ctx.strokeStyle = 'black';
 	const {x: rx, y: ry} = descriptor.boards[0].triad;
-	/** Where all the boards are on the canvas. */
+	/** Where all the boards are on the canvas. Coordinates are job-local. */
 	const tloc = drawLayout(ctx, rootX, rootY, scale,
 			descriptor.triad_width, descriptor.triad_height, 3,
 			triadCoord => {
@@ -624,6 +625,24 @@ function drawJob(
 	}
 
 	/**
+	 * Get the basic board location description. Wrapper around `allocated`.
+	 *
+	 * @param {BoardTriad} triad
+	 *		Which board to describe.
+	 * @return {BoardLocator | undefined}
+	 *		The machine description of the board, or `undefined` if no board.
+	 */
+	function Board(triad: BoardTriad) : BoardLocator | undefined {
+		const [x, y, z] = triad;
+		const key = tuplekey([rx+x, ry+y, z]);
+		var board : BoardLocator = undefined;
+		if (allocated.has(key)) {
+			board = allocated.get(key);
+		}
+		return board
+	}
+
+	/**
 	 * Set or clear a tooltip.
 	 *
 	 * @param {BoardTriad?} triad
@@ -646,19 +665,13 @@ function drawJob(
 	 *		The multiline description of the board.
 	 */
 	function triadDescription(triad: BoardTriad) : string | undefined {
+		const board = Board(triad);
 		const [x, y, z] = triad;
-		var board : BoardLocator = undefined;
-		if (allocated.has(tuplekey(triad))) {
-			board = allocated.get(tuplekey(triad));
+		var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
+		if (board !== undefined && board.hasOwnProperty("network")) {
+			s += `\nIP: ${board.network.address}`;
 		}
-		if (board !== undefined) {
-			var s = `Board: (X: ${x}, Y: ${y}, Z: ${z})`;
-			if (board.hasOwnProperty("network")) {
-				s += `\nIP: ${board.network.address}`;
-			}
-			return s;
-		}
-		return undefined;
+		return s;
 	}
 
 	/** The current board (i.e., that has the mouse over it). */
