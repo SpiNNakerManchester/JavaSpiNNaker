@@ -395,30 +395,30 @@ public class UserControl extends SQLQueries {
 		}
 	}
 
+	private static final class GetUserResult {
+		final PasswordChangeRecord baseUser;
+
+		final String oldEncPass;
+
+		GetUserResult(Row row) {
+			baseUser = new PasswordChangeRecord(row.getInt("user_id"),
+					row.getString("user_name"));
+			oldEncPass = row.getString("encrypted_password");
+		}
+	}
+
 	private PasswordChangeRecord updateUserOfPrincipal(Principal principal,
 			PasswordChangeRecord user, UpdatePassSQL sql) {
-		final class Result {
-			PasswordChangeRecord baseUser;
-
-			String encPass;
-
-			Result(Row row) {
-				baseUser = new PasswordChangeRecord(row.getInt("user_id"),
-						row.getString("user_name"));
-				encPass = row.getString("encrypted_password");
-			}
-		}
-
-		Result result = sql
+		GetUserResult result = sql
 				.transaction(() -> sql.getPasswordedUser
-						.call1(principal.getName()).map(Result::new))
+						.call1(principal.getName()).map(GetUserResult::new))
 				.orElseThrow(
 						// OpenID-authenticated user; go away
 						() -> new AuthenticationServiceException(
 								"user is managed externally; cannot "
 										+ "change password here"));
 		if (!passServices.matchPassword(user.getOldPassword(),
-				result.encPass)) {
+				result.oldEncPass)) {
 			throw new BadCredentialsException("bad password");
 		}
 		// Validate change; this should never fail but...
