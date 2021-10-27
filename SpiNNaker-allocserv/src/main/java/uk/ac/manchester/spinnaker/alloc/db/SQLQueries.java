@@ -924,8 +924,13 @@ public abstract class SQLQueries {
 	 *
 	 * @see UserControl
 	 */
+	@Parameter("user_name")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	@ResultColumn("encrypted_password")
+	@SingleRowResult
 	protected static final String GET_LOCAL_USER_DETAILS =
-			"SELECT user_id, user_name FROM user_info "
+			"SELECT user_id, user_name, encrypted_password FROM user_info "
 					+ "WHERE user_name = :user_name "
 					+ "AND encrypted_password IS NOT NULL LIMIT 1";
 
@@ -957,17 +962,17 @@ public abstract class SQLQueries {
 					+ "WHERE user_name = :username";
 
 	/**
-	 * Get the permissions for a user.
+	 * Get the permissions and encrypted password for a user.
 	 *
 	 * @see LocalAuthProviderImpl
 	 */
 	@Parameter("user_id")
 	@ResultColumn("trust_level")
-	@ResultColumn("has_password")
+	@ResultColumn("encrypted_password")
 	@SingleRowResult
-	protected static final String GET_USER_AUTHORITIES = "SELECT trust_level, "
-			+ "encrypted_password IS NOT NULL AS has_password FROM user_info "
-			+ "WHERE user_id = :user_id LIMIT 1";
+	protected static final String GET_USER_AUTHORITIES =
+			"SELECT trust_level, encrypted_password FROM user_info "
+					+ "WHERE user_id = :user_id LIMIT 1";
 
 	/**
 	 * Note the login success.
@@ -1087,22 +1092,6 @@ public abstract class SQLQueries {
 					+ "WHERE user_id = :user_id";
 
 	/**
-	 * Whether a user's password matches. Be aware that the result is a boolean
-	 * <em>or {@code null}</em>.
-	 *
-	 * @see LocalAuthProviderImpl
-	 * @see UserControl
-	 */
-	@Parameter("password")
-	@Parameter("user_id")
-	@ResultColumn("matches")
-	@SingleRowResult
-	protected static final String IS_USER_PASS_MATCHED =
-			"SELECT match_password(:password, encrypted_password) AS matches "
-					+ "FROM user_info WHERE user_id = :user_id AND "
-					+ "encrypted_password IS NOT NULL LIMIT 1";
-
-	/**
 	 * Set a user's password. Passwords are either encrypted (with bcrypt) or
 	 * {@code null} to indicate that they should be using some other system
 	 * (OIDC?) to authenticate them.
@@ -1112,7 +1101,7 @@ public abstract class SQLQueries {
 	@Parameter("password")
 	@Parameter("user_id")
 	protected static final String SET_USER_PASS = "UPDATE user_info "
-			+ "SET encrypted_password = encode_password(:password) "
+			+ "SET encrypted_password = :password "
 			+ "WHERE user_id = :user_id";
 
 	/**
@@ -1144,14 +1133,14 @@ public abstract class SQLQueries {
 	 * @see UserControl
 	 */
 	@Parameter("user_name")
-	@Parameter("password")
+	@Parameter("encoded_password")
 	@Parameter("trust_level")
 	@Parameter("disabled")
 	@GeneratesID
 	protected static final String CREATE_USER =
 			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
 					+ "trust_level, disabled) VALUES(:user_name, "
-					+ "encode_password(:password), :trust_level, :disabled)";
+					+ ":encoded_password, :trust_level, :disabled)";
 
 	/**
 	 * Create a quota (in board-seconds) for a user on a machine.
