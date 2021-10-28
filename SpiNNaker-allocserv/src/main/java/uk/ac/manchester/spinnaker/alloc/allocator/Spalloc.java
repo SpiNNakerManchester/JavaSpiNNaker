@@ -108,6 +108,12 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	@Autowired
 	private AllocatorProperties props;
 
+	private transient Map<String, List<BoardCoords>> downBoardsCache =
+			new HashMap<>();
+
+	private transient Map<String, List<DownLink>> downLinksCache =
+			new HashMap<>();
+
 	@Override
 	public Map<String, Machine> getMachines() {
 		return db.execute(this::getMachines);
@@ -471,6 +477,14 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		return Optional.empty();
 	}
 
+	/** Purge the cache of what boards are down. */
+	public void purgeDownCache() {
+		synchronized (this) {
+			downBoardsCache.clear();
+			downLinksCache.clear();
+		}
+	}
+
 	private static DownLink makeDownLinkFromRow(Row row) {
 		BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
 				row.getInt("board_1_y"), row.getInt("board_1_z"),
@@ -494,10 +508,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private final int width;
 
 		private final int height;
-
-		private transient List<BoardCoords> downBoardsCache;
-
-		private transient List<DownLink> downLinksCache;
 
 		@JsonIgnore
 		private final Epoch epoch;
@@ -590,9 +600,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public List<BoardCoords> getDeadBoards() {
 			// Assume that the list doesn't change for the duration of this obj
-			synchronized (this) {
-				if (nonNull(downBoardsCache)) {
-					return unmodifiableList(downBoardsCache);
+			synchronized (Spalloc.this) {
+				List<BoardCoords> down = downBoardsCache.get(name);
+				if (nonNull(down)) {
+					return unmodifiableList(down);
 				}
 			}
 			try (Connection conn = db.getConnection();
@@ -606,10 +617,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 										row.getInteger("board_num"),
 										row.getString("address")))
 								.toList());
-				synchronized (this) {
-					if (isNull(downBoardsCache)) {
-						downBoardsCache = downBoards;
-					}
+				synchronized (Spalloc.this) {
+					downBoardsCache.putIfAbsent(name, downBoards);
 				}
 				return unmodifiableList(downBoards);
 			}
@@ -618,19 +627,18 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public List<DownLink> getDownLinks() {
 			// Assume that the list doesn't change for the duration of this obj
-			synchronized (this) {
-				if (nonNull(downLinksCache)) {
-					return unmodifiableList(downLinksCache);
+			synchronized (Spalloc.this) {
+				List<DownLink> down = downLinksCache.get(name);
+				if (nonNull(down)) {
+					return unmodifiableList(down);
 				}
 			}
 			try (Connection conn = db.getConnection();
 					Query boardNumbers = conn.query(getDeadLinks)) {
 				List<DownLink> downLinks = conn.transaction(() -> boardNumbers
 						.call(id).map(Spalloc::makeDownLinkFromRow).toList());
-				synchronized (this) {
-					if (isNull(downLinksCache)) {
-						downLinksCache = downLinks;
-					}
+				synchronized (Spalloc.this) {
+					downLinksCache.putIfAbsent(name, downLinks);
 				}
 				return unmodifiableList(downLinks);
 			}
@@ -1204,7 +1212,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				}
 			}
 			if (acted > 0) {
-				// TODO purge the cache of what boards are down
+				purgeDownCache();
 				epochs.nextMachineEpoch();
 			}
 			return acted > 0 ? Optional.of(acted) : Optional.empty();

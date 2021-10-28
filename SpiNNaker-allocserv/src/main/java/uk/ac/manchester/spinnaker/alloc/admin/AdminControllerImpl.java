@@ -57,6 +57,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -104,6 +105,9 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 
 	@Autowired
 	private DatabaseEngine db;
+
+	@Autowired
+	private Spalloc spalloc;
 
 	private List<String> getMachineNames() {
 		try (Connection conn = db.getConnection();
@@ -369,6 +373,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 								+ "({},{},{}) to {}",
 						bs.x, bs.y, bs.z, board.isEnabled());
 				bs.setState(board.isEnabled());
+				spalloc.purgeDownCache();
 			}
 		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());
