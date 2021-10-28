@@ -26,39 +26,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>User Details</h1>
 
 <form:form method="POST" modelAttribute="user">
-    <form:label path="userName">User Name: </form:label>
-    <form:input path="userName" type="text"/>
-    <form:select path="trustLevel">
-    <form:option value="">pick a level</form:option>
-    <form:options items="${ trustLevels }"/>
-    </form:select>
-    <br>
-    <form:label path="password">Password: </form:label>
-    <form:input path="password" type="password" />
-    <form:label path="hasPassword">Has Password: </form:label>
-    <form:checkbox path="hasPassword"/>
-    <br>
-    <form:label path="isEnabled">Is enabled? </form:label>
-    <form:checkbox path="isEnabled"/>
-    <form:label path="isLocked">Is temporarily locked? </form:label>
-    <form:checkbox path="isLocked"/>
-    <br>
-    Last successful login: ${ user.lastSuccessfulLogin }
-    <br>
-    Last failed login: ${ user.lastFailedLogin }
-    <p>
-    Quotas:
-    <c:forEach items="${ user.quota }" var="q">
-    	<br> ${ q.key } : ${ q.value } board-seconds
-<%-- FIXME add support for editing user quotas --%>
-    </c:forEach>
-    <p>
-    <input type="submit" value="Update" />
+	<form:label path="userName">User Name: </form:label>
+	<form:input path="userName" type="text"/>
+	<form:select path="trustLevel">
+		<form:option value="">pick a level</form:option>
+		<form:options items="${ trustLevels }"/>
+	</form:select>
+	<br>
+	<form:label path="password">Password: </form:label>
+	<form:input path="password" type="password" />
+	<form:label path="hasPassword">Has Password: </form:label>
+	<form:checkbox path="hasPassword"/>
+	<br>
+	<form:label path="isEnabled">Is enabled? </form:label>
+	<form:checkbox path="isEnabled"/>
+	<form:label path="isLocked">Is temporarily locked? </form:label>
+	<form:checkbox path="isLocked"/>
+	<br>
+	Last successful login: ${ user.lastSuccessfulLogin }
+	<br>
+	Last failed login: ${ user.lastFailedLogin }
+	<p>
+	<table>
+		<thead>
+			<tr>
+				<th colspan="2">Quotas</th>
+			</tr>
+			<tr>
+				<th>Machine</th>
+				<th>Remaining (board seconds)
+			</tr>
+		</thead>
+		<tbody>
+		<c:forEach items="${ user.quota }" var="q">
+			<tr>
+				<td> <c:out value="${ q.key }" escapeXml="true" /> </td>
+				<td> ${ q.value } </td>
+			</tr>
+			<%-- FIXME add support for editing user quotas --%>
+		</c:forEach>
+		</tbody>
+	</table>
+	<p>
+	<input type="submit" value="Update" />
 </form:form>
 <p>
-<form method="POST" action="${deleteUri }">
-   <sec:csrfInput />
-   <input type="submit" class="warningbutton" value="Delete this user" />
+<form method="POST" action="${ deleteUri }">
+	<sec:csrfInput />
+	<input type="submit" class="warningbutton" value="Delete this user" />
 </form>
 <p>
 

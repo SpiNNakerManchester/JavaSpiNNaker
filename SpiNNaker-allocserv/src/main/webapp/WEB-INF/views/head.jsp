@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>${ param.title }</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>${ param.title }</title>
 	<link rel="stylesheet" href="<c:url value="/system/resources/spalloc.css"/>">
 	<c:if test="${ param.spalloclib ne null }">
 		<script src="<c:url value="/system/resources/spinnaker.js"/>">

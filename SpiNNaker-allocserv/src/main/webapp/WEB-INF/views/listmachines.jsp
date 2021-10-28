@@ -30,32 +30,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <table border="1">
 <thead>
 <tr>
-  	<th>Name</th>
-  	<th>Num boards</th>
-  	<th>In-use</th>
+	<th>Name</th>
+	<th>Num boards</th>
+	<th>In-use</th>
 	<th>Jobs</th>
-  	<th>Tags</th>
+	<th>Tags</th>
 </tr>
 </thead>
 <tbody>
 <c:forEach items="${ machineList }" var="machine">
 <tr>
-    <td class="textColumn">
-    <c:if test="${ machine.detailsUrl.present }">
-    	<a href="${ machine.detailsUrl.get() }"><code>${ machine.name }</code></a>
-    </c:if>
-    <c:if test="${ !machine.detailsUrl.present }">
-    	<code>${ machine.name }</code>
-    </c:if>
-    </td>
-    <td class="numberColumn">${ machine.numBoards }</td>
-    <td class="numberColumn">${ machine.numInUse }</td>
-    <td class="numberColumn">${ machine.numJobs }</td>
-    <td class="textColumn">
+	<td class="textColumn">
+		<c:if test="${ machine.detailsUrl.present }">
+			<a href="${ machine.detailsUrl.get() }">
+				<code><c:out value="${ machine.name }" escapeXml="true" /></code>
+			</a>
+		</c:if>
+		<c:if test="${ !machine.detailsUrl.present }">
+			<code><c:out value="${ machine.name }" escapeXml="true" /></code>
+		</c:if>
+	</td>
+	<td class="numberColumn">${ machine.numBoards }</td>
+	<td class="numberColumn">${ machine.numInUse }</td>
+	<td class="numberColumn">${ machine.numJobs }</td>
+	<td class="textColumn">
 	<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
-		<code>${ tag }</code><c:if test="${ !loop.last }">,</c:if>
+		<code><c:out value="${ tag }" escapeXml="true"/></code><c:if test="${ !loop.last }">,</c:if>
 	</c:forEach>
-    </td>
+	</td>
 </tr>
 </c:forEach>
 </tbody>

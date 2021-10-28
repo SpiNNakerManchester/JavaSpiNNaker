@@ -24,24 +24,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <h1>Login</h1>
 <c:if test="${ error != null }">
-   <p>Please try again...</p>
+	<p>Please try again...</p>
 </c:if>
 <form name='f' action='<c:url value="/system/perform_login"/>' method='POST'>
-   <sec:csrfInput />
-    <table>
-       <tr>
-          <td>User:</td>
-          <td><input type='text' name='username' value=''></td>
-       </tr>
-       <tr>
-          <td>Password:</td>
-          <td><input type='password' name='password' /></td>
-       </tr>
-       <tr>
-          <td colspan=2>
-             <input name="submit" type="submit" value="submit" /></td>
-       </tr>
-    </table>
+	<sec:csrfInput />
+	<table>
+		<tr>
+			<td>User:</td>
+			<td><input type='text' name='username' value=''></td>
+		</tr>
+		<tr>
+			<td>Password:</td>
+			<td><input type='password' name='password' /></td>
+		</tr>
+		<tr>
+			<td colspan=2>
+				<input name="submit" type="submit" value="submit" />
+			</td>
+		</tr>
+	</table>
 </form>
 
 </body>

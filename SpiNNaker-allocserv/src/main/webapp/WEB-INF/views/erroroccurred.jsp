@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -22,15 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <h1>Error</h1>
 <pre>
-${ error }
+<c:out value="${ error }" escapeXml="true"/>
 </pre>
 
 <h3>Please enter the correct details</h3>
-<table>
-    <tr>
-        <td><a href="${ baseuri }">Retry</a></td>
-    </tr>
-</table>
+<a href="${ baseuri }">Retry</a>
 
 <jsp:include page="basicfooter.jsp" />
 </body>
