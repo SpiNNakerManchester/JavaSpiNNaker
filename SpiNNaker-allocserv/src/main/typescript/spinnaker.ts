@@ -117,43 +117,63 @@ interface JobDescriptor {
 };
 
 /**
- * Draw a single board cell. This is a distorted hexagon.
+ * Draw a single board cell, identified in machine coordinates. This is a
+ * distorted hexagon. Caller must configure colours prior to calling.
  *
- * @param {CanvasRenderingContext2D} ctx
+ * @param ctx
  *		The drawing context.
- * @param {number} x
- *		The canvas X coordinate.
- * @param {number} y
- *		The canvas Y coordinate.
- * @param {number} scale
+ * @param rootX
+ *		The canvas X coordinate of the bottom left of the machine.
+ * @param rootY
+ *		The canvas Y coordinate of the bottom left of the machine.
+ * @param scale
  *		The fundamental length scale for the size of boards.
- * @param {boolean} fill
+ * @param triadCoords
+ *		Triad coordinates of the board to draw
+ * @param fill
  *		Whether to fill the cell or just draw the outline.
- * @param {string} label
- *		What label to put in the cell, if any.
- * @returns {HexCoords}
+ * @param labeller
+ *		Function to generate the label.
+ * @return
  *		The coordinates of the vertices of the cell.
  */
-function drawBoard(
-		ctx : CanvasRenderingContext2D,
-		x : number, y : number, scale : number,
-		fill : boolean = false,
-		label : string = undefined) : HexCoords {
+function drawTriadBoard(
+		ctx: CanvasRenderingContext2D,
+		rootX: number, rootY: number, scale: number,
+		triadCoords: BoardTriad,
+		fill: boolean = false,
+		labeller: (key: BoardTriad) => string = undefined) : HexCoords {
+	const [tx, ty, tz] = triadCoords;
+	var bx : number = rootX + tx * 3 * scale;
+	var by : number = rootY - ty * 3 * scale;
+	if (tz == 1) {
+		bx += 2 * scale;
+		by -= scale;
+	} else if (tz == 2) {
+		bx += scale;
+		by -= 2 * scale;
+	}
+	var label : string = undefined;
+	if (labeller !== undefined) {
+		label = labeller(triadCoords);
+	}
+
+	/** The coordinate list. */
+	const coords: [number, number][] = [];
+	coords.push([bx, by]);
+	coords.push([bx + scale, by]);
+	coords.push([bx + 2 * scale, by - scale]);
+	coords.push([bx + 2 * scale, by - 2 * scale]);
+	coords.push([bx + scale, by - 2 * scale]);
+	coords.push([bx, by - scale]);
+
+	// Transfer coords into a path
 	ctx.beginPath();
-	var coords : [number, number][] = [];
-	coords.push([x, y]);
-	ctx.moveTo(x, y);
-	coords.push([x + scale, y]);
-	ctx.lineTo(x + scale, y);
-	coords.push([x + 2 * scale, y - scale]);
-	ctx.lineTo(x + 2 * scale, y - scale);
-	coords.push([x + 2 * scale, y - 2 * scale]);
-	ctx.lineTo(x + 2 * scale, y - 2 * scale);
-	coords.push([x + scale, y - 2 * scale]);
-	ctx.lineTo(x + scale, y - 2 * scale);
-	coords.push([x, y - scale]);
-	ctx.lineTo(x, y - scale);
+	coords.forEach(([x, y], i) => {
+		if (i) {ctx.lineTo(x, y);} else {ctx.moveTo(x, y);}
+	});
 	ctx.closePath();
+
 	if (fill) {
 		ctx.fill();
 	}
@@ -162,62 +182,18 @@ function drawBoard(
 		ctx.save();
 		ctx.fillStyle = ctx.strokeStyle;
 		ctx.textAlign = "center";
-		ctx.fillText(label, x + scale, y - scale, 2 * scale);
+		ctx.fillText(label, bx + scale, by - scale, 2 * scale);
 		ctx.restore();
 	}
 	return coords;
 }
 
 /**
- * Draw a single board cell, identified in machine coordinates. This is a
- * distorted hexagon.
- *
- * @param {CanvasRenderingContext2D} ctx
- *		The drawing context.
- * @param {number} rootX
- *		The canvas X coordinate of the bottom left of the machine.
- * @param {number} rootY
- *		The canvas Y coordinate of the bottom left of the machine.
- * @param {number} scale
- *		The fundamental length scale for the size of boards.
- * @param {BoardTriad} triadCoords
- *		Triad coordinates of the board to draw
- * @param {boolean} fill
- *		Whether to fill the cell or just draw the outline.
- * @param {(BoardTriad) => string} labeller
- *		Function to generate the label.
- * @returns {HexCoords}
- *		The coordinates of the vertices of the cell.
- */
-function drawTriadBoard(
-		ctx : CanvasRenderingContext2D,
-		rootX : number, rootY : number, scale : number,
-		triadCoords : BoardTriad,
-		fill : boolean = false,
-		labeller : (key: BoardTriad) => string = undefined) : HexCoords {
-	const [x, y, z] = triadCoords;
-	var bx : number = rootX + x * 3 * scale;
-	var by : number = rootY - y * 3 * scale;
-	if (z == 1) {
-		bx += 2 * scale;
-		by -= scale;
-	} else if (z == 2) {
-		bx += scale;
-		by -= 2 * scale;
-	}
-	var label : string = undefined;
-	if (labeller !== undefined) {
-		label = labeller(triadCoords);
-	}
-	return drawBoard(ctx, bx, by, scale, fill, label);
-}
-
-/**
  * Convert board triad coordinates into a key suitable for a Map.
  *
- * @param {BoardCoords} coords
+ * @param coords
  *		The coordinates.
- * @return {string}
+ * @return
  * 		The key string
  */
 function tuplekey(coords: BoardTriad) : string {
@@ -228,33 +204,34 @@ function tuplekey(coords: BoardTriad) : string {
 /**
  * Convert a list of board locators into a map using the triad coords as key.
  *
- * @param {CanvasRenderingContext2D} ctx
+ * @param ctx
  *		How to draw on the canvas.
- * @param {number} rootX
+ * @param rootX
  *		The root X coordinate for drawing.
- * @param {number} rootY
+ * @param rootY
  *		The root Y coordinate for drawing.
- * @param {number} scale
+ * @param scale
  *		The diagram basic scaling factor.
- * @param {number} width
+ * @param width
  *		The width of the diagram, in triads.
- * @param {number} height
+ * @param height
  *		The height of the diagram, in triads.
- * @param {number} depth
+ * @param depth
  *		The depth of the diagram (usually 1 or 3).
- * @param {string | ((key: BoardTriad) => string)} colourer
+ * @param colourer
  *		How to get a colour for a board.
- * @param {(key: BoardTriad) => string} labeller
+ * @param labeller
  *		How to get the label for a board.
- * @return {Map<string,[BoardTriad,HexCoords]>}
+ * @return
  *		Description of where each board was drawn.
  */
 function drawLayout(
-		ctx : CanvasRenderingContext2D,
-		rootX : number, rootY : number, scale : number,
-		width : number, height : number, depth : number = 3,
-		colourer : string | ((key: BoardTriad) => string) = undefined,
-		labeller : (key: BoardTriad) => string = undefined) : Map<string,[BoardTriad,HexCoords]> {
+		ctx: CanvasRenderingContext2D,
+		rootX: number, rootY: number, scale: number,
+		width: number, height: number, depth: number = 3,
+		colourer: string | ((key: BoardTriad) => string) = undefined,
+		labeller: (key: BoardTriad) => string = undefined) :
+			Map<string,[BoardTriad,HexCoords]> {
 	var tloc : Map<string,[BoardTriad,HexCoords]> = new Map();
 	for (var y : number = 0; y < height; y++) {
 		for (var x : number = 0; x < width; x++) {
@@ -276,19 +253,19 @@ function drawLayout(
 /**
  * Test if a point is inside a board.
  *
- * @param {number} x
+ * @param x
  *		Canvas X coordinate
- * @param {number} y
+ * @param y
  *		Canvas Y coordinate
- * @param {Map<string,[BoardTriad,HexCoords]>} tloc
+ * @param tloc
  *		Location mapping from `drawLayout()`
- * @return {BoardTriad}
+ * @return
  *		Which board the point is in, or `undefined` if none.
  */
 // https://stackoverflow.com/a/29915728/301832
 function inside(
-		x : number, y : number,
-		tloc : Map<string,[BoardTriad,HexCoords]>) : BoardTriad {
+		x: number, y: number,
+		tloc: Map<string,[BoardTriad,HexCoords]>) : BoardTriad {
     // ray-casting algorithm based on
     // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
 
@@ -316,9 +293,9 @@ function inside(
 /**
  * Convert a list of board locators into a map using the triad coords as key.
  *
- * @param {BoardLocator[]} boards
+ * @param boards
  *		The board information list.
- * @return {Map<string,BoardLocator>}
+ * @return
  *		Map from triad coords to full locators.
  */
 function boardMap(boards: readonly BoardLocator[]) : Map<string,BoardLocator> {
@@ -333,20 +310,44 @@ function boardMap(boards: readonly BoardLocator[]) : Map<string,BoardLocator> {
 /**
  * Convert a list of jobs into a map from board locators to .
  *
- * @param {BoardLocator[]} jobs
+ * @param jobs
  *		The job information list.
- * @return {[Map<string,number>, Map<number,MachineJobDescriptor>]}
- *		Map from triad coords to job IDs, and map from job ID to job information.
+ * @return
+ *		Map from triad coords to job IDs, map from job ID to job information,
+ *		and map from job ID to colour.
  */
 function mapOfJobs(jobs: readonly MachineJobDescriptor[]) :
 		[Map<string,number>, Map<number,MachineJobDescriptor>, Map<number,string>] {
 	const m : Map<string,number> = new Map();
 	const m2 : Map<number,MachineJobDescriptor> = new Map();
 	const colours : Map<number,string> = new Map();
+
+	/**
+	 * Compute a hash of a number. Messy because we want "close" numbers to go
+	 * to resulting values that are far apart.
+	 *
+	 * @param val
+	 *		The number to compute a hash of.
+	 * @return
+	 *		The hash code, in the range [0.0, 1.0)
+	 */
+	function hashcode(val: number) : number {
+		const str: string = `${ val }`.split("").reverse().join("");
+		var hash = 0;
+		if (str.length > 0) {
+			for (var i = 0; i < str.length; i++) {
+				// Code chosen to spread the bits low and high
+				hash = hash * 0xA5459 + str.charCodeAt(i);
+				hash = hash & hash; // Convert to 32bit integer
+			}
+		}
+		return (hash % 10000) / 10000.0;
+	};
+
 	for (const j of jobs) {
 		m2.set(j.id, j);
-		// TODO derive the hue from the job ID
-		colours.set(j.id, `hsl(${Math.floor(Math.random() * 360)}, 80%, 50%)`);
+		const h = hashcode(j.id);
+		colours.set(j.id, `hsl(${Math.floor(h * 360)}, 40%, 60%)`);
 		for (const b of j.boards) {
 			const {x:x, y:y, z:z} = b.triad;
 			m.set(tuplekey([x,y,z]), j.id);
@@ -358,19 +359,19 @@ function mapOfJobs(jobs: readonly MachineJobDescriptor[]) :
 /**
  * Shared part of the tooltip control code.
  *
- * @param {HTMLCanvasElement} canv
+ * @param canv
  *		The main canvas element.
- * @param {HTMLCanvasElement} tooltip
+ * @param tooltip
  *		The tooltip canvas element.
- * @param {CanvasRenderingContext2D} tooltipCtx
+ * @param tooltipCtx
  *		The drawing context for the tooltip.
- * @param {((t: BoardTriad) => HexCoords)} locmapper
+ * @param locmapper
  *		How to look up coordinates.
- * @param {number} scale
+ * @param scale
  *		General UI scaling factor.
- * @param {BoardTriad?} triad
+ * @param triad
  *		Which triad (if any) are we setting the tooltip for.
- * @param {string?} message
+ * @param message
  *		What message (if any) are we setting the tooltip to be. If omitted,
  *		we clear the tooltip. May be multiline.
  */
@@ -402,16 +403,16 @@ function setTooltipCore(
 /**
  * Set up a canvas to illustrate a machine's boards.
  *
- * @param {string} canvasId
+ * @param canvasId
  *		The name of the main canvas element.
- * @param {string} tooltipId
+ * @param tooltipId
  *		The name of the tooltip canvas element.
- * @param {MachineDescriptor} descriptor
+ * @param descriptor
  *		The information loaded about the machine.
  */
 function drawMachine(
-		canvasId : string, tooltipId : string,
-		descriptor : MachineDescriptor) {
+		canvasId: string, tooltipId: string,
+		descriptor: MachineDescriptor) {
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
 	const rect = canv.getBoundingClientRect();
 	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
@@ -456,9 +457,9 @@ function drawMachine(
 	/**
 	 * Get the canvas coordinates of a board's hexagon. Wrapper around `tloc`.
 	 *
-	 * @param {BoardTriad} triad
+	 * @param triad
 	 *		The logical coordinates of the board.
-	 * @return {HexCoords}
+	 * @return
 	 *		The hex coordinates, or `undefined` if the board isn't known.
 	 */
 	function location(triad: BoardTriad) : HexCoords {
@@ -469,10 +470,10 @@ function drawMachine(
 	/**
 	 * Set or clear a tooltip.
 	 *
-	 * @param {BoardTriad?} triad
+	 * @param triad
 	 *		The logical coordinates of the board.
 	 *		Clear the tooltip if `undefined`.
-	 * @param {string?} message
+	 * @param message
 	 *		The tooltip message. Clear the tooltip if `undefined`.
 	 */
 	function setTooltip(triad?: BoardTriad, message?: string) {
@@ -482,9 +483,9 @@ function drawMachine(
 	/**
 	 * Get the detailed description of a board.
 	 *
-	 * @param {BoardTriad} triad
+	 * @param triad
 	 *		Which board to describe.
-	 * @return {string}
+	 * @return
 	 *		The multiline description of the board.
 	 */
 	function triadDescription(triad: BoardTriad) : string {
@@ -570,16 +571,16 @@ function drawMachine(
 
 /**
  * Set up a canvas to illustrate a job's allocation.
- * @param {string} canvasId
+ * @param canvasId
  *		The name of the main canvas element.
- * @param {string} tooltipId
+ * @param tooltipId
  *		The name of the tooltip canvas element.
- * @param {JobDescriptor} descriptor
+ * @param descriptor
  *		The information loaded about the job.
  */
 function drawJob(
-		canvasId : string, tooltipId : string,
-		descriptor : JobDescriptor) {
+		canvasId: string, tooltipId: string,
+		descriptor: JobDescriptor) {
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
 	const rect = canv.getBoundingClientRect();
 	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
@@ -614,9 +615,9 @@ function drawJob(
 	/**
 	 * Get the canvas coordinates of a board's hexagon. Wrapper around `tloc`.
 	 *
-	 * @param {BoardTriad} triad
+	 * @param triad
 	 *		The logical coordinates of the board.
-	 * @return {HexCoords}
+	 * @return
 	 *		The hex coordinates, or `undefined` if the board isn't known.
 	 */
 	function location(triad: BoardTriad) : HexCoords {
@@ -627,9 +628,9 @@ function drawJob(
 	/**
 	 * Get the basic board location description. Wrapper around `allocated`.
 	 *
-	 * @param {BoardTriad} triad
+	 * @param triad
 	 *		Which board to describe.
-	 * @return {BoardLocator | undefined}
+	 * @return
 	 *		The machine description of the board, or `undefined` if no board.
 	 */
 	function Board(triad: BoardTriad) : BoardLocator | undefined {
@@ -645,10 +646,10 @@ function drawJob(
 	/**
 	 * Set or clear a tooltip.
 	 *
-	 * @param {BoardTriad?} triad
+	 * @param triad
 	 *		The logical coordinates of the board.
 	 *		Clear the tooltip if `undefined`.
-	 * @param {string?} message
+	 * @param message
 	 *		The tooltip message. Clear the tooltip if `undefined`.
 	 */
 	function setTooltip(triad?: BoardTriad, message?: string) {
@@ -659,9 +660,9 @@ function drawJob(
 	/**
 	 * Get the detailed description of a board.
 	 *
-	 * @param {BoardTriad} triad
+	 * @param triad
 	 *		Which board to describe.
-	 * @return {string | undefined}
+	 * @return
 	 *		The multiline description of the board.
 	 */
 	function triadDescription(triad: BoardTriad) : string | undefined {
