@@ -656,7 +656,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			int machineId, TriadCoords root) {
 		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
-		// TODO Use RETURNING to combine getConnectedBoardIDs and allocBoard
 		List<Integer> boardsToAllocate = sql.getConnectedBoardIDs
 				.call(machineId, root.x, root.y, root.z, rect.width,
 						rect.height, rect.depth)
@@ -725,7 +724,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			// TODO Combine getPerimeter and issuePowerChange
 			Map<Integer, EnumSet<Direction>> perimeterLinks = new HashMap<>();
 			for (Row row : sql.getPerimeter.call(jobId)) {
 				perimeterLinks
