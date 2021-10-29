@@ -28,6 +28,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -36,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -347,7 +350,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Component
 	static class MyAuthenticationFailureHandler
 			implements AuthenticationFailureHandler {
-		@Autowired private AuthProperties properties;
+		@Autowired
+		private AuthProperties properties;
 
 		@Autowired
 		private JsonMapper mapper;
@@ -607,77 +611,81 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 
 		/**
-		 * Mark the current thread as having permission to access objects. Used
-		 * to elevate the capabilities of an asynchronous worker thread.
+		 * Push our special temporary authentication object for the duration of
+		 * the inner code. Used to satisfy Spring method security.
 		 *
-		 * @return A handle that will de-authorize the thread when closed.
+		 * @param <T>
+		 *            The type of the result
+		 * @param inContext
+		 *            The inner code to run with an authentication object
+		 *            applied.
+		 * @return Whatever the inner code returns
 		 */
-		public QuietCloseable authorizeCurrentThread() {
-			SecurityContext c = SecurityContextHolder.getContext();
-			c.setAuthentication(new TempAuth());
-			return () -> {
-				c.setAuthentication(null);
-			};
-		}
+		public <T> T authorize(Supplier<T> inContext) {
+			/**
+			 * A temporarily-installable authentication token. Allows access to
+			 * secured APIs in asynchronous worker threads, provided they
+			 * provide a {@link Permit} (obtained from a service thread) to show
+			 * that they may do so.
+			 */
+			@SuppressWarnings("serial")
+			class TempAuth implements Authentication {
+				// The permit already proves we're authenticated
+				private boolean auth = true;
 
-		/**
-		 * An auto-closeable that guarantees that it doesn't throw when closed.
-		 */
-		public interface QuietCloseable extends AutoCloseable {
-			@Override
-			void close();
-		}
-
-		/**
-		 * A temporarily-installable authentication token. Allows access to
-		 * secured APIs in asynchronous worker threads, provided they provide a
-		 * {@link Permit} (obtained from a service thread) to show that they may
-		 * do so.
-		 *
-		 */
-		@SuppressWarnings("serial")
-		private final class TempAuth implements Authentication {
-			// The permit already proves we're authenticated
-			private boolean auth = true;
-
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			public Collection<? extends GrantedAuthority> getAuthorities() {
-				return authorities.stream().map(SimpleGrantedAuthority::new)
-						.collect(toList());
-			}
-
-			@Override
-			public Object getCredentials() {
-				// You can never get the credentials from this
-				return null;
-			}
-
-			@Override
-			public Permit getDetails() {
-				return Permit.this;
-			}
-
-			@Override
-			public String getPrincipal() {
-				return name;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return auth;
-			}
-
-			@Override
-			public void setAuthenticated(boolean isAuthenticated)
-					throws IllegalArgumentException {
-				if (!isAuthenticated) {
-					auth = false;
+				@Override
+				public String getName() {
+					return name;
 				}
+
+				@Override
+				public Collection<? extends GrantedAuthority> getAuthorities() {
+					return authorities.stream().map(SimpleGrantedAuthority::new)
+							.collect(toList());
+				}
+
+				@Override
+				public Object getCredentials() {
+					// You can never get the credentials from this
+					return null;
+				}
+
+				@Override
+				public Permit getDetails() {
+					return Permit.this;
+				}
+
+				@Override
+				public String getPrincipal() {
+					return name;
+				}
+
+				@Override
+				public boolean isAuthenticated() {
+					return auth;
+				}
+
+				@Override
+				public void setAuthenticated(boolean isAuthenticated) {
+					if (!isAuthenticated) {
+						auth = false;
+					}
+				}
+
+				private void writeObject(ObjectOutputStream out)
+						throws NotSerializableException {
+					throw new NotSerializableException(
+							"not actually serializable");
+				}
+			}
+
+			SecurityContext c = SecurityContextHolder.getContext();
+			Authentication old = c.getAuthentication();
+			c.setAuthentication(new TempAuth());
+			try {
+				return inContext.get();
+			} finally {
+				c.setAuthentication(old);
 			}
 		}
 	}

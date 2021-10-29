@@ -23,14 +23,13 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
+import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.net.Socket;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -50,16 +49,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -91,6 +85,8 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 @Component
 @Scope(SCOPE_PROTOTYPE)
 class V1TaskImpl extends V1CompatTask {
+	private static final double NS_PER_S = 1e9;
+
 	private static final int ONE_MINUTE = 60;
 
 	private static final int LOTS = 10000;
@@ -127,10 +123,8 @@ class V1TaskImpl extends V1CompatTask {
 	@Autowired
 	private DatabaseEngine db;
 
-	private String serviceUser;
-
 	/** Encoded form of our special permissions token. */
-	private Permit serviceUserPermit;
+	private Permit permit;
 
 	V1TaskImpl(V1CompatService srv, Socket sock) throws IOException {
 		super(srv, sock);
@@ -138,9 +132,7 @@ class V1TaskImpl extends V1CompatTask {
 
 	@PostConstruct
 	void initUser() {
-		CompatibilityProperties props = mainProps.getCompat();
-		serviceUser = props.getServiceUser();
-		serviceUserPermit = new Permit(props.getServiceUser());
+		permit = new Permit(mainProps.getCompat().getServiceUser());
 	}
 
 	@Override
@@ -168,12 +160,9 @@ class V1TaskImpl extends V1CompatTask {
 		JobMachineInfo jmi = new JobMachineInfo();
 		jmi.setMachineName(machine.getMachine().getName());
 		jmi.setBoards(machine.getBoards());
-		jmi.setConnections(machine.getConnections().stream().map(ci -> {
-			Connection c = new Connection();
-			c.setChip(ci.getChip());
-			c.setHostname(ci.getHostname());
-			return c;
-		}).collect(toList()));
+		jmi.setConnections(machine.getConnections().stream()
+				.map(ci -> new Connection(ci.getChip(), ci.getHostname()))
+				.collect(toList()));
 		jmi.setWidth(job.getWidth().orElse(0));
 		jmi.setHeight(job.getHeight().orElse(0));
 		return jmi;
@@ -205,12 +194,42 @@ class V1TaskImpl extends V1CompatTask {
 		getJob(jobId).access(host());
 	}
 
-	private List<String> tags(Object src, boolean mayForceDefault) {
+	/**
+	 * Parse a value to get a keepalive duration.
+	 *
+	 * @param keepalive
+	 *            The number to parse. May be {@code null} to get a default.
+	 * @return The duration. Never {@code null}.
+	 */
+	private static Duration parseKeepalive(Number keepalive) {
+		if (isNull(keepalive)) {
+			return DEFAULT_KEEPALIVE;
+		}
+		Duration d = Duration.ofSeconds(keepalive.longValue());
+		if (!(keepalive instanceof Double || keepalive instanceof Float)) {
+			return d;
+		}
+		double fractionalPart = keepalive.doubleValue() - keepalive.longValue();
+		return d.plusNanos((long) (fractionalPart * NS_PER_S));
+	}
+
+	/**
+	 * Parse a value to get a list of machine tags to match.
+	 *
+	 * @param src
+	 *            The value to parse.
+	 * @param mayForceDefault
+	 *            Whether we want to force a default value into the tags.
+	 * @return The list of tags. Never {@code null}.
+	 */
+	private static List<String> tags(Object src, boolean mayForceDefault) {
 		List<String> vals = new ArrayList<>();
 		if (src instanceof List) {
 			for (Object o : (List<?>) src) {
 				vals.add(Objects.toString(o));
 			}
+		} else if (src instanceof String) {
+			vals.add((String) src);
 		}
 		if (vals.isEmpty() && mayForceDefault) {
 			vals = asList("default");
@@ -221,35 +240,35 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final Integer createJobNumBoards(int numBoards,
 			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(new CreateNumBoards(numBoards), kwargs, cmd);
+		return createJob(new CreateNumBoards(numBoards), kwargs, cmd)
+				.orElse(null);
 	}
 
 	@Override
 	protected final Integer createJobRectangle(int width, int height,
 			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(new CreateDimensions(width, height), kwargs, cmd);
+		return createJob(new CreateDimensions(width, height), kwargs, cmd)
+				.orElse(null);
 	}
 
 	@Override
 	protected final Integer createJobSpecificBoard(TriadCoords coords,
 			Map<String, Object> kwargs, byte[] cmd) {
 		return createJob(CreateBoard.triad(coords.x, coords.y, coords.z),
-				kwargs, cmd);
+				kwargs, cmd).orElse(null);
 	}
 
-	private Integer createJob(SpallocAPI.CreateDescriptor create,
+	private Optional<Integer> createJob(SpallocAPI.CreateDescriptor create,
 			Map<String, Object> kwargs, byte[] cmd) {
-		Integer maxDead = (Integer) kwargs.get("max_dead_boards");
-		Number keepalive = (Number) kwargs.get("keepalive");
+		Integer maxDead = parseDec(kwargs.get("max_dead_boards"));
+		Duration keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
 		String machineName = (String) kwargs.get("machine");
-		List<String> ts = tags(kwargs.get("tags"), machineName == null);
-		return inAuthenticatedContext(() -> {
-			Job job = spalloc.createJob(serviceUser, create, machineName, ts,
-					isNull(keepalive) ? DEFAULT_KEEPALIVE
-							: Duration.ofSeconds(keepalive.intValue()),
-					maxDead, cmd);
-			return job.getId();
-		});
+		List<String> ts = tags(kwargs.get("tags"), isNull(machineName));
+
+		return permit
+				.authorize(() -> spalloc.createJob(permit.name, create,
+						machineName, ts, keepalive, maxDead, cmd))
+				.map(Job::getId);
 	}
 
 	@Override
@@ -280,10 +299,11 @@ class V1TaskImpl extends V1CompatTask {
 	protected final JobDescription[] listJobs() {
 		// Messy; hits the database many times
 		return mapArrayTx(
-				() -> inAuthenticatedContext(
+				() -> permit.authorize(
 						() -> spalloc.getJobs(false, LOTS, 0).jobs()),
 				JobDescription.class, (job, jd) -> {
 					jd.setJobID(job.getId());
+					jd.setOwner(job.getOwner().orElse(""));
 					jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
 					jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
 					jd.setReason(job.getReason().orElse(""));
@@ -311,8 +331,7 @@ class V1TaskImpl extends V1CompatTask {
 	protected final Machine[] listMachines() {
 		// Messy; hits the database many times
 		return mapArrayTx(
-				() -> inAuthenticatedContext(
-						() -> spalloc.getMachines().values()),
+				() -> permit.authorize(() -> spalloc.getMachines().values()),
 				Machine.class, (m, md) -> {
 					md.setName(m.getName());
 					md.setTags(new ArrayList<>(m.getTags()));
@@ -333,7 +352,7 @@ class V1TaskImpl extends V1CompatTask {
 			job.access(host());
 		}
 		manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-			List<Integer> actual = inAuthenticatedContext(() -> {
+			List<Integer> actual = permit.authorize(() -> {
 				spalloc.getJobs(false, LOTS, 0)
 						.waitForChange(NOTIFIER_WAIT_TIME);
 				return spalloc.getJobs(false, LOTS, 0).ids();
@@ -355,8 +374,7 @@ class V1TaskImpl extends V1CompatTask {
 		manageNotifier(machNotifiers, machine, wantNotify, () -> {
 			epochs.getMachineEpoch().waitForChange(NOTIFIER_WAIT_TIME);
 			List<String> actual = new ArrayList<>(
-					inAuthenticatedContext(() -> spalloc.getMachines())
-							.keySet());
+					permit.authorize(() -> spalloc.getMachines()).keySet());
 			if (nonNull(machine)) {
 				actual.retainAll(singleton(machine));
 			}
@@ -444,14 +462,13 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	private Job getJob(int jobId) throws TaskException {
-		return inAuthenticatedContext(
-				() -> spalloc.getJob(serviceUserPermit, jobId))
-						.orElseThrow(() -> new TaskException("no such job"));
+		return permit.authorize(() -> spalloc.getJob(permit, jobId))
+				.orElseThrow(() -> new TaskException("no such job"));
 	}
 
 	private SpallocAPI.Machine getMachine(String machineName)
 			throws TaskException {
-		return inAuthenticatedContext(() -> spalloc.getMachine(machineName))
+		return permit.authorize(() -> spalloc.getMachine(machineName))
 				.orElseThrow(() -> new TaskException("no such machine"));
 	}
 
@@ -478,88 +495,5 @@ class V1TaskImpl extends V1CompatTask {
 				return null;
 			}
 		});
-	}
-
-	/**
-	 * Used to protect access to the spalloc core service.
-	 *
-	 * @param <T>
-	 *            The type of the result of the action.
-	 * @author Donal Fellows
-	 */
-	@FunctionalInterface
-	private interface InContext<T> {
-		/**
-		 * Perform the action.
-		 *
-		 * @return The result of the action.
-		 */
-		T act();
-	}
-
-	/**
-	 * Push our special authentication object for the duration of the inner
-	 * code. Used to satisfy Spring method security.
-	 *
-	 * @param <T>
-	 *            The type of the result
-	 * @param inContext
-	 *            The inner code to run with an authentication object applied.
-	 * @return Whatever the inner code returns
-	 */
-	private <T> T inAuthenticatedContext(InContext<T> inContext) {
-		@SuppressWarnings("serial")
-		final class TempAuth implements Authentication {
-			@Override
-			public String getName() {
-				return serviceUser;
-			}
-
-			@Override
-			public Collection<? extends GrantedAuthority> getAuthorities() {
-				return asList(() -> USER.name());
-			}
-
-			@Override
-			public Object getCredentials() {
-				// Never any credentials; always authenticated if this is in use
-				return null;
-			}
-
-			@Override
-			public Object getDetails() {
-				return serviceUserPermit;
-			}
-
-			@Override
-			public Object getPrincipal() {
-				return serviceUserPermit;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				// Never any credentials; always authenticated if this is in use
-				return true;
-			}
-
-			@Override
-			public void setAuthenticated(boolean isAuthenticated) {
-				throw new UnsupportedOperationException();
-			}
-
-			private void writeObject(java.io.ObjectOutputStream out)
-					throws NotSerializableException {
-				throw new NotSerializableException("not actually serializable");
-			}
-		}
-
-		SecurityContext context = SecurityContextHolder.getContext();
-		Authentication old = context.getAuthentication();
-		try {
-			context.setAuthentication(new TempAuth());
-			return inContext.act();
-		} finally {
-			context.setAuthentication(old);
-		}
 	}
 }

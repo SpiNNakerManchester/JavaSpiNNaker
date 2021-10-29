@@ -77,6 +77,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.Ping;
 
 /**
@@ -539,19 +540,21 @@ public class BMPController extends SQLQueries {
 	private void takeRequestsForJob(Machine machine, Integer jobId,
 			TakeReqsSQL sql, List<Request> requestCollector) {
 		List<Integer> changeIds = new ArrayList<>();
-		Map<BMPCoords, List<Integer>> boardsOn = new HashMap<>();
-		Map<BMPCoords, List<Integer>> boardsOff = new HashMap<>();
-		Map<BMPCoords, List<Link>> linksOff = new HashMap<>();
+		Map<BMPCoords, List<Integer>> boardsOn =
+				new DefaultMap<>(ArrayList::new);
+		Map<BMPCoords, List<Integer>> boardsOff =
+				new DefaultMap<>(ArrayList::new);
+		Map<BMPCoords, List<Link>> linksOff = new DefaultMap<>(ArrayList::new);
 		JobState from = UNKNOWN, to = UNKNOWN;
-		Map<BMPCoords, Map<Integer, Integer>> idToBoard = new HashMap<>();
+		Map<BMPCoords, Map<Integer, Integer>> idToBoard =
+				new DefaultMap<>(HashMap::new);
 
 		for (Row row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
 			BMPCoords bmp =
 					new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
 			Integer board = row.getInteger("board_id");
-			idToBoard.computeIfAbsent(bmp, ignored -> new HashMap<>())
-					.put(board, row.getInteger("board_num"));
+			idToBoard.get(bmp).put(board, row.getInteger("board_num"));
 			boolean switchOn = row.getBoolean("power");
 			/*
 			 * Set these multiple times; we don't care as they should be the
@@ -560,22 +563,17 @@ public class BMPController extends SQLQueries {
 			from = row.getEnum("from_state", JobState.class);
 			to = row.getEnum("to_state", JobState.class);
 			if (switchOn) {
-				boardsOn.computeIfAbsent(bmp, ignored -> new ArrayList<>())
-						.add(board);
+				boardsOn.get(bmp).add(board);
 				/*
 				 * Decode a collection of boolean columns to say which links to
 				 * switch back off
 				 */
 				asList(Direction.values()).stream()
 						.filter(link -> !row.getBoolean(link.columnName))
-						.map(link -> new Link(board, link))
-						.forEach(link -> linksOff
-								.computeIfAbsent(bmp,
-										ignored -> new ArrayList<>())
-								.add(link));
+						.forEach(link -> linksOff.get(bmp)
+								.add(new Link(board, link)));
 			} else {
-				boardsOff.computeIfAbsent(bmp, ignored -> new ArrayList<>())
-						.add(board);
+				boardsOff.get(bmp).add(board);
 			}
 		}
 
@@ -673,14 +671,9 @@ public class BMPController extends SQLQueries {
 	private WorkerState getWorkerState(Machine machine)
 			throws InterruptedException {
 		synchronized (state) {
-			WorkerState ws = state.get(machine);
-			if (isNull(ws)) {
-				ws = new WorkerState(machine);
-				state.put(machine, ws);
-			}
+			WorkerState ws = state.computeIfAbsent(machine, WorkerState::new);
 			if (isNull(ws.workerThread)) {
-				WorkerState ws2 = ws;
-				executor.execute(() -> backgroundThread(ws2));
+				executor.execute(() -> backgroundThread(ws));
 				while (isNull(ws.workerThread)) {
 					state.wait();
 				}
@@ -695,16 +688,22 @@ public class BMPController extends SQLQueries {
 	/** The state of worker threads that can be seen outside the thread. */
 	private class WorkerState {
 		/** What machine is the worker handling? */
-		final Machine machine;
+		private final Machine machine;
 
 		/** Queue of requests to the machine to carry out. */
-		final Queue<Request> requests = new ConcurrentLinkedDeque<>();
+		private final Queue<Request> requests = new ConcurrentLinkedDeque<>();
 
-		/** Whether there are any requests pending. */
-		boolean requestsPending = false;
+		/**
+		 * Whether there are any requests pending. Protected by a lock on the
+		 * {@link BMPController} object.
+		 */
+		private boolean requestsPending = false;
 
-		/** What thread is serving as the worker? */
-		Thread workerThread;
+		/**
+		 * What thread is serving as the worker? Protected by a lock on the
+		 * {@link BMPController#state} object.
+		 */
+		private Thread workerThread;
 
 		WorkerState(Machine machine) {
 			this.machine = machine;

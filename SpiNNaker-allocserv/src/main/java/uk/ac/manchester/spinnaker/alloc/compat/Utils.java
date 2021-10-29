@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.interrupted;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -109,8 +110,10 @@ abstract class Utils {
 	 * @throws IllegalArgumentException
 	 *             If the object can't be converted to a number.
 	 */
-	static int parseDec(Object value) {
-		if (value instanceof Integer) {
+	static Integer parseDec(Object value) {
+		if (isNull(value)) {
+			return null;
+		} else if (value instanceof Integer) {
 			return (Integer) value;
 		} else if (value instanceof Number) {
 			return ((Number) value).intValue();
@@ -120,6 +123,42 @@ abstract class Utils {
 			throw new IllegalArgumentException(
 					"needed a number, got a " + value.getClass().getName());
 		}
+	}
+
+	/**
+	 * Get an argument from an argument list.
+	 *
+	 * @param args
+	 *            The list containing the value.
+	 * @param index
+	 *            The index into the list.
+	 * @return The value.
+	 * @throws Oops
+	 *             If the list doesn't have a value at that index.
+	 */
+	static Object getArgument(List<Object> args, int index) {
+		if (isNull(args) || index < 0 || index >= args.size()) {
+			throw new Oops("missing argument at index " + index);
+		}
+		return args.get(index);
+	}
+
+	/**
+	 * Get an argument from an argument map.
+	 *
+	 * @param kwargs
+	 *            The map containing the value.
+	 * @param index
+	 *            The key into the map.
+	 * @return The value.
+	 * @throws Oops
+	 *             If the map doesn't have a value with that key.
+	 */
+	static Object getArgument(Map<String, Object> kwargs, String index) {
+		if (isNull(kwargs) || !kwargs.containsKey(index)) {
+			throw new Oops("missing keyword argument: " + index);
+		}
+		return kwargs.get(index);
 	}
 
 	/**
@@ -133,7 +172,7 @@ abstract class Utils {
 	 * @return The decimal value.
 	 */
 	static int parseDec(List<Object> args, int index) {
-		return parseDec(args.get(index));
+		return parseDec(getArgument(args, index));
 	}
 
 	/**
@@ -147,7 +186,7 @@ abstract class Utils {
 	 * @return The decimal value.
 	 */
 	static int parseDec(Map<String, Object> kwargs, String index) {
-		return parseDec(kwargs.get(index));
+		return parseDec(getArgument(kwargs, index));
 	}
 
 	/**

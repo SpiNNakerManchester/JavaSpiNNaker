@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit.QuietCloseable;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 
 /**
@@ -96,11 +95,10 @@ public abstract class BackgroundSupport {
 	 */
 	protected void bgAction(AsyncResponse response, Permit permit,
 			BackgroundAction action) {
-		executor.execute(() -> {
-			try (QuietCloseable t = permit.authorizeCurrentThread()) {
-				fgAction(response, action);
-			}
-		});
+		executor.execute(() -> permit.authorize(() -> {
+			fgAction(response, action);
+			return this; // dummy value
+		}));
 	}
 
 	/**

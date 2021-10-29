@@ -90,6 +90,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private static final Logger log = getLogger(Spalloc.class);
 
+	private static final int TRIAD_SIZE = 3;
+
 	@Autowired
 	private DatabaseEngine db;
 
@@ -244,11 +246,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			JobCollection jc = new JobCollection(epochs.getJobsEpoch());
 			if (deleted) {
 				try (Query jobs = conn.query(GET_JOB_IDS)) {
-					jc.addJobs(jobs.call(limit, start));
+					jc.setJobs(jobs.call(limit, start));
 				}
 			} else {
 				try (Query jobs = conn.query(GET_LIVE_JOB_IDS)) {
-					jc.addJobs(jobs.call(limit, start));
+					jc.setJobs(jobs.call(limit, start));
 				}
 			}
 			return jc;
@@ -346,7 +348,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public Job createJob(String owner, CreateDescriptor descriptor,
+	public Optional<Job> createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards, byte[] req) {
 		return db.execute(conn -> {
@@ -355,23 +357,23 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			Optional<MachineImpl> mach = selectMachine(conn, machineName, tags);
 			if (!mach.isPresent()) {
 				// Cannot find machine!
-				return null;
+				return Optional.empty();
 			}
 			MachineImpl m = mach.get();
 			if (!quotaManager.mayCreateJob(m.id, owner)) {
 				// No quota left
-				return null;
+				return Optional.empty();
 			}
 			int id = insertJob(conn, m, user, keepaliveInterval, req);
 			if (id < 0) {
 				// Insert failed
-				return null;
+				return Optional.empty();
 			}
 			epochs.nextJobsEpoch();
 
 			// Ask the allocator engine to do the allocation
 			insertRequest(conn, m, id, descriptor, maxDeadBoards);
-			return getJob(id, conn).orElse(null);
+			return getJob(id, conn).map(ji -> (Job) ji);
 		});
 	}
 
@@ -380,8 +382,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return getUser.call1(userName).map(row -> row.getInt("user_id"));
 		}
 	}
-
-	private static final int TRIAD_SIZE = 3;
 
 	private void insertRequest(Connection conn, MachineImpl machine, int id,
 			CreateDescriptor descriptor, Integer numDeadBoards) {
@@ -477,7 +477,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		return Optional.empty();
 	}
 
-	/** Purge the cache of what boards are down. */
+	@Override
 	public void purgeDownCache() {
 		synchronized (this) {
 			downBoardsCache.clear();
@@ -732,7 +732,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return jobs.stream().map(Job::getId).collect(toList());
 		}
 
-		void addJobs(MappableIterable<Row> rows) {
+		private void setJobs(MappableIterable<Row> rows) {
 			jobs = rows.map(this::makeJob).toList();
 		}
 

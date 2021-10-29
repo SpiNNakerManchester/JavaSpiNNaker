@@ -155,11 +155,14 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job.
+	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
 	 */
-	Job createJob(String owner, CreateDescriptor descriptor, String machineName,
-			List<String> tags, Duration keepaliveInterval,
+	Optional<Job> createJob(String owner, CreateDescriptor descriptor,
+			String machineName, List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards, byte[] originalRequest);
+
+	/** Purge the cache of what boards are down. */
+	void purgeDownCache();
 
 	/**
 	 * Describes what sort of request to create a job this is.

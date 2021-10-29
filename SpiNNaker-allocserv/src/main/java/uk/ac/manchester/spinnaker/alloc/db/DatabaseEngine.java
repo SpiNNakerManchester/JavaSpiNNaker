@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -1478,7 +1479,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				@Override
 				public Row next() {
 					if (finished) {
-						return null;
+						throw new NoSuchElementException();
 					}
 					consumed = true;
 					return row;
@@ -1575,6 +1576,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				private boolean finished = false;
 				private int rowCount = 0;
 				private boolean consumed = true;
+				private Integer key = null;
 
 				@Override
 				public boolean hasNext() {
@@ -1588,7 +1590,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					try {
 						result = rs.next();
 						rowCount++;
+						if (result) {
+							key = (Integer) rs.getObject(1);
+						}
 					} catch (SQLException e) {
+						result = false;
 					} finally {
 						if (!result) {
 							finished = true;
@@ -1604,18 +1610,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				@Override
 				public Integer next() {
 					if (finished) {
-						return null;
+						throw new NoSuchElementException();
 					}
-					try {
-						// Assume that keys fit in 31 bits
-						return (Integer) rs.getObject(1);
-					} catch (SQLException e) {
-						closeResults();
-						finished = true;
-						return null;
-					} finally {
-						consumed = true;
-					}
+					consumed = true;
+					return key;
 				}
 			};
 		}
