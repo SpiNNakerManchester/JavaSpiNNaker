@@ -545,7 +545,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByGlobalChip)) {
 				return conn.transaction(() -> findBoard.call1(id, x, y)
-						.map(row -> new BoardLocationImpl(row, id)));
+						.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -556,7 +556,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					Query findBoard = conn.query(findBoardByPhysicalCoords)) {
 				return conn.transaction(
 						() -> findBoard.call1(id, cabinet, frame, board)
-								.map(row -> new BoardLocationImpl(row, id)));
+								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -566,7 +566,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByLogicalCoords)) {
 				return conn.transaction(() -> findBoard.call1(id, x, y, z)
-						.map(row -> new BoardLocationImpl(row, id)));
+						.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -575,7 +575,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByIPAddress)) {
 				return conn.transaction(() -> findBoard.call1(id, address)
-						.map(row -> new BoardLocationImpl(row, id)));
+						.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -925,7 +925,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByJobChip)) {
 				return conn.transaction(() -> findBoard.call1(id, root, x, y)
-						.map(row -> new BoardLocationImpl(row, machineId)));
+						.map(row -> new BoardLocationImpl(row, Spalloc.this
+								.getMachine(machineId, conn).get())));
 			}
 		}
 
@@ -1366,7 +1367,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	private final class BoardLocationImpl implements BoardLocation {
 		private JobImpl job;
 
-		private final String machine;
+		private final String machineName;
+
+		private final int machineWidth;
+
+		private final int machineHeight;
 
 		private final ChipLocation chip;
 
@@ -1377,13 +1382,15 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private final BoardPhysicalCoordinates physical;
 
 		// Transaction is open
-		private BoardLocationImpl(Row row, int machineId) {
-			machine = row.getString("machine_name");
+		private BoardLocationImpl(Row row, Machine machine) {
+			machineName = row.getString("machine_name");
 			logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"),
 					row.getInt("z"));
 			physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
 					row.getInt("frame"), row.getInteger("board_num"));
 			chip = new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
+			machineWidth = machine.getWidth();
+			machineHeight = machine.getHeight();
 			Integer boardX = row.getInteger("board_chip_x");
 			if (nonNull(boardX)) {
 				boardChip =
@@ -1395,7 +1402,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			Integer jobId = row.getInteger("job_id");
 			if (nonNull(jobId)) {
 				// No epoch; can't wait on this
-				job = new JobImpl(null, jobId, machineId);
+				job = new JobImpl(null, jobId, machine.getId());
 				job.chipRoot = new ChipLocation(row.getInt("job_root_chip_x"),
 						row.getInt("job_root_chip_y"));
 			}
@@ -1408,13 +1415,20 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public ChipLocation getChipRelativeTo(ChipLocation rootChip) {
-			return new ChipLocation(chip.getX() - rootChip.getX(),
-					chip.getY() - rootChip.getY());
+			int x = chip.getX() - rootChip.getX();
+			if (x < 0) {
+				x += machineWidth;
+			}
+			int y = chip.getY() - rootChip.getY();
+			if (y < 0) {
+				y += machineHeight;
+			}
+			return new ChipLocation(x, y);
 		}
 
 		@Override
 		public String getMachine() {
-			return machine;
+			return machineName;
 		}
 
 		@Override

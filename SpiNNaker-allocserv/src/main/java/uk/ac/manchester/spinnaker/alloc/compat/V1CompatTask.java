@@ -120,7 +120,7 @@ public abstract class V1CompatTask {
 	}
 
 	final void handleConnection() {
-		log.info("waiting for commands from {}", sock);
+		log.debug("waiting for commands from {}", sock);
 		try {
 			while (!interrupted()) {
 				if (!communicate()) {
@@ -132,7 +132,7 @@ public abstract class V1CompatTask {
 		} catch (InterruptedException e) {
 			// ignored
 		} finally {
-			log.info("closing down connection from {}", sock);
+			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
 			try {
 				sock.close();
