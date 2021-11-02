@@ -1365,6 +1365,9 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	private final class BoardLocationImpl implements BoardLocation {
+		/** The width and height of a triad, in chips. */
+		private static final int TRIAD_DIMENSION_FACTOR = 12;
+
 		private JobImpl job;
 
 		private final String machineName;
@@ -1417,11 +1420,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		public ChipLocation getChipRelativeTo(ChipLocation rootChip) {
 			int x = chip.getX() - rootChip.getX();
 			if (x < 0) {
-				x += machineWidth;
+				x += machineWidth * TRIAD_DIMENSION_FACTOR;
 			}
 			int y = chip.getY() - rootChip.getY();
 			if (y < 0) {
-				y += machineHeight;
+				y += machineHeight * TRIAD_DIMENSION_FACTOR;
 			}
 			return new ChipLocation(x, y);
 		}
