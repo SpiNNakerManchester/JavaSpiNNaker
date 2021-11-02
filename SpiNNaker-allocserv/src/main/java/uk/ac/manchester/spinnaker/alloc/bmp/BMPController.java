@@ -447,7 +447,11 @@ public class BMPController extends SQLQueries {
 				// Don't bother with pings when the dummy is enabled
 				return;
 			}
-			log.info("verifying network access to {} boards for job {}",
+			if (powerOnAddresses.isEmpty()) {
+				// Nothing to do
+				return;
+			}
+			log.debug("verifying network access to {} boards for job {}",
 					powerOnAddresses.size(), jobId);
 			powerOnAddresses.parallelStream().forEach(address -> {
 				if (Ping.ping(address) != 0) {

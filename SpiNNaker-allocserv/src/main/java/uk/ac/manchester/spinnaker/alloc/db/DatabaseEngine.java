@@ -760,8 +760,60 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
 	public final class Connection extends UncheckedConnection {
+		// If there's no transaction, we can't roll it back
+		private static final String NO_TRANSACTION_MSG =
+				"cannot rollback - no transaction is active";
+
+		/** Number of times to try to start a transaction. */
+		private static final int TRIES = 5;
+
+		private boolean inTransaction;
+
 		private Connection(java.sql.Connection c) {
 			super(c);
+			inTransaction = false;
+		}
+
+		/**
+		 * Start a transaction, trying multiple times if the database is busy.
+		 *
+		 * @throws DataAccessException
+		 *             If we can't start the transaction.
+		 */
+		private void begin() throws DataAccessException {
+			for (int i = 0; true; i++) {
+				try {
+					setAutoCommit(false);
+					return;
+				} catch (DataAccessException e) {
+					if (i >= TRIES || !(e.getCause() instanceof SQLiteException)
+							|| ((SQLiteException) e.getCause())
+									.getResultCode() != SQLITE_BUSY) {
+						throw e;
+					}
+				}
+				if (log.isDebugEnabled()) {
+					log.debug("database busy; trying to relock");
+				}
+			}
+		}
+
+		/**
+		 * Roll back a transaction, but without complaining if not in a
+		 * transaction. That's because that's not a case that the user can do
+		 * anything about.
+		 *
+		 * @throws DataAccessException
+		 *             If an exception with significance happens
+		 */
+		private void rollbackQuietly() throws DataAccessException {
+			try {
+				rollback();
+			} catch (DataAccessException e) {
+				if (!e.getMessage().contains(NO_TRANSACTION_MSG)) {
+					throw e;
+				}
+			}
 		}
 
 		/**
@@ -771,14 +823,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @param operation
 		 *            The operation to run
-		 * @throws DataAccessException
-		 *             If something goes wrong with the database access.
-		 * @throws RuntimeException
-		 *             If something unexpected goes wrong with the contained
-		 *             code.
 		 */
 		public void transaction(Transacted operation) {
-			if (!getAutoCommit()) {
+			if (!inTransaction) {
 				// Already in a transaction; just run the operation
 				operation.act();
 				return;
@@ -786,22 +833,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			if (log.isDebugEnabled()) {
 				log.debug("start transaction: {}", getCaller());
 			}
-			setAutoCommit(false);
+			begin();
+			inTransaction = true;
 			boolean done = false;
 			try {
 				operation.act();
 				commit();
 				done = true;
 				return;
-			} catch (RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("unexpected exception", e);
 			} finally {
+				inTransaction = false;
 				if (!done) {
-					rollback();
+					rollbackQuietly();
 				}
-				setAutoCommit(true);
 				log.debug("finish transaction");
 			}
 		}
@@ -816,36 +860,28 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param operation
 		 *            The operation to run
 		 * @return the value returned by {@code operation}
-		 * @throws DataAccessException
-		 *             If something goes wrong with the database access.
-		 * @throws RuntimeException
-		 *             If something unexpected goes wrong with the contained
-		 *             code.
 		 */
 		public <T> T transaction(TransactedWithResult<T> operation) {
-			if (!getAutoCommit()) {
+			if (!inTransaction) {
 				// Already in a transaction; just run the operation
 				return operation.act();
 			}
 			if (log.isDebugEnabled()) {
 				log.debug("start transaction:\n{}", getCaller());
 			}
-			setAutoCommit(false);
+			begin();
+			inTransaction = true;
 			boolean done = false;
 			try {
 				T result = operation.act();
 				commit();
 				done = true;
 				return result;
-			} catch (RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("unexpected exception", e);
 			} finally {
+				inTransaction = false;
 				if (!done) {
-					rollback();
+					rollbackQuietly();
 				}
-				setAutoCommit(true);
 				log.debug("finish transaction");
 			}
 		}
