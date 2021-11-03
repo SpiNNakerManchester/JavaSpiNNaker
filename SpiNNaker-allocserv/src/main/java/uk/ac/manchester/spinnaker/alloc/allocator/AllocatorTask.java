@@ -398,8 +398,9 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 *
 	 * @param conn
 	 *            The DB connection
+	 * @return The tombstoned job IDs
 	 */
-	void tombstone(Connection conn) {
+	List<Integer> tombstone(Connection conn) {
 		try (Query copy = conn.query(copyToHistoricalData);
 				Update delete = conn.update(DELETE_JOB_RECORD)) {
 			List<Integer> jobIds = conn
@@ -407,6 +408,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 							.map(row -> row.getInteger("job_id")).toList());
 			conn.transaction(() -> jobIds.stream().filter(Objects::nonNull)
 					.forEach(delete::call));
+			return jobIds;
 		}
 	}
 
@@ -418,7 +420,19 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 	}
 
-	private boolean destroyJob(Connection conn, int id, String reason) {
+	/**
+	 * Destroy a job.
+	 *
+	 * @param conn
+	 *            How to talk to the DB
+	 * @param id
+	 *            The ID of the job
+	 * @param reason
+	 *            Why is the job being destroyed.
+	 * @return Whether the job was destroyed.
+	 */
+	@Deprecated // INTERNAL
+	boolean destroyJob(Connection conn, int id, String reason) {
 		log.debug("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
 			if (sql.getJob.call1(id)
@@ -709,7 +723,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				.map(row -> row.getInteger("board_id")).toList();
 		if (boards.isEmpty()) {
 			if (targetState == DESTROYED) {
-				log.info("no boards for {} in destroy", jobId);
+				log.debug("no boards for {} in destroy", jobId);
 			}
 			return false;
 		}

@@ -47,13 +47,19 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @SpringJUnitWebConfig(BootTest.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
-	"spalloc.database-path=" + BootTest.DB
+	"spalloc.database-path=" + BootTest.DB,
+	"spalloc.historical-data.path=" + BootTest.HIST_DB,
+	// Stop scheduled tasks from running
+	"spalloc.pause=true"
 })
 class BootTest {
 	private static final Logger log = getLogger(BootTest.class);
 
 	/** The DB file. */
 	static final String DB = "boot_test.sqlite3";
+
+	/** The DB history file. */
+	static final String HIST_DB = "boot_test_hist.sqlite3";
 
 	@Configuration
 	@ComponentScan

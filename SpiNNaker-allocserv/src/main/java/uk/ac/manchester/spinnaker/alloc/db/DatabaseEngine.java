@@ -675,16 +675,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		wrapper.exec(sqlDDLFile);
 		log.info("initalising historical DB from schema {}", tombstoneDDLFile);
 		wrapper.exec(tombstoneDDLFile);
-		wrapper.transaction(() -> {
-			log.info("initalising DB static data from {}", sqlInitDataFile);
-			wrapper.exec(sqlInitDataFile);
-		});
-		wrapper.transaction(() -> {
-			log.info("verifying main DB integrity");
-			wrapper.exec("SELECT COUNT(*) FROM jobs");
-			log.info("verifying historical DB integrity");
-			wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
-		});
+		log.info("initalising DB static data from {}", sqlInitDataFile);
+		wrapper.exec(sqlInitDataFile);
+		log.info("verifying main DB integrity");
+		wrapper.exec("SELECT COUNT(*) FROM jobs");
+		log.info("verifying historical DB integrity");
+		wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
 	}
 
 	@Override
@@ -764,38 +760,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		private static final String NO_TRANSACTION_MSG =
 				"cannot rollback - no transaction is active";
 
-		/** Number of times to try to start a transaction. */
-		private static final int TRIES = 5;
+		private static final String ALREADY_OUT_MSG =
+				"database in auto-commit mode";
 
 		private boolean inTransaction;
 
 		private Connection(java.sql.Connection c) {
 			super(c);
 			inTransaction = false;
-		}
-
-		/**
-		 * Start a transaction, trying multiple times if the database is busy.
-		 *
-		 * @throws DataAccessException
-		 *             If we can't start the transaction.
-		 */
-		private void begin() throws DataAccessException {
-			for (int i = 0; true; i++) {
-				try {
-					setAutoCommit(false);
-					return;
-				} catch (DataAccessException e) {
-					if (i >= TRIES || !(e.getCause() instanceof SQLiteException)
-							|| ((SQLiteException) e.getCause())
-									.getResultCode() != SQLITE_BUSY) {
-						throw e;
-					}
-				}
-				if (log.isDebugEnabled()) {
-					log.debug("database busy; trying to relock");
-				}
-			}
 		}
 
 		/**
@@ -810,7 +782,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				rollback();
 			} catch (DataAccessException e) {
-				if (!e.getMessage().contains(NO_TRANSACTION_MSG)) {
+				if (!e.getMessage().contains(NO_TRANSACTION_MSG)
+						&& !e.getMessage().contains(ALREADY_OUT_MSG)) {
 					throw e;
 				}
 			}
@@ -825,7 +798,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *            The operation to run
 		 */
 		public void transaction(Transacted operation) {
-			if (!inTransaction) {
+			if (inTransaction) {
 				// Already in a transaction; just run the operation
 				operation.act();
 				return;
@@ -833,7 +806,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			if (log.isDebugEnabled()) {
 				log.debug("start transaction: {}", getCaller());
 			}
-			begin();
+			setAutoCommit(false);
 			inTransaction = true;
 			boolean done = false;
 			try {
@@ -862,14 +835,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return the value returned by {@code operation}
 		 */
 		public <T> T transaction(TransactedWithResult<T> operation) {
-			if (!inTransaction) {
+			if (inTransaction) {
 				// Already in a transaction; just run the operation
 				return operation.act();
 			}
 			if (log.isDebugEnabled()) {
 				log.debug("start transaction:\n{}", getCaller());
 			}
-			begin();
+			setAutoCommit(false);
 			inTransaction = true;
 			boolean done = false;
 			try {

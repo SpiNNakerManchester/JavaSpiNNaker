@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -50,6 +51,10 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
+@TestPropertySource(properties = {
+	// Stop scheduled tasks from running
+	"spalloc.pause=true"
+})
 class DQLTest extends SQLQueries {
 	// Not equal to any machine_id
 	private static final int NO_MACHINE = -1;

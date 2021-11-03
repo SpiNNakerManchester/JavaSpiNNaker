@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
 import static java.time.Instant.now;
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -26,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -57,7 +60,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 	"spalloc.database-path=" + AllocatorTest.DB,
 	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB,
 	// Stop scheduled tasks from running
-	"spalloc.master.pause=true",
+	"spalloc.pause=true",
 	// Ensure that no real BMP is talked to
 	"spalloc.transceiver.dummy=true"
 })
@@ -94,7 +97,10 @@ class AllocatorTest extends SQLQueries {
 					conn = c;
 					action.act();
 				} finally {
-					c.rollback();
+					try {
+						c.rollback();
+					} catch (DataAccessException ignored) {
+					}
 					conn = null;
 				}
 			});
@@ -239,21 +245,21 @@ class AllocatorTest extends SQLQueries {
 
 	private void assertState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		assertEquals(state, getJobState(jobId));
-		assertEquals(requestCount, getJobRequestCount());
-		assertEquals(powerCount, getPendingPowerChanges());
+		List<?> expected =
+				asList(state, "req", requestCount, "power", powerCount);
+		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
+				"power", getPendingPowerChanges());
+		assertEquals(expected, got);
 	}
 
 	private void assumeState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		JobState js = getJobState(jobId);
-		assumeTrue(state == js, () -> "expected " + state + " but got " + js);
-		int c1 = getJobRequestCount();
-		assumeTrue(requestCount == c1, () -> "expected " + requestCount
-				+ " job requests but got " + c1);
-		int c2 = getPendingPowerChanges();
-		assumeTrue(powerCount == c2, () -> "expected " + requestCount
-				+ " power changes but got " + c2);
+		List<?> expected =
+				asList(state, "req", requestCount, "power", powerCount);
+		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
+				"power", getPendingPowerChanges());
+		assumeTrue(expected.equals(got),
+				() -> "expected " + expected + " but got " + got);
 	}
 
 	@Test
@@ -268,15 +274,15 @@ class AllocatorTest extends SQLQueries {
 
 			assertState(job, JobState.QUEUED, 1, 0);
 
-			alloc.allocate(conn);
+			assertTrue(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 1);
 
-			alloc.allocate(conn);
+			assertFalse(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 1);
 
-			alloc.destroyJob(job, "test");
+			alloc.destroyJob(conn, job, "test");
 
 			assertState(job, JobState.DESTROYED, 0, 0);
 		});
@@ -294,15 +300,15 @@ class AllocatorTest extends SQLQueries {
 
 			assertState(job, JobState.QUEUED, 1, 0);
 
-			alloc.allocate(conn);
+			assertTrue(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 3);
 
-			alloc.allocate(conn);
+			assertFalse(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 3);
 
-			alloc.destroyJob(job, "test");
+			alloc.destroyJob(conn, job, "test");
 
 			assertState(job, JobState.DESTROYED, 0, 0);
 		});
@@ -320,15 +326,15 @@ class AllocatorTest extends SQLQueries {
 
 			assertState(job, JobState.QUEUED, 1, 0);
 
-			alloc.allocate(conn);
+			assertTrue(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 1);
 
-			alloc.allocate(conn);
+			assertFalse(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 1);
 
-			alloc.destroyJob(job, "test");
+			alloc.destroyJob(conn, job, "test");
 
 			assertState(job, JobState.DESTROYED, 0, 0);
 		});
@@ -346,16 +352,16 @@ class AllocatorTest extends SQLQueries {
 
 			assertState(job, JobState.QUEUED, 1, 0);
 
-			alloc.allocate(conn);
+			assertTrue(alloc.allocate(conn));
 
 			// Allocates a whole triad
 			assertState(job, JobState.POWER, 0, 3);
 
-			alloc.allocate(conn);
+			assertFalse(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 3);
 
-			alloc.destroyJob(job, "test");
+			alloc.destroyJob(conn, job, "test");
 
 			assertState(job, JobState.DESTROYED, 0, 0);
 		});
@@ -373,15 +379,15 @@ class AllocatorTest extends SQLQueries {
 
 			assertState(job, JobState.QUEUED, 1, 0);
 
-			alloc.allocate(conn);
+			assertTrue(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 1);
 
-			alloc.allocate(conn);
+			assertFalse(alloc.allocate(conn));
 
 			assertState(job, JobState.POWER, 0, 1);
 
-			alloc.destroyJob(job, "test");
+			alloc.destroyJob(conn, job, "test");
 
 			assertState(job, JobState.DESTROYED, 0, 0);
 		});
@@ -468,26 +474,27 @@ class AllocatorTest extends SQLQueries {
 			int job = makeJob(1);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				alloc.allocate(conn);
+				alloc.allocate(c);
+				snooze();
 				processBMPRequests();
 
 				assumeState(job, JobState.READY, 0, 0);
 
-				alloc.expireJobs(conn);
+				alloc.expireJobs(c);
 
 				assertState(job, JobState.DESTROYED, 0, 1);
 
 				// HACK! Allow immediate switch off (OK because not real BMP)
-				conn.update("UPDATE boards SET "
+				c.update("UPDATE boards SET "
 						+ "power_on_timestamp = power_on_timestamp - 1000")
 								.call();
 				processBMPRequests();
 
 				assertState(job, JobState.DESTROYED, 0, 0);
 			} finally {
-				alloc.destroyJob(job, "test");
-				conn.update("DELETE FROM job_request").call();
-				conn.update("DELETE FROM pending_changes").call();
+				alloc.destroyJob(c, job, "test");
+				c.update("DELETE FROM job_request").call();
+				c.update("DELETE FROM pending_changes").call();
 			}
 		}
 	}
@@ -495,6 +502,13 @@ class AllocatorTest extends SQLQueries {
 	private void processBMPRequests() throws Exception {
 		bmpCtrl.processRequests();
 		snooze();
+		bmpCtrl.processRequests();
+	}
+
+	private int countJobInTable(int job, String table) {
+		return conn.query(
+				"SELECT COUNT(*) AS c FROM " + table + " WHERE job_id = :job")
+				.call1(job).get().getInt("c");
 	}
 
 	@Test
@@ -506,23 +520,14 @@ class AllocatorTest extends SQLQueries {
 			conn.update(
 					"UPDATE jobs SET death_timestamp = 0 WHERE job_id = :job")
 					.call(job);
-			int preMain = conn
-					.query("SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
-					.call1(job).get().getInt("c");
-			assertTrue(preMain > 0,
+			int preMain = countJobInTable(job, "jobs");
+			assertTrue(preMain == 1,
 					() -> "must have created a job we can tombstone");
-			int preTomb = conn
-					.query("SELECT COUNT(*) AS c FROM tombstone.jobs "
-							+ "WHERE job_id = :job")
-					.call1(job).get().getInt("c");
-			alloc.tombstone(conn);
-			assertEquals(preMain - 1, conn
-					.query("SELECT COUNT(*) AS c FROM jobs WHERE job_id = :job")
-					.call1(job).get().getInt("c"));
-			assertEquals(preTomb + 1,
-					conn.query("SELECT COUNT(*) AS c FROM tombstone.jobs "
-							+ "WHERE job_id = :job").call1(job).get()
-							.getInt("c"));
+			int preTomb = countJobInTable(job, "tombstone.jobs");
+			List<Integer> movedJobs = alloc.tombstone(conn);
+			assertEquals(1, movedJobs.size());
+			assertEquals(preMain - 1, countJobInTable(job, "jobs"));
+			assertEquals(preTomb + 1, countJobInTable(job, "tombstone.jobs"));
 		});
 	}
 }

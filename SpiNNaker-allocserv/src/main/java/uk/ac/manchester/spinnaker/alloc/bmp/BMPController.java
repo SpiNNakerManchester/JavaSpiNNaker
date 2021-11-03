@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,6 +118,8 @@ public class BMPController extends SQLQueries {
 
 	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
+	private Deque<Runnable> cleanupTasks = new ConcurrentLinkedDeque<>();
+
 	/** We have our own pool. */
 	private ExecutorService executor = newCachedThreadPool(this::makeThread);
 
@@ -182,6 +185,10 @@ public class BMPController extends SQLQueries {
 	@Deprecated
 	public void processRequests()
 			throws IOException, SpinnmanException, InterruptedException {
+		for (Runnable cleanup = cleanupTasks.poll(); cleanup != null; cleanup =
+				cleanupTasks.poll()) {
+			cleanup.run();
+		}
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
@@ -888,12 +895,11 @@ public class BMPController extends SQLQueries {
 	private boolean tryChangePowerState(Request request,
 			Map<BMPCoords, SpiNNakerControl> controllers, boolean isLastTry)
 			throws InterruptedException {
-		Machine machine = request.machine;
 		try {
 			request.changeBoardPowerState(controllers);
 			// We want to ensure the lead board is alive
 			request.ping();
-			request.done();
+			cleanupTasks.add(request::done);
 			// Exit the retry loop (in caller) if the requests all worked
 			return true;
 		} catch (InterruptedException e) {
@@ -903,8 +909,8 @@ public class BMPController extends SQLQueries {
 			 * outside gets to clean up.
 			 */
 			log.error("Requests failed on BMP {} because of interruption",
-					machine, e);
-			request.failed();
+					request.machine, e);
+			cleanupTasks.add(request::failed);
 			currentThread().interrupt();
 			throw e;
 		} catch (Exception e) {
@@ -912,13 +918,14 @@ public class BMPController extends SQLQueries {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...
 				 */
-				log.warn("Retrying requests on BMP {} after {}: {}", machine,
-						props.getProbeInterval(), e.getMessage());
+				log.warn("Retrying requests on BMP {} after {}: {}",
+						request.machine, props.getProbeInterval(),
+						e.getMessage());
 				// Ask for a retry
 				return false;
 			}
-			log.error("Requests failed on BMP {}", machine, e);
-			request.failed();
+			log.error("Requests failed on BMP {}", request.machine, e);
+			cleanupTasks.add(request::failed);
 			// This is (probably) a permanent failure; stop retry loop
 			return true;
 		}

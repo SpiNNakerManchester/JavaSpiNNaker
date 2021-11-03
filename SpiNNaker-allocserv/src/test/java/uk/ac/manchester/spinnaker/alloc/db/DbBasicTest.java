@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
+import org.springframework.test.context.TestPropertySource;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -44,6 +45,10 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
+@TestPropertySource(properties = {
+	// Stop scheduled tasks from running
+	"spalloc.pause=true"
+})
 class DbBasicTest {
 	@Autowired
 	private DatabaseEngine mainDBEngine;

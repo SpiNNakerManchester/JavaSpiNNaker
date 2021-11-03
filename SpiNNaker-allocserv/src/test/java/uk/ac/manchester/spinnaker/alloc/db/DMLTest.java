@@ -41,6 +41,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
+import org.springframework.test.context.TestPropertySource;
 import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
@@ -58,6 +59,10 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
+@TestPropertySource(properties = {
+	// Stop scheduled tasks from running
+	"spalloc.pause=true"
+})
 class DMLTest extends SQLQueries {
 	// Not equal to any machine_id
 	private static final int NO_MACHINE = -1;

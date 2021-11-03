@@ -18,7 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -43,10 +44,10 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
@@ -56,12 +57,16 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + QuotaManagerTest.DB,
+	"spalloc.historical-data.path=" + QuotaManagerTest.HIST_DB,
 	// Stop scheduled tasks from running
-	"spalloc.master.pause=true"
+	"spalloc.pause=true"
 })
 class QuotaManagerTest extends SQLQueries {
 	/** The DB file. */
 	static final String DB = "qm_test.sqlite3";
+
+	/** The DB file. */
+	static final String HIST_DB = "qm_test_hist.sqlite3";
 
 	@Parameter("machine_id")
 	@Parameter("user_id")
