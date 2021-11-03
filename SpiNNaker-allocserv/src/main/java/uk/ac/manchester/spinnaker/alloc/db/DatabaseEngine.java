@@ -796,12 +796,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				done = true;
 				return;
 			} catch (DataAccessException e) {
-				cantCommitWarning(e);
+				cantWarning("commit", e);
 				throw e;
 			} finally {
 				inTransaction = false;
-				if (!done) {
-					rollback();
+				try {
+					if (!done) {
+						rollback();
+					}
+				} catch (DataAccessException e) {
+					cantWarning("rollback", e);
+					throw e;
 				}
 				synchronized (transactionHolders) {
 					transactionHolders.remove(Thread.currentThread());
@@ -841,12 +846,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				done = true;
 				return result;
 			} catch (DataAccessException e) {
-				cantCommitWarning(e);
+				cantWarning("commit", e);
 				throw e;
 			} finally {
 				inTransaction = false;
-				if (!done) {
-					rollback();
+				try {
+					if (!done) {
+						rollback();
+					}
+				} catch (DataAccessException e) {
+					cantWarning("rollback", e);
+					throw e;
 				}
 				synchronized (transactionHolders) {
 					transactionHolders.remove(Thread.currentThread());
@@ -855,18 +865,20 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		private void cantCommitWarning(DataAccessException e) {
+		private void cantWarning(String op, DataAccessException e) {
 			if (e.getMostSpecificCause() instanceof SQLiteException) {
 				SQLiteException ex = (SQLiteException) e.getMostSpecificCause();
-				if (ex.getMessage()
-						.equals("cannot commit - no transaction is active")) {
+				if (ex.getMessage().equals(
+						"cannot " + op + " - no transaction is active")) {
 					Object o;
 					synchronized (transactionHolders) {
 						o = transactionHolders.stream().map(Thread::getName)
 								.collect(toList());
 					}
-					log.warn("failed to commit transaction: "
-							+ "current transaction holders are " + o);
+					log.warn(
+							"failed to {} transaction: "
+									+ "current transaction holders are {}",
+							op, o);
 				}
 			}
 		}
