@@ -24,6 +24,7 @@ import static java.nio.file.Files.exists;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -52,6 +53,7 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -223,6 +225,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private Map<String, SummaryStatistics> statementLengths =
 			new DefaultMap<>(SummaryStatistics::new);
+
+	private Set<Thread> transactionHolders = new HashSet<>();
 
 	/**
 	 * Records the execution time of a statement, at least to first result set.
@@ -756,37 +760,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
 	public final class Connection extends UncheckedConnection {
-		// If there's no transaction, we can't roll it back
-		private static final String NO_TRANSACTION_MSG =
-				"cannot rollback - no transaction is active";
-
-		private static final String ALREADY_OUT_MSG =
-				"database in auto-commit mode";
-
 		private boolean inTransaction;
 
 		private Connection(java.sql.Connection c) {
 			super(c);
 			inTransaction = false;
-		}
-
-		/**
-		 * Roll back a transaction, but without complaining if not in a
-		 * transaction. That's because that's not a case that the user can do
-		 * anything about.
-		 *
-		 * @throws DataAccessException
-		 *             If an exception with significance happens
-		 */
-		private void rollbackQuietly() throws DataAccessException {
-			try {
-				rollback();
-			} catch (DataAccessException e) {
-				if (!e.getMessage().contains(NO_TRANSACTION_MSG)
-						&& !e.getMessage().contains(ALREADY_OUT_MSG)) {
-					throw e;
-				}
-			}
 		}
 
 		/**
@@ -808,16 +786,25 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 			setAutoCommit(false);
 			inTransaction = true;
+			synchronized (transactionHolders) {
+				transactionHolders.add(Thread.currentThread());
+			}
 			boolean done = false;
 			try {
 				operation.act();
 				commit();
 				done = true;
 				return;
+			} catch (DataAccessException e) {
+				cantCommitWarning(e);
+				throw e;
 			} finally {
 				inTransaction = false;
 				if (!done) {
-					rollbackQuietly();
+					rollback();
+				}
+				synchronized (transactionHolders) {
+					transactionHolders.remove(Thread.currentThread());
 				}
 				log.debug("finish transaction");
 			}
@@ -844,18 +831,43 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 			setAutoCommit(false);
 			inTransaction = true;
+			synchronized (transactionHolders) {
+				transactionHolders.add(Thread.currentThread());
+			}
 			boolean done = false;
 			try {
 				T result = operation.act();
 				commit();
 				done = true;
 				return result;
+			} catch (DataAccessException e) {
+				cantCommitWarning(e);
+				throw e;
 			} finally {
 				inTransaction = false;
 				if (!done) {
-					rollbackQuietly();
+					rollback();
+				}
+				synchronized (transactionHolders) {
+					transactionHolders.remove(Thread.currentThread());
 				}
 				log.debug("finish transaction");
+			}
+		}
+
+		private void cantCommitWarning(DataAccessException e) {
+			if (e.getMostSpecificCause() instanceof SQLiteException) {
+				SQLiteException ex = (SQLiteException) e.getMostSpecificCause();
+				if (ex.getMessage()
+						.equals("cannot commit - no transaction is active")) {
+					Object o;
+					synchronized (transactionHolders) {
+						o = transactionHolders.stream().map(Thread::getName)
+								.collect(toList());
+					}
+					log.warn("failed to commit transaction: "
+							+ "current transaction holders are " + o);
+				}
 			}
 		}
 
