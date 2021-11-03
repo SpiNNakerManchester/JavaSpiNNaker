@@ -754,6 +754,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
+	private Object currentTransactionHolders() {
+		synchronized (transactionHolders) {
+			return transactionHolders.stream().map(Thread::getName)
+					.collect(toList());
+		}
+	}
+
 	/**
 	 * Connections made by the database engine bean. Its methods do not throw
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
@@ -765,6 +772,25 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		private Connection(java.sql.Connection c) {
 			super(c);
 			inTransaction = false;
+		}
+
+		private void begin() {
+			try {
+				setAutoCommit(false);
+			} catch (DataAccessException e) {
+				log.warn(
+						"failed to begin transaction: "
+								+ "current transaction holders are {}",
+						currentTransactionHolders());
+				try {
+					if (e.getMostSpecificCause() instanceof SQLiteException) {
+						// Try to get the state to be sane
+						setAutoCommit(true);
+					}
+				} catch (DataAccessException ignored) {
+				}
+				throw e;
+			}
 		}
 
 		/**
@@ -784,7 +810,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			if (log.isDebugEnabled()) {
 				log.debug("start transaction: {}", getCaller());
 			}
-			setAutoCommit(false);
+			begin();
 			inTransaction = true;
 			synchronized (transactionHolders) {
 				transactionHolders.add(Thread.currentThread());
@@ -834,7 +860,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			if (log.isDebugEnabled()) {
 				log.debug("start transaction:\n{}", getCaller());
 			}
-			setAutoCommit(false);
+			begin();
 			inTransaction = true;
 			synchronized (transactionHolders) {
 				transactionHolders.add(Thread.currentThread());
@@ -868,17 +894,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		private void cantWarning(String op, DataAccessException e) {
 			if (e.getMostSpecificCause() instanceof SQLiteException) {
 				SQLiteException ex = (SQLiteException) e.getMostSpecificCause();
-				if (ex.getMessage().equals(
+				if (ex.getMessage().contains(
 						"cannot " + op + " - no transaction is active")) {
-					Object o;
-					synchronized (transactionHolders) {
-						o = transactionHolders.stream().map(Thread::getName)
-								.collect(toList());
-					}
 					log.warn(
 							"failed to {} transaction: "
 									+ "current transaction holders are {}",
-							op, o);
+							op, currentTransactionHolders());
 				}
 			}
 		}
