@@ -31,7 +31,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
-import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
@@ -57,6 +56,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -81,6 +81,7 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Component;
 import org.sqlite.Function;
+import org.sqlite.SQLiteCommitListener;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
@@ -266,10 +267,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static void
 			logStatementExecutionTime(Map.Entry<String, SummaryStatistics> e) {
-		log.info("statement execution time " + "{}us (max: {}us) for: {}",
-				e.getValue().getMean() / NS_PER_US,
-				e.getValue().getMax() / NS_PER_US,
-				trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
+		if (log.isInfoEnabled()) {
+			log.info("statement execution time " + "{}us (max: {}us) for: {}",
+					e.getValue().getMean() / NS_PER_US,
+					e.getValue().getMax() / NS_PER_US,
+					trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
+		}
 	}
 
 	private static Set<String> columnNames(ResultSetMetaData md)
@@ -490,7 +493,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		// Check that the connection is correct
 		try (Connection conn = getConnection();
 				Query countMovements = conn.query(COUNT_MOVEMENTS)) {
-			int numMovements = countMovements.call1().get().getInt("c");
+			int numMovements = conn.transaction(
+					() -> countMovements.call1().get().getInt("c"));
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
 						dbConnectionUrl, numMovements, EXPECTED_NUM_MOVEMENTS);
@@ -504,7 +508,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		config.enforceForeignKeys(true);
 		config.setSynchronous(NORMAL);
 		config.setBusyTimeout((int) props.getTimeout().toMillis());
-		config.setTransactionMode(IMMEDIATE);
 		config.setDateClass("INTEGER");
 	}
 
@@ -676,15 +679,55 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		// Note that we don't close the wrapper; this is deliberate!
 		@SuppressWarnings("resource")
 		Connection wrapper = new Connection(conn);
-		wrapper.exec(sqlDDLFile);
-		log.info("initalising historical DB from schema {}", tombstoneDDLFile);
-		wrapper.exec(tombstoneDDLFile);
-		log.info("initalising DB static data from {}", sqlInitDataFile);
-		wrapper.exec(sqlInitDataFile);
-		log.info("verifying main DB integrity");
-		wrapper.exec("SELECT COUNT(*) FROM jobs");
-		log.info("verifying historical DB integrity");
-		wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
+		synchronized (this) {
+			wrapper.transaction(() -> {
+				wrapper.exec(sqlDDLFile);
+				log.info("initalising historical DB from schema {}",
+						tombstoneDDLFile);
+				wrapper.exec(tombstoneDDLFile);
+				log.info("initalising DB static data from {}", sqlInitDataFile);
+				wrapper.exec(sqlInitDataFile);
+				log.info("verifying main DB integrity");
+				wrapper.exec("SELECT COUNT(*) FROM jobs");
+				log.info("verifying historical DB integrity");
+				wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
+			});
+		}
+	}
+
+	/**
+	 * Perform some actions immediately to condition the per-connection state.
+	 *
+	 * @param conn
+	 *            The newly created, unwrapped connection
+	 * @throws SQLException
+	 *             Raw SQL exceptions
+	 */
+	private void prepareConnectionForService(SQLiteConnection conn)
+			throws SQLException {
+		for (Entry<String, Function> func : functions.entrySet()) {
+			log.debug("installing function from bean '{}'", func.getKey());
+			installFunction(conn, func.getKey(), func.getValue());
+		}
+		log.debug("attaching historical job DB ({})", tombstoneFile);
+		try (PreparedStatement s =
+				conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
+			s.setString(1, tombstoneFile);
+			s.execute();
+		}
+		if (log.isDebugEnabled()) {
+			conn.addCommitListener(new SQLiteCommitListener() {
+				@Override
+				public void onCommit() {
+					log.debug("committing transaction");
+				}
+
+				@Override
+				public void onRollback() {
+					log.debug("rolling back transaction");
+				}
+			});
+		}
 	}
 
 	@Override
@@ -693,19 +736,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try {
 			SQLiteConnection conn =
 					(SQLiteConnection) config.createConnection(dbConnectionUrl);
-			/*
-			 * Perform some actions immediately as they have to be done for
-			 * every connection and can't be cached.
-			 */
-			for (String s : functions.keySet()) {
-				installFunction(conn, s, functions.get(s));
-			}
-			log.debug("attaching historical job DB ({})", tombstoneFile);
-			try (PreparedStatement s =
-					conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
-				s.setString(1, tombstoneFile);
-				s.execute();
-			}
+			prepareConnectionForService(conn);
 			return conn;
 		} catch (SQLException e) {
 			throw mapException(e, null);
@@ -774,6 +805,30 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			inTransaction = false;
 		}
 
+		private class Hold implements AutoCloseable {
+			private final boolean it;
+
+			Hold() {
+				it = inTransaction;
+				if (!it) {
+					inTransaction = true;
+					synchronized (transactionHolders) {
+						transactionHolders.add(Thread.currentThread());
+					}
+				}
+			}
+
+			@Override
+			public void close() {
+				if (!it) {
+					inTransaction = it;
+					synchronized (transactionHolders) {
+						transactionHolders.remove(Thread.currentThread());
+					}
+				}
+			}
+		}
+
 		private void begin() {
 			try {
 				setAutoCommit(false);
@@ -783,11 +838,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 								+ "current transaction holders are {}",
 						currentTransactionHolders());
 				try {
-					if (e.getMostSpecificCause() instanceof SQLiteException) {
+					if (e.getMostSpecificCause() instanceof SQLiteException
+							&& !getAutoCommit()) {
 						// Try to get the state to be sane
-						setAutoCommit(true);
+						log.warn("resetting connection commit state");
+						unwrap(SQLiteConnection.class).getConnectionConfig()
+								.setAutoCommit(true);
 					}
-				} catch (DataAccessException ignored) {
+				} catch (DataAccessException inner) {
+					e.addSuppressed(inner);
 				}
 				throw e;
 			}
@@ -802,43 +861,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *            The operation to run
 		 */
 		public void transaction(Transacted operation) {
-			if (inTransaction) {
-				// Already in a transaction; just run the operation
+			// Use the other method, ignoring the result value
+			transaction(() -> {
 				operation.act();
-				return;
-			}
-			if (log.isDebugEnabled()) {
-				log.debug("start transaction: {}", getCaller());
-			}
-			begin();
-			inTransaction = true;
-			synchronized (transactionHolders) {
-				transactionHolders.add(Thread.currentThread());
-			}
-			boolean done = false;
-			try {
-				operation.act();
-				commit();
-				done = true;
-				return;
-			} catch (DataAccessException e) {
-				cantWarning("commit", e);
-				throw e;
-			} finally {
-				inTransaction = false;
-				try {
-					if (!done) {
-						rollback();
-					}
-				} catch (DataAccessException e) {
-					cantWarning("rollback", e);
-					throw e;
-				}
-				synchronized (transactionHolders) {
-					transactionHolders.remove(Thread.currentThread());
-				}
-				log.debug("finish transaction");
-			}
+				return this;
+			});
 		}
 
 		/**
@@ -857,17 +884,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				// Already in a transaction; just run the operation
 				return operation.act();
 			}
+			Object caller = null;
 			if (log.isDebugEnabled()) {
-				log.debug("start transaction:\n{}", getCaller());
+				caller = getCaller();
+				log.debug("start transaction: {}", caller);
 			}
 			begin();
-			inTransaction = true;
-			synchronized (transactionHolders) {
-				transactionHolders.add(Thread.currentThread());
-			}
 			boolean done = false;
-			try {
+			try (Hold hold = new Hold()) {
 				T result = operation.act();
+				log.debug("commence commit: {}", caller);
 				commit();
 				done = true;
 				return result;
@@ -875,19 +901,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				cantWarning("commit", e);
 				throw e;
 			} finally {
-				inTransaction = false;
 				try {
 					if (!done) {
+						log.debug("commence rollback: {}", caller);
 						rollback();
 					}
 				} catch (DataAccessException e) {
 					cantWarning("rollback", e);
 					throw e;
 				}
-				synchronized (transactionHolders) {
-					transactionHolders.remove(Thread.currentThread());
-				}
-				log.debug("finish transaction");
+				log.debug("finish transaction: {}", caller);
 			}
 		}
 
@@ -1056,7 +1079,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #update(String)
 		 */
 		public void exec(String sql) {
-			try (Statement s = createStatement()) {
+			try (Hold hold = new Hold(); Statement s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
 				s.executeUpdate(sql);
 				/*
@@ -1172,6 +1195,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		return dbPath;
 	}
 
+	private static final Set<String> FILTERED_CLASSES;
+
+	static {
+		FILTERED_CLASSES = new HashSet<>();
+		FILTERED_CLASSES.add(Query.class.getName());
+		FILTERED_CLASSES.add(Update.class.getName());
+		FILTERED_CLASSES.add(Connection.class.getName());
+		FILTERED_CLASSES.add("uk.ac.manchester.spinnaker.alloc.bmp."
+				+ "BMPController$AbstractSQL");
+	}
+
 	/**
 	 * Get the stack frame description of the caller of the of the transaction.
 	 *
@@ -1188,9 +1222,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 						|| name.startsWith("sun.")) {
 					continue;
 				}
-				boolean found1 = name.equals(DatabaseEngine.class.getName())
+				boolean found1 = FILTERED_CLASSES.contains(name)
 						// Special case
-						&& !frame.getMethodName().contains("initDBConn");
+						|| frame.getMethodName().equals("execute");
 				found |= found1;
 				if (found && !found1) {
 					return frame;
@@ -1352,6 +1386,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		final void closeResults() {
 			if (nonNull(rs)) {
 				try {
+					log.debug("closing result set");
 					rs.close();
 				} catch (SQLException ignored) {
 				}
@@ -1492,8 +1527,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public MappableIterable<Row> call(Object... arguments) {
 			closeResults();
 			try {
-				long pre = nanoTime();
+				log.debug("opening result set in {}", getCaller());
 				setParams(arguments);
+				long pre = nanoTime();
 				rs = s.executeQuery();
 				long post = nanoTime();
 				statementLength(s, pre, post);
@@ -1518,7 +1554,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					try {
 						result = rs.next();
 					} catch (SQLException e) {
-						// ignore
+						throw mapException(e, s.toString());
 					} finally {
 						if (result) {
 							consumed = false;
@@ -1552,6 +1588,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public Optional<Row> call1(Object... arguments) {
 			try {
+				log.debug("opening result set in {}", getCaller());
 				closeResults();
 				setParams(arguments);
 				long pre = nanoTime();
@@ -1618,6 +1655,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			long pre, post;
 			try {
 				setParams(arguments);
+				log.debug("opening result set in {}", getCaller());
 				pre = nanoTime();
 				numRows = s.executeUpdate();
 				post = nanoTime();
@@ -1690,6 +1728,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				if (numRows < 1) {
 					return Optional.empty();
 				}
+				log.debug("opening result set in {}", getCaller());
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {
 					return Optional.ofNullable((Integer) rs.getObject(1));

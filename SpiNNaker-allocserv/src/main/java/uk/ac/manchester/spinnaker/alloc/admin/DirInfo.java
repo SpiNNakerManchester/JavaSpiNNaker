@@ -111,11 +111,15 @@ public final class DirInfo extends SQLQueries {
 
 	static void load(Connection conn) {
 		if (MAP.isEmpty()) {
-			try (Query di = conn.query(LOAD_DIR_INFO)) {
-				di.call().forEach(row -> new DirInfo(row.getInt("z"),
-						row.getEnum("direction", Direction.class),
-						row.getInt("dx"), row.getInt("dy"), row.getInt("dz")));
-			}
+			conn.transaction(() -> {
+				try (Query di = conn.query(LOAD_DIR_INFO)) {
+					di.call()
+							.forEach(row -> new DirInfo(row.getInt("z"),
+									row.getEnum("direction", Direction.class),
+									row.getInt("dx"), row.getInt("dy"),
+									row.getInt("dz")));
+				}
+			});
 			log.debug("created {} DirInfo instances",
 					MAP.values().stream().mapToInt(Map::size).sum());
 		}

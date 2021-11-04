@@ -48,9 +48,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + BootTest.DB,
-	"spalloc.historical-data.path=" + BootTest.HIST_DB,
-	// Stop scheduled tasks from running
-	"spalloc.pause=true"
+	"spalloc.historical-data.path=" + BootTest.HIST_DB
 })
 class BootTest {
 	private static final Logger log = getLogger(BootTest.class);
@@ -94,7 +92,7 @@ class BootTest {
 	}
 
 	@Test
-	void testContextBoot() {
+	void testContextBoot() throws InterruptedException {
 		// If all these bits are there, we declare the application to be working
 		assertNotNull(service);
 		assertNotNull(core);
@@ -102,5 +100,7 @@ class BootTest {
 		assertNotNull(root);
 		assertNotNull(admin);
 		assertNotNull(adminUI);
+		// Give background tasks a chance to run
+		Thread.sleep(5000);
 	}
 }
