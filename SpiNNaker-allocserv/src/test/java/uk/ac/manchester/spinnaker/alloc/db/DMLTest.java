@@ -679,4 +679,15 @@ class DMLTest extends SQLQueries {
 			});
 		}
 	}
+
+	@Test
+	void clearStuckPending() {
+		assumeWritable(c);
+		try (Update u = c.update(CLEAR_STUCK_PENDING)) {
+			assertEquals(0, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call());
+			});
+		}
+	}
 }

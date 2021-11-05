@@ -47,6 +47,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
@@ -150,6 +151,24 @@ public class BMPController extends SQLQueries {
 
 	// ----------------------------------------------------------------
 	// SERVICE IMPLEMENTATION
+
+	/**
+	 * Mark all pending changes as eligible for processing. Called once on
+	 * application startup when all internal queues are guaranteed to be empty.
+	 */
+	@PostConstruct
+	private void clearStuckPending() {
+		db.executeVoid(c -> {
+			try (Update u = c.update(CLEAR_STUCK_PENDING)) {
+				int changes = u.call();
+				if (changes > 0) {
+					log.info(
+							"marking {} change sets as eligible for processing",
+							changes);
+				}
+			}
+		});
+	}
 
 	@Scheduled(fixedDelayString = "#{txrxProperties.period}",
 			initialDelayString = "#{txrxProperties.period}")
