@@ -912,9 +912,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			if (isNull(root)) {
 				return Optional.empty();
 			}
-			try (Connection conn = db.getConnection()) {
-				return Optional.of(new SubMachineImpl(conn));
-			}
+			return db.execute(conn -> Optional.of(new SubMachineImpl(conn)));
 		}
 
 		@Override

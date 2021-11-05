@@ -205,7 +205,8 @@ public class BMPController extends SQLQueries {
 	public int getPendingRequestLoading() {
 		try (Connection conn = db.getConnection();
 				Query countChanges = conn.query(COUNT_PENDING_CHANGES)) {
-			return countChanges.call1().map(row -> row.getInt("c")).orElse(0);
+			return conn.transaction(() -> countChanges.call1()
+					.map(row -> row.getInt("c")).orElse(0));
 		}
 	}
 

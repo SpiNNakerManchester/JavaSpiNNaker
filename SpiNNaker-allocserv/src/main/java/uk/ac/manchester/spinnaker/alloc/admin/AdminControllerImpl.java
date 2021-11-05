@@ -112,8 +112,8 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	private List<String> getMachineNames() {
 		try (Connection conn = db.getConnection();
 				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return listMachines.call().map(row -> row.getString("machine_name"))
-					.toList();
+			return conn.transaction(() -> listMachines.call()
+					.map(row -> row.getString("machine_name")).toList());
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
 			return emptyList();
