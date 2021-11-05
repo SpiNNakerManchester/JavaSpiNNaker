@@ -350,6 +350,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 				// Only process responses which have matching requests
 				log.info("discarding message with unknown sequence number: {}",
 						msg.getSequenceNumber());
+				log.info("discarded message: {}", msg);
 				return;
 			}
 
