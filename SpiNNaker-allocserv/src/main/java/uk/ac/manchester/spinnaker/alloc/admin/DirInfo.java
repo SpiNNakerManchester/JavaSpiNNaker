@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  * Consider this board layout (a classic 24 board machine, with wrap-arounds not
  * shown):
  * <p>
- * <img src="doc-files/DirInfo1.png" width="450">
+ * <img src="doc-files/DirInfo1.png" width="450" alt="24-board layout">
  * <p>
  * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0 chips
  * horizontally offset from 0,0,0. (Also, the real boards are slightly offset

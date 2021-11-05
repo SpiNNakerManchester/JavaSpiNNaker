@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  * The literal SQL queries used in this package.
  * <p>
  * The schema they query against (defined in {@code spalloc.sql}) is: <br>
- * <img src="doc-files/schema.png" width="95%">
+ * <img src="doc-files/schema.png" width="95%" alt="Database Schema">
  *
  * @author Donal Fellows
  */

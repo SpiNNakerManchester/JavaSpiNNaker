@@ -23,7 +23,8 @@ import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_SW_W;
 /**
  * Represents link directions of a board.
  * <p>
- * <img src="doc-files/Directions.png" width="300">
+ * <img src="doc-files/Directions.png" width="300"
+ *		alt="SpiNNaker board neighbourhood">
  * <p>
  * Note how this is tilted over with respect to classical compass directions; to
  * <em>actually</em> go "true vertically north", you have to go first {@link #N}

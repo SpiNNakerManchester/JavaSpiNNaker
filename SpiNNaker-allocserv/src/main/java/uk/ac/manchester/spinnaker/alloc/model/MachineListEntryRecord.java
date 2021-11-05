@@ -25,8 +25,9 @@ import java.util.Optional;
 
 /**
  * Entry in a table of machines. The table is like this:
- * <p>
- * <table border>
+ *
+ * <table border="1">
+ * <caption style="display:none">Machine List</caption>
  * <tr>
  * <th>Name
  * <th>Num boards

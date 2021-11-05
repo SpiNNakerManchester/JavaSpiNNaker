@@ -107,7 +107,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	/**
 	 * Flag direct from SQLite.
-	 * <p>
+	 *
 	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
 	 * may only be invoked from top-level SQL, and cannot be used in
 	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
@@ -128,7 +128,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	/**
 	 * Flag direct from SQLite.
-	 * <p>
+	 *
 	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
 	 * unlikely to cause problems even if misused. An innocuous function should
 	 * have no side effects and should not depend on any values other than its
@@ -847,7 +847,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @param operation
 		 *            The operation to run
-		 * @see #transaction(TransactedWithResult)
+		 * @see #transaction(DatabaseEngine.TransactedWithResult)
 		 */
 		public void transaction(Transacted operation) {
 			// Use the other method, ignoring the result value
@@ -867,7 +867,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param operation
 		 *            The operation to run
 		 * @return the value returned by {@code operation}
-		 * @see #transaction(Transacted)
+		 * @see #transaction(DatabaseEngine.Transacted)
 		 */
 		public <T> T transaction(TransactedWithResult<T> operation) {
 			if (inTransaction) {
@@ -929,7 +929,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * or:
 		 * <pre>
 		 * try (Query q = conn.query(SQL_SELECT)) {
-		 *     u.call(argument1, argument2).forEach(row -> {
+		 *     u.call(argument1, argument2).forEach(row -&gt; {
 		 *         // Do something with the row
 		 *     });
 		 * }
@@ -960,7 +960,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * or:
 		 * <pre>
 		 * try (Query q = conn.query(sqlSelectResource)) {
-		 *     u.call(argument1, argument2).forEach(row -> {
+		 *     u.call(argument1, argument2).forEach(row -&gt; {
 		 *         // Do something with the row
 		 *     });
 		 * }
@@ -997,7 +997,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * or even:
 		 * <pre>
 		 * try (Update u = conn.update(SQL_INSERT)) {
-		 *     u.key(argument1, argument2).ifPresent(key -> {
+		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
 		 *         // Do something with the key
 		 *     });
 		 * }
@@ -1037,7 +1037,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * or even:
 		 * <pre>
 		 * try (Update u = conn.update(sqlInsertResource)) {
-		 *     u.key(argument1, argument2).ifPresent(key -> {
+		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
 		 *         // Do something with the key
 		 *     });
 		 * }
@@ -1102,8 +1102,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * Get a connection. This connection is thread-bound and pooled; it <em>must
 	 * not</em> be passed to other threads. They should get their own
 	 * connections instead. The connection has auto-commit disabled; use the
-	 * {@link Connection#transaction(TransactedWithResult) transaction()} method
-	 * instead.
+	 * {@link Connection#transaction(DatabaseEngine.TransactedWithResult)
+	 * transaction()} method instead.
 	 * <p>
 	 * Note that if an in-memory database is used (see
 	 * {@link #getInMemoryDB()}), that DB can <em>only</em> be accessed from the
