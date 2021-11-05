@@ -117,8 +117,8 @@ public class QuotaManager extends SQLQueries {
 			return;
 		}
 		// Split off for testability
-		try {
-			doConsolidate();
+		try (Connection c = db.getConnection()) {
+			doConsolidate(c);
 		} catch (DataAccessException e) {
 			if (isBusy(e)) {
 				log.info("database is busy; "
@@ -129,10 +129,8 @@ public class QuotaManager extends SQLQueries {
 		}
 	}
 
-	final void doConsolidate() {
-		try (Connection c = db.getConnection();
-				Query getConsoldationTargets =
-						c.query(GET_CONSOLIDATION_TARGETS);
+	final void doConsolidate(Connection c) {
+		try (Query getConsoldationTargets = c.query(GET_CONSOLIDATION_TARGETS);
 				Update decrementQuota = c.update(DECREMENT_QUOTA);
 				Update markConsolidated = c.update(MARK_CONSOLIDATED)) {
 			c.transaction(() -> consolidate(getConsoldationTargets,

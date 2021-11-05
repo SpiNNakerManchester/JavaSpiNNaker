@@ -26,8 +26,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,7 +98,7 @@ class QuotaManagerTest extends SQLQueries {
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
-			setupDB(c);
+			c.transaction(() -> setupDB(c));
 		}
 	}
 
@@ -114,10 +112,9 @@ class QuotaManagerTest extends SQLQueries {
 
 	private void setupDB(Connection c) {
 		// A simple machine
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO machines("
-						+ "machine_id, machine_name, width, height, [depth], "
-						+ "board_model) VALUES (?, ?, ?, ?, ?, 5)")) {
+		try (Update u = c.update("INSERT OR IGNORE INTO machines("
+				+ "machine_id, machine_name, width, height, [depth], "
+				+ "board_model) VALUES (?, ?, ?, ?, ?, 5)")) {
 			u.call(MACHINE, "foo", 1, 1, 1);
 		}
 		try (Update u = c.update(
@@ -125,18 +122,17 @@ class QuotaManagerTest extends SQLQueries {
 						+ "cabinet, frame) VALUES (?, ?, ?, ?, ?)")) {
 			u.call(BMP, MACHINE, "1.1.1.1", 1, 1);
 		}
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO boards(board_id, address, "
+		try (Update u =
+				c.update("INSERT OR IGNORE INTO boards(board_id, address, "
 						+ "bmp_id, board_num, machine_id, x, y, z, "
 						+ "root_x, root_y, board_power) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 			u.call(BOARD, "2.2.2.2", BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
 		}
 		// A disabled permission-less user with a quota
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO user_info("
-						+ "user_id, user_name, trust_level, disabled) "
-						+ "VALUES (?, ?, ?, ?)")) {
+		try (Update u = c.update("INSERT OR IGNORE INTO user_info("
+				+ "user_id, user_name, trust_level, disabled) "
+				+ "VALUES (?, ?, ?, ?)")) {
 			u.call(USER, "bar", TrustLevel.BASIC, true);
 		}
 		try (Update u = c.update("INSERT OR REPLACE INTO quotas("
@@ -170,20 +166,30 @@ class QuotaManagerTest extends SQLQueries {
 		}
 	}
 
+	private Object getQuota(Connection c) {
+		try (Query q = c.query(GET_QUOTA)) {
+			return q.call1(MACHINE, USER).get().getObject("quota");
+		}
+	}
+
+	private void setQuota(Connection c, Integer quota) {
+		try (Update u = c.update("UPDATE quotas SET quota = :quota "
+				+ "WHERE machine_id = :machine AND user_id = :user")) {
+			u.call(quota, MACHINE, USER);
+		}
+	}
+
 	@Test
 	void testDoConsolidate() {
 		db.executeVoid(c -> {
 			// Does a job get consolidated once and only once
-			try (Query q = c.query(GET_QUOTA)) {
+			try {
 				makeJob(c, 1, 100);
-				assertEquals(1024,
-						q.call1(MACHINE, USER).get().getObject("quota"));
-				qm.doConsolidate();
-				assertEquals(924,
-						q.call1(MACHINE, USER).get().getObject("quota"));
-				qm.doConsolidate();
-				assertEquals(924,
-						q.call1(MACHINE, USER).get().getObject("quota"));
+				assertEquals(1024, getQuota(c));
+				qm.doConsolidate(c);
+				assertEquals(924, getQuota(c));
+				qm.doConsolidate(c);
+				assertEquals(924, getQuota(c));
 			} finally {
 				c.rollback();
 			}
@@ -193,18 +199,14 @@ class QuotaManagerTest extends SQLQueries {
 	@Test
 	void testDoNoConsolidate() {
 		db.executeVoid(c -> {
-			try (Statement s = c.createStatement();
-					Query q = c.query(GET_QUOTA)) {
+			try {
 				// Delete the quota
-				s.execute("UPDATE quotas SET quota = NULL "
-						+ "WHERE user_id = 4000");
+				setQuota(c, null);
 				makeJob(c, 1, 100);
 				// Does a job NOT get consolidated if there's no quota
-				assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
-				qm.doConsolidate();
-				assertNull(q.call1(MACHINE, USER).get().getObject("quota"));
-			} catch (SQLException e) {
-				throw new RuntimeException("database problem", e);
+				assertNull(getQuota(c));
+				qm.doConsolidate(c);
+				assertNull(getQuota(c));
 			} finally {
 				c.rollback();
 			}

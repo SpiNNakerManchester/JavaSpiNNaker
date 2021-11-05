@@ -29,6 +29,7 @@ import java.util.List;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * A thread-aware cache of database connections. This looks after ensuring that
@@ -50,7 +51,8 @@ abstract class DatabaseCache<Conn extends Connection> {
 			synchronizedList(new ArrayList<>());
 
 	/**
-	 * Actually open a connection to the database. This should do nothing else.
+	 * Actually open a connection to the database. This should do nothing that
+	 * is not strictly required per connection.
 	 *
 	 * @return The database connection.
 	 * @throws SQLException
@@ -64,7 +66,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 	 *
 	 * @return Whether the current thread needs a full shutdown hook.
 	 */
-	private static boolean isLongTermThread() {
+	protected static boolean isLongTermThread() {
 		// Special case for the main thread
 		return currentThread().getName().equals("main");
 	}
@@ -75,14 +77,16 @@ abstract class DatabaseCache<Conn extends Connection> {
 	 * caching.
 	 *
 	 * @return The connection to cache.
+	 * @throws DataAccessResourceFailureException
+	 *             If the connection can't be opened.
 	 */
 	private Conn generateCachedDatabaseConnection() {
 		Conn connection;
 		try {
 			connection = openDatabaseConnection();
 		} catch (SQLException e) {
-			throw new RuntimeException("problem opening database connection",
-					e);
+			throw new DataAccessResourceFailureException(
+					"problem opening database connection", e);
 		}
 		if (isLongTermThread()) {
 			// Special case for the main thread

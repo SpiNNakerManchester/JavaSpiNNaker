@@ -177,8 +177,11 @@ class DMLTest extends SQLQueries {
 		Duration d = Duration.ofSeconds(100);
 		try (Update u = c.update(INSERT_JOB)) {
 			assertEquals(4, u.getNumArguments());
-			// No such machine
-			assertThrowsFK(() -> u.keys(NO_MACHINE, NO_USER, d, new byte[0]));
+			c.transaction(() -> {
+				// No such machine
+				assertThrowsFK(
+						() -> u.keys(NO_MACHINE, NO_USER, d, new byte[0]));
+			});
 		}
 	}
 
@@ -187,9 +190,11 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_REQ_N_BOARDS)) {
 			assertEquals(4, u.getNumArguments());
-			// No such job
-			assertThrowsFK(() -> u.keys(NO_JOB, 1, 0, 0));
-			assertThrowsCheck(() -> u.keys(NO_JOB, -1, 0, 0));
+			c.transaction(() -> {
+				// No such job
+				assertThrowsFK(() -> u.keys(NO_JOB, 1, 0, 0));
+				assertThrowsCheck(() -> u.keys(NO_JOB, -1, 0, 0));
+			});
 		}
 	}
 
@@ -198,9 +203,11 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_REQ_SIZE)) {
 			assertEquals(5, u.getNumArguments());
-			// No such job
-			assertThrowsFK(() -> u.keys(NO_JOB, 1, 1, 0, 0));
-			assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, 0, 0));
+			c.transaction(() -> {
+				// No such job
+				assertThrowsFK(() -> u.keys(NO_JOB, 1, 1, 0, 0));
+				assertThrowsCheck(() -> u.keys(NO_JOB, -1, -1, 0, 0));
+			});
 		}
 	}
 
@@ -208,9 +215,11 @@ class DMLTest extends SQLQueries {
 	void insertReqBoard() {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_REQ_BOARD)) {
-			assertEquals(3, u.getNumArguments());
-			// No such job or board
-			assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0));
+			c.transaction(() -> {
+				assertEquals(3, u.getNumArguments());
+				// No such job or board
+				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0));
+			});
 		}
 	}
 
@@ -219,7 +228,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(UPDATE_KEEPALIVE)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call("gorp", NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call("gorp", NO_JOB));
+			});
 		}
 	}
 
@@ -228,7 +239,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(DESTROY_JOB)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call("gorp", NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call("gorp", NO_JOB));
+			});
 		}
 	}
 
@@ -237,7 +250,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(DELETE_TASK)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_JOB));
+			});
 		}
 	}
 
@@ -246,7 +261,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(ALLOCATE_BOARDS_JOB)) {
 			assertEquals(6, u.getNumArguments());
-			assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, NO_JOB));
+			});
 		}
 	}
 
@@ -255,7 +272,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(DEALLOCATE_BOARDS_JOB)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_JOB));
+			});
 		}
 	}
 
@@ -264,7 +283,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(ALLOCATE_BOARDS_BOARD)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(NO_JOB, NO_BOARD));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_JOB, NO_BOARD));
+			});
 		}
 	}
 
@@ -273,7 +294,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_STATE_PENDING)) {
 			assertEquals(3, u.getNumArguments());
-			assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
+			});
 		}
 	}
 
@@ -282,8 +305,10 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(BUMP_IMPORTANCE)) {
 			assertEquals(0, u.getNumArguments());
-			// table should be empty
-			assertEquals(0, u.call());
+			c.transaction(() -> {
+				// table should be empty
+				assertEquals(0, u.call());
+			});
 		}
 	}
 
@@ -292,7 +317,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(KILL_JOB_ALLOC_TASK)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_JOB));
+			});
 		}
 	}
 
@@ -301,7 +328,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(KILL_JOB_PENDING)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_JOB));
+			});
 		}
 	}
 
@@ -310,7 +339,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_IN_PROGRESS)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(false, NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(false, NO_JOB));
+			});
 		}
 	}
 
@@ -319,9 +350,11 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(issueChangeForJob)) {
 			assertEquals(11, u.getNumArguments());
-			// No such job
-			assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0, 0, //
-					true, false, false, false, false, false, false));
+			c.transaction(() -> {
+				// No such job
+				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0, 0, //
+						true, false, false, false, false, false, false));
+			});
 		}
 	}
 
@@ -330,7 +363,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_BOARD_POWER)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(false, NO_BOARD));
+			c.transaction(() -> {
+				assertEquals(0, u.call(false, NO_BOARD));
+			});
 		}
 	}
 
@@ -339,7 +374,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(FINISHED_PENDING)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_CHANGE));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_CHANGE));
+			});
 		}
 	}
 
@@ -348,8 +385,10 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_MACHINE_SPINN_5)) {
 			assertEquals(4, u.getNumArguments());
-			// Bad depth
-			assertThrowsCheck(() -> u.keys("gorp", -1, -1, -1));
+			c.transaction(() -> {
+				// Bad depth
+				assertThrowsCheck(() -> u.keys("gorp", -1, -1, -1));
+			});
 		}
 	}
 
@@ -358,8 +397,10 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_TAG)) {
 			assertEquals(2, u.getNumArguments());
-			// No machine
-			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp"));
+			c.transaction(() -> {
+				// No machine
+				assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp"));
+			});
 		}
 	}
 
@@ -368,8 +409,10 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_BMP)) {
 			assertEquals(4, u.getNumArguments());
-			// No machine
-			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", 0, 0));
+			c.transaction(() -> {
+				// No machine
+				assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", 0, 0));
+			});
 		}
 	}
 
@@ -378,9 +421,11 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_BOARD)) {
 			assertEquals(10, u.getNumArguments());
-			// No machine
-			assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", NO_BMP, 0, 0, 0, 0,
-					0, 0, true));
+			c.transaction(() -> {
+				// No machine
+				assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", NO_BMP, 0, 0, 0,
+						0, 0, 0, true));
+			});
 		}
 	}
 
@@ -389,9 +434,11 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_LINK)) {
 			assertEquals(5, u.getNumArguments());
-			// No board
-			assertThrowsFK(() -> u.keys(NO_BOARD, Direction.N, NO_BOARD,
-					Direction.S, false));
+			c.transaction(() -> {
+				// No board
+				assertThrowsFK(() -> u.keys(NO_BOARD, Direction.N, NO_BOARD,
+						Direction.S, false));
+			});
 		}
 	}
 
@@ -400,8 +447,10 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_MAX_COORDS)) {
 			assertEquals(3, u.getNumArguments());
-			// No machine
-			assertEquals(0, u.call(0, 0, NO_MACHINE));
+			c.transaction(() -> {
+				// No machine
+				assertEquals(0, u.call(0, 0, NO_MACHINE));
+			});
 		}
 	}
 
@@ -410,7 +459,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_FUNCTIONING_FIELD)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(false, NO_BOARD));
+			c.transaction(() -> {
+				assertEquals(0, u.call(false, NO_BOARD));
+			});
 		}
 	}
 
@@ -419,7 +470,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(DECREMENT_QUOTA)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(0, NO_USER)); // really quota_id
+			c.transaction(() -> {
+				assertEquals(0, u.call(0, NO_USER)); // really quota_id
+			});
 		}
 	}
 
@@ -428,7 +481,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(MARK_CONSOLIDATED)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_JOB));
+			});
 		}
 	}
 
@@ -437,7 +492,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(MARK_LOGIN_SUCCESS)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_USER));
+			});
 		}
 	}
 
@@ -448,7 +505,9 @@ class DMLTest extends SQLQueries {
 		try (Query u = c.query(MARK_LOGIN_FAILURE)) {
 			assertEquals(2, u.getNumArguments());
 			assertSetEquals(set("locked"), u.getRowColumnNames());
-			assertFalse(u.call1(0, NO_USER).isPresent());
+			c.transaction(() -> {
+				assertFalse(u.call1(0, NO_USER).isPresent());
+			});
 		}
 	}
 
@@ -459,7 +518,9 @@ class DMLTest extends SQLQueries {
 		try (Query u = c.query(UNLOCK_LOCKED_USERS)) {
 			assertEquals(1, u.getNumArguments());
 			assertSetEquals(set("user_name"), u.getRowColumnNames());
-			assertFalse(u.call1(Duration.ofDays(1000)).isPresent());
+			c.transaction(() -> {
+				assertFalse(u.call1(Duration.ofDays(1000)).isPresent());
+			});
 		}
 	}
 
@@ -468,7 +529,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(DELETE_USER)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_USER));
+			});
 		}
 	}
 
@@ -477,7 +540,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_USER_QUOTA)) {
 			assertEquals(3, u.getNumArguments());
-			assertEquals(0, u.call(0L, NO_USER, "gorp"));
+			c.transaction(() -> {
+				assertEquals(0, u.call(0L, NO_USER, "gorp"));
+			});
 		}
 	}
 
@@ -486,7 +551,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_USER_TRUST)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(TrustLevel.BASIC, NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call(TrustLevel.BASIC, NO_USER));
+			});
 		}
 	}
 
@@ -495,7 +562,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_USER_LOCKED)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(false, NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call(false, NO_USER));
+			});
 		}
 	}
 
@@ -504,7 +573,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_USER_DISABLED)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(false, NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call(false, NO_USER));
+			});
 		}
 	}
 
@@ -513,7 +584,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_USER_PASS)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call("*", NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call("*", NO_USER));
+			});
 		}
 	}
 
@@ -522,7 +595,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(SET_USER_NAME)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call("gorp", NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call("gorp", NO_USER));
+			});
 		}
 	}
 
@@ -531,8 +606,10 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(CREATE_USER)) {
 			assertEquals(4, u.getNumArguments());
-			// DB was userless; this makes one
-			assertEquals(1, u.call("gorp", "*", TrustLevel.BASIC, true));
+			c.transaction(() -> {
+				// DB was userless; this makes one
+				assertEquals(1, u.call("gorp", "*", TrustLevel.BASIC, true));
+			});
 		}
 	}
 
@@ -541,7 +618,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(CREATE_QUOTA)) {
 			assertEquals(3, u.getNumArguments());
-			assertEquals(0, u.call(NO_USER, 0, "gorp"));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_USER, 0, "gorp"));
+			});
 		}
 	}
 
@@ -550,7 +629,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(CREATE_QUOTAS_FROM_DEFAULTS)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_USER));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_USER));
+			});
 		}
 	}
 
@@ -559,7 +640,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
 			assertEquals(2, u.getNumArguments());
-			assertEquals(0, u.call(NO_USER, 0));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_USER, 0));
+			});
 		}
 	}
 
@@ -568,7 +651,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_BOARD_REPORT)) {
 			assertEquals(4, u.getNumArguments());
-			assertThrowsFK(() -> u.call(NO_BOARD, NO_JOB, "gorp", NO_USER));
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD, NO_JOB, "gorp", NO_USER));
+			});
 		}
 	}
 
@@ -577,7 +662,9 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (Update u = c.update(DELETE_JOB_RECORD)) {
 			assertEquals(1, u.getNumArguments());
-			assertEquals(0, u.call(NO_JOB));
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_JOB));
+			});
 		}
 	}
 
@@ -587,7 +674,9 @@ class DMLTest extends SQLQueries {
 		try (Query q = c.query(copyToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id"), q.getRowColumnNames());
-			assertFalse(q.call1(1000000).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(1000000).isPresent());
+			});
 		}
 	}
 }

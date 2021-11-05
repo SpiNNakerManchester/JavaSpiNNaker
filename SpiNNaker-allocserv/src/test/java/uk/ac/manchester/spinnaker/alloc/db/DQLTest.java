@@ -161,7 +161,9 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
-			assertFalse(q.call1().isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1().isPresent());
+			});
 		}
 	}
 
@@ -170,7 +172,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(LIST_MACHINE_NAMES)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("machine_name"), q.getRowColumnNames());
-			assertFalse(q.call1().isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1().isPresent());
+			});
 		}
 	}
 
@@ -181,7 +185,9 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -192,7 +198,9 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
-			assertFalse(q.call1("gorp").isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1("gorp").isPresent());
+			});
 		}
 	}
 
@@ -201,7 +209,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_MACHINE_JOBS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id", "owner_name"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -211,7 +221,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
-			assertFalse(q.call1(0, 0).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(0, 0).isPresent());
+			});
 		}
 	}
 
@@ -221,8 +233,10 @@ class DQLTest extends SQLQueries {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
-			q.call(0, 0);
-			// Must not throw
+			c.transaction(() -> {
+				q.call(0, 0);
+				// Must not throw
+			});
 		}
 	}
 
@@ -236,7 +250,9 @@ class DQLTest extends SQLQueries {
 					"keepalive_interval", "create_timestamp", "death_reason",
 					"death_timestamp", "original_request", "owner"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_JOB).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_JOB).isPresent());
+			});
 		}
 	}
 
@@ -245,7 +261,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_JOB_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_id"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_JOB).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_JOB).isPresent());
+			});
 		}
 	}
 
@@ -255,7 +273,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_JOB).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_JOB).isPresent());
+			});
 		}
 	}
 
@@ -264,10 +284,12 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_JOB_CHIP_DIMENSIONS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("width", "height"), q.getRowColumnNames());
-			Row row = q.call1(NO_JOB).get();
-			// These two are actually NULL when there's no job
-			assertEquals(0, row.getInt("width"));
-			assertEquals(0, row.getInt("height"));
+			c.transaction(() -> {
+				Row row = q.call1(NO_JOB).get();
+				// These two are actually NULL when there's no job
+				assertEquals(0, row.getInt("width"));
+				assertEquals(0, row.getInt("height"));
+			});
 		}
 	}
 
@@ -276,7 +298,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_ROOT_OF_BOARD)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("root_x", "root_y"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_BOARD).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
 		}
 	}
 
@@ -285,7 +309,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_ROOT_BMP_ADDRESS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("address"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -294,7 +320,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_BMP_ADDRESS)) {
 			assertEquals(3, q.getNumArguments());
 			assertSetEquals(set("address"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
+			});
 		}
 	}
 
@@ -303,7 +331,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_BOARD_ADDRESS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("address"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_BOARD).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
 		}
 	}
 
@@ -312,7 +342,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_num"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -321,7 +353,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_BMP_BOARD_NUMBERS)) {
 			assertEquals(3, q.getNumArguments());
 			assertSetEquals(set("board_num"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
+			});
 		}
 	}
 
@@ -331,7 +365,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -341,7 +377,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -355,7 +393,9 @@ class DQLTest extends SQLQueries {
 							"board_2_x", "board_2_y", "board_2_z", "board_2_c",
 							"board_2_f", "board_2_b", "board_2_addr", "dir_2"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -364,7 +404,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_AVAILABLE_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_num"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -373,7 +415,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_TAGS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("tag"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -383,8 +427,10 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_BOARD_POWER)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("total_on"), q.getRowColumnNames());
-			Row row = q.call1(NO_JOB).get();
-			assertEquals(0, row.getInt("total_on"));
+			c.transaction(() -> {
+				Row row = q.call1(NO_JOB).get();
+				assertEquals(0, row.getInt("total_on"));
+			});
 		}
 	}
 
@@ -394,7 +440,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_id", "address", "x", "y", "z", "root_x",
 					"root_y"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_JOB).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_JOB).isPresent());
+			});
 		}
 	}
 
@@ -404,7 +452,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("x", "y", "z", "root_x", "root_y"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_BOARD).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
 		}
 	}
 
@@ -416,7 +466,9 @@ class DQLTest extends SQLQueries {
 					"height", "board_id", "machine_id", "max_dead_boards",
 					"max_height", "max_width", "job_state", "importance"),
 					q.getRowColumnNames());
-			assertFalse(q.call1().isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1().isPresent());
+			});
 		}
 	}
 
@@ -425,7 +477,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(FIND_FREE_BOARD)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -434,7 +488,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_BOARD_BY_COORDS)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(set("board_id"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+			});
 		}
 	}
 
@@ -443,7 +499,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(FIND_EXPIRED_JOBS)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("job_id"), q.getRowColumnNames());
-			assertFalse(q.call1().isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1().isPresent());
+			});
 		}
 	}
 
@@ -453,7 +511,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("z", "direction", "dx", "dy", "dz"),
 					q.getRowColumnNames());
-			q.call();
+			c.transaction(() -> {
+				q.call();
+			});
 		}
 	}
 
@@ -462,17 +522,21 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_CHANGES)) {
 			assertEquals(1, q.getNumArguments());
 			Set<String> colNames = q.getRowColumnNames();
-			assertSetEquals(set("change_id", "job_id", "board_id", "power",
-					"fpga_n", "fpga_s", "fpga_e", "fpga_w", "fpga_nw",
-					"fpga_se", "in_progress", "from_state", "to_state",
-					"board_num", "cabinet", "frame", "bmp_id"), colNames);
+			assertSetEquals(
+					set("change_id", "job_id", "board_id", "power", "fpga_n",
+							"fpga_s", "fpga_e", "fpga_w", "fpga_nw", "fpga_se",
+							"in_progress", "from_state", "to_state",
+							"board_num", "cabinet", "frame", "bmp_id"),
+					colNames);
 			// Ensure that this link is maintained
 			for (Direction d : Direction.values()) {
 				assertTrue(colNames.contains(d.columnName),
 						() -> format("%s must contain %s", colNames,
 								d.columnName));
 			}
-			assertFalse(q.call1(NO_JOB).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_JOB).isPresent());
+			});
 		}
 	}
 
@@ -482,7 +546,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(set("id", "x", "y", "z", "available"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(-1, -1, NO_MACHINE, 0).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(-1, -1, NO_MACHINE, 0).isPresent());
+			});
 		}
 	}
 
@@ -491,7 +557,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(findLocation)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE, NO_BOARD).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, NO_BOARD).isPresent());
+			});
 		}
 	}
 
@@ -500,8 +568,10 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(countConnected)) {
 			assertEquals(5, q.getNumArguments());
 			assertSetEquals(set("connected_size"), q.getRowColumnNames());
-			Row row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
-			assertEquals(0, row.getInt("connected_size"));
+			c.transaction(() -> {
+				Row row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
+				assertEquals(0, row.getInt("connected_size"));
+			});
 		}
 	}
 
@@ -510,8 +580,10 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(COUNT_PENDING_CHANGES)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("c"), q.getRowColumnNames());
-			Row row = q.call1().get();
-			assertEquals(0, row.getInt("c"));
+			c.transaction(() -> {
+				Row row = q.call1().get();
+				assertEquals(0, row.getInt("c"));
+			});
 		}
 	}
 
@@ -521,7 +593,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_id", "direction"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_JOB).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_JOB).isPresent());
+			});
 		}
 	}
 
@@ -535,7 +609,9 @@ class DQLTest extends SQLQueries {
 					"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_MACHINE, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, -1, -1).isPresent());
+			});
 		}
 	}
 
@@ -550,7 +626,9 @@ class DQLTest extends SQLQueries {
 							"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_JOB, NO_BOARD, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_JOB, NO_BOARD, -1, -1).isPresent());
+			});
 		}
 	}
 
@@ -564,7 +642,9 @@ class DQLTest extends SQLQueries {
 					"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+			});
 		}
 	}
 
@@ -578,7 +658,9 @@ class DQLTest extends SQLQueries {
 					"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
+			});
 		}
 	}
 
@@ -592,7 +674,9 @@ class DQLTest extends SQLQueries {
 					"job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
-			assertFalse(q.call1(NO_MACHINE, "127.0.0.1").isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, "127.0.0.1").isPresent());
+			});
 		}
 	}
 
@@ -601,7 +685,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(getJobsWithChanges)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
 		}
 	}
 
@@ -610,8 +696,10 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(getConnectedBoards)) {
 			assertEquals(7, q.getNumArguments());
 			assertSetEquals(set("board_id"), q.getRowColumnNames());
-			assertFalse(
-					q.call1(NO_MACHINE, -1, -1, -1, -1, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, -1, -1, -1, -1, -1, -1)
+						.isPresent());
+			});
 		}
 	}
 
@@ -620,7 +708,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
-			assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+			});
 		}
 	}
 
@@ -629,7 +719,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
-			assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+			});
 		}
 	}
 
@@ -638,7 +730,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
-			assertFalse(q.call1("gorp", "256.256.256.256").isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1("gorp", "256.256.256.256").isPresent());
+			});
 		}
 	}
 
@@ -647,7 +741,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_FUNCTIONING_FIELD)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("functioning"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_BOARD).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
 		}
 	}
 
@@ -656,7 +752,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_USER_QUOTA)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("quota", "user_id"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE, "gorp").isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, "gorp").isPresent());
+			});
 		}
 	}
 
@@ -665,8 +763,10 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_CURRENT_USAGE)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("current_usage"), q.getRowColumnNames());
-			assertNull(q.call1(NO_MACHINE, "gorp").get()
-					.getObject("current_usage"));
+			c.transaction(() -> {
+				assertNull(q.call1(NO_MACHINE, "gorp").get()
+						.getObject("current_usage"));
+			});
 		}
 	}
 
@@ -675,7 +775,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("quota", "usage"), q.getRowColumnNames());
-			assertFalse(q.call1(NO_MACHINE, NO_JOB).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE, NO_JOB).isPresent());
+			});
 		}
 	}
 
@@ -685,8 +787,10 @@ class DQLTest extends SQLQueries {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("job_id", "quota_id", "usage"),
 					q.getRowColumnNames());
-			// Empty DB has no consolidation targets
-			assertFalse(q.call1().isPresent());
+			c.transaction(() -> {
+				// Empty DB has no consolidation targets
+				assertFalse(q.call1().isPresent());
+			});
 		}
 	}
 
@@ -696,8 +800,10 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("disabled", "locked", "user_id"),
 					q.getRowColumnNames());
-			// Empty DB has no consolidation targets
-			assertFalse(q.call1("").isPresent());
+			c.transaction(() -> {
+				// Empty DB has no consolidation targets
+				assertFalse(q.call1("").isPresent());
+			});
 		}
 	}
 
@@ -707,7 +813,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("trust_level", "encrypted_password"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_USER).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_USER).isPresent());
+			});
 		}
 	}
 
@@ -716,8 +824,10 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(LIST_ALL_USERS)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(set("user_id", "user_name"), q.getRowColumnNames());
-			// Testing DB has no users by default
-			assertFalse(q.call1().isPresent());
+			c.transaction(() -> {
+				// Testing DB has no users by default
+				assertFalse(q.call1().isPresent());
+			});
 		}
 	}
 
@@ -726,8 +836,10 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(GET_USER_ID)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("user_id"), q.getRowColumnNames());
-			// Testing DB has no users by default
-			assertFalse(q.call1("gorp").isPresent());
+			c.transaction(() -> {
+				// Testing DB has no users by default
+				assertFalse(q.call1("gorp").isPresent());
+			});
 		}
 	}
 
@@ -740,7 +852,9 @@ class DQLTest extends SQLQueries {
 							"last_successful_login_timestamp", "locked",
 							"trust_level", "user_id", "user_name"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_USER).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_USER).isPresent());
+			});
 		}
 	}
 
@@ -750,7 +864,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("machine_name", "quota"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_USER).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_USER).isPresent());
+			});
 		}
 	}
 
@@ -760,10 +876,12 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("board_count", "in_use", "num_jobs"),
 					q.getRowColumnNames());
-			Row r = q.call1(NO_MACHINE).get();
-			assertEquals(0, r.getInt("board_count"));
-			assertEquals(0, r.getInt("in_use"));
-			assertEquals(0, r.getInt("num_jobs"));
+			c.transaction(() -> {
+				Row r = q.call1(NO_MACHINE).get();
+				assertEquals(0, r.getInt("board_count"));
+				assertEquals(0, r.getInt("in_use"));
+				assertEquals(0, r.getInt("num_jobs"));
+			});
 		}
 	}
 
@@ -772,7 +890,9 @@ class DQLTest extends SQLQueries {
 		try (Query q = c.query(COUNT_POWERED_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("c"), q.getRowColumnNames());
-			assertEquals(0, q.call1(NO_JOB).get().getInt("c"));
+			c.transaction(() -> {
+				assertEquals(0, q.call1(NO_JOB).get().getInt("c"));
+			});
 		}
 	}
 
@@ -785,8 +905,10 @@ class DQLTest extends SQLQueries {
 							"job_state", "keepalive_host", "keepalive_interval",
 							"machine_id", "machine_name", "user_name"),
 					q.getRowColumnNames());
-			// No jobs right now
-			assertFalse(q.call1().isPresent());
+			c.transaction(() -> {
+				// No jobs right now
+				assertFalse(q.call1().isPresent());
+			});
 		}
 	}
 
@@ -796,7 +918,9 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("user_id", "user_name", "encrypted_password"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(NO_USER).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_USER).isPresent());
+			});
 		}
 	}
 
@@ -807,7 +931,9 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(
 					set("board_id", "num_reports", "x", "y", "z", "address"),
 					q.getRowColumnNames());
-			assertFalse(q.call1(0).isPresent());
+			c.transaction(() -> {
+				assertFalse(q.call1(0).isPresent());
+			});
 		}
 	}
 }

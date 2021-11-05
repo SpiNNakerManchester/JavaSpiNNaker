@@ -151,29 +151,31 @@ class MDefLoaderTest {
 			}
 		});
 
-		try (Query q = c.query("SELECT machine_name FROM machines")) {
-			int rows = 0;
-			for (Row row : q.call()) {
-				assertEquals("my-board", row.getString("machine_name"));
-				rows++;
+		c.transaction(() -> {
+			try (Query q = c.query("SELECT machine_name FROM machines")) {
+				int rows = 0;
+				for (Row row : q.call()) {
+					assertEquals("my-board", row.getString("machine_name"));
+					rows++;
+				}
+				assertEquals(1, rows);
 			}
-			assertEquals(1, rows);
-		}
 
-		// Should be just one BMP
-		try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-			assertEquals(1, q.call1().get().getInt("c"));
-		}
+			// Should be just one BMP
+			try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
+				assertEquals(1, q.call1().get().getInt("c"));
+			}
 
-		// Should be just one board
-		try (Query q = c.query(COUNT_LIVE_BOARDS)) {
-			assertEquals(1, q.call1().get().getInt("c"));
-		}
+			// Should be just one board
+			try (Query q = c.query(COUNT_LIVE_BOARDS)) {
+				assertEquals(1, q.call1().get().getInt("c"));
+			}
 
-		// Single-board setups have no inter-board links
-		try (Query q = c.query(COUNT_LIVE_LINKS)) {
-			assertEquals(0, q.call1().get().getInt("c"));
-		}
+			// Single-board setups have no inter-board links
+			try (Query q = c.query(COUNT_LIVE_LINKS)) {
+				assertEquals(0, q.call1().get().getInt("c"));
+			}
+		});
 	}
 
 	@Test
@@ -192,28 +194,31 @@ class MDefLoaderTest {
 			}
 		});
 
-		try (Query q = c.query("SELECT machine_name FROM machines")) {
-			int rows = 0;
-			for (Row row : q.call()) {
-				assertEquals("SpiNNaker3board", row.getString("machine_name"));
-				rows++;
+		c.transaction(() -> {
+			try (Query q = c.query("SELECT machine_name FROM machines")) {
+				int rows = 0;
+				for (Row row : q.call()) {
+					assertEquals("SpiNNaker3board",
+							row.getString("machine_name"));
+					rows++;
+				}
+				assertEquals(1, rows);
 			}
-			assertEquals(1, rows);
-		}
 
-		// Should be just one BMP
-		try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-			assertEquals(1, q.call1().get().getInt("c"));
-		}
+			// Should be just one BMP
+			try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
+				assertEquals(1, q.call1().get().getInt("c"));
+			}
 
-		// Should be just one board
-		try (Query q = c.query(COUNT_LIVE_BOARDS)) {
-			assertEquals(3, q.call1().get().getInt("c"));
-		}
+			// Should be just one board
+			try (Query q = c.query(COUNT_LIVE_BOARDS)) {
+				assertEquals(3, q.call1().get().getInt("c"));
+			}
 
-		// Single-board setups have no inter-board links
-		try (Query q = c.query(COUNT_LIVE_LINKS)) {
-			assertEquals(9, q.call1().get().getInt("c"));
-		}
+			// Single-board setups have no inter-board links
+			try (Query q = c.query(COUNT_LIVE_LINKS)) {
+				assertEquals(9, q.call1().get().getInt("c"));
+			}
+		});
 	}
 }

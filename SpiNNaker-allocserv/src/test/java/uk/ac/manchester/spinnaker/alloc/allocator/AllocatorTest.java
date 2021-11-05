@@ -120,7 +120,7 @@ class AllocatorTest extends SQLQueries {
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
-			setupDB(c);
+			c.transaction(() -> setupDB(c));
 		}
 	}
 
@@ -134,11 +134,10 @@ class AllocatorTest extends SQLQueries {
 
 	private void setupDB(Connection c) {
 		// A simple machine
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO machines("
-						+ "machine_id, machine_name, width, height, [depth], "
-						+ "default_quota, board_model) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, 5)")) {
+		try (Update u = c.update("INSERT OR IGNORE INTO machines("
+				+ "machine_id, machine_name, width, height, [depth], "
+				+ "default_quota, board_model) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, 5)")) {
 			u.call(MACHINE, "foo", 1, 1, 3, 10000);
 		}
 		try (Update u = c.update(
@@ -147,8 +146,8 @@ class AllocatorTest extends SQLQueries {
 			u.call(BMP, MACHINE, "1.1.1.1", 1, 1);
 		}
 		int b0 = BOARD, b1 = BOARD + 1, b2 = BOARD + 2;
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO boards(board_id, address, "
+		try (Update u =
+				c.update("INSERT OR IGNORE INTO boards(board_id, address, "
 						+ "bmp_id, board_num, machine_id, x, y, z, "
 						+ "root_x, root_y, board_power) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
@@ -164,10 +163,9 @@ class AllocatorTest extends SQLQueries {
 			u.call(b1, 2, b2, 5);
 		}
 		// A disabled permission-less user with a quota
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO user_info("
-						+ "user_id, user_name, trust_level, disabled) "
-						+ "VALUES (?, ?, ?, ?)")) {
+		try (Update u = c.update("INSERT OR IGNORE INTO user_info("
+				+ "user_id, user_name, trust_level, disabled) "
+				+ "VALUES (?, ?, ?, ?)")) {
 			u.call(USER, "bar", TrustLevel.BASIC, true);
 		}
 		try (Update u = c.update("INSERT OR REPLACE INTO quotas("
@@ -188,14 +186,15 @@ class AllocatorTest extends SQLQueries {
 	 * @return Job ID
 	 */
 	private int makeJob(int time) {
-		try (Update u = conn.update(
-				"INSERT INTO jobs(machine_id, owner, job_state, "
+		try (Update u =
+				conn.update("INSERT INTO jobs(machine_id, owner, job_state, "
 						+ "create_timestamp, keepalive_interval, "
 						+ "keepalive_timestamp) "
 						+ "VALUES (?, ?, ?, 0, ?, ?)")) {
-			return u.key(MACHINE, USER, JobState.QUEUED, time, now())
-					.orElseThrow(
-							() -> new RuntimeException("failed to insert job"));
+			return conn.transaction(
+					() -> u.key(MACHINE, USER, JobState.QUEUED, time, now())
+							.orElseThrow(() -> new RuntimeException(
+									"failed to insert job")));
 		}
 	}
 
@@ -203,7 +202,7 @@ class AllocatorTest extends SQLQueries {
 		try (Update u =
 				conn.update("INSERT INTO job_request(job_id, num_boards) "
 						+ "VALUES (?, ?)")) {
-			u.call(job, size);
+			conn.transaction(() -> u.call(job, size));
 		}
 	}
 
@@ -212,34 +211,34 @@ class AllocatorTest extends SQLQueries {
 		try (Update u =
 				conn.update("INSERT INTO job_request(job_id, width, height, "
 						+ "max_dead_boards) VALUES (?, ?, ?, ?)")) {
-			u.call(job, width, height, allowedDead);
+			conn.transaction(() -> u.call(job, width, height, allowedDead));
 		}
 	}
 
 	private void makeAllocByBoardIdRequest(int job, int board) {
-		try (Update u =
-				conn.update("INSERT INTO job_request(job_id, board_id) "
-						+ "VALUES (?, ?)")) {
-			u.call(job, board);
+		try (Update u = conn.update("INSERT INTO job_request(job_id, board_id) "
+				+ "VALUES (?, ?)")) {
+			conn.transaction(() -> u.call(job, board));
 		}
 	}
 
 	private JobState getJobState(int job) {
 		try (Query q = conn.query(GET_JOB)) {
-			return q.call1(job).get().getEnum("job_state", JobState.class);
+			return conn.transaction(() -> q.call1(job).get()
+					.getEnum("job_state", JobState.class));
 		}
 	}
 
 	private int getJobRequestCount() {
 		try (Query q = conn.query("SELECT COUNT(*) AS cnt FROM job_request")) {
-			return q.call1().get().getInt("cnt");
+			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
 
 	private int getPendingPowerChanges() {
 		try (Query q =
 				conn.query("SELECT COUNT(*) AS cnt FROM pending_changes")) {
-			return q.call1().get().getInt("cnt");
+			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
 
@@ -474,27 +473,35 @@ class AllocatorTest extends SQLQueries {
 			int job = makeJob(1);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				alloc.allocate(c);
+				c.transaction(() -> {
+					alloc.allocate(c);
+				});
 				snooze();
 				processBMPRequests();
 
 				assumeState(job, JobState.READY, 0, 0);
 
-				alloc.expireJobs(c);
+				c.transaction(() -> {
+					alloc.expireJobs(c);
+				});
 
 				assertState(job, JobState.DESTROYED, 0, 1);
 
 				// HACK! Allow immediate switch off (OK because not real BMP)
-				c.update("UPDATE boards SET "
-						+ "power_on_timestamp = power_on_timestamp - 1000")
-								.call();
+				c.transaction(() -> {
+					c.update("UPDATE boards SET "
+							+ "power_on_timestamp = power_on_timestamp - 1000")
+							.call();
+				});
 				processBMPRequests();
 
 				assertState(job, JobState.DESTROYED, 0, 0);
 			} finally {
-				alloc.destroyJob(c, job, "test");
-				c.update("DELETE FROM job_request").call();
-				c.update("DELETE FROM pending_changes").call();
+				c.transaction(() -> {
+					alloc.destroyJob(c, job, "test");
+					c.update("DELETE FROM job_request").call();
+					c.update("DELETE FROM pending_changes").call();
+				});
 			}
 		}
 	}

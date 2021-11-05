@@ -33,6 +33,7 @@ import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
+import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
 import java.io.File;
@@ -715,6 +716,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			s.setString(1, tombstoneFile);
 			s.execute();
 		}
+		conn.setAutoCommit(false);
 		if (log.isDebugEnabled()) {
 			conn.addCommitListener(new SQLiteCommitListener() {
 				@Override
@@ -765,7 +767,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			// NB: Not a standard query! Safe, because we know we have an int
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				conn.exec(String.format(OPTIMIZE_DB, props.getAnalysisLimit()));
+				conn.transaction(() -> {
+					conn.exec(String.format(OPTIMIZE_DB,
+							props.getAnalysisLimit()));
+				});
 			} catch (DataAccessException e) {
 				/*
 				 * If we're busy, just don't bother; it's optional to optimise
@@ -829,26 +834,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		private void begin() {
-			try {
-				setAutoCommit(false);
-			} catch (DataAccessException e) {
-				log.warn(
-						"failed to begin transaction: "
-								+ "current transaction holders are {}",
-						currentTransactionHolders());
-				try {
-					if (e.getMostSpecificCause() instanceof SQLiteException
-							&& !getAutoCommit()) {
-						// Try to get the state to be sane
-						log.warn("resetting connection commit state");
-						unwrap(SQLiteConnection.class).getConnectionConfig()
-								.setAutoCommit(true);
-					}
-				} catch (DataAccessException inner) {
-					e.addSuppressed(inner);
-				}
-				throw e;
+		void checkInTransaction() {
+			if (!inTransaction) {
+				log.warn("executing not inside transaction: {}", getCaller());
 			}
 		}
 
@@ -859,6 +847,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *
 		 * @param operation
 		 *            The operation to run
+		 * @see #transaction(TransactedWithResult)
 		 */
 		public void transaction(Transacted operation) {
 			// Use the other method, ignoring the result value
@@ -878,6 +867,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @param operation
 		 *            The operation to run
 		 * @return the value returned by {@code operation}
+		 * @see #transaction(Transacted)
 		 */
 		public <T> T transaction(TransactedWithResult<T> operation) {
 			if (inTransaction) {
@@ -889,7 +879,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				caller = getCaller();
 				log.debug("start transaction: {}", caller);
 			}
-			begin();
 			boolean done = false;
 			try (Hold hold = new Hold()) {
 				T result = operation.act();
@@ -1079,7 +1068,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #update(String)
 		 */
 		public void exec(String sql) {
-			try (Hold hold = new Hold(); Statement s = createStatement()) {
+			checkInTransaction();
+			try (Statement s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
 				s.executeUpdate(sql);
 				/*
@@ -1106,10 +1096,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
+	private boolean threadCacheConnections = false;
+
 	/**
 	 * Get a connection. This connection is thread-bound and pooled; it <em>must
 	 * not</em> be passed to other threads. They should get their own
-	 * connections instead.
+	 * connections instead. The connection has auto-commit disabled; use the
+	 * {@link Connection#transaction(TransactedWithResult) transaction()} method
+	 * instead.
 	 * <p>
 	 * Note that if an in-memory database is used (see
 	 * {@link #getInMemoryDB()}), that DB can <em>only</em> be accessed from the
@@ -1127,16 +1121,26 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			// In-memory DB (dbPath null) always must be initialised
 			SQLiteConnection conn = openDatabaseConnection();
 			initDBConn(conn);
-			return new Connection(conn);
+			return new Connection(threadBound(conn));
 		}
 		synchronized (this) {
-			boolean doInit = !initialised || !exists(dbPath);
-			SQLiteConnection conn = getCachedDatabaseConnection();
-			if (doInit) {
-				initDBConn(conn);
-				initialised = true;
+			if (threadCacheConnections && !isLongTermThread()) {
+				SQLiteConnection conn = getCachedDatabaseConnection();
+				maybeInit(conn);
+				return new Connection(uncloseableThreadBound(conn));
+			} else {
+				SQLiteConnection conn = openDatabaseConnection();
+				maybeInit(conn);
+				return new Connection(threadBound(conn));
 			}
-			return new Connection(uncloseableThreadBound(conn));
+		}
+	}
+
+	private void maybeInit(SQLiteConnection conn) {
+		boolean doInit = !initialised || !exists(dbPath);
+		if (doInit) {
+			initDBConn(conn);
+			initialised = true;
 		}
 	}
 
@@ -1378,7 +1382,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/** The result set from the statement that we will manage. */
 		ResultSet rs;
 
+		/** The database connection. */
+		final Connection conn;
+
 		StatementWrapper(Connection conn, String sql) {
+			this.conn = conn;
 			s = conn.prepareStatement(sql);
 			rs = null;
 		}
@@ -1525,6 +1533,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         outlive the iteration.
 		 */
 		public MappableIterable<Row> call(Object... arguments) {
+			conn.checkInTransaction();
 			closeResults();
 			try {
 				log.debug("opening result set in {}", getCaller());
@@ -1550,6 +1559,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					if (!consumed) {
 						return true;
 					}
+					conn.checkInTransaction();
 					boolean result = false;
 					try {
 						result = rs.next();
@@ -1587,6 +1597,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         row.
 		 */
 		public Optional<Row> call1(Object... arguments) {
+			conn.checkInTransaction();
 			try {
 				log.debug("opening result set in {}", getCaller());
 				closeResults();
@@ -1624,6 +1635,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The number of rows updated
 		 */
 		public int call(Object... arguments) {
+			conn.checkInTransaction();
 			closeResults();
 			try {
 				setParams(arguments);
@@ -1645,6 +1657,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The integer primary keys generated by the update.
 		 */
 		public MappableIterable<Integer> keys(Object... arguments) {
+			conn.checkInTransaction();
 			/*
 			 * In theory, the statement should have been prepared with the
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
@@ -1678,6 +1691,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					if (!consumed) {
 						return true;
 					}
+					conn.checkInTransaction();
 					boolean result = false;
 					try {
 						result = rs.next();
@@ -1718,6 +1732,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The integer primary key generated by the update.
 		 */
 		public Optional<Integer> key(Object... arguments) {
+			conn.checkInTransaction();
 			closeResults();
 			try {
 				setParams(arguments);
