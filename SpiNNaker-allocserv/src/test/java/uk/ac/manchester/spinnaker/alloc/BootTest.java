@@ -47,13 +47,17 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @SpringJUnitWebConfig(BootTest.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
-	"spalloc.database-path=" + BootTest.DB
+	"spalloc.database-path=" + BootTest.DB,
+	"spalloc.historical-data.path=" + BootTest.HIST_DB
 })
 class BootTest {
 	private static final Logger log = getLogger(BootTest.class);
 
 	/** The DB file. */
 	static final String DB = "boot_test.sqlite3";
+
+	/** The DB history file. */
+	static final String HIST_DB = "boot_test_hist.sqlite3";
 
 	@Configuration
 	@ComponentScan
@@ -88,7 +92,7 @@ class BootTest {
 	}
 
 	@Test
-	void testContextBoot() {
+	void testContextBoot() throws InterruptedException {
 		// If all these bits are there, we declare the application to be working
 		assertNotNull(service);
 		assertNotNull(core);
@@ -96,5 +100,7 @@ class BootTest {
 		assertNotNull(root);
 		assertNotNull(admin);
 		assertNotNull(adminUI);
+		// Give background tasks a chance to run
+		Thread.sleep(5000);
 	}
 }

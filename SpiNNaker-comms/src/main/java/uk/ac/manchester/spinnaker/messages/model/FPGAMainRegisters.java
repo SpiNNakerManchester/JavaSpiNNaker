@@ -58,10 +58,10 @@ public enum FPGAMainRegisters {
 	 * Enable SpiNNaker chip (2-of-7) link. (Default: {@code 0x00000000})
 	 *
 	 * <pre>
-	 * { 0: Link 0 SpiNN->FPGA enable,
-	 *   1: Link 0 FPGA->SpiNN enable,
-	 *   2: Link 1 SpiNN->FPGA enable,
-	 *   3: Link 1 FPGA->SpiNN enable,
+	 * { 0: Link 0 SpiNN-&gt;FPGA enable,
+	 *   1: Link 0 FPGA-&gt;SpiNN enable,
+	 *   2: Link 1 SpiNN-&gt;FPGA enable,
+	 *   3: Link 1 FPGA-&gt;SpiNN enable,
 	 *   ... }
 	 * </pre>
 	 */

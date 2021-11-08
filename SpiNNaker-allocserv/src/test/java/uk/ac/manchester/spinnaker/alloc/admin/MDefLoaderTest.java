@@ -18,7 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -38,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.TestPropertySource;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
@@ -57,6 +59,10 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
+@TestPropertySource(properties = {
+	// Stop scheduled tasks from running
+	"spalloc.pause=true"
+})
 class MDefLoaderTest {
 	private static final String COUNT_LIVE_BOARDS =
 			"SELECT COUNT(*) AS c FROM boards WHERE board_num IS NOT NULL";
@@ -145,29 +151,31 @@ class MDefLoaderTest {
 			}
 		});
 
-		try (Query q = c.query("SELECT machine_name FROM machines")) {
-			int rows = 0;
-			for (Row row : q.call()) {
-				assertEquals("my-board", row.getString("machine_name"));
-				rows++;
+		c.transaction(() -> {
+			try (Query q = c.query("SELECT machine_name FROM machines")) {
+				int rows = 0;
+				for (Row row : q.call()) {
+					assertEquals("my-board", row.getString("machine_name"));
+					rows++;
+				}
+				assertEquals(1, rows);
 			}
-			assertEquals(1, rows);
-		}
 
-		// Should be just one BMP
-		try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-			assertEquals(1, q.call1().get().getInt("c"));
-		}
+			// Should be just one BMP
+			try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
+				assertEquals(1, q.call1().get().getInt("c"));
+			}
 
-		// Should be just one board
-		try (Query q = c.query(COUNT_LIVE_BOARDS)) {
-			assertEquals(1, q.call1().get().getInt("c"));
-		}
+			// Should be just one board
+			try (Query q = c.query(COUNT_LIVE_BOARDS)) {
+				assertEquals(1, q.call1().get().getInt("c"));
+			}
 
-		// Single-board setups have no inter-board links
-		try (Query q = c.query(COUNT_LIVE_LINKS)) {
-			assertEquals(0, q.call1().get().getInt("c"));
-		}
+			// Single-board setups have no inter-board links
+			try (Query q = c.query(COUNT_LIVE_LINKS)) {
+				assertEquals(0, q.call1().get().getInt("c"));
+			}
+		});
 	}
 
 	@Test
@@ -186,28 +194,31 @@ class MDefLoaderTest {
 			}
 		});
 
-		try (Query q = c.query("SELECT machine_name FROM machines")) {
-			int rows = 0;
-			for (Row row : q.call()) {
-				assertEquals("SpiNNaker3board", row.getString("machine_name"));
-				rows++;
+		c.transaction(() -> {
+			try (Query q = c.query("SELECT machine_name FROM machines")) {
+				int rows = 0;
+				for (Row row : q.call()) {
+					assertEquals("SpiNNaker3board",
+							row.getString("machine_name"));
+					rows++;
+				}
+				assertEquals(1, rows);
 			}
-			assertEquals(1, rows);
-		}
 
-		// Should be just one BMP
-		try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-			assertEquals(1, q.call1().get().getInt("c"));
-		}
+			// Should be just one BMP
+			try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
+				assertEquals(1, q.call1().get().getInt("c"));
+			}
 
-		// Should be just one board
-		try (Query q = c.query(COUNT_LIVE_BOARDS)) {
-			assertEquals(3, q.call1().get().getInt("c"));
-		}
+			// Should be just one board
+			try (Query q = c.query(COUNT_LIVE_BOARDS)) {
+				assertEquals(3, q.call1().get().getInt("c"));
+			}
 
-		// Single-board setups have no inter-board links
-		try (Query q = c.query(COUNT_LIVE_LINKS)) {
-			assertEquals(9, q.call1().get().getInt("c"));
-		}
+			// Single-board setups have no inter-board links
+			try (Query q = c.query(COUNT_LIVE_LINKS)) {
+				assertEquals(9, q.call1().get().getInt("c"));
+			}
+		});
 	}
 }

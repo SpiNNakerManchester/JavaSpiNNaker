@@ -25,22 +25,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>Create User</h1>
 
 <form:form method="POST" modelAttribute="user">
-    <form:label path="userName">User Name: </form:label>
-    <form:input path="userName" type="text"/>
-    <form:select path="trustLevel">
-    <form:option value="">pick a level</form:option>
-    <form:options items="${ trustLevels }"/>
-    </form:select>
-    <br>
-    <form:label path="password">Password: </form:label>
-    <form:input path="password" type="password" />
-    <form:label path="hasPassword">Has Password: </form:label>
-    <form:checkbox path="hasPassword"/>
-    <br>
-    <form:label path="isEnabled">Is enabled? </form:label>
-    <form:checkbox path="isEnabled"/>
-    <p>
-    <input type="submit" value="Create" />
+	<form:label path="userName">User Name: </form:label>
+	<form:input path="userName" type="text"/>
+	<form:select path="trustLevel">
+		<form:option value="">pick a level</form:option>
+		<form:options items="${ trustLevels }"/>
+	</form:select>
+	<br>
+	<form:label path="password">Password: </form:label>
+	<form:input path="password" type="password" />
+	<form:label path="hasPassword">Has Password: </form:label>
+	<form:checkbox path="hasPassword"/>
+	<br>
+	<form:label path="isEnabled">Is enabled? </form:label>
+	<form:checkbox path="isEnabled"/>
+	<p>
+	<input type="submit" value="Create" />
 </form:form>
 
 <jsp:include page="footer.jsp" />

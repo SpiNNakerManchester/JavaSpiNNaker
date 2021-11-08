@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
-	<td>${ job.owner.orElse('[SHROUDED]') }</td>
+	<td><c:out value="${ job.owner.orElse('[SHROUDED]') }" escapeXml="true" /></td>
 </tr>
 <tr>
 	<th class="lineTitle">State:</th>
@@ -53,11 +53,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Owner host:</th>
-	<td>${ job.ownerHost.orElse('[SHROUDED]') }</td>
+	<td><c:out value="${ job.ownerHost.orElse('[SHROUDED]') }" escapeXml="true" /></td>
 </tr>
 <tr>
 	<th class="lineTitle">Raw Request:</th>
-	<td>${ job.request }</td>
+	<td><pre><c:out value="${ job.request }" escapeXml="true" /></pre></td>
 </tr>
 <tr>
 	<th class="lineTitle">Allocation:</th>
@@ -99,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Running on:</th>
-	<td><a href="${ job.machineUrl }">${ job.machine }</a></td>
+	<td><a href="${ job.machineUrl }"><c:out value="${ job.machine }" escapeXml="true" /></a></td>
 </tr>
 </table>
 

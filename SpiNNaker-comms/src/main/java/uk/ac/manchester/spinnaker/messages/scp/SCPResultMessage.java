@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.Byte.toUnsignedInt;
+import static java.lang.Integer.toHexString;
 import static java.lang.Short.toUnsignedInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
@@ -24,12 +26,14 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /** The low-level format of SCP result message. */
-public class SCPResultMessage {
+public final class SCPResultMessage {
 	private static final int SDP_HEADER_LENGTH = 8;
 
 	private static final int SKIP_HEADER_BYTES = 2 + SDP_HEADER_LENGTH;
@@ -134,5 +138,20 @@ public class SCPResultMessage {
 
 	public int getSequenceNumber() {
 		return sequenceNumber;
+	}
+
+	@Override
+	public String toString() {
+		Object contents;
+		if (responseData != null) {
+			List<String> data = new ArrayList<>();
+			for (int i = 0; i < responseData.limit(); i++) {
+				data.add(toHexString(toUnsignedInt(responseData.get(i))));
+			}
+			contents = data;
+		} else {
+			contents = "message data purged";
+		}
+		return "SCPResultMessage(" + contents + ")";
 	}
 }

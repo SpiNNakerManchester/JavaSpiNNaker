@@ -34,15 +34,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</tr>
 	</thead>
 	<tbody>
-    <c:forEach items="${ userlist }" var="item">
-	    <tr>
-		    <td>${item.key }</td>
-		    <td>
-		    	<button onclick="location.href='${ item.value }'"
-		    			type="button">Manage</button>
-		    </td>
-	    </tr>
-    </c:forEach>
+	<c:forEach items="${ userlist }" var="item">
+		<tr>
+			<td>
+				<c:out value="${ item.key }" escapeXml='true' />
+			</td>
+			<td>
+				<button onclick="location.href='${ item.value }'"
+						type="button">Manage</button>
+			</td>
+		</tr>
+	</c:forEach>
 	</tbody>
 </table>
 

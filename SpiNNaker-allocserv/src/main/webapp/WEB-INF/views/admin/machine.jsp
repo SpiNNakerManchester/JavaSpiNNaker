@@ -26,21 +26,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>Machine Import</h1>
 <c:if test="${ not empty definedMachines }">
 	<c:forEach items="${ definedMachines }" var="m">
-		Machine called "<code>${ m.name }</code>"
+		Machine called "<code><c:out value="${ m.name }" escapeXml="true" /></code>"
 		(${ m.width }&times;${ m.height }&times;3) defined.<br>
 	</c:forEach>
 </c:if>
 <form method="POST" enctype="multipart/form-data">
-   <sec:csrfInput />
-    <table>
-        <tr>
-            <td><label>Select a configuration file to upload:</label></td>
-            <td><input type="file" name="file" /></td>
-        </tr>
-        <tr>
-            <td colspan="2"><input type="submit" value="Submit" /></td>
-        </tr>
-    </table>
+	<sec:csrfInput />
+	<table>
+		<tr>
+			<td><label>Select a configuration file to upload:</label></td>
+			<td><input type="file" name="file" /></td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="submit" value="Submit" /></td>
+		</tr>
+	</table>
 </form>
 
 <jsp:include page="footer.jsp" />

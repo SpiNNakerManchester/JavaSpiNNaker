@@ -57,6 +57,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -105,11 +106,14 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	@Autowired
 	private DatabaseEngine db;
 
+	@Autowired
+	private SpallocAPI spalloc;
+
 	private List<String> getMachineNames() {
 		try (Connection conn = db.getConnection();
 				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return listMachines.call().map(row -> row.getString("machine_name"))
-					.toList();
+			return conn.transaction(() -> listMachines.call()
+					.map(row -> row.getString("machine_name")).toList());
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
 			return emptyList();
@@ -369,6 +373,7 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 								+ "({},{},{}) to {}",
 						bs.x, bs.y, bs.z, board.isEnabled());
 				bs.setState(board.isEnabled());
+				spalloc.purgeDownCache();
 			}
 		} catch (DataAccessException e) {
 			return errors("database access failed: " + e.getMessage());

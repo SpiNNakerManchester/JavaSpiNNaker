@@ -155,11 +155,14 @@ public interface SpallocAPI {
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
-	 * @return Handle to the job.
+	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
 	 */
-	Job createJob(String owner, CreateDescriptor descriptor, String machineName,
-			List<String> tags, Duration keepaliveInterval,
+	Optional<Job> createJob(String owner, CreateDescriptor descriptor,
+			String machineName, List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards, byte[] originalRequest);
+
+	/** Purge the cache of what boards are down. */
+	void purgeDownCache();
 
 	/**
 	 * Describes what sort of request to create a job this is.
@@ -595,8 +598,23 @@ public interface SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	interface BoardLocation {
+		/**
+		 * Get the location of the characteristic chip of a board. This is
+		 * usually the root chip of the board.
+		 *
+		 * @return chip location, in <em>global</em> (whole machine) coordinates
+		 */
 		ChipLocation getBoardChip();
 
+		/**
+		 * Get the location of this board location relative to another global
+		 * location (the global location of the root chip of an allocation).
+		 *
+		 * @param rootChip
+		 *            The global location of the root chip of an allocation that
+		 *            we are converting this board location to be relative to.
+		 * @return chip location, in <em>relative</em> (single job) coordinates
+		 */
 		ChipLocation getChipRelativeTo(ChipLocation rootChip);
 
 		/**
@@ -623,7 +641,8 @@ public interface SpallocAPI {
 		/**
 		 * Where is the chip of interest? Usually the root chip of the board.
 		 *
-		 * @return a chip location
+		 * @return a chip location, in <em>global</em> (whole machine)
+		 *         coordinates
 		 */
 		ChipLocation getChip();
 

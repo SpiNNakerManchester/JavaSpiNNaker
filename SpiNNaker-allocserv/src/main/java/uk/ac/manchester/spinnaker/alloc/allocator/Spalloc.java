@@ -90,6 +90,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	private static final Logger log = getLogger(Spalloc.class);
 
+	private static final int TRIAD_SIZE = 3;
+
 	@Autowired
 	private DatabaseEngine db;
 
@@ -107,6 +109,12 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 	@Autowired
 	private AllocatorProperties props;
+
+	private transient Map<String, List<BoardCoords>> downBoardsCache =
+			new HashMap<>();
+
+	private transient Map<String, List<DownLink>> downLinksCache =
+			new HashMap<>();
 
 	@Override
 	public Map<String, Machine> getMachines() {
@@ -238,11 +246,11 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			JobCollection jc = new JobCollection(epochs.getJobsEpoch());
 			if (deleted) {
 				try (Query jobs = conn.query(GET_JOB_IDS)) {
-					jc.addJobs(jobs.call(limit, start));
+					jc.setJobs(jobs.call(limit, start));
 				}
 			} else {
 				try (Query jobs = conn.query(GET_LIVE_JOB_IDS)) {
-					jc.addJobs(jobs.call(limit, start));
+					jc.setJobs(jobs.call(limit, start));
 				}
 			}
 			return jc;
@@ -340,7 +348,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	@Override
-	public Job createJob(String owner, CreateDescriptor descriptor,
+	public Optional<Job> createJob(String owner, CreateDescriptor descriptor,
 			String machineName, List<String> tags, Duration keepaliveInterval,
 			Integer maxDeadBoards, byte[] req) {
 		return db.execute(conn -> {
@@ -349,23 +357,23 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			Optional<MachineImpl> mach = selectMachine(conn, machineName, tags);
 			if (!mach.isPresent()) {
 				// Cannot find machine!
-				return null;
+				return Optional.empty();
 			}
 			MachineImpl m = mach.get();
 			if (!quotaManager.mayCreateJob(m.id, owner)) {
 				// No quota left
-				return null;
+				return Optional.empty();
 			}
 			int id = insertJob(conn, m, user, keepaliveInterval, req);
 			if (id < 0) {
 				// Insert failed
-				return null;
+				return Optional.empty();
 			}
 			epochs.nextJobsEpoch();
 
 			// Ask the allocator engine to do the allocation
 			insertRequest(conn, m, id, descriptor, maxDeadBoards);
-			return getJob(id, conn).orElse(null);
+			return getJob(id, conn).map(ji -> (Job) ji);
 		});
 	}
 
@@ -374,8 +382,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return getUser.call1(userName).map(row -> row.getInt("user_id"));
 		}
 	}
-
-	private static final int TRIAD_SIZE = 3;
 
 	private void insertRequest(Connection conn, MachineImpl machine, int id,
 			CreateDescriptor descriptor, Integer numDeadBoards) {
@@ -471,6 +477,14 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		return Optional.empty();
 	}
 
+	@Override
+	public void purgeDownCache() {
+		synchronized (this) {
+			downBoardsCache.clear();
+			downLinksCache.clear();
+		}
+	}
+
 	private static DownLink makeDownLinkFromRow(Row row) {
 		BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
 				row.getInt("board_1_y"), row.getInt("board_1_z"),
@@ -494,10 +508,6 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private final int width;
 
 		private final int height;
-
-		private transient List<BoardCoords> downBoardsCache;
-
-		private transient List<DownLink> downLinksCache;
 
 		@JsonIgnore
 		private final Epoch epoch;
@@ -535,7 +545,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByGlobalChip)) {
 				return conn.transaction(() -> findBoard.call1(id, x, y)
-						.map(row -> new BoardLocationImpl(row, id)));
+						.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -546,7 +556,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 					Query findBoard = conn.query(findBoardByPhysicalCoords)) {
 				return conn.transaction(
 						() -> findBoard.call1(id, cabinet, frame, board)
-								.map(row -> new BoardLocationImpl(row, id)));
+								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -556,7 +566,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByLogicalCoords)) {
 				return conn.transaction(() -> findBoard.call1(id, x, y, z)
-						.map(row -> new BoardLocationImpl(row, id)));
+						.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -565,7 +575,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByIPAddress)) {
 				return conn.transaction(() -> findBoard.call1(id, address)
-						.map(row -> new BoardLocationImpl(row, id)));
+						.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -590,9 +600,10 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public List<BoardCoords> getDeadBoards() {
 			// Assume that the list doesn't change for the duration of this obj
-			synchronized (this) {
-				if (nonNull(downBoardsCache)) {
-					return unmodifiableList(downBoardsCache);
+			synchronized (Spalloc.this) {
+				List<BoardCoords> down = downBoardsCache.get(name);
+				if (nonNull(down)) {
+					return unmodifiableList(down);
 				}
 			}
 			try (Connection conn = db.getConnection();
@@ -606,10 +617,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 										row.getInteger("board_num"),
 										row.getString("address")))
 								.toList());
-				synchronized (this) {
-					if (isNull(downBoardsCache)) {
-						downBoardsCache = downBoards;
-					}
+				synchronized (Spalloc.this) {
+					downBoardsCache.putIfAbsent(name, downBoards);
 				}
 				return unmodifiableList(downBoards);
 			}
@@ -618,19 +627,18 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		@Override
 		public List<DownLink> getDownLinks() {
 			// Assume that the list doesn't change for the duration of this obj
-			synchronized (this) {
-				if (nonNull(downLinksCache)) {
-					return unmodifiableList(downLinksCache);
+			synchronized (Spalloc.this) {
+				List<DownLink> down = downLinksCache.get(name);
+				if (nonNull(down)) {
+					return unmodifiableList(down);
 				}
 			}
 			try (Connection conn = db.getConnection();
 					Query boardNumbers = conn.query(getDeadLinks)) {
 				List<DownLink> downLinks = conn.transaction(() -> boardNumbers
 						.call(id).map(Spalloc::makeDownLinkFromRow).toList());
-				synchronized (this) {
-					if (isNull(downLinksCache)) {
-						downLinksCache = downLinks;
-					}
+				synchronized (Spalloc.this) {
+					downLinksCache.putIfAbsent(name, downLinks);
 				}
 				return unmodifiableList(downLinks);
 			}
@@ -724,7 +732,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			return jobs.stream().map(Job::getId).collect(toList());
 		}
 
-		void addJobs(MappableIterable<Row> rows) {
+		private void setJobs(MappableIterable<Row> rows) {
 			jobs = rows.map(this::makeJob).toList();
 		}
 
@@ -904,9 +912,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			if (isNull(root)) {
 				return Optional.empty();
 			}
-			try (Connection conn = db.getConnection()) {
-				return Optional.of(new SubMachineImpl(conn));
-			}
+			return db.execute(conn -> Optional.of(new SubMachineImpl(conn)));
 		}
 
 		@Override
@@ -917,7 +923,8 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			try (Connection conn = db.getConnection();
 					Query findBoard = conn.query(findBoardByJobChip)) {
 				return conn.transaction(() -> findBoard.call1(id, root, x, y)
-						.map(row -> new BoardLocationImpl(row, machineId)));
+						.map(row -> new BoardLocationImpl(row, Spalloc.this
+								.getMachine(machineId, conn).get())));
 			}
 		}
 
@@ -1204,7 +1211,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 				}
 			}
 			if (acted > 0) {
-				// TODO purge the cache of what boards are down
+				purgeDownCache();
 				epochs.nextMachineEpoch();
 			}
 			return acted > 0 ? Optional.of(acted) : Optional.empty();
@@ -1356,9 +1363,16 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 	}
 
 	private final class BoardLocationImpl implements BoardLocation {
+		/** The width and height of a triad, in chips. */
+		private static final int TRIAD_DIMENSION_FACTOR = 12;
+
 		private JobImpl job;
 
-		private final String machine;
+		private final String machineName;
+
+		private final int machineWidth;
+
+		private final int machineHeight;
 
 		private final ChipLocation chip;
 
@@ -1369,13 +1383,15 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 		private final BoardPhysicalCoordinates physical;
 
 		// Transaction is open
-		private BoardLocationImpl(Row row, int machineId) {
-			machine = row.getString("machine_name");
+		private BoardLocationImpl(Row row, Machine machine) {
+			machineName = row.getString("machine_name");
 			logical = new BoardCoordinates(row.getInt("x"), row.getInt("y"),
 					row.getInt("z"));
 			physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
 					row.getInt("frame"), row.getInteger("board_num"));
 			chip = new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
+			machineWidth = machine.getWidth();
+			machineHeight = machine.getHeight();
 			Integer boardX = row.getInteger("board_chip_x");
 			if (nonNull(boardX)) {
 				boardChip =
@@ -1387,7 +1403,7 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 			Integer jobId = row.getInteger("job_id");
 			if (nonNull(jobId)) {
 				// No epoch; can't wait on this
-				job = new JobImpl(null, jobId, machineId);
+				job = new JobImpl(null, jobId, machine.getId());
 				job.chipRoot = new ChipLocation(row.getInt("job_root_chip_x"),
 						row.getInt("job_root_chip_y"));
 			}
@@ -1400,13 +1416,20 @@ public class Spalloc extends SQLQueries implements SpallocAPI {
 
 		@Override
 		public ChipLocation getChipRelativeTo(ChipLocation rootChip) {
-			return new ChipLocation(chip.getX() - rootChip.getX(),
-					chip.getY() - rootChip.getY());
+			int x = chip.getX() - rootChip.getX();
+			if (x < 0) {
+				x += machineWidth * TRIAD_DIMENSION_FACTOR;
+			}
+			int y = chip.getY() - rootChip.getY();
+			if (y < 0) {
+				y += machineHeight * TRIAD_DIMENSION_FACTOR;
+			}
+			return new ChipLocation(x, y);
 		}
 
 		@Override
 		public String getMachine() {
-			return machine;
+			return machineName;
 		}
 
 		@Override

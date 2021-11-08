@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
@@ -77,6 +79,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.Ping;
 
 /**
@@ -116,6 +119,8 @@ public class BMPController extends SQLQueries {
 
 	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
+	private Deque<Runnable> cleanupTasks = new ConcurrentLinkedDeque<>();
+
 	/** We have our own pool. */
 	private ExecutorService executor = newCachedThreadPool(this::makeThread);
 
@@ -146,6 +151,24 @@ public class BMPController extends SQLQueries {
 
 	// ----------------------------------------------------------------
 	// SERVICE IMPLEMENTATION
+
+	/**
+	 * Mark all pending changes as eligible for processing. Called once on
+	 * application startup when all internal queues are guaranteed to be empty.
+	 */
+	@PostConstruct
+	private void clearStuckPending() {
+		db.executeVoid(c -> {
+			try (Update u = c.update(CLEAR_STUCK_PENDING)) {
+				int changes = u.call();
+				if (changes > 0) {
+					log.info(
+							"marking {} change sets as eligible for processing",
+							changes);
+				}
+			}
+		});
+	}
 
 	@Scheduled(fixedDelayString = "#{txrxProperties.period}",
 			initialDelayString = "#{txrxProperties.period}")
@@ -181,6 +204,10 @@ public class BMPController extends SQLQueries {
 	@Deprecated
 	public void processRequests()
 			throws IOException, SpinnmanException, InterruptedException {
+		for (Runnable cleanup = cleanupTasks.poll(); cleanup != null; cleanup =
+				cleanupTasks.poll()) {
+			cleanup.run();
+		}
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
@@ -197,7 +224,8 @@ public class BMPController extends SQLQueries {
 	public int getPendingRequestLoading() {
 		try (Connection conn = db.getConnection();
 				Query countChanges = conn.query(COUNT_PENDING_CHANGES)) {
-			return countChanges.call1().map(row -> row.getInt("c")).orElse(0);
+			return conn.transaction(() -> countChanges.call1()
+					.map(row -> row.getInt("c")).orElse(0));
 		}
 	}
 
@@ -446,7 +474,11 @@ public class BMPController extends SQLQueries {
 				// Don't bother with pings when the dummy is enabled
 				return;
 			}
-			log.info("verifying network access to {} boards for job {}",
+			if (powerOnAddresses.isEmpty()) {
+				// Nothing to do
+				return;
+			}
+			log.debug("verifying network access to {} boards for job {}",
 					powerOnAddresses.size(), jobId);
 			powerOnAddresses.parallelStream().forEach(address -> {
 				if (Ping.ping(address) != 0) {
@@ -539,19 +571,21 @@ public class BMPController extends SQLQueries {
 	private void takeRequestsForJob(Machine machine, Integer jobId,
 			TakeReqsSQL sql, List<Request> requestCollector) {
 		List<Integer> changeIds = new ArrayList<>();
-		Map<BMPCoords, List<Integer>> boardsOn = new HashMap<>();
-		Map<BMPCoords, List<Integer>> boardsOff = new HashMap<>();
-		Map<BMPCoords, List<Link>> linksOff = new HashMap<>();
+		Map<BMPCoords, List<Integer>> boardsOn =
+				new DefaultMap<>(ArrayList::new);
+		Map<BMPCoords, List<Integer>> boardsOff =
+				new DefaultMap<>(ArrayList::new);
+		Map<BMPCoords, List<Link>> linksOff = new DefaultMap<>(ArrayList::new);
 		JobState from = UNKNOWN, to = UNKNOWN;
-		Map<BMPCoords, Map<Integer, Integer>> idToBoard = new HashMap<>();
+		Map<BMPCoords, Map<Integer, Integer>> idToBoard =
+				new DefaultMap<>(HashMap::new);
 
 		for (Row row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
 			BMPCoords bmp =
 					new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
 			Integer board = row.getInteger("board_id");
-			idToBoard.computeIfAbsent(bmp, ignored -> new HashMap<>())
-					.put(board, row.getInteger("board_num"));
+			idToBoard.get(bmp).put(board, row.getInteger("board_num"));
 			boolean switchOn = row.getBoolean("power");
 			/*
 			 * Set these multiple times; we don't care as they should be the
@@ -560,22 +594,17 @@ public class BMPController extends SQLQueries {
 			from = row.getEnum("from_state", JobState.class);
 			to = row.getEnum("to_state", JobState.class);
 			if (switchOn) {
-				boardsOn.computeIfAbsent(bmp, ignored -> new ArrayList<>())
-						.add(board);
+				boardsOn.get(bmp).add(board);
 				/*
 				 * Decode a collection of boolean columns to say which links to
 				 * switch back off
 				 */
 				asList(Direction.values()).stream()
 						.filter(link -> !row.getBoolean(link.columnName))
-						.map(link -> new Link(board, link))
-						.forEach(link -> linksOff
-								.computeIfAbsent(bmp,
-										ignored -> new ArrayList<>())
-								.add(link));
+						.forEach(link -> linksOff.get(bmp)
+								.add(new Link(board, link)));
 			} else {
-				boardsOff.computeIfAbsent(bmp, ignored -> new ArrayList<>())
-						.add(board);
+				boardsOff.get(bmp).add(board);
 			}
 		}
 
@@ -673,14 +702,9 @@ public class BMPController extends SQLQueries {
 	private WorkerState getWorkerState(Machine machine)
 			throws InterruptedException {
 		synchronized (state) {
-			WorkerState ws = state.get(machine);
-			if (isNull(ws)) {
-				ws = new WorkerState(machine);
-				state.put(machine, ws);
-			}
+			WorkerState ws = state.computeIfAbsent(machine, WorkerState::new);
 			if (isNull(ws.workerThread)) {
-				WorkerState ws2 = ws;
-				executor.execute(() -> backgroundThread(ws2));
+				executor.execute(() -> backgroundThread(ws));
 				while (isNull(ws.workerThread)) {
 					state.wait();
 				}
@@ -695,16 +719,22 @@ public class BMPController extends SQLQueries {
 	/** The state of worker threads that can be seen outside the thread. */
 	private class WorkerState {
 		/** What machine is the worker handling? */
-		final Machine machine;
+		private final Machine machine;
 
 		/** Queue of requests to the machine to carry out. */
-		final Queue<Request> requests = new ConcurrentLinkedDeque<>();
+		private final Queue<Request> requests = new ConcurrentLinkedDeque<>();
 
-		/** Whether there are any requests pending. */
-		boolean requestsPending = false;
+		/**
+		 * Whether there are any requests pending. Protected by a lock on the
+		 * {@link BMPController} object.
+		 */
+		private boolean requestsPending = false;
 
-		/** What thread is serving as the worker? */
-		Thread workerThread;
+		/**
+		 * What thread is serving as the worker? Protected by a lock on the
+		 * {@link BMPController#state} object.
+		 */
+		private Thread workerThread;
 
 		WorkerState(Machine machine) {
 			this.machine = machine;
@@ -885,12 +915,11 @@ public class BMPController extends SQLQueries {
 	private boolean tryChangePowerState(Request request,
 			Map<BMPCoords, SpiNNakerControl> controllers, boolean isLastTry)
 			throws InterruptedException {
-		Machine machine = request.machine;
 		try {
 			request.changeBoardPowerState(controllers);
 			// We want to ensure the lead board is alive
 			request.ping();
-			request.done();
+			cleanupTasks.add(request::done);
 			// Exit the retry loop (in caller) if the requests all worked
 			return true;
 		} catch (InterruptedException e) {
@@ -900,8 +929,8 @@ public class BMPController extends SQLQueries {
 			 * outside gets to clean up.
 			 */
 			log.error("Requests failed on BMP {} because of interruption",
-					machine, e);
-			request.failed();
+					request.machine, e);
+			cleanupTasks.add(request::failed);
 			currentThread().interrupt();
 			throw e;
 		} catch (Exception e) {
@@ -909,13 +938,14 @@ public class BMPController extends SQLQueries {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...
 				 */
-				log.warn("Retrying requests on BMP {} after {}: {}", machine,
-						props.getProbeInterval(), e.getMessage());
+				log.warn("Retrying requests on BMP {} after {}: {}",
+						request.machine, props.getProbeInterval(),
+						e.getMessage());
 				// Ask for a retry
 				return false;
 			}
-			log.error("Requests failed on BMP {}", machine, e);
-			request.failed();
+			log.error("Requests failed on BMP {}", request.machine, e);
+			cleanupTasks.add(request::failed);
 			// This is (probably) a permanent failure; stop retry loop
 			return true;
 		}

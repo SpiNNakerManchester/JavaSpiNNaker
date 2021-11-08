@@ -23,40 +23,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>Spalloc Board Management</h1>
 
 <form:form method="POST" modelAttribute="board">
-    <form:label path="machineName">Machine: </form:label>
-    <form:select path="machineName">
-    <form:options items="${ machineNames }"/>
-    </form:select>
-    <br>
-    Triad coordinates:
-    <form:label path="x">X: </form:label>
-    <form:input path="x" type="number"/>
-    <form:label path="y">Y: </form:label>
-    <form:input path="y" type="number"/>
-    <form:label path="z">Z: </form:label>
-    <form:input path="z" type="number"/>
-    <br>
-    Physical coordinates:
-    <form:label path="cabinet">Cabinet: </form:label>
-    <form:input path="cabinet" type="number"/>
-    <form:label path="frame">Frame: </form:label>
-    <form:input path="frame" type="number"/>
-    <form:label path="board">Board: </form:label>
-    <form:input path="board" type="number"/>
-    <br>
-    Network coordinates:
-    <form:label path="ipAddress">IP Address: </form:label>
-    <form:input path="ipAddress" type="text"/>
-    <br>
-    <c:if test="${ board.enabledDefined }">
+	<form:label path="machineName">Machine: </form:label>
+	<form:select path="machineName">
+		<form:options items="${ machineNames }"/>
+	</form:select>
+	<br>
+	Triad coordinates:
+	<form:label path="x">X: </form:label>
+	<form:input path="x" type="number"/>
+	<form:label path="y">Y: </form:label>
+	<form:input path="y" type="number"/>
+	<form:label path="z">Z: </form:label>
+	<form:input path="z" type="number"/>
+	<br>
+	Physical coordinates:
+	<form:label path="cabinet">Cabinet: </form:label>
+	<form:input path="cabinet" type="number"/>
+	<form:label path="frame">Frame: </form:label>
+	<form:input path="frame" type="number"/>
+	<form:label path="board">Board: </form:label>
+	<form:input path="board" type="number"/>
+	<br>
+	Network coordinates:
+	<form:label path="ipAddress">IP Address: </form:label>
+	<form:input path="ipAddress" type="text"/>
+	<br>
+	<c:if test="${ board.enabledDefined }">
 		<form:label path="enabled">Enable: </form:label>
 		<form:checkbox path="enabled"/>
 		<p>
 		<input type="submit" value="Change State" />
-    </c:if>
-    <c:if test="${ not board.enabledDefined }">
+	</c:if>
+	<c:if test="${ not board.enabledDefined }">
 		<input type="submit" value="Look Up Board" />
-    </c:if>
+	</c:if>
 </form:form>
 <button onclick="window.location.href='${ baseuri }'">Clear form</button>
 

@@ -20,6 +20,7 @@ import static java.lang.Thread.currentThread;
 import static java.lang.Thread.interrupted;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
@@ -36,11 +37,11 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -119,7 +120,7 @@ public abstract class V1CompatTask {
 	}
 
 	final void handleConnection() {
-		log.info("waiting for commands from {}", sock);
+		log.debug("waiting for commands from {}", sock);
 		try {
 			while (!interrupted()) {
 				if (!communicate()) {
@@ -131,7 +132,7 @@ public abstract class V1CompatTask {
 		} catch (InterruptedException e) {
 			// ignored
 		} finally {
-			log.info("closing down connection from {}", sock);
+			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
 			try {
 				sock.close();
@@ -198,25 +199,26 @@ public abstract class V1CompatTask {
 	 * Read a command message from the client. The message will have occupied
 	 * one line of text on the input stream from the socket.
 	 *
-	 * @return The parsed command message, or {@code null} on end-of-stream.
+	 * @return The parsed command message, or {@code empty} on end-of-stream.
 	 * @throws IOException
 	 *             If things go wrong, such as a bad or incomplete message.
 	 * @throws InterruptedException
 	 *             If interrupted.
 	 */
-	private Command readMessage() throws IOException, InterruptedException {
+	private Optional<Command> readMessage()
+			throws IOException, InterruptedException {
 		String line = in.readLine();
 		if (isNull(line)) {
 			if (currentThread().isInterrupted()) {
 				throw new InterruptedException();
 			}
-			return null;
+			return Optional.empty();
 		}
 		Command c = parseCommand(line);
 		if (isNull(c) || isNull(c.getCommand())) {
 			throw new IOException("message did not specify a command");
 		}
-		return c;
+		return Optional.of(c);
 	}
 
 	/**
@@ -249,9 +251,7 @@ public abstract class V1CompatTask {
 	 */
 	protected final void writeResponse(Object response) throws IOException {
 		if (!sock.isClosed()) {
-			ReturnResponse rr = new ReturnResponse();
-			rr.setReturnValue(response);
-			sendMessage(rr);
+			sendMessage(new ReturnResponse(response));
 		}
 	}
 
@@ -263,11 +263,13 @@ public abstract class V1CompatTask {
 	 * @throws IOException
 	 *             If network access fails.
 	 */
-	protected final void writeException(Object exn) throws IOException {
+	protected final void writeException(Throwable exn) throws IOException {
 		if (!sock.isClosed()) {
-			ExceptionResponse er = new ExceptionResponse();
-			er.setException(exn.toString());
-			sendMessage(er);
+			if (nonNull(exn.getMessage())) {
+				sendMessage(new ExceptionResponse(exn.getMessage()));
+			} else {
+				sendMessage(new ExceptionResponse(exn.toString()));
+			}
 		}
 	}
 
@@ -282,9 +284,7 @@ public abstract class V1CompatTask {
 	protected final void writeJobNotification(List<Integer> jobIds)
 			throws IOException {
 		if (!jobIds.isEmpty() && !sock.isClosed()) {
-			JobNotifyMessage jnm = new JobNotifyMessage();
-			jnm.setJobsChanged(jobIds);
-			sendMessage(jnm);
+			sendMessage(new JobNotifyMessage(jobIds));
 		}
 	}
 
@@ -300,9 +300,7 @@ public abstract class V1CompatTask {
 	protected final void writeMachineNotification(List<String> machineNames)
 			throws IOException {
 		if (!machineNames.isEmpty() && !sock.isClosed()) {
-			MachineNotifyMessage mnm = new MachineNotifyMessage();
-			mnm.setMachinesChanged(machineNames);
-			sendMessage(mnm);
+			sendMessage(new MachineNotifyMessage(machineNames));
 		}
 	}
 
@@ -318,10 +316,10 @@ public abstract class V1CompatTask {
 	 */
 	public final boolean communicate()
 			throws IOException, InterruptedException {
-		Command cmd;
+		Optional<Command> cmd;
 		try {
 			cmd = readMessage();
-			if (isNull(cmd) || isNull(cmd.getCommand())) {
+			if (!cmd.isPresent()) {
 				log.debug("null message");
 				return false;
 			}
@@ -336,14 +334,14 @@ public abstract class V1CompatTask {
 
 		Object r;
 		try {
-			r = callOperation(cmd);
+			r = callOperation(cmd.get());
 		} catch (Oops | TaskException e) {
 			// Expected exceptions; don't log
 			writeException(e);
 			return true;
 		} catch (Exception e) {
-			log.warn("unexpected exception from {} operation", cmd.getCommand(),
-					e);
+			log.warn("unexpected exception from {} operation",
+					cmd.get().getCommand(), e);
 			writeException(e);
 			return true;
 		}
@@ -358,8 +356,8 @@ public abstract class V1CompatTask {
 	 *
 	 * @param cmd
 	 *            The command.
-	 * @return The result of the command. Can be anything as long as it can be
-	 *         serialised.
+	 * @return The result of the command. Can be anything (<em>including</em>
+	 *         {@code null}) as long as it can be serialised.
 	 * @throws Exception
 	 *             If things go wrong
 	 */
@@ -474,7 +472,7 @@ public abstract class V1CompatTask {
 	 *            Keyword argument map.
 	 * @param cmd
 	 *            The actual command, as serialised JSON.
-	 * @return Job identifier.
+	 * @return Job identifier. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -492,7 +490,7 @@ public abstract class V1CompatTask {
 	 *            Keyword argument map.
 	 * @param cmd
 	 *            The actual command, as serialised JSON.
-	 * @return Job identifier.
+	 * @return Job identifier. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -508,7 +506,7 @@ public abstract class V1CompatTask {
 	 *            Keyword argument map.
 	 * @param cmd
 	 *            The actual command, as serialised JSON.
-	 * @return Job identifier.
+	 * @return Job identifier. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -539,7 +537,7 @@ public abstract class V1CompatTask {
 	 *            Frame number.
 	 * @param board
 	 *            Board number.
-	 * @return Logical location.
+	 * @return Logical location. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -558,7 +556,7 @@ public abstract class V1CompatTask {
 	 *            Triad Y coordinate.
 	 * @param z
 	 *            Triad Z coordinate.
-	 * @return Physical location.
+	 * @return Physical location. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -570,7 +568,7 @@ public abstract class V1CompatTask {
 	 *
 	 * @param jobId
 	 *            Job identifier.
-	 * @return Description of job's (sub)machine.
+	 * @return Description of job's (sub)machine. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -582,7 +580,7 @@ public abstract class V1CompatTask {
 	 *
 	 * @param jobId
 	 *            Job identifier.
-	 * @return State description.
+	 * @return State description. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -601,7 +599,7 @@ public abstract class V1CompatTask {
 	/**
 	 * List the jobs.
 	 *
-	 * @return Descriptions of jobs on all machines.
+	 * @return Descriptions of jobs on all machines. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -610,7 +608,7 @@ public abstract class V1CompatTask {
 	/**
 	 * List the machines.
 	 *
-	 * @return Descriptions of all machines.
+	 * @return Descriptions of all machines. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -656,7 +654,7 @@ public abstract class V1CompatTask {
 			throws TaskException;
 
 	/**
-	 * @return The service version.
+	 * @return The service version. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -671,7 +669,7 @@ public abstract class V1CompatTask {
 	 *            Chip X coordinate.
 	 * @param y
 	 *            Chip Y coordinate.
-	 * @return Descriptor.
+	 * @return Descriptor. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -687,7 +685,7 @@ public abstract class V1CompatTask {
 	 *            Chip X coordinate.
 	 * @param y
 	 *            Chip Y coordinate.
-	 * @return Descriptor.
+	 * @return Descriptor. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -705,7 +703,7 @@ public abstract class V1CompatTask {
 	 *            Triad Y coordinate.
 	 * @param z
 	 *            Triad Z coordinate.
-	 * @return Descriptor.
+	 * @return Descriptor. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -723,7 +721,7 @@ public abstract class V1CompatTask {
 	 *            Frame number.
 	 * @param board
 	 *            Board number.
-	 * @return Descriptor.
+	 * @return Descriptor. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
@@ -737,84 +735,26 @@ public abstract class V1CompatTask {
 	private static String optStr(List<Object> args) {
 		return args.isEmpty() ? null : args.get(0).toString();
 	}
+}
 
-	/** Indicates a failure to parse a command. */
-	private static final class Oops extends RuntimeException {
-		private static final long serialVersionUID = 1L;
+/** Indicates a failure to parse a command. */
+final class Oops extends RuntimeException {
+	private static final long serialVersionUID = 1L;
 
-		Oops(String msg) {
-			super(msg);
-		}
+	Oops(String msg) {
+		super(msg);
 	}
+}
 
-	private static final class ReturnResponse {
-		private Object returnValue;
+/**
+ * An exception that a task operation may throw.
+ *
+ * @author Donal Fellows
+ */
+final class TaskException extends Exception {
+	private static final long serialVersionUID = 1L;
 
-		@JsonProperty("return")
-		public Object getReturnValue() {
-			return returnValue;
-		}
-
-		public void setReturnValue(Object returnValue) {
-			this.returnValue = returnValue;
-		}
-	}
-
-	private static final class ExceptionResponse {
-		private String exception;
-
-		@JsonProperty("exception")
-		public String getException() {
-			return exception;
-		}
-
-		public void setException(String exception) {
-			this.exception = isNull(exception) ? "" : exception.toString();
-		}
-	}
-
-	private static final class JobNotifyMessage {
-		private List<Integer> jobsChanged;
-
-		/**
-		 * @return the jobs changed
-		 */
-		@JsonProperty("jobs_changed")
-		public List<Integer> getJobsChanged() {
-			return jobsChanged;
-		}
-
-		public void setJobsChanged(List<Integer> jobsChanged) {
-			this.jobsChanged = jobsChanged;
-		}
-	}
-
-	private static final class MachineNotifyMessage {
-		private List<String> machinesChanged;
-
-		/**
-		 * @return the machines changed
-		 */
-		@JsonProperty("machines_changed")
-		public List<String> getMachinesChanged() {
-			return machinesChanged;
-		}
-
-		public void setMachinesChanged(List<String> machinesChanged) {
-			this.machinesChanged = machinesChanged;
-		}
-	}
-
-	/**
-	 * An exception that a task operation may throw.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static final class TaskException extends Exception {
-		private static final long serialVersionUID = 1L;
-
-		TaskException(String msg) {
-			super(msg);
-		}
+	TaskException(String msg) {
+		super(msg);
 	}
 }

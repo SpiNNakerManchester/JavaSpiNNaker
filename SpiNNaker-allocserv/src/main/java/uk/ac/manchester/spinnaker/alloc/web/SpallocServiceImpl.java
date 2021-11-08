@@ -400,14 +400,15 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 		// Async because it involves getting a write lock
 		bgAction(response, () -> {
-			Job j = core.createJob(req.owner.trim(), crds, req.machineName,
-					req.tags, req.keepaliveInterval, req.maxDeadBoards,
-					mapper.writeValueAsBytes(req));
-			if (isNull(j)) {
+			Optional<Job> jj = core.createJob(req.owner.trim(), crds,
+					req.machineName, req.tags, req.keepaliveInterval,
+					req.maxDeadBoards, mapper.writeValueAsBytes(req));
+			if (!jj.isPresent()) {
 				// Most likely reason for failure
 				return status(BAD_REQUEST).type(TEXT_PLAIN)
 						.entity("out of quota").build();
 			}
+			Job j = jj.get();
 			URI uri = ui.getRequestUriBuilder().path("{id}").build(j.getId());
 			return created(uri).entity(new CreateJobResponse(j, ui)).build();
 		});

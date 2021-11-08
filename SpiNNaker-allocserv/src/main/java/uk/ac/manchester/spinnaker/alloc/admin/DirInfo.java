@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  * Consider this board layout (a classic 24 board machine, with wrap-arounds not
  * shown):
  * <p>
- * <img src="doc-files/DirInfo1.png" width="450">
+ * <img src="doc-files/DirInfo1.png" width="450" alt="24-board layout">
  * <p>
  * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0 chips
  * horizontally offset from 0,0,0. (Also, the real boards are slightly offset
@@ -111,11 +111,15 @@ public final class DirInfo extends SQLQueries {
 
 	static void load(Connection conn) {
 		if (MAP.isEmpty()) {
-			try (Query di = conn.query(LOAD_DIR_INFO)) {
-				di.call().forEach(row -> new DirInfo(row.getInt("z"),
-						row.getEnum("direction", Direction.class),
-						row.getInt("dx"), row.getInt("dy"), row.getInt("dz")));
-			}
+			conn.transaction(() -> {
+				try (Query di = conn.query(LOAD_DIR_INFO)) {
+					di.call()
+							.forEach(row -> new DirInfo(row.getInt("z"),
+									row.getEnum("direction", Direction.class),
+									row.getInt("dx"), row.getInt("dy"),
+									row.getInt("dz")));
+				}
+			});
 			log.debug("created {} DirInfo instances",
 					MAP.values().stream().mapToInt(Map::size).sum());
 		}

@@ -392,7 +392,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 * Enumeration of links from a SpiNNaker chip, as used in the old spalloc.
 	 * <p>
 	 * Note that the numbers chosen have two useful properties:
-	 * <p>
+	 *
 	 * <ul>
 	 * <li>The integer values assigned are chosen to match the numbers used to
 	 * identify the links in the low-level software API and hardware registers.

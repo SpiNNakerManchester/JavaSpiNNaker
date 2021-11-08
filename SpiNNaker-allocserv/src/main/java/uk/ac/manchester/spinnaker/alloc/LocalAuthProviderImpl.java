@@ -625,9 +625,12 @@ public class LocalAuthProviderImpl extends SQLQueries
 	void unlock() {
 		try (Connection conn = db.getConnection();
 				Query unlock = conn.query(UNLOCK_LOCKED_USERS)) {
-			unlock.call(authProps.getAccountLockDuration())
-					.map(row -> row.getString("user_name")).forEach(user -> log
-							.info("automatically unlocked user {}", user));
+			conn.transaction(() -> {
+				unlock.call(authProps.getAccountLockDuration())
+						.map(row -> row.getString("user_name"))
+						.forEach(user -> log
+								.info("automatically unlocked user {}", user));
+			});
 		}
 	}
 }

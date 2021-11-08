@@ -37,7 +37,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  * The literal SQL queries used in this package.
  * <p>
  * The schema they query against (defined in {@code spalloc.sql}) is: <br>
- * <img src="doc-files/schema.png" width="95%">
+ * <img src="doc-files/schema.png" width="95%" alt="Database Schema">
  *
  * @author Donal Fellows
  */
@@ -1191,6 +1191,13 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	protected static final String DELETE_JOB_RECORD =
 			"DELETE FROM jobs WHERE job_id = :job_id";
+
+	/**
+	 * Mark all pending changes as eligible for processing. Called once on
+	 * application startup when all internal queues are guaranteed to be empty.
+	 */
+	protected static final String CLEAR_STUCK_PENDING =
+			"UPDATE pending_changes SET in_progress = 0";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

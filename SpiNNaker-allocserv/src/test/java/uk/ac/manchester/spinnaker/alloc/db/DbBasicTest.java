@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
+import org.springframework.test.context.TestPropertySource;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -44,6 +45,10 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
+@TestPropertySource(properties = {
+	// Stop scheduled tasks from running
+	"spalloc.pause=true"
+})
 class DbBasicTest {
 	@Autowired
 	private DatabaseEngine mainDBEngine;
@@ -71,16 +76,18 @@ class DbBasicTest {
 
 	@Test
 	void testDbConn() {
-		int rows = 0;
 		try (Query q =
 				c.query("SELECT COUNT(*) AS c FROM board_model_coords")) {
-			for (Row row : q.call()) {
-				// For v2, v3, v4 and v5 board configs (
-				assertEquals(104, row.getInt("c"));
-				rows++;
-			}
+			c.transaction(() -> {
+				int rows = 0;
+				for (Row row : q.call()) {
+					// For v2, v3, v4 and v5 board configs (
+					assertEquals(104, row.getInt("c"));
+					rows++;
+				}
+				assertEquals(1, rows, "should be only one row in query result");
+			});
 		}
-		assertEquals(1, rows, "should be only one row in query result");
 	}
 
 	private static void assumeWritable(Connection c) {
@@ -90,49 +97,51 @@ class DbBasicTest {
 	@Test
 	void testDbChanges() {
 		assumeWritable(c);
-		int rows;
-		c.exec("CREATE TEMPORARY TABLE foo(x)");
-		try (Update u = c.update("INSERT INTO foo(x) VALUES(?)");
-				Query q = c.query("SELECT x FROM foo WHERE ? = ?");
-				Query q2 = c.query("SELECT x FROM foo")) {
-			rows = 0;
-			for (Row row : q.call(1, 1)) {
-				assertNotNull(row.getObject("x"));
-				rows++;
+		c.transaction(() -> {
+			int rows;
+			c.exec("CREATE TEMPORARY TABLE foo(x)");
+			try (Update u = c.update("INSERT INTO foo(x) VALUES(?)");
+					Query q = c.query("SELECT x FROM foo WHERE ? = ?");
+					Query q2 = c.query("SELECT x FROM foo")) {
+				rows = 0;
+				for (Row row : q.call(1, 1)) {
+					assertNotNull(row.getObject("x"));
+					rows++;
+				}
+				assertEquals(0, rows);
+
+				int keyCount = 0;
+				for (Integer key : u.keys(123)) {
+					// Tricky: assumes how SQLite generates keys
+					assertEquals(Integer.valueOf(1), key);
+					keyCount++;
+				}
+				assertEquals(1, keyCount);
+
+				rows = 0;
+				for (Row row : q.call(1, 1)) {
+					assertEquals(123, row.getInt("x"));
+					rows++;
+				}
+				assertEquals(1, rows);
+
+				// Test what happens when we give too many arguments
+				DataAccessException e1 = assertThrows(DataAccessException.class,
+						() -> q.call(1, 2, 3));
+				assertEquals("prepared statement takes 2 arguments, not 3",
+						e1.getMostSpecificCause().getMessage());
+
+				DataAccessException e2 = assertThrows(DataAccessException.class,
+						() -> q2.call(1));
+				assertEquals("prepared statement takes no arguments",
+						e2.getMostSpecificCause().getMessage());
+
+				// Test what happens when we give too few arguments
+				DataAccessException e3 = assertThrows(DataAccessException.class,
+						() -> q.call(1));
+				assertEquals("prepared statement takes 2 arguments, not 1",
+						e3.getMostSpecificCause().getMessage());
 			}
-			assertEquals(0, rows);
-
-			int keyCount = 0;
-			for (Integer key : u.keys(123)) {
-				// Tricky: assumes how SQLite generates keys
-				assertEquals(Integer.valueOf(1), key);
-				keyCount++;
-			}
-			assertEquals(1, keyCount);
-
-			rows = 0;
-			for (Row row : q.call(1, 1)) {
-				assertEquals(123, row.getInt("x"));
-				rows++;
-			}
-			assertEquals(1, rows);
-
-			// Test what happens when we give too many arguments
-			DataAccessException e1 = assertThrows(DataAccessException.class,
-					() -> q.call(1, 2, 3));
-			assertEquals("prepared statement takes 2 arguments, not 3",
-					e1.getMostSpecificCause().getMessage());
-
-			DataAccessException e2 =
-					assertThrows(DataAccessException.class, () -> q2.call(1));
-			assertEquals("prepared statement takes no arguments",
-					e2.getMostSpecificCause().getMessage());
-
-			// Test what happens when we give too few arguments
-			DataAccessException e3 =
-					assertThrows(DataAccessException.class, () -> q.call(1));
-			assertEquals("prepared statement takes 2 arguments, not 1",
-					e3.getMostSpecificCause().getMessage());
-		}
+		});
 	}
 }
