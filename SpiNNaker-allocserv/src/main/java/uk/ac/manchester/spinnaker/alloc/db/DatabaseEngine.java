@@ -240,6 +240,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private Set<Thread> transactionHolders = new HashSet<>();
 
 	/**
+	 * We maintain our own lock rather than delegating to the database. This is
+	 * known to be overly pessimistic, but it's extremely hard to do better
+	 * without getting a deadlock when several threads try to upgrade their
+	 * locks to write locks at the same time.
+	 */
+	private final Lock lock = new ReentrantLock();
+
+	/**
 	 * Records the execution time of a statement, at least to first result set.
 	 *
 	 * @param s
@@ -830,6 +838,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * it doesn't need to, eventually causing database locking problems.
 		 */
 		private void realBegin() {
+			lock.lock();
 			try {
 				realDB.exec("begin;", false);
 			} catch (SQLException e) {
@@ -847,6 +856,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				realDB.exec("commit;", false);
 			} catch (SQLException e) {
 				throw mapException(e, null);
+			} finally {
+				lock.unlock();
 			}
 		}
 
@@ -860,6 +871,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				realDB.exec("rollback;", false);
 			} catch (SQLException e) {
 				throw mapException(e, null);
+			} finally {
+				lock.unlock();
 			}
 		}
 
