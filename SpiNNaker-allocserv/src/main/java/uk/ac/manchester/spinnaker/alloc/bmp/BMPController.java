@@ -71,7 +71,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
@@ -119,10 +119,15 @@ public class BMPController extends SQLQueries {
 
 	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
-	private Deque<Runnable> cleanupTasks = new ConcurrentLinkedDeque<>();
+	private Deque<Cleanup> cleanupTasks = new ConcurrentLinkedDeque<>();
 
 	/** We have our own pool. */
 	private ExecutorService executor = newCachedThreadPool(this::makeThread);
+
+	@FunctionalInterface
+	private interface Cleanup {
+		boolean run(AfterSQL sql);
+	}
 
 	/**
 	 * A {@link ThreadFactory}.
@@ -204,9 +209,22 @@ public class BMPController extends SQLQueries {
 	@Deprecated
 	public void processRequests()
 			throws IOException, SpinnmanException, InterruptedException {
-		for (Runnable cleanup = cleanupTasks.poll(); cleanup != null; cleanup =
-				cleanupTasks.poll()) {
-			cleanup.run();
+		if (db.execute(conn -> {
+			boolean changed = false;
+			for (Cleanup cleanup =
+					cleanupTasks.poll(); cleanup != null; cleanup =
+							cleanupTasks.poll()) {
+				try (AfterSQL sql = new AfterSQL(conn)) {
+					changed |= cleanup.run(sql);
+				} catch (DataAccessException e) {
+					log.error("problem with database", e);
+				}
+			}
+			return changed;
+		})) {
+			// If anything changed, we bump the epochs
+			epochs.nextJobsEpoch();
+			epochs.nextMachineEpoch();
 		}
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
@@ -323,14 +341,11 @@ public class BMPController extends SQLQueries {
 			 * Map this now so we keep the DB out of the way of the BMP. This
 			 * mapping is not expected to change during the request's lifetime.
 			 */
-			sql.transaction(() -> {
-				powerOnAddresses = powerOnBoards.values().stream()
-						.flatMap(Collection::stream)
-						.map(boardId -> sql.getBoardAddress.call1(boardId)
-								.map(row -> row.getString("address"))
-								.orElse(null))
-						.collect(toList());
-			});
+			powerOnAddresses = sql.transaction(() -> powerOnBoards.values()
+					.stream().flatMap(Collection::stream)
+					.map(boardId -> sql.getBoardAddress.call1(boardId)
+							.map(row -> row.getString("address")).orElse(null))
+					.collect(toList()));
 		}
 
 		/**
@@ -378,41 +393,14 @@ public class BMPController extends SQLQueries {
 		}
 
 		/**
-		 * Declare this to be a successful request.
-		 */
-		private void done() {
-			try (AfterSQL sql = new AfterSQL()) {
-				sql.transaction(() -> done(sql));
-			} catch (DataAccessException e) {
-				log.error("problem with database", e);
-			} finally {
-				epochs.nextJobsEpoch();
-				epochs.nextMachineEpoch();
-			}
-		}
-
-		/**
-		 * Declare this to be a failed request.
-		 */
-		private void failed() {
-			try (AfterSQL sql = new AfterSQL()) {
-				sql.transaction(() -> failed(sql));
-			} catch (DataAccessException e) {
-				log.error("problem with database", e);
-			} finally {
-				epochs.nextJobsEpoch();
-				epochs.nextMachineEpoch();
-			}
-		}
-
-		/**
 		 * Handles the database changes after a set of changes to a BMP complete
 		 * successfully. We will move the job to the state it supposed to be in.
 		 *
 		 * @param sql
 		 *            How to access the DB
+		 * @return Whether the state of boards or jobs has changed.
 		 */
-		private void done(AfterSQL sql) {
+		private boolean done(AfterSQL sql) {
 			int turnedOn = powerOnBoards.values().stream()
 					.flatMap(Collection::stream)
 					.mapToInt(board -> sql.setBoardState(true, board)).sum();
@@ -435,6 +423,7 @@ public class BMPController extends SQLQueries {
 							+ "bmpTasksBackedOff:{} bmpTasksDone:{}",
 					jobId, from, to, turnedOn, turnedOff, jobChange,
 					deallocated, 0, killed);
+			return turnedOn + turnedOff > 0 || jobChange > 0;
 		}
 
 		/**
@@ -444,8 +433,9 @@ public class BMPController extends SQLQueries {
 		 *
 		 * @param sql
 		 *            How to access the DB
+		 * @return Whether the state of boards or jobs has changed.
 		 */
-		private void failed(AfterSQL sql) {
+		private boolean failed(AfterSQL sql) {
 			int backedOff = changeIds.stream()
 					.mapToInt(changeId -> sql.setInProgress(false, changeId))
 					.sum();
@@ -455,6 +445,7 @@ public class BMPController extends SQLQueries {
 							+ "jobChangesApplied:{} boardsDeallocated:{} "
 							+ "bmpTasksBackedOff:{} bmpTasksDone:{}",
 					jobId, from, to, 0, 0, jobChange, 0, backedOff, 0, 0);
+			return jobChange > 0;
 		}
 
 		/**
@@ -502,22 +493,41 @@ public class BMPController extends SQLQueries {
 	}
 
 	/**
-	 * Encapsulation of a connection.
+	 * Encapsulation of a connection. Can either do the management itself or use
+	 * a connection managed outside; the difference is important mainly during
+	 * testing as tests often use in-memory DBs.
 	 */
 	private abstract class AbstractSQL implements AutoCloseable {
 		final Connection conn;
 
+		private final boolean doClose;
+
+		/** Manage a connection ourselves. */
 		AbstractSQL() {
 			conn = db.getConnection();
+			doClose = true;
 		}
 
-		void transaction(Transacted action) {
-			conn.transaction(action);
+		/**
+		 * Use an existing connection. Caller looks after its management.
+		 *
+		 * @param conn
+		 *            The connection to use.
+		 */
+		AbstractSQL(Connection conn) {
+			this.conn = conn;
+			doClose = false;
+		}
+
+		<T> T transaction(TransactedWithResult<T> action) {
+			return conn.transaction(action);
 		}
 
 		@Override
 		public void close() {
-			conn.close();
+			if (doClose) {
+				conn.close();
+			}
 		}
 	}
 
@@ -551,11 +561,11 @@ public class BMPController extends SQLQueries {
 	 * @return List of requests to pass to the {@link WorkerThread}s.
 	 */
 	private List<Request> takeRequests() {
-		List<Request> requestCollector = new ArrayList<>();
 		List<Machine> machines =
 				new ArrayList<>(spallocCore.getMachines().values());
 		try (TakeReqsSQL sql = new TakeReqsSQL()) {
-			sql.transaction(() -> {
+			return sql.transaction(() -> {
+				List<Request> requestCollector = new ArrayList<>();
 				// The outer loop is always over a small set, fortunately
 				for (Machine machine : machines) {
 					sql.getJobIdsWithChanges.call(machine.getId())
@@ -563,9 +573,9 @@ public class BMPController extends SQLQueries {
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
 				}
+				return requestCollector;
 			});
 		}
-		return requestCollector;
 	}
 
 	private void takeRequestsForJob(Machine machine, Integer jobId,
@@ -625,16 +635,24 @@ public class BMPController extends SQLQueries {
 	 * {@code processAfterChange()}.
 	 */
 	private final class AfterSQL extends AbstractSQL {
-		private final Update setBoardState = conn.update(SET_BOARD_POWER);
+		private final Update setBoardState;
 
-		private final Update setJobState = conn.update(SET_STATE_PENDING);
+		private final Update setJobState;
 
-		private final Update setInProgress = conn.update(SET_IN_PROGRESS);
+		private final Update setInProgress;
 
-		private final Update deallocateBoards =
-				conn.update(DEALLOCATE_BOARDS_JOB);
+		private final Update deallocateBoards;
 
-		private final Update deleteChange = conn.update(FINISHED_PENDING);
+		private final Update deleteChange;
+
+		AfterSQL(Connection conn) {
+			super(conn);
+			setBoardState = conn.update(SET_BOARD_POWER);
+			setJobState = conn.update(SET_STATE_PENDING);
+			setInProgress = conn.update(SET_IN_PROGRESS);
+			deallocateBoards = conn.update(DEALLOCATE_BOARDS_JOB);
+			deleteChange = conn.update(FINISHED_PENDING);
+		}
 
 		@Override
 		public void close() {

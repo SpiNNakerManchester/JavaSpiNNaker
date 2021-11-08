@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
@@ -86,6 +87,7 @@ import org.sqlite.SQLiteCommitListener;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
+import org.sqlite.core.DB;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
@@ -197,6 +199,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final double NS_PER_US = 1000.0;
 
 	private static final String ELLIPSIS = "...";
+
+	// TODO move LOCKED_TRIES and LOCK_FAILED_DELAY_MS to config
+	/** Number of times to try to take the lock in a transaction. */
+	private static final int LOCKED_TRIES = 3;
+
+	/** Delay after transaction failure before retrying, in milliseconds. */
+	private static final int LOCK_FAILED_DELAY_MS = 100;
 
 	private final Path dbPath;
 
@@ -717,6 +726,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			s.execute();
 		}
 		conn.setAutoCommit(false);
+		// We don't want to have a transaction active by default!
+		conn.getDatabase().exec("rollback;", false);
 		if (log.isDebugEnabled()) {
 			conn.addCommitListener(new SQLiteCommitListener() {
 				@Override
@@ -803,11 +814,53 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
 	public final class Connection extends UncheckedConnection {
+		private final DB realDB;
+
 		private boolean inTransaction;
 
 		private Connection(java.sql.Connection c) {
 			super(c);
+			realDB = unwrap(SQLiteConnection.class).getDatabase();
 			inTransaction = false;
+		}
+
+		/**
+		 * A real database {@code BEGIN}. Can't use
+		 * {@link #setAutoCommit(boolean)} as that maintains transactions when
+		 * it doesn't need to, eventually causing database locking problems.
+		 */
+		private void realBegin() {
+			try {
+				realDB.exec("begin;", false);
+			} catch (SQLException e) {
+				throw mapException(e, null);
+			}
+		}
+
+		/**
+		 * A real database {@code COMMIT}. Can't use {@link #commit()} as that
+		 * maintains transactions when it doesn't need to, eventually causing
+		 * database locking problems.
+		 */
+		private void realCommit() {
+			try {
+				realDB.exec("commit;", false);
+			} catch (SQLException e) {
+				throw mapException(e, null);
+			}
+		}
+
+		/**
+		 * A real database {@code ROLLBACK}. Can't use {@link #rollback()} as
+		 * that maintains transactions when it doesn't need to, eventually
+		 * causing database locking problems.
+		 */
+		private void realRollback() {
+			try {
+				realDB.exec("rollback;", false);
+			} catch (SQLException e) {
+				throw mapException(e, null);
+			}
 		}
 
 		private class Hold implements AutoCloseable {
@@ -874,32 +927,48 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				// Already in a transaction; just run the operation
 				return operation.act();
 			}
-			Object caller = null;
-			if (log.isDebugEnabled()) {
-				caller = getCaller();
-				log.debug("start transaction: {}", caller);
-			}
-			boolean done = false;
-			try (Hold hold = new Hold()) {
-				T result = operation.act();
-				log.debug("commence commit: {}", caller);
-				commit();
-				done = true;
-				return result;
-			} catch (DataAccessException e) {
-				cantWarning("commit", e);
-				throw e;
-			} finally {
-				try {
-					if (!done) {
-						log.debug("commence rollback: {}", caller);
-						rollback();
-					}
-				} catch (DataAccessException e) {
-					cantWarning("rollback", e);
-					throw e;
+			int tries = 0;
+			while (true) {
+				tries++;
+				Object caller = null;
+				if (log.isDebugEnabled()) {
+					caller = getCaller();
+					log.debug("start transaction: {}", caller);
 				}
-				log.debug("finish transaction: {}", caller);
+				realBegin();
+				boolean done = false;
+				try (Hold hold = new Hold()) {
+					T result = operation.act();
+					log.debug("commence commit: {}", caller);
+					realCommit();
+					done = true;
+					return result;
+				} catch (DataAccessException e) {
+					if (tries < LOCKED_TRIES && isBusy(e)) {
+						log.warn(
+								"retrying transaction due to lock failure; "
+										+ "current transaction holders are {}",
+								currentTransactionHolders());
+						try {
+							sleep(LOCK_FAILED_DELAY_MS);
+						} catch (InterruptedException ignored) {
+						}
+						continue;
+					}
+					cantWarning("commit", e);
+					throw e;
+				} finally {
+					try {
+						if (!done) {
+							log.debug("commence rollback: {}", caller);
+							realRollback();
+						}
+					} catch (DataAccessException e) {
+						cantWarning("rollback", e);
+						throw e;
+					}
+					log.debug("finish transaction: {}", caller);
+				}
 			}
 		}
 
