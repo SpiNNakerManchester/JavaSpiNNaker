@@ -67,13 +67,11 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
@@ -89,15 +87,12 @@ import uk.ac.manchester.spinnaker.utils.Ping;
  */
 @Service("bmpController")
 @ManagedResource("Spalloc:type=BMPController,name=bmpController")
-public class BMPController extends SQLQueries {
+public class BMPController extends DatabaseAwareBean {
 	private static final Logger log = getLogger(BMPController.class);
 
 	private boolean stop;
 
 	private Map<Machine, WorkerState> state = new HashMap<>();
-
-	@Autowired
-	private DatabaseEngine db;
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -163,16 +158,15 @@ public class BMPController extends SQLQueries {
 	 */
 	@PostConstruct
 	private void clearStuckPending() {
-		db.executeVoid(c -> {
+		int changes = execute(c -> {
 			try (Update u = c.update(CLEAR_STUCK_PENDING)) {
-				int changes = u.call();
-				if (changes > 0) {
-					log.info(
-							"marking {} change sets as eligible for processing",
-							changes);
-				}
+				return u.call();
 			}
 		});
+		if (changes > 0) {
+			log.info("marking {} change sets as eligible for processing",
+					changes);
+		}
 	}
 
 	@Scheduled(fixedDelayString = "#{txrxProperties.period}",
@@ -209,7 +203,7 @@ public class BMPController extends SQLQueries {
 	@Deprecated
 	public void processRequests()
 			throws IOException, SpinnmanException, InterruptedException {
-		if (db.execute(conn -> {
+		if (execute(conn -> {
 			boolean changed = false;
 			for (Cleanup cleanup =
 					cleanupTasks.poll(); cleanup != null; cleanup =
@@ -240,7 +234,7 @@ public class BMPController extends SQLQueries {
 	@ManagedAttribute(
 			description = "An estimate of the number of requests " + "pending.")
 	public int getPendingRequestLoading() {
-		try (Connection conn = db.getConnection();
+		try (Connection conn = getConnection();
 				Query countChanges = conn.query(COUNT_PENDING_CHANGES)) {
 			return conn.transaction(() -> countChanges.call1()
 					.map(row -> row.getInt("c")).orElse(0));
@@ -489,45 +483,6 @@ public class BMPController extends SQLQueries {
 			sb.append(",off=").append(powerOffBoards);
 			sb.append(",links=").append(linkRequests);
 			return sb.append(")").toString();
-		}
-	}
-
-	/**
-	 * Encapsulation of a connection. Can either do the management itself or use
-	 * a connection managed outside; the difference is important mainly during
-	 * testing as tests often use in-memory DBs.
-	 */
-	private abstract class AbstractSQL implements AutoCloseable {
-		final Connection conn;
-
-		private final boolean doClose;
-
-		/** Manage a connection ourselves. */
-		AbstractSQL() {
-			conn = db.getConnection();
-			doClose = true;
-		}
-
-		/**
-		 * Use an existing connection. Caller looks after its management.
-		 *
-		 * @param conn
-		 *            The connection to use.
-		 */
-		AbstractSQL(Connection conn) {
-			this.conn = conn;
-			doClose = false;
-		}
-
-		<T> T transaction(TransactedWithResult<T> action) {
-			return conn.transaction(action);
-		}
-
-		@Override
-		public void close() {
-			if (doClose) {
-				conn.close();
-			}
 		}
 	}
 

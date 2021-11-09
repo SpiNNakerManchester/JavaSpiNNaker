@@ -145,8 +145,7 @@ class MDefLoaderTest {
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q =
-					new MachineDefinitionLoader.Updates(c)) {
+			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});
@@ -188,8 +187,7 @@ class MDefLoaderTest {
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q =
-					new MachineDefinitionLoader.Updates(c)) {
+			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});

@@ -18,11 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
@@ -33,10 +31,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
  * @author Donal Fellows
  */
 @Component
-public class MachineStateControl extends SQLQueries {
-	@Autowired
-	private DatabaseEngine db;
-
+public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Access to the enablement-state of a board.
 	 */
@@ -79,7 +74,7 @@ public class MachineStateControl extends SQLQueries {
 		 * @return The state of the board.
 		 */
 		public boolean getState() {
-			return db.execute(conn -> {
+			return execute(conn -> {
 				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
 					return q.call1(boardId)
 							.map(row -> row.getBoolean("functioning"))
@@ -89,9 +84,9 @@ public class MachineStateControl extends SQLQueries {
 		}
 
 		public void setState(boolean newValue) {
-			db.executeVoid(conn -> {
+			execute(conn -> {
 				try (Update u = conn.update(SET_FUNCTIONING_FIELD)) {
-					u.call(newValue, boardId);
+					return u.call(newValue, boardId);
 				}
 			});
 		}
@@ -111,7 +106,7 @@ public class MachineStateControl extends SQLQueries {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
-		return db.execute(conn -> {
+		return execute(conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 				return q.call1(machine, x, y, z).map(BoardState::new);
 			}
@@ -133,7 +128,7 @@ public class MachineStateControl extends SQLQueries {
 	 */
 	public Optional<BoardState> findPhysical(String machine, int c, int f,
 			int b) {
-		return db.execute(conn -> {
+		return execute(conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 				return q.call1(machine, c, f, b).map(BoardState::new);
 			}
@@ -150,7 +145,7 @@ public class MachineStateControl extends SQLQueries {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findIP(String machine, String address) {
-		return db.execute(conn -> {
+		return execute(conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				return q.call1(machine, address).map(BoardState::new);
 			}

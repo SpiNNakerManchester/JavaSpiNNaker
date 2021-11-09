@@ -44,7 +44,6 @@ import org.springframework.stereotype.Service;
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
@@ -57,7 +56,7 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 @Path(BASE_PATH)
 @Hidden
 @ManagedResource("Spalloc:type=Admin,name=admin")
-public class AdminImpl extends SQLQueries implements AdminAPI {
+public class AdminImpl implements AdminAPI {
 	private static final Logger log = getLogger(AdminImpl.class);
 
 	@Autowired

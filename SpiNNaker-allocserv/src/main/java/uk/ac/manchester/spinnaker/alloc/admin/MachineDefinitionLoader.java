@@ -66,8 +66,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
@@ -80,7 +79,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * @author Donal Fellows
  */
 @Component
-public class MachineDefinitionLoader extends SQLQueries {
+public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private static final Logger log = getLogger(MachineDefinitionLoader.class);
 
 	private static final int DECIMAL = 10;
@@ -770,9 +769,6 @@ public class MachineDefinitionLoader extends SQLQueries {
 	}
 
 	@Autowired
-	private DatabaseEngine db;
-
-	@Autowired
 	private JsonMapper mapper;
 
 	@Autowired
@@ -780,7 +776,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 
 	@PostConstruct
 	private void setUp() {
-		try (Connection conn = db.getConnection()) {
+		try (Connection conn = getConnection()) {
 			DirInfo.load(conn);
 		}
 	}
@@ -855,26 +851,24 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 * <p>
 	 * Only non-{@code private} for testing purposes.
 	 */
-	static final class Updates implements AutoCloseable {
-		private final Update makeMachine;
+	final class Updates extends AbstractSQL {
+		private final Update makeMachine = conn.update(INSERT_MACHINE_SPINN_5);
 
-		private final Update makeTag;
+		private final Update makeTag = conn.update(INSERT_TAG);
 
-		private final Update makeBMP;
+		private final Update makeBMP = conn.update(INSERT_BMP);
 
-		private final Update makeBoard;
+		private final Update makeBoard = conn.update(INSERT_BOARD);
 
-		private final Update makeLink;
+		private final Update makeLink = conn.update(INSERT_LINK);
 
-		private final Update setMaxCoords;
+		private final Update setMaxCoords = conn.update(SET_MAX_COORDS);
 
-		Updates(Connection conn) {
-			makeMachine = conn.update(INSERT_MACHINE_SPINN_5);
-			makeTag = conn.update(INSERT_TAG);
-			makeBMP = conn.update(INSERT_BMP);
-			makeBoard = conn.update(INSERT_BOARD);
-			makeLink = conn.update(INSERT_LINK);
-			setMaxCoords = conn.update(SET_MAX_COORDS);
+		Updates() {
+		}
+
+		Updates(Connection c) {
+			super(c);
 		}
 
 		@Override
@@ -885,6 +879,7 @@ public class MachineDefinitionLoader extends SQLQueries {
 			makeBoard.close();
 			makeLink.close();
 			setMaxCoords.close();
+			super.close();
 		}
 	}
 
@@ -904,10 +899,9 @@ public class MachineDefinitionLoader extends SQLQueries {
 	public void loadMachineDefinitions(InputStream stream)
 			throws JsonParseException, JsonMappingException, IOException {
 		List<Machine> machines = readMachineDefinitions(stream);
-		try (Connection conn = db.getConnection();
-				Updates sql = new Updates(conn)) {
+		try (Updates sql = new Updates()) {
 			for (Machine machine : machines) {
-				conn.transaction(() -> loadMachineDefinition(sql, machine));
+				sql.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}
 	}
@@ -919,10 +913,9 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *            The configuration.
 	 */
 	public void loadMachineDefinitions(Configuration configuration) {
-		try (Connection conn = db.getConnection();
-				Updates sql = new Updates(conn)) {
+		try (Updates sql = new Updates()) {
 			for (Machine machine : configuration.getMachines()) {
-				conn.transaction(() -> loadMachineDefinition(sql, machine));
+				sql.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}
 	}
@@ -934,9 +927,8 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *            The machine definition.
 	 */
 	public void loadMachineDefinition(Machine machine) {
-		try (Connection conn = db.getConnection();
-				Updates sql = new Updates(conn)) {
-			conn.transaction(() -> loadMachineDefinition(sql, machine));
+		try (Updates sql = new Updates()) {
+			sql.transaction(() -> loadMachineDefinition(sql, machine));
 		}
 	}
 
@@ -961,13 +953,17 @@ public class MachineDefinitionLoader extends SQLQueries {
 	 *            INSERTs).
 	 * @param machine
 	 *            The description of the machine to add.
+	 * @return The ID of the created machine.
+	 * @throws InsertFailedException
+	 *             If the machine couldn't be created.
 	 */
-	void loadMachineDefinition(Updates sql, Machine machine) {
+	Integer loadMachineDefinition(Updates sql, Machine machine) {
 		int machineId = makeMachine(sql, machine);
 		Map<BMPCoords, Integer> bmpIds = makeBMPs(sql, machine, machineId);
 		Map<TriadCoords, Integer> boardIds =
 				makeBoards(sql, machine, machineId, bmpIds);
 		makeLinks(sql, machine, boardIds);
+		return machineId;
 	}
 
 	private int makeMachine(Updates sql, Machine machine)

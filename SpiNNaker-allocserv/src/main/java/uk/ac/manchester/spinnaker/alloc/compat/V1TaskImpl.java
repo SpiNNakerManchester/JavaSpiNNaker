@@ -63,7 +63,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -119,9 +119,8 @@ class V1TaskImpl extends V1CompatTask {
 	@Autowired
 	private Epochs epochs;
 
-	/** The database. */
 	@Autowired
-	private DatabaseEngine db;
+	private CompatHelper helper;
 
 	/** Encoded form of our special permissions token. */
 	private Permit permit;
@@ -295,53 +294,99 @@ class V1TaskImpl extends V1CompatTask {
 				.getPhysical();
 	}
 
+	@Component
+	private static class CompatHelper extends DatabaseAwareBean {
+		/** The core spalloc service. */
+		@Autowired
+		private SpallocAPI spalloc;
+
+		/**
+		 * Map a collection of items to an array within a transaction.
+		 *
+		 * @param <T>
+		 *            The type of source items.
+		 * @param <U>
+		 *            The type of target items.
+		 * @param srcItems
+		 *            How to get the collection of source items.
+		 * @param targetCls
+		 *            The type of target items created. Needed so we can make
+		 *            them and make an array of them.
+		 * @param itemMapper
+		 *            How to fill out a target item given a source item.
+		 * @return Array of items of target type.
+		 */
+		private <T, U> U[] mapArrayTx(Supplier<Collection<T>> srcItems,
+				Class<U> targetCls, BiConsumer<T, U> itemMapper) {
+			return execute(
+					c -> mapToArray(srcItems.get(), targetCls, itemMapper));
+		}
+
+		private JobDescription[] listJobs(V1TaskImpl task) {
+			// Messy; hits the database many times
+			return mapArrayTx(
+					() -> spalloc.getJobs(false, LOTS, 0).jobs(),
+					JobDescription.class, (job, jd) -> {
+						jd.setJobID(job.getId());
+						jd.setOwner(job.getOwner().orElse(""));
+						jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
+						jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
+						jd.setReason(job.getReason().orElse(""));
+						jd.setStartTime(timestamp(job.getStartTime()));
+						jd.setState(state(job));
+						getCommand(task, job).ifPresent(cmd -> {
+							// In order to get here, this must be safe
+							// Validation was when job was created
+							@SuppressWarnings({
+								"unchecked", "rawtypes"
+							})
+							List<Integer> args = (List) cmd.getArgs();
+							jd.setArgs(args);
+							jd.setKwargs(cmd.getKwargs());
+						});
+						job.getMachine().ifPresent(sm -> {
+							jd.setMachine(sm.getMachine().getName());
+							jd.setBoards(sm.getBoards());
+							jd.setPower(sm.getPower() == ON);
+						});
+					});
+		}
+
+		private Optional<Command> getCommand(V1TaskImpl task, Job job) {
+			return job.getOriginalRequest().map(req -> {
+				try {
+					return task.parseCommand(req);
+				} catch (IOException e) {
+					log.error("unexpected failure parsing JSON", e);
+					return null;
+				}
+			});
+		}
+
+		private Machine[] listMachines() {
+			// Messy; hits the database many times
+			return mapArrayTx(() -> spalloc.getMachines().values(),
+					Machine.class, (m, md) -> {
+						md.setName(m.getName());
+						md.setTags(new ArrayList<>(m.getTags()));
+						md.setWidth(m.getWidth());
+						md.setHeight(m.getHeight());
+						md.setDeadBoards(m.getDeadBoards().stream()
+								.map(Utils::board).collect(toList()));
+						md.setDeadLinks(m.getDownLinks().stream()
+								.flatMap(Utils::boardLinks).collect(toList()));
+					});
+		}
+	}
+
 	@Override
 	protected final JobDescription[] listJobs() {
-		// Messy; hits the database many times
-		return mapArrayTx(
-				() -> permit.authorize(
-						() -> spalloc.getJobs(false, LOTS, 0).jobs()),
-				JobDescription.class, (job, jd) -> {
-					jd.setJobID(job.getId());
-					jd.setOwner(job.getOwner().orElse(""));
-					jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-					jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-					jd.setReason(job.getReason().orElse(""));
-					jd.setStartTime(timestamp(job.getStartTime()));
-					jd.setState(state(job));
-					getCommand(job).ifPresent(cmd -> {
-						// In order to get here, this must be safe
-						// Validation was when job was created
-						@SuppressWarnings({
-							"unchecked", "rawtypes"
-						})
-						List<Integer> args = (List) cmd.getArgs();
-						jd.setArgs(args);
-						jd.setKwargs(cmd.getKwargs());
-					});
-					job.getMachine().ifPresent(sm -> {
-						jd.setMachine(sm.getMachine().getName());
-						jd.setBoards(sm.getBoards());
-						jd.setPower(sm.getPower() == ON);
-					});
-				});
+		return permit.authorize(() -> helper.listJobs(this));
 	}
 
 	@Override
 	protected final Machine[] listMachines() {
-		// Messy; hits the database many times
-		return mapArrayTx(
-				() -> permit.authorize(() -> spalloc.getMachines().values()),
-				Machine.class, (m, md) -> {
-					md.setName(m.getName());
-					md.setTags(new ArrayList<>(m.getTags()));
-					md.setWidth(m.getWidth());
-					md.setHeight(m.getHeight());
-					md.setDeadBoards(m.getDeadBoards().stream()
-							.map(Utils::board).collect(toList()));
-					md.setDeadLinks(m.getDownLinks().stream()
-							.flatMap(Utils::boardLinks).collect(toList()));
-				});
+		return permit.authorize(helper::listMachines);
 	}
 
 	@Override
@@ -392,7 +437,7 @@ class V1TaskImpl extends V1CompatTask {
 				.setPower(switchOn);
 	}
 
-	private WhereIs whereis(BoardLocation bl) {
+	private static WhereIs makeWhereIs(BoardLocation bl) {
 		WhereIs wi = new WhereIs();
 		wi.setMachine(bl.getMachine());
 		wi.setLogical(bl.getLogical());
@@ -412,54 +457,35 @@ class V1TaskImpl extends V1CompatTask {
 			throws TaskException {
 		Job job = getJob(jobId);
 		job.access(host());
-		return whereis(job.whereIs(x, y).orElseThrow(
-				() -> new TaskException("no boards currently allocated")));
+		return job.whereIs(x, y).map(V1TaskImpl::makeWhereIs).orElseThrow(
+				() -> new TaskException("no boards currently allocated"));
 	}
 
 	@Override
 	protected final WhereIs whereIsMachineChip(String machineName, int x, int y)
 			throws TaskException {
-		return whereis(getMachine(machineName).getBoardByChip(x, y)
-				.orElseThrow(() -> new TaskException("no such board")));
+		return getMachine(machineName).getBoardByChip(x, y)
+				.map(V1TaskImpl::makeWhereIs)
+				.orElseThrow(() -> new TaskException("no such board"));
 	}
 
 	@Override
 	protected final WhereIs whereIsMachineLogicalBoard(String machineName,
 			int x, int y, int z) throws TaskException {
-		return whereis(getMachine(machineName).getBoardByLogicalCoords(x, y, z)
-				.orElseThrow(() -> new TaskException("no such board")));
+		return getMachine(machineName).getBoardByLogicalCoords(x, y, z)
+				.map(V1TaskImpl::makeWhereIs)
+				.orElseThrow(() -> new TaskException("no such board"));
 	}
 
 	@Override
 	protected final WhereIs whereIsMachinePhysicalBoard(String machineName,
 			int c, int f, int b) throws TaskException {
-		return whereis(getMachine(machineName).getBoardByPhysicalCoords(c, f, b)
-				.orElseThrow(() -> new TaskException("no such board")));
+		return getMachine(machineName).getBoardByPhysicalCoords(c, f, b)
+				.map(V1TaskImpl::makeWhereIs)
+				.orElseThrow(() -> new TaskException("no such board"));
 	}
 
 	// instance-aware utilities
-
-	/**
-	 * Map a collection of items to an array within a transaction.
-	 *
-	 * @param <T>
-	 *            The type of source items.
-	 * @param <U>
-	 *            The type of target items.
-	 * @param srcItems
-	 *            How to get the collection of source items.
-	 * @param targetCls
-	 *            The type of target items created. Needed so we can make them
-	 *            and make an array of them.
-	 * @param itemMapper
-	 *            How to fill out a target item given a source item.
-	 * @return Array of items of target type.
-	 */
-	private <T, U> U[] mapArrayTx(Supplier<Collection<T>> srcItems,
-			Class<U> targetCls, BiConsumer<T, U> itemMapper) {
-		return db.execute(
-				c -> mapToArray(srcItems.get(), targetCls, itemMapper));
-	}
 
 	private Job getJob(int jobId) throws TaskException {
 		return permit.authorize(() -> spalloc.getJob(permit, jobId))
@@ -484,16 +510,5 @@ class V1TaskImpl extends V1CompatTask {
 				n.cancel(true);
 			}
 		}
-	}
-
-	private Optional<Command> getCommand(Job job) {
-		return job.getOriginalRequest().map(req -> {
-			try {
-				return parseCommand(req);
-			} catch (IOException e) {
-				log.error("unexpected failure parsing JSON", e);
-				return null;
-			}
-		});
 	}
 }
