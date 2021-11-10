@@ -34,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +208,22 @@ public abstract class V1CompatTask {
 	 */
 	private Optional<Command> readMessage()
 			throws IOException, InterruptedException {
-		String line = in.readLine();
+		String line;
+		try {
+			line = in.readLine();
+		} catch (SocketException e) {
+			/*
+			 * Don't know why we get a generic socket exception for this, but it
+			 * happens when there's been some sort of network drop. Treating as
+			 * interrupt seems to be mostly right.
+			 */
+			if (e.getMessage().contains("Connection timed out (Read failed)")) {
+				currentThread().interrupt();
+				throw (InterruptedException) new InterruptedException()
+						.initCause(e);
+			}
+			throw e;
+		}
 		if (isNull(line)) {
 			if (currentThread().isInterrupted()) {
 				throw new InterruptedException();
