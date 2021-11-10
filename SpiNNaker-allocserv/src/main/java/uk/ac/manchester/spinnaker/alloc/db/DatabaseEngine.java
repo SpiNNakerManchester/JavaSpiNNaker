@@ -63,7 +63,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -245,7 +247,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * without getting a deadlock when several threads try to upgrade their
 	 * locks to write locks at the same time.
 	 */
-	private final Lock lock = new ReentrantLock();
+	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 	/**
 	 * Records the execution time of a statement, at least to first result set.
@@ -511,7 +513,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		// Check that the connection is correct
 		try (Connection conn = getConnection();
 				Query countMovements = conn.query(COUNT_MOVEMENTS)) {
-			int numMovements = conn.transaction(
+			int numMovements = conn.transaction(false,
 					() -> countMovements.call1().get().getInt("c"));
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
@@ -698,7 +700,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		@SuppressWarnings("resource")
 		Connection wrapper = new Connection(conn);
 		synchronized (this) {
-			wrapper.transaction(() -> {
+			wrapper.transaction(true, () -> {
 				wrapper.exec(sqlDDLFile);
 				log.info("initalising historical DB from schema {}",
 						tombstoneDDLFile);
@@ -786,7 +788,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			// NB: Not a standard query! Safe, because we know we have an int
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				conn.transaction(() -> {
+				conn.transaction(true, () -> {
 					conn.exec(String.format(OPTIMIZE_DB,
 							props.getAnalysisLimit()));
 				});
@@ -826,6 +828,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		private boolean inTransaction;
 
+		private Lock currentLock;
+
+		private boolean isLockedForWrites;
+
 		private Connection(java.sql.Connection c) {
 			super(c);
 			realDB = unwrap(SQLiteConnection.class).getDatabase();
@@ -836,9 +842,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * A real database {@code BEGIN}. Can't use
 		 * {@link #setAutoCommit(boolean)} as that maintains transactions when
 		 * it doesn't need to, eventually causing database locking problems.
+		 *
+		 * @param lockForWriting
+		 *            Whether to lock for writing. Multiple read locks can be
+		 *            held at once, but only one write lock. Locks
+		 *            <em>cannot</em> be upgraded (because that causes
+		 *            deadlocks).
 		 */
-		private void realBegin() {
-			lock.lock();
+		private void realBegin(boolean lockForWriting) {
+			Lock l;
+			if (lockForWriting) {
+				l = lock.writeLock();
+			} else {
+				l = lock.readLock();
+			}
+			currentLock = l;
+			isLockedForWrites = lockForWriting;
+			l.lock();
 			try {
 				realDB.exec("begin;", false);
 			} catch (SQLException e) {
@@ -857,7 +877,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			} catch (SQLException e) {
 				throw mapException(e, null);
 			} finally {
-				lock.unlock();
+				if (currentLock != null) {
+					currentLock.unlock();
+					currentLock = null;
+				}
 			}
 		}
 
@@ -872,7 +895,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			} catch (SQLException e) {
 				throw mapException(e, null);
 			} finally {
-				lock.unlock();
+				if (currentLock != null) {
+					currentLock.unlock();
+					currentLock = null;
+				}
 			}
 		}
 
@@ -900,9 +926,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		void checkInTransaction() {
+		void checkInTransaction(boolean expectedLockType) {
 			if (!inTransaction) {
 				log.warn("executing not inside transaction: {}", getCaller());
+			} else if (expectedLockType && !isLockedForWrites) {
+				log.warn("performing write inside read transaction: {}",
+						getCaller());
 			}
 		}
 
@@ -911,13 +940,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * normally (and this isn't a nested use), the transaction commits. If
 		 * an exception is thrown, the transaction is rolled back.
 		 *
+		 * @param lockForWriting
+		 *            Whether to lock for writing. Multiple read locks can be
+		 *            held at once, but only one write lock. Locks
+		 *            <em>cannot</em> be upgraded (because that causes
+		 *            deadlocks).
 		 * @param operation
 		 *            The operation to run
 		 * @see #transaction(DatabaseEngine.TransactedWithResult)
 		 */
-		public void transaction(Transacted operation) {
+		public void transaction(boolean lockForWriting, Transacted operation) {
 			// Use the other method, ignoring the result value
-			transaction(() -> {
+			transaction(lockForWriting, () -> {
 				operation.act();
 				return this;
 			});
@@ -926,7 +960,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * A nestable transaction runner. If the {@code operation} completes
 		 * normally (and this isn't a nested use), the transaction commits. If
-		 * an exception is thrown, the transaction is rolled back.
+		 * an exception is thrown, the transaction is rolled back. This uses a
+		 * write lock.
+		 *
+		 * @param operation
+		 *            The operation to run
+		 * @see #transaction(DatabaseEngine.TransactedWithResult)
+		 */
+		public void transaction(Transacted operation) {
+			transaction(true, operation);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code operation} completes
+		 * normally (and this isn't a nested use), the transaction commits. If
+		 * an exception is thrown, the transaction is rolled back. This uses a
+		 * write lock.
 		 *
 		 * @param <T>
 		 *            The type of the result of {@code operation}
@@ -936,7 +985,32 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #transaction(DatabaseEngine.Transacted)
 		 */
 		public <T> T transaction(TransactedWithResult<T> operation) {
+			return transaction(true, operation);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code operation} completes
+		 * normally (and this isn't a nested use), the transaction commits. If
+		 * an exception is thrown, the transaction is rolled back.
+		 *
+		 * @param <T>
+		 *            The type of the result of {@code operation}
+		 * @param lockForWriting
+		 *            Whether to lock for writing. Multiple read locks can be
+		 *            held at once, but only one write lock. Locks
+		 *            <em>cannot</em> be upgraded (because that causes
+		 *            deadlocks).
+		 * @param operation
+		 *            The operation to run
+		 * @return the value returned by {@code operation}
+		 * @see #transaction(DatabaseEngine.Transacted)
+		 */
+		public <T> T transaction(boolean lockForWriting,
+				TransactedWithResult<T> operation) {
 			if (inTransaction) {
+				if (lockForWriting && !isLockedForWrites) {
+					log.warn("attempt to upgrade lock: {}", getCaller());
+				}
 				// Already in a transaction; just run the operation
 				return operation.act();
 			}
@@ -948,7 +1022,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					caller = getCaller();
 					log.debug("start transaction: {}", caller);
 				}
-				realBegin();
+				realBegin(lockForWriting);
 				boolean done = false;
 				try (Hold hold = new Hold()) {
 					T result = operation.act();
@@ -1026,7 +1100,40 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		// @formatter:on
 		public Query query(String sql) {
-			return new Query(this, sql);
+			return new Query(this, false, sql);
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new query. Usage pattern:
+		 * <pre>
+		 * try (Query q = conn.query(SQL_SELECT)) {
+		 *     for (Row row : u.call(argument1, argument2)) {
+		 *         // Do something with the row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Query q = conn.query(SQL_SELECT)) {
+		 *     u.call(argument1, argument2).forEach(row -&gt; {
+		 *         // Do something with the row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sql
+		 *            The SQL of the query.
+		 * @param lockType
+		 *            Whether we expect to have a write lock. This is vital
+		 * @return The query object.
+		 * @see #query(Resource)
+		 * @see #update(String)
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Query query(String sql, boolean lockType) {
+			return new Query(this, lockType, sql);
 		}
 
 		// @formatter:off
@@ -1057,7 +1164,41 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		// @formatter:on
 		public Query query(Resource sqlResource) {
-			return new Query(this, readSQL(sqlResource));
+			return new Query(this, false, readSQL(sqlResource));
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new query.
+		 * <pre>
+		 * try (Query q = conn.query(sqlSelectResource)) {
+		 *     for (Row row : u.call(argument1, argument2)) {
+		 *         // Do something with the row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Query q = conn.query(sqlSelectResource)) {
+		 *     u.call(argument1, argument2).forEach(row -&gt; {
+		 *         // Do something with the row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sqlResource
+		 *            Reference to the SQL of the query.
+		 * @param lockType
+		 *            Whether we expect to have a write lock. This is vital
+		 *            only when the query is an {@code UPDATE RETURNING}.
+		 * @return The query object.
+		 * @see #query(String)
+		 * @see #update(Resource)
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Query query(Resource sqlResource, boolean lockType) {
+			return new Query(this, lockType, readSQL(sqlResource));
 		}
 
 		// @formatter:off
@@ -1086,7 +1227,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * </pre>
 		 * <p>
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
-		 * you should use a {@link Query}.
+		 * you should use a {@link Query} with the {@code lockType} set to
+		 * {@code true}.
 		 *
 		 * @param sql
 		 *            The SQL of the update.
@@ -1126,7 +1268,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * </pre>
 		 * <p>
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
-		 * you should use a {@link Query}.
+		 * you should use a {@link Query} with the {@code lockType} set to
+		 * {@code true}.
 		 *
 		 * @param sqlResource
 		 *            Reference to the SQL of the update.
@@ -1150,7 +1293,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #update(String)
 		 */
 		public void exec(String sql) {
-			checkInTransaction();
+			checkInTransaction(true);
 			try (Statement s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
 				s.executeUpdate(sql);
@@ -1328,15 +1471,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * commits. If an exception is thrown, the transaction is rolled back. The
 	 * connection is closed up in any case.
 	 *
+	 * @param lockForWriting
+	 *            Whether to lock for writing. Multiple read locks can be held
+	 *            at once, but only one write lock. Locks <em>cannot</em> be
+	 *            upgraded (because that causes deadlocks).
 	 * @param operation
 	 *            The operation to run
 	 * @throws RuntimeException
 	 *             If something goes wrong with the database access or the
 	 *             contained code.
 	 */
-	public void executeVoid(Connected operation) {
+	public void executeVoid(boolean lockForWriting, Connected operation) {
 		try (Connection conn = getConnection()) {
-			conn.transaction(() -> operation.act(conn));
+			conn.transaction(lockForWriting, () -> operation.act(conn));
 		}
 	}
 
@@ -1344,7 +1491,49 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * A connection manager and transaction runner. If the {@code operation}
 	 * completes normally (and this isn't a nested use), the transaction
 	 * commits. If an exception is thrown, the transaction is rolled back. The
+	 * connection is closed up in any case. This uses a write lock.
+	 *
+	 * @param operation
+	 *            The operation to run
+	 * @throws RuntimeException
+	 *             If something goes wrong with the database access or the
+	 *             contained code.
+	 */
+	public void executeVoid(Connected operation) {
+		executeVoid(true, operation);
+	}
+
+	/**
+	 * A connection manager and transaction runner. If the {@code operation}
+	 * completes normally (and this isn't a nested use), the transaction
+	 * commits. If an exception is thrown, the transaction is rolled back. The
 	 * connection is closed up in any case.
+	 *
+	 * @param <T>
+	 *            The type of the result of {@code operation}
+	 * @param lockForWriting
+	 *            Whether to lock for writing. Multiple read locks can be held
+	 *            at once, but only one write lock. Locks <em>cannot</em> be
+	 *            upgraded (because that causes deadlocks).
+	 * @param operation
+	 *            The operation to run
+	 * @return the value returned by {@code operation}
+	 * @throws RuntimeException
+	 *             If something other than database access goes wrong with the
+	 *             contained code.
+	 */
+	public <T> T execute(boolean lockForWriting,
+			ConnectedWithResult<T> operation) {
+		try (Connection conn = getConnection()) {
+			return conn.transaction(lockForWriting, () -> operation.act(conn));
+		}
+	}
+
+	/**
+	 * A connection manager and transaction runner. If the {@code operation}
+	 * completes normally (and this isn't a nested use), the transaction
+	 * commits. If an exception is thrown, the transaction is rolled back. The
+	 * connection is closed up in any case. This uses a write lock.
 	 *
 	 * @param <T>
 	 *            The type of the result of {@code operation}
@@ -1356,9 +1545,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *             contained code.
 	 */
 	public <T> T execute(ConnectedWithResult<T> operation) {
-		try (Connection conn = getConnection()) {
-			return conn.transaction(() -> operation.act(conn));
-		}
+		return execute(true, operation);
 	}
 
 	/**
@@ -1600,9 +1787,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @author Donal Fellows
 	 */
 	public final class Query extends StatementWrapper {
-		private Query(Connection conn, String sql) {
+		private Query(Connection conn, boolean lockType, String sql) {
 			super(conn, sql);
+			this.lockType = lockType;
 		}
+
+		private final boolean lockType;
 
 		/**
 		 * Run the query on the given arguments.
@@ -1615,7 +1805,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         outlive the iteration.
 		 */
 		public MappableIterable<Row> call(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(lockType);
 			closeResults();
 			try {
 				log.debug("opening result set in {}", getCaller());
@@ -1641,7 +1831,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					if (!consumed) {
 						return true;
 					}
-					conn.checkInTransaction();
+					conn.checkInTransaction(lockType);
 					boolean result = false;
 					try {
 						result = rs.next();
@@ -1679,7 +1869,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         row.
 		 */
 		public Optional<Row> call1(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(lockType);
 			try {
 				log.debug("opening result set in {}", getCaller());
 				closeResults();
@@ -1717,7 +1907,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The number of rows updated
 		 */
 		public int call(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(true);
 			closeResults();
 			try {
 				setParams(arguments);
@@ -1739,7 +1929,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The integer primary keys generated by the update.
 		 */
 		public MappableIterable<Integer> keys(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(true);
 			/*
 			 * In theory, the statement should have been prepared with the
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
@@ -1773,7 +1963,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					if (!consumed) {
 						return true;
 					}
-					conn.checkInTransaction();
+					conn.checkInTransaction(true);
 					boolean result = false;
 					try {
 						result = rs.next();
@@ -1814,7 +2004,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The integer primary key generated by the update.
 		 */
 		public Optional<Integer> key(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(true);
 			closeResults();
 			try {
 				setParams(arguments);

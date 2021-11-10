@@ -109,7 +109,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private List<String> getMachineNames() {
 		try (Connection conn = getConnection();
 				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return conn.transaction(() -> listMachines.call()
+			return conn.transaction(false, () -> listMachines.call()
 					.map(row -> row.getString("machine_name")).toList());
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);

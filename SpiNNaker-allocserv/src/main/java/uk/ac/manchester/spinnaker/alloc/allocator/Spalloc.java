@@ -150,7 +150,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public List<MachineListEntryRecord> listMachines() {
-		return execute(conn -> {
+		return execute(false, conn -> {
 			try (ListMachinesSQL sql = new ListMachinesSQL(conn)) {
 				return sql.listMachines.call()
 						.map(row -> makeMachineListEntryRecord(sql, row))
@@ -175,7 +175,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public Optional<Machine> getMachine(String name) {
-		return execute(conn -> getMachine(name, conn).map(m -> m));
+		return execute(false, conn -> getMachine(name, conn).map(m -> m));
 	}
 
 	private Optional<MachineImpl> getMachine(int id, Connection conn) {
@@ -197,7 +197,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	public Optional<MachineDescription> getMachineInfo(String machine,
 			Permit permit) {
-		return execute(conn -> {
+		return execute(false, conn -> {
 			try (Query namedMachine = conn.query(GET_NAMED_MACHINE);
 					Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
 					Query getTags = conn.query(GET_TAGS);
@@ -254,7 +254,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public Jobs getJobs(boolean deleted, int limit, int start) {
-		return execute(conn -> {
+		return execute(false, conn -> {
 			JobCollection jc = new JobCollection(epochs.getJobsEpoch());
 			if (deleted) {
 				try (Query jobs = conn.query(GET_JOB_IDS)) {
@@ -271,7 +271,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public List<JobListEntryRecord> listJobs(Permit permit) {
-		return execute(conn -> {
+		return execute(false, conn -> {
 			try (Query listLiveJobs = conn.query(LIST_LIVE_JOBS);
 					Query countPoweredBoards =
 							conn.query(COUNT_POWERED_BOARDS)) {
@@ -308,7 +308,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<Job> getJob(Permit permit, int id) {
-		return execute(conn -> getJob(id, conn).map(j -> (Job) j));
+		return execute(false, conn -> getJob(id, conn).map(j -> (Job) j));
 	}
 
 	private Optional<JobImpl> getJob(int id, Connection conn) {
@@ -556,7 +556,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public Optional<BoardLocation> getBoardByChip(int x, int y) {
 			try (Connection conn = getConnection();
 					Query findBoard = conn.query(findBoardByGlobalChip)) {
-				return conn.transaction(() -> findBoard.call1(id, x, y)
+				return conn.transaction(false, () -> findBoard.call1(id, x, y)
 						.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
@@ -566,7 +566,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				int frame, int board) {
 			try (Connection conn = getConnection();
 					Query findBoard = conn.query(findBoardByPhysicalCoords)) {
-				return conn.transaction(
+				return conn.transaction(false,
 						() -> findBoard.call1(id, cabinet, frame, board)
 								.map(row -> new BoardLocationImpl(row, this)));
 			}
@@ -577,8 +577,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				int z) {
 			try (Connection conn = getConnection();
 					Query findBoard = conn.query(findBoardByLogicalCoords)) {
-				return conn.transaction(() -> findBoard.call1(id, x, y, z)
-						.map(row -> new BoardLocationImpl(row, this)));
+				return conn.transaction(false,
+						() -> findBoard.call1(id, x, y, z)
+								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -586,8 +587,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public Optional<BoardLocation> getBoardByIPAddress(String address) {
 			try (Connection conn = getConnection();
 					Query findBoard = conn.query(findBoardByIPAddress)) {
-				return conn.transaction(() -> findBoard.call1(id, address)
-						.map(row -> new BoardLocationImpl(row, this)));
+				return conn.transaction(false,
+						() -> findBoard.call1(id, address)
+								.map(row -> new BoardLocationImpl(row, this)));
 			}
 		}
 
@@ -595,7 +597,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public String getRootBoardBMPAddress() {
 			try (Connection conn = getConnection();
 					Query rootBMPaddr = conn.query(GET_ROOT_BMP_ADDRESS)) {
-				return conn.transaction(() -> rootBMPaddr.call1(id)
+				return conn.transaction(false, () -> rootBMPaddr.call1(id)
 						.map(row -> row.getString("address")).orElse(null));
 			}
 		}
@@ -604,7 +606,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public List<Integer> getBoardNumbers() {
 			try (Connection conn = getConnection();
 					Query boardNumbers = conn.query(GET_BOARD_NUMBERS)) {
-				return conn.transaction(() -> boardNumbers.call(id)
+				return conn.transaction(false, () -> boardNumbers.call(id)
 						.map(row -> row.getInteger("board_num")).toList());
 			}
 		}
@@ -620,7 +622,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (Connection conn = getConnection();
 					Query boardNumbers = conn.query(GET_DEAD_BOARDS)) {
-				List<BoardCoords> downBoards = conn.transaction(
+				List<BoardCoords> downBoards = conn.transaction(false,
 						() -> boardNumbers.call(id)
 								.map(row -> new BoardCoords(row.getInt("x"),
 										row.getInt("y"), row.getInt("z"),
@@ -647,8 +649,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (Connection conn = getConnection();
 					Query boardNumbers = conn.query(getDeadLinks)) {
-				List<DownLink> downLinks = conn.transaction(() -> boardNumbers
-						.call(id).map(Spalloc::makeDownLinkFromRow).toList());
+				List<DownLink> downLinks =
+						conn.transaction(false, () -> boardNumbers.call(id)
+								.map(Spalloc::makeDownLinkFromRow).toList());
 				synchronized (Spalloc.this) {
 					downLinksCache.putIfAbsent(name, downLinks);
 				}
@@ -661,7 +664,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (Connection conn = getConnection();
 					Query boardNumbers =
 							conn.query(GET_AVAILABLE_BOARD_NUMBERS)) {
-				return conn.transaction(() -> boardNumbers.call(id)
+				return conn.transaction(false, () -> boardNumbers.call(id)
 						.map(row -> row.getInteger("board_num")).toList());
 			}
 		}
@@ -695,7 +698,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public String getBMPAddress(BMPCoords bmp) {
 			try (Connection conn = getConnection();
 					Query bmpAddr = conn.query(GET_BMP_ADDRESS)) {
-				return conn.transaction(() -> bmpAddr
+				return conn.transaction(false, () -> bmpAddr
 						.call1(id, bmp.getCabinet(), bmp.getFrame())
 						.map(row -> row.getString("address")).orElse(null));
 			}
@@ -705,7 +708,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public List<Integer> getBoardNumbers(BMPCoords bmp) {
 			try (Connection conn = getConnection();
 					Query boardNumbers = conn.query(GET_BMP_BOARD_NUMBERS)) {
-				return conn.transaction(() -> boardNumbers
+				return conn.transaction(false, () -> boardNumbers
 						.call(id, bmp.getCabinet(), bmp.getFrame())
 						.map(row -> row.getInteger("board_num")).toList());
 			}
@@ -924,7 +927,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (isNull(root)) {
 				return Optional.empty();
 			}
-			return execute(conn -> Optional.of(new SubMachineImpl(conn)));
+			return execute(false,
+					conn -> Optional.of(new SubMachineImpl(conn)));
 		}
 
 		@Override
@@ -934,9 +938,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (Connection conn = getConnection();
 					Query findBoard = conn.query(findBoardByJobChip)) {
-				return conn.transaction(() -> findBoard.call1(id, root, x, y)
-						.map(row -> new BoardLocationImpl(row, Spalloc.this
-								.getMachine(machineId, conn).get())));
+				return conn.transaction(false,
+						() -> findBoard.call1(id, root, x, y).map(
+								row -> new BoardLocationImpl(row, Spalloc.this
+										.getMachine(machineId, conn).get())));
 			}
 		}
 
@@ -1353,7 +1358,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			public PowerState getPower() {
 				try (Connection conn = getConnection();
 						Query power = conn.query(GET_BOARD_POWER)) {
-					return conn.transaction(() -> power.call1(id)
+					return conn.transaction(false, () -> power.call1(id)
 							.map(row -> row.getInt("total_on") < boardIds.size()
 									? PowerState.OFF
 									: PowerState.ON)

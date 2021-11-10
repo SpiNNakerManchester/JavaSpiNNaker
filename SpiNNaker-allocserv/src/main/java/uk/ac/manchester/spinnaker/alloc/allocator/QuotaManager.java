@@ -61,8 +61,8 @@ public class QuotaManager extends DatabaseAwareBean {
 				// These could be combined, but they're complicated enough
 				Query getQuota = c.query(GET_USER_QUOTA);
 				Query getCurrentUsage = c.query(GET_CURRENT_USAGE)) {
-			return c.transaction(() -> mayCreateJob(machineId, user, getQuota,
-					getCurrentUsage));
+			return c.transaction(false, () -> mayCreateJob(machineId, user,
+					getQuota, getCurrentUsage));
 		}
 	}
 
@@ -96,7 +96,8 @@ public class QuotaManager extends DatabaseAwareBean {
 	public boolean mayLetJobContinue(int machineId, int jobId) {
 		try (Connection c = getConnection();
 				Query getUsageAndQuota = c.query(GET_JOB_USAGE_AND_QUOTA)) {
-			return c.transaction(() -> getUsageAndQuota.call1(machineId, jobId)
+			return c.transaction(false, () -> getUsageAndQuota
+					.call1(machineId, jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
 					// Otherwise, we'll just allow it

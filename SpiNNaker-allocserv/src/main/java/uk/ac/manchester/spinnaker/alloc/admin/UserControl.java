@@ -147,7 +147,7 @@ public class UserControl extends DatabaseAwareBean {
 	public List<UserRecord> listUsers() {
 		try (Connection c = getConnection();
 				Query q = c.query(LIST_ALL_USERS)) {
-			return c.transaction(
+			return c.transaction(false,
 					() -> q.call().map(UserControl::sketchUser).toList());
 		}
 	}
@@ -353,7 +353,7 @@ public class UserControl extends DatabaseAwareBean {
 			throws AuthenticationException {
 		try (Connection c = getConnection();
 				Query q = c.query(GET_LOCAL_USER_DETAILS)) {
-			return c.transaction(() -> q.call1(principal.getName())
+			return c.transaction(false, () -> q.call1(principal.getName())
 					.map(row -> new PasswordChangeRecord(
 							row.getInt("user_id"), row.getString("user_name")))
 					.orElseThrow(

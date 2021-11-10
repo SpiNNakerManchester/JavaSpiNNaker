@@ -236,7 +236,7 @@ public class BMPController extends DatabaseAwareBean {
 	public int getPendingRequestLoading() {
 		try (Connection conn = getConnection();
 				Query countChanges = conn.query(COUNT_PENDING_CHANGES)) {
-			return conn.transaction(() -> countChanges.call1()
+			return conn.transaction(false, () -> countChanges.call1()
 					.map(row -> row.getInt("c")).orElse(0));
 		}
 	}
