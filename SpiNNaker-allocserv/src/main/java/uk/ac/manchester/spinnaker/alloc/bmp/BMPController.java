@@ -171,7 +171,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	@Scheduled(fixedDelayString = "#{txrxProperties.period}",
 			initialDelayString = "#{txrxProperties.period}")
-	void mainSchedule() throws IOException, SpinnmanException {
+	void mainSchedule() throws IOException {
 		if (serviceControl.isPaused()) {
 			return;
 		}
@@ -186,6 +186,8 @@ public class BMPController extends DatabaseAwareBean {
 			throw e;
 		} catch (InterruptedException e) {
 			log.error("interrupted while spawning a worker", e);
+		} catch (SpinnmanException e) {
+			log.error("fatal problem talking to BMP", e);
 		}
 	}
 

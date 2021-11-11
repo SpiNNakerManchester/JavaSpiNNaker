@@ -53,6 +53,7 @@ import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.utils.Ping;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
@@ -142,6 +143,8 @@ public class TransceiverFactory
 				SCP_SCAMP_PORT);
 	}
 
+	private static final int BUILD_TRIES = 5;
+
 	/**
 	 * Build a transceiver connection.
 	 * <p>
@@ -158,8 +161,21 @@ public class TransceiverFactory
 	 */
 	private Transceiver makeTransceiver(BMPConnectionData data)
 			throws IOException, SpinnmanException {
-		return new Transceiver(null, asList(new BMPConnection(data)), null,
-				null, null, null, null);
+		int count = 0;
+		while (true) {
+			try {
+				return new Transceiver(null, asList(new BMPConnection(data)),
+						null, null, null, null, null);
+			} catch (ProcessException e) {
+				if (++count > BUILD_TRIES) {
+					log.error("completely failed to connect to BMP; "
+							+ "service is unstable!");
+					throw e;
+				}
+				log.error("failed to connect to BMP; will ping and retry", e);
+				Ping.ping(data.ipAddress);
+			}
+		}
 	}
 
 	@PreDestroy
