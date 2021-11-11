@@ -213,16 +213,22 @@ public abstract class V1CompatTask {
 			line = in.readLine();
 		} catch (SocketException e) {
 			/*
-			 * Don't know why we get a generic socket exception for this, but it
-			 * happens when there's been some sort of network drop. Treating as
-			 * interrupt seems to be mostly right.
+			 * Don't know why we get a generic socket exception for some of
+			 * these, but it happens when there's been some sort of network drop
+			 * or if the connection close happens in a weird order. Treating as
+			 * EOF is the right thing.
+			 *
+			 * I also don't know why there is no nicer way of detecting this
+			 * than matching the exception message. You'd think that you'd get
+			 * something better, but no...
 			 */
-			if (e.getMessage().contains("Connection timed out (Read failed)")) {
-				currentThread().interrupt();
-				throw (InterruptedException) new InterruptedException()
-						.initCause(e);
+			switch (e.getMessage()) {
+			case "Connection reset":
+			case "Connection timed out (Read failed)":
+				return Optional.empty();
+			default:
+				throw e;
 			}
-			throw e;
 		}
 		if (isNull(line)) {
 			if (currentThread().isInterrupted()) {

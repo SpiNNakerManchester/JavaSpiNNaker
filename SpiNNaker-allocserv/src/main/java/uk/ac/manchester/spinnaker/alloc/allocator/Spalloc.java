@@ -713,6 +713,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						.map(row -> row.getInteger("board_num")).toList());
 			}
 		}
+
+		@Override
+		public String toString() {
+			return "Machine(" + name + ")";
+		}
 	}
 
 	private class JobCollection implements Jobs {
@@ -1301,12 +1306,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						boards.add(new BoardCoordinates(row.getInt("x"),
 								row.getInt("y"), row.getInt("z")));
 						connections.add(new ConnectionInfo(
-								new ChipLocation(
-										row.getInt("root_x") - chipRoot.getX(),
-										row.getInt("root_y") - chipRoot.getY()),
+								relativeChipLocation(row.getInt("root_x"),
+										row.getInt("root_y")),
 								row.getString("address")));
 					});
 				}
+			}
+
+			private ChipLocation relativeChipLocation(int x, int y) {
+				x -= chipRoot.getX();
+				y -= chipRoot.getY();
+				// Allow for wrapping
+				if (x < 0) {
+					x += machine.getWidth();
+				}
+				if (y < 0) {
+					y += machine.getHeight();
+				}
+				return new ChipLocation(x, y);
 			}
 
 			@Override

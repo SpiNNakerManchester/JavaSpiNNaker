@@ -901,8 +901,8 @@ public class BMPController extends DatabaseAwareBean {
 			 * (because we're in an inconsistent state) and rethrow so that the
 			 * outside gets to clean up.
 			 */
-			log.error("Requests failed on BMP {} because of interruption",
-					request.machine, e);
+			log.error("Requests failed on BMP(s) for {} because of "
+					+ "interruption", request.machine, e);
 			cleanupTasks.add(request::failed);
 			currentThread().interrupt();
 			throw e;
@@ -911,13 +911,13 @@ public class BMPController extends DatabaseAwareBean {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...
 				 */
-				log.warn("Retrying requests on BMP {} after {}: {}",
+				log.warn("Retrying requests on BMP(s) for {} after {}: {}",
 						request.machine, props.getProbeInterval(),
 						e.getMessage());
 				// Ask for a retry
 				return false;
 			}
-			log.error("Requests failed on BMP {}", request.machine, e);
+			log.error("Requests failed on BMP(s) for {}", request.machine, e);
 			cleanupTasks.add(request::failed);
 			// This is (probably) a permanent failure; stop retry loop
 			return true;
