@@ -204,16 +204,30 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static final int TRIM_PERF_LOG_LENGTH = 120;
 
-	private static final double NS_PER_US = 1000.0;
+	private static final double NS_PER_US = 1000;
+
+	private static final double NS_PER_MS = 1000000;
 
 	private static final String ELLIPSIS = "...";
 
-	// TODO move LOCKED_TRIES and LOCK_FAILED_DELAY_MS to config
+	// TODO move LOCKED_TRIES, LOCK_FAILED_DELAY_MS to config
+	// TODO move TX_LOCK_NOTE_THRESHOLD_NS, TX_LOCK_WARN_THRESHOLD_NS to config
 	/** Number of times to try to take the lock in a transaction. */
 	private static final int LOCKED_TRIES = 3;
 
 	/** Delay after transaction failure before retrying, in milliseconds. */
 	private static final int LOCK_FAILED_DELAY_MS = 100;
+
+	/**
+	 * Time delay (in nanoseconds) before we issue a warning on transaction end.
+	 */
+	private static final long TX_LOCK_NOTE_THRESHOLD_NS = 50000000;
+
+	/**
+	 * Time delay (in nanoseconds) before we issue a warning during the
+	 * execution of a transaction.
+	 */
+	private static final long TX_LOCK_WARN_THRESHOLD_NS = 100000000;
 
 	private final Path dbPath;
 
@@ -244,6 +258,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Autowired
 	private ScheduledExecutorService executor;
+
+	// If you add more autowired stuff here, make sure in-memory DBs get a copy!
 
 	private Map<String, SummaryStatistics> statementLengths =
 			new DefaultMap<>(SummaryStatistics::new);
@@ -578,6 +594,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
 		functions = prototype.functions;
+		executor = prototype.executor;
 		setupConfig();
 	}
 
@@ -834,10 +851,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
 	public final class Connection extends UncheckedConnection {
-		private static final double NS_PER_MS = 1000000.0;
-
-		private static final long TX_LOCK_WARN_THRESHOLD_NS = 10000000L;
-
 		private final DB realDB;
 
 		private boolean inTransaction;
@@ -869,7 +882,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			Thread lockingThread = currentThread();
 			lockWarningTimeout =
 					executor.schedule(() -> warnLock(lockingThread),
-							TX_LOCK_WARN_THRESHOLD_NS * 2, NANOSECONDS);
+							TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
 			lockTimestamp = nanoTime();
 		}
 
@@ -880,8 +893,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				currentLock = null;
 				lockWarningTimeout.cancel(false);
 				long dt = unlockTimestamp - lockTimestamp;
-				if (dt > TX_LOCK_WARN_THRESHOLD_NS) {
-					log.warn("transaction lock was held for {}ms",
+				if (dt > TX_LOCK_NOTE_THRESHOLD_NS) {
+					log.info("transaction lock was held for {}ms",
 							dt / NS_PER_MS);
 				}
 			}
@@ -889,8 +902,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		private void warnLock(Thread lockingThread) {
 			long dt = nanoTime() - lockTimestamp;
-			log.warn("transaction lock being held excessively by {} (> {}ms)",
-					lockingThread, dt / NS_PER_MS);
+			log.warn(
+					"transaction lock being held excessively by "
+							+ "{} (> {}ms); current transactions are {}",
+					lockingThread, dt / NS_PER_MS, currentTransactionHolders());
 		}
 
 		/**
