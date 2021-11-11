@@ -67,6 +67,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -879,10 +880,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			currentLock = l;
 			isLockedForWrites = lockForWriting;
 			l.lock();
-			Thread lockingThread = currentThread();
-			lockWarningTimeout =
-					executor.schedule(() -> warnLock(lockingThread),
-							TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
+			try {
+				final Thread lockingThread = currentThread();
+				lockWarningTimeout =
+						executor.schedule(() -> warnLock(lockingThread),
+								TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
+			} catch (RejectedExecutionException ignored) {
+				// Can't do anything about this, and it isn't too important
+			}
 			lockTimestamp = nanoTime();
 		}
 
