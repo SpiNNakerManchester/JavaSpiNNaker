@@ -865,9 +865,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 
 		private class Locker implements AutoCloseable {
-			private Lock currentLock;
+			private final Lock currentLock;
 
-			private long lockTimestamp;
+			private final long lockTimestamp;
 
 			private Future<?> lockWarningTimeout;
 
@@ -907,8 +907,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			public void close() {
 				long unlockTimestamp = nanoTime();
 				currentLock.unlock();
-				currentLock = null;
-				lockWarningTimeout.cancel(false);
+				if (lockWarningTimeout != null) {
+					lockWarningTimeout.cancel(false);
+				}
 				long dt = unlockTimestamp - lockTimestamp;
 				if (dt > TX_LOCK_NOTE_THRESHOLD_NS) {
 					log.info("transaction lock was held for {}ms",
