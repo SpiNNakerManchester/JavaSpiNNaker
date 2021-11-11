@@ -16,21 +16,25 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.lang.Math.max;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
+import static org.sqlite.SQLiteConfig.JournalMode.WAL;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
@@ -62,6 +66,8 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -235,6 +241,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
+
+	@Autowired
+	private ScheduledExecutorService executor;
 
 	private Map<String, SummaryStatistics> statementLengths =
 			new DefaultMap<>(SummaryStatistics::new);
@@ -529,6 +538,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		config.setSynchronous(NORMAL);
 		config.setBusyTimeout((int) props.getTimeout().toMillis());
 		config.setDateClass("INTEGER");
+		config.setJournalMode(WAL);
 	}
 
 	/**
@@ -824,6 +834,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
 	public final class Connection extends UncheckedConnection {
+		private static final double NS_PER_MS = 1000000.0;
+
+		private static final long TX_LOCK_WARN_THRESHOLD_NS = 10000000L;
+
 		private final DB realDB;
 
 		private boolean inTransaction;
@@ -832,10 +846,51 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		private boolean isLockedForWrites;
 
+		private long lockTimestamp;
+
+		private Future<?> lockWarningTimeout;
+
 		private Connection(java.sql.Connection c) {
 			super(c);
 			realDB = unwrap(SQLiteConnection.class).getDatabase();
 			inTransaction = false;
+		}
+
+		private void acquireLock(boolean lockForWriting) {
+			Lock l;
+			if (lockForWriting) {
+				l = lock.writeLock();
+			} else {
+				l = lock.readLock();
+			}
+			currentLock = l;
+			isLockedForWrites = lockForWriting;
+			l.lock();
+			Thread lockingThread = currentThread();
+			lockWarningTimeout =
+					executor.schedule(() -> warnLock(lockingThread),
+							TX_LOCK_WARN_THRESHOLD_NS * 2, NANOSECONDS);
+			lockTimestamp = nanoTime();
+		}
+
+		private void dropLock() {
+			if (currentLock != null) {
+				long unlockTimestamp = nanoTime();
+				currentLock.unlock();
+				currentLock = null;
+				lockWarningTimeout.cancel(false);
+				long dt = unlockTimestamp - lockTimestamp;
+				if (dt > TX_LOCK_WARN_THRESHOLD_NS) {
+					log.warn("transaction lock was held for {}ms",
+							dt / NS_PER_MS);
+				}
+			}
+		}
+
+		private void warnLock(Thread lockingThread) {
+			long dt = nanoTime() - lockTimestamp;
+			log.warn("transaction lock being held excessively by {} (> {}ms)",
+					lockingThread, dt / NS_PER_MS);
 		}
 
 		/**
@@ -850,15 +905,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *            deadlocks).
 		 */
 		private void realBegin(boolean lockForWriting) {
-			Lock l;
-			if (lockForWriting) {
-				l = lock.writeLock();
-			} else {
-				l = lock.readLock();
-			}
-			currentLock = l;
-			isLockedForWrites = lockForWriting;
-			l.lock();
+			acquireLock(lockForWriting);
 			try {
 				realDB.exec("begin;", false);
 			} catch (SQLException e) {
@@ -877,10 +924,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			} catch (SQLException e) {
 				throw mapException(e, null);
 			} finally {
-				if (currentLock != null) {
-					currentLock.unlock();
-					currentLock = null;
-				}
+				dropLock();
 			}
 		}
 
@@ -895,10 +939,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			} catch (SQLException e) {
 				throw mapException(e, null);
 			} finally {
-				if (currentLock != null) {
-					currentLock.unlock();
-					currentLock = null;
-				}
+				dropLock();
 			}
 		}
 
@@ -1426,41 +1467,46 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static final Set<String> FILTERED_CLASSES;
 
+	private static final Set<String> FILTERED_PREFIXES;
+
 	static {
-		FILTERED_CLASSES = new HashSet<>();
-		FILTERED_CLASSES.add(Query.class.getName());
-		FILTERED_CLASSES.add(Update.class.getName());
-		FILTERED_CLASSES.add(Connection.class.getName());
-		FILTERED_CLASSES.add("uk.ac.manchester.spinnaker.alloc.bmp."
+		Set<String> filteredPrefixes = new HashSet<>();
+		filteredPrefixes.add("java");
+		filteredPrefixes.add("javax");
+		filteredPrefixes.add("sun");
+		FILTERED_PREFIXES = unmodifiableSet(filteredPrefixes);
+
+		Set<String> filteredClasses = new HashSet<>();
+		filteredClasses.add(Query.class.getName());
+		filteredClasses.add(Update.class.getName());
+		filteredClasses.add(Connection.class.getName());
+		filteredClasses.add(DatabaseAwareBean.class.getName());
+		filteredClasses.add("uk.ac.manchester.spinnaker.alloc.bmp."
 				+ "BMPController$AbstractSQL");
+		FILTERED_CLASSES = unmodifiableSet(filteredClasses);
 	}
 
 	/**
 	 * Get the stack frame description of the caller of the of the transaction.
+	 * <p>
+	 * This is an expensive operation.
 	 *
 	 * @return The (believed) caller of the transaction. {@code null} if this
 	 *         can't be determined.
 	 */
 	private static StackTraceElement getCaller() {
-		try {
-			boolean found = false;
-			for (StackTraceElement frame : currentThread().getStackTrace()) {
-				String name = frame.getClassName();
-				if (name.startsWith("java.") || name.startsWith("javax.")
-				// MAGIC!
-						|| name.startsWith("sun.")) {
-					continue;
-				}
-				boolean found1 = FILTERED_CLASSES.contains(name)
-						// Special case
-						|| frame.getMethodName().equals("execute");
-				found |= found1;
-				if (found && !found1) {
-					return frame;
-				}
+		boolean found = false;
+		for (StackTraceElement frame : currentThread().getStackTrace()) {
+			String name = frame.getClassName();
+			String first = name.substring(0, max(0, name.indexOf('.')));
+			if (FILTERED_PREFIXES.contains(first)) {
+				continue;
 			}
-		} catch (SecurityException ignored) {
-			// Security manager says no? OK, we can cope.
+			boolean found1 = FILTERED_CLASSES.contains(name);
+			found |= found1;
+			if (found && !found1) {
+				return frame;
+			}
 		}
 		return null;
 	}
