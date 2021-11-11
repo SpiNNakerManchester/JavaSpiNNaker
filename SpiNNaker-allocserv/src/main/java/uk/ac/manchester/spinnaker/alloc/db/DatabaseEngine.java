@@ -856,13 +856,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		private boolean inTransaction;
 
-		private Lock currentLock;
-
 		private boolean isLockedForWrites;
-
-		private long lockTimestamp;
-
-		private Future<?> lockWarningTimeout;
 
 		private Connection(java.sql.Connection c) {
 			super(c);
@@ -870,29 +864,47 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			inTransaction = false;
 		}
 
-		private void acquireLock(boolean lockForWriting) {
-			Lock l;
-			if (lockForWriting) {
-				l = lock.writeLock();
-			} else {
-				l = lock.readLock();
-			}
-			currentLock = l;
-			isLockedForWrites = lockForWriting;
-			l.lock();
-			try {
-				final Thread lockingThread = currentThread();
-				lockWarningTimeout =
-						executor.schedule(() -> warnLock(lockingThread),
-								TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
-			} catch (RejectedExecutionException ignored) {
-				// Can't do anything about this, and it isn't too important
-			}
-			lockTimestamp = nanoTime();
-		}
+		private class Locker implements AutoCloseable {
+			private Lock currentLock;
 
-		private void dropLock() {
-			if (currentLock != null) {
+			private long lockTimestamp;
+
+			private Future<?> lockWarningTimeout;
+
+			/**
+			 * @param lockForWriting
+			 *            Whether to lock for writing. Multiple read locks can
+			 *            be held at once, but only one write lock. Locks
+			 *            <em>cannot</em> be upgraded (because that causes
+			 *            deadlocks).
+			 */
+			Locker(boolean lockForWriting) {
+				Lock l = getLock(lockForWriting);
+				currentLock = l;
+				isLockedForWrites = lockForWriting;
+				l.lock();
+				try {
+					final Object lockingContext = getCaller();
+					lockWarningTimeout =
+							executor.schedule(() -> warnLock(lockingContext),
+									TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
+				} catch (RejectedExecutionException ignored) {
+					// Can't do anything about this, and it isn't too important
+				}
+				lockTimestamp = nanoTime();
+			}
+
+			private Lock getLock(boolean lockForWriting) {
+				lockForWriting |= true; // HACK
+				if (lockForWriting) {
+					return lock.writeLock();
+				} else {
+					return lock.readLock();
+				}
+			}
+
+			@Override
+			public void close() {
 				long unlockTimestamp = nanoTime();
 				currentLock.unlock();
 				currentLock = null;
@@ -903,29 +915,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 							dt / NS_PER_MS);
 				}
 			}
-		}
 
-		private void warnLock(Thread lockingThread) {
-			long dt = nanoTime() - lockTimestamp;
-			log.warn(
-					"transaction lock being held excessively by "
-							+ "{} (> {}ms); current transactions are {}",
-					lockingThread, dt / NS_PER_MS, currentTransactionHolders());
+			private void warnLock(Object lockingContext) {
+				long dt = nanoTime() - lockTimestamp;
+				log.warn(
+						"transaction lock being held excessively by "
+								+ "{} (> {}ms); current transactions are {}",
+						lockingContext, dt / NS_PER_MS,
+						currentTransactionHolders());
+			}
 		}
 
 		/**
 		 * A real database {@code BEGIN}. Can't use
 		 * {@link #setAutoCommit(boolean)} as that maintains transactions when
 		 * it doesn't need to, eventually causing database locking problems.
-		 *
-		 * @param lockForWriting
-		 *            Whether to lock for writing. Multiple read locks can be
-		 *            held at once, but only one write lock. Locks
-		 *            <em>cannot</em> be upgraded (because that causes
-		 *            deadlocks).
 		 */
-		private void realBegin(boolean lockForWriting) {
-			acquireLock(lockForWriting);
+		private void realBegin() {
 			try {
 				realDB.exec("begin;", false);
 			} catch (SQLException e) {
@@ -943,8 +949,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				realDB.exec("commit;", false);
 			} catch (SQLException e) {
 				throw mapException(e, null);
-			} finally {
-				dropLock();
 			}
 		}
 
@@ -958,8 +962,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				realDB.exec("rollback;", false);
 			} catch (SQLException e) {
 				throw mapException(e, null);
-			} finally {
-				dropLock();
 			}
 		}
 
@@ -1083,39 +1085,42 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					caller = getCaller();
 					log.debug("start transaction: {}", caller);
 				}
-				realBegin(lockForWriting);
-				boolean done = false;
-				try (Hold hold = new Hold()) {
-					T result = operation.act();
-					log.debug("commence commit: {}", caller);
-					realCommit();
-					done = true;
-					return result;
-				} catch (DataAccessException e) {
-					if (tries < LOCKED_TRIES && isBusy(e)) {
-						log.warn(
-								"retrying transaction due to lock failure; "
-										+ "current transaction holders are {}",
-								currentTransactionHolders());
-						try {
-							sleep(LOCK_FAILED_DELAY_MS);
-						} catch (InterruptedException ignored) {
-						}
-						continue;
-					}
-					cantWarning("commit", e);
-					throw e;
-				} finally {
-					try {
-						if (!done) {
-							log.debug("commence rollback: {}", caller);
-							realRollback();
-						}
+				try (Locker locker = new Locker(lockForWriting)) {
+					realBegin();
+					boolean done = false;
+					try (Hold hold = new Hold()) {
+						T result = operation.act();
+						log.debug("commence commit: {}", caller);
+						realCommit();
+						done = true;
+						return result;
 					} catch (DataAccessException e) {
-						cantWarning("rollback", e);
+						if (tries < LOCKED_TRIES && isBusy(e)) {
+							log.warn(
+									"retrying transaction due to lock failure; "
+											+ "current transaction holders "
+											+ "are {}",
+									currentTransactionHolders());
+							try {
+								sleep(LOCK_FAILED_DELAY_MS);
+							} catch (InterruptedException ignored) {
+							}
+							continue;
+						}
+						cantWarning("commit", e);
 						throw e;
+					} finally {
+						try {
+							if (!done) {
+								log.debug("commence rollback: {}", caller);
+								realRollback();
+							}
+						} catch (DataAccessException e) {
+							cantWarning("rollback", e);
+							throw e;
+						}
+						log.debug("finish transaction: {}", caller);
 					}
-					log.debug("finish transaction: {}", caller);
 				}
 			}
 		}
