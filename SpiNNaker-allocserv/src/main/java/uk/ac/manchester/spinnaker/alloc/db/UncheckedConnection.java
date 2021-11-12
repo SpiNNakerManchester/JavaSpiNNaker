@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
+
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -36,20 +38,14 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.dao.RecoverableDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
+import org.sqlite.SQLiteConfig.TransactionMode;
 import org.sqlite.SQLiteConnection;
-import org.sqlite.SQLiteException;
 import org.sqlite.core.DB;
 
 /**
- * A connection that guarantees to not throw {@link SQLException} from many
- * of its methods. Such exceptions are wrapped as
- * {@link DataAccessException}s instead.
+ * A connection that guarantees to not throw {@link SQLException} from many of
+ * its methods. Such exceptions are wrapped as {@link DataAccessException}s
+ * instead.
  *
  * @author Donal Fellows
  */
@@ -71,10 +67,15 @@ class UncheckedConnection implements Connection {
 	 * A real database {@code BEGIN} in SQLite. Can't use
 	 * {@link #setAutoCommit(boolean)} as that maintains transactions when it
 	 * doesn't need to, eventually causing database locking problems.
+	 *
+	 * @param mode
+	 *            Which transaction mode to use
+	 * @throws DataAccessException
+	 *             If the {@code BEGIN} fails.
 	 */
-	final void realBegin() {
+	final void realBegin(TransactionMode mode) {
 		try {
-			realDB.exec("begin;", false);
+			realDB.exec("begin " + mode.name() + ";", false);
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
@@ -84,6 +85,9 @@ class UncheckedConnection implements Connection {
 	 * A real database {@code COMMIT} in SQLite. Can't use {@link #commit()} as
 	 * that maintains transactions when it doesn't need to, eventually causing
 	 * database locking problems.
+	 *
+	 * @throws DataAccessException
+	 *             If the {@code COMMIT} fails.
 	 */
 	final void realCommit() {
 		try {
@@ -97,6 +101,9 @@ class UncheckedConnection implements Connection {
 	 * A real database {@code ROLLBACK} in SQLite. Can't use {@link #rollback()}
 	 * as that maintains transactions when it doesn't need to, eventually
 	 * causing database locking problems.
+	 *
+	 * @throws DataAccessException
+	 *             If the {@code ROLLBACK} fails.
 	 */
 	final void realRollback() {
 		try {
@@ -309,16 +316,15 @@ class UncheckedConnection implements Connection {
 	public final PreparedStatement prepareStatement(String sql,
 			int resultSetType, int resultSetConcurrency) {
 		try {
-			return c.prepareStatement(sql, resultSetType,
-					resultSetConcurrency);
+			return c.prepareStatement(sql, resultSetType, resultSetConcurrency);
 		} catch (SQLException e) {
 			throw mapException(e, sql);
 		}
 	}
 
 	@Override
-	public final CallableStatement prepareCall(String sql,
-			int resultSetType, int resultSetConcurrency) {
+	public final CallableStatement prepareCall(String sql, int resultSetType,
+			int resultSetConcurrency) {
 		try {
 			return c.prepareCall(sql, resultSetType, resultSetConcurrency);
 		} catch (SQLException e) {
@@ -410,17 +416,16 @@ class UncheckedConnection implements Connection {
 			int resultSetType, int resultSetConcurrency,
 			int resultSetHoldability) {
 		try {
-			return c.prepareStatement(sql, resultSetType,
-					resultSetConcurrency, resultSetHoldability);
+			return c.prepareStatement(sql, resultSetType, resultSetConcurrency,
+					resultSetHoldability);
 		} catch (SQLException e) {
 			throw mapException(e, sql);
 		}
 	}
 
 	@Override
-	public final CallableStatement prepareCall(String sql,
-			int resultSetType, int resultSetConcurrency,
-			int resultSetHoldability) {
+	public final CallableStatement prepareCall(String sql, int resultSetType,
+			int resultSetConcurrency, int resultSetHoldability) {
 		try {
 			return c.prepareCall(sql, resultSetType, resultSetConcurrency,
 					resultSetHoldability);
@@ -580,8 +585,7 @@ class UncheckedConnection implements Connection {
 	}
 
 	@Override
-	public final void setNetworkTimeout(Executor executor,
-			int milliseconds) {
+	public final void setNetworkTimeout(Executor executor, int milliseconds) {
 		try {
 			c.setNetworkTimeout(executor, milliseconds);
 		} catch (SQLException e) {
@@ -595,99 +599,6 @@ class UncheckedConnection implements Connection {
 			return c.getNetworkTimeout();
 		} catch (SQLException e) {
 			throw mapException(e, null);
-		}
-	}
-
-	static DataAccessException mapException(SQLException e, String sql) {
-		if (!(e instanceof SQLiteException)) {
-			return new UncategorizedSQLException("general SQL exception", sql,
-					e);
-		}
-		SQLiteException exn = (SQLiteException) e;
-		String msg = exn.getMessage();
-		if (msg.contains("SQL error or missing database (")) {
-			msg = msg.replaceFirst("SQL error or missing database \\((.*)\\)",
-					"$1");
-		}
-		switch (exn.getResultCode()) {
-		case SQLITE_CONSTRAINT:
-		case SQLITE_CONSTRAINT_CHECK:
-		case SQLITE_CONSTRAINT_COMMITHOOK:
-		case SQLITE_CONSTRAINT_FOREIGNKEY:
-		case SQLITE_CONSTRAINT_FUNCTION:
-		case SQLITE_CONSTRAINT_PRIMARYKEY:
-		case SQLITE_CONSTRAINT_UNIQUE:
-		case SQLITE_CONSTRAINT_NOTNULL:
-		case SQLITE_CONSTRAINT_TRIGGER:
-		case SQLITE_CONSTRAINT_ROWID:
-		case SQLITE_CONSTRAINT_VTAB:
-		case SQLITE_MISMATCH:
-			return new DataIntegrityViolationException(msg, exn);
-
-		case SQLITE_BUSY:
-		case SQLITE_BUSY_RECOVERY:
-		case SQLITE_BUSY_SNAPSHOT:
-		case SQLITE_LOCKED:
-		case SQLITE_LOCKED_SHAREDCACHE:
-			return new PessimisticLockingFailureException(msg, exn);
-
-		case SQLITE_ABORT:
-		case SQLITE_ABORT_ROLLBACK:
-		case SQLITE_FULL:
-		case SQLITE_EMPTY:
-			return new RecoverableDataAccessException(msg, exn);
-
-		case SQLITE_SCHEMA:
-		case SQLITE_TOOBIG:
-		case SQLITE_RANGE:
-			return new InvalidDataAccessResourceUsageException(msg, exn);
-
-		case SQLITE_IOERR:
-		case SQLITE_IOERR_SHORT_READ:
-		case SQLITE_IOERR_READ:
-		case SQLITE_IOERR_WRITE:
-		case SQLITE_IOERR_FSYNC:
-		case SQLITE_IOERR_DIR_FSYNC:
-		case SQLITE_IOERR_TRUNCATE:
-		case SQLITE_IOERR_FSTAT:
-		case SQLITE_IOERR_UNLOCK:
-		case SQLITE_IOERR_RDLOCK:
-		case SQLITE_IOERR_DELETE:
-		case SQLITE_IOERR_NOMEM:
-		case SQLITE_IOERR_ACCESS:
-		case SQLITE_IOERR_CHECKRESERVEDLOCK:
-		case SQLITE_IOERR_LOCK:
-		case SQLITE_IOERR_CLOSE:
-		case SQLITE_IOERR_SHMOPEN:
-		case SQLITE_IOERR_SHMSIZE:
-		case SQLITE_IOERR_SHMMAP:
-		case SQLITE_IOERR_SEEK:
-		case SQLITE_IOERR_DELETE_NOENT:
-		case SQLITE_IOERR_MMAP:
-		case SQLITE_IOERR_GETTEMPPATH:
-		case SQLITE_IOERR_CONVPATH:
-		case SQLITE_PERM:
-		case SQLITE_READONLY:
-		case SQLITE_READONLY_RECOVERY:
-		case SQLITE_READONLY_CANTLOCK:
-		case SQLITE_READONLY_ROLLBACK:
-		case SQLITE_READONLY_DBMOVED:
-		case SQLITE_AUTH:
-		case SQLITE_MISUSE:
-		case SQLITE_NOLFS:
-		case SQLITE_CORRUPT:
-		case SQLITE_CORRUPT_VTAB:
-		case SQLITE_CANTOPEN:
-		case SQLITE_CANTOPEN_ISDIR:
-		case SQLITE_CANTOPEN_FULLPATH:
-		case SQLITE_CANTOPEN_CONVPATH:
-		case SQLITE_NOTADB:
-		case SQLITE_FORMAT:
-			return new DataAccessResourceFailureException(msg, exn);
-
-		default:
-			return new UncategorizedSQLException("general SQL exception", sql,
-					e);
 		}
 	}
 }

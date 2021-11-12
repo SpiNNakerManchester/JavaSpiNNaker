@@ -36,8 +36,8 @@ import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 

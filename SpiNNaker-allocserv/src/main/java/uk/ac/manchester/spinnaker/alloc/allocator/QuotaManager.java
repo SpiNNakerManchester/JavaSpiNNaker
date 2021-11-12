@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * Manages user quotas.

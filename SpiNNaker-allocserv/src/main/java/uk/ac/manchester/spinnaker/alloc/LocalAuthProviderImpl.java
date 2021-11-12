@@ -23,7 +23,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +56,8 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * Does authentication against users defined entirely in the database. This

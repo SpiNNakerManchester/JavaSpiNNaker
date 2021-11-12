@@ -29,7 +29,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 
@@ -70,8 +70,8 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;

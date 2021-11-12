@@ -34,10 +34,13 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.JournalMode.WAL;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
-import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
+import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
-import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
@@ -129,7 +132,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final String COUNT_MOVEMENTS =
 			"SELECT count(*) AS c FROM movement_directions";
 
-	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
+	private final Map<Resource, String> queryCache = new HashMap<>();
 
 	// From https://sqlite.org/lang_analyze.html
 	// These are special operations
@@ -142,15 +145,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private static final int EXPECTED_NUM_MOVEMENTS = 18;
 
-	private static final int TRIM_LENGTH = 80;
-
 	private static final int TRIM_PERF_LOG_LENGTH = 120;
 
 	private static final double NS_PER_US = 1000;
 
 	private static final double NS_PER_MS = 1000000;
-
-	private static final String ELLIPSIS = "...";
 
 	/** Whether to examine the stack for transaction debugging purposes. */
 	private static final boolean ENABLE_EXPENSIVE_TX_DEBUGGING = false;
@@ -256,7 +255,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	private static void
-			logStatementExecutionTime(Map.Entry<String, SummaryStatistics> e) {
+			logStatementExecutionTime(Entry<String, SummaryStatistics> e) {
 		if (log.isInfoEnabled()) {
 			log.info("statement execution time " + "{}us (max: {}us) for: {}",
 					e.getValue().getMean() / NS_PER_US,
@@ -265,215 +264,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	private static Set<String> columnNames(ResultSetMetaData md)
-			throws SQLException {
+	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
 		Set<String> names = new LinkedHashSet<>();
 		for (int i = 1; i <= md.getColumnCount(); i++) {
 			names.add(md.getColumnName(i));
 		}
 		return names;
-	}
-
-	/**
-	 * A restricted form of result set. Note that this object <em>must not</em>
-	 * be saved outside the context of iteration over its' query's results.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static final class Row {
-		private final ResultSet rs;
-
-		private Row(ResultSet rs) {
-			this.rs = rs;
-		}
-
-		/**
-		 * Get the column names from this row.
-		 *
-		 * @return The set of column names; all lookup of columns is by name, so
-		 *         the order is unimportant. (The set returned will iterate over
-		 *         the names in the order they are in the underlying result set,
-		 *         but this is considered "unimportant".)
-		 */
-		public Set<String> getColumnNames() {
-			try {
-				return columnNames(rs.getMetaData());
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A string, or {@code null} on {@code NULL}.
-		 */
-		public String getString(String columnLabel) {
-			try {
-				return rs.getString(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A boolean, or {@code false} on {@code NULL}.
-		 */
-		public boolean getBoolean(String columnLabel) {
-			try {
-				return rs.getBoolean(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An integer, or {@code 0} on {@code NULL}.
-		 */
-		public int getInt(String columnLabel) {
-			try {
-				return rs.getInt(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An integer or {@code null}.
-		 */
-		public Integer getInteger(String columnLabel) {
-			try {
-				return (Integer) rs.getObject(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A byte array, or {@code null} on {@code NULL}.
-		 */
-		public byte[] getBytes(String columnLabel) {
-			try {
-				return rs.getBytes(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An instant, or {@code null} on {@code NULL}.
-		 */
-		public Instant getInstant(String columnLabel) {
-			try {
-				long moment = rs.getLong(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return Instant.ofEpochSecond(moment);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A duration, or {@code null} on {@code NULL}.
-		 */
-		public Duration getDuration(String columnLabel) {
-			try {
-				long span = rs.getLong(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return Duration.ofSeconds(span);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An automatically-decoded object, or {@code null} on
-		 *         {@code NULL}. (Only returns basic types.)
-		 */
-		public Object getObject(String columnLabel) {
-			try {
-				return rs.getObject(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param <T>
-		 *            The enumeration type.
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @param type
-		 *            The enumeration type class.
-		 * @return An enum value, or {@code null} on {@code NULL}.
-		 */
-		public <T extends Enum<T>> T getEnum(String columnLabel,
-				Class<T> type) {
-			try {
-				int value = rs.getInt(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return type.getEnumConstants()[value];
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A long value, or {@code null} on {@code NULL}.
-		 */
-		public Long getLong(String columnLabel) {
-			try {
-				Number value = (Number) rs.getObject(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return value.longValue();
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
 	}
 
 	@PostConstruct
@@ -1010,7 +806,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					log.debug("start transaction: {}", context);
 				}
 				try (Locker locker = new Locker(lockForWriting)) {
-					realBegin();
+					realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
 					boolean done = false;
 					try (Hold hold = new Hold()) {
 						T result = operation.act();
@@ -1617,17 +1413,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @throws UncategorizedScriptException
 	 *             If the resource can't be loaded.
 	 */
-	private static String readSQL(Resource resource) {
-		synchronized (QUERY_CACHE) {
-			if (QUERY_CACHE.containsKey(resource)) {
-				return QUERY_CACHE.get(resource);
+	private String readSQL(Resource resource) {
+		synchronized (queryCache) {
+			if (queryCache.containsKey(resource)) {
+				return queryCache.get(resource);
 			}
 		}
 		try (InputStream is = resource.getInputStream()) {
 			String s = IOUtils.toString(is, UTF_8);
-			synchronized (QUERY_CACHE) {
+			synchronized (queryCache) {
 				// Not really a problem if it is put in twice
-				QUERY_CACHE.put(resource, s);
+				queryCache.put(resource, s);
 			}
 			return s;
 		} catch (IOException e) {
@@ -1748,37 +1544,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Exclude comments and compress whitespace from the SQL of a statement.
-	 *
-	 * @param sql
-	 *            The text of the SQL to trim.
-	 * @return The trimmed SQL.
-	 */
-	private static String trimSQL(String sql) {
-		return trimSQL(sql, TRIM_LENGTH);
-	}
-
-	/**
-	 * Exclude comments and compress whitespace from the SQL of a statement.
-	 *
-	 * @param sql
-	 *            The text of the SQL to trim.
-	 * @param length
-	 *            The point to insert an ellipsis if required.
-	 * @return The trimmed SQL.
-	 */
-	private static String trimSQL(String sql, int length) {
-		sql = sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
-		// Trim long queries to no more than TRIM_LENGTH...
-		String sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
-		if (sql2 != sql) {
-			// and add an ellipsis if we do the trimming
-			sql = sql2 + ELLIPSIS;
-		}
-		return sql;
-	}
-
-	/**
 	 * Wrapping a prepared query to be more suitable for Java 8 onwards.
 	 *
 	 * @author Donal Fellows
@@ -1805,7 +1570,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			conn.checkInTransaction(lockType);
 			closeResults();
 			try {
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				setParams(arguments);
 				long pre = nanoTime();
 				rs = s.executeQuery();
@@ -1868,7 +1633,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		public Optional<Row> call1(Object... arguments) {
 			conn.checkInTransaction(lockType);
 			try {
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				closeResults();
 				setParams(arguments);
 				long pre = nanoTime();
@@ -1937,7 +1702,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			long pre, post;
 			try {
 				setParams(arguments);
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				pre = nanoTime();
 				numRows = s.executeUpdate();
 				post = nanoTime();
@@ -2012,7 +1777,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				if (numRows < 1) {
 					return Optional.empty();
 				}
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {
 					return Optional.ofNullable((Integer) rs.getObject(1));
@@ -2025,19 +1790,5 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				closeResults();
 			}
 		}
-	}
-
-	/**
-	 * Utility for testing whether an exception was thrown because the database
-	 * was busy.
-	 *
-	 * @param e
-	 *            The outer wrapping exception.
-	 * @return Whether it was caused by the database being busy.
-	 */
-	public static boolean isBusy(DataAccessException e) {
-		return e.getMostSpecificCause() instanceof SQLiteException
-				&& ((SQLiteException) e.getMostSpecificCause()).getResultCode()
-						.equals(SQLITE_BUSY);
 	}
 }

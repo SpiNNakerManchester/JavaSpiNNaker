@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoord
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * Test that the database engine interface works and that the queries are
