@@ -29,14 +29,14 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.Response.status;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
 import static org.sqlite.SQLiteConfig.JournalMode.WAL;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
+import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
+import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
 import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
@@ -76,9 +76,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -96,7 +93,6 @@ import org.sqlite.SQLiteCommitListener;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
-import org.sqlite.core.DB;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
@@ -115,61 +111,6 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 @Component
 public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
-
-	/**
-	 * Flag direct from SQLite.
-	 *
-	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
-	 * may only be invoked from top-level SQL, and cannot be used in
-	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
-	 * <em>CHECK</em> constraints, <em>DEFAULT</em> clauses, expression indexes,
-	 * partial indexes, or generated columns. The {@code SQLITE_DIRECTONLY}
-	 * flags is a security feature which is recommended for all
-	 * application-defined SQL functions, and especially for functions that have
-	 * side-effects or that could potentially leak sensitive
-	 * information.</blockquote>
-	 * <p>
-	 * Note that the password-related functions we install are definitely
-	 * examples of functions that are only usable directly.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_DIRECTONLY = 0x000080000;
-
-	/**
-	 * Flag direct from SQLite.
-	 *
-	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
-	 * unlikely to cause problems even if misused. An innocuous function should
-	 * have no side effects and should not depend on any values other than its
-	 * input parameters. The {@code abs()} function is an example of an
-	 * innocuous function. The {@code load_extension()} SQL function is not
-	 * innocuous because of its side effects.
-	 * <p>
-	 * {@code SQLITE_INNOCUOUS} is similar to {@code SQLITE_DETERMINISTIC}, but
-	 * is not exactly the same. The {@code random()} function is an example of a
-	 * function that is innocuous but not deterministic.
-	 * <p>
-	 * Some heightened security settings ({@code SQLITE_DBCONFIG_TRUSTED_SCHEMA}
-	 * and {@code PRAGMA trusted_schema=OFF}) disable the use of SQL functions
-	 * inside views and triggers and in schema structures such as <em>CHECK</em>
-	 * constraints, <em>DEFAULT</em> clauses, expression indexes, partial
-	 * indexes, and generated columns unless the function is tagged with
-	 * {@code SQLITE_INNOCUOUS}. Most built-in functions are innocuous.
-	 * Developers are advised to avoid using the {@code SQLITE_INNOCUOUS} flag
-	 * for application-defined functions unless the function has been carefully
-	 * audited and found to be free of potentially security-adverse side-effects
-	 * and information-leaks. </blockquote>
-	 * <p>
-	 * Note that this engine marks non-innocuous functions as
-	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
-	 * correct.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_INNOCUOUS = 0x000200000;
 
 	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
@@ -210,6 +151,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final double NS_PER_MS = 1000000;
 
 	private static final String ELLIPSIS = "...";
+
+	/** Whether to examine the stack for transaction debugging purposes. */
+	private static final boolean ENABLE_EXPENSIVE_TX_DEBUGGING = false;
 
 	// TODO move LOCKED_TRIES, LOCK_FAILED_DELAY_MS to config
 	// TODO move TX_LOCK_NOTE_THRESHOLD_NS, TX_LOCK_WARN_THRESHOLD_NS to config
@@ -643,10 +587,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	/**
 	 * If placed on a bean of type {@link Function}, specifies that the function
-	 * may be used in schema structures.
+	 * may be used in schema structures. The {@link DatabaseEngine} assumes that
+	 * all functions that are not innocuous must be direct-only.
 	 *
-	 * @see DatabaseEngine#SQLITE_DIRECTONLY SQLITE_DIRECTONLY
-	 * @see DatabaseEngine#SQLITE_INNOCUOUS SQLITE_INNOCUOUS
+	 * @see SQLiteFlags#SQLITE_DIRECTONLY SQLITE_DIRECTONLY
+	 * @see SQLiteFlags#SQLITE_INNOCUOUS SQLITE_INNOCUOUS
 	 * @author Donal Fellows
 	 * @deprecated Consult the SQLite documentation on innocuous functions very
 	 *             carefully before enabling this. Only disable the deprecation
@@ -770,12 +715,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			conn.addCommitListener(new SQLiteCommitListener() {
 				@Override
 				public void onCommit() {
-					log.debug("committing transaction");
+					log.debug("database is committing transaction");
 				}
 
 				@Override
 				public void onRollback() {
-					log.debug("rolling back transaction");
+					log.debug("database is rolling back transaction");
 				}
 			});
 		}
@@ -847,20 +792,33 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
+	 * Obtain some context for log messages when tracking what's happening in a
+	 * transaction. The only useful operation possible with this object is to
+	 * print it to the log!
+	 *
+	 * @return A printable object for debugging purposes. Might be the current
+	 *         thread or might be a useful stack frame.
+	 */
+	private static Object getDebugContext() {
+		if (ENABLE_EXPENSIVE_TX_DEBUGGING) {
+			return getCaller();
+		} else {
+			return currentThread();
+		}
+	}
+
+	/**
 	 * Connections made by the database engine bean. Its methods do not throw
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
 	 * up correctly when the thread exits (ideal for thread pools).
 	 */
 	public final class Connection extends UncheckedConnection {
-		private final DB realDB;
-
 		private boolean inTransaction;
 
 		private boolean isLockedForWrites;
 
 		private Connection(java.sql.Connection c) {
 			super(c);
-			realDB = unwrap(SQLiteConnection.class).getDatabase();
 			inTransaction = false;
 		}
 
@@ -868,6 +826,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			private final Lock currentLock;
 
 			private final long lockTimestamp;
+
+			private final Object lockingContext;
 
 			private Future<?> lockWarningTimeout;
 
@@ -882,12 +842,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				Lock l = getLock(lockForWriting);
 				currentLock = l;
 				isLockedForWrites = lockForWriting;
+				lockingContext = getDebugContext();
 				l.lock();
 				try {
-					final Object lockingContext = getCaller();
-					lockWarningTimeout =
-							executor.schedule(() -> warnLock(lockingContext),
-									TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
+					lockWarningTimeout = executor.schedule(this::warnLock,
+							TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
 				} catch (RejectedExecutionException ignored) {
 					// Can't do anything about this, and it isn't too important
 				}
@@ -917,7 +876,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 			}
 
-			private void warnLock(Object lockingContext) {
+			private void warnLock() {
 				long dt = nanoTime() - lockTimestamp;
 				log.warn(
 						"transaction lock being held excessively by "
@@ -927,54 +886,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 		}
 
-		/**
-		 * A real database {@code BEGIN}. Can't use
-		 * {@link #setAutoCommit(boolean)} as that maintains transactions when
-		 * it doesn't need to, eventually causing database locking problems.
-		 */
-		private void realBegin() {
-			try {
-				realDB.exec("begin;", false);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * A real database {@code COMMIT}. Can't use {@link #commit()} as that
-		 * maintains transactions when it doesn't need to, eventually causing
-		 * database locking problems.
-		 */
-		private void realCommit() {
-			try {
-				realDB.exec("commit;", false);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * A real database {@code ROLLBACK}. Can't use {@link #rollback()} as
-		 * that maintains transactions when it doesn't need to, eventually
-		 * causing database locking problems.
-		 */
-		private void realRollback() {
-			try {
-				realDB.exec("rollback;", false);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
 		private class Hold implements AutoCloseable {
 			private final boolean it;
 
+			private final Thread holder;
+
 			Hold() {
 				it = inTransaction;
+				holder = currentThread();
 				if (!it) {
 					inTransaction = true;
 					synchronized (transactionHolders) {
-						transactionHolders.add(Thread.currentThread());
+						transactionHolders.add(holder);
 					}
 				}
 			}
@@ -984,7 +907,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				if (!it) {
 					inTransaction = it;
 					synchronized (transactionHolders) {
-						transactionHolders.remove(Thread.currentThread());
+						transactionHolders.remove(holder);
 					}
 				}
 			}
@@ -992,10 +915,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		void checkInTransaction(boolean expectedLockType) {
 			if (!inTransaction) {
-				log.warn("executing not inside transaction: {}", getCaller());
+				log.warn("executing not inside transaction: {}",
+						getDebugContext());
 			} else if (expectedLockType && !isLockedForWrites) {
 				log.warn("performing write inside read transaction: {}",
-						getCaller());
+						getDebugContext());
 			}
 		}
 
@@ -1071,9 +995,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> operation) {
+			Object context = getDebugContext();
 			if (inTransaction) {
 				if (lockForWriting && !isLockedForWrites) {
-					log.warn("attempt to upgrade lock: {}", getCaller());
+					log.warn("attempt to upgrade lock: {}", context);
 				}
 				// Already in a transaction; just run the operation
 				return operation.act();
@@ -1081,26 +1006,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			int tries = 0;
 			while (true) {
 				tries++;
-				Object caller = null;
 				if (log.isDebugEnabled()) {
-					caller = getCaller();
-					log.debug("start transaction: {}", caller);
+					log.debug("start transaction: {}", context);
 				}
 				try (Locker locker = new Locker(lockForWriting)) {
 					realBegin();
 					boolean done = false;
 					try (Hold hold = new Hold()) {
 						T result = operation.act();
-						log.debug("commence commit: {}", caller);
+						log.debug("commence commit: {}", context);
 						realCommit();
 						done = true;
 						return result;
 					} catch (DataAccessException e) {
 						if (tries < LOCKED_TRIES && isBusy(e)) {
-							log.warn(
-									"retrying transaction due to lock failure; "
-											+ "current transaction holders "
-											+ "are {}",
+							log.warn("retrying transaction due to lock "
+									+ "failure: {}", context);
+							log.info("current transaction holders are {}",
 									currentTransactionHolders());
 							try {
 								sleep(LOCK_FAILED_DELAY_MS);
@@ -1113,14 +1035,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					} finally {
 						try {
 							if (!done) {
-								log.debug("commence rollback: {}", caller);
+								log.debug("commence rollback: {}", context);
 								realRollback();
 							}
 						} catch (DataAccessException e) {
 							cantWarning("rollback", e);
 							throw e;
 						}
-						log.debug("finish transaction: {}", caller);
+						log.debug("finish transaction: {}", context);
 					}
 				}
 			}
@@ -1555,7 +1477,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public void executeVoid(boolean lockForWriting, Connected operation) {
 		try (Connection conn = getConnection()) {
-			conn.transaction(lockForWriting, () -> operation.act(conn));
+			conn.transaction(lockForWriting, () -> {
+				operation.act(conn);
+				return this;
+			});
 		}
 	}
 
@@ -2114,51 +2039,5 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		return e.getMostSpecificCause() instanceof SQLiteException
 				&& ((SQLiteException) e.getMostSpecificCause()).getResultCode()
 						.equals(SQLITE_BUSY);
-	}
-
-	/**
-	 * Handler for {@link SQLException}.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Component
-	@Provider
-	public static class SQLExceptionMapper
-			implements ExceptionMapper<SQLException> {
-		@Autowired
-		private SpallocProperties properties;
-
-		@Override
-		public Response toResponse(SQLException exception) {
-			log.warn("uncaught SQL exception", exception);
-			if (properties.getSqlite().isDebugFailures()) {
-				return status(INTERNAL_SERVER_ERROR)
-						.entity("failed: " + exception.getMessage()).build();
-			}
-			return status(INTERNAL_SERVER_ERROR).entity("failed").build();
-		}
-	}
-
-	/**
-	 * Handler for {@link DataAccessException}.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Component
-	@Provider
-	public static class DataAccessExceptionMapper
-			implements ExceptionMapper<DataAccessException> {
-		@Autowired
-		private SpallocProperties properties;
-
-		@Override
-		public Response toResponse(DataAccessException exception) {
-			log.warn("uncaught SQL exception", exception);
-			if (properties.getSqlite().isDebugFailures()) {
-				return status(INTERNAL_SERVER_ERROR)
-						.entity("failed: " + exception.getMessage()).build();
-			}
-			return status(INTERNAL_SERVER_ERROR).entity("failed").build();
-		}
 	}
 }

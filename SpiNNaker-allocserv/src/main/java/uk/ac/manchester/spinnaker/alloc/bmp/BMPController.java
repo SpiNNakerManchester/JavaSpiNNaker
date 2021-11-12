@@ -470,9 +470,9 @@ public class BMPController extends DatabaseAwareBean {
 			powerOnAddresses.parallelStream().forEach(address -> {
 				if (Ping.ping(address) != 0) {
 					log.warn(
-							"board with address {} "
-									+ "might not have come up correctly",
-							address);
+							"ARP fault? Board with address {} might not have "
+									+ "come up correctly for job {}",
+							address, jobId);
 				}
 			});
 		}

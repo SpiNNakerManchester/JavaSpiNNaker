@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
@@ -384,8 +385,14 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			epochs.nextJobsEpoch();
 
 			// Ask the allocator engine to do the allocation
-			insertRequest(conn, m, id, descriptor, maxDeadBoards);
-			return getJob(id, conn).map(ji -> (Job) ji);
+			int numBoards =
+					insertRequest(conn, m, id, descriptor, maxDeadBoards);
+			return getJob(id, conn).map(ji -> {
+				JobLifecycle.log.info(
+						"created job {} on {} for {} asking for {} board(s)",
+						ji.id, m.name, owner, numBoards);
+				return (Job) ji;
+			});
 		});
 	}
 
@@ -395,7 +402,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	private void insertRequest(Connection conn, MachineImpl machine, int id,
+	private int insertRequest(Connection conn, MachineImpl machine, int id,
 			CreateDescriptor descriptor, Integer numDeadBoards) {
 		PriorityScale scale = props.getPriorityScale();
 		if (descriptor instanceof CreateNumBoards) {
@@ -409,6 +416,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				int priority = (int) (nb.numBoards * scale.getSize());
 				ps.call(id, nb.numBoards, numDeadBoards, priority);
 			}
+			return nb.numBoards;
 		} else if (descriptor instanceof CreateDimensions) {
 			// Request by specific size IN BOARDS
 			CreateDimensions d = (CreateDimensions) descriptor;
@@ -421,6 +429,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						(int) (d.width * d.height * scale.getDimensions());
 				ps.call(id, d.width, d.height, numDeadBoards, priority);
 			}
+			return max(1, d.height * d.width - numDeadBoards);
 		} else {
 			/*
 			 * Request by specific location; resolve to board ID now, as that
@@ -459,6 +468,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				int priority = (int) scale.getSpecificBoard();
 				ps.call(id, boardId, priority);
 			}
+			return 1;
 		}
 	}
 

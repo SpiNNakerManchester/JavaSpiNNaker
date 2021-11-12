@@ -103,7 +103,7 @@ public abstract class Constants {
 	public static final double BMP_POWER_ON_TIMEOUT = 10.0;
 
 	/** Timeout for other BMP commands to reply (in seconds). */
-	public static final double BMP_TIMEOUT = 0.5;
+	public static final double BMP_TIMEOUT = 0.75;
 
 	/** Time to sleep after powering on boards (in seconds). */
 	public static final double BMP_POST_POWER_ON_SLEEP_TIME = 5.0;

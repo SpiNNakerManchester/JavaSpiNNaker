@@ -474,7 +474,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	@Deprecated // INTERNAL
 	boolean destroyJob(Connection conn, int id, String reason) {
-		log.debug("destroying job {} \"{}\"", id, reason);
+		JobLifecycle.log.info("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
 			if (sql.getJob.call1(id)
 					.map(row -> row.getEnum("job_state", JobState.class))
@@ -809,7 +809,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		if (targetState == DESTROYED) {
-			log.info("num changes for {} in destroy: {}", jobId, numPending);
+			log.debug("num changes for {} in destroy: {}", jobId, numPending);
 		}
 		sql.setStatePending.call(
 				targetState == DESTROYED ? DESTROYED

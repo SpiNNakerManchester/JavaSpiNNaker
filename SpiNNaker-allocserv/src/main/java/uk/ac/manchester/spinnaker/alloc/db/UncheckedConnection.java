@@ -42,7 +42,9 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
+import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
+import org.sqlite.core.DB;
 
 /**
  * A connection that guarantees to not throw {@link SQLException} from many
@@ -54,8 +56,54 @@ import org.sqlite.SQLiteException;
 class UncheckedConnection implements Connection {
 	private final Connection c;
 
+	private final DB realDB;
+
 	UncheckedConnection(Connection c) {
 		this.c = c;
+		if (isWrapperFor(SQLiteConnection.class)) {
+			realDB = unwrap(SQLiteConnection.class).getDatabase();
+		} else {
+			realDB = null;
+		}
+	}
+
+	/**
+	 * A real database {@code BEGIN} in SQLite. Can't use
+	 * {@link #setAutoCommit(boolean)} as that maintains transactions when it
+	 * doesn't need to, eventually causing database locking problems.
+	 */
+	final void realBegin() {
+		try {
+			realDB.exec("begin;", false);
+		} catch (SQLException e) {
+			throw mapException(e, null);
+		}
+	}
+
+	/**
+	 * A real database {@code COMMIT} in SQLite. Can't use {@link #commit()} as
+	 * that maintains transactions when it doesn't need to, eventually causing
+	 * database locking problems.
+	 */
+	final void realCommit() {
+		try {
+			realDB.exec("commit;", false);
+		} catch (SQLException e) {
+			throw mapException(e, null);
+		}
+	}
+
+	/**
+	 * A real database {@code ROLLBACK} in SQLite. Can't use {@link #rollback()}
+	 * as that maintains transactions when it doesn't need to, eventually
+	 * causing database locking problems.
+	 */
+	final void realRollback() {
+		try {
+			realDB.exec("rollback;", false);
+		} catch (SQLException e) {
+			throw mapException(e, null);
+		}
 	}
 
 	@Override
