@@ -102,6 +102,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * The database engine interface. Based on SQLite. Manages a pool of database
