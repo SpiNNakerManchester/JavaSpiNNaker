@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -42,7 +41,6 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
-import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -66,7 +64,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 	private static final String TIMEOUT_TOKEN = "BMP timed out";
 
-	private static final int BMP_RETRIES = 3;
+	/** Number of times we retry a BMP action. */
+	static final int BMP_RETRIES = 3;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 
@@ -399,44 +398,17 @@ class BMPCommandProcess<R extends BMPResponse> {
 			if (!req.hasRetries()) {
 				// Report timeouts as timeout exception
 				if (req.allTimeoutFailures()) {
-					throw new SendTimedOutException(
+					throw new BMPSendTimedOutException(
 							req.request.scpRequestHeader, timeout);
 				}
 
 				// Report any other exception
-				throw new SendFailedException(req.request.scpRequestHeader,
+				throw new BMPSendFailedException(req.request.scpRequestHeader,
 						req.dest(), req.retryReason);
 			}
 
 			// If the request can be retried, retry it
 			req.resend(reason.toString());
-		}
-	}
-
-	/**
-	 * Indicates that message sending timed out.
-	 */
-	static final class SendTimedOutException extends SocketTimeoutException {
-		private static final long serialVersionUID = 1660563278795501381L;
-
-		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
-			super(format("Operation %s timed out after %f seconds", hdr.command,
-					timeout / (double) MSEC_PER_SEC));
-		}
-	}
-
-	/**
-	 * Indicates that message sending failed for various reasons.
-	 */
-	static final class SendFailedException extends IOException {
-		private static final long serialVersionUID = -7806549580351626377L;
-
-		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,
-				List<String> retryReason) {
-			super(format(
-					"Errors sending request %s to %d,%d,%d over %d retries: %s",
-					hdr.command, core.getX(), core.getY(), core.getP(),
-					BMP_RETRIES, retryReason));
 		}
 	}
 }

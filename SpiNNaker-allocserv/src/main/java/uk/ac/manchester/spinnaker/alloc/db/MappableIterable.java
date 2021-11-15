@@ -16,10 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.util.Objects.nonNull;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,38 +32,34 @@ import java.util.function.Predicate;
  * Extends iterable with the ability to be mapped to different values.
  *
  * @param <T>
- *            The type of elements returned by the iterator
+ *            The type of elements returned by the iterator. Note that it is
+ *            <em>strongly</em> recommended to not ever return {@code null};
+ *            consider using {@link Optional} instead of that.
  * @author Donal Fellows
  */
 public interface MappableIterable<T> extends Iterable<T> {
 	/**
 	 * Apply a function to an iterable to get another iterable.
 	 *
-	 * @param <TT>
+	 * @param <U>
 	 *            The type of the elements of the created iterable.
 	 * @param mapper
-	 *            The function to apply.
+	 *            The function to apply. <em>Should not return
+	 *            {@code null}.</em>
 	 * @return The new iterable, which may also be mapped.
 	 */
-	default <TT> MappableIterable<TT> map(Function<T, TT> mapper) {
-		MappableIterable<T> src = this;
-		return new MappableIterable<TT>() {
+	default <U> MappableIterable<U> map(Function<T, U> mapper) {
+		return IteratorWrapper.wrap(this, src -> new Iterator<U>() {
 			@Override
-			public Iterator<TT> iterator() {
-				Iterator<T> srcit = src.iterator();
-				return new Iterator<TT>() {
-					@Override
-					public boolean hasNext() {
-						return srcit.hasNext();
-					}
-
-					@Override
-					public TT next() {
-						return mapper.apply(srcit.next());
-					}
-				};
+			public boolean hasNext() {
+				return src.hasNext();
 			}
-		};
+
+			@Override
+			public U next() {
+				return mapper.apply(src.next());
+			}
+		});
 	}
 
 	/**
@@ -74,38 +74,70 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 *         {@code null}</em>.
 	 */
 	default MappableIterable<T> filter(Predicate<T> filterer) {
-		MappableIterable<T> src = this;
-		return new MappableIterable<T>() {
+		return IteratorWrapper.wrap(this, src -> new IteratorSupport<T>() {
 			@Override
-			public Iterator<T> iterator() {
-				Iterator<T> srcit = src.iterator();
-				return new Iterator<T>() {
-					T value;
-
-					@Override
-					public boolean hasNext() {
-						if (value != null) {
-							return true;
-						}
-						while (srcit.hasNext()) {
-							T val = srcit.next();
-							if (filterer.test(val)) {
-								value = val;
-								return true;
-							}
-						}
-						return false;
-					}
-
-					@Override
-					public T next() {
-						T val = value;
-						value = null;
+			T generateNext() {
+				while (src.hasNext()) {
+					T val = src.next();
+					if (filterer.test(val)) {
 						return val;
 					}
-				};
+				}
+				return null;
 			}
-		};
+		});
+	}
+
+	/**
+	 * Get the first item in the iterable, if there is one.
+	 *
+	 * @return an optional with the first item.
+	 */
+	default Optional<T> first() {
+		for (T value : this) {
+			return Optional.ofNullable(value);
+		}
+		return Optional.empty();
+	}
+
+	/**
+	 * Get another iterable with the first {@code n} item in the iterable (or up
+	 * to that if the source iterable has fewer items).
+	 *
+	 * @param n
+	 *            the maximum number of items of the iterable that are wanted
+	 * @return the first {@code n} items.
+	 */
+	default MappableIterable<T> first(int n) {
+		return IteratorWrapper.wrap(this, src -> new IteratorSupport<T>() {
+			private int count;
+
+			@Override
+			T generateNext() {
+				if (count >= n || !src.hasNext()) {
+					return null;
+				}
+				count++;
+				return src.next();
+			}
+		});
+	}
+
+	/**
+	 * Index into the iterable.
+	 *
+	 * @param n
+	 *            The index into the iterable. <em>Zero-based.</em>
+	 * @return The item at that index, should it exist.
+	 */
+	default Optional<T> nth(int n) {
+		int i = 0;
+		for (T value : this) {
+			if (i++ >= n) {
+				return Optional.ofNullable(value);
+			}
+		}
+		return Optional.empty();
 	}
 
 	/**
@@ -135,5 +167,58 @@ public interface MappableIterable<T> extends Iterable<T> {
 			list.add(val);
 		}
 		return list;
+	}
+}
+
+/**
+ * An interlocked generator that handles feeding values out of itself.
+ *
+ * @param <T>
+ *            The type of values in the iterator.
+ * @author Donal Fellows
+ */
+abstract class IteratorSupport<T> implements Iterator<T> {
+	/**
+	 * The current value.
+	 */
+	private T value;
+
+	@Override
+	public boolean hasNext() {
+		if (nonNull(value)) {
+			return true;
+		}
+		value = generateNext();
+		return nonNull(value);
+	}
+
+	/**
+	 * Generate the next value in the sequence, if there is one.
+	 *
+	 * @return The generated value, or {@code null} if there is no such value.
+	 */
+	abstract T generateNext();
+
+	@Override
+	public T next() {
+		T val = value;
+		value = null;
+		if (nonNull(val)) {
+			return val;
+		}
+		throw new NoSuchElementException("no such element");
+	}
+}
+
+abstract class IteratorWrapper {
+	private IteratorWrapper() {
+	}
+
+	static <T, U> MappableIterable<U> wrap(MappableIterable<T> mapiter,
+			Function<Iterator<T>, Iterator<U>> mapper) {
+		return () -> {
+			Iterator<T> srcit = mapiter.iterator();
+			return mapper.apply(srcit);
+		};
 	}
 }

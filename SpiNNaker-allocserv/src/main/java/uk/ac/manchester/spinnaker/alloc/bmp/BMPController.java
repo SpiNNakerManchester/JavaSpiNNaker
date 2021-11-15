@@ -156,7 +156,6 @@ public class BMPController extends DatabaseAwareBean {
 	 * Mark all pending changes as eligible for processing. Called once on
 	 * application startup when all internal queues are guaranteed to be empty.
 	 */
-	@PostConstruct
 	private void clearStuckPending() {
 		int changes = execute(c -> {
 			try (Update u = c.update(CLEAR_STUCK_PENDING)) {
@@ -167,6 +166,13 @@ public class BMPController extends DatabaseAwareBean {
 			log.info("marking {} change sets as eligible for processing",
 					changes);
 		}
+	}
+
+	@PostConstruct
+	private void init() {
+		clearStuckPending();
+		// Ought to do this, but not sure about scaling
+		// establishBMPConnections();
 	}
 
 	@Scheduled(fixedDelayString = "#{txrxProperties.period}",
@@ -207,9 +213,8 @@ public class BMPController extends DatabaseAwareBean {
 			throws IOException, SpinnmanException, InterruptedException {
 		if (execute(conn -> {
 			boolean changed = false;
-			for (Cleanup cleanup =
-					cleanupTasks.poll(); cleanup != null; cleanup =
-							cleanupTasks.poll()) {
+			for (Cleanup cleanup = cleanupTasks.poll(); nonNull(
+					cleanup); cleanup = cleanupTasks.poll()) {
 				try (AfterSQL sql = new AfterSQL(conn)) {
 					changed |= cleanup.run(sql);
 				} catch (DataAccessException e) {

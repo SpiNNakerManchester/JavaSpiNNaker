@@ -119,4 +119,12 @@ public class BMPConnectionData {
 					range(0, numBoards).boxed().collect(toList()));
 		}
 	}
+
+	@Override
+	public String toString() {
+		return String.format(
+				"(c:%d,f:%d,b:%s...; %s)", cabinet, frame, boards.stream()
+						.findFirst().map(i -> Integer.toString(i)).orElse(""),
+				ipAddress);
+	}
 }
