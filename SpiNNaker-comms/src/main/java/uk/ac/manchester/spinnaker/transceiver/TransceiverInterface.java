@@ -86,6 +86,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
@@ -438,7 +439,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default Iterable<CPUInfo> getCPUInformation()
+	default MappableIterable<CPUInfo> getCPUInformation()
 			throws IOException, ProcessException {
 		return getCPUInformation((CoreSubsets) null);
 	}
@@ -459,7 +460,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
-		return getCPUInformation(coreSubsets).iterator().next();
+		return getCPUInformation(coreSubsets).first().get();
 	}
 
 	/**
@@ -481,7 +482,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
+	MappableIterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
 	/**
@@ -575,7 +576,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default Iterable<IOBuffer> getIobuf() throws IOException, ProcessException {
+	default MappableIterable<IOBuffer> getIobuf()
+			throws IOException, ProcessException {
 		return getIobuf((CoreSubsets) null);
 	}
 
@@ -595,7 +597,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			throws IOException, ProcessException {
 		CoreSubsets coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
-		return getIobuf(coreSubsets).iterator().next();
+		return getIobuf(coreSubsets).first().get();
 	}
 
 	/**
@@ -611,7 +613,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
+	MappableIterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
 	/**
@@ -3165,9 +3167,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, ProcessException {
-		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
 		CoreSubsets coresInState = new CoreSubsets();
-		for (CPUInfo coreInfo : coreInfos) {
+		for (CPUInfo coreInfo : getCPUInformation(allCoreSubsets)) {
 			if (states.contains(coreInfo.getState())) {
 				coresInState.addCore(coreInfo.asCoreLocation());
 			}
@@ -3220,9 +3221,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
 			throws IOException, ProcessException {
-		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
 		Map<CoreLocation, CPUInfo> coresNotInState = new TreeMap<>();
-		for (CPUInfo coreInfo : coreInfos) {
+		for (CPUInfo coreInfo : getCPUInformation(allCoreSubsets)) {
 			if (!states.contains(coreInfo.getState())) {
 				coresNotInState.put(coreInfo.asCoreLocation(), coreInfo);
 			}

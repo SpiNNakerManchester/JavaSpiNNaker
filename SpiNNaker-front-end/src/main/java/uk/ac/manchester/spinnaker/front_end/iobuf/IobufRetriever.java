@@ -109,18 +109,15 @@ public class IobufRetriever extends BoardLocalSupport {
 	public NotableMessages retrieveIobufContents(IobufRequest request,
 			String provenanceDir) throws IOException, ProcessException {
 		File provDir = new File(provenanceDir);
-		if (!provDir.isDirectory() || !provDir.canWrite()) {
-			throw new IOException(
-					"provenance location must be writable directory");
-		}
+		validateProvenanceDirectory(provDir);
 		List<String> errorEntries = new ArrayList<>();
 		List<String> warnEntries = new ArrayList<>();
 		try {
 			Map<File, CoreSubsets> mapping = request.getRequestDetails();
 			Tasks tasks = executor
-					.submitTasks(mapping.keySet().stream().flatMap(binary -> {
-						Replacer r = new Replacer(binary);
-						return partitionByBoard(mapping.get(binary))
+					.submitTasks(mapping.entrySet().stream().flatMap(entry -> {
+						Replacer r = new Replacer(entry.getKey());
+						return partitionByBoard(entry.getValue())
 								.map(cores -> () -> retrieveIobufContents(cores,
 										r, provDir, errorEntries, warnEntries));
 					}));
@@ -159,10 +156,7 @@ public class IobufRetriever extends BoardLocalSupport {
 	public NotableMessages retrieveIobufContents(CoreSubsets coreSubsets,
 			File binaryFile, File provenanceDir)
 			throws IOException, ProcessException {
-		if (!provenanceDir.isDirectory() || !provenanceDir.canWrite()) {
-			throw new IOException(
-					"provenance location must be writable directory");
-		}
+		validateProvenanceDirectory(provenanceDir);
 		List<String> errorEntries = new ArrayList<>();
 		List<String> warnEntries = new ArrayList<>();
 		try {
@@ -184,6 +178,14 @@ public class IobufRetriever extends BoardLocalSupport {
 		return new NotableMessages(errorEntries, warnEntries);
 	}
 
+	private static void validateProvenanceDirectory(File provDir)
+			throws IOException {
+		if (!provDir.isDirectory() || !provDir.canWrite()) {
+			throw new IOException(
+					"provenance location must be writable directory");
+		}
+	}
+
 	private Stream<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
 		Map<ChipLocation, CoreSubsets> map = new DefaultMap<>(CoreSubsets::new);
 		for (CoreLocation core : coreSubsets) {
@@ -195,12 +197,9 @@ public class IobufRetriever extends BoardLocalSupport {
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
 			File provenanceDir, List<String> errorEntries,
 			List<String> warnEntries) throws IOException, ProcessException {
-		try (BoardLocal bl = new BoardLocal(cores.iterator().next())) {
-			// extract iobuf
-			Iterable<IOBuffer> ioBuffers = txrx.getIobuf(cores);
-
-			// write iobuf to file and check for errors for provenance
-			for (IOBuffer iobuf : ioBuffers) {
+		try (BoardLocal bl = new BoardLocal(cores.first().get())) {
+			// extract iobuf, write to file and check for errors for provenance
+			for (IOBuffer iobuf : txrx.getIobuf(cores)) {
 				File file = getProvenanceFile(provenanceDir, iobuf);
 				try (BufferedWriter w = openFileForAppending(file)) {
 					log.info("storing iobuf from {} (running {}) in {}",

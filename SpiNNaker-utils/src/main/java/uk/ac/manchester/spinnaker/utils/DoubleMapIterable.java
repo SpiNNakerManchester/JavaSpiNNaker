@@ -29,7 +29,7 @@ import java.util.Map;
  * @param <V>
  *            Class of the Object to be supplied by the final Iterator.
  */
-public final class DoubleMapIterable<V> implements Iterable<V> {
+public final class DoubleMapIterable<V> implements MappableIterable<V> {
 
 	private final Iterable<? extends Map<?, V>> outer;
 

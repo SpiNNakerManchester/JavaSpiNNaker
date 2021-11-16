@@ -16,27 +16,27 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.Objects;
-
+import static java.util.Collections.unmodifiableCollection;
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
-import java.util.List;
+
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  *
  * @author Christian-B
  */
-public final class Router implements Iterable<Link> {
-
+public final class Router implements MappableIterable<Link> {
 	private final EnumMap<Direction, Link> links =
 			new EnumMap<>(Direction.class);
 
@@ -60,7 +60,7 @@ public final class Router implements Iterable<Link> {
 	 * Default Constructor to add links later using default values.
 	 */
 	public Router() {
-		this(MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+		this(ROUTER_AVAILABLE_ENTRIES);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public final class Router implements Iterable<Link> {
 				ChipLocation destination =
 						details.getLinkDestination(direction, source, machine);
 				addLink(new Link(source, direction,
-						Objects.requireNonNull(destination)));
+						requireNonNull(destination)));
 			}
 		}
 	}
@@ -223,7 +223,7 @@ public final class Router implements Iterable<Link> {
 	 * @return An unmodifiable collection of Link(s).
 	 */
 	public Collection<Link> links() {
-		return Collections.unmodifiableCollection(links.values());
+		return unmodifiableCollection(links.values());
 	}
 
 	/**
@@ -258,8 +258,8 @@ public final class Router implements Iterable<Link> {
 	 *
 	 * @return A Stream over the destination locations.
 	 */
-	public Iterable<ChipLocation> iterNeighbouringChipsCoords() {
-		return () -> new NeighbourIterator(links.values().iterator());
+	public MappableIterable<ChipLocation> iterNeighbouringChipsCoords() {
+		return () -> new NeighbourIterator(links.values());
 	}
 
 	/**

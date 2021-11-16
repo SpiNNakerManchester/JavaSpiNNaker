@@ -28,6 +28,8 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
+
 /**
  * An EIEIO message containing data.
  *
@@ -35,7 +37,7 @@ import java.util.NoSuchElementException;
  * @author Donal Fellows
  */
 public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
-		Iterable<AbstractDataElement> {
+		MappableIterable<AbstractDataElement> {
 	private final Header header;
 
 	private ByteBuffer elements;

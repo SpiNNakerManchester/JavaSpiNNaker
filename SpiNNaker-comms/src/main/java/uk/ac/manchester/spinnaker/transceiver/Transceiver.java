@@ -155,6 +155,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * An encapsulation of various communications with the SpiNNaker board.
@@ -1314,7 +1315,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafeWithCare
-	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
+	public MappableIterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
 		if (coreSubsets == null) {
@@ -1326,7 +1327,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafeWithCare
-	public Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
+	public MappableIterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
 		if (iobufSize == null) {

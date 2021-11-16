@@ -16,10 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableCollection;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -248,12 +255,10 @@ public final class SpiNNakerTriadGeometry {
 			maxWidth = dimensions.width;
 			maxHeight = dimensions.height;
 		} else {
-			maxWidth =
-					dimensions.width - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
-			maxHeight =
-					dimensions.height - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
+			maxWidth = dimensions.width - SIZE_X_OF_ONE_BOARD + 1;
+			maxHeight = dimensions.height - SIZE_Y_OF_ONE_BOARD + 1;
 			if (maxWidth < 0 || maxHeight < 0) {
-				results.add(ChipLocation.ZERO_ZERO);
+				results.add(ZERO_ZERO);
 				return results;
 			}
 		}
@@ -273,7 +278,7 @@ public final class SpiNNakerTriadGeometry {
 	 * @return An unmodifiable Collection of the Locations on one board.
 	 */
 	public Collection<ChipLocation> singleBoard() {
-		return Collections.unmodifiableCollection(singleBoardCoordinates);
+		return unmodifiableCollection(singleBoardCoordinates);
 	}
 
 	/**
@@ -306,16 +311,12 @@ public final class SpiNNakerTriadGeometry {
 	 */
 	public static SpiNNakerTriadGeometry getSpinn5Geometry() {
 		if (spinn5TriadGeometry == null) {
-			Collection<ChipLocation> roots = Arrays.asList(
-					new ChipLocation(0, 0),
-					new ChipLocation(MachineDefaults.HALF_SIZE,
-							MachineDefaults.SIZE_Y_OF_ONE_BOARD),
-					new ChipLocation(MachineDefaults.SIZE_X_OF_ONE_BOARD,
-							MachineDefaults.HALF_SIZE));
+			Collection<ChipLocation> roots = asList(new ChipLocation(0, 0),
+					new ChipLocation(HALF_SIZE, SIZE_Y_OF_ONE_BOARD),
+					new ChipLocation(SIZE_X_OF_ONE_BOARD, HALF_SIZE));
 
-			spinn5TriadGeometry = new SpiNNakerTriadGeometry(
-					MachineDefaults.TRIAD_HEIGHT, MachineDefaults.TRIAD_WIDTH,
-					roots, VIRTUAL_CENTRE_X, VIRTUAL_CENTRE_Y);
+			spinn5TriadGeometry = new SpiNNakerTriadGeometry(TRIAD_HEIGHT,
+					TRIAD_WIDTH, roots, VIRTUAL_CENTRE_X, VIRTUAL_CENTRE_Y);
 		}
 		return spinn5TriadGeometry;
 	}

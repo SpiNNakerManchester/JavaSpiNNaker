@@ -16,14 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
@@ -32,6 +30,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * Get the CPU information structure for a set of processors.
@@ -61,7 +60,7 @@ class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
+	MappableIterable<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		List<CPUInfo> cpuInfo = new ArrayList<>();
 		for (CoreLocation core : requireNonNull(coreSubsets,
@@ -73,6 +72,6 @@ class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 		finish();
 		checkForError();
-		return unmodifiableList(cpuInfo);
+		return cpuInfo::iterator;
 	}
 }

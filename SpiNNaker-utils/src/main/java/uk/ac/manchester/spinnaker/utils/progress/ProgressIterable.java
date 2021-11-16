@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
+
 /**
  * An {@link Iterable} wrapper that will start a {@link ProgressBar} for each
  * iterator.
@@ -40,7 +42,7 @@ import java.util.Iterator;
  * @param <E>
  *            Type of elements to be iterated over.
  */
-public class ProgressIterable<E> implements Iterable<E>, Closeable {
+public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
 	private final Collection<E> things;
 
 	private final String description;

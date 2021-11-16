@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import uk.ac.manchester.spinnaker.utils.InetFactory;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * A representation of a SpiNNaker Machine with a number of {@link Chip}s. This
@@ -136,7 +137,7 @@ public class VirtualMachine extends Machine {
 	private Router getRouter(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips,
 			Map<ChipLocation, Set<Direction>> ignoreLinks) {
-		Iterable<Link> links;
+		MappableIterable<Link> links;
 		if (ignoreLinks.containsKey(location)) {
 			links = getLinks(location, allChips, ignoreLinks.get(location));
 		} else {
@@ -145,7 +146,7 @@ public class VirtualMachine extends Machine {
 		return new Router(links);
 	}
 
-	private Iterable<Link> getLinks(ChipLocation location,
+	private MappableIterable<Link> getLinks(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips) {
 		List<Link> links = new ArrayList<>();
 		for (Direction direction : Direction.values()) {
@@ -154,10 +155,10 @@ public class VirtualMachine extends Machine {
 				links.add(new Link(location, direction, destination));
 			}
 		}
-		return links;
+		return links::iterator;
 	}
 
-	private Iterable<Link> getLinks(ChipLocation location,
+	private MappableIterable<Link> getLinks(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips,
 			Set<Direction> ignoreLinks) {
 		List<Link> links = new ArrayList<>();
@@ -169,7 +170,7 @@ public class VirtualMachine extends Machine {
 				}
 			}
 		}
-		return links;
+		return links::iterator;
 	}
 
 	private Chip getChip(ChipLocation location, Router router,
