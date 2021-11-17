@@ -28,7 +28,7 @@ machine = (
 		<json:object>
 			<json:property name="id" value="${ job.id }" />
 			<c:if test="${ job.owner.present }">
-				<json:property name="url" value="${ job.url }" />
+				<json:property name="url" value="${ job.url.get() }" />
 				<json:property name="owner" value="${ job.owner.get() }" />
 			</c:if>
 			<json:array name="boards" items="${ job.boards }" var="board">
