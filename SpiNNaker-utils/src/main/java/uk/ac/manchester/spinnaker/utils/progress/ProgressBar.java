@@ -22,7 +22,6 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.formatDuration;
 
 import java.io.Closeable;
 import java.io.PrintStream;
-import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
  * Progress bar for telling the user where a task is up to and for reporting the
