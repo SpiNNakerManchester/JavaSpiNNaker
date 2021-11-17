@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static java.nio.ByteBuffer.allocate;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.download.RecordingRegion.getRecordingRegionDescriptors;
 
@@ -218,7 +219,7 @@ public class DataReceiver extends BoardLocalSupport {
 			int length) throws IOException, ProcessException {
 		if (length < 1) {
 			// Crazy negative lengths get an exception
-			return ByteBuffer.allocate(length);
+			return allocate(length);
 		}
 		return txrx.readMemory(location.getScampCore(), address, length);
 	}

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableMap;
@@ -23,10 +25,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
+import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +55,6 @@ import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.utils.Ping;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
@@ -202,7 +203,7 @@ public class TransceiverFactory
 					throw e;
 				}
 				log.error("failed to connect to BMP; will ping and retry", e);
-				Ping.ping(data.ipAddress);
+				ping(data.ipAddress);
 			}
 		}
 	}
@@ -240,8 +241,8 @@ class DummyTransceiver implements BMPTransceiverInterface {
 	 *         checks, and arbitrary (zero) elsewhere.
 	 */
 	private static ByteBuffer syntheticVersionData() {
-		ByteBuffer b = ByteBuffer.allocate(VERSION_INFO_SIZE);
-		b.order(ByteOrder.LITTLE_ENDIAN);
+		ByteBuffer b = allocate(VERSION_INFO_SIZE);
+		b.order(LITTLE_ENDIAN);
 		b.putInt(0);
 		b.putInt(0);
 		b.putInt(0);

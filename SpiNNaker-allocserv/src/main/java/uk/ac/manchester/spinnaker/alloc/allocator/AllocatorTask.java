@@ -26,6 +26,8 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -487,7 +489,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 			sql.killPending.call(id);
 			// Inserts into pending_changes; these run after job is dead
-			setPower(sql, id, PowerState.OFF, DESTROYED);
+			setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
 			return sql.markAsDestroyed.call(reason, id) > 0;
 		}
@@ -726,7 +728,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
 		log.debug("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
-		return setPower(sql, jobId, PowerState.ON, READY);
+		return setPower(sql, jobId, ON, READY);
 	}
 
 	@Override
@@ -772,7 +774,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		// Number of changes pending, one per board
 		int numPending = 0;
 
-		if (power == PowerState.ON) {
+		if (power == ON) {
 			/*
 			 * This is a bit of a trickier case, as we need to say which links
 			 * are to be switched on or, more particularly, which are to be

@@ -16,6 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT;
+
 /**
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
  *
@@ -51,9 +55,9 @@ public class RegionLocation
 		this.y = core.getY();
 		this.p = core.getP();
 		this.region = region;
-		this.hashcode = ((((x << MachineDefaults.COORD_SHIFT)
-				^ y) << MachineDefaults.CORE_SHIFT)
-				^ p) << MachineDefaults.REGION_SHIFT ^ region;
+		this.hashcode =
+				((((x << COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p) << REGION_SHIFT
+						^ region;
 	}
 
 	@Override

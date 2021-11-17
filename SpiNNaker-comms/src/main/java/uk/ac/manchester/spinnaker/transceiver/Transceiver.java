@@ -21,6 +21,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
+import static java.nio.ByteBuffer.allocate;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -64,7 +65,6 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -950,7 +950,7 @@ public class Transceiver extends UDPTransceiver
 		 * that supports SCP - this is done via the machine
 		 */
 		if (scpConnections.isEmpty()) {
-			return Collections.emptyList();
+			return emptyList();
 		}
 
 		// Get the machine dimensions
@@ -1385,34 +1385,32 @@ public class Transceiver extends UDPTransceiver
 				.updateProvenanceAndExit(coreSubsets);
 	}
 
+	private static ByteBuffer oneByte(int value) {
+		ByteBuffer data = allocate(1);
+		data.put((byte) value).flip();
+		return data;
+	}
+
 	@Override
 	@ParallelSafe
 	public void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, ProcessException {
-		// build data holder
-		ByteBuffer data = ByteBuffer.allocate(1);
-		data.put((byte) watchdog).flip();
-
 		// write data
 		writeMemory(chip,
 				SYSTEM_VARIABLE_BASE_ADDRESS + software_watchdog_count.offset,
-				data);
+				oneByte(watchdog));
 	}
 
 	@Override
 	@ParallelSafe
 	public void enableWatchDogTimerOnChip(HasChipLocation chip,
 			boolean watchdog) throws IOException, ProcessException {
-		// build data holder
-		ByteBuffer data = ByteBuffer.allocate(1);
-		data.put((byte) (watchdog
-				? (Integer) software_watchdog_count.getDefault()
-				: 0)).flip();
-
 		// write data
 		writeMemory(chip,
 				SYSTEM_VARIABLE_BASE_ADDRESS + software_watchdog_count.offset,
-				data);
+				oneByte(watchdog
+						? (Integer) software_watchdog_count.getDefault()
+						: 0));
 	}
 
 	@Override

@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.Math.max;
 import static java.lang.String.format;
+import static java.lang.Thread.currentThread;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
@@ -26,6 +27,8 @@ import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -558,7 +561,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
-				Thread.currentThread().interrupt();
+				currentThread().interrupt();
 			}
 		}
 
@@ -748,7 +751,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
-				Thread.currentThread().interrupt();
+				currentThread().interrupt();
 			}
 		}
 
@@ -887,7 +890,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try {
 				epoch.waitForChange(timeout);
 			} catch (InterruptedException ignored) {
-				Thread.currentThread().interrupt();
+				currentThread().interrupt();
 			}
 		}
 
@@ -1387,8 +1390,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						Query power = conn.query(GET_BOARD_POWER)) {
 					return conn.transaction(false, () -> power.call1(id)
 							.map(row -> row.getInt("total_on") < boardIds.size()
-									? PowerState.OFF
-									: PowerState.ON)
+									? OFF
+									: ON)
 							.orElse(null));
 				}
 			}
@@ -1513,7 +1516,7 @@ class ReportRollbackExn extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	ReportRollbackExn(String msg, Object... args) {
-		super(String.format(msg, args));
+		super(format(msg, args));
 	}
 
 	ReportRollbackExn(HasChipLocation chip) {

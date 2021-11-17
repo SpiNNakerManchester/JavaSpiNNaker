@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.lang.Byte.toUnsignedInt;
+import static java.lang.Integer.toHexString;
+
 /**
  * Miscellaneous mathematical functions.
  *
@@ -59,6 +62,6 @@ public abstract class MathUtils {
 	 * @return The (unsigned) hexadecimal representation of the byte.
 	 */
 	public static String hexbyte(byte value) {
-		return Integer.toHexString(Byte.toUnsignedInt(value));
+		return toHexString(toUnsignedInt(value));
 	}
 }

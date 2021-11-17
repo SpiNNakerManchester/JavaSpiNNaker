@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.columnNames;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
 import java.sql.ResultSet;
@@ -47,7 +48,7 @@ public final class Row {
 	 */
 	public Set<String> getColumnNames() {
 		try {
-			return DatabaseEngine.columnNames(rs.getMetaData());
+			return columnNames(rs.getMetaData());
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}

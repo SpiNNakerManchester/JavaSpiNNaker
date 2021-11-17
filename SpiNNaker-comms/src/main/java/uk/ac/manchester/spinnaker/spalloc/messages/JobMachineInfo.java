@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import java.util.Collections;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
@@ -31,11 +30,11 @@ public class JobMachineInfo {
 
 	private int height;
 
-	private List<Connection> connections = Collections.emptyList();
+	private List<Connection> connections = emptyList();
 
 	private String machineName;
 
-	private List<BoardCoordinates> boards = Collections.emptyList();
+	private List<BoardCoordinates> boards = emptyList();
 
 	/** Number of boards/Connections to list individually in the toString. */
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;

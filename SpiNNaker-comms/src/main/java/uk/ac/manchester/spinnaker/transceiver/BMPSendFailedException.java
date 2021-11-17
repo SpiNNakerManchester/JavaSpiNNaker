@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
+import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRIES;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +36,6 @@ public final class BMPSendFailedException extends IOException {
 		super(format(
 				"Errors sending request %s to %d,%d,%d over %d retries: %s",
 				hdr.command, core.getX(), core.getY(), core.getP(),
-				BMPCommandProcess.BMP_RETRIES, retryReason));
+				BMP_RETRIES, retryReason));
 	}
 }

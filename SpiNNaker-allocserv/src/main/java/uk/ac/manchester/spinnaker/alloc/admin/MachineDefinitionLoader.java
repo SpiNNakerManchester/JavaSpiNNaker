@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.lang.Integer.compare;
+import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -96,7 +98,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *             If the string doesn't contain such a number.
 	 */
 	private static int parseDec(String string) throws NumberFormatException {
-		return Integer.parseInt(string, DECIMAL);
+		return parseInt(string, DECIMAL);
 	}
 
 	/**
@@ -227,15 +229,15 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		@Override
 		public int compareTo(TriadCoords other) {
-			int cmp = Integer.compare(x, other.x);
+			int cmp = compare(x, other.x);
 			if (cmp != 0) {
 				return cmp;
 			}
-			cmp = Integer.compare(y, other.y);
+			cmp = compare(y, other.y);
 			if (cmp != 0) {
 				return cmp;
 			}
-			return Integer.compare(z, other.z);
+			return compare(z, other.z);
 		}
 	}
 
@@ -296,11 +298,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		@Override
 		public int compareTo(BMPCoords other) {
-			int cmp = Integer.compare(c, other.c);
+			int cmp = compare(c, other.c);
 			if (cmp != 0) {
 				return cmp;
 			}
-			return Integer.compare(f, other.f);
+			return compare(f, other.f);
 		}
 	}
 
@@ -375,15 +377,15 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		@Override
 		public int compareTo(BoardPhysicalCoords other) {
-			int cmp = Integer.compare(c, other.c);
+			int cmp = compare(c, other.c);
 			if (cmp != 0) {
 				return cmp;
 			}
-			cmp = Integer.compare(f, other.f);
+			cmp = compare(f, other.f);
 			if (cmp != 0) {
 				return cmp;
 			}
-			return Integer.compare(b, other.b);
+			return compare(b, other.b);
 		}
 	}
 

@@ -30,12 +30,14 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.WATCHDOG;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
+import static uk.ac.manchester.spinnaker.transceiver.Address.convert;
 import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
@@ -45,6 +47,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1295,13 +1298,14 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			Map<CoreLocation, CPUInfo> coresNotReady = getCoresNotInState(
 					executableTargets.getAllCoreSubsets(), READY);
 			if (!coresNotReady.isEmpty()) {
-				StringBuilder b = new StringBuilder(String.format(
-						"Only %d of %d cores reached ready state:", count,
-						executableTargets.getTotalProcessors()));
-				for (CPUInfo info : coresNotReady.values()) {
-					b.append('\n').append(info.getStatusDescription());
+				try (Formatter f = new Formatter()) {
+					f.format("Only %d of %d cores reached ready state:", count,
+							executableTargets.getTotalProcessors());
+					for (CPUInfo info : coresNotReady.values()) {
+						f.format("\n%s", info.getStatusDescription());
+					}
+					throw new SpinnmanException(f.toString());
 				}
-				throw new SpinnmanException(b.toString());
 			}
 		}
 
@@ -1442,7 +1446,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), dataStream, numBytes);
+		writeMemory(chip, convert(baseAddress), dataStream, numBytes);
 	}
 
 	/**
@@ -1494,7 +1498,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), dataStream, numBytes);
+		writeMemory(core, convert(baseAddress), dataStream, numBytes);
 	}
 
 	/**
@@ -1541,7 +1545,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			File dataFile) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), dataFile);
+		writeMemory(chip, convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -1587,7 +1591,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			File dataFile) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), dataFile);
+		writeMemory(core, convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -1630,7 +1634,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), dataWord);
+		writeMemory(chip, convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -1674,7 +1678,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), dataWord);
+		writeMemory(core, convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -1720,7 +1724,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			byte[] data) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), wrap(data));
+		writeMemory(chip, convert(baseAddress), wrap(data));
 	}
 
 	/**
@@ -1764,7 +1768,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			byte[] data) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), data);
+		writeMemory(core, convert(baseAddress), data);
 	}
 
 	/**
@@ -1809,7 +1813,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasChipLocation chip, long baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), data);
+		writeMemory(chip, convert(baseAddress), data);
 	}
 
 	/**
@@ -1855,7 +1859,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, long baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), data);
+		writeMemory(core, convert(baseAddress), data);
 	}
 
 	/**
@@ -1910,8 +1914,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
-				dataStream, numBytes);
+		writeNeighbourMemory(chip, link, convert(baseAddress), dataStream,
+				numBytes);
 	}
 
 	/**
@@ -1981,8 +1985,8 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress),
-				dataStream, numBytes);
+		writeNeighbourMemory(core, link, convert(baseAddress), dataStream,
+				numBytes);
 	}
 
 	/**
@@ -2047,8 +2051,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
-				dataFile);
+		writeNeighbourMemory(chip, link, convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -2113,8 +2116,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress),
-				dataFile);
+		writeNeighbourMemory(core, link, convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -2176,8 +2178,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
-				dataWord);
+		writeNeighbourMemory(chip, link, convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -2240,8 +2241,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress),
-				dataWord);
+		writeNeighbourMemory(core, link, convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -2306,7 +2306,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
+		writeNeighbourMemory(chip, link, convert(baseAddress), data);
 	}
 
 	/**
@@ -2368,7 +2368,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
+		writeNeighbourMemory(core, link, convert(baseAddress), data);
 	}
 
 	/**
@@ -2431,7 +2431,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
+		writeNeighbourMemory(chip, link, convert(baseAddress), data);
 	}
 
 	/**
@@ -2496,7 +2496,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
+		writeNeighbourMemory(core, link, convert(baseAddress), data);
 	}
 
 	/**
@@ -2553,7 +2553,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, InputStream dataStream,
 			int numBytes) throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), dataStream, numBytes);
+		writeMemoryFlood(convert(baseAddress), dataStream, numBytes);
 	}
 
 	/**
@@ -2601,7 +2601,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), dataFile);
+		writeMemoryFlood(convert(baseAddress), dataFile);
 	}
 
 	/**
@@ -2646,7 +2646,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), dataWord);
+		writeMemoryFlood(convert(baseAddress), dataWord);
 	}
 
 	/**
@@ -2694,7 +2694,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), data);
+		writeMemoryFlood(convert(baseAddress), data);
 	}
 
 	/**
@@ -2741,7 +2741,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(long baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), data);
+		writeMemoryFlood(convert(baseAddress), data);
 	}
 
 	/**
@@ -2833,7 +2833,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default ByteBuffer readMemory(HasChipLocation chip, long baseAddress,
 			int length) throws IOException, ProcessException {
-		return readMemory(chip, Address.convert(baseAddress), length);
+		return readMemory(chip, convert(baseAddress), length);
 	}
 
 	/**
@@ -2857,7 +2857,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default ByteBuffer readMemory(HasCoreLocation core, long baseAddress,
 			int length) throws IOException, ProcessException {
-		return readMemory(core, Address.convert(baseAddress), length);
+		return readMemory(core, convert(baseAddress), length);
 	}
 
 	/**
@@ -2999,8 +2999,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default ByteBuffer readNeighbourMemory(HasChipLocation chip, Direction link,
 			long baseAddress, int length) throws IOException, ProcessException {
-		return readNeighbourMemory(chip, link, Address.convert(baseAddress),
-				length);
+		return readNeighbourMemory(chip, link, convert(baseAddress), length);
 	}
 
 	/**
@@ -3033,8 +3032,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
 			long baseAddress, int length) throws IOException, ProcessException {
-		return readNeighbourMemory(core, link, Address.convert(baseAddress),
-				length);
+		return readNeighbourMemory(core, link, convert(baseAddress), length);
 	}
 
 	/**
@@ -3478,7 +3476,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default int mallocSDRAM(HasChipLocation chip, int size)
 			throws IOException, ProcessException {
-		return mallocSDRAM(chip, size, AppID.DEFAULT, 0);
+		return mallocSDRAM(chip, size, DEFAULT, 0);
 	}
 
 	/**
@@ -3540,7 +3538,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void freeSDRAM(HasChipLocation chip, long baseAddress)
 			throws IOException, ProcessException {
-		freeSDRAM(chip, Address.convert(baseAddress));
+		freeSDRAM(chip, convert(baseAddress));
 	}
 
 	/**
@@ -3593,7 +3591,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes)
 			throws IOException, ProcessException {
-		loadMulticastRoutes(chip, routes, AppID.DEFAULT);
+		loadMulticastRoutes(chip, routes, DEFAULT);
 	}
 
 	/**
@@ -3630,7 +3628,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
-		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
+		loadFixedRoute(chip, fixedRoute, DEFAULT);
 	}
 
 	/**
@@ -3665,7 +3663,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
-		return readFixedRoute(chip, AppID.DEFAULT);
+		return readFixedRoute(chip, DEFAULT);
 	}
 
 	/**

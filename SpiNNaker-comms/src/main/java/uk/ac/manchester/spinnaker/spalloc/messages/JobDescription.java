@@ -16,11 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class JobDescription {
 
 	private Map<String, Object> kwargs;
 
-	private List<BoardCoordinates> boards = Collections.emptyList();
+	private List<BoardCoordinates> boards = emptyList();
 
 	private String keepAliveHost;
 

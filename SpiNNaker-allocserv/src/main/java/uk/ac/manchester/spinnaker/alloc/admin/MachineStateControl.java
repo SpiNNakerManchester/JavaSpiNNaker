@@ -74,7 +74,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * @return The state of the board.
 		 */
 		public boolean getState() {
-			return execute(conn -> {
+			return execute(false, conn -> {
 				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
 					return q.call1(boardId)
 							.map(row -> row.getBoolean("functioning"))
@@ -106,7 +106,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
-		return execute(conn -> {
+		return execute(false, conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 				return q.call1(machine, x, y, z).map(BoardState::new);
 			}
@@ -128,7 +128,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<BoardState> findPhysical(String machine, int c, int f,
 			int b) {
-		return execute(conn -> {
+		return execute(false, conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 				return q.call1(machine, c, f, b).map(BoardState::new);
 			}
@@ -145,7 +145,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findIP(String machine, String address) {
-		return execute(conn -> {
+		return execute(false, conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				return q.call1(machine, address).map(BoardState::new);
 			}

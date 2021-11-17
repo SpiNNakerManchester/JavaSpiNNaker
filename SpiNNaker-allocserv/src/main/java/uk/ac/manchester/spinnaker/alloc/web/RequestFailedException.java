@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static java.util.Objects.nonNull;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+import static javax.ws.rs.core.Response.noContent;
+import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.GONE;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -84,7 +86,7 @@ public class RequestFailedException extends RuntimeException {
 		if (getCause() instanceof WebApplicationException) {
 			return ((WebApplicationException) getCause()).getResponse();
 		}
-		return Response.status(code).type(TEXT_PLAIN).entity(message).build();
+		return status(code).type(TEXT_PLAIN).entity(message).build();
 	}
 
 	private void log(Logger log) {
@@ -142,7 +144,7 @@ public class RequestFailedException extends RuntimeException {
 
 		@Override
 		Response toResponse() {
-			return Response.status(NO_CONTENT).build();
+			return noContent().build();
 		}
 	}
 

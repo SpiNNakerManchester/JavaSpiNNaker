@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils.progress;
 
+import static java.lang.System.out;
+
 import java.io.Closeable;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -86,7 +88,7 @@ public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
 	 *            duration.
 	 */
 	public ProgressIterable(Collection<E> things, String description) {
-		this(things, description, System.out);
+		this(things, description, out);
 	}
 
 	/**

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.front_end.iobuf;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -221,8 +222,8 @@ public class IobufRetriever extends BoardLocalSupport {
 
 	private static File getProvenanceFile(File provenanceDir, IOBuffer iobuf) {
 		return new File(provenanceDir,
-				String.format("iobuf_for_chip_%d_%d_processor_id_%d.txt",
-						iobuf.getX(), iobuf.getY(), iobuf.getP()));
+				format("iobuf_for_chip_%d_%d_processor_id_%d.txt", iobuf.getX(),
+						iobuf.getY(), iobuf.getP()));
 	}
 
 	private static BufferedWriter openFileForAppending(File file)
@@ -236,7 +237,7 @@ public class IobufRetriever extends BoardLocalSupport {
 		Matcher match = regex.matcher(line);
 		if (match.matches()) {
 			synchronized (entries) {
-				entries.add(String.format("%d, %d, %d: %s (%s)", core.getX(),
+				entries.add(format("%d, %d, %d: %s (%s)", core.getX(),
 						core.getY(), core.getP(), match.group(ENTRY_TEXT),
 						match.group(ENTRY_FILE)));
 			}

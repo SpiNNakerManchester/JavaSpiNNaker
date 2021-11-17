@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.lang.Short.toUnsignedInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.Instant.ofEpochSecond;
 import static java.time.ZoneOffset.UTC;
@@ -95,7 +96,7 @@ public final class VersionInfo {
 			core = new CoreLocation(x, y, p);
 		}
 		buffer.getShort(); // Ignore 2 bytes
-		int vn = Short.toUnsignedInt(buffer.getShort());
+		int vn = toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
 
 		String decoded = new String(buffer.array(), buffer.position(),

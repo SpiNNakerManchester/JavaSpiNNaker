@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import static java.lang.Thread.sleep;
+import static java.nio.ByteBuffer.allocate;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -118,7 +120,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			+ "machine (please try removing firewalls)";
 
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
-			System.getProperty("spinnaker.compare.download");
+			getProperty("spinnaker.compare.download");
 
 	private final Transceiver txrx;
 
@@ -631,7 +633,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		ByteBuffer doDownload(Monitor extraMonitor, Region region)
 				throws IOException, TimeoutException, ProcessException {
 			monitorCore = extraMonitor;
-			dataReceiver = ByteBuffer.allocate(region.size);
+			dataReceiver = allocate(region.size);
 			/*
 			 * Tricky point: where an amount of data to be downloaded is exactly
 			 * a multiple of the number of payload words per packet, we need an

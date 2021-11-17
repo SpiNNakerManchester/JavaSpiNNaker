@@ -21,6 +21,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.lang.Integer.compare;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -70,7 +74,7 @@ public final class ChipLocation
 	@JsonCreator
 	public ChipLocation(@JsonProperty(value = "x", required = true) int x,
 			@JsonProperty(value = "y", required = true) int y) {
-		MachineDefaults.validateChipLocation(x, y);
+		validateChipLocation(x, y);
 		this.x = x;
 		this.y = y;
 	}
@@ -89,18 +93,16 @@ public final class ChipLocation
 
 	@Override
 	public int hashCode() {
-		return (x << MachineDefaults.COORD_SHIFT) ^ y;
+		return (x << COORD_SHIFT) ^ y;
 	}
 
 	@Override
 	public int compareTo(ChipLocation o) {
-		if (this.x < o.x) {
-			return -1;
+		int cmp = compare(this.x, o.x);
+		if (cmp == 0) {
+			cmp = compare(this.y, o.y);
 		}
-		if (this.x > o.x) {
-			return 1;
-		}
-		return Integer.compare(this.y, o.y);
+		return cmp;
 	}
 
 	@Override

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.String.format;
+import static java.lang.ThreadLocal.withInitial;
 import static java.net.InetAddress.getByAddress;
 import static java.net.StandardProtocolFamily.INET;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
@@ -73,7 +75,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private static final int PACKET_MAX_SIZE = 300;
 
 	private static final ThreadLocal<Selector> SELECTOR_FACTORY =
-			ThreadLocal.withInitial(() -> {
+			withInitial(() -> {
 				try {
 					return Selector.open();
 				} catch (IOException e) {
@@ -127,7 +129,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
 		channel =
 				initialiseSocket(localHost, localPort, remoteHost, remotePort);
-		selectionKeyFactory = ThreadLocal.withInitial(() -> {
+		selectionKeyFactory = withInitial(() -> {
 			try {
 				return channel.register(SELECTOR_FACTORY.get(), OP_READ);
 			} catch (IOException e) {
@@ -362,7 +364,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
-		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
+		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
 		SocketAddress addr = channel.receive(buffer);
 		receivable = false;
 		if (addr == null) {
@@ -685,7 +687,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			ra = getRemoteAddress();
 		} catch (IOException ignore) {
 		}
-		return String.format("%s(%s <-%s-> %s)",
+		return format("%s(%s <-%s-> %s)",
 				getClass().getSimpleName().replaceAll("^.*\\.", ""), la,
 				isClosed() ? "|" : "", ra);
 	}

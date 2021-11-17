@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.lang.String.format;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 /** Logical coordinates of a board. */
-@JsonFormat(shape = Shape.ARRAY)
+@JsonFormat(shape = ARRAY)
 public class Triad {
 	private int x;
 
@@ -54,6 +56,6 @@ public class Triad {
 
 	@Override
 	public String toString() {
-		return String.format("[X:%d, Y:%d, Z:%d]", x, y, z);
+		return format("[X:%d, Y:%d, Z:%d]", x, y, z);
 	}
 }

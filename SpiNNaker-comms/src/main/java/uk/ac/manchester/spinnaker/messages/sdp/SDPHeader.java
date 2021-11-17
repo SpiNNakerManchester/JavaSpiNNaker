@@ -124,7 +124,7 @@ public class SDPHeader implements SerializableMessage {
 		// Caller MUST have stripped the leading padding
 		assert buffer.position() == 2 : "leading padding must be skipped";
 		flags = Flag.get(buffer.get());
-		tag = Byte.toUnsignedInt(buffer.get());
+		tag = toUnsignedInt(buffer.get());
 		int dpc = toUnsignedInt(buffer.get());
 		int spc = toUnsignedInt(buffer.get());
 		int dcy = toUnsignedInt(buffer.get());
@@ -284,7 +284,7 @@ public class SDPHeader implements SerializableMessage {
 	}
 
 	public void setTag(byte tag) {
-		this.tag = Byte.toUnsignedInt(tag);
+		this.tag = toUnsignedInt(tag);
 	}
 
 	/** The meanings of individual flag bits in {@link SDPHeader.Flag}. */

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableCollection;
@@ -25,7 +26,6 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SDRAM_PER_CHIP;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -82,7 +82,7 @@ public class Chip implements HasChipLocation {
 			Processor> DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
 
 	private static final List<Integer> DEFAULT_ETHERNET_TAG_IDS =
-			Arrays.asList(1, 2, 3, 4, 5, 6, 7);
+			asList(1, 2, 3, 4, 5, 6, 7);
 
 	// Note: emergency_routing_enabled not implemented as not used
 	// TODO convert_routing_table_entry_to_spinnaker_route

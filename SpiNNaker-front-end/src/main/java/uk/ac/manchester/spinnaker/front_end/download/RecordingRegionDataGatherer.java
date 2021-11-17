@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -152,11 +153,11 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	@Override
 	public void close() throws InterruptedException {
 		log.info("waiting for database usage to complete");
-		long start = System.currentTimeMillis();
+		long start = currentTimeMillis();
 		dbWorker.shutdown();
 		// It really shouldn't take a minute to finish
 		dbWorker.awaitTermination(1, MINUTES);
-		long end = System.currentTimeMillis();
+		long end = currentTimeMillis();
 		log.info("total of {} database writes done", numWrites);
 		if (end - start > TERMINATION_REPORT_THRESHOLD) {
 			double diff = (end - start) / (double) MSEC_PER_SEC;

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.model;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 
 import java.time.Instant;
 import java.util.Map;
@@ -228,7 +229,7 @@ public final class UserRecord {
 	public void initCreationDefaults() {
 		setUserId(null);
 		if (isNull(getTrustLevel())) {
-			setTrustLevel(TrustLevel.USER);
+			setTrustLevel(USER);
 		}
 		if (isNull(isEnabled())) {
 			setEnabled(true);

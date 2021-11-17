@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				pass = passServices.generatePassword();
 				poorPassword = false;
 			}
-			if (createUser(DUMMY_USER, pass, TrustLevel.ADMIN,
+			if (createUser(DUMMY_USER, pass, ADMIN,
 					quotaProps.getDefaultQuota())) {
 				if (authProps.isDummyRandomPass()) {
 					log.info("admin user {} has password: {}", DUMMY_USER,

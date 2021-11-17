@@ -16,12 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
+
 import java.net.InetAddress;
 import java.util.Objects;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.machine.MachineDefaults;
 
 /**
  * Abstract Root of all Data Links.
@@ -78,9 +80,9 @@ public class AbstractDataLink implements HasChipLocation {
 
 	@Override
 	public int hashCode() {
-		int hash = 41 * (getX() << MachineDefaults.COORD_SHIFT) ^ getY();
-		hash = 41 * hash + Objects.hashCode(this.boardAddress);
-		hash = 41 * hash + this.direction.hashCode();
+		int hash = 41 * (getX() << COORD_SHIFT) ^ getY();
+		hash = 41 * hash + Objects.hashCode(boardAddress);
+		hash = 41 * hash + direction.hashCode();
 		return hash;
 	}
 
@@ -112,10 +114,10 @@ public class AbstractDataLink implements HasChipLocation {
 	 *         links are on the same chip
 	 */
 	boolean sameAs(AbstractDataLink other) {
-		if (!this.direction.equals(other.direction)) {
+		if (!direction.equals(other.direction)) {
 			return false;
 		}
-		if (!Objects.equals(this.boardAddress, other.boardAddress)) {
+		if (!Objects.equals(boardAddress, other.boardAddress)) {
 			return false;
 		}
 		return location.onSameChipAs(other.location);

@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.GATHERER_DATA_SPEED_UP;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
@@ -107,7 +108,7 @@ class FastDataInProtocol {
 
 	private SDPHeader header() {
 		return new SDPHeader(REPLY_NOT_EXPECTED, gathererCore,
-				SDPPort.GATHERER_DATA_SPEED_UP.value);
+				GATHERER_DATA_SPEED_UP.value);
 	}
 
 	/**

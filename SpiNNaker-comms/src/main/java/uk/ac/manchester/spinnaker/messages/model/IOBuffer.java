@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,8 +34,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  * @author Donal Fellows
  */
 public class IOBuffer implements HasCoreLocation {
-	private static final Charset ASCII = Charset.forName("ascii");
-
 	private final HasCoreLocation core;
 
 	private final byte[] iobuf;
@@ -109,7 +108,7 @@ public class IOBuffer implements HasCoreLocation {
 	 * @return The contents of the buffer as a string, interpreting it as ASCII.
 	 */
 	public String getContentsString() {
-		return getContentsString(ASCII);
+		return getContentsString(US_ASCII);
 	}
 
 	/**

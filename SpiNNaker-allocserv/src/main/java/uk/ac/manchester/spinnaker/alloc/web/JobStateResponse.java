@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_MACHINE;
@@ -152,7 +153,7 @@ public class JobStateResponse {
 	/** @return What host (if any) is keeping the job alive? */
 	@JsonInclude(NON_NULL)
 	public String getKeepaliveHost() {
-		if (state.equals(JobState.DESTROYED)) {
+		if (state == DESTROYED) {
 			return null;
 		}
 		return keepaliveHost;
@@ -181,7 +182,7 @@ public class JobStateResponse {
 	/** @return When the job last had a keep-alive message. */
 	@JsonInclude(NON_NULL)
 	public Instant getKeepAliveTime() {
-		if (state.equals(JobState.DESTROYED)) {
+		if (state == DESTROYED) {
 			return null;
 		}
 		return keepaliveTime;

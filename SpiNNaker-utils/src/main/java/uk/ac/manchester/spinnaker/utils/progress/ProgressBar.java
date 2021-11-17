@@ -16,6 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.utils.progress;
 
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.out;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.formatDuration;
+
 import java.io.Closeable;
 import java.io.PrintStream;
 import uk.ac.manchester.spinnaker.utils.UnitConstants;
@@ -89,7 +93,7 @@ public class ProgressBar implements Closeable {
 		this.description = description;
 		this.output = output;
 		charsPerThing = MAX_LENGTH / numberOfThings;
-		startTime = System.currentTimeMillis();
+		startTime = currentTimeMillis();
 		printHeader();
 	}
 
@@ -103,7 +107,7 @@ public class ProgressBar implements Closeable {
 	 *            duration.
 	 */
 	public ProgressBar(int numberOfThings, String description) {
-		this(numberOfThings, description, System.out);
+		this(numberOfThings, description, out);
 	}
 
 	/**
@@ -150,8 +154,8 @@ public class ProgressBar implements Closeable {
 		if (charsDone < MAX_LENGTH_IN_CHARS) {
 			output.println();
 		}
-		long duration = (System.currentTimeMillis() - startTime);
-		String durationSt = UnitConstants.formatDuration(duration);
+		long duration = currentTimeMillis() - startTime;
+		String durationSt = formatDuration(duration);
 		if (description == null) {
 			output.println("This took " + durationSt);
 		} else {

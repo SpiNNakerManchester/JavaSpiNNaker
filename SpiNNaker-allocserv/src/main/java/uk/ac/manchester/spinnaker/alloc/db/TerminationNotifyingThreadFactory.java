@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.util.Objects.nonNull;
+import static java.util.concurrent.Executors.defaultThreadFactory;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -38,7 +39,7 @@ public class TerminationNotifyingThreadFactory implements ThreadFactory {
 	private Runnable terminationCallback;
 
 	public TerminationNotifyingThreadFactory() {
-		realThreadFactory = Executors.defaultThreadFactory();
+		realThreadFactory = defaultThreadFactory();
 	}
 
 	public void setTerminationCallback(Runnable callback) {

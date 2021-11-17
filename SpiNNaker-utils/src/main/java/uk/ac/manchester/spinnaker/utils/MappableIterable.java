@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import static java.util.Objects.nonNull;
+import static uk.ac.manchester.spinnaker.utils.IteratorWrapper.wrap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,7 +50,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @return The new iterable, which may also be mapped.
 	 */
 	default <U> MappableIterable<U> map(Function<T, U> mapper) {
-		return IteratorWrapper.wrap(this, src -> new Iterator<U>() {
+		return wrap(this, src -> new Iterator<U>() {
 			@Override
 			public boolean hasNext() {
 				return src.hasNext();
@@ -74,7 +75,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 *         {@code null}</em>.
 	 */
 	default MappableIterable<T> filter(Predicate<T> filterer) {
-		return IteratorWrapper.wrap(this, src -> new IteratorSupport<T>() {
+		return wrap(this, src -> new IteratorSupport<T>() {
 			@Override
 			T generateNext() {
 				while (src.hasNext()) {
@@ -109,7 +110,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @return the first {@code n} items.
 	 */
 	default MappableIterable<T> first(int n) {
-		return IteratorWrapper.wrap(this, src -> new IteratorSupport<T>() {
+		return wrap(this, src -> new IteratorSupport<T>() {
 			private int count;
 
 			@Override

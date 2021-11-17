@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.lang.Integer.compare;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.DTCM_AVAILABLE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSOR_CLOCK_SPEED;
@@ -143,11 +144,9 @@ public final class Processor implements Comparable<Processor> {
 
 	@Override
 	public int compareTo(Processor other) {
-		if (this.processorId < other.processorId) {
-			return -1;
-		}
-		if (this.processorId > other.processorId) {
-			return 1;
+		int cmp = compare(this.processorId, other.processorId);
+		if (cmp != 0) {
+			return cmp;
 		}
 		// Check the other parameters for consistency with equals.
 		if (this.isMonitor) {
@@ -159,13 +158,11 @@ public final class Processor implements Comparable<Processor> {
 				return -1;
 			}
 		}
-		if (this.dtcmAvailable < other.dtcmAvailable) {
-			return -1;
+		cmp = compare(this.dtcmAvailable, other.dtcmAvailable);
+		if (cmp != 0) {
+			return cmp;
 		}
-		if (this.dtcmAvailable > other.dtcmAvailable) {
-			return 1;
-		}
-		return Integer.compare(this.clockSpeed, other.clockSpeed);
+		return compare(this.clockSpeed, other.clockSpeed);
 	}
 
 	/**

@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.created;
+import static javax.ws.rs.core.Response.noContent;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -162,7 +164,7 @@ public class AdminImpl implements AdminAPI {
 						"user already exists"));
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
 		int id = realUser.getUserId();
-		return Response.created(ub.build(id)).type(APPLICATION_JSON)
+		return created(ub.build(id)).type(APPLICATION_JSON)
 				.entity(realUser.sanitise()).build();
 	}
 
@@ -188,6 +190,6 @@ public class AdminImpl implements AdminAPI {
 		log.warn("CALLED deleteUser({})", id);
 		String adminUser = security.getUserPrincipal().getName();
 		userController.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
-		return Response.noContent().build();
+		return noContent().build();
 	}
 }

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.lang.Byte.toUnsignedInt;
+import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
@@ -165,7 +167,7 @@ public class ChipInfo implements HasChipLocation {
 
 		virtualCoreIDs = new ArrayList<>();
 		for (byte vID : physicalToVirtualCoreMap) {
-			if (Byte.toUnsignedInt(vID) != UNMAPPED) {
+			if (toUnsignedInt(vID) != UNMAPPED) {
 				virtualCoreIDs.add((int) vID);
 			}
 		}
@@ -175,7 +177,7 @@ public class ChipInfo implements HasChipLocation {
 			ipAddress = null;
 		} else {
 			try {
-				ipAddress = InetAddress.getByAddress(ip);
+				ipAddress = getByAddress(ip);
 			} catch (UnknownHostException e) {
 				ipAddress = null;
 			}

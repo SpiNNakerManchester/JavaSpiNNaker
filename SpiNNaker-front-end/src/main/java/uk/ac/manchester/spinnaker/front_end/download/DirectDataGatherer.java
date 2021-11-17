@@ -16,12 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static java.lang.String.format;
+import static java.util.Collections.singletonList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,12 +117,12 @@ public class DirectDataGatherer extends DataGatherer {
 			int word = buffer.getInt();
 			if (word != APPDATA_MAGIC_NUM) {
 				throw new IllegalStateException(
-						String.format("unexpected magic number: %08x", word));
+						format("unexpected magic number: %08x", word));
 			}
 			word = buffer.getInt();
 			if (word != DSE_VERSION) {
 				throw new IllegalStateException(
-						String.format("unexpected DSE version: %08x", word));
+						format("unexpected DSE version: %08x", word));
 			}
 			map.put(vertex.getBaseAddress(), buffer);
 		}
@@ -135,7 +136,7 @@ public class DirectDataGatherer extends DataGatherer {
 				placement.getVertex());
 		// TODO This is probably wrong!
 		int size = b.get(regionID + 1) - b.get(regionID);
-		return Collections.singletonList(
+		return singletonList(
 				new Region(placement, regionID, b.get(regionID), size));
 	}
 

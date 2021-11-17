@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
@@ -148,8 +150,7 @@ public final class SpiNNakerTriadGeometry {
 			float yCentre) {
 		float dx = x - xCentre;
 		float dy = y - yCentre;
-		return Math.max(Math.abs(dx),
-				Math.max(Math.abs(dy), Math.abs(dx - dy)));
+		return max(abs(dx), max(abs(dy), abs(dx - dy)));
 	}
 
 	/**

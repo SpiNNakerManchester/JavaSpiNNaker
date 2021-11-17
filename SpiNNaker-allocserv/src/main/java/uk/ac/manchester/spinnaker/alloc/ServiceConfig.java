@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -267,7 +268,7 @@ public class ServiceConfig extends Application {
 	 */
 	public static void main(String[] args) {
 		// DISABLE IPv6 SUPPORT; SpiNNaker can't use it and it's a pain
-		System.setProperty("java.net.preferIPv4Stack", "false");
+		setProperty("java.net.preferIPv4Stack", "false");
 		SpringApplication.run(ServiceConfig.class, args);
 	}
 }

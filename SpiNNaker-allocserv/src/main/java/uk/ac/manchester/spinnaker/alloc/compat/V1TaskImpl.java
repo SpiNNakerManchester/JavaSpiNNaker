@@ -23,6 +23,7 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
@@ -58,7 +59,6 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoord
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
@@ -176,7 +176,7 @@ class V1TaskImpl extends V1CompatTask {
 		js.setKeepalivehost(job.getKeepaliveHost().orElse(""));
 		js.setPower(job.getMachine().map(m -> {
 			try {
-				return m.getPower().equals(PowerState.ON);
+				return m.getPower() == ON;
 			} catch (DataAccessException e) {
 				log.warn("problem getting job power state", e);
 				return false;
@@ -253,8 +253,8 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final Integer createJobSpecificBoard(TriadCoords coords,
 			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(CreateBoard.triad(coords.x, coords.y, coords.z),
-				kwargs, cmd).orElse(null);
+		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd)
+				.orElse(null);
 	}
 
 	private Optional<Integer> createJob(SpallocAPI.CreateDescriptor create,

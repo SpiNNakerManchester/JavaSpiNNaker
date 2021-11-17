@@ -17,9 +17,12 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.Math.max;
+import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
@@ -49,7 +52,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.nio.file.Path;
@@ -359,7 +361,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	@Documented
 	@Retention(RUNTIME)
-	@Target(ElementType.TYPE)
+	@Target(TYPE)
 	public @interface ArgumentCount {
 		/**
 		 * The number of arguments taken by the function. If not specified, any
@@ -378,7 +380,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	@Documented
 	@Retention(RUNTIME)
-	@Target(ElementType.TYPE)
+	@Target(TYPE)
 	public @interface Deterministic {
 	}
 
@@ -398,7 +400,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Deprecated
 	@Documented
 	@Retention(RUNTIME)
-	@Target(ElementType.TYPE)
+	@Target(TYPE)
 	public @interface Innocuous {
 	}
 
@@ -554,13 +556,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void optimiseDB() {
 		optimiseSerialisationLock.lock();
 		try {
-			long start = System.currentTimeMillis();
+			long start = currentTimeMillis();
 			// NB: Not a standard query! Safe, because we know we have an int
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
 				conn.transaction(true, () -> {
-					conn.exec(String.format(OPTIMIZE_DB,
-							props.getAnalysisLimit()));
+					conn.exec(format(OPTIMIZE_DB, props.getAnalysisLimit()));
 				});
 			} catch (DataAccessException e) {
 				/*
@@ -572,7 +573,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					throw e;
 				}
 			}
-			long end = System.currentTimeMillis();
+			long end = currentTimeMillis();
 			log.debug("optimised the database in {}ms", end - start);
 		} catch (SQLException e) {
 			log.warn("failed to optimise DB pre-close", e);
