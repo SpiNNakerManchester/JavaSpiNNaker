@@ -90,7 +90,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS boardBmpSanity ON boards(
 	bmp_id ASC, board_num ASC);
 CREATE INDEX IF NOT EXISTS boardReuseTimestamps ON boards(
 	power_off_timestamp ASC);
--- When the power is changed, update the right timestamp
+-- When the power is changed, update the right timestamp and deallocate if necessary
 CREATE TRIGGER IF NOT EXISTS boardStateTimestamping
 AFTER UPDATE OF board_power ON boards
 BEGIN
@@ -227,6 +227,20 @@ BEGIN
 	UPDATE jobs
 		SET allocated_root = NEW.root_id
 	WHERE job_id = OLD.job_id AND NEW.root_id IS NOT NULL;
+END;
+
+-- When the power is turned off on a board allocated to a job that is destroyed,
+-- deallocate the board.
+CREATE TRIGGER IF NOT EXISTS boardDeallocation
+AFTER UPDATE OF board_power ON boards
+BEGIN
+	UPDATE boards
+		SET allocated_job = NULL
+	WHERE board_id = NEW.board_id
+		AND OLD.board_power IS NOT 0 AND NEW.board_power IS 0
+		AND EXISTS(
+			SELECT 1 FROM jobs
+			WHERE jobs.job_id = OLD.allocated_job AND jobs.job_state = 4);
 END;
 
 CREATE TABLE IF NOT EXISTS job_request (

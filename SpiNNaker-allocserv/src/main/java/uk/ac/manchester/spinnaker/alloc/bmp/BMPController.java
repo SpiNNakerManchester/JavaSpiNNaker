@@ -405,10 +405,10 @@ public class BMPController extends DatabaseAwareBean {
 			int turnedOn = powerOnBoards.values().stream()
 					.flatMap(Collection::stream)
 					.mapToInt(board -> sql.setBoardState(true, board)).sum();
+			int jobChange = sql.setJobState(to, 0, jobId);
 			int turnedOff = powerOffBoards.values().stream()
 					.flatMap(Collection::stream)
 					.mapToInt(board -> sql.setBoardState(false, board)).sum();
-			int jobChange = sql.setJobState(to, 0, jobId);
 			int deallocated = 0;
 			if (to == DESTROYED) {
 				/*
