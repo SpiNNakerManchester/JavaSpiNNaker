@@ -788,3 +788,15 @@ function drawJob(
 	}
 	setupCallbacks(canv, getBoardInfo, undefined, tloc, setCurrent, clearCurrent);
 }
+
+/**
+ * Convert a JSON document into a form more digestible for people.
+ *
+ * @param elementId
+ *		The ID of the element JSON document to pretty-print.
+ */
+function prettyJson(elementId: string) {
+	const element = document.getElementById(elementId);
+	const pretty = JSON.stringify(JSON.parse(element.textContent), null, 2);
+	element.textContent = pretty;
+}

@@ -57,7 +57,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Raw Request:</th>
-	<td><pre><c:out value="${ job.request }" escapeXml="true" /></pre></td>
+	<td><pre id="rawRequest"><c:out value="${ job.request }" escapeXml="true" /></pre></td>
+	<c:if test="${ not empty job.request }">
+		<script defer="defer">
+		prettyJson("rawRequest");
+		</script>
+	</c:if>
 </tr>
 <tr>
 	<th class="lineTitle">Allocation:</th>
