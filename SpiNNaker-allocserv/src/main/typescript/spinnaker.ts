@@ -800,3 +800,39 @@ function prettyJson(elementId: string) {
 	const pretty = JSON.stringify(JSON.parse(element.textContent), null, 2);
 	element.textContent = pretty;
 }
+
+/**
+ * Convert a timestamp into a form more digestible for people.
+ *
+ * @param elementId
+ *		The ID of the element containing the timestamp.
+ */
+function prettyTimestamp(elementId: string) {
+	const element = document.getElementById(elementId);
+	const timestamp = new Date(element.textContent);
+	const dtf = new Intl.DateTimeFormat([], {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric'
+	});
+	const pretty = dtf.format(timestamp);
+	element.textContent = pretty;
+}
+
+/**
+ * Convert a timestamp into a form more digestible for people.
+ *
+ * @param elementId
+ *		The ID of the element containing the timestamp.
+ */
+function prettyDuration(elementId: string) {
+	const element = document.getElementById(elementId);
+	var content: string = element.textContent;
+	content = content.replace(/^PT/, "").replace("H", " hours ").replace(
+		"M", " minutes ").replace("S", " seconds ");
+	content = content.replace(new RegExp(/\b1 (\w+)s/, "g"), "1 $1");
+	content = content.replace(new RegExp(/\b( \d)/, "g"), ",$1");
+	element.textContent = content;
+}

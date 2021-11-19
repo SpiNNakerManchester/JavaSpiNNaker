@@ -45,24 +45,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Start time:</th>
-	<td>${ job.startTime }</td>
+	<td id="startTime">${ job.startTime }</td>
+	<script defer="defer">
+		prettyTimestamp("startTime");
+	</script>
 </tr>
 <tr>
-	<th class="lineTitle">Keepalive:</th>
-	<td>${ job.keepAlive }</td>
+	<th class="lineTitle">Keep-alive:</th>
+	<td id="keepAlive">${ job.keepAlive }</td>
+	<script defer="defer">
+		prettyDuration("keepAlive");
+	</script>
 </tr>
 <tr>
 	<th class="lineTitle">Owner host:</th>
 	<td><c:out value="${ job.ownerHost.orElse('[SHROUDED]') }" escapeXml="true" /></td>
 </tr>
 <tr>
-	<th class="lineTitle">Raw Request:</th>
-	<td><pre id="rawRequest"><c:out value="${ job.request }" escapeXml="true" /></pre></td>
+	<th class="lineTitle">Raw request:</th>
+	<td><details><summary><em>Click to show</em></summary>
+	<pre id="rawRequest"><c:out value="${ job.request }" escapeXml="true" /></pre>
 	<c:if test="${ not empty job.request }">
 		<script defer="defer">
-		prettyJson("rawRequest");
+			prettyJson("rawRequest");
 		</script>
 	</c:if>
+	</details></td>
 </tr>
 <tr>
 	<th class="lineTitle">Allocation:</th>
@@ -71,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<canvas id="board_layout" width="300" height="200"></canvas>
 			<canvas id="tooltip" width="100" height="50"></canvas>
 			<script defer="defer">
-			drawJob("board_layout", "tooltip", job);
+				drawJob("board_layout", "tooltip", job);
 			</script>
 		</c:if>
 		<c:if test="${ empty job.boards }">
@@ -80,7 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</td>
 </tr>
 <tr>
-	<th class="lineTitle">Hostname:</th>
+	<th class="lineTitle">Root board IP address:</th>
 	<td>${ empty job.boards ? 'not currently allocated' : job.boards[0].address }</td>
 </tr>
 <tr>
@@ -95,7 +103,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</td>
 </tr>
 <tr>
-	<th class="lineTitle">Num boards:</th>
+	<th class="lineTitle">Number of boards:</th>
 	<td>${ empty job.boards ? 'not currently allocated' : job.boards.size() }</td>
 </tr>
 <tr>
