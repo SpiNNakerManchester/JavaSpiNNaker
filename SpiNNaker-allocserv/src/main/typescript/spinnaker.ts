@@ -408,6 +408,23 @@ function setupCallbacks(
 		setCurrent: ((newTriad: BoardTriad) => void),
 		clearCurrent: ((oldTriad: BoardTriad) => void)) {
 	var current : BoardTriad = undefined;
+	function geturl() : string {
+		if (getJobInfo !== undefined) {
+			const job = getJobInfo(current);
+			if (job !== undefined && job.hasOwnProperty("url")) {
+				return job.url;
+			}
+		}
+		return undefined;
+	}
+	function configurePointer(asLink: boolean = false) {
+		const c = canv.classList;
+		if (asLink) {
+			c.add("overlink");
+		} else {
+			c.remove("overlink");
+		}
+	}
 	canv.addEventListener('mousemove', (e: MouseEvent) => {
 		const triad = inside(e.offsetX, e.offsetY, tloc);
 		if (current === triad) {
@@ -419,9 +436,11 @@ function setupCallbacks(
 			}
 			setCurrent(triad);
 			current = triad;
+			configurePointer(geturl() !== undefined);
 		} else if (current !== undefined) {
 			clearCurrent(current);
 			current = undefined;
+			configurePointer();
 		}
 	});
 	canv.addEventListener('mouseenter', (e: MouseEvent) => {
@@ -436,15 +455,18 @@ function setupCallbacks(
 			}
 			setCurrent(triad);
 			current = triad;
+			configurePointer(geturl() !== undefined);
 		} else if (current !== undefined) {
 			clearCurrent(current);
 			current = undefined;
+			configurePointer();
 		}
 	});
 	canv.addEventListener('mouseleave', (_: MouseEvent) => {
 		if (current !== undefined) {
 			clearCurrent(current);
 			current = undefined;
+			configurePointer();
 		}
 	});
 	canv.addEventListener("click", (e: MouseEvent) => {

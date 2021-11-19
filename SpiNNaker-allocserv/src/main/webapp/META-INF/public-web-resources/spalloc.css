@@ -34,6 +34,9 @@ footer {
 .warningbutton {
 	background-color: #f44336;
 }
+canvas.overlink {
+	cursor: pointer;
+}
 
 /* Used to mark columns of tables as semantically containing numbers or text. */
 .numberColumn {
