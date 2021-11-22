@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="Spalloc Job" name="title"/>
+	<jsp:param value="SpiNNaker Job" name="title"/>
 	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
 <script>
@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </script>
 <body>
 
-<h1>Spalloc Job</h1>
+<h1>SpiNNaker Job</h1>
 
 <table>
 <tr>
@@ -64,8 +64,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <tr>
 	<th class="lineTitle">Raw request:</th>
 	<td><details><summary><em>Click to show</em></summary>
-	<pre id="rawRequest"><c:out value="${ job.request }" escapeXml="true" /></pre>
 	<c:if test="${ not empty job.request }">
+		<pre id="rawRequest"><c:out value="${ job.request }" escapeXml="true" /></pre>
 		<script defer="defer">
 			prettyJson("rawRequest");
 		</script>
@@ -75,43 +75,64 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <tr>
 	<th class="lineTitle">Allocation:</th>
 	<td>
-		<c:if test="${ not empty job.boards }">
-			<canvas id="board_layout" width="300" height="200"></canvas>
-			<canvas id="tooltip" width="100" height="50"></canvas>
-			<script defer="defer">
-				drawJob("board_layout", "tooltip", job);
-			</script>
-		</c:if>
-		<c:if test="${ empty job.boards }">
-			No allocation
-		</c:if>
+		<c:choose>
+			<c:when test="${ not empty job.boards }">
+				<canvas id="board_layout" width="300" height="200"></canvas>
+				<canvas id="tooltip" width="100" height="50"></canvas>
+				<script defer="defer">
+					drawJob("board_layout", "tooltip", job);
+				</script>
+			</c:when>
+			<c:otherwise>Not currently allocated</c:otherwise>
+		</c:choose>
 	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Root board IP address:</th>
-	<td>${ empty job.boards ? 'not currently allocated' : job.boards[0].address }</td>
+	<td>
+		<c:choose>
+			<c:when test="${ not empty job.boards }">
+				${ job.boards[0].address }
+			</c:when>
+			<c:otherwise>Not currently allocated</c:otherwise>
+		</c:choose>
+	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Dimensions (chips):</th>
 	<td>
-		<c:if test="${ job.width.present }">
-			${ job.width.get() }&times;${ job.height.get() }
-		</c:if>
-		<c:if test="${ not job.width.present }">
-			not currently allocated
-		</c:if>
+		<c:choose>
+			<c:when test="${ job.width.present }">
+				${ job.width.get() }&times;${ job.height.get() }
+			</c:when>
+			<c:otherwise>Not currently allocated</c:otherwise>
+		</c:choose>
 	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Number of boards:</th>
-	<td>${ empty job.boards ? 'not currently allocated' : job.boards.size() }</td>
+	<td>
+		<c:choose>
+			<c:when test="${ not empty job.boards }">
+				${ job.boards.size() }
+			</c:when>
+			<c:otherwise>Not currently allocated</c:otherwise>
+		</c:choose>
+	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Board power:</th>
-	<td>${ job.powered ? 'on' : 'off' }</td>
+	<td>
+		<c:choose>
+			<c:when test="${ not empty job.boards }">
+				${ job.powered ? 'on' : 'off' }
+			</c:when>
+			<c:otherwise>Not currently allocated</c:otherwise>
+		</c:choose>
+	</td>
 </tr>
 <tr>
-	<th class="lineTitle">Running on:</th>
+	<th class="lineTitle">SpiNNaker machine:</th>
 	<td><a href="${ job.machineUrl }"><c:out value="${ job.machine }" escapeXml="true" /></a></td>
 </tr>
 </table>

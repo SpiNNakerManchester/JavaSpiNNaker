@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <body>
 
-<h1>User Details</h1>
+<h1>Local Spalloc User Details</h1>
 
 <form:form method="POST" modelAttribute="user">
 	<form:label path="userName">User Name: </form:label>
@@ -47,27 +47,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<br>
 	Last failed login: ${ user.lastFailedLogin }
 	<p>
-	<table>
-		<thead>
-			<tr>
-				<th colspan="2">Quotas</th>
-			</tr>
-			<tr>
-				<th>Machine</th>
-				<th>Remaining (board seconds)
-			</tr>
-		</thead>
-		<tbody>
-		<c:forEach items="${ user.quota }" var="q">
-			<tr>
-				<td> <c:out value="${ q.key }" escapeXml="true" /> </td>
-				<td> ${ q.value } </td>
-			</tr>
-			<%-- FIXME add support for editing user quotas --%>
-		</c:forEach>
-		</tbody>
-	</table>
-	<p>
+	<c:if test="${ not empty user.quota }">
+		<table>
+			<thead>
+				<tr>
+					<th colspan="2">Quotas</th>
+				</tr>
+				<tr>
+					<th>Machine</th>
+					<th>Remaining (board seconds)
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${ user.quota }" var="q">
+					<tr>
+						<td> <c:out value="${ q.key }" escapeXml="true" /> </td>
+						<td> ${ q.value } </td>
+					</tr>
+					<%-- FIXME add support for editing user quotas --%>
+				</c:forEach>
+			</tbody>
+		</table>
+		<p>
+	</c:if>
 	<input type="submit" value="Update" />
 </form:form>
 <p>

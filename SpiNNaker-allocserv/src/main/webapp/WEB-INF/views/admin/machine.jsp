@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="Machine Management" name="title"/>
+	<jsp:param value="Spalloc Machine Management" name="title"/>
 </jsp:include>
 <body>
 
@@ -42,6 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</tr>
 	</table>
 </form>
+
+<!-- TODO: Allow machines to be taken out of service entirely or retagged? -->
 
 <jsp:include page="footer.jsp" />
 </body>

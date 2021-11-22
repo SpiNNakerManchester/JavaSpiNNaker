@@ -18,22 +18,22 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="Spalloc Service" name="title"/>
+	<jsp:param value="SpiNNaker Allocation Service" name="title"/>
 </jsp:include>
 <body>
 
-<h1>Spalloc Service</h1>
+<h1>SpiNNaker Allocation Service</h1>
 <sec:authorize access="hasRole('ADMIN')">
 	<p>
 		<a href="<c:url value="admin/"/>">Service Administration</a>
 	</p>
 </sec:authorize>
 <sec:authorize access="hasRole('READER')">
-	<h2>Machines</h2>
+	<h2>SpiNNaker Machines</h2>
 	<p>
 		<a href="<c:url value="list_machines/"/>">List</a>
 	</p>
-	<h2>Jobs</h2>
+	<h2>SpiNNaker Jobs</h2>
 	<p>
 		<a href="<c:url value="list_jobs/"/>">List</a>
 	</p>
