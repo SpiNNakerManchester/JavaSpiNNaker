@@ -155,6 +155,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
 
+	/** Prefix of URLs. */
+	private static final String URL_PREFIX = "/spalloc/";
+
 	@Autowired
 	private BasicAuthEntryPoint authenticationEntryPoint;
 
@@ -233,6 +236,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		void unlockLockedUsers();
 	}
 
+	private static String url(String suffix) {
+		return URL_PREFIX + suffix;
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		/*
@@ -244,14 +251,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
-				.antMatchers("/info*", "/info/**", "/spalloc/info*",
-						"/spalloc/info/**")
-				.hasRole("ADMIN")
+				.antMatchers(url("info*"), url("info/**")).hasRole("ADMIN")
 				// Login process and static resources are available to all
-				.antMatchers("/system/login*", "/system/perform_*",
-						"/system/error", "/system/resources/*",
-						"/spalloc/system/login*", "/spalloc/system/perform_*",
-						"/spalloc/system/error", "/spalloc/system/resources/*")
+				.antMatchers(url("system/login*"), url("system/perform_*"),
+						url("system/error"), url("system/resources/*"))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
@@ -259,10 +262,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
 		if (properties.isLocalForm()) {
-			http.formLogin().loginPage("/system/login.html")
-					.loginProcessingUrl("/system/perform_login")
-					.defaultSuccessUrl("/system/", true)
-					.failureUrl("/system/login.html?error=true")
+			http.formLogin().loginPage(url("system/login.html"))
+					.loginProcessingUrl(url("system/perform_login"))
+					.defaultSuccessUrl(url("system/"), true)
+					.failureUrl(url("system/login.html?error=true"))
 					.failureHandler(authenticationFailureHandler);
 		}
 		/*
@@ -270,9 +273,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * browsers will just log straight back in again. Still, it is
 		 * meaningful.
 		 */
-		http.logout().logoutUrl("/system/perform_logout")
+		http.logout().logoutUrl(url("system/perform_logout"))
 				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
-				.logoutSuccessUrl("/system/login.html");
+				.logoutSuccessUrl(url("system/login.html"));
 		// FIXME add support for HBP/EBRAINS OpenID Connect
 	}
 
