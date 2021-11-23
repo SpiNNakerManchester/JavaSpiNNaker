@@ -244,10 +244,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
-				.antMatchers("/info*", "/info/**").hasRole("ADMIN")
+				.antMatchers("/info*", "/info/**", "/spalloc/info*",
+						"/spalloc/info/**")
+				.hasRole("ADMIN")
 				// Login process and static resources are available to all
 				.antMatchers("/system/login*", "/system/perform_*",
-						"/system/error", "/system/resources/*")
+						"/system/error", "/system/resources/*",
+						"/spalloc/system/login*", "/spalloc/system/perform_*",
+						"/spalloc/system/error", "/spalloc/system/resources/*")
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
