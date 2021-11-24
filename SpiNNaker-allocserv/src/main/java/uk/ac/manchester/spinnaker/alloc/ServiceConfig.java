@@ -21,6 +21,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
@@ -181,9 +182,10 @@ public class ServiceConfig extends Application {
 
 	/**
 	 * Handles the upgrade of the CXF endpoint protocol to HTTPS when the
-	 * service is behind a reverse proxy like nginx. In theory, CXF should do
-	 * this itself; this is the kind of obscure rubbish that frameworks are
-	 * supposed to handle for us. In practice, it doesn't.
+	 * service is behind a reverse proxy like nginx which might be handling
+	 * SSL/TLS for us. In theory, CXF should do this itself; this is the kind of
+	 * obscure rubbish that frameworks are supposed to handle for us. In
+	 * practice, it doesn't. Yuck.
 	 *
 	 * @author Donal Fellows
 	 */
@@ -202,7 +204,8 @@ public class ServiceConfig extends Application {
 		@SuppressWarnings("unchecked")
 		private Map<String, List<String>> getHeaders(Message message) {
 			// If we've got one of these in the message, it's of this type
-			return (Map<String, List<String>>) message.get(PROTOCOL_HEADERS);
+			return (Map<String, List<String>>) message
+					.getOrDefault(PROTOCOL_HEADERS, emptyMap());
 		}
 
 		@Override
@@ -215,16 +218,15 @@ public class ServiceConfig extends Application {
 			}
 		}
 
+		/**
+		 * Upgrade the endpoint address if necessary; it's dumb that it might
+		 * need it, but we're being careful.
+		 */
 		private void upgradeEndpointProtocol(ServletRequest request) {
-			log.info("attempting to upgrade endpoint address to secure");
 			String addr = (String) request.getAttribute(ENDPOINT_ADDRESS);
 			if (addr != null && addr.startsWith("http:")) {
 				request.setAttribute(ENDPOINT_ADDRESS,
 						addr.replace("http:", "https:"));
-				log.info("upgraded to {}",
-						request.getAttribute(ENDPOINT_ADDRESS));
-			} else {
-				log.info("endpoint protocol not upgraded: {}", addr);
 			}
 		}
 	}
