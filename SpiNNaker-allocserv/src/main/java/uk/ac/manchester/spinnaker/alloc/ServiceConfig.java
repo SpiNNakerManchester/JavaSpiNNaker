@@ -42,10 +42,14 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
+import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
+import org.apache.cxf.message.Message;
+import org.apache.cxf.phase.AbstractPhaseInterceptor;
+import org.apache.cxf.phase.Phase;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,9 +95,6 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @EnableConfigurationProperties(SpallocProperties.class)
 public class ServiceConfig extends Application {
 	private static final Logger log = getLogger(ServiceConfig.class);
-
-	// TODO load from config file
-	private String restAddress = "https://spinnaker.cs.man.ac.uk/";
 
 	/**
 	 * The thread pool. The rest of the application expects there to be a single
@@ -153,21 +154,37 @@ public class ServiceConfig extends Application {
 	 *
 	 * @param bus
 	 *            The CXF bus.
+	 * @param protocolCorrector
+	 *            How to correct the protocol
 	 * @return A factory instance
 	 */
 	@Bean
 	@Scope(SCOPE_PROTOTYPE)
-	JAXRSServerFactoryBean rawFactory(SpringBus bus) {
+	JAXRSServerFactoryBean rawFactory(SpringBus bus,
+			ProtocolCorrectionInterceptor protocolCorrector) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setStaticSubresourceResolution(true);
-		factory.setAddress(restAddress);
+		factory.setAddress("/");
 		factory.setBus(bus);
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
 		factory.setFeatures(asList(new OpenApiFeature()));
-		factory.setInInterceptors(asList(
-				new JAXRSBeanValidationInInterceptor()));
+		factory.setInInterceptors(asList(new JAXRSBeanValidationInInterceptor(),
+				protocolCorrector));
 		return factory;
+	}
+
+	@Component
+	static class ProtocolCorrectionInterceptor
+			extends AbstractPhaseInterceptor<Message> {
+		ProtocolCorrectionInterceptor() {
+			super(Phase.RECEIVE);
+		}
+
+		@Override
+		public void handleMessage(Message message) throws Fault {
+			log.info("message: {}", message);
+		}
 	}
 
 	@Provider
