@@ -28,7 +28,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -183,14 +185,19 @@ public class ServiceConfig extends Application {
 
 		@Override
 		public void handleMessage(Message message) throws Fault {
+			Map<String, Object> update = new HashMap<>();
 			message.forEach((k, v) -> {
 				if (v instanceof String) {
 					String value = (String) v;
-					if (value.contains("http:")) {
-						log.info("message: {}: {}", k, value);
+					if (value.contains("http")) {
+						String replacement = value.replace("http:", "https:");
+						update.put(k, replacement);
+						log.info("replacing {}:{} with {}", k, value,
+								replacement);
 					}
 				}
 			});
+			message.putAll(update);
 		}
 	}
 
