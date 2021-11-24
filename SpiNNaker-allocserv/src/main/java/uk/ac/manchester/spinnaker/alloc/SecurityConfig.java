@@ -157,6 +157,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public static final String MVC_ERROR = "erroroccurred";
 
 	/** Prefix of URLs. */
+	// TODO This ought to come from the config file properly
 	private static final String URL_PREFIX = "/spalloc/";
 
 	@Autowired
@@ -237,8 +238,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		void unlockLockedUsers();
 	}
 
-	private static String url(String suffix) {
+	/**
+	 * Create a full local URL bearing in mind the deployment configuration.
+	 *
+	 * @param suffix
+	 *            The URL suffix
+	 * @return The full local URL (absolute path, without protocol or host)
+	 */
+	private static String baseUrl(String suffix) {
 		return URL_PREFIX + suffix;
+	}
+
+	/**
+	 * Create a full local URL for the system components, bearing in mind the
+	 * deployment configuration.
+	 *
+	 * @param suffix
+	 *            The URL suffix
+	 * @return The full local URL (absolute path, without protocol or host)
+	 */
+	public static String systemUrl(String suffix) {
+		return URL_PREFIX + "system/" + suffix;
 	}
 
 	@Override
@@ -252,10 +272,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
-				.antMatchers(url("info*"), url("info/**")).hasRole("ADMIN")
+				.antMatchers(baseUrl("info*"), baseUrl("info/**"))
+				.hasRole("ADMIN")
 				// Login process and static resources are available to all
-				.antMatchers(url("system/login*"), url("system/perform_*"),
-						url("system/error"), url("system/resources/*"))
+				.antMatchers(systemUrl("login*"), systemUrl("perform_*"),
+						systemUrl("error"), systemUrl("resources/*"))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
@@ -263,10 +284,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
 		if (properties.isLocalForm()) {
-			http.formLogin().loginPage(url("system/login.html"))
-					.loginProcessingUrl(url("system/perform_login"))
-					.defaultSuccessUrl(url("system/"), true)
-					.failureUrl(url("system/login.html?error=true"))
+			http.formLogin().loginPage(systemUrl("login.html"))
+					.loginProcessingUrl(systemUrl("perform_login"))
+					.defaultSuccessUrl(systemUrl(""), true)
+					.failureUrl(systemUrl("login.html?error=true"))
 					.failureHandler(authenticationFailureHandler);
 		}
 		/*
@@ -274,9 +295,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * browsers will just log straight back in again. Still, it is
 		 * meaningful.
 		 */
-		http.logout().logoutUrl(url("system/perform_logout"))
+		http.logout().logoutUrl(systemUrl("perform_logout"))
 				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
-				.logoutSuccessUrl(url("system/login.html"));
+				.logoutSuccessUrl(systemUrl("login.html"));
 		// FIXME add support for HBP/EBRAINS OpenID Connect
 	}
 

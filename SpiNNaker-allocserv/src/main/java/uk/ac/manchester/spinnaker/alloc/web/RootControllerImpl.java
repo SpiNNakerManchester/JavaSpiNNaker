@@ -25,6 +25,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.systemUrl;
 
 import java.net.URI;
 import java.security.Principal;
@@ -81,9 +82,6 @@ public class RootControllerImpl implements RootController {
 	private static final String JOB_LIST_VIEW = "listjobs";
 
 	private static final String JOB_VIEW = "jobdetails";
-
-	/** Where to redirect to upon logout. */
-	private static final String LOGIN_URL = "/system/login.html";
 
 	/**
 	 * Special delegate for building URIs only.
@@ -153,7 +151,7 @@ public class RootControllerImpl implements RootController {
 			log.info("logging out {}", auth.getPrincipal());
 			logoutHandler.logout(request, response, auth);
 		}
-		return "redirect:" + LOGIN_URL;
+		return "redirect:" + systemUrl("login.html");
 	}
 
 	@Override
