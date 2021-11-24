@@ -17,9 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <footer>
 <hr>
-<a href="<c:url value="/system/"/>">Main page</a>
+<a href="<c:url value="/spalloc/system/"/>">Main page</a>
 &mdash;
-<a href="<c:url value="/system/change_password"/>">Change password</a>
+<a href="<c:url value="/spalloc/system/change_password"/>">Change password</a>
 &mdash;
-<a href="<c:url value="/system/perform_logout"/>">Log out</a>
+<a href="<c:url value="/spalloc/system/perform_logout"/>">Log out</a>
 </footer>

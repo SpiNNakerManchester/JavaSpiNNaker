@@ -82,6 +82,9 @@ public class RootControllerImpl implements RootController {
 
 	private static final String JOB_VIEW = "jobdetails";
 
+	/** Where to redirect to upon logout. */
+	private static final String LOGIN_URL = "/system/login.html";
+
 	/**
 	 * Special delegate for building URIs only.
 	 *
@@ -150,7 +153,7 @@ public class RootControllerImpl implements RootController {
 			log.info("logging out {}", auth.getPrincipal());
 			logoutHandler.logout(request, response, auth);
 		}
-		return "redirect:/system/login.html";
+		return "redirect:" + LOGIN_URL;
 	}
 
 	@Override
