@@ -20,17 +20,18 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static org.apache.cxf.message.Message.PROTOCOL_HEADERS;
 import static org.apache.cxf.phase.Phase.RECEIVE;
 import static org.apache.cxf.transport.http.AbstractHTTPDestination.HTTP_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -165,7 +166,7 @@ public class ServiceConfig extends Application {
 	@Bean
 	@Scope(SCOPE_PROTOTYPE)
 	JAXRSServerFactoryBean rawFactory(SpringBus bus,
-			ProtocolCorrectionInterceptor protocolCorrector) {
+			ProtocolUpgraderInterceptor protocolCorrector) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setStaticSubresourceResolution(true);
 		factory.setAddress("/");
@@ -178,39 +179,53 @@ public class ServiceConfig extends Application {
 		return factory;
 	}
 
+	/**
+	 * Handles the upgrade of the CXF endpoint protocol to HTTPS when the
+	 * service is behind a reverse proxy like nginx. In theory, CXF should do
+	 * this itself; this is the kind of obscure rubbish that frameworks are
+	 * supposed to handle for us. In practice, it doesn't.
+	 *
+	 * @author Donal Fellows
+	 */
 	@Component
-	static class ProtocolCorrectionInterceptor
+	static class ProtocolUpgraderInterceptor
 			extends AbstractPhaseInterceptor<Message> {
-		ProtocolCorrectionInterceptor() {
+		ProtocolUpgraderInterceptor() {
 			super(RECEIVE);
 		}
+
+		private static final String FORWARDED_PROTOCOL = "x-forwarded-proto";
 
 		private static final String ENDPOINT_ADDRESS =
 				"org.apache.cxf.transport.endpoint.address";
 
+		@SuppressWarnings("unchecked")
+		private Map<String, List<String>> getHeaders(Message message) {
+			// If we've got one of these in the message, it's of this type
+			return (Map<String, List<String>>) message.get(PROTOCOL_HEADERS);
+		}
+
 		@Override
 		public void handleMessage(Message message) throws Fault {
-			ServletRequest request = (ServletRequest) message.get(HTTP_REQUEST);
-			Object addr = request.getAttribute(ENDPOINT_ADDRESS);
-			if (addr == null) {
-				log.info("endpoint address is null");
-			} else {
-				log.info("endpoint address may be {} (type: {})", addr,
-						addr.getClass());
+			Map<String, List<String>> headers = getHeaders(message);
+			if (headers.getOrDefault(FORWARDED_PROTOCOL, emptyList())
+					.contains("https")) {
+				upgradeEndpointProtocol(
+						(ServletRequest) message.get(HTTP_REQUEST));
 			}
-			Map<String, Object> update = new HashMap<>();
-			message.forEach((k, v) -> {
-				if (v instanceof String) {
-					String value = (String) v;
-					if (value.contains("http")) {
-						String replacement = value.replace("http:", "https:");
-						update.put(k, replacement);
-						log.info("replacing {}:{} with {}", k, value,
-								replacement);
-					}
-				}
-			});
-			message.putAll(update);
+		}
+
+		private void upgradeEndpointProtocol(ServletRequest request) {
+			log.info("attempting to upgrade endpoint address to secure");
+			String addr = (String) request.getAttribute(ENDPOINT_ADDRESS);
+			if (addr != null && addr.startsWith("http:")) {
+				request.setAttribute(ENDPOINT_ADDRESS,
+						addr.replace("http:", "https:"));
+				log.info("upgraded to {}",
+						request.getAttribute(ENDPOINT_ADDRESS));
+			} else {
+				log.info("endpoint protocol not upgraded: {}", addr);
+			}
 		}
 	}
 
