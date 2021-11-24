@@ -92,6 +92,9 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 public class ServiceConfig extends Application {
 	private static final Logger log = getLogger(ServiceConfig.class);
 
+	// TODO load from config file
+	private String restAddress = "https://spinnaker.cs.man.ac.uk/";
+
 	/**
 	 * The thread pool. The rest of the application expects there to be a single
 	 * such pool.
@@ -157,7 +160,7 @@ public class ServiceConfig extends Application {
 	JAXRSServerFactoryBean rawFactory(SpringBus bus) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setStaticSubresourceResolution(true);
-		factory.setAddress("/");
+		factory.setAddress(restAddress);
 		factory.setBus(bus);
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
@@ -191,7 +194,7 @@ public class ServiceConfig extends Application {
 	 *            A factory used to make servers.
 	 * @return The REST service core, configured.
 	 */
-	@Bean
+	@Bean(destroyMethod = "destroy")
 	@ConditionalOnWebApplication
 	@DependsOn("JSONProvider")
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
