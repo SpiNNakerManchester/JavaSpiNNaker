@@ -83,6 +83,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -322,6 +323,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public String getAuthority() {
 			return role;
 		}
+	}
+
+	private enum RequestLogLevel {
+		BASIC, QUERY, HEADERS, RESPONSE
+	}
+
+	private static final RequestLogLevel LOG_DETAIL = RequestLogLevel.HEADERS;
+
+	private static final int MAX_PAYLOAD_LENGTH = 10000;
+
+	/**
+	 * Enables detailed logging of requests.
+	 *
+	 * @return Logging filter.
+	 */
+	@Bean
+	public CommonsRequestLoggingFilter logFilter() {
+		CommonsRequestLoggingFilter filter = new CommonsRequestLoggingFilter();
+		filter.setIncludeQueryString(
+				LOG_DETAIL.compareTo(RequestLogLevel.QUERY) >= 0);
+		filter.setIncludeHeaders(
+				LOG_DETAIL.compareTo(RequestLogLevel.HEADERS) >= 0);
+		boolean showResponse =
+				LOG_DETAIL.compareTo(RequestLogLevel.RESPONSE) >= 0;
+		filter.setIncludePayload(showResponse);
+		if (showResponse) {
+			filter.setMaxPayloadLength(MAX_PAYLOAD_LENGTH);
+			filter.setAfterMessagePrefix("REQUEST DATA : ");
+		}
+		return filter;
 	}
 
 	/**
