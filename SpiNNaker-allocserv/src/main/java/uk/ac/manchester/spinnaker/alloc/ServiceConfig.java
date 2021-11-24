@@ -183,7 +183,14 @@ public class ServiceConfig extends Application {
 
 		@Override
 		public void handleMessage(Message message) throws Fault {
-			log.info("message: {}", message);
+			message.forEach((k, v) -> {
+				if (v instanceof String) {
+					String value = (String) v;
+					if (value.contains("http:")) {
+						log.info("message: {}: {}", k, value);
+					}
+				}
+			});
 		}
 	}
 
