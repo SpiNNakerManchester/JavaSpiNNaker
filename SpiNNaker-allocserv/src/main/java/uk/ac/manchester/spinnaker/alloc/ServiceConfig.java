@@ -24,6 +24,8 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static org.apache.cxf.phase.Phase.RECEIVE;
+import static org.apache.cxf.transport.http.AbstractHTTPDestination.HTTP_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -35,6 +37,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletRequest;
 import javax.validation.ValidationException;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -51,7 +54,6 @@ import org.apache.cxf.jaxrs.spring.JaxRsConfig;
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
-import org.apache.cxf.phase.Phase;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,11 +182,22 @@ public class ServiceConfig extends Application {
 	static class ProtocolCorrectionInterceptor
 			extends AbstractPhaseInterceptor<Message> {
 		ProtocolCorrectionInterceptor() {
-			super(Phase.RECEIVE);
+			super(RECEIVE);
 		}
+
+		private static final String ENDPOINT_ADDRESS =
+				"org.apache.cxf.transport.endpoint.address";
 
 		@Override
 		public void handleMessage(Message message) throws Fault {
+			ServletRequest request = (ServletRequest) message.get(HTTP_REQUEST);
+			Object addr = request.getAttribute(ENDPOINT_ADDRESS);
+			if (addr == null) {
+				log.info("endpoint address is null");
+			} else {
+				log.info("endpoint address may be {} (type: {})", addr,
+						addr.getClass());
+			}
 			Map<String, Object> update = new HashMap<>();
 			message.forEach((k, v) -> {
 				if (v instanceof String) {
