@@ -266,6 +266,47 @@ public class ServiceConfig extends Application {
 		return s;
 	}
 
+	@Component
+	public static final class URLPathMaker {
+		@Value("${spring.mvc.servlet.path}")
+		private String mvcServletPath;
+
+		@Value("${cxf.path}")
+		private String cxfPath;
+
+		/**
+		 * Create a full local URL for the system components, bearing in mind
+		 * the deployment configuration.
+		 *
+		 * @param suffix
+		 *            The URL suffix
+		 * @return The full local URL (absolute path, without protocol or host)
+		 */
+		public String systemUrl(String suffix) {
+			String prefix = mvcServletPath;
+			if (!prefix.endsWith("/")) {
+				prefix += "/";
+			}
+			return prefix + suffix;
+		}
+
+		/**
+		 * Create a full local URL for web service components, bearing in mind
+		 * the deployment configuration.
+		 *
+		 * @param suffix
+		 *            The URL suffix
+		 * @return The full local URL (absolute path, without protocol or host)
+		 */
+		public String serviceUrl(String suffix) {
+			String prefix = cxfPath;
+			if (!prefix.endsWith("/")) {
+				prefix += "/";
+			}
+			return prefix + suffix;
+		}
+	}
+
 	@Autowired
 	private ApplicationContext ctx;
 

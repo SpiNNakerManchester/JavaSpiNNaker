@@ -53,7 +53,6 @@ import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -93,6 +92,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 
 /**
@@ -232,47 +232,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Unlock any locked users whose lock period has expired.
 		 */
 		void unlockLockedUsers();
-	}
-
-	@Component
-	public static final class URLPathMaker {
-		@Value("${spring.mvc.servlet.path}")
-		private String mvcServletPath;
-
-		@Value("${cxf.path}")
-		private String cxfPath;
-
-		/**
-		 * Create a full local URL for the system components, bearing in mind
-		 * the deployment configuration.
-		 *
-		 * @param suffix
-		 *            The URL suffix
-		 * @return The full local URL (absolute path, without protocol or host)
-		 */
-		public String systemUrl(String suffix) {
-			String prefix = mvcServletPath;
-			if (!prefix.endsWith("/")) {
-				prefix += "/";
-			}
-			return prefix + suffix;
-		}
-
-		/**
-		 * Create a full local URL for web service components, bearing in mind
-		 * the deployment configuration.
-		 *
-		 * @param suffix
-		 *            The URL suffix
-		 * @return The full local URL (absolute path, without protocol or host)
-		 */
-		public String serviceUrl(String suffix) {
-			String prefix = cxfPath;
-			if (!prefix.endsWith("/")) {
-				prefix += "/";
-			}
-			return prefix + suffix;
-		}
 	}
 
 	@Autowired

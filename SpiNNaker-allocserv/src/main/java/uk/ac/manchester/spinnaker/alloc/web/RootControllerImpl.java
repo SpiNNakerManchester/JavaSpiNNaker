@@ -52,7 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.URLPathMaker;
+import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
