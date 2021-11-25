@@ -92,7 +92,7 @@ public abstract class SQLQueries {
 					+ "iu AS (SELECT COUNT(*) AS c FROM b "
 					+ "WHERE allocated_job IS NOT NULL), "
 					+ "jc AS (SELECT COUNT(*) AS c FROM jobs,args "
-					+ "WHERE machine_id = m) "
+					+ "WHERE machine_id = m AND job_state != 4) " // DESTROYED
 					+ "SELECT bc.c AS board_count, iu.c AS in_use, "
 					+ "jc.c AS num_jobs FROM bc, iu, jc";
 

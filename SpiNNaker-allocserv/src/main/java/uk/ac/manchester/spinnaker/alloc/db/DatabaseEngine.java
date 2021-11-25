@@ -16,23 +16,34 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.lang.Math.max;
+import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.Response.status;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
+import static org.sqlite.SQLiteConfig.JournalMode.WAL;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
-import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
-import static uk.ac.manchester.spinnaker.alloc.db.UncheckedConnection.mapException;
+import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
+import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
+import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
+import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
@@ -41,7 +52,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.nio.file.Path;
@@ -61,14 +71,16 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -92,6 +104,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * The database engine interface. Based on SQLite. Manages a pool of database
@@ -104,61 +117,6 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
 @Component
 public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
-
-	/**
-	 * Flag direct from SQLite.
-	 *
-	 * <blockquote>The {@code SQLITE_DIRECTONLY} flag means that the function
-	 * may only be invoked from top-level SQL, and cannot be used in
-	 * <em>VIEW</em>s or <em>TRIGGER</em>s nor in schema structures such as
-	 * <em>CHECK</em> constraints, <em>DEFAULT</em> clauses, expression indexes,
-	 * partial indexes, or generated columns. The {@code SQLITE_DIRECTONLY}
-	 * flags is a security feature which is recommended for all
-	 * application-defined SQL functions, and especially for functions that have
-	 * side-effects or that could potentially leak sensitive
-	 * information.</blockquote>
-	 * <p>
-	 * Note that the password-related functions we install are definitely
-	 * examples of functions that are only usable directly.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_DIRECTONLY = 0x000080000;
-
-	/**
-	 * Flag direct from SQLite.
-	 *
-	 * <blockquote>The {@code SQLITE_INNOCUOUS} flag means that the function is
-	 * unlikely to cause problems even if misused. An innocuous function should
-	 * have no side effects and should not depend on any values other than its
-	 * input parameters. The {@code abs()} function is an example of an
-	 * innocuous function. The {@code load_extension()} SQL function is not
-	 * innocuous because of its side effects.
-	 * <p>
-	 * {@code SQLITE_INNOCUOUS} is similar to {@code SQLITE_DETERMINISTIC}, but
-	 * is not exactly the same. The {@code random()} function is an example of a
-	 * function that is innocuous but not deterministic.
-	 * <p>
-	 * Some heightened security settings ({@code SQLITE_DBCONFIG_TRUSTED_SCHEMA}
-	 * and {@code PRAGMA trusted_schema=OFF}) disable the use of SQL functions
-	 * inside views and triggers and in schema structures such as <em>CHECK</em>
-	 * constraints, <em>DEFAULT</em> clauses, expression indexes, partial
-	 * indexes, and generated columns unless the function is tagged with
-	 * {@code SQLITE_INNOCUOUS}. Most built-in functions are innocuous.
-	 * Developers are advised to avoid using the {@code SQLITE_INNOCUOUS} flag
-	 * for application-defined functions unless the function has been carefully
-	 * audited and found to be free of potentially security-adverse side-effects
-	 * and information-leaks. </blockquote>
-	 * <p>
-	 * Note that this engine marks non-innocuous functions as
-	 * {@link #SQLITE_DIRECTONLY}; this is slightly over-eager, but likely
-	 * correct.
-	 *
-	 * @see <a href=
-	 *      "https://www.sqlite.org/c3ref/c_deterministic.html">SQLite</a>
-	 */
-	public static final int SQLITE_INNOCUOUS = 0x000200000;
 
 	/**
 	 * The name of the mounted database. Always {@code main} by SQLite
@@ -177,7 +135,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final String COUNT_MOVEMENTS =
 			"SELECT count(*) AS c FROM movement_directions";
 
-	private static final Map<Resource, String> QUERY_CACHE = new HashMap<>();
+	private final Map<Resource, String> queryCache = new HashMap<>();
 
 	// From https://sqlite.org/lang_analyze.html
 	// These are special operations
@@ -190,13 +148,33 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private static final int EXPECTED_NUM_MOVEMENTS = 18;
 
-	private static final int TRIM_LENGTH = 80;
-
 	private static final int TRIM_PERF_LOG_LENGTH = 120;
 
-	private static final double NS_PER_US = 1000.0;
+	private static final double NS_PER_US = 1000;
 
-	private static final String ELLIPSIS = "...";
+	private static final double NS_PER_MS = 1000000;
+
+	/** Whether to examine the stack for transaction debugging purposes. */
+	private static final boolean ENABLE_EXPENSIVE_TX_DEBUGGING = false;
+
+	// TODO move LOCKED_TRIES, LOCK_FAILED_DELAY_MS to config
+	// TODO move TX_LOCK_NOTE_THRESHOLD_NS, TX_LOCK_WARN_THRESHOLD_NS to config
+	/** Number of times to try to take the lock in a transaction. */
+	private static final int LOCKED_TRIES = 3;
+
+	/** Delay after transaction failure before retrying, in milliseconds. */
+	private static final int LOCK_FAILED_DELAY_MS = 100;
+
+	/**
+	 * Time delay (in nanoseconds) before we issue a warning on transaction end.
+	 */
+	private static final long TX_LOCK_NOTE_THRESHOLD_NS = 50000000;
+
+	/**
+	 * Time delay (in nanoseconds) before we issue a warning during the
+	 * execution of a transaction.
+	 */
+	private static final long TX_LOCK_WARN_THRESHOLD_NS = 100000000;
 
 	private final Path dbPath;
 
@@ -225,10 +203,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
 
+	@Autowired
+	private ScheduledExecutorService executor;
+
+	// If you add more autowired stuff here, make sure in-memory DBs get a copy!
+
 	private Map<String, SummaryStatistics> statementLengths =
 			new DefaultMap<>(SummaryStatistics::new);
 
 	private Set<Thread> transactionHolders = new HashSet<>();
+
+	/**
+	 * We maintain our own lock rather than delegating to the database. This is
+	 * known to be overly pessimistic, but it's extremely hard to do better
+	 * without getting a deadlock when several threads try to upgrade their
+	 * locks to write locks at the same time.
+	 */
+	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 	/**
 	 * Records the execution time of a statement, at least to first result set.
@@ -267,7 +258,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	private static void
-			logStatementExecutionTime(Map.Entry<String, SummaryStatistics> e) {
+			logStatementExecutionTime(Entry<String, SummaryStatistics> e) {
 		if (log.isInfoEnabled()) {
 			log.info("statement execution time " + "{}us (max: {}us) for: {}",
 					e.getValue().getMean() / NS_PER_US,
@@ -276,215 +267,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
-	private static Set<String> columnNames(ResultSetMetaData md)
-			throws SQLException {
+	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
 		Set<String> names = new LinkedHashSet<>();
 		for (int i = 1; i <= md.getColumnCount(); i++) {
 			names.add(md.getColumnName(i));
 		}
 		return names;
-	}
-
-	/**
-	 * A restricted form of result set. Note that this object <em>must not</em>
-	 * be saved outside the context of iteration over its' query's results.
-	 *
-	 * @author Donal Fellows
-	 */
-	public static final class Row {
-		private final ResultSet rs;
-
-		private Row(ResultSet rs) {
-			this.rs = rs;
-		}
-
-		/**
-		 * Get the column names from this row.
-		 *
-		 * @return The set of column names; all lookup of columns is by name, so
-		 *         the order is unimportant. (The set returned will iterate over
-		 *         the names in the order they are in the underlying result set,
-		 *         but this is considered "unimportant".)
-		 */
-		public Set<String> getColumnNames() {
-			try {
-				return columnNames(rs.getMetaData());
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A string, or {@code null} on {@code NULL}.
-		 */
-		public String getString(String columnLabel) {
-			try {
-				return rs.getString(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A boolean, or {@code false} on {@code NULL}.
-		 */
-		public boolean getBoolean(String columnLabel) {
-			try {
-				return rs.getBoolean(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An integer, or {@code 0} on {@code NULL}.
-		 */
-		public int getInt(String columnLabel) {
-			try {
-				return rs.getInt(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An integer or {@code null}.
-		 */
-		public Integer getInteger(String columnLabel) {
-			try {
-				return (Integer) rs.getObject(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A byte array, or {@code null} on {@code NULL}.
-		 */
-		public byte[] getBytes(String columnLabel) {
-			try {
-				return rs.getBytes(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An instant, or {@code null} on {@code NULL}.
-		 */
-		public Instant getInstant(String columnLabel) {
-			try {
-				long moment = rs.getLong(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return Instant.ofEpochSecond(moment);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A duration, or {@code null} on {@code NULL}.
-		 */
-		public Duration getDuration(String columnLabel) {
-			try {
-				long span = rs.getLong(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return Duration.ofSeconds(span);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return An automatically-decoded object, or {@code null} on
-		 *         {@code NULL}. (Only returns basic types.)
-		 */
-		public Object getObject(String columnLabel) {
-			try {
-				return rs.getObject(columnLabel);
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param <T>
-		 *            The enumeration type.
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @param type
-		 *            The enumeration type class.
-		 * @return An enum value, or {@code null} on {@code NULL}.
-		 */
-		public <T extends Enum<T>> T getEnum(String columnLabel,
-				Class<T> type) {
-			try {
-				int value = rs.getInt(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return type.getEnumConstants()[value];
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
-
-		/**
-		 * Get the contents of the named column.
-		 *
-		 * @param columnLabel
-		 *            The name of the column.
-		 * @return A long value, or {@code null} on {@code NULL}.
-		 */
-		public Long getLong(String columnLabel) {
-			try {
-				Number value = (Number) rs.getObject(columnLabel);
-				if (rs.wasNull()) {
-					return null;
-				}
-				return value.longValue();
-			} catch (SQLException e) {
-				throw mapException(e, null);
-			}
-		}
 	}
 
 	@PostConstruct
@@ -494,7 +282,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		// Check that the connection is correct
 		try (Connection conn = getConnection();
 				Query countMovements = conn.query(COUNT_MOVEMENTS)) {
-			int numMovements = conn.transaction(
+			int numMovements = conn.transaction(false,
 					() -> countMovements.call1().get().getInt("c"));
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
@@ -510,6 +298,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		config.setSynchronous(NORMAL);
 		config.setBusyTimeout((int) props.getTimeout().toMillis());
 		config.setDateClass("INTEGER");
+		config.setJournalMode(WAL);
 	}
 
 	/**
@@ -549,6 +338,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
 		functions = prototype.functions;
+		executor = prototype.executor;
 		setupConfig();
 	}
 
@@ -571,7 +361,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	@Documented
 	@Retention(RUNTIME)
-	@Target(ElementType.TYPE)
+	@Target(TYPE)
 	public @interface ArgumentCount {
 		/**
 		 * The number of arguments taken by the function. If not specified, any
@@ -590,16 +380,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	@Documented
 	@Retention(RUNTIME)
-	@Target(ElementType.TYPE)
+	@Target(TYPE)
 	public @interface Deterministic {
 	}
 
 	/**
 	 * If placed on a bean of type {@link Function}, specifies that the function
-	 * may be used in schema structures.
+	 * may be used in schema structures. The {@link DatabaseEngine} assumes that
+	 * all functions that are not innocuous must be direct-only.
 	 *
-	 * @see DatabaseEngine#SQLITE_DIRECTONLY SQLITE_DIRECTONLY
-	 * @see DatabaseEngine#SQLITE_INNOCUOUS SQLITE_INNOCUOUS
+	 * @see SQLiteFlags#SQLITE_DIRECTONLY SQLITE_DIRECTONLY
+	 * @see SQLiteFlags#SQLITE_INNOCUOUS SQLITE_INNOCUOUS
 	 * @author Donal Fellows
 	 * @deprecated Consult the SQLite documentation on innocuous functions very
 	 *             carefully before enabling this. Only disable the deprecation
@@ -609,7 +400,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Deprecated
 	@Documented
 	@Retention(RUNTIME)
-	@Target(ElementType.TYPE)
+	@Target(TYPE)
 	public @interface Innocuous {
 	}
 
@@ -681,7 +472,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		@SuppressWarnings("resource")
 		Connection wrapper = new Connection(conn);
 		synchronized (this) {
-			wrapper.transaction(() -> {
+			wrapper.transaction(true, () -> {
 				wrapper.exec(sqlDDLFile);
 				log.info("initalising historical DB from schema {}",
 						tombstoneDDLFile);
@@ -717,16 +508,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			s.execute();
 		}
 		conn.setAutoCommit(false);
+		// We don't want to have a transaction active by default!
+		conn.getDatabase().exec("rollback;", false);
 		if (log.isDebugEnabled()) {
 			conn.addCommitListener(new SQLiteCommitListener() {
 				@Override
 				public void onCommit() {
-					log.debug("committing transaction");
+					log.debug("database is committing transaction");
 				}
 
 				@Override
 				public void onRollback() {
-					log.debug("rolling back transaction");
+					log.debug("database is rolling back transaction");
 				}
 			});
 		}
@@ -763,13 +556,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private void optimiseDB() {
 		optimiseSerialisationLock.lock();
 		try {
-			long start = System.currentTimeMillis();
+			long start = currentTimeMillis();
 			// NB: Not a standard query! Safe, because we know we have an int
 			try (Connection conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
-				conn.transaction(() -> {
-					conn.exec(String.format(OPTIMIZE_DB,
-							props.getAnalysisLimit()));
+				conn.transaction(true, () -> {
+					conn.exec(format(OPTIMIZE_DB, props.getAnalysisLimit()));
 				});
 			} catch (DataAccessException e) {
 				/*
@@ -781,7 +573,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					throw e;
 				}
 			}
-			long end = System.currentTimeMillis();
+			long end = currentTimeMillis();
 			log.debug("optimised the database in {}ms", end - start);
 		} catch (SQLException e) {
 			log.warn("failed to optimise DB pre-close", e);
@@ -798,6 +590,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
+	 * Obtain some context for log messages when tracking what's happening in a
+	 * transaction. The only useful operation possible with this object is to
+	 * print it to the log!
+	 *
+	 * @return A printable object for debugging purposes. Might be the current
+	 *         thread or might be a useful stack frame.
+	 */
+	private static Object getDebugContext() {
+		if (ENABLE_EXPENSIVE_TX_DEBUGGING) {
+			return getCaller();
+		} else {
+			return currentThread();
+		}
+	}
+
+	/**
 	 * Connections made by the database engine bean. Its methods do not throw
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
 	 * up correctly when the thread exits (ideal for thread pools).
@@ -805,20 +613,89 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public final class Connection extends UncheckedConnection {
 		private boolean inTransaction;
 
+		private boolean isLockedForWrites;
+
 		private Connection(java.sql.Connection c) {
 			super(c);
 			inTransaction = false;
 		}
 
+		private class Locker implements AutoCloseable {
+			private final Lock currentLock;
+
+			private final long lockTimestamp;
+
+			private final Object lockingContext;
+
+			private Future<?> lockWarningTimeout;
+
+			/**
+			 * @param lockForWriting
+			 *            Whether to lock for writing. Multiple read locks can
+			 *            be held at once, but only one write lock. Locks
+			 *            <em>cannot</em> be upgraded (because that causes
+			 *            deadlocks).
+			 */
+			Locker(boolean lockForWriting) {
+				Lock l = getLock(lockForWriting);
+				currentLock = l;
+				isLockedForWrites = lockForWriting;
+				lockingContext = getDebugContext();
+				l.lock();
+				try {
+					lockWarningTimeout = executor.schedule(this::warnLock,
+							TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
+				} catch (RejectedExecutionException ignored) {
+					// Can't do anything about this, and it isn't too important
+				}
+				lockTimestamp = nanoTime();
+			}
+
+			private Lock getLock(boolean lockForWriting) {
+				lockForWriting |= true; // HACK
+				if (lockForWriting) {
+					return lock.writeLock();
+				} else {
+					return lock.readLock();
+				}
+			}
+
+			@Override
+			public void close() {
+				long unlockTimestamp = nanoTime();
+				currentLock.unlock();
+				if (lockWarningTimeout != null) {
+					lockWarningTimeout.cancel(false);
+				}
+				long dt = unlockTimestamp - lockTimestamp;
+				if (dt > TX_LOCK_NOTE_THRESHOLD_NS) {
+					log.info("transaction lock was held for {}ms",
+							dt / NS_PER_MS);
+				}
+			}
+
+			private void warnLock() {
+				long dt = nanoTime() - lockTimestamp;
+				log.warn(
+						"transaction lock being held excessively by "
+								+ "{} (> {}ms); current transactions are {}",
+						lockingContext, dt / NS_PER_MS,
+						currentTransactionHolders());
+			}
+		}
+
 		private class Hold implements AutoCloseable {
 			private final boolean it;
 
+			private final Thread holder;
+
 			Hold() {
 				it = inTransaction;
+				holder = currentThread();
 				if (!it) {
 					inTransaction = true;
 					synchronized (transactionHolders) {
-						transactionHolders.add(Thread.currentThread());
+						transactionHolders.add(holder);
 					}
 				}
 			}
@@ -828,15 +705,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				if (!it) {
 					inTransaction = it;
 					synchronized (transactionHolders) {
-						transactionHolders.remove(Thread.currentThread());
+						transactionHolders.remove(holder);
 					}
 				}
 			}
 		}
 
-		void checkInTransaction() {
+		void checkInTransaction(boolean expectedLockType) {
 			if (!inTransaction) {
-				log.warn("executing not inside transaction: {}", getCaller());
+				log.warn("executing not inside transaction: {}",
+						getDebugContext());
+			} else if (expectedLockType && !isLockedForWrites) {
+				log.warn("performing write inside read transaction: {}",
+						getDebugContext());
 			}
 		}
 
@@ -845,13 +726,18 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * normally (and this isn't a nested use), the transaction commits. If
 		 * an exception is thrown, the transaction is rolled back.
 		 *
+		 * @param lockForWriting
+		 *            Whether to lock for writing. Multiple read locks can be
+		 *            held at once, but only one write lock. Locks
+		 *            <em>cannot</em> be upgraded (because that causes
+		 *            deadlocks).
 		 * @param operation
 		 *            The operation to run
 		 * @see #transaction(DatabaseEngine.TransactedWithResult)
 		 */
-		public void transaction(Transacted operation) {
+		public void transaction(boolean lockForWriting, Transacted operation) {
 			// Use the other method, ignoring the result value
-			transaction(() -> {
+			transaction(lockForWriting, () -> {
 				operation.act();
 				return this;
 			});
@@ -860,7 +746,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * A nestable transaction runner. If the {@code operation} completes
 		 * normally (and this isn't a nested use), the transaction commits. If
-		 * an exception is thrown, the transaction is rolled back.
+		 * an exception is thrown, the transaction is rolled back. This uses a
+		 * write lock.
+		 *
+		 * @param operation
+		 *            The operation to run
+		 * @see #transaction(DatabaseEngine.TransactedWithResult)
+		 */
+		public void transaction(Transacted operation) {
+			transaction(true, operation);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code operation} completes
+		 * normally (and this isn't a nested use), the transaction commits. If
+		 * an exception is thrown, the transaction is rolled back. This uses a
+		 * write lock.
 		 *
 		 * @param <T>
 		 *            The type of the result of {@code operation}
@@ -870,36 +771,78 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #transaction(DatabaseEngine.Transacted)
 		 */
 		public <T> T transaction(TransactedWithResult<T> operation) {
+			return transaction(true, operation);
+		}
+
+		/**
+		 * A nestable transaction runner. If the {@code operation} completes
+		 * normally (and this isn't a nested use), the transaction commits. If
+		 * an exception is thrown, the transaction is rolled back.
+		 *
+		 * @param <T>
+		 *            The type of the result of {@code operation}
+		 * @param lockForWriting
+		 *            Whether to lock for writing. Multiple read locks can be
+		 *            held at once, but only one write lock. Locks
+		 *            <em>cannot</em> be upgraded (because that causes
+		 *            deadlocks).
+		 * @param operation
+		 *            The operation to run
+		 * @return the value returned by {@code operation}
+		 * @see #transaction(DatabaseEngine.Transacted)
+		 */
+		public <T> T transaction(boolean lockForWriting,
+				TransactedWithResult<T> operation) {
+			Object context = getDebugContext();
 			if (inTransaction) {
+				if (lockForWriting && !isLockedForWrites) {
+					log.warn("attempt to upgrade lock: {}", context);
+				}
 				// Already in a transaction; just run the operation
 				return operation.act();
 			}
-			Object caller = null;
-			if (log.isDebugEnabled()) {
-				caller = getCaller();
-				log.debug("start transaction: {}", caller);
-			}
-			boolean done = false;
-			try (Hold hold = new Hold()) {
-				T result = operation.act();
-				log.debug("commence commit: {}", caller);
-				commit();
-				done = true;
-				return result;
-			} catch (DataAccessException e) {
-				cantWarning("commit", e);
-				throw e;
-			} finally {
-				try {
-					if (!done) {
-						log.debug("commence rollback: {}", caller);
-						rollback();
-					}
-				} catch (DataAccessException e) {
-					cantWarning("rollback", e);
-					throw e;
+			int tries = 0;
+			while (true) {
+				tries++;
+				if (log.isDebugEnabled()) {
+					log.debug("start transaction: {}", context);
 				}
-				log.debug("finish transaction: {}", caller);
+				try (Locker locker = new Locker(lockForWriting)) {
+					realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
+					boolean done = false;
+					try (Hold hold = new Hold()) {
+						T result = operation.act();
+						log.debug("commence commit: {}", context);
+						realCommit();
+						done = true;
+						return result;
+					} catch (DataAccessException e) {
+						if (tries < LOCKED_TRIES && isBusy(e)) {
+							log.warn("retrying transaction due to lock "
+									+ "failure: {}", context);
+							log.info("current transaction holders are {}",
+									currentTransactionHolders());
+							try {
+								sleep(LOCK_FAILED_DELAY_MS);
+							} catch (InterruptedException ignored) {
+							}
+							continue;
+						}
+						cantWarning("commit", e);
+						throw e;
+					} finally {
+						try {
+							if (!done) {
+								log.debug("commence rollback: {}", context);
+								realRollback();
+							}
+						} catch (DataAccessException e) {
+							cantWarning("rollback", e);
+							throw e;
+						}
+						log.debug("finish transaction: {}", context);
+					}
+				}
 			}
 		}
 
@@ -944,7 +887,40 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		// @formatter:on
 		public Query query(String sql) {
-			return new Query(this, sql);
+			return new Query(this, false, sql);
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new query. Usage pattern:
+		 * <pre>
+		 * try (Query q = conn.query(SQL_SELECT)) {
+		 *     for (Row row : u.call(argument1, argument2)) {
+		 *         // Do something with the row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Query q = conn.query(SQL_SELECT)) {
+		 *     u.call(argument1, argument2).forEach(row -&gt; {
+		 *         // Do something with the row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sql
+		 *            The SQL of the query.
+		 * @param lockType
+		 *            Whether we expect to have a write lock. This is vital
+		 * @return The query object.
+		 * @see #query(Resource)
+		 * @see #update(String)
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Query query(String sql, boolean lockType) {
+			return new Query(this, lockType, sql);
 		}
 
 		// @formatter:off
@@ -975,7 +951,41 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		// @formatter:on
 		public Query query(Resource sqlResource) {
-			return new Query(this, readSQL(sqlResource));
+			return new Query(this, false, readSQL(sqlResource));
+		}
+
+		// @formatter:off
+		/**
+		 * Create a new query.
+		 * <pre>
+		 * try (Query q = conn.query(sqlSelectResource)) {
+		 *     for (Row row : u.call(argument1, argument2)) {
+		 *         // Do something with the row
+		 *     }
+		 * }
+		 * </pre>
+		 * or:
+		 * <pre>
+		 * try (Query q = conn.query(sqlSelectResource)) {
+		 *     u.call(argument1, argument2).forEach(row -&gt; {
+		 *         // Do something with the row
+		 *     });
+		 * }
+		 * </pre>
+		 *
+		 * @param sqlResource
+		 *            Reference to the SQL of the query.
+		 * @param lockType
+		 *            Whether we expect to have a write lock. This is vital
+		 *            only when the query is an {@code UPDATE RETURNING}.
+		 * @return The query object.
+		 * @see #query(String)
+		 * @see #update(Resource)
+		 * @see SQLQueries
+		 */
+		// @formatter:on
+		public Query query(Resource sqlResource, boolean lockType) {
+			return new Query(this, lockType, readSQL(sqlResource));
 		}
 
 		// @formatter:off
@@ -1004,7 +1014,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * </pre>
 		 * <p>
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
-		 * you should use a {@link Query}.
+		 * you should use a {@link Query} with the {@code lockType} set to
+		 * {@code true}.
 		 *
 		 * @param sql
 		 *            The SQL of the update.
@@ -1044,7 +1055,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * </pre>
 		 * <p>
 		 * <strong>Note:</strong> If you use a {@code RETURNING} clause then
-		 * you should use a {@link Query}.
+		 * you should use a {@link Query} with the {@code lockType} set to
+		 * {@code true}.
 		 *
 		 * @param sqlResource
 		 *            Reference to the SQL of the update.
@@ -1068,7 +1080,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #update(String)
 		 */
 		public void exec(String sql) {
-			checkInTransaction();
+			checkInTransaction(true);
 			try (Statement s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
 				s.executeUpdate(sql);
@@ -1201,41 +1213,46 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static final Set<String> FILTERED_CLASSES;
 
+	private static final Set<String> FILTERED_PREFIXES;
+
 	static {
-		FILTERED_CLASSES = new HashSet<>();
-		FILTERED_CLASSES.add(Query.class.getName());
-		FILTERED_CLASSES.add(Update.class.getName());
-		FILTERED_CLASSES.add(Connection.class.getName());
-		FILTERED_CLASSES.add("uk.ac.manchester.spinnaker.alloc.bmp."
+		Set<String> filteredPrefixes = new HashSet<>();
+		filteredPrefixes.add("java");
+		filteredPrefixes.add("javax");
+		filteredPrefixes.add("sun");
+		FILTERED_PREFIXES = unmodifiableSet(filteredPrefixes);
+
+		Set<String> filteredClasses = new HashSet<>();
+		filteredClasses.add(Query.class.getName());
+		filteredClasses.add(Update.class.getName());
+		filteredClasses.add(Connection.class.getName());
+		filteredClasses.add(DatabaseAwareBean.class.getName());
+		filteredClasses.add("uk.ac.manchester.spinnaker.alloc.bmp."
 				+ "BMPController$AbstractSQL");
+		FILTERED_CLASSES = unmodifiableSet(filteredClasses);
 	}
 
 	/**
 	 * Get the stack frame description of the caller of the of the transaction.
+	 * <p>
+	 * This is an expensive operation.
 	 *
 	 * @return The (believed) caller of the transaction. {@code null} if this
 	 *         can't be determined.
 	 */
 	private static StackTraceElement getCaller() {
-		try {
-			boolean found = false;
-			for (StackTraceElement frame : currentThread().getStackTrace()) {
-				String name = frame.getClassName();
-				if (name.startsWith("java.") || name.startsWith("javax.")
-				// MAGIC!
-						|| name.startsWith("sun.")) {
-					continue;
-				}
-				boolean found1 = FILTERED_CLASSES.contains(name)
-						// Special case
-						|| frame.getMethodName().equals("execute");
-				found |= found1;
-				if (found && !found1) {
-					return frame;
-				}
+		boolean found = false;
+		for (StackTraceElement frame : currentThread().getStackTrace()) {
+			String name = frame.getClassName();
+			String first = name.substring(0, max(0, name.indexOf('.')));
+			if (FILTERED_PREFIXES.contains(first)) {
+				continue;
 			}
-		} catch (SecurityException ignored) {
-			// Security manager says no? OK, we can cope.
+			boolean found1 = FILTERED_CLASSES.contains(name);
+			found |= found1;
+			if (found && !found1) {
+				return frame;
+			}
 		}
 		return null;
 	}
@@ -1246,15 +1263,22 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * commits. If an exception is thrown, the transaction is rolled back. The
 	 * connection is closed up in any case.
 	 *
+	 * @param lockForWriting
+	 *            Whether to lock for writing. Multiple read locks can be held
+	 *            at once, but only one write lock. Locks <em>cannot</em> be
+	 *            upgraded (because that causes deadlocks).
 	 * @param operation
 	 *            The operation to run
 	 * @throws RuntimeException
 	 *             If something goes wrong with the database access or the
 	 *             contained code.
 	 */
-	public void executeVoid(Connected operation) {
+	public void executeVoid(boolean lockForWriting, Connected operation) {
 		try (Connection conn = getConnection()) {
-			conn.transaction(() -> operation.act(conn));
+			conn.transaction(lockForWriting, () -> {
+				operation.act(conn);
+				return this;
+			});
 		}
 	}
 
@@ -1262,7 +1286,49 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * A connection manager and transaction runner. If the {@code operation}
 	 * completes normally (and this isn't a nested use), the transaction
 	 * commits. If an exception is thrown, the transaction is rolled back. The
+	 * connection is closed up in any case. This uses a write lock.
+	 *
+	 * @param operation
+	 *            The operation to run
+	 * @throws RuntimeException
+	 *             If something goes wrong with the database access or the
+	 *             contained code.
+	 */
+	public void executeVoid(Connected operation) {
+		executeVoid(true, operation);
+	}
+
+	/**
+	 * A connection manager and transaction runner. If the {@code operation}
+	 * completes normally (and this isn't a nested use), the transaction
+	 * commits. If an exception is thrown, the transaction is rolled back. The
 	 * connection is closed up in any case.
+	 *
+	 * @param <T>
+	 *            The type of the result of {@code operation}
+	 * @param lockForWriting
+	 *            Whether to lock for writing. Multiple read locks can be held
+	 *            at once, but only one write lock. Locks <em>cannot</em> be
+	 *            upgraded (because that causes deadlocks).
+	 * @param operation
+	 *            The operation to run
+	 * @return the value returned by {@code operation}
+	 * @throws RuntimeException
+	 *             If something other than database access goes wrong with the
+	 *             contained code.
+	 */
+	public <T> T execute(boolean lockForWriting,
+			ConnectedWithResult<T> operation) {
+		try (Connection conn = getConnection()) {
+			return conn.transaction(lockForWriting, () -> operation.act(conn));
+		}
+	}
+
+	/**
+	 * A connection manager and transaction runner. If the {@code operation}
+	 * completes normally (and this isn't a nested use), the transaction
+	 * commits. If an exception is thrown, the transaction is rolled back. The
+	 * connection is closed up in any case. This uses a write lock.
 	 *
 	 * @param <T>
 	 *            The type of the result of {@code operation}
@@ -1274,9 +1340,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *             contained code.
 	 */
 	public <T> T execute(ConnectedWithResult<T> operation) {
-		try (Connection conn = getConnection()) {
-			return conn.transaction(() -> operation.act(conn));
-		}
+		return execute(true, operation);
 	}
 
 	/**
@@ -1351,17 +1415,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @throws UncategorizedScriptException
 	 *             If the resource can't be loaded.
 	 */
-	private static String readSQL(Resource resource) {
-		synchronized (QUERY_CACHE) {
-			if (QUERY_CACHE.containsKey(resource)) {
-				return QUERY_CACHE.get(resource);
+	private String readSQL(Resource resource) {
+		synchronized (queryCache) {
+			if (queryCache.containsKey(resource)) {
+				return queryCache.get(resource);
 			}
 		}
 		try (InputStream is = resource.getInputStream()) {
 			String s = IOUtils.toString(is, UTF_8);
-			synchronized (QUERY_CACHE) {
+			synchronized (queryCache) {
 				// Not really a problem if it is put in twice
-				QUERY_CACHE.put(resource, s);
+				queryCache.put(resource, s);
 			}
 			return s;
 		} catch (IOException e) {
@@ -1482,45 +1546,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	/**
-	 * Exclude comments and compress whitespace from the SQL of a statement.
-	 *
-	 * @param sql
-	 *            The text of the SQL to trim.
-	 * @return The trimmed SQL.
-	 */
-	private static String trimSQL(String sql) {
-		return trimSQL(sql, TRIM_LENGTH);
-	}
-
-	/**
-	 * Exclude comments and compress whitespace from the SQL of a statement.
-	 *
-	 * @param sql
-	 *            The text of the SQL to trim.
-	 * @param length
-	 *            The point to insert an ellipsis if required.
-	 * @return The trimmed SQL.
-	 */
-	private static String trimSQL(String sql, int length) {
-		sql = sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
-		// Trim long queries to no more than TRIM_LENGTH...
-		String sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
-		if (sql2 != sql) {
-			// and add an ellipsis if we do the trimming
-			sql = sql2 + ELLIPSIS;
-		}
-		return sql;
-	}
-
-	/**
 	 * Wrapping a prepared query to be more suitable for Java 8 onwards.
 	 *
 	 * @author Donal Fellows
 	 */
 	public final class Query extends StatementWrapper {
-		private Query(Connection conn, String sql) {
+		private Query(Connection conn, boolean lockType, String sql) {
 			super(conn, sql);
+			this.lockType = lockType;
 		}
+
+		private final boolean lockType;
 
 		/**
 		 * Run the query on the given arguments.
@@ -1533,10 +1569,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         outlive the iteration.
 		 */
 		public MappableIterable<Row> call(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(lockType);
 			closeResults();
 			try {
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				setParams(arguments);
 				long pre = nanoTime();
 				rs = s.executeQuery();
@@ -1559,7 +1595,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					if (!consumed) {
 						return true;
 					}
-					conn.checkInTransaction();
+					conn.checkInTransaction(lockType);
 					boolean result = false;
 					try {
 						result = rs.next();
@@ -1597,9 +1633,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 *         row.
 		 */
 		public Optional<Row> call1(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(lockType);
 			try {
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				closeResults();
 				setParams(arguments);
 				long pre = nanoTime();
@@ -1635,7 +1671,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The number of rows updated
 		 */
 		public int call(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(true);
 			closeResults();
 			try {
 				setParams(arguments);
@@ -1657,7 +1693,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The integer primary keys generated by the update.
 		 */
 		public MappableIterable<Integer> keys(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(true);
 			/*
 			 * In theory, the statement should have been prepared with the
 			 * GET_GENERATED_KEYS flag set. In practice, the SQLite driver
@@ -1668,7 +1704,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			long pre, post;
 			try {
 				setParams(arguments);
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				pre = nanoTime();
 				numRows = s.executeUpdate();
 				post = nanoTime();
@@ -1691,7 +1727,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					if (!consumed) {
 						return true;
 					}
-					conn.checkInTransaction();
+					conn.checkInTransaction(true);
 					boolean result = false;
 					try {
 						result = rs.next();
@@ -1732,7 +1768,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @return The integer primary key generated by the update.
 		 */
 		public Optional<Integer> key(Object... arguments) {
-			conn.checkInTransaction();
+			conn.checkInTransaction(true);
 			closeResults();
 			try {
 				setParams(arguments);
@@ -1743,7 +1779,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				if (numRows < 1) {
 					return Optional.empty();
 				}
-				log.debug("opening result set in {}", getCaller());
+				log.debug("opening result set in {}", getDebugContext());
 				rs = s.getGeneratedKeys();
 				if (rs.next()) {
 					return Optional.ofNullable((Integer) rs.getObject(1));
@@ -1755,66 +1791,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			} finally {
 				closeResults();
 			}
-		}
-	}
-
-	/**
-	 * Utility for testing whether an exception was thrown because the database
-	 * was busy.
-	 *
-	 * @param e
-	 *            The outer wrapping exception.
-	 * @return Whether it was caused by the database being busy.
-	 */
-	public static boolean isBusy(DataAccessException e) {
-		return e.getMostSpecificCause() instanceof SQLiteException
-				&& ((SQLiteException) e.getMostSpecificCause()).getResultCode()
-						.equals(SQLITE_BUSY);
-	}
-
-	/**
-	 * Handler for {@link SQLException}.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Component
-	@Provider
-	public static class SQLExceptionMapper
-			implements ExceptionMapper<SQLException> {
-		@Autowired
-		private SpallocProperties properties;
-
-		@Override
-		public Response toResponse(SQLException exception) {
-			log.warn("uncaught SQL exception", exception);
-			if (properties.getSqlite().isDebugFailures()) {
-				return status(INTERNAL_SERVER_ERROR)
-						.entity("failed: " + exception.getMessage()).build();
-			}
-			return status(INTERNAL_SERVER_ERROR).entity("failed").build();
-		}
-	}
-
-	/**
-	 * Handler for {@link DataAccessException}.
-	 *
-	 * @author Donal Fellows
-	 */
-	@Component
-	@Provider
-	public static class DataAccessExceptionMapper
-			implements ExceptionMapper<DataAccessException> {
-		@Autowired
-		private SpallocProperties properties;
-
-		@Override
-		public Response toResponse(DataAccessException exception) {
-			log.warn("uncaught SQL exception", exception);
-			if (properties.getSqlite().isDebugFailures()) {
-				return status(INTERNAL_SERVER_ERROR)
-						.entity("failed: " + exception.getMessage()).build();
-			}
-			return status(INTERNAL_SERVER_ERROR).entity("failed").build();
 		}
 	}
 }

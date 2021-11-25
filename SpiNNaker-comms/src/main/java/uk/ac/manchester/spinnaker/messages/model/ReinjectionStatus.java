@@ -164,7 +164,7 @@ public class ReinjectionStatus {
 	}
 
 	private boolean flag(DPRIFlags flag) {
-		return (flags & (1 << flag.ordinal())) != 0;
+		return (flags & flag.mask()) != 0;
 	}
 
 	/** @return if re-injection of multicast packets is enabled. */
@@ -189,6 +189,10 @@ public class ReinjectionStatus {
 
 	private enum DPRIFlags {
 		MULTICAST, POINT_TO_POINT, NEAREST_NEIGHBOUR, FIXED_ROUTE;
+
+		private int mask() {
+			return 1 << ordinal();
+		}
 	}
 
 	@Override

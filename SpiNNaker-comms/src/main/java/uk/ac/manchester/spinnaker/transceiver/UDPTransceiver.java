@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
+import static java.net.InetAddress.getByAddress;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
@@ -160,7 +161,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 	static {
 		try {
-			WILDCARD_ADDRESS = InetAddress.getByAddress(new byte[IPV4_SIZE]);
+			WILDCARD_ADDRESS = getByAddress(new byte[IPV4_SIZE]);
 			if (!WILDCARD_ADDRESS.isAnyLocalAddress()) {
 				throw new RuntimeException(
 						"wildcard address is not wildcard address?");

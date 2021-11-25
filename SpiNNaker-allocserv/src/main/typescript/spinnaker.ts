@@ -400,6 +400,98 @@ function setTooltipCore(
 	}
 }
 
+function setupCallbacks(
+		canv: HTMLCanvasElement,
+		getBoardInfo: ((board: BoardTriad) => BoardLocator),
+		getJobInfo: ((board: BoardTriad) => MachineJobDescriptor) | undefined,
+		tloc: Map<string, [BoardTriad, HexCoords]>,
+		setCurrent: ((newTriad: BoardTriad) => void),
+		clearCurrent: ((oldTriad: BoardTriad) => void)) {
+	var current : BoardTriad = undefined;
+	function geturl() : string {
+		if (getJobInfo !== undefined) {
+			const job = getJobInfo(current);
+			if (job !== undefined && job.hasOwnProperty("url")) {
+				return job.url;
+			}
+		}
+		return undefined;
+	}
+	function configurePointer(asLink: boolean = false) {
+		const c = canv.classList;
+		if (asLink) {
+			c.add("overlink");
+		} else {
+			c.remove("overlink");
+		}
+	}
+	canv.addEventListener('mousemove', (e: MouseEvent) => {
+		const triad = inside(e.offsetX, e.offsetY, tloc);
+		if (current === triad) {
+			return;
+		}
+		if (triad !== undefined) {
+			if (current !== undefined) {
+				clearCurrent(current);
+			}
+			setCurrent(triad);
+			current = triad;
+			configurePointer(geturl() !== undefined);
+		} else if (current !== undefined) {
+			clearCurrent(current);
+			current = undefined;
+			configurePointer();
+		}
+	});
+	canv.addEventListener('mouseenter', (e: MouseEvent) => {
+		const triad = inside(e.offsetX, e.offsetY, tloc);
+		if (current === triad) {
+			return;
+		}
+		if (triad !== undefined) {
+			if (current !== undefined) {
+				// I don't think this should be reachable
+				clearCurrent(current);
+			}
+			setCurrent(triad);
+			current = triad;
+			configurePointer(geturl() !== undefined);
+		} else if (current !== undefined) {
+			clearCurrent(current);
+			current = undefined;
+			configurePointer();
+		}
+	});
+	canv.addEventListener('mouseleave', (_: MouseEvent) => {
+		if (current !== undefined) {
+			clearCurrent(current);
+			current = undefined;
+			configurePointer();
+		}
+	});
+	canv.addEventListener("click", (e: MouseEvent) => {
+		if (current !== undefined) {
+			const board = getBoardInfo(current);
+			var job: MachineJobDescriptor = undefined;
+			var url = undefined;
+			if (getJobInfo !== undefined) {
+				job = getJobInfo(current);
+				if (job !== undefined && job.hasOwnProperty("url")) {
+					url = job.url;
+				}
+			}
+			if (url !== undefined) {
+				// If we have a URL, go there now
+				window.location.assign(url);
+			} else {
+				// Don't have anything; log for debugging purposes until we
+				// decide what to do about it
+				console.log("clicked", current, board, job, e);
+			}
+		}
+	});
+}
+
 /**
  * Set up a canvas to illustrate a machine's boards.
  *
@@ -516,57 +608,47 @@ function drawMachine(
 		return s;
 	}
 
-	/** The current board (i.e., that has the mouse over it). */
-	var current : BoardTriad = undefined;
-	/** Common code: clear the current board/tooltip. */
-	function clearCurrent() {
+	/**
+	 * Clear the current board/tooltip.
+	 *
+	 * @param triad
+	 *		The old triad to clear.
+	 */
+	function clearCurrent(triad: BoardTriad) {
 		ctx.strokeStyle = 'black';
-		drawTriadBoard(ctx, rootX, rootY, scale, current);
+		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip();
-		current = undefined;
 	}
-	/** Common code: set the current board/tooltip. */
-	function setCurrent(triad : BoardTriad) {
+	/**
+	 * Set the current board/tooltip.
+	 *
+	 * @param triad
+	 *		The new triad to set.
+	 */
+	function setCurrent(triad: BoardTriad) {
 		ctx.strokeStyle = 'red';
 		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip(triad, triadDescription(triad));
-		current = triad;
 	}
-
-	canv.addEventListener('mousemove', (e: MouseEvent) => {
-		const triad = inside(e.offsetX, e.offsetY, tloc);
-		if (current === triad) {
-			return;
+	function getBoardInfo(triad: BoardTriad): BoardLocator {
+		const key = tuplekey(triad);
+		if (live.has(key)) {
+			return live.get(key);
 		}
-		if (triad !== undefined) {
-			if (current !== undefined) {
-				clearCurrent();
-			}
-			setCurrent(triad);
-		} else if (current !== undefined) {
-			clearCurrent();
+		if (dead.has(key)) {
+			return dead.get(key);
 		}
-	});
-	canv.addEventListener('mouseenter', (e: MouseEvent) => {
-		const triad = inside(e.offsetX, e.offsetY, tloc);
-		if (current === triad) {
-			return;
+		return undefined;
+	}
+	function getJobInfo(triad: BoardTriad): MachineJobDescriptor {
+		const key = tuplekey(triad);
+		if (jobIdMap.has(key)) {
+			const id = jobIdMap.get(key);
+			return jobMap.get(id);
 		}
-		if (triad !== undefined) {
-			if (current !== undefined) {
-				// I don't think this should be reachable
-				clearCurrent();
-			}
-			setCurrent(triad);
-		} else if (current !== undefined) {
-			clearCurrent();
-		}
-	});
-	canv.addEventListener('mouseleave', (_: MouseEvent) => {
-		if (current !== undefined) {
-			clearCurrent();
-		}
-	});
+		return undefined;
+	}
+	setupCallbacks(canv, getBoardInfo, getJobInfo, tloc, setCurrent, clearCurrent);
 };
 
 /**
@@ -675,55 +757,82 @@ function drawJob(
 		return s;
 	}
 
-	/** The current board (i.e., that has the mouse over it). */
-	var current : BoardTriad = undefined;
-	/** Common code: clear the current board/tooltip. */
-	function clearCurrent() {
+	/**
+	 * Clear the current board/tooltip.
+	 *
+	 * @param triad
+	 *		The old triad to clear.
+	 */
+	function clearCurrent(triad: BoardTriad) {
 		ctx.strokeStyle = 'black';
-		drawTriadBoard(ctx, rootX, rootY, scale, current);
+		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip();
-		current = undefined;
 	}
-	/** Common code: set the current board/tooltip. */
+	/**
+	 * Set the current board/tooltip.
+	 *
+	 * @param triad
+	 *		The new triad to set.
+	 */
 	function setCurrent(triad : BoardTriad) {
 		ctx.strokeStyle = 'green';
 		drawTriadBoard(ctx, rootX, rootY, scale, triad);
 		setTooltip(triad, triadDescription(triad));
-		current = triad;
 	}
+	function getBoardInfo(triad: BoardTriad): BoardLocator {
+		const key = tuplekey(triad);
+		if (allocated.has(key)) {
+			return allocated.get(key);
+		}
+		return undefined;
+	}
+	setupCallbacks(canv, getBoardInfo, undefined, tloc, setCurrent, clearCurrent);
+}
 
-	canv.addEventListener('mousemove', (e: MouseEvent) => {
-		const triad = inside(e.offsetX, e.offsetY, tloc);
-		if (current === triad) {
-			return;
-		}
-		if (triad !== undefined) {
-			if (current !== undefined) {
-				clearCurrent();
-			}
-			setCurrent(triad);
-		} else if (current !== undefined) {
-			clearCurrent();
-		}
+/**
+ * Convert a JSON document into a form more digestible for people.
+ *
+ * @param elementId
+ *		The ID of the element JSON document to pretty-print.
+ */
+function prettyJson(elementId: string) {
+	const element = document.getElementById(elementId);
+	const pretty = JSON.stringify(JSON.parse(element.textContent), null, 2);
+	element.textContent = pretty;
+}
+
+/**
+ * Convert a timestamp into a form more digestible for people.
+ *
+ * @param elementId
+ *		The ID of the element containing the timestamp.
+ */
+function prettyTimestamp(elementId: string) {
+	const element = document.getElementById(elementId);
+	const timestamp = new Date(element.textContent);
+	const dtf = new Intl.DateTimeFormat([], {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric'
 	});
-	canv.addEventListener('mouseenter', (e: MouseEvent) => {
-		const triad = inside(e.offsetX, e.offsetY, tloc);
-		if (current === triad) {
-			return;
-		}
-		if (triad !== undefined) {
-			if (current !== undefined) {
-				// I don't think this should be reachable
-				clearCurrent();
-			}
-			setCurrent(triad);
-		} else if (current !== undefined) {
-			clearCurrent();
-		}
-	});
-	canv.addEventListener('mouseleave', (_: MouseEvent) => {
-		if (current !== undefined) {
-			clearCurrent();
-		}
-	});
+	const pretty = dtf.format(timestamp);
+	element.textContent = pretty;
+}
+
+/**
+ * Convert a timestamp into a form more digestible for people.
+ *
+ * @param elementId
+ *		The ID of the element containing the timestamp.
+ */
+function prettyDuration(elementId: string) {
+	const element = document.getElementById(elementId);
+	var content: string = element.textContent;
+	content = content.replace(/^PT/, "").replace("H", " hours ").replace(
+		"M", " minutes ").replace("S", " seconds ");
+	content = content.replace(new RegExp(/\b1 (\w+)s/, "g"), "1 $1");
+	content = content.replace(new RegExp(/\b( \d)/, "g"), ",$1");
+	element.textContent = content;
 }

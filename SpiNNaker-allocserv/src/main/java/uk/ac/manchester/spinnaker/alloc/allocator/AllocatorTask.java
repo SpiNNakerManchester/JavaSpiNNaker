@@ -21,11 +21,13 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -43,18 +45,19 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.HistoricalDataProperties;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 
 @Component
-public class AllocatorTask extends SQLQueries implements PowerController {
+public class AllocatorTask extends DatabaseAwareBean
+		implements PowerController {
 	/** Triads contain three boards. */
 	private static final int TRIAD_DEPTH = 3;
 
@@ -74,9 +77,6 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 * live jobs even on the big machine.
 	 */
 	private static final Integer NUMBER_OF_JOBS_TO_QUOTA_CHECK = 100000;
-
-	@Autowired
-	private DatabaseEngine db;
 
 	@Autowired
 	private Epochs epochs;
@@ -137,7 +137,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		try {
-			if (db.execute(this::allocate)) {
+			if (execute(this::allocate)) {
 				log.debug("advancing job epoch");
 				epochs.nextJobsEpoch();
 			}
@@ -152,18 +152,29 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	}
 
 	/** Encapsulates the queries and updates used in power control. */
-	private class PowerSQL implements AutoCloseable {
+	private class PowerSQL extends AbstractSQL {
+		/** Get basic information about a specific job. */
 		private final Query getJobState;
 
+		/** Get what boards are allocated to a job (that is queued or ready). */
 		private final Query getJobBoards;
 
+		/**
+		 * Get the links on the perimeter of the allocation to a job. The
+		 * perimeter is defined as being the links between a board that is part
+		 * of the allocation and a board that is not; it's <em>not</em> a
+		 * geometric definition, but rather a relational algebraic one.
+		 */
 		private final Query getPerimeter;
 
+		/** Create a request to change the power status of a board. */
 		private final Update issuePowerChange;
 
+		/** Set the state and number of pending changes for a job. */
 		private final Update setStatePending;
 
 		PowerSQL(Connection conn) {
+			super(conn);
 			getJobState = conn.query(GET_JOB);
 			getJobBoards = conn.query(GET_JOB_BOARDS);
 			getPerimeter = conn.query(getPerimeterLinks);
@@ -183,24 +194,50 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	/** Encapsulates the queries and updates used in allocation. */
 	private final class AllocSQL extends PowerSQL {
+		/** Increases the importance of a job. */
 		private final Update bumpImportance;
 
+		/** Get the list of allocation tasks. */
 		private final Query getTasks;
 
+		/** Delete an allocation task. */
 		private final Update delete;
 
+		/** Find a single free board. */
 		private final Query findFreeBoard;
 
+		/**
+		 * Find a rectangle of triads of boards that may be allocated.
+		 *
+		 * @see SQLQueries#FIND_FREE_BOARD
+		 */
 		private final Query getRectangles;
 
+		/**
+		 * Count the number of <em>connected</em> boards (i.e., have at least
+		 * one path over enabled links to the root board of the allocation)
+		 * within a rectangle of triads. The triads are taken as being full
+		 * depth.
+		 */
 		private final Query countConnectedBoards;
 
+		/**
+		 * Find an allocatable board with a specific board ID. (This will have
+		 * been previously converted from some other form of board coordinates.)
+		 */
 		private final Query findSpecificBoard;
 
+		/**
+		 * Get the set of boards at some coordinates within a triad rectangle
+		 * that are connected (i.e., have at least one path over enableable
+		 * links) to the root board.
+		 */
 		private final Query getConnectedBoardIDs;
 
+		/** Tell a board that it is allocated. */
 		private final Update allocBoard;
 
+		/** Tell a job that it is allocated. Doesn't set the state. */
 		private final Update allocJob;
 
 		AllocSQL(Connection conn) {
@@ -235,12 +272,18 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	/** Encapsulates the queries and updates used in deletion. */
 	private class DestroySQL extends PowerSQL {
+		/** Get basic information about a specific job. */
 		private final Query getJob;
 
+		/** Mark a job as dead. */
 		private final Update markAsDestroyed;
 
+		/** Delete a request to allocate resources for a job. */
 		private final Update killAlloc;
 
+		/**
+		 * Delete a request to change the power of boards allocated to a job.
+		 */
 		private final Update killPending;
 
 		DestroySQL(Connection conn) {
@@ -322,7 +365,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		try {
-			if (db.execute(this::expireJobs)) {
+			if (execute(this::expireJobs)) {
 				epochs.nextJobsEpoch();
 				epochs.nextMachineEpoch();
 			}
@@ -378,7 +421,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			return;
 		}
 
-		try (Connection conn = db.getConnection()) {
+		try (Connection conn = getConnection()) {
 			tombstone(conn);
 		} catch (DataAccessException e) {
 			if (isBusy(e)) {
@@ -414,7 +457,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 
 	@Override
 	public void destroyJob(int id, String reason) {
-		if (db.execute(conn -> destroyJob(conn, id, reason))) {
+		if (execute(conn -> destroyJob(conn, id, reason))) {
 			epochs.nextJobsEpoch();
 			epochs.nextMachineEpoch();
 		}
@@ -433,7 +476,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 	 */
 	@Deprecated // INTERNAL
 	boolean destroyJob(Connection conn, int id, String reason) {
-		log.debug("destroying job {} \"{}\"", id, reason);
+		JobLifecycle.log.info("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
 			if (sql.getJob.call1(id)
 					.map(row -> row.getEnum("job_state", JobState.class))
@@ -446,7 +489,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 			}
 			sql.killPending.call(id);
 			// Inserts into pending_changes; these run after job is dead
-			setPower(sql, id, PowerState.OFF, DESTROYED);
+			setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
 			return sql.markAsDestroyed.call(reason, id) > 0;
 		}
@@ -685,12 +728,12 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 				boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
 		log.debug("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
-		return setPower(sql, jobId, PowerState.ON, READY);
+		return setPower(sql, jobId, ON, READY);
 	}
 
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState) {
-		boolean updated = db.execute(conn -> {
+		boolean updated = execute(conn -> {
 			try (PowerSQL sql = new PowerSQL(conn)) {
 				return setPower(sql, jobId, power, targetState);
 			}
@@ -731,7 +774,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		// Number of changes pending, one per board
 		int numPending = 0;
 
-		if (power == PowerState.ON) {
+		if (power == ON) {
 			/*
 			 * This is a bit of a trickier case, as we need to say which links
 			 * are to be switched on or, more particularly, which are to be
@@ -768,7 +811,7 @@ public class AllocatorTask extends SQLQueries implements PowerController {
 		}
 
 		if (targetState == DESTROYED) {
-			log.info("num changes for {} in destroy: {}", jobId, numPending);
+			log.debug("num changes for {} in destroy: {}", jobId, numPending);
 		}
 		sql.setStatePending.call(
 				targetState == DESTROYED ? DESTROYED

@@ -94,6 +94,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 
 /**
@@ -157,6 +158,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
 
+	private static final String SESSION_COOKIE = "JSESSIONID";
+
 	@Autowired
 	private BasicAuthEntryPoint authenticationEntryPoint;
 
@@ -168,6 +171,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AuthProperties properties;
+
+	@Autowired
+	private URLPathMaker urlMaker;
 
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
@@ -235,18 +241,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		void unlockLockedUsers();
 	}
 
-	private static final String MAIN_PAGE = "/system";
-
-	private static final String LOGIN_PAGE = "/system/login.html";
-
-	private static final String LOGIN_ERROR_PAGE = LOGIN_PAGE + "?error=true";
-
-	private static final String LOGIN_ACTION_URL = "/system/perform_login";
-
-	private static final String LOGOUT_ACTION_URL = "/system/perform_logout";
-
-	private static final String SESSION_COOKIE = "JSESSIONID";
-
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		/*
@@ -258,21 +252,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
-				.antMatchers("/info*", "/info/**").hasRole("ADMIN")
+				.antMatchers(urlMaker.serviceUrl("info*"),
+						urlMaker.serviceUrl("info/**"))
+				.hasRole("ADMIN")
 				// Login process and static resources are available to all
-				.antMatchers("/system/login*", "/system/perform_*",
-						"/system/error", "/system/resources/*")
+				.antMatchers(urlMaker.systemUrl("login*"),
+						urlMaker.systemUrl("perform_*"),
+						urlMaker.systemUrl("error"),
+						urlMaker.systemUrl("resources/*"))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
 		if (properties.isBasic()) {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
+		String loginUrl = urlMaker.systemUrl("login.html");
 		if (properties.isLocalForm()) {
-			http.formLogin().loginPage(LOGIN_PAGE)
-					.loginProcessingUrl(LOGIN_ACTION_URL)
-					.defaultSuccessUrl(MAIN_PAGE, true)
-					.failureUrl(LOGIN_ERROR_PAGE)
+			http.formLogin().loginPage(loginUrl)
+					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
+					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler);
 		}
 		if (properties.getOpenid().isEnable()) {
@@ -282,10 +281,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * tools (especially within the collabratory and the Jupyter
 			 * notebook).
 			 */
-			http.oauth2Login().loginPage(LOGIN_PAGE)
-					.loginProcessingUrl(LOGIN_ACTION_URL)
-					.defaultSuccessUrl(MAIN_PAGE, true)
-					.failureUrl(LOGIN_ERROR_PAGE)
+			http.oauth2Login().loginPage(loginUrl)
+					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
+					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler)
 					//
 					.and().oauth2ResourceServer(oauth2 -> oauth2.jwt());
@@ -295,8 +294,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * browsers will just log straight back in again. Still, it is
 		 * meaningful.
 		 */
-		http.logout().logoutUrl(LOGOUT_ACTION_URL).deleteCookies(SESSION_COOKIE)
-				.invalidateHttpSession(true).logoutSuccessUrl(LOGIN_PAGE);
+		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
+				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
+				.logoutSuccessUrl(loginUrl);
 	}
 
 	/**

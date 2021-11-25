@@ -33,13 +33,11 @@ import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 
@@ -49,29 +47,20 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
  * @author Donal Fellows
  */
 @Component
-public class UserControl extends SQLQueries {
-	@Autowired
-	private DatabaseEngine db;
-
+public class UserControl extends DatabaseAwareBean {
 	@Autowired
 	private PasswordServices passServices;
 
-	private abstract class AccessQuotaSQL implements AutoCloseable {
-		final Connection conn = db.getConnection();
-
+	private abstract class AccessQuotaSQL extends AbstractSQL {
 		private final Query getQuotas = conn.query(GET_QUOTA_DETAILS);
 
 		private final Query userCheck = conn.query(GET_USER_ID);
-
-		final <T> T transaction(TransactedWithResult<T> action) {
-			return conn.transaction(action);
-		}
 
 		@Override
 		public void close() {
 			getQuotas.close();
 			userCheck.close();
-			conn.close();
+			super.close();
 		}
 	}
 
@@ -156,9 +145,9 @@ public class UserControl extends SQLQueries {
 	 *         {@link UserRecord#userName} fields are inflated.
 	 */
 	public List<UserRecord> listUsers() {
-		try (Connection c = db.getConnection();
+		try (Connection c = getConnection();
 				Query q = c.query(LIST_ALL_USERS)) {
-			return c.transaction(
+			return c.transaction(false,
 					() -> q.call().map(UserControl::sketchUser).toList());
 		}
 	}
@@ -362,9 +351,9 @@ public class UserControl extends SQLQueries {
 	 */
 	public PasswordChangeRecord getUserForPrincipal(Principal principal)
 			throws AuthenticationException {
-		try (Connection c = db.getConnection();
+		try (Connection c = getConnection();
 				Query q = c.query(GET_LOCAL_USER_DETAILS)) {
-			return c.transaction(() -> q.call1(principal.getName())
+			return c.transaction(false, () -> q.call1(principal.getName())
 					.map(row -> new PasswordChangeRecord(
 							row.getInt("user_id"), row.getString("user_name")))
 					.orElseThrow(

@@ -29,6 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -54,8 +55,12 @@ public class V1CompatService {
 	/** In seconds. */
 	private static final int SHUTDOWN_TIMEOUT = 3;
 
-	private static final ThreadGroup GROUP =
-			new ThreadGroup("spalloc-legacy-service");
+	private static final ThreadFactory THREAD_FACTORY;
+
+	static {
+		ThreadGroup group = new ThreadGroup("spalloc-legacy-service");
+		THREAD_FACTORY = r -> new Thread(group, r);
+	}
 
 	private static final Logger log = getLogger(V1CompatService.class);
 
@@ -94,9 +99,9 @@ public class V1CompatService {
 		CompatibilityProperties props = mainProps.getCompat();
 		if (props.getThreadPoolSize() > 0) {
 			executor = newFixedThreadPool(props.getThreadPoolSize(),
-					r -> new Thread(GROUP, r));
+					THREAD_FACTORY);
 		} else {
-			executor = newCachedThreadPool(r -> new Thread(GROUP, r));
+			executor = newCachedThreadPool(THREAD_FACTORY);
 		}
 
 		if (props.isEnable()) {
@@ -104,7 +109,7 @@ public class V1CompatService {
 					new InetSocketAddress(props.getHost(), props.getPort());
 			serv = new ServerSocket();
 			serv.bind(addr);
-			servThread = new Thread(GROUP, this::acceptConnections);
+			servThread = THREAD_FACTORY.newThread(this::acceptConnections);
 			servThread.setName("service-master");
 			log.info("launching listener thread {} on address {}", servThread,
 					addr);

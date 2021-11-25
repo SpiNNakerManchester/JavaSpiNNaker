@@ -26,8 +26,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public class ProcessException extends SpinnmanException {
 	private static final long serialVersionUID = 7759365416594564702L;
 
-	private static final String S = "     "; // five spaces
-
 	/**
 	 * Create an exception.
 	 *
@@ -37,10 +35,7 @@ public class ProcessException extends SpinnmanException {
 	 *            What exception caused problems.
 	 */
 	ProcessException(HasCoreLocation core, Throwable cause) {
-		super(format(
-				"when sending to %d:%d:%d, received exception: %s\n" + S
-						+ "with message: %s",
-				core.getX(), core.getY(), core.getP(),
-				cause.getClass().getName(), cause.getMessage()), cause);
+		super(format("when sending to %d:%d:%d, %s", core.getX(), core.getY(),
+				core.getP(), cause.getMessage()), cause);
 	}
 }

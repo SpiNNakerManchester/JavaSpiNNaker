@@ -17,52 +17,56 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="Machine List" name="title"/>
+	<jsp:param value="SpiNNaker Machine List" name="title"/>
 </jsp:include>
 <body>
 
-<h1>Spalloc Machines</h1>
+<h1>SpiNNaker Machines</h1>
 
-<c:if test="${ empty machineList }">
-	<p>No machines are defined!</p>
-</c:if>
-<c:if test="${ not empty machineList }">
-<table border="1">
-<thead>
-<tr>
-	<th>Name</th>
-	<th>Num boards</th>
-	<th>In-use</th>
-	<th>Jobs</th>
-	<th>Tags</th>
-</tr>
-</thead>
-<tbody>
-<c:forEach items="${ machineList }" var="machine">
-<tr>
-	<td class="textColumn">
-		<c:if test="${ machine.detailsUrl.present }">
-			<a href="${ machine.detailsUrl.get() }">
-				<code><c:out value="${ machine.name }" escapeXml="true" /></code>
-			</a>
-		</c:if>
-		<c:if test="${ !machine.detailsUrl.present }">
-			<code><c:out value="${ machine.name }" escapeXml="true" /></code>
-		</c:if>
-	</td>
-	<td class="numberColumn">${ machine.numBoards }</td>
-	<td class="numberColumn">${ machine.numInUse }</td>
-	<td class="numberColumn">${ machine.numJobs }</td>
-	<td class="textColumn">
-	<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
-		<code><c:out value="${ tag }" escapeXml="true"/></code><c:if test="${ !loop.last }">,</c:if>
-	</c:forEach>
-	</td>
-</tr>
-</c:forEach>
-</tbody>
-</table>
-</c:if>
+<c:choose>
+	<c:when test="${ not empty machineList }">
+		<table border="1">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Num boards</th>
+					<th>In-use</th>
+					<th>Jobs</th>
+					<th>Tags</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach items="${ machineList }" var="machine">
+					<tr>
+						<td class="textColumn">
+							<c:choose>
+								<c:when test="${ machine.detailsUrl.present }">
+									<a href="${ machine.detailsUrl.get() }">
+										<code><c:out value="${ machine.name }" escapeXml="true" /></code>
+									</a>
+								</c:when>
+								<c:otherwise>
+									<code><c:out value="${ machine.name }" escapeXml="true" /></code>
+								</c:otherwise>
+							</c:choose>
+						</td>
+						<td class="numberColumn">${ machine.numBoards }</td>
+						<td class="numberColumn">${ machine.numInUse }</td>
+						<td class="numberColumn">${ machine.numJobs }</td>
+						<td class="textColumn">
+						<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
+							<code><c:out value="${ tag }" escapeXml="true"/></code><c:if test="${ !loop.last }">,</c:if>
+						</c:forEach>
+						</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</c:when>
+	<c:otherwise>
+		<p>No machines are defined!</p>
+	</c:otherwise>
+</c:choose>
 
 <jsp:include page="basicfooter.jsp" />
 </body>

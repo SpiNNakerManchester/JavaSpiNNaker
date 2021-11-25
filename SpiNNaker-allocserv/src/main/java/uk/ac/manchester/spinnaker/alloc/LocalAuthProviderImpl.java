@@ -27,7 +27,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,13 +65,11 @@ import uk.ac.manchester.spinnaker.alloc.SecurityConfig.SimpleGrantedAuthority;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * Does authentication against users defined entirely in the database. This
@@ -82,12 +80,9 @@ import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
  * @author Donal Fellows
  */
 @Component
-public class LocalAuthProviderImpl extends SQLQueries
+public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider {
 	private static final Logger log = getLogger(LocalAuthProviderImpl.class);
-
-	@Autowired
-	private DatabaseEngine db;
 
 	@Autowired
 	private ServiceMasterControl control;
@@ -152,7 +147,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			throw new UsernameNotFoundException("empty user name?");
 		}
 		String encPass = passServices.encodePassword(password);
-		try (Connection conn = db.getConnection();
+		try (Connection conn = getConnection();
 				Update createUser = conn.update(CREATE_USER);
 				Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
 			return conn.transaction(() -> createUser(username, encPass,
@@ -284,7 +279,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			return null;
 		}
 		try (AuthQueries queries = new AuthQueries()) {
-			if (!queries.transact(//
+			if (!queries.transaction(//
 					() -> authOpenIDAgainstDB(name, queries))) {
 				return null;
 			}
@@ -320,36 +315,23 @@ public class LocalAuthProviderImpl extends SQLQueries
 	 * Database connection and queries used for authentication and authorization
 	 * purposes.
 	 */
-	private final class AuthQueries implements AutoCloseable {
-		private final Connection conn;
+	private final class AuthQueries extends AbstractSQL {
+		private final Query getUserBlocked = conn.query(IS_USER_LOCKED);
 
-		private final Query getUserBlocked;
+		private final Query userAuthorities = conn.query(GET_USER_AUTHORITIES);
 
-		private final Query userAuthorities;
+		private final Update loginSuccess = conn.update(MARK_LOGIN_SUCCESS);
 
-		private final Update loginSuccess;
+		private final Query loginFailure = conn.query(MARK_LOGIN_FAILURE);
 
-		private final Query loginFailure;
+		private final Update createUser = conn.update(CREATE_USER);
 
-		private final Update createUser;
-
-		private final Update addQuota;
+		private final Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES);
 
 		/**
 		 * Make an instance.
 		 */
 		AuthQueries() {
-			conn = db.getConnection();
-			getUserBlocked = conn.query(IS_USER_LOCKED);
-			userAuthorities = conn.query(GET_USER_AUTHORITIES);
-			loginSuccess = conn.update(MARK_LOGIN_SUCCESS);
-			loginFailure = conn.query(MARK_LOGIN_FAILURE);
-			createUser = conn.update(CREATE_USER);
-			addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES);
-		}
-
-		<T> T transact(TransactedWithResult<T> code) {
-			return conn.transaction(code);
 		}
 
 		@Override
@@ -360,7 +342,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			loginSuccess.close();
 			userAuthorities.close();
 			getUserBlocked.close();
-			conn.close();
+			super.close();
 		}
 
 		/**
@@ -470,7 +452,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 			}
 		}
 
-		Result result = queries.transact(() -> {
+		Result result = queries.transaction(() -> {
 			Optional<Row> r = queries.getUser(username);
 			if (!r.isPresent()) {
 				// No such user
@@ -516,13 +498,13 @@ public class LocalAuthProviderImpl extends SQLQueries
 				throw new BadCredentialsException("bad password");
 			}
 		} catch (AuthenticationException e) {
-			queries.transact(() -> {
+			queries.transaction(() -> {
 				queries.noteLoginFailureForUser(result.userId, username);
 				log.info("login failure for {}", username, e);
 				throw e;
 			});
 		}
-		return queries.transact(() -> {
+		return queries.transaction(() -> {
 			try {
 				queries.noteLoginSuccessForUser(result.userId);
 				switch (result.trustLevel) {
@@ -623,7 +605,7 @@ public class LocalAuthProviderImpl extends SQLQueries
 	}
 
 	void unlock() {
-		try (Connection conn = db.getConnection();
+		try (Connection conn = getConnection();
 				Query unlock = conn.query(UNLOCK_LOCKED_USERS)) {
 			conn.transaction(() -> {
 				unlock.call(authProps.getAccountLockDuration())

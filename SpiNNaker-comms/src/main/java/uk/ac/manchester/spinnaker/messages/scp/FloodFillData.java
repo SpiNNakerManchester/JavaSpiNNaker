@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.nio.ByteBuffer.wrap;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
@@ -70,7 +71,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 			int baseAddress, byte[] data, int offset, int length) {
 		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
 				argument2(blockNumber, length), baseAddress,
-				ByteBuffer.wrap(data, offset, length));
+				wrap(data, offset, length));
 	}
 
 	/**

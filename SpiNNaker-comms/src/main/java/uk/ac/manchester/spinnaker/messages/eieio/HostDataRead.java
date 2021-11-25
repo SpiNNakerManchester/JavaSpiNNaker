@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.HOST_DATA_READ;
 
 import java.nio.ByteBuffer;
@@ -104,19 +105,19 @@ public class HostDataRead extends EIEIOCommandMessage {
 	}
 
 	public int getNumRequests() {
-		return Byte.toUnsignedInt(header.numRequests);
+		return toUnsignedInt(header.numRequests);
 	}
 
 	public int getSequenceNumber() {
-		return Byte.toUnsignedInt(header.sequenceNumber);
+		return toUnsignedInt(header.sequenceNumber);
 	}
 
 	public int getChannel(int ackID) {
-		return Byte.toUnsignedInt(acks.channel[ackID]);
+		return toUnsignedInt(acks.channel[ackID]);
 	}
 
 	public int getRegionID(int ackID) {
-		return Byte.toUnsignedInt(acks.regionID[ackID]);
+		return toUnsignedInt(acks.regionID[ackID]);
 	}
 
 	public int getSpaceRead(int ackID) {
@@ -141,6 +142,7 @@ public class HostDataRead extends EIEIOCommandMessage {
 	 * and a sequence number.
 	 */
 	private static class Header {
+		// Range: 0-7
 		final byte numRequests;
 
 		final byte sequenceNumber;

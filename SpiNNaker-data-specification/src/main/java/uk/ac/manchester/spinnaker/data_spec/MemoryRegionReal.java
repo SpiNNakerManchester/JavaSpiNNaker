@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.Math.max;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNull;
 
@@ -73,7 +74,7 @@ public final class MemoryRegionReal extends MemoryRegion {
 		regionBaseAddress = 0;
 		this.unfilled = unfilled;
 		reference = null;
-		buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+		buffer = allocate(size).order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -98,7 +99,7 @@ public final class MemoryRegionReal extends MemoryRegion {
 		regionBaseAddress = 0;
 		this.unfilled = unfilled;
 		this.reference = reference;
-		buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+		buffer = allocate(size).order(LITTLE_ENDIAN);
 	}
 
 	public int getMemoryPointer() {

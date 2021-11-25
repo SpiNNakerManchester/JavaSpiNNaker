@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.created;
+import static javax.ws.rs.core.Response.noContent;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -44,7 +46,6 @@ import org.springframework.stereotype.Service;
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
@@ -57,7 +58,7 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 @Path(BASE_PATH)
 @Hidden
 @ManagedResource("Spalloc:type=Admin,name=admin")
-public class AdminImpl extends SQLQueries implements AdminAPI {
+public class AdminImpl implements AdminAPI {
 	private static final Logger log = getLogger(AdminImpl.class);
 
 	@Autowired
@@ -163,7 +164,7 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 						"user already exists"));
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
 		int id = realUser.getUserId();
-		return Response.created(ub.build(id)).type(APPLICATION_JSON)
+		return created(ub.build(id)).type(APPLICATION_JSON)
 				.entity(realUser.sanitise()).build();
 	}
 
@@ -189,6 +190,6 @@ public class AdminImpl extends SQLQueries implements AdminAPI {
 		log.warn("CALLED deleteUser({})", id);
 		String adminUser = security.getUserPrincipal().getName();
 		userController.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
-		return Response.noContent().build();
+		return noContent().build();
 	}
 }

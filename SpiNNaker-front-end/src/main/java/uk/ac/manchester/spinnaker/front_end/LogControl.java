@@ -24,6 +24,7 @@ import static org.apache.logging.log4j.Level.WARN;
 import static org.apache.logging.log4j.core.Filter.Result.ACCEPT;
 import static org.apache.logging.log4j.core.Filter.Result.DENY;
 import static org.apache.logging.log4j.core.appender.ConsoleAppender.Target.SYSTEM_ERR;
+import static org.apache.logging.log4j.core.config.Configurator.reconfigure;
 import static org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory.newConfigurationBuilder;
 
 import java.io.File;
@@ -32,7 +33,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.FilterComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.LayoutComponentBuilder;
@@ -203,6 +203,6 @@ public final class LogControl {
 		File logfile = new File(new File(directoryName), LOG_FILE);
 		String level = getProperty(Props.LOGGING_LEVEL_NAME, "info");
 		LogControl lc = new LogControl();
-		Configurator.reconfigure(lc.configuration(logfile, level));
+		reconfigure(lc.configuration(logfile, level));
 	}
 }

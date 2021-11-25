@@ -41,7 +41,6 @@ import org.springframework.test.context.TestPropertySource;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
 /**

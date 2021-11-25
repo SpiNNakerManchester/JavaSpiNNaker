@@ -17,7 +17,9 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.Runtime.getRuntime;
+import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.currentThread;
+import static java.lang.ThreadLocal.withInitial;
 import static java.util.Collections.synchronizedList;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,7 +47,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 	private static final Logger log = getLogger(DatabaseCache.class);
 
 	private ThreadLocal<Conn> connectionCache =
-			ThreadLocal.withInitial(this::generateCachedDatabaseConnection);
+			withInitial(this::generateCachedDatabaseConnection);
 
 	private List<CloserThread> closerThreads =
 			synchronizedList(new ArrayList<>());
@@ -114,7 +116,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 			owner = currentThread();
 			resource = c;
 			setName("database closer for " + owner);
-			setPriority(Thread.MAX_PRIORITY);
+			setPriority(MAX_PRIORITY);
 			start();
 		}
 
@@ -152,14 +154,14 @@ abstract class DatabaseCache<Conn extends Connection> {
 	@PreDestroy
 	private void shutdown() {
 		log.info("waiting for all database connections to close");
-		long before = System.currentTimeMillis();
+		long before = currentTimeMillis();
 		for (CloserThread t : new ArrayList<>(closerThreads)) {
 			try {
 				t.join();
 			} catch (InterruptedException ignored) {
 			}
 		}
-		long after = System.currentTimeMillis();
+		long after = currentTimeMillis();
 		log.info("waited for {} milliseconds", after - before);
 	}
 

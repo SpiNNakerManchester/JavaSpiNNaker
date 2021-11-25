@@ -43,6 +43,7 @@ import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateProvenanceAndExit;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * A process for controlling an application running on a SpiNNaker core. The
@@ -172,7 +173,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
+	MappableIterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws ProcessException, IOException {
 		// Get the IOBuf address for each core
 		for (CoreLocation core : requireNonNull(cores,
@@ -221,24 +222,19 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 			checkForError();
 		}
 
-		return new Iterable<IOBuffer>() {
+		return () -> new Iterator<IOBuffer>() {
+			private final Iterator<CoreLocation> cores =
+					iobuf.keySet().iterator();
+
 			@Override
-			public Iterator<IOBuffer> iterator() {
-				return new Iterator<IOBuffer>() {
-					private final Iterator<CoreLocation> cores =
-							iobuf.keySet().iterator();
+			public boolean hasNext() {
+				return cores.hasNext();
+			}
 
-					@Override
-					public boolean hasNext() {
-						return cores.hasNext();
-					}
-
-					@Override
-					public IOBuffer next() {
-						CoreLocation core = cores.next();
-						return new IOBuffer(core, iobuf.get(core).values());
-					}
-				};
+			@Override
+			public IOBuffer next() {
+				CoreLocation core = cores.next();
+				return new IOBuffer(core, iobuf.get(core).values());
 			}
 		};
 	}

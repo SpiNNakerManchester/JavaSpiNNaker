@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static java.lang.String.format;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BoardCoords {
@@ -126,7 +128,7 @@ public class BoardCoords {
 
 	@Override
 	public String toString() {
-		return String.format("Board(%d,%d,%d|%d:%d:%d|%s)", x, y, z,
+		return format("Board(%d,%d,%d|%d:%d:%d|%s)", x, y, z,
 				cabinet, frame, board, address);
 	}
 }

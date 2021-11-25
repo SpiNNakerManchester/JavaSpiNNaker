@@ -19,6 +19,11 @@ package uk.ac.manchester.spinnaker.py2json;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static java.lang.String.format;
+import static java.lang.System.err;
+import static java.lang.System.exit;
+import static java.lang.System.getProperty;
+import static org.python.core.PySystemState.initialize;
 import static picocli.CommandLine.populateCommand;
 import static uk.ac.manchester.spinnaker.py2json.PythonUtils.getattr;
 import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
@@ -329,7 +334,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	 * Create a converter.
 	 */
 	public MachineDefinitionConverter() {
-		PySystemState.initialize(null, null);
+		initialize(null, null);
 		sys = new PySystemState();
 		File enumPy = new File(
 				getClass().getClassLoader().getResource("enum.py").getFile());
@@ -357,7 +362,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	public Configuration loadClassicConfigurationDefinition(File definitionFile,
 			boolean doCd) {
 		String what = definitionFile.getAbsolutePath();
-		String cwd = System.getProperty("user.dir");
+		String cwd = getProperty("user.dir");
 		try (PythonInterpreter py = new PythonInterpreter(null, sys)) {
 			if (doCd) {
 				/*
@@ -366,7 +371,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 				 * the environment that cares. Outside... we shouldn't need to
 				 * care.
 				 */
-				py.exec(String.format(
+				py.exec(format(
 						"import os; __saved=os.getcwd(); os.chdir(r'''%s''')",
 						cwd));
 			}
@@ -437,9 +442,9 @@ public class MachineDefinitionConverter implements AutoCloseable {
 					.loadClassicConfigurationDefinition(a.configFile, false);
 			getJsonWriter().writeValue(a.destination, config);
 		} catch (ParameterException e) {
-			System.err.println(e.getMessage());
-			e.getCommandLine().usage(System.err);
-			System.exit(1);
+			err.println(e.getMessage());
+			e.getCommandLine().usage(err);
+			exit(1);
 		}
 	}
 }

@@ -33,7 +33,7 @@ spring:
     name: spalloc
   mvc:
     servlet:
-      path: /system
+      path: /spalloc/system
   task:
     scheduling:
       pool:
@@ -83,7 +83,7 @@ server:
   port: 8080
 
 cxf:
-  path: /srv
+  path: /spalloc/srv
   servlet.init: 
     service-list-path: info
   jaxrs:

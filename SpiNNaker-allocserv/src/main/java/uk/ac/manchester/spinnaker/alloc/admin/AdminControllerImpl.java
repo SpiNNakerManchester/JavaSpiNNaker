@@ -58,8 +58,7 @@ import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
@@ -73,7 +72,8 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 @Controller("mvc.adminController")
 @RequestMapping(AdminController.BASE_PATH)
 @PreAuthorize(IS_ADMIN)
-public class AdminControllerImpl extends SQLQueries implements AdminController {
+public class AdminControllerImpl extends DatabaseAwareBean
+		implements AdminController {
 	private static final Logger log = getLogger(AdminControllerImpl.class);
 
 	private static final String MAIN_VIEW = "admin/index";
@@ -104,15 +104,12 @@ public class AdminControllerImpl extends SQLQueries implements AdminController {
 	private MachineDefinitionLoader machineDefiner;
 
 	@Autowired
-	private DatabaseEngine db;
-
-	@Autowired
 	private SpallocAPI spalloc;
 
 	private List<String> getMachineNames() {
-		try (Connection conn = db.getConnection();
+		try (Connection conn = getConnection();
 				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return conn.transaction(() -> listMachines.call()
+			return conn.transaction(false, () -> listMachines.call()
 					.map(row -> row.getString("machine_name")).toList());
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);

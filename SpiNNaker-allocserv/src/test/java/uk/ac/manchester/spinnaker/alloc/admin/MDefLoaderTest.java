@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoord
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * Test that the database engine interface works and that the queries are
@@ -145,8 +145,7 @@ class MDefLoaderTest {
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q =
-					new MachineDefinitionLoader.Updates(c)) {
+			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});
@@ -188,8 +187,7 @@ class MDefLoaderTest {
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q =
-					new MachineDefinitionLoader.Updates(c)) {
+			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});

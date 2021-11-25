@@ -16,19 +16,22 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.sort;
+import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SDRAM_PER_CHIP;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
+
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
 import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
@@ -57,7 +60,7 @@ public class Chip implements HasChipLocation {
 	public final Router router;
 
 	// Changed from an Object to just an int as Object only had a single value
-	/** The size of the sdram. */
+	/** The size of the SDRAM. */
 	public final int sdram;
 
 	/** The IP address of the chip or None if no Ethernet attached. */
@@ -79,7 +82,7 @@ public class Chip implements HasChipLocation {
 			Processor> DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
 
 	private static final List<Integer> DEFAULT_ETHERNET_TAG_IDS =
-			new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6, 7));
+			asList(1, 2, 3, 4, 5, 6, 7);
 
 	// Note: emergency_routing_enabled not implemented as not used
 	// TODO convert_routing_table_entry_to_spinnaker_route
@@ -116,19 +119,18 @@ public class Chip implements HasChipLocation {
 			Router router, int sdram, InetAddress ipAddress, boolean virtual,
 			List<Integer> tagIds, ChipLocation nearestEthernet) {
 		this.location = location;
-		this.monitorProcessors = new TreeMap<>();
-		this.userProcessors = new TreeMap<>();
+		monitorProcessors = new TreeMap<>();
+		userProcessors = new TreeMap<>();
 		processors.forEach((processor) -> {
-			if (this.monitorProcessors.containsKey(processor.processorId)) {
+			if (monitorProcessors.containsKey(processor.processorId)) {
 				throw new IllegalArgumentException();
-			}
-			if (this.userProcessors.containsKey(processor.processorId)) {
+			} else if (userProcessors.containsKey(processor.processorId)) {
 				throw new IllegalArgumentException();
 			}
 			if (processor.isMonitor) {
-				this.monitorProcessors.put(processor.processorId, processor);
+				monitorProcessors.put(processor.processorId, processor);
 			} else {
-				this.userProcessors.put(processor.processorId, processor);
+				userProcessors.put(processor.processorId, processor);
 			}
 		});
 		this.router = router;
@@ -231,22 +233,22 @@ public class Chip implements HasChipLocation {
 	public Chip(ChipLocation location, Router router, InetAddress ipAddress,
 			ChipLocation nearestEthernet) {
 		this.location = location;
-		this.monitorProcessors = DEFAULT_MONITOR_PROCESSORS;
-		this.userProcessors = DEFAULT_USER_PROCESSORS;
+		monitorProcessors = DEFAULT_MONITOR_PROCESSORS;
+		userProcessors = DEFAULT_USER_PROCESSORS;
 		this.router = router;
 
-		this.sdram = SDRAM_PER_CHIP;
+		sdram = SDRAM_PER_CHIP;
 		this.ipAddress = ipAddress;
 
-		this.virtual = false;
+		virtual = false;
 		if (ipAddress == null) {
-			this.tagIds = emptyList();
+			tagIds = emptyList();
 		} else {
-			this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
+			tagIds = DEFAULT_ETHERNET_TAG_IDS;
 		}
 
 		this.nearestEthernet = nearestEthernet;
-		if (this.virtual) {
+		if (virtual) {
 			assert this.nearestEthernet == null;
 		} else {
 			assert this.nearestEthernet != null;
@@ -254,38 +256,38 @@ public class Chip implements HasChipLocation {
 	}
 
 	Chip(Chip chip, Router newRouter) {
-		this.location = chip.location;
-		this.monitorProcessors = chip.monitorProcessors;
-		this.userProcessors = chip.userProcessors;
-		this.router = newRouter;
+		location = chip.location;
+		monitorProcessors = chip.monitorProcessors;
+		userProcessors = chip.userProcessors;
+		router = newRouter;
 
-		this.sdram = chip.sdram;
-		this.ipAddress = chip.ipAddress;
+		sdram = chip.sdram;
+		ipAddress = chip.ipAddress;
 
-		this.virtual = chip.virtual;
-		this.tagIds = chip.tagIds;
+		virtual = chip.virtual;
+		tagIds = chip.tagIds;
 
-		this.nearestEthernet = chip.nearestEthernet;
+		nearestEthernet = chip.nearestEthernet;
 	}
 
 	Chip(ChipBean bean, Machine machine) {
 		ChipDetails details = bean.getDetails();
 		ChipResources resources = bean.getResources();
 
-		this.location = bean.getLocation();
-		this.monitorProcessors = provideMonitors(resources.getMonitors());
-		this.userProcessors =
+		location = bean.getLocation();
+		monitorProcessors = provideMonitors(resources.getMonitors());
+		userProcessors =
 				provideUserProcesses(resources.getMonitors(), details.cores);
 
-		this.router = new Router(location, resources.getRouterEntries(),
-				details, machine);
+		router = new Router(location, resources.getRouterEntries(), details,
+				machine);
 
-		this.sdram = resources.getSdram();
-		this.ipAddress = details.getIpAddress();
-		this.virtual = resources.getVirtual();
-		this.tagIds = resources.getTags();
+		sdram = resources.getSdram();
+		ipAddress = details.getIpAddress();
+		virtual = resources.getVirtual();
+		tagIds = resources.getTags();
 
-		this.nearestEthernet = details.getEthernet(); // chip.nearestEthernet;
+		nearestEthernet = details.getEthernet(); // chip.nearestEthernet;
 	}
 
 	private static TreeMap<Integer, Processor> defaultUserProcessors() {
@@ -379,7 +381,7 @@ public class Chip implements HasChipLocation {
 	public List<Processor> allProcessors() {
 		ArrayList<Processor> all = new ArrayList<>(monitorProcessors.values());
 		all.addAll(userProcessors.values());
-		Collections.sort(all);
+		sort(all);
 		return all;
 	}
 
@@ -395,7 +397,7 @@ public class Chip implements HasChipLocation {
 	 * @return A unmodifiable View over the processors.
 	 */
 	public Collection<Processor> userProcessors() {
-		return Collections.unmodifiableCollection(this.userProcessors.values());
+		return unmodifiableCollection(userProcessors.values());
 	}
 
 	/**
@@ -404,7 +406,7 @@ public class Chip implements HasChipLocation {
 	 * @return The size of the Processor Collection
 	 */
 	public int nProcessors() {
-		return this.userProcessors.size() + this.monitorProcessors.size();
+		return userProcessors.size() + monitorProcessors.size();
 	}
 
 	/**
@@ -415,7 +417,7 @@ public class Chip implements HasChipLocation {
 	 * @return The size of the Processor Collection
 	 */
 	public int nUserProcessors() {
-		return this.userProcessors.size();
+		return userProcessors.size();
 	}
 
 	/**
@@ -426,23 +428,23 @@ public class Chip implements HasChipLocation {
 	 *             If all the Processor(s) are monitors.
 	 */
 	public Processor getFirstUserProcessor() throws NoSuchElementException {
-		return this.userProcessors.get(this.userProcessors.firstKey());
+		return userProcessors.get(userProcessors.firstKey());
 	}
 
 	/**
 	 * @return the tagIds
 	 */
 	public List<Integer> getTagIds() {
-		return Collections.unmodifiableList(tagIds);
+		return unmodifiableList(tagIds);
 	}
 
 	@Override
 	public String toString() {
 		return "[Chip: x=" + getX() + ", y=" + getY() + ", sdram=" + sdram
-				+ ", ip_address=" + this.ipAddress + ", router=" + router
+				+ ", ip_address=" + ipAddress + ", router=" + router
 				+ ", monitors=" + monitorProcessors.keySet() + ", users="
 				+ userProcessors.keySet() + ", nearest_ethernet="
-				+ this.nearestEthernet + "]";
+				+ nearestEthernet + "]";
 	}
 
 	@Override

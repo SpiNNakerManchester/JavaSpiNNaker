@@ -17,12 +17,12 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static java.util.concurrent.TimeUnit.DAYS;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -84,7 +84,7 @@ public class BasicExecutor implements AutoCloseable {
 	@Override
 	public void close() throws InterruptedException {
 		executor.shutdown();
-		executor.awaitTermination(1, TimeUnit.DAYS);
+		executor.awaitTermination(1, DAYS);
 	}
 
 	/**

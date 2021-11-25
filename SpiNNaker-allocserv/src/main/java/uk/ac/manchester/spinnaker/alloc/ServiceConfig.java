@@ -18,20 +18,28 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static org.apache.cxf.message.Message.PROTOCOL_HEADERS;
+import static org.apache.cxf.phase.Phase.RECEIVE;
+import static org.apache.cxf.transport.http.AbstractHTTPDestination.HTTP_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletRequest;
 import javax.validation.ValidationException;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -41,10 +49,13 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
+import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.openapi.OpenApiFeature;
 import org.apache.cxf.jaxrs.spring.JaxRsConfig;
 import org.apache.cxf.jaxrs.validation.JAXRSBeanValidationInInterceptor;
+import org.apache.cxf.message.Message;
+import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -149,11 +160,14 @@ public class ServiceConfig extends Application {
 	 *
 	 * @param bus
 	 *            The CXF bus.
+	 * @param protocolCorrector
+	 *            How to correct the protocol
 	 * @return A factory instance
 	 */
 	@Bean
 	@Scope(SCOPE_PROTOTYPE)
-	JAXRSServerFactoryBean rawFactory(SpringBus bus) {
+	JAXRSServerFactoryBean rawFactory(SpringBus bus,
+			ProtocolUpgraderInterceptor protocolCorrector) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
 		factory.setStaticSubresourceResolution(true);
 		factory.setAddress("/");
@@ -161,9 +175,60 @@ public class ServiceConfig extends Application {
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
 		factory.setFeatures(asList(new OpenApiFeature()));
-		factory.setInInterceptors(asList(
-				new JAXRSBeanValidationInInterceptor()));
+		factory.setInInterceptors(asList(new JAXRSBeanValidationInInterceptor(),
+				protocolCorrector));
 		return factory;
+	}
+
+	/**
+	 * Handles the upgrade of the CXF endpoint protocol to HTTPS when the
+	 * service is behind a reverse proxy like nginx which might be handling
+	 * SSL/TLS for us. In theory, CXF should do this itself; this is the kind of
+	 * obscure rubbish that frameworks are supposed to handle for us. In
+	 * practice, it doesn't. Yuck.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Component
+	static class ProtocolUpgraderInterceptor
+			extends AbstractPhaseInterceptor<Message> {
+		ProtocolUpgraderInterceptor() {
+			super(RECEIVE);
+		}
+
+		private static final String FORWARDED_PROTOCOL = "x-forwarded-proto";
+
+		private static final String ENDPOINT_ADDRESS =
+				"org.apache.cxf.transport.endpoint.address";
+
+		@SuppressWarnings("unchecked")
+		private Map<String, List<String>> getHeaders(Message message) {
+			// If we've got one of these in the message, it's of this type
+			return (Map<String, List<String>>) message
+					.getOrDefault(PROTOCOL_HEADERS, emptyMap());
+		}
+
+		@Override
+		public void handleMessage(Message message) throws Fault {
+			Map<String, List<String>> headers = getHeaders(message);
+			if (headers.getOrDefault(FORWARDED_PROTOCOL, emptyList())
+					.contains("https")) {
+				upgradeEndpointProtocol(
+						(ServletRequest) message.get(HTTP_REQUEST));
+			}
+		}
+
+		/**
+		 * Upgrade the endpoint address if necessary; it's dumb that it might
+		 * need it, but we're being careful.
+		 */
+		private void upgradeEndpointProtocol(ServletRequest request) {
+			String addr = (String) request.getAttribute(ENDPOINT_ADDRESS);
+			if (addr != null && addr.startsWith("http:")) {
+				request.setAttribute(ENDPOINT_ADDRESS,
+						addr.replace("http:", "https:"));
+			}
+		}
 	}
 
 	@Provider
@@ -190,7 +255,7 @@ public class ServiceConfig extends Application {
 	 *            A factory used to make servers.
 	 * @return The REST service core, configured.
 	 */
-	@Bean
+	@Bean(destroyMethod = "destroy")
 	@ConditionalOnWebApplication
 	@DependsOn("JSONProvider")
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
@@ -199,6 +264,55 @@ public class ServiceConfig extends Application {
 		Server s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
+	}
+
+	/**
+	 * Used for making paths to things in the service in contexts where we can't
+	 * ask for the current request session to help. An example of such a context
+	 * is in configuring the access control rules on the paths, which has to be
+	 * done prior to any message session existing.
+	 *
+	 * @author Donal Fellows
+	 */
+	@Component
+	public static final class URLPathMaker {
+		@Value("${spring.mvc.servlet.path}")
+		private String mvcServletPath;
+
+		@Value("${cxf.path}")
+		private String cxfPath;
+
+		/**
+		 * Create a full local URL for the system components, bearing in mind
+		 * the deployment configuration.
+		 *
+		 * @param suffix
+		 *            The URL suffix; <em>should not</em> start with {@code /}
+		 * @return The full local URL (absolute path, without protocol or host)
+		 */
+		public String systemUrl(String suffix) {
+			String prefix = mvcServletPath;
+			if (!prefix.endsWith("/")) {
+				prefix += "/";
+			}
+			return prefix + suffix;
+		}
+
+		/**
+		 * Create a full local URL for web service components, bearing in mind
+		 * the deployment configuration.
+		 *
+		 * @param suffix
+		 *            The URL suffix; <em>should not</em> start with {@code /}
+		 * @return The full local URL (absolute path, without protocol or host)
+		 */
+		public String serviceUrl(String suffix) {
+			String prefix = cxfPath;
+			if (!prefix.endsWith("/")) {
+				prefix += "/";
+			}
+			return prefix + suffix;
+		}
 	}
 
 	@Autowired
@@ -267,7 +381,7 @@ public class ServiceConfig extends Application {
 	 */
 	public static void main(String[] args) {
 		// DISABLE IPv6 SUPPORT; SpiNNaker can't use it and it's a pain
-		System.setProperty("java.net.preferIPv4Stack", "false");
+		setProperty("java.net.preferIPv4Stack", "false");
 		SpringApplication.run(ServiceConfig.class, args);
 	}
 }

@@ -48,15 +48,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<form:label path="ipAddress">IP Address: </form:label>
 	<form:input path="ipAddress" type="text"/>
 	<br>
-	<c:if test="${ board.enabledDefined }">
-		<form:label path="enabled">Enable: </form:label>
-		<form:checkbox path="enabled"/>
-		<p>
-		<input type="submit" value="Change State" />
-	</c:if>
-	<c:if test="${ not board.enabledDefined }">
-		<input type="submit" value="Look Up Board" />
-	</c:if>
+	<c:choose>
+		<c:when test="${ board.enabledDefined }">
+			<form:label path="enabled">Enable: </form:label>
+			<form:checkbox path="enabled"/>
+			<p>
+			<input type="submit" value="Change State" />
+		</c:when>
+		<c:otherwise>
+			<input type="submit" value="Look Up Board" />
+		</c:otherwise>
+	</c:choose>
 </form:form>
 <button onclick="window.location.href='${ baseuri }'">Clear form</button>
 

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
+
 import javax.validation.constraints.NotNull;
 
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -30,7 +32,7 @@ public class MachinePower {
 	private PowerState power;
 
 	public MachinePower() {
-		power = PowerState.OFF;
+		power = OFF;
 	}
 
 	public MachinePower(PowerState power) {

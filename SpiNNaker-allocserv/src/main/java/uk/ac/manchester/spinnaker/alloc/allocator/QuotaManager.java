@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +27,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Row;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * Manages user quotas.
@@ -40,11 +39,8 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
  * @author Donal Fellows
  */
 @Component
-public class QuotaManager extends SQLQueries {
+public class QuotaManager extends DatabaseAwareBean {
 	private static final Logger log = getLogger(QuotaManager.class);
-
-	@Autowired
-	private DatabaseEngine db;
 
 	@Autowired
 	private ServiceMasterControl control;
@@ -61,12 +57,12 @@ public class QuotaManager extends SQLQueries {
 	 * @return True if they can make a job. False if they can't.
 	 */
 	public boolean mayCreateJob(int machineId, String user) {
-		try (Connection c = db.getConnection();
+		try (Connection c = getConnection();
 				// These could be combined, but they're complicated enough
 				Query getQuota = c.query(GET_USER_QUOTA);
 				Query getCurrentUsage = c.query(GET_CURRENT_USAGE)) {
-			return c.transaction(() -> mayCreateJob(machineId, user, getQuota,
-					getCurrentUsage));
+			return c.transaction(false, () -> mayCreateJob(machineId, user,
+					getQuota, getCurrentUsage));
 		}
 	}
 
@@ -98,9 +94,10 @@ public class QuotaManager extends SQLQueries {
 	 * @return True if the job can continue to run. False if it can't.
 	 */
 	public boolean mayLetJobContinue(int machineId, int jobId) {
-		try (Connection c = db.getConnection();
+		try (Connection c = getConnection();
 				Query getUsageAndQuota = c.query(GET_JOB_USAGE_AND_QUOTA)) {
-			return c.transaction(() -> getUsageAndQuota.call1(machineId, jobId)
+			return c.transaction(false, () -> getUsageAndQuota
+					.call1(machineId, jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
 					// Otherwise, we'll just allow it
@@ -117,7 +114,7 @@ public class QuotaManager extends SQLQueries {
 			return;
 		}
 		// Split off for testability
-		try (Connection c = db.getConnection()) {
+		try (Connection c = getConnection()) {
 			doConsolidate(c);
 		} catch (DataAccessException e) {
 			if (isBusy(e)) {
@@ -129,6 +126,7 @@ public class QuotaManager extends SQLQueries {
 		}
 	}
 
+	// Accessible for testing only
 	final void doConsolidate(Connection c) {
 		try (Query getConsoldationTargets = c.query(GET_CONSOLIDATION_TARGETS);
 				Update decrementQuota = c.update(DECREMENT_QUOTA);

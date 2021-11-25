@@ -34,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
@@ -207,7 +208,28 @@ public abstract class V1CompatTask {
 	 */
 	private Optional<Command> readMessage()
 			throws IOException, InterruptedException {
-		String line = in.readLine();
+		String line;
+		try {
+			line = in.readLine();
+		} catch (SocketException e) {
+			/*
+			 * Don't know why we get a generic socket exception for some of
+			 * these, but it happens when there's been some sort of network drop
+			 * or if the connection close happens in a weird order. Treating as
+			 * EOF is the right thing.
+			 *
+			 * I also don't know why there is no nicer way of detecting this
+			 * than matching the exception message. You'd think that you'd get
+			 * something better, but no...
+			 */
+			switch (e.getMessage()) {
+			case "Connection reset":
+			case "Connection timed out (Read failed)":
+				return Optional.empty();
+			default:
+				throw e;
+			}
+		}
 		if (isNull(line)) {
 			if (currentThread().isInterrupted()) {
 				throw new InterruptedException();

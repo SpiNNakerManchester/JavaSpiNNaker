@@ -111,7 +111,7 @@ public final class DirInfo extends SQLQueries {
 
 	static void load(Connection conn) {
 		if (MAP.isEmpty()) {
-			conn.transaction(() -> {
+			conn.transaction(false, () -> {
 				try (Query di = conn.query(LOAD_DIR_INFO)) {
 					di.call()
 							.forEach(row -> new DirInfo(row.getInt("z"),

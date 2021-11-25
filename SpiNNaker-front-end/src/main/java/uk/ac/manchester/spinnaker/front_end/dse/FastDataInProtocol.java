@@ -22,11 +22,12 @@ import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_DATA_TO_LOCATION;
-import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_TELL_DATA_IN;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_SEQ_DATA;
+import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInCommandID.SEND_TELL_DATA_IN;
 import static uk.ac.manchester.spinnaker.messages.Constants.SDP_PAYLOAD_WORDS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
+import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.GATHERER_DATA_SPEED_UP;
 import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.nio.ByteBuffer;
@@ -37,7 +38,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPPort;
 
 /**
  * Manufactures Fast Data In protocol messages.
@@ -107,7 +107,7 @@ class FastDataInProtocol {
 
 	private SDPHeader header() {
 		return new SDPHeader(REPLY_NOT_EXPECTED, gathererCore,
-				SDPPort.GATHERER_DATA_SPEED_UP.value);
+				GATHERER_DATA_SPEED_UP.value);
 	}
 
 	/**

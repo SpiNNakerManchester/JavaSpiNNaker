@@ -16,16 +16,22 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.ArrayList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.unmodifiableSet;
+
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * Represents a set of of {@link CoreLocation}s organized by Chip.
@@ -37,9 +43,8 @@ import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
  *
  * @author Christian-B
  */
-public class CoreSubsets implements Iterable<CoreLocation> {
-	private final TreeMap<ChipLocation,
-			TreeMap<Integer, CoreLocation>> locations;
+public class CoreSubsets implements MappableIterable<CoreLocation> {
+	private final Map<ChipLocation, Map<Integer, CoreLocation>> locations;
 
 	private boolean immutable;
 
@@ -79,9 +84,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 			throw new IllegalStateException("The subsets is immutable. "
 					+ "Possibly because a hashcode has been generated.");
 		}
-		ChipLocation chip = core.asChipLocation();
-		TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
-		subset.put(core.getP(), core);
+		getOrCreate(core.asChipLocation()).put(core.getP(), core);
 	}
 
 	/**
@@ -101,8 +104,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 *             hashcode has been generated,
 	 */
 	public void addCore(int x, int y, int p) {
-		ChipLocation chip = new ChipLocation(x, y);
-		addCore(chip, p);
+		addCore(new ChipLocation(x, y), p);
 	}
 
 	/**
@@ -124,9 +126,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 			throw new IllegalStateException("The subsets is immutable. "
 					+ "Possibly because a hashcode has been generated.");
 		}
-		CoreLocation core = new CoreLocation(chip, p);
-		TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
-		subset.put(p, core);
+		getOrCreate(chip).put(p, new CoreLocation(chip, p));
 	}
 
 	/**
@@ -148,10 +148,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 			throw new IllegalStateException("The subsets is immutable. "
 					+ "Possibly because a hashcode has been generated.");
 		}
+		Map<Integer, CoreLocation> map = getOrCreate(chip);
 		for (Integer p : processors) {
-			CoreLocation core = new CoreLocation(chip, p);
-			TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
-			subset.put(p, core);
+			map.put(p, new CoreLocation(chip, p));
 		}
 	}
 
@@ -172,8 +171,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 *             hashcode has been generated,
 	 */
 	public void addCores(int x, int y, Iterable<Integer> processors) {
-		ChipLocation chip = new ChipLocation(x, y);
-		addCores(chip, processors);
+		addCores(new ChipLocation(x, y), processors);
 	}
 
 	/**
@@ -198,11 +196,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 *            Coordinates of a chip
 	 * @return The core subset of a chip or {@code null} if there is no subset.
 	 */
-	private TreeMap<Integer, CoreLocation> getOrCreate(ChipLocation chip) {
-		if (!locations.containsKey(chip)) {
-			locations.put(chip, new TreeMap<>());
-		}
-		return locations.get(chip);
+	private Map<Integer, CoreLocation> getOrCreate(ChipLocation chip) {
+		return locations.computeIfAbsent(chip, k -> new TreeMap<>());
 	}
 
 	/**
@@ -211,11 +206,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return The sum of the individual CoreSubset sizes.
 	 */
 	public int size() {
-		int count = 0;
-		for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
-			count += subset.size();
-		}
-		return count;
+		return locations.values().stream().mapToInt(Map::size).sum();
 	}
 
 	/**
@@ -224,12 +215,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return {@code true} when the core subsets are empty.
 	 */
 	public boolean isEmpty() {
-		for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
-			if (!subset.isEmpty()) {
-				return false;
-			}
-		}
-		return true;
+		return locations.values().stream().allMatch(Map::isEmpty);
 	}
 
 	/**
@@ -242,11 +228,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return True if and only if there is a none empty Subset for this Chip.
 	 */
 	public boolean isChip(ChipLocation chip) {
-		if (locations.containsKey(chip)) {
-			return !locations.get(chip).isEmpty();
-		} else {
-			return false;
-		}
+		return !locations.getOrDefault(chip, emptyMap()).isEmpty();
 	}
 
 	/**
@@ -258,12 +240,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return True if and only if there is a core with these coordinates
 	 */
 	public boolean isCore(CoreLocation core) {
-		TreeMap<Integer, CoreLocation> subset =
-				locations.get(core.asChipLocation());
-		if (subset == null) {
-			return false;
-		}
-		return subset.containsValue(core);
+		return locations.getOrDefault(core.asChipLocation(), emptyMap())
+				.containsValue(core);
 	}
 
 	/**
@@ -282,7 +260,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	public final int hashCode() {
 		immutable = true;
 		int hash = 7;
-		for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
+		for (Map<Integer, CoreLocation> subset : locations.values()) {
 			for (CoreLocation location : subset.values()) {
 				hash = 89 * hash + location.hashCode();
 			}
@@ -333,17 +311,16 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 */
 	public CoreSubsets intersection(CoreSubsets other) {
 		CoreSubsets results = new CoreSubsets();
-		for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry
-				: locations.entrySet()) {
-			if (other.locations.containsKey(entry.getKey())) {
-				TreeMap<Integer, CoreLocation> otherSubset =
-						other.locations.get(entry.getKey());
-				if (otherSubset != null) {
-					for (CoreLocation location : entry.getValue().values()) {
-						if (otherSubset.containsValue(location)) {
-							results.addCore(location);
-						}
-					}
+		for (Entry<?, Map<Integer, CoreLocation>> entry : locations
+				.entrySet()) {
+			Map<?, CoreLocation> otherSubset =
+					other.locations.get(entry.getKey());
+			if (otherSubset == null) {
+				continue;
+			}
+			for (CoreLocation location : entry.getValue().values()) {
+				if (otherSubset.containsValue(location)) {
+					results.addCore(location);
 				}
 			}
 		}
@@ -359,7 +336,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return An ordered set of chips.
 	 */
 	public Set<ChipLocation> getChips() {
-		return Collections.unmodifiableSet(locations.keySet());
+		return unmodifiableSet(locations.keySet());
 	}
 
 	@Override
@@ -379,10 +356,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 */
 	public Collection<CoreLocation> coreByChip(ChipLocation chip) {
 		if (locations.containsKey(chip)) {
-			return Collections
-					.unmodifiableCollection(locations.get(chip).values());
+			return unmodifiableCollection(locations.get(chip).values());
 		} else {
-			return new ArrayList<>();
+			return emptyList();
 		}
 	}
 
@@ -398,9 +374,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 */
 	public Set<Integer> pByChip(ChipLocation chip) {
 		if (locations.containsKey(chip)) {
-			return Collections.unmodifiableSet(locations.get(chip).keySet());
+			return unmodifiableSet(locations.get(chip).keySet());
 		} else {
-			return new HashSet<>();
+			return emptySet();
 		}
 	}
 }

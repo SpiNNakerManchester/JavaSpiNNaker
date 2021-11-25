@@ -64,8 +64,9 @@ class SpiNNaker1 implements SpiNNakerControl {
 
 	/**
 	 * We <em>always</em> pretend to talk to the root BMP of a machine (actually
-	 * the root of a frame), and never directly to any others. The BMPs use a
-	 * CAN bus and I<sup>2</sup>C to communicate with each other on our behalf.
+	 * the root of a frame), and never directly to any others. The BMPs within a
+	 * frame use a CAN bus and I<sup>2</sup>C to communicate with each other on
+	 * our behalf.
 	 */
 	private static final BMPCoords ROOT_BMP = new BMPCoords(0, 0);
 
@@ -123,14 +124,15 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param fpga
 	 *            Which FPGA (0, 1, or 2) is being tested?
 	 * @return True if the FPGA is in a correct state, false otherwise.
-	 * @throws ProcessException
-	 *             If a BMP rejects a message.
-	 * @throws IOException
-	 *             If network I/O fails.
 	 */
-	private boolean isGoodFPGA(Integer board, FpgaIdentifiers fpga)
-			throws ProcessException, IOException {
-		int flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
+	private boolean isGoodFPGA(Integer board, FpgaIdentifiers fpga) {
+		int flag;
+		try {
+			flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
+		} catch (ProcessException | IOException ignored) {
+			// An exception means the FPGA is a problem
+			return false;
+		}
 		// FPGA ID is bottom two bits of FLAG register
 		int fpgaId = flag & FPGA_FLAG_ID_MASK;
 		boolean ok = fpgaId == fpga.ordinal();
@@ -178,6 +180,23 @@ class SpiNNaker1 implements SpiNNakerControl {
 				board);
 	}
 
+	/**
+	 * A board is good if all its FPGAs are good.
+	 *
+	 * @param board
+	 *            The board ID
+	 * @return Whether the board's FPGAs all came up correctly.
+	 * @see #isGoodFPGA(Integer, FpgaIdentifiers)
+	 */
+	private boolean hasGoodFPGAs(Integer board) {
+		for (FpgaIdentifiers fpga : FpgaIdentifiers.values()) {
+			if (!isGoodFPGA(board, fpga)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public void powerOnAndCheck(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
@@ -202,16 +221,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 					continue;
 				}
 
-				for (FpgaIdentifiers fpga : FpgaIdentifiers.values()) {
-					if (!isGoodFPGA(board, fpga)) {
-						retryBoards.add(board);
-						/*
-						 * Stop the INNERMOST loop; we know this board needs
-						 * retrying so there's no point in continuing to look at
-						 * the FPGAs it has.
-						 */
-						break;
-					}
+				if (!hasGoodFPGAs(board)) {
+					retryBoards.add(board);
 				}
 			}
 			if (retryBoards.isEmpty()) {

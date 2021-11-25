@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.lang.String.format;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 /** Physical coordinates of a board. */
-@JsonFormat(shape = Shape.ARRAY)
+@JsonFormat(shape = ARRAY)
 public class Physical {
 	private int cabinet;
 
@@ -54,6 +56,6 @@ public class Physical {
 
 	@Override
 	public String toString() {
-		return String.format("[%d:%d:%s]", cabinet, frame, board);
+		return format("[%d:%d:%s]", cabinet, frame, board);
 	}
 }

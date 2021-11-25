@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
+import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
@@ -45,7 +46,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	 *            The ID of the packet, between 0 and 127
 	 */
 	public FloodFillEnd(byte nearestNeighbourID) {
-		this(nearestNeighbourID, AppID.DEFAULT, null, false);
+		this(nearestNeighbourID, DEFAULT, null, false);
 	}
 
 	/**

@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.System.nanoTime;
+import static java.nio.ByteBuffer.allocate;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
@@ -49,7 +50,7 @@ final class GatherDownloadConnection extends SDPConnection {
 	private static final int INTER_SEND_INTERVAL_NS = 60000;
 
 	/** An empty buffer. Used so we don't try to read zero bytes. */
-	private static final ByteBuffer EMPTY_DATA = ByteBuffer.allocate(0);
+	private static final ByteBuffer EMPTY_DATA = allocate(0);
 
 	/**
 	 * Create an instance.

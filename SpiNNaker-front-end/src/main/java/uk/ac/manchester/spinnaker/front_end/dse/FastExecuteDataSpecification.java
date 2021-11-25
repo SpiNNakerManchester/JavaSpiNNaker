@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
+import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -26,8 +27,10 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.dse.ExecutionContext.TOTAL_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,11 +42,11 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.BitSet;
 
 import org.slf4j.Logger;
 
@@ -77,7 +80,6 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
-import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
  * Implementation of the Data Specification Executor that uses the Fast Data In
@@ -340,13 +342,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 		}
 
-		float timeTaken = timeDiff / (float) UnitConstants.NSEC_PER_SEC;
+		float timeTaken = timeDiff / (float) NSEC_PER_SEC;
 		float megabits = (size * (long) NBBY) / (float) (ONE_KI * ONE_KI);
 		String mbs;
 		if (timeDiff == 0) {
 			mbs = "unknown, below threshold";
 		} else {
-			mbs = String.format("%f", megabits / timeTaken);
+			mbs = format("%f", megabits / timeTaken);
 		}
 		try (PrintWriter w = open(reportPath, true)) {
 			w.printf("%d\t%d\t%#08x\t%d\t%f\t%s\t%s\n", chip.getX(),
@@ -468,7 +470,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			try {
 				ds = ctl.getDataSpec();
 			} catch (StorageException e) {
-				throw new DataSpecificationException(String.format(
+				throw new DataSpecificationException(format(
 						"failed to read data specification on "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
@@ -480,17 +482,17 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				log.info("loaded {} memory regions (including metadata "
 						+ "pseudoregion) for {}", writes, ctl.core);
 			} catch (DataSpecificationException e) {
-				throw new DataSpecificationException(String.format(
+				throw new DataSpecificationException(format(
 						"failed to execute data specification on "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
 			} catch (IOException e) {
-				throw new IOException(String.format(
+				throw new IOException(format(
 						"failed to upload built data to "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
 			} catch (StorageException e) {
-				throw new StorageException(String.format(
+				throw new StorageException(format(
 						"failed to record results of data specification for "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
@@ -509,7 +511,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 			}
-			int written = ExecutionContext.TOTAL_HEADER_SIZE;
+			int written = TOTAL_HEADER_SIZE;
 			int writeCount = 1;
 
 			for (MemoryRegion reg : executor.regions()) {

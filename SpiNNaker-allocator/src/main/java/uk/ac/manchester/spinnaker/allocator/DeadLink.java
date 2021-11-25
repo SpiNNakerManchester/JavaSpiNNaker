@@ -16,15 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
-import java.util.Arrays;
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.util.Arrays.asList;
+
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
-@JsonFormat(shape = Shape.ARRAY)
+@JsonFormat(shape = ARRAY)
 @JsonPropertyOrder({
 	"end1", "end2"
 })
@@ -52,6 +53,6 @@ public class DeadLink {
 	private DeadLink.End end2;
 
 	public List<DeadLink.End> getEnds() {
-		return Arrays.asList(end1, end2);
+		return asList(end1, end2);
 	}
 }

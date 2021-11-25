@@ -18,16 +18,16 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.interrupted;
+import static java.lang.reflect.Array.newInstance;
+import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -259,7 +259,7 @@ abstract class Utils {
 		bl2.setZ(downLink.end2.board.getZ());
 		bl2.setLink(downLink.end2.direction.ordinal());
 
-		return Arrays.asList(bl1, bl2).stream();
+		return asList(bl1, bl2).stream();
 	}
 
 	/**
@@ -294,7 +294,7 @@ abstract class Utils {
 
 		// This is why we can't use a Supplier
 		@SuppressWarnings("unchecked")
-		U[] ary = (U[]) Array.newInstance(cls, projectedSize);
+		U[] ary = (U[]) newInstance(cls, projectedSize);
 
 		try {
 			for (T val : src) {

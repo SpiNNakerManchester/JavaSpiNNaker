@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timedOut;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.DESTROYED;
+import static uk.ac.manchester.spinnaker.spalloc.messages.State.QUEUED;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.UNKNOWN;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
@@ -592,10 +593,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		 * getJobMachineInfo works if the Job is in State.POWER
 		 */
 		// TODO what about state UNKNOWN and State.DESTROYED
-		if (getState() == State.QUEUED) {
+		if (getState() == QUEUED) {
 			// Double check very latest state.
 			purgeStatus();
-			if (getState() == State.QUEUED) {
+			if (getState() == QUEUED) {
 				throw new IllegalStateException(
 						"Job not Ready. Call waitUntilReady first.");
 			}

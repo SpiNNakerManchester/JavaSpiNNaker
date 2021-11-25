@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.net.InetAddress.getByAddress;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.GET;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.CORE_MASK;
@@ -94,7 +95,7 @@ public class IPTagGet extends SCPRequest<IPTagGet.Response> {
 
 			byte[] ipBytes = new byte[IPV4_BYTES];
 			buffer.get(ipBytes);
-			ipAddress = InetAddress.getByAddress(ipBytes);
+			ipAddress = getByAddress(ipBytes);
 
 			macAddress = new byte[MAC_BYTES];
 			buffer.get(macAddress);

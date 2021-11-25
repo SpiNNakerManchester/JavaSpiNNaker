@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Objects.isNull;
@@ -25,9 +26,13 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.created;
 import static javax.ws.rs.core.Response.noContent;
+import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.address;
+import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.physical;
+import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
 
 import java.net.URI;
@@ -62,7 +67,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
@@ -343,12 +347,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 	 */
 	private Response wrapPaging(ListJobsResponse value, UriInfo ui, int start,
 			int limit) {
-		ResponseBuilder r = Response.ok(value);
+		ResponseBuilder r = ok(value);
 		Map<String, URI> links = new HashMap<>();
 		if (start > 0) {
 			URI prev = ui.getRequestUriBuilder()
 					.replaceQueryParam("wait", false)
-					.replaceQueryParam("start", Math.max(start - limit, 0))
+					.replaceQueryParam("start", max(start - limit, 0))
 					.build();
 			value.setPrev(prev);
 			links.put("prev", prev);
@@ -466,12 +470,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 					req.dimensions.height);
 		} else if (nonNull(req.board)) {
 			if (nonNull(req.board.x)) {
-				return CreateBoard.triad(req.board.x, req.board.y, req.board.z);
+				return triad(req.board.x, req.board.y, req.board.z);
 			} else if (nonNull(req.board.cabinet)) {
-				return CreateBoard.physical(req.board.cabinet, req.board.frame,
+				return physical(req.board.cabinet, req.board.frame,
 						req.board.board);
 			} else {
-				return CreateBoard.address(req.board.address);
+				return address(req.board.address);
 			}
 		} else {
 			// It's a single board

@@ -16,6 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
+import static java.nio.ByteBuffer.wrap;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_LOADING_METADATA;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.COUNT_WORK;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORE_DATA_SPEC;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_CORES_TO_LOAD_FILTERED;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
+
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,7 +73,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	}
 
 	private static int countWorkRequired(Connection conn) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.COUNT_WORK);
+		try (PreparedStatement s = conn.prepareStatement(COUNT_WORK);
 				ResultSet rs = s.executeQuery()) {
 			while (rs.next()) {
 				// count_content
@@ -83,7 +91,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	private static List<Ethernet> listEthernetsToLoad(Connection conn)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.LIST_ETHERNETS);
+		try (PreparedStatement s = conn.prepareStatement(LIST_ETHERNETS);
 				ResultSet rs = s.executeQuery()) {
 			List<Ethernet> result = new ArrayList<>();
 			while (rs.next()) {
@@ -120,8 +128,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	private List<CoreToLoad> listCoresToLoad(Connection conn,
 			EthernetImpl ethernet) throws SQLException {
-		try (PreparedStatement s =
-				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD)) {
+		try (PreparedStatement s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
 			// ethernet_id
 			s.setInt(FIRST, ethernet.id);
 			try (ResultSet rs = s.executeQuery()) {
@@ -149,7 +156,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			EthernetImpl ethernet, boolean loadSystemCores)
 			throws SQLException {
 		try (PreparedStatement s =
-				conn.prepareStatement(SQL.LIST_CORES_TO_LOAD_FILTERED)) {
+				conn.prepareStatement(LIST_CORES_TO_LOAD_FILTERED)) {
 			// ethernet_id
 			s.setInt(FIRST, ethernet.id);
 			s.setBoolean(SECOND, loadSystemCores);
@@ -185,13 +192,11 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	private static ByteBuffer getDataSpec(Connection conn, CoreToLoadImpl core)
 			throws SQLException {
-		try (PreparedStatement s =
-				conn.prepareStatement(SQL.GET_CORE_DATA_SPEC)) {
+		try (PreparedStatement s = conn.prepareStatement(GET_CORE_DATA_SPEC)) {
 			s.setInt(FIRST, core.id);
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
-					return ByteBuffer.wrap(rs.getBytes(FIRST))
-							.asReadOnlyBuffer();
+					return wrap(rs.getBytes(FIRST)).asReadOnlyBuffer();
 				}
 			}
 			throw new IllegalStateException(
@@ -211,7 +216,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			CoreToLoadImpl core, int startAddress, int memoryUsed,
 			int memoryWritten) throws SQLException {
 		try (PreparedStatement s =
-				conn.prepareStatement(SQL.ADD_LOADING_METADATA)) {
+				conn.prepareStatement(ADD_LOADING_METADATA)) {
 			s.setInt(FIRST, startAddress);
 			s.setInt(SECOND, memoryUsed);
 			s.setInt(THIRD, memoryWritten);

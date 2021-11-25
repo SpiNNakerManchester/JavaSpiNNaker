@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
 
@@ -237,7 +239,7 @@ public class RawConfigParser {
 		if (isNone(value)) {
 			return null;
 		}
-		return Integer.parseInt(value);
+		return parseInt(value);
 	}
 
 	/**
@@ -254,7 +256,7 @@ public class RawConfigParser {
 		if (isNone(value)) {
 			return null;
 		}
-		return Boolean.parseBoolean(value);
+		return parseBoolean(value);
 	}
 
 	/**

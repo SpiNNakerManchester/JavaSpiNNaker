@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.SPINNAKER_REQUEST_BUFFERS;
 
 import java.nio.ByteBuffer;
@@ -72,13 +73,13 @@ public class SpinnakerRequestBuffers extends EIEIOCommandMessage
 	SpinnakerRequestBuffers(ByteBuffer data) {
 		super(data);
 
-		int y = Byte.toUnsignedInt(data.get());
-		int x = Byte.toUnsignedInt(data.get());
+		int y = toUnsignedInt(data.get());
+		int x = toUnsignedInt(data.get());
 		int p = ((data.get() >>> PROC_SHIFT) & PROC_MASK);
 		core = new CoreLocation(x, y, p);
 		data.get(); // ignore
 		regionID = data.get() & REGION_MASK;
-		sequenceNum = Byte.toUnsignedInt(data.get());
+		sequenceNum = toUnsignedInt(data.get());
 		spaceAvailable = data.getInt();
 	}
 

@@ -16,18 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableMap;
-import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
+import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -115,32 +117,62 @@ public class TransceiverFactory
 	@Override
 	public BMPTransceiverInterface getTransciever(Machine machineDescription,
 			BMPCoords bmp) throws IOException, SpinnmanException {
-		// Can't use Map.computeIfAbsent(); checked exceptions in the way
-		synchronized (txrxMap) {
-			Key key = new Key(machineDescription.getName(), bmp);
-			BMPTransceiverInterface t = txrxMap.get(key);
-			if (isNull(t)) {
-				BMPConnectionData connData =
-						makeConnectionData(machineDescription, bmp);
-				if (control.isUseDummyBMP()) {
-					t = new DummyTransceiver(machineDescription.getName(),
-							connData);
-				} else {
-					t = makeTransceiver(connData);
-				}
-				txrxMap.put(key, t);
+		try {
+			synchronized (txrxMap) {
+				return txrxMap.computeIfAbsent(
+						new Key(machineDescription.getName(), bmp),
+						k -> makeTransceiver(machineDescription, bmp));
 			}
-			return t;
+		} catch (TransceiverFactoryException e) {
+			Throwable t = e.getCause();
+			if (t instanceof IOException) {
+				throw (IOException) t;
+			} else if (t instanceof SpinnmanException) {
+				throw (SpinnmanException) t;
+			}
+			throw e;
 		}
 	}
 
-	private BMPConnectionData makeConnectionData(Machine machine, BMPCoords bmp)
-			throws IOException {
-		String address = machine.getBMPAddress(bmp);
-		List<Integer> boards = machine.getBoardNumbers(bmp);
-		return new BMPConnectionData(0, 0, getByName(address), boards,
-				SCP_SCAMP_PORT);
+	private static class TransceiverFactoryException extends RuntimeException {
+		private static final long serialVersionUID = 2102592240724419836L;
+
+		TransceiverFactoryException(String msg, Exception e) {
+			super(msg, e);
+		}
 	}
+
+	private BMPTransceiverInterface makeTransceiver(Machine machineDescription,
+			BMPCoords bmp) {
+		BMPConnectionData connData =
+				makeConnectionData(machineDescription, bmp);
+		try {
+			if (control.isUseDummyBMP()) {
+				return new DummyTransceiver(machineDescription.getName(),
+						connData);
+			} else {
+				return makeTransceiver(connData);
+			}
+		} catch (IOException | SpinnmanException e) {
+			throw new TransceiverFactoryException(
+					"failed to build BMP transceiver", e);
+		}
+	}
+
+	private BMPConnectionData makeConnectionData(Machine machine,
+			BMPCoords bmp) {
+		try {
+			String address = machine.getBMPAddress(bmp);
+			List<Integer> boards = machine.getBoardNumbers(bmp);
+			return new BMPConnectionData(0, 0, getByName(address), boards,
+					SCP_SCAMP_PORT);
+		} catch (IOException e) {
+			throw new TransceiverFactoryException(
+					"failed to build address of BMP transceiver", e);
+		}
+	}
+
+	private static final int BUILD_TIMEOUT_TRIES = 5;
 
 	/**
 	 * Build a transceiver connection.
@@ -158,8 +190,22 @@ public class TransceiverFactory
 	 */
 	private Transceiver makeTransceiver(BMPConnectionData data)
 			throws IOException, SpinnmanException {
-		return new Transceiver(null, asList(new BMPConnection(data)), null,
-				null, null, null, null);
+		int count = 0;
+		while (true) {
+			try {
+				return new Transceiver(null, asList(new BMPConnection(data)),
+						null, null, null, null, null);
+			} catch (ProcessException e) {
+				if (e.getCause() instanceof BMPSendTimedOutException
+						&& ++count > BUILD_TIMEOUT_TRIES) {
+					log.error("completely failed to connect to BMP {}; "
+							+ "service is unstable!", data);
+					throw e;
+				}
+				log.error("failed to connect to BMP; will ping and retry", e);
+				ping(data.ipAddress);
+			}
+		}
 	}
 
 	@PreDestroy
@@ -195,8 +241,8 @@ class DummyTransceiver implements BMPTransceiverInterface {
 	 *         checks, and arbitrary (zero) elsewhere.
 	 */
 	private static ByteBuffer syntheticVersionData() {
-		ByteBuffer b = ByteBuffer.allocate(VERSION_INFO_SIZE);
-		b.order(ByteOrder.LITTLE_ENDIAN);
+		ByteBuffer b = allocate(VERSION_INFO_SIZE);
+		b.order(LITTLE_ENDIAN);
 		b.putInt(0);
 		b.putInt(0);
 		b.putInt(0);
