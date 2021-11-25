@@ -83,7 +83,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -343,58 +342,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		public String getAuthority() {
 			return role;
-		}
-	}
-
-	private enum RequestLogLevel {
-		NONE, BASIC, QUERY, HEADERS, RESPONSE
-	}
-
-	/**
-	 * Enables detailed logging of requests.
-	 */
-	@Component
-	static class LoggingFilter extends AbstractRequestLoggingFilter {
-		private static final Logger log = getLogger(LoggingFilter.class);
-
-		private static final int MAX_PAYLOAD_LENGTH = 10000;
-
-		// TODO make this configurable via the config file
-		private RequestLogLevel logDetail = RequestLogLevel.NONE;
-
-		LoggingFilter() {
-			switch (logDetail) {
-			case RESPONSE:
-				setIncludePayload(true);
-				setMaxPayloadLength(MAX_PAYLOAD_LENGTH);
-				setAfterMessagePrefix("REQUEST DATA : ");
-			case HEADERS:
-				setIncludeHeaders(true);
-			case QUERY:
-				setIncludeQueryString(true);
-			default:
-				// fall through
-			}
-		}
-
-		@Override
-		protected boolean shouldLog(HttpServletRequest request) {
-			if (logDetail == RequestLogLevel.NONE) {
-				return false;
-			}
-			return log.isInfoEnabled();
-		}
-
-		@Override
-		protected void beforeRequest(HttpServletRequest req, String msg) {
-			log.info(msg);
-		}
-
-		/**
-		 * Never log after request. We're not interested.
-		 */
-		@Override
-		protected void afterRequest(HttpServletRequest req, String msg) {
 		}
 	}
 
