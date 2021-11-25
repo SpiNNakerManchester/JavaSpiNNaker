@@ -25,7 +25,6 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.systemUrl;
 
 import java.net.URI;
 import java.security.Principal;
@@ -53,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
@@ -98,6 +98,9 @@ public class RootControllerImpl implements RootController {
 
 	@Autowired
 	private UserControl userControl;
+
+	@Autowired
+	private URLPathMaker urlMaker;
 
 	private static URI uri(Object selfCall) {
 		// No template variables in the overall controller, so can factor out
@@ -151,7 +154,7 @@ public class RootControllerImpl implements RootController {
 			log.info("logging out {}", auth.getPrincipal());
 			logoutHandler.logout(request, response, auth);
 		}
-		return "redirect:" + systemUrl("login.html");
+		return "redirect:" + urlMaker.systemUrl("login.html");
 	}
 
 	@Override

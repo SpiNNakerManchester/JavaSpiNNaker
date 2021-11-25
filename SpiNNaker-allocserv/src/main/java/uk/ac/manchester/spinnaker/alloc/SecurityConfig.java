@@ -53,6 +53,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -155,10 +156,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
 
-	/** Prefix of URLs. */
-	// TODO This ought to come from the config file properly
-	private static final String URL_PREFIX = "/spalloc/";
-
 	@Autowired
 	private BasicAuthEntryPoint authenticationEntryPoint;
 
@@ -237,28 +234,49 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		void unlockLockedUsers();
 	}
 
-	/**
-	 * Create a full local URL bearing in mind the deployment configuration.
-	 *
-	 * @param suffix
-	 *            The URL suffix
-	 * @return The full local URL (absolute path, without protocol or host)
-	 */
-	private static String baseUrl(String suffix) {
-		return URL_PREFIX + suffix;
+	@Component
+	public static final class URLPathMaker {
+		@Value("${spring.mvc.servlet.path}")
+		private String mvcServletPath;
+
+		@Value("${cxf.path}")
+		private String cxfPath;
+
+		/**
+		 * Create a full local URL for the system components, bearing in mind
+		 * the deployment configuration.
+		 *
+		 * @param suffix
+		 *            The URL suffix
+		 * @return The full local URL (absolute path, without protocol or host)
+		 */
+		public String systemUrl(String suffix) {
+			String prefix = mvcServletPath;
+			if (!prefix.endsWith("/")) {
+				prefix += "/";
+			}
+			return prefix + suffix;
+		}
+
+		/**
+		 * Create a full local URL for web service components, bearing in mind
+		 * the deployment configuration.
+		 *
+		 * @param suffix
+		 *            The URL suffix
+		 * @return The full local URL (absolute path, without protocol or host)
+		 */
+		public String serviceUrl(String suffix) {
+			String prefix = cxfPath;
+			if (!prefix.endsWith("/")) {
+				prefix += "/";
+			}
+			return prefix + suffix;
+		}
 	}
 
-	/**
-	 * Create a full local URL for the system components, bearing in mind the
-	 * deployment configuration.
-	 *
-	 * @param suffix
-	 *            The URL suffix
-	 * @return The full local URL (absolute path, without protocol or host)
-	 */
-	public static String systemUrl(String suffix) {
-		return URL_PREFIX + "system/" + suffix;
-	}
+	@Autowired
+	private URLPathMaker urlMaker;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -271,22 +289,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
-				.antMatchers(baseUrl("info*"), baseUrl("info/**"))
+				.antMatchers(urlMaker.serviceUrl("info*"),
+						urlMaker.serviceUrl("info/**"))
 				.hasRole("ADMIN")
 				// Login process and static resources are available to all
-				.antMatchers(systemUrl("login*"), systemUrl("perform_*"),
-						systemUrl("error"), systemUrl("resources/*"))
+				.antMatchers(urlMaker.systemUrl("login*"),
+						urlMaker.systemUrl("perform_*"),
+						urlMaker.systemUrl("error"),
+						urlMaker.systemUrl("resources/*"))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
 		if (properties.isBasic()) {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
+		String loginUrl = urlMaker.systemUrl("login.html");
 		if (properties.isLocalForm()) {
-			http.formLogin().loginPage(systemUrl("login.html"))
-					.loginProcessingUrl(systemUrl("perform_login"))
-					.defaultSuccessUrl(systemUrl(""), true)
-					.failureUrl(systemUrl("login.html?error=true"))
+			http.formLogin().loginPage(loginUrl)
+					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
+					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler);
 		}
 		/*
@@ -294,9 +316,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * browsers will just log straight back in again. Still, it is
 		 * meaningful.
 		 */
-		http.logout().logoutUrl(systemUrl("perform_logout"))
+		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
-				.logoutSuccessUrl(systemUrl("login.html"));
+				.logoutSuccessUrl(loginUrl);
 		// FIXME add support for HBP/EBRAINS OpenID Connect
 	}
 
