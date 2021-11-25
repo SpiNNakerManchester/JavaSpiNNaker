@@ -266,6 +266,14 @@ public class ServiceConfig extends Application {
 		return s;
 	}
 
+	/**
+	 * Used for making paths to things in the service in contexts where we can't
+	 * ask for the current request session to help. An example of such a context
+	 * is in configuring the access control rules on the paths, which has to be
+	 * done prior to any message session existing.
+	 *
+	 * @author Donal Fellows
+	 */
 	@Component
 	public static final class URLPathMaker {
 		@Value("${spring.mvc.servlet.path}")
@@ -279,7 +287,7 @@ public class ServiceConfig extends Application {
 		 * the deployment configuration.
 		 *
 		 * @param suffix
-		 *            The URL suffix
+		 *            The URL suffix; <em>should not</em> start with {@code /}
 		 * @return The full local URL (absolute path, without protocol or host)
 		 */
 		public String systemUrl(String suffix) {
@@ -295,7 +303,7 @@ public class ServiceConfig extends Application {
 		 * the deployment configuration.
 		 *
 		 * @param suffix
-		 *            The URL suffix
+		 *            The URL suffix; <em>should not</em> start with {@code /}
 		 * @return The full local URL (absolute path, without protocol or host)
 		 */
 		public String serviceUrl(String suffix) {
