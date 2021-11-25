@@ -92,6 +92,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 
 /**
@@ -233,6 +234,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		void unlockLockedUsers();
 	}
 
+	@Autowired
+	private URLPathMaker urlMaker;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		/*
@@ -244,21 +248,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
-				.antMatchers("/info*", "/info/**").hasRole("ADMIN")
+				.antMatchers(urlMaker.serviceUrl("info*"),
+						urlMaker.serviceUrl("info/**"))
+				.hasRole("ADMIN")
 				// Login process and static resources are available to all
-				.antMatchers("/system/login*", "/system/perform_*",
-						"/system/error", "/system/resources/*")
+				.antMatchers(urlMaker.systemUrl("login*"),
+						urlMaker.systemUrl("perform_*"),
+						urlMaker.systemUrl("error"),
+						urlMaker.systemUrl("resources/*"))
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
 		if (properties.isBasic()) {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
+		String loginUrl = urlMaker.systemUrl("login.html");
 		if (properties.isLocalForm()) {
-			http.formLogin().loginPage("/system/login.html")
-					.loginProcessingUrl("/system/perform_login")
-					.defaultSuccessUrl("/system/", true)
-					.failureUrl("/system/login.html?error=true")
+			http.formLogin().loginPage(loginUrl)
+					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
+					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler);
 		}
 		/*
@@ -266,9 +275,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * browsers will just log straight back in again. Still, it is
 		 * meaningful.
 		 */
-		http.logout().logoutUrl("/system/perform_logout")
+		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
-				.logoutSuccessUrl("/system/login.html");
+				.logoutSuccessUrl(loginUrl);
 		// FIXME add support for HBP/EBRAINS OpenID Connect
 	}
 
