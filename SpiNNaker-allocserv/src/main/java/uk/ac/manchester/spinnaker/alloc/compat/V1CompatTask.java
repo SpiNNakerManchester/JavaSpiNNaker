@@ -38,6 +38,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
@@ -477,6 +478,22 @@ public abstract class V1CompatTask {
 			} else {
 				throw new Oops("missing parameter: chip_x, x, or cabinet");
 			}
+		case "report_problem":
+			String ip = args.get(0).toString();
+			Integer x = null, y = null, p = null;
+			String desc = "It doesn't work and I don't know why.";
+			if (kwargs.containsKey("x")) {
+				x = parseDec(kwargs, "x");
+				y = parseDec(kwargs, "y");
+				if (kwargs.containsKey("p")) {
+					p = parseDec(kwargs, "p");
+				}
+			}
+			if (kwargs.containsKey("description")) {
+				desc = Objects.toString(kwargs.get("description"));
+			}
+			reportProblem(ip, x, y, p, desc);
+			break;
 		case "login":
 			throw new Oops("upgrading security is not supported");
 		default:
@@ -674,6 +691,25 @@ public abstract class V1CompatTask {
 	 */
 	protected abstract void powerJobBoards(int jobId, PowerState switchOn)
 			throws TaskException;
+
+	/**
+	 * Report a problem with a board, chip or core. If a whole chip has a
+	 * problem, {@code p} will be {@code null}. If a whole board has a problem,
+	 * {@code x,y} will be {@code null,null}.
+	 *
+	 * @param address
+	 *            The board's IP address.
+	 * @param x
+	 *            The chip's X coordinate.
+	 * @param y
+	 *            The chip's Y coordinate.
+	 * @param p
+	 *            The core's P coordinate.
+	 * @param description
+	 *            Optional descriptive text about the problem.
+	 */
+	protected abstract void reportProblem(String address, Integer x, Integer y,
+			Integer p, String description);
 
 	/**
 	 * @return The service version. Never {@code null}.
