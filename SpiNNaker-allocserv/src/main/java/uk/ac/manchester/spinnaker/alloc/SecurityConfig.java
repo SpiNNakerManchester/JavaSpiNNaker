@@ -286,8 +286,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
 					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler)
-					//
-					.and().oauth2ResourceServer(oauth2 -> oauth2.jwt());
+					// The next line is shorter written like this
+					.and().oauth2ResourceServer(oauth -> oauth.jwt());
 		}
 		/*
 		 * Logging out is common code, but pretty pointless for Basic Auth as
