@@ -39,6 +39,8 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -163,6 +165,25 @@ public interface SpallocAPI {
 
 	/** Purge the cache of what boards are down. */
 	void purgeDownCache();
+
+	/**
+	 * Tells the service that there may be a problem with a board at a
+	 * particular address.
+	 *
+	 * @param address
+	 *            The IP address of the board. Note that we haven't yet
+	 *            identified which machine has the board.
+	 * @param coreLocation
+	 *            Where on the board is the problem. If the problem is at the
+	 *            core level, it's a {@link HasCoreLocation}. If the problem is
+	 *            at the board level, this is {@code null}.
+	 * @param description
+	 *            Optional problem description. May be {@code null}.
+	 * @param permit
+	 *            Who is making the request.
+	 */
+	void reportProblem(String address, HasChipLocation coreLocation,
+			String description, Permit permit);
 
 	/**
 	 * Describes what sort of request to create a job this is.

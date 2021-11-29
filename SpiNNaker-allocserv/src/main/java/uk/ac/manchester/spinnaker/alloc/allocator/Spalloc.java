@@ -33,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +77,7 @@ import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -510,6 +512,120 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
+	private static String mergeDescription(HasChipLocation coreLocation,
+			String description) {
+		if (isNull(description)) {
+			description = "<null>";
+		}
+		if (coreLocation instanceof HasCoreLocation) {
+			HasCoreLocation loc = (HasCoreLocation) coreLocation;
+			description += format(" (at core %d of chip %s)", loc.getP(),
+					loc.asChipLocation());
+		} else if (nonNull(coreLocation)) {
+			description +=
+					format(" (at chip %s)", coreLocation.asChipLocation());
+		}
+		return description;
+	}
+
+	@Override
+	public void reportProblem(String address, HasChipLocation coreLocation,
+			String description, Permit permit) {
+		try (BoardReportSQL sql = new BoardReportSQL()) {
+			String desc = mergeDescription(coreLocation, description);
+			Optional<EmailBuilder> email = sql.transaction(() -> {
+				Collection<Machine> machines =
+						getMachines(sql.getConnection()).values();
+				for (Machine m : machines) {
+					Optional<EmailBuilder> mail =
+							sql.findBoardNet.call1(m.getId(), address)
+									.flatMap(row -> reportProblem(row, desc,
+											permit, sql));
+					if (mail.isPresent()) {
+						return mail;
+					}
+				}
+				return Optional.empty();
+			});
+			// Outside the transaction!
+			email.ifPresent(this::sendBoardServiceMail);
+		} catch (ReportRollbackExn e) {
+			log.warn("failed to handle problem report", e);
+		}
+	}
+
+	private Optional<EmailBuilder> reportProblem(Row row, String description,
+			Permit permit, BoardReportSQL sql) {
+		EmailBuilder email = new EmailBuilder(row.getInt("job_id"));
+		email.header(description, 1, permit.name);
+		int userId = getUser(sql.getConnection(), permit.name).orElseThrow(
+				() -> new ReportRollbackExn("no such user: " + permit.name));
+		sql.insertReport.key(row.getInt("board_id"), row.getInt("job_id"),
+				description, userId).ifPresent(email::issue);
+		return takeBoardsOutOfService(sql, email).map(acted -> {
+			email.footer(acted);
+			return email;
+		});
+	}
+
+	/**
+	 * Take boards out of service if they've been reported frequently enough.
+	 *
+	 * @param sql
+	 *            How to touch the DB
+	 * @param email
+	 *            The email we are building.
+	 * @return The number of boards taken out of service
+	 */
+	private Optional<Integer> takeBoardsOutOfService(BoardReportSQL sql,
+			EmailBuilder email) {
+		int acted = 0;
+		for (Row r : sql.getReported.call(props.getReportActionThreshold())) {
+			int boardId = r.getInt("board_id");
+			if (sql.setFunctioning.call(false, boardId) > 0) {
+				email.serviceActionDone(r);
+				acted++;
+			}
+		}
+		if (acted > 0) {
+			purgeDownCache();
+			epochs.nextMachineEpoch();
+		}
+		return acted > 0 ? Optional.of(acted) : Optional.empty();
+	}
+
+	/**
+	 * Send an assembled message if the service is configured to do so.
+	 * <p>
+	 * <strong>NB:</strong> This call may take some time; do not hold a
+	 * transaction open when calling this.
+	 *
+	 * @param email
+	 *            The message contents to send.
+	 */
+	private void sendBoardServiceMail(EmailBuilder email) {
+		ReportProperties properties = props.getReportEmail();
+		if (nonNull(emailSender) && nonNull(properties.getTo())
+				&& properties.isSend()) {
+			SimpleMailMessage message = new SimpleMailMessage();
+			if (nonNull(properties.getFrom())) {
+				message.setFrom(properties.getFrom());
+			}
+			message.setTo(properties.getTo());
+			if (nonNull(properties.getSubject())) {
+				message.setSubject(properties.getSubject());
+			}
+			message.setText(email.toString());
+			try {
+				if (!properties.getTo().isEmpty()) {
+					emailSender.send(message);
+				}
+			} catch (MailException e) {
+				log.warn("problem when sending email", e);
+			}
+		}
+	}
+
 	private static DownLink makeDownLinkFromRow(Row row) {
 		BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
 				row.getInt("board_1_y"), row.getInt("board_1_z"),
@@ -785,6 +901,104 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
+	private final class BoardReportSQL extends AbstractSQL {
+		final Query findBoardByChip = conn.query(findBoardByJobChip);
+
+		final Query findBoardByTriad = conn.query(findBoardByLogicalCoords);
+
+		final Query findBoardPhys = conn.query(findBoardByPhysicalCoords);
+
+		final Query findBoardNet = conn.query(findBoardByIPAddress);
+
+		final Update insertReport = conn.update(INSERT_BOARD_REPORT);
+
+		final Query getReported = conn.query(getReportedBoards);
+
+		final Update setFunctioning = conn.update(SET_FUNCTIONING_FIELD);
+
+		@Override
+		public void close() {
+			findBoardByChip.close();
+			findBoardByTriad.close();
+			findBoardPhys.close();
+			findBoardNet.close();
+			insertReport.close();
+			getReported.close();
+			setFunctioning.close();
+			super.close();
+		}
+	}
+
+	/** Used to assemble an issue-report email for sending. */
+	private static final class EmailBuilder {
+		/**
+		 * More efficient than several String.format() calls, and much
+		 * clearer than a mess of direct {@link StringBuilder} calls!
+		 */
+		private final Formatter b = new Formatter(Locale.UK);
+
+		private final int id;
+
+		/**
+		 * @param id The job ID
+		 */
+		EmailBuilder(int id) {
+			this.id = id;
+		}
+
+		void header(String issue, int numBoards, String who) {
+			b.format("Issues \"%s\" with %d boards reported by %s\n\n",
+					issue, numBoards, who);
+		}
+
+		void chip(ReportedBoard board) {
+			b.format("\tBoard for job (%d) chip %s\n", //
+					id, board.chip);
+		}
+
+		void triad(ReportedBoard board) {
+			b.format("\tBoard for job (%d) board (X:%d,Y:%d,Z:%d)\n", //
+					id, board.x, board.y, board.z);
+		}
+
+		void phys(ReportedBoard board) {
+			b.format(
+					"\tBoard for job (%d) board "
+							+ "[Cabinet:%d,Frame:%d,Board:%d]\n", //
+					id, board.cabinet, board.frame, board.board);
+		}
+
+		void ip(ReportedBoard board) {
+			b.format("\tBoard for job (%d) board (IP: %s)\n", //
+					id, board.address);
+		}
+
+		void issue(int issueId) {
+			b.format("\t\tAction: noted as issue #%d\n", //
+					issueId);
+		}
+
+		void footer(int numActions) {
+			b.format("\nSummary: %d boards taken out of service.\n",
+					numActions);
+		}
+
+		void serviceActionDone(Row r) {
+			b.format(
+					"\tAction: board (X:%d,Y:%d,Z:) (IP: %s) "
+							+ "taken out of service once not in use "
+							+ "(%d problems reported)\n",
+					r.getInt("x"), r.getInt("y"), r.getInt("z"),
+					r.getString("address"), r.getInt("numReports"));
+		}
+
+		/** @return The assembled message body. */
+		@Override
+		public String toString() {
+			return b.toString();
+		}
+	}
+
 	private final class JobImpl implements Job {
 		@JsonIgnore
 		private Epoch epoch;
@@ -966,99 +1180,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		// -------------------------------------------------------------
 		// Bad board report handling
 
-		private final class BoardReportSQL extends AbstractSQL {
-			final Query findBoardByChip = conn.query(findBoardByJobChip);
-
-			final Query findBoardByTriad = conn.query(findBoardByLogicalCoords);
-
-			final Query findBoardPhys = conn.query(findBoardByPhysicalCoords);
-
-			final Query findBoardNet = conn.query(findBoardByIPAddress);
-
-			final Update insertReport = conn.update(INSERT_BOARD_REPORT);
-
-			final Query getReported = conn.query(getReportedBoards);
-
-			final Update setFunctioning = conn.update(SET_FUNCTIONING_FIELD);
-
-			@Override
-			public void close() {
-				findBoardByChip.close();
-				findBoardByTriad.close();
-				findBoardPhys.close();
-				findBoardNet.close();
-				insertReport.close();
-				getReported.close();
-				setFunctioning.close();
-				super.close();
-			}
-		}
-
-		/** Used to assemble an issue-report email for sending. */
-		private final class EmailBuilder {
-			/**
-			 * More efficient than several String.format() calls, and much
-			 * clearer than a mess of direct {@link StringBuilder} calls!
-			 */
-			private final Formatter b = new Formatter(Locale.UK);
-
-			void header(String issue, int numBoards, String who) {
-				b.format("Issues \"%s\" with %d boards reported by %s\n\n",
-						issue, numBoards, who);
-			}
-
-			void chip(ReportedBoard board) {
-				b.format("\tBoard for job (%d) chip %s\n", //
-						id, board.chip);
-			}
-
-			void triad(ReportedBoard board) {
-				b.format("\tBoard for job (%d) board (X:%d,Y:%d,Z:%d)\n", //
-						id, board.x, board.y, board.z);
-			}
-
-			void phys(ReportedBoard board) {
-				b.format(
-						"\tBoard for job (%d) board "
-								+ "[Cabinet:%d,Frame:%d,Board:%d]\n", //
-						id, board.cabinet, board.frame, board.board);
-			}
-
-			void ip(ReportedBoard board) {
-				b.format("\tBoard for job (%d) board (IP: %s)\n", //
-						id, board.address);
-			}
-
-			void issue(int issueId) {
-				b.format("\t\tAction: noted as issue #%d\n", //
-						issueId);
-			}
-
-			void footer(int numActions) {
-				b.format("\nSummary: %d boards taken out of service.\n",
-						numActions);
-			}
-
-			void serviceActionDone(Row r) {
-				b.format(
-						"\tAction: board (X:%d,Y:%d,Z:) (IP: %s) "
-								+ "taken out of service once not in use "
-								+ "(%d problems reported)\n",
-						r.getInt("x"), r.getInt("y"), r.getInt("z"),
-						r.getString("address"), r.getInt("numReports"));
-			}
-
-			/** @return The assembled message body. */
-			@Override
-			public String toString() {
-				return b.toString();
-			}
-		}
-
 		@Override
 		public String reportIssue(IssueReportRequest report, Permit permit) {
 			try (BoardReportSQL q = new BoardReportSQL()) {
-				EmailBuilder email = new EmailBuilder();
+				EmailBuilder email = new EmailBuilder(id);
 				String result = q.transaction(
 						() -> reportIssue(report, permit, email, q));
 				sendBoardServiceMail(email);
@@ -1103,38 +1228,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				email.footer(acted);
 				return format("%d boards taken out of service", acted);
 			}).orElse("report noted");
-		}
-
-		/**
-		 * Send an assembled message if the service is configured to do so.
-		 * <p>
-		 * <strong>NB:</strong> This call may take some time; do not hold a
-		 * transaction open when calling this.
-		 *
-		 * @param email
-		 *            The message contents to send.
-		 */
-		private void sendBoardServiceMail(EmailBuilder email) {
-			ReportProperties properties = props.getReportEmail();
-			if (nonNull(emailSender) && nonNull(properties.getTo())
-					&& properties.isSend()) {
-				SimpleMailMessage message = new SimpleMailMessage();
-				if (nonNull(properties.getFrom())) {
-					message.setFrom(properties.getFrom());
-				}
-				message.setTo(properties.getTo());
-				if (nonNull(properties.getSubject())) {
-					message.setSubject(properties.getSubject());
-				}
-				message.setText(email.toString());
-				try {
-					if (!properties.getTo().isEmpty()) {
-						emailSender.send(message);
-					}
-				} catch (MailException e) {
-					log.warn("problem when sending email", e);
-				}
-			}
 		}
 
 		/**
@@ -1220,33 +1313,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				int userId, EmailBuilder email) {
 			u.insertReport.key(boardId, id, issue, userId)
 					.ifPresent(email::issue);
-		}
-
-		/**
-		 * Take boards out of service if they've been reported frequently
-		 * enough.
-		 *
-		 * @param u
-		 *            How to touch the DB
-		 * @param email
-		 *            The email we are building.
-		 * @return The number of boards taken out of service
-		 */
-		private Optional<Integer> takeBoardsOutOfService(BoardReportSQL u,
-				EmailBuilder email) {
-			int acted = 0;
-			for (Row r : u.getReported.call(props.getReportActionThreshold())) {
-				int boardId = r.getInt("board_id");
-				if (u.setFunctioning.call(false, boardId) > 0) {
-					email.serviceActionDone(r);
-					acted++;
-				}
-			}
-			if (acted > 0) {
-				purgeDownCache();
-				epochs.nextMachineEpoch();
-			}
-			return acted > 0 ? Optional.of(acted) : Optional.empty();
 		}
 
 		// -------------------------------------------------------------

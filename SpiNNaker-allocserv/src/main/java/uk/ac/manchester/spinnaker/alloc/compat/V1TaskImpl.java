@@ -65,6 +65,9 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
@@ -435,6 +438,25 @@ class V1TaskImpl extends V1CompatTask {
 		job.getMachine().orElseThrow(
 				() -> new TaskException("no boards currently allocated"))
 				.setPower(switchOn);
+	}
+
+	@Override
+	protected void reportProblem(String address, Integer x, Integer y,
+			Integer p, String description) {
+		HasChipLocation locus;
+		if (nonNull(x) && nonNull(y)) {
+			if (nonNull(p)) {
+				locus = new CoreLocation(x, y, p);
+			} else {
+				locus = new ChipLocation(x, y);
+			}
+		} else {
+			locus = null;
+		}
+		permit.authorize(() -> {
+			spalloc.reportProblem(address, locus, description, permit);
+			return this; // Ignored value
+		});
 	}
 
 	private static WhereIs makeWhereIs(BoardLocation bl) {
