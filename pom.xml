@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 		<slf4j.version>1.7.32</slf4j.version>
 		<log4j.version>2.14.1</log4j.version>
-		<junit.version>5.8.1</junit.version>
+		<junit.version>5.8.2</junit.version>
 		<checkstyle.version>9.2</checkstyle.version>
 
 		<testing.version>3.0.0-M5</testing.version>
