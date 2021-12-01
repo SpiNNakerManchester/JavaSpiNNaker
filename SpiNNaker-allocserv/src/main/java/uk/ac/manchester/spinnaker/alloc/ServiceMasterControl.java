@@ -22,7 +22,7 @@ import java.beans.PropertyChangeSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * Control over general aspects of the service's manageability. Not exposed as
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Donal Fellows
  */
-@Component("control")
+@Service("control")
 @ManagedResource("Spalloc:type=ServiceMasterControl,name=control")
 public class ServiceMasterControl {
 	private boolean paused = false;

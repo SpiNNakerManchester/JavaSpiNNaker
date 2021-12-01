@@ -29,7 +29,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
  *
  * @author Donal Fellows
  */
-@Component
+@Service
 public class UserControl extends DatabaseAwareBean {
 	@Autowired
 	private PasswordServices passServices;

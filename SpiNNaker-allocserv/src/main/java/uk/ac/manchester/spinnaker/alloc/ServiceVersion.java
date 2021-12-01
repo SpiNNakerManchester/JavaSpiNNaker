@@ -17,12 +17,12 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 /** The version of the service. */
-@Component
+@Service
 public class ServiceVersion {
 	private String fullVersion;
 

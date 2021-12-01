@@ -21,7 +21,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
@@ -57,7 +56,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuth
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
@@ -79,7 +78,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  * @see AuthProperties Configuration properties
  * @author Donal Fellows
  */
-@Component
+@Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider {
 	private static final Logger log = getLogger(LocalAuthProviderImpl.class);
@@ -252,26 +251,36 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private Authentication
 			authenticateOpenId(OAuth2LoginAuthenticationToken auth) {
 		log.info("authenticating OpenID Login {}", auth.toString());
-		auth = (OAuth2LoginAuthenticationToken) loginProvider
-				.authenticate(auth);
-		auth.getPrincipal().getAttributes();
+		OAuth2LoginAuthenticationToken authToken =
+				(OAuth2LoginAuthenticationToken) loginProvider
+						.authenticate(auth);
+		if (isNull(authToken)) {
+			return null;
+		}
+		log.info("got principal: {}", authToken.getPrincipal());
 		// FIXME how to get username from login token?
 		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ auth.getPrincipal().getAttribute("preferred_username"));
+				+ authToken.getPrincipal().getAttribute("preferred_username"));
 	}
 
 	private Authentication authenticateOpenId(
 			OAuth2AuthorizationCodeAuthenticationToken auth) {
 		log.info("authenticating OpenID Token {}", auth.toString());
-		auth = (OAuth2AuthorizationCodeAuthenticationToken) tokenProvider
-				.authenticate(auth);
+		OAuth2AuthorizationCodeAuthenticationToken authToken =
+				(OAuth2AuthorizationCodeAuthenticationToken) tokenProvider
+						.authenticate(auth);
+		if (isNull(authToken)) {
+			return null;
+		}
+		log.info("got principal {} with parameters {}",
+				authToken.getPrincipal(), authToken.getAdditionalParameters());
 		// FIXME how to get username from auth code token?
-		auth.getAdditionalParameters().get("preferred_username");
+		authToken.getAdditionalParameters().get("preferred_username");
 		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ auth.getPrincipal());
+				+ authToken.getPrincipal());
 	}
 
-	private AuthenticationToken authorizeOpenId(String name) {
+	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name) {
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
@@ -285,17 +294,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			}
 		}
 		// Users from OpenID always have the same permissions
-		return new AuthenticationToken(name);
+		return new OpenIDDerivedAuthenticationToken(name);
 	}
 
-	private static final class AuthenticationToken
+	private static final class OpenIDDerivedAuthenticationToken
 			extends AbstractAuthenticationToken {
 		private static final long serialVersionUID = 1L;
 
 		private final String who;
 
-		private AuthenticationToken(String who) {
-			super(asList(new SimpleGrantedAuthority(GRANT_USER)));
+		private OpenIDDerivedAuthenticationToken(String who) {
+			super(asList(new SimpleGrantedAuthority(GRANT_READER),
+					new SimpleGrantedAuthority(GRANT_USER)));
 			this.who = who;
 		}
 
@@ -404,6 +414,30 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
+	private static final class LocalAuthResult {
+		final int userId;
+
+		final TrustLevel trustLevel;
+
+		final String passInfo;
+
+		/**
+		 * Auth succeeded.
+		 *
+		 * @param u
+		 *            The user ID
+		 * @param t
+		 *            The trust level.
+		 * @param ep
+		 *            The <em>encoded</em> password.
+		 */
+		LocalAuthResult(int u, TrustLevel t, String ep) {
+			userId = u;
+			trustLevel = requireNonNull(t);
+			passInfo = requireNonNull(ep);
+		}
+	}
+
 	/**
 	 * Check if a user can log in, and determine what permissions they have.
 	 *
@@ -428,107 +462,96 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private boolean authLocalAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities, AuthQueries queries) {
-		class Result {
-			final boolean success;
+		Optional<LocalAuthResult> lookup =
+				queries.transaction(() -> lookUpUserDetails(username, queries));
+		return lookup.map(details -> {
+			checkPassword(username, password, details, queries);
+			// Succeeded; finalize into external form
+			return queries.transaction(() -> {
+				queries.noteLoginSuccessForUser(details.userId);
+				// Convert tiered trust level to grant form
+				details.trustLevel.getGrants().forEach(authorities::add);
+				log.info("login success for {} at level {}", username,
+						details.trustLevel);
+				return true;
+			});
+		}).orElse(false);
+	}
 
-			final int userId;
-
-			final TrustLevel trustLevel;
-
-			final String passInfo;
-
-			Result() {
-				success = false;
-				userId = -1;
-				trustLevel = null;
-				passInfo = null;
-			}
-
-			Result(int u, TrustLevel t, String ep) {
-				success = true;
-				userId = u;
-				trustLevel = requireNonNull(t);
-				passInfo = requireNonNull(ep);
-			}
+	/**
+	 * Look up a local user. Does all checks <em>except</em> the password check;
+	 * that's slow (because bcrypt) so we do it outside the transaction.
+	 *
+	 * @param username
+	 *            The user name we're looking up.
+	 * @param queries
+	 *            How to access the database.
+	 * @return Whether we know the user, and if so, what do we know about them.
+	 * @throws AuthenticationException
+	 *             If the user is known and definitely can't log in for some
+	 *             reason.
+	 */
+	private static Optional<LocalAuthResult> lookUpUserDetails(String username,
+			AuthQueries queries) {
+		Optional<Row> r = queries.getUser(username);
+		if (!r.isPresent()) {
+			// No such user
+			return Optional.empty();
 		}
-
-		Result result = queries.transaction(() -> {
-			Optional<Row> r = queries.getUser(username);
-			if (!r.isPresent()) {
-				// No such user
-				return new Result();
-			}
-			Row userInfo = r.get();
-			int userId = userInfo.getInt("user_id");
-			if (userInfo.getBoolean("disabled")) {
-				throw new DisabledException("account is disabled");
-			}
-			try {
-				if (userInfo.getBoolean("locked")) {
-					// Note that this extends the lock!
-					throw new LockedException("account is locked");
-				}
-				Row authInfo = queries.getUserAuthorities(userId);
-				String encPass = authInfo.getString("encrypted_password");
-				if (isNull(encPass)) {
-					/*
-					 * We know this user, but they can't use this authentication
-					 * method. They'll probably have to use OIDC.
-					 */
-					return new Result();
-				}
-				TrustLevel trust =
-						authInfo.getEnum("trust_level", TrustLevel.class);
-				return new Result(userId, trust, encPass);
-			} catch (AuthenticationException e) {
-				queries.noteLoginFailureForUser(userId, username);
-				log.info("login failure for {}", username, e);
-				throw e;
-			}
-		});
-		if (!result.success) {
-			return false;
+		Row userInfo = r.get();
+		int userId = userInfo.getInt("user_id");
+		if (userInfo.getBoolean("disabled")) {
+			log.info("login failure for {}: account is disabled", username);
+			throw new DisabledException("account is disabled");
 		}
 		try {
-			/*
-			 * This is slow (100ms!) so we make sure we aren't holding a
-			 * transaction open while this step is ongoing.
-			 */
-			if (!passServices.matchPassword(password, result.passInfo)) {
-				throw new BadCredentialsException("bad password");
+			if (userInfo.getBoolean("locked")) {
+				// Note that this extends the lock!
+				throw new LockedException("account is locked");
 			}
+			Row authInfo = queries.getUserAuthorities(userId);
+			String encPass = authInfo.getString("encrypted_password");
+			if (isNull(encPass)) {
+				/*
+				 * We know this user, but they can't use this authentication
+				 * method. They'll probably have to use OpenID.
+				 */
+				return Optional.empty();
+			}
+			TrustLevel trust =
+					authInfo.getEnum("trust_level", TrustLevel.class);
+			return Optional.of(new LocalAuthResult(userId, trust, encPass));
 		} catch (AuthenticationException e) {
+			queries.noteLoginFailureForUser(userId, username);
+			log.info("login failure for {}", username, e);
+			throw e;
+		}
+	}
+
+	/**
+	 * This is slow (100ms!) so we make sure we aren't holding a transaction
+	 * open while this step is ongoing.
+	 *
+	 * @param username
+	 *            The username (now validated as existing).
+	 * @param password
+	 *            The user-provided password that we're checking.
+	 * @param queries
+	 *            How to access the DB.
+	 * @param details
+	 *            The results of looking up the user
+	 * @return
+	 */
+	private LocalAuthResult checkPassword(String username, String password,
+			LocalAuthResult details, AuthQueries queries) {
+		if (!passServices.matchPassword(password, details.passInfo)) {
 			queries.transaction(() -> {
-				queries.noteLoginFailureForUser(result.userId, username);
-				log.info("login failure for {}", username, e);
-				throw e;
+				queries.noteLoginFailureForUser(details.userId, username);
+				log.info("login failure for {}: bad password", username);
+				throw new BadCredentialsException("bad password");
 			});
 		}
-		return queries.transaction(() -> {
-			try {
-				queries.noteLoginSuccessForUser(result.userId);
-				switch (result.trustLevel) {
-				case ADMIN:
-					authorities.add(new SimpleGrantedAuthority(GRANT_ADMIN));
-					// fallthrough
-				case USER:
-					authorities.add(new SimpleGrantedAuthority(GRANT_USER));
-					// fallthrough
-				case READER:
-					authorities.add(new SimpleGrantedAuthority(GRANT_READER));
-					// fallthrough
-				default:
-					// Do nothing; no grants of authority made
-				}
-				log.info("login success for {} at level {}", username,
-						result.trustLevel);
-				return true;
-			} catch (AuthenticationException e) {
-				queries.noteLoginFailureForUser(result.userId, username);
-				log.info("login failure for {}", username, e);
-				throw e;
-			}
-		});
+		return details;
 	}
 
 	/**

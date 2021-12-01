@@ -17,15 +17,17 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.time.Instant.now;
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 
 import java.io.IOException;
 import java.io.NotSerializableException;
@@ -84,7 +86,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -186,27 +187,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	public enum TrustLevel {
 		/** Grants no real permissions at all. */
-		BASIC,
+		BASIC(),
 		/**
 		 * Grants read-only permissions in addition to {@link #BASIC}.
 		 *
 		 * @see SecurityConfig#GRANT_READER
 		 */
-		READER,
+		READER(GRANT_READER),
 		/**
 		 * Grants job creation and management permissions in addition to
 		 * {@link #READER}.
 		 *
 		 * @see SecurityConfig#GRANT_USER
 		 */
-		USER,
+		USER(GRANT_READER, GRANT_USER),
 		/**
 		 * Grants service administration permissions in addition to
 		 * {@link #USER}.
 		 *
 		 * @see SecurityConfig#GRANT_ADMIN
 		 */
-		ADMIN
+		ADMIN(GRANT_READER, GRANT_USER, GRANT_ADMIN);
+
+		private List<String> grants;
+
+		TrustLevel(String... grants) {
+			this.grants = asList(grants);
+		}
+
+		Stream<GrantedAuthority> getGrants() {
+			return grants.stream().map(SimpleGrantedAuthority::new);
+		}
 	}
 
 	/**
@@ -538,7 +549,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @see <a href="https://stackoverflow.com/q/66107075/301832">Stack
 	 *      Overflow</a>
 	 */
-	@Service
+	@Component
 	static class AnyTypeMethodSecurityExpressionHandler
 			extends DefaultMethodSecurityExpressionHandler
 			implements MethodSecurityExpressionHandler {
@@ -583,7 +594,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		/** What is the name of the user? */
 		public final String name;
 
-		private List<String> authorities = new ArrayList<>();
+		private List<GrantedAuthority> authorities = new ArrayList<>();
 
 		private static final String[] STDAUTH = {
 			GRANT_ADMIN, GRANT_READER, GRANT_USER
@@ -598,11 +609,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public Permit(javax.ws.rs.core.SecurityContext context) {
 			for (String role : STDAUTH) {
 				if (context.isUserInRole(role)) {
-					authorities.add(role);
+					authorities.add(new SimpleGrantedAuthority(role));
 				}
 			}
-			admin = authorities.contains(GRANT_ADMIN);
+			admin = isAdmin(authorities);
 			name = context.getUserPrincipal().getName();
+		}
+
+		private static boolean isAdmin(List<GrantedAuthority> auths) {
+			return auths.stream().map(GrantedAuthority::getAuthority)
+					.anyMatch(GRANT_ADMIN::equals);
 		}
 
 		/**
@@ -612,10 +628,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The originating security context.
 		 */
 		public Permit(SecurityContext context) {
-			context.getAuthentication().getAuthorities().stream()
-					.map(GrantedAuthority::getAuthority)
-					.forEach(authorities::add);
-			admin = authorities.contains(GRANT_ADMIN);
+			authorities = new ArrayList<>(
+					context.getAuthentication().getAuthorities());
+			admin = isAdmin(authorities);
 			name = context.getAuthentication().getName();
 		}
 
@@ -628,8 +643,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The user name. Must exist in order to be actually used.
 		 */
 		public Permit(String serviceUser) {
-			authorities.add(GRANT_READER);
-			authorities.add(GRANT_USER);
+			USER.getGrants().forEach(authorities::add);
 			admin = false;
 			name = serviceUser;
 		}
@@ -677,8 +691,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 				@Override
 				public Collection<? extends GrantedAuthority> getAuthorities() {
-					return authorities.stream().map(SimpleGrantedAuthority::new)
-							.collect(toList());
+					return unmodifiableCollection(authorities);
 				}
 
 				@Override

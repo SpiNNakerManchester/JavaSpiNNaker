@@ -30,7 +30,6 @@ import static org.apache.cxf.message.Message.PROTOCOL_HEADERS;
 import static org.apache.cxf.phase.Phase.RECEIVE;
 import static org.apache.cxf.transport.http.AbstractHTTPDestination.HTTP_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +67,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
@@ -84,6 +82,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.db.TerminationNotifyingThreadFactory;
+import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 /**
@@ -165,7 +164,7 @@ public class ServiceConfig extends Application {
 	 * @return A factory instance
 	 */
 	@Bean
-	@Scope(SCOPE_PROTOTYPE)
+	@Prototype
 	JAXRSServerFactoryBean rawFactory(SpringBus bus,
 			ProtocolUpgraderInterceptor protocolCorrector) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();

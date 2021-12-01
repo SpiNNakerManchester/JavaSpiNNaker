@@ -107,7 +107,8 @@ public class BMPController extends DatabaseAwareBean {
 	private TxrxProperties props;
 
 	/**
-	 * Factory for {@linkplain SpiNNakerControl controllers}.
+	 * Factory for {@linkplain SpiNNakerControl controllers}. Only use via
+	 * {@link #getControllers(Request) getControllers(...)}.
 	 */
 	@Autowired
 	private ObjectProvider<SpiNNakerControl> controllerFactory;
@@ -871,6 +872,20 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
+	/**
+	 * Get the controllers for each real frame root BMP in the given request.
+	 *
+	 * @param request
+	 *            The request, containing all the BMP coordinates.
+	 * @return Map from BMP cooordinates to how to control it. These controllers
+	 *         can be safely communicated with in parallel.
+	 * @throws IOException
+	 *             If a BMP controller fails to initialise due to network
+	 *             problems.
+	 * @throws SpinnmanException
+	 *             If a BMP controller fails to initialise due to the BMP not
+	 *             liking a message.
+	 */
 	private Map<BMPCoords, SpiNNakerControl> getControllers(Request request)
 			throws IOException, SpinnmanException {
 		try {

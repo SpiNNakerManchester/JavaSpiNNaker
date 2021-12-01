@@ -535,6 +535,9 @@ public class SpallocProperties {
 
 	/** Notify an administrator about problems reported with boards. */
 	public static class ReportProperties {
+		private static final String DEFAULT_SUBJECT =
+				"NOTICE: Board taken out of service";
+
 		/** Whether to send an email about reported boards. */
 		private boolean send;
 
@@ -550,8 +553,7 @@ public class SpallocProperties {
 		public ReportProperties(@DefaultValue("false") boolean send,
 				@DefaultValue("spalloc@localhost") String from,
 				@DefaultValue("root@localhost") String to,
-				@DefaultValue("NOTICE: "
-						+ "Board taken out of service") String subject) {
+				@DefaultValue(DEFAULT_SUBJECT) String subject) {
 			this.send = send;
 			this.from = from;
 			this.to = to;

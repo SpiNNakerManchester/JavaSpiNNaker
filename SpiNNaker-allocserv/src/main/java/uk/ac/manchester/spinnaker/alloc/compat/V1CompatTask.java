@@ -40,14 +40,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
@@ -64,7 +62,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  *
  * @author Donal Fellows
  */
-public abstract class V1CompatTask {
+public abstract class V1CompatTask extends V1CompatService.Aware {
 	private static final Logger log = getLogger(V1CompatTask.class);
 
 	/**
@@ -95,10 +93,6 @@ public abstract class V1CompatTask {
 	 */
 	private final PrintWriter out;
 
-	private final ExecutorService executor;
-
-	private final ObjectMapper mapper;
-
 	/**
 	 * @param srv
 	 *            The overall service, used for looking up shared resources that
@@ -110,8 +104,7 @@ public abstract class V1CompatTask {
 	 */
 	protected V1CompatTask(V1CompatService srv, Socket sock)
 			throws IOException {
-		this.executor = srv.executor;
-		this.mapper = srv.mapper;
+		super(srv);
 		this.sock = sock;
 		sock.setTcpNoDelay(true);
 		sock.setSoTimeout(TASK_BASIC_WAIT_TIMEOUT);
@@ -150,20 +143,6 @@ public abstract class V1CompatTask {
 	protected abstract void closeNotifiers();
 
 	/**
-	 * @return The executor to use.
-	 */
-	protected final ExecutorService getExecutor() {
-		return executor;
-	}
-
-	/**
-	 * @return The JSON mapper to use if necessary.
-	 */
-	protected final ObjectMapper getJsonMapper() {
-		return mapper;
-	}
-
-	/**
 	 * @return The remote host that this task is serving.
 	 */
 	public final String host() {
@@ -181,7 +160,7 @@ public abstract class V1CompatTask {
 	 *             If the message doesn't contain a valid command.
 	 */
 	protected Command parseCommand(String msg) throws IOException {
-		return mapper.readValue(msg, Command.class);
+		return getJsonMapper().readValue(msg, Command.class);
 	}
 
 	/**
@@ -194,7 +173,7 @@ public abstract class V1CompatTask {
 	 *             If the message doesn't contain a valid command.
 	 */
 	protected Command parseCommand(byte[] msg) throws IOException {
-		return mapper.readValue(msg, Command.class);
+		return getJsonMapper().readValue(msg, Command.class);
 	}
 
 	/**
@@ -254,7 +233,7 @@ public abstract class V1CompatTask {
 	 */
 	private void sendMessage(Object msg) throws JsonProcessingException {
 		// We go via a string to avoid early closing issues
-		String data = mapper.writeValueAsString(msg);
+		String data = getJsonMapper().writeValueAsString(msg);
 		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
@@ -391,7 +370,7 @@ public abstract class V1CompatTask {
 		switch (cmd.getCommand()) {
 		case "create_job":
 			// This is three operations really, and an optional parameter.
-			byte[] serialCmd = mapper.writeValueAsBytes(cmd);
+			byte[] serialCmd = getJsonMapper().writeValueAsBytes(cmd);
 			switch (args.size()) {
 			case 0:
 				return requireNonNull(createJobNumBoards(1, kwargs, serialCmd));

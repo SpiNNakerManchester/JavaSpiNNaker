@@ -56,7 +56,7 @@ import javax.validation.constraints.PositiveOrZero;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.sqlite.SQLiteException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -80,7 +80,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  *
  * @author Donal Fellows
  */
-@Component
+@Service
 public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private static final Logger log = getLogger(MachineDefinitionLoader.class);
 

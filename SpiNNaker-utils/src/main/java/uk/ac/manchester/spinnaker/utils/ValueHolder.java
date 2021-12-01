@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import java.util.function.Function;
+
 /**
  * A simple class that can optionally hold a single value. <i>This class is
  * modifiable.</i>
@@ -60,5 +62,21 @@ public class ValueHolder<T> {
 	 */
 	public void setValue(T value) {
 		this.value = value;
+	}
+
+	/**
+	 * Applies a function to update the value of this instance, returning the
+	 * old value.
+	 *
+	 * @param function
+	 *            The operation to apply.
+	 * @return The <em>old</em> value.
+	 */
+	public T update(Function<T, T> function) {
+		try {
+			return value;
+		} finally {
+			value = function.apply(value);
+		}
 	}
 }

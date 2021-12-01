@@ -39,7 +39,7 @@ import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -67,7 +67,7 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  *
  * @author Donal Fellows
  */
-@Component("transceiverFactory")
+@Service("transceiverFactory")
 public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
 	private static final Logger log = getLogger(TransceiverFactory.class);

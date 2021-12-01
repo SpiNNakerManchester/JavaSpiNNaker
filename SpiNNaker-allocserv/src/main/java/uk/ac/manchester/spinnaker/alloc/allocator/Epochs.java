@@ -20,14 +20,14 @@ import static java.lang.System.currentTimeMillis;
 
 import java.time.Duration;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * Manages epoch counters.
  *
  * @author Donal Fellows
  */
-@Component
+@Service
 public class Epochs {
 	private long jobsEpoch = 0L;
 
