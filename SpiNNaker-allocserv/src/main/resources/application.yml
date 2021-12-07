@@ -59,22 +59,15 @@ spring:
           hbp-ebrains:
             client-id: ${spalloc.auth.openid.id}
             client-secret: ${spalloc.auth.openid.secret}
-            scope:
-            - openid
-            - profile
-            - team
-            - group
-            authorization-grant-type: client_credentials
+            scope: [ openid, profile, email ]
+            authorization-grant-type: authorization_code
         provider:
           hbp-ebrains:
-            authorization-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/auth
-            jwk-set-uri: https://iam.ebrains.eu/auth/realms/hbp
-            token-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/token
-            user-info-uri: https://iam.ebrains.eu/auth/realms/hbp/protocol/openid-connect/userinfo
+            issuer-uri: https://iam.ebrains.eu/auth/realms/hbp/
             user-name-attribute: preferred_username
       resourceserver:
         jwt:
-          jwk-set-uri: https://iam.ebrains.eu/auth/realms/hbp
+          issuer-uri: https://iam.ebrains.eu/auth/realms/hbp/
         opaquetoken:
           client-id: ${spalloc.auth.openid.id}
           client-secret: ${spalloc.auth.openid.secret}
@@ -161,7 +154,7 @@ spalloc:
       # Support OIDC
       enable: true
       # The credentials for HBP/EBRAINS go here
-      id: XYZZY_OVERRIDE_THIS
+      id: spinnaker-spalloc
       secret: XYZZY_OVERRIDE_THIS
       # Prefix all OpenID-sourced names with this
       username-prefix: "openid."
