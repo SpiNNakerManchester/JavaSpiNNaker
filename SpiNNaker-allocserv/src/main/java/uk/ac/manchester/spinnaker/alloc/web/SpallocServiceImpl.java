@@ -54,7 +54,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
@@ -73,6 +72,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
+import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.EmptyResponse;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.ItsGone;
@@ -139,7 +139,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		 *         security support (if needed).
 		 */
 		@Bean
-		@Scope("prototype")
+		@Prototype
 		public MachineAPI machine(Machine machine, UriInfo ui) {
 			return new MachineAPI() {
 				@Override
@@ -210,7 +210,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		 *         security support (if needed).
 		 */
 		@Bean
-		@Scope("prototype")
+		@Prototype
 		public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
 			return new JobAPI() {
 				@Override

@@ -32,13 +32,13 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
+import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
@@ -51,7 +51,7 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
  * longer-lived {@link TransceiverFactory}.
  */
 @Component
-@Scope("prototype")
+@Prototype
 class SpiNNaker1 implements SpiNNakerControl {
 	// ----------------------------------------------------------------
 	// CORE BMP ACCESS FUNCTIONS
