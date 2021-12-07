@@ -46,7 +46,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
@@ -77,7 +77,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  *
  * @author Donal Fellows
  */
-@Component
+@Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
 		implements LocalAuthenticationProvider {
 	private static final Logger log = getLogger(LocalAuthProviderImpl.class);

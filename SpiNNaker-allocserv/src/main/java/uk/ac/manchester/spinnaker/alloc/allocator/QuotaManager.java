@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
@@ -38,7 +38,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  *
  * @author Donal Fellows
  */
-@Component
+@Service
 public class QuotaManager extends DatabaseAwareBean {
 	private static final Logger log = getLogger(QuotaManager.class);
 

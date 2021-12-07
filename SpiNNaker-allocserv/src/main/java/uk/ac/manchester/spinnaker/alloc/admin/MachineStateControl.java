@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import java.util.Optional;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  *
  * @author Donal Fellows
  */
-@Component
+@Service
 public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Access to the enablement-state of a board.

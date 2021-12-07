@@ -41,8 +41,8 @@ import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
-import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
@@ -92,7 +92,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.sqlite.Function;
 import org.sqlite.SQLiteCommitListener;
 import org.sqlite.SQLiteConfig;
@@ -114,7 +114,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-@Component
+@Service
 public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final Logger log = getLogger(DatabaseEngine.class);
 

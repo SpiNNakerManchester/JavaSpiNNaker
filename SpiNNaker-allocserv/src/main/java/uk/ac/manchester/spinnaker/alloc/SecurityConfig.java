@@ -82,7 +82,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -510,7 +509,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @see <a href="https://stackoverflow.com/q/66107075/301832">Stack
 	 *      Overflow</a>
 	 */
-	@Service
+	@Component
 	static class AnyTypeMethodSecurityExpressionHandler
 			extends DefaultMethodSecurityExpressionHandler
 			implements MethodSecurityExpressionHandler {

@@ -37,7 +37,7 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -50,7 +50,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityPropertie
  *
  * @author Donal Fellows
  */
-@Component("spalloc-v1-compatibility-service")
+@Service("spalloc-v1-compatibility-service")
 public class V1CompatService {
 	/** In seconds. */
 	private static final int SHUTDOWN_TIMEOUT = 3;
