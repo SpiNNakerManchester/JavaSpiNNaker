@@ -107,7 +107,8 @@ public class BMPController extends DatabaseAwareBean {
 	private TxrxProperties props;
 
 	/**
-	 * Factory for {@linkplain SpiNNakerControl controllers}.
+	 * Factory for {@linkplain SpiNNakerControl controllers}. Only use via
+	 * {@link #getControllers(Request) getControllers(...)}.
 	 */
 	@Autowired
 	private ObjectProvider<SpiNNakerControl> controllerFactory;

@@ -97,13 +97,16 @@ public class SpallocServiceImpl extends BackgroundSupport
 	private JsonMapper mapper;
 
 	/**
-	 * Factory for {@linkplain MachineAPI machines}.
+	 * Factory for {@linkplain MachineAPI machines}. Only use via
+	 * {@link #getMachine(String, UriInfo) getMachine(...)}.
 	 */
 	@Autowired
 	private ObjectProvider<MachineAPI> machineFactory;
 
 	/**
-	 * Factory for {@linkplain JobAPI jobs}.
+	 * Factory for {@linkplain JobAPI jobs}. Only use via
+	 * {@link #getJob(int, UriInfo, HttpServletRequest, SecurityContext)
+	 * getJob(...)}.
 	 */
 	@Autowired
 	private ObjectProvider<JobAPI> jobFactory;

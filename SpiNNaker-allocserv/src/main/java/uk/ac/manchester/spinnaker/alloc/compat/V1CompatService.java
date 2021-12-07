@@ -27,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -69,7 +70,8 @@ public class V1CompatService {
 	private SpallocProperties mainProps;
 
 	/**
-	 * Factory for {@linkplain V1CompatTask tasks}.
+	 * Factory for {@linkplain V1CompatTask tasks}. Only use via
+	 * {@link #getTask(Socket) getTask(...)}.
 	 */
 	@Autowired
 	private ObjectProvider<V1CompatTask> taskFactory;
@@ -133,12 +135,22 @@ public class V1CompatService {
 		executor.awaitTermination(SHUTDOWN_TIMEOUT, SECONDS);
 	}
 
+	/**
+	 * Make a task.
+	 *
+	 * @param socket
+	 *            The connected socket that the task will be handling.
+	 * @return The task instance.
+	 */
+	private V1CompatTask getTask(Socket socket) {
+		return taskFactory.getObject(this, socket);
+	}
+
 	private void acceptConnections() {
 		try {
 			while (!interrupted()) {
 				try {
-					V1CompatTask service =
-							taskFactory.getObject(this, serv.accept());
+					V1CompatTask service = getTask(serv.accept());
 					executor.execute(() -> service.handleConnection());
 				} catch (SocketException e) {
 					if (interrupted()) {
