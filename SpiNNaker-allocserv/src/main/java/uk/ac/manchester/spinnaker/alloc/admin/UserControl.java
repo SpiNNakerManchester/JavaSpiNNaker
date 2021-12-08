@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -266,10 +267,9 @@ public class UserControl extends DatabaseAwareBean {
 
 	// Use this for looking up the current user, who should exist!
 	private static int getCurrentUserId(AccessQuotaSQL sql, String userName) {
-		return sql.userCheck.call1(userName)
+		return sql.userCheck.call1(userName).map(integer("user_id"))
 				.orElseThrow(() -> new RuntimeException(
-						"current user has unexpectedly vanshed"))
-				.getInt("user_id");
+						"current user has unexpectedly vanshed"));
 	}
 
 	private Optional<UserRecord> updateUser(int id, UserRecord user,

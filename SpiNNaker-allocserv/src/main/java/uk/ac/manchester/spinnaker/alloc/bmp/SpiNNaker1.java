@@ -32,7 +32,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -50,7 +50,7 @@ import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
  * This is a short-lived component, which is why it isn't merged with the
  * longer-lived {@link TransceiverFactory}.
  */
-@Service
+@Component
 @Prototype
 class SpiNNaker1 implements SpiNNakerControl {
 	// ----------------------------------------------------------------

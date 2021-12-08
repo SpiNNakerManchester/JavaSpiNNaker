@@ -85,7 +85,7 @@ public class WhereIsResponse {
 		if (nonNull(j)) {
 			jobId = j.getId();
 			jobRef = minter.build(JOB, jobId);
-			jobChip = j.getRootChip().map(rc -> location.getChipRelativeTo(rc))
+			jobChip = j.getRootChip().map(location::getChipRelativeTo)
 					.orElse(null);
 		} else {
 			jobId = null;

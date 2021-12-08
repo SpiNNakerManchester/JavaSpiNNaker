@@ -26,6 +26,8 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import java.util.ArrayList;
@@ -407,7 +409,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		void noteLoginFailureForUser(int userId, String username) {
 			if (loginFailure.call1(authProps.getMaxLoginFailures(), userId)
-					.map(row -> row.getBoolean("locked")).orElse(false)) {
+					.map(bool("locked")).orElse(false)) {
 				log.warn("automatically locking user {} for {}", username,
 						authProps.getAccountLockDuration());
 			}
@@ -632,8 +634,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				Query unlock = conn.query(UNLOCK_LOCKED_USERS)) {
 			conn.transaction(() -> {
 				unlock.call(authProps.getAccountLockDuration())
-						.map(row -> row.getString("user_name"))
-						.forEach(user -> log
+						.map(string("user_name")).forEach(user -> log
 								.info("automatically unlocked user {}", user));
 			});
 		}
