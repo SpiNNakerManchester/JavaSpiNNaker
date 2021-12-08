@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -76,8 +78,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public boolean getState() {
 			return execute(false, conn -> {
 				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
-					return q.call1(boardId)
-							.map(row -> row.getBoolean("functioning"))
+					return q.call1(boardId).map(bool("functioning"))
 							.orElse(false);
 				}
 			});

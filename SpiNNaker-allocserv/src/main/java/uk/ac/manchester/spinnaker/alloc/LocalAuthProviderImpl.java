@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import java.util.ArrayList;
@@ -421,8 +422,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				Query unlock = conn.query(UNLOCK_LOCKED_USERS)) {
 			conn.transaction(() -> {
 				unlock.call(authProps.getAccountLockDuration())
-						.map(row -> row.getString("user_name"))
-						.forEach(user -> log
+						.map(string("user_name")).forEach(user -> log
 								.info("automatically unlocked user {}", user));
 			});
 		}

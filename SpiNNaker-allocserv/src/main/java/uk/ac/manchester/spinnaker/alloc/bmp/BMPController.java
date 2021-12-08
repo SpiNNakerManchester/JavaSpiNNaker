@@ -29,6 +29,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
@@ -245,7 +247,7 @@ public class BMPController extends DatabaseAwareBean {
 		try (Connection conn = getConnection();
 				Query countChanges = conn.query(COUNT_PENDING_CHANGES)) {
 			return conn.transaction(false, () -> countChanges.call1()
-					.map(row -> row.getInt("c")).orElse(0));
+					.map(integer("c")).orElse(0));
 		}
 	}
 
@@ -346,7 +348,7 @@ public class BMPController extends DatabaseAwareBean {
 			powerOnAddresses = sql.transaction(() -> powerOnBoards.values()
 					.stream().flatMap(Collection::stream)
 					.map(boardId -> sql.getBoardAddress.call1(boardId)
-							.map(row -> row.getString("address")).orElse(null))
+							.map(string("address")).orElse(null))
 					.collect(toList()));
 		}
 
@@ -507,12 +509,15 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Query getBoardAddress = conn.query(GET_BOARD_ADDRESS);
 
+		private final Update setJobState = conn.update(SET_STATE_PENDING);
+
 		@Override
 		public void close() {
 			getJobIdsWithChanges.close();
 			getPowerChangesToDo.close();
 			setInProgress.close();
 			getBoardAddress.close();
+			setJobState.close();
 			super.close();
 		}
 	}
@@ -532,7 +537,7 @@ public class BMPController extends DatabaseAwareBean {
 				// The outer loop is always over a small set, fortunately
 				for (Machine machine : machines) {
 					sql.getJobIdsWithChanges.call(machine.getId())
-							.map(row -> row.getInteger("job_id"))
+							.map(integer("job_id"))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
 				}
@@ -583,6 +588,13 @@ public class BMPController extends DatabaseAwareBean {
 
 		if (boardsOn.isEmpty() && boardsOff.isEmpty()) {
 			// Nothing to do? Oh well, though this shouldn't be reachable...
+			if (to != UNKNOWN) {
+				// Nothing to do, but we know the target state; just move to it
+				sql.setJobState.call(to, 0, jobId);
+			} else {
+				// Eeep! This should be a logic bug
+				log.warn("refusing to switch job {} to {} state", jobId, to);
+			}
 			return;
 		}
 

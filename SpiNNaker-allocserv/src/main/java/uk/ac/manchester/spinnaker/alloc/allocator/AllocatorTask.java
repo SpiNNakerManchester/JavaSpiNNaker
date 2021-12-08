@@ -21,6 +21,8 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
@@ -106,13 +108,28 @@ public class AllocatorTask extends DatabaseAwareBean
 		/** Depth of rectangle. 1 or 3 */
 		final int depth;
 
-		Rectangle(int width, int height, int depth) {
+		private Rectangle(int width, int height, int depth) {
 			this.width = width;
 			this.height = height;
 			this.depth = depth;
 		}
+
+		private Rectangle(Row row) {
+			this(row.getInt("max_width"), row.getInt("max_height"),
+					TRIAD_DEPTH);
+		}
+
+		@Override
+		public String toString() {
+			return String.format("%dx%dx%d", width, height, depth);
+		}
 	}
 
+	/**
+	 * Helper class representing the logical coordinates of a board.
+	 *
+	 * @author Donal Fellows
+	 */
 	private static final class TriadCoords {
 		final int x;
 
@@ -120,10 +137,15 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		final int z;
 
-		TriadCoords(Row row) {
+		private TriadCoords(Row row) {
 			this.x = row.getInt("x");
 			this.y = row.getInt("y");
 			this.z = row.getInt("z");
+		}
+
+		@Override
+		public String toString() {
+			return String.format("[%d,%d,%d]", x, y, z);
 		}
 	}
 
@@ -271,7 +293,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/** Encapsulates the queries and updates used in deletion. */
-	private class DestroySQL extends PowerSQL {
+	private final class DestroySQL extends PowerSQL {
 		/** Get basic information about a specific job. */
 		private final Query getJob;
 
@@ -390,8 +412,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	boolean expireJobs(Connection conn) {
 		boolean changed = false;
 		try (Query find = conn.query(FIND_EXPIRED_JOBS)) {
-			List<Integer> toKill =
-					find.call().map(r -> r.getInteger("job_id")).toList();
+			List<Integer> toKill = find.call().map(integer("job_id")).toList();
 			for (Integer id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
@@ -448,7 +469,7 @@ public class AllocatorTask extends DatabaseAwareBean
 				Update delete = conn.update(DELETE_JOB_RECORD)) {
 			List<Integer> jobIds = conn
 					.transaction(() -> copy.call(historyProps.getGracePeriod())
-							.map(row -> row.getInteger("job_id")).toList());
+							.map(integer("job_id")).toList());
 			conn.transaction(() -> jobIds.stream().filter(Objects::nonNull)
 					.forEach(delete::call));
 			return jobIds;
@@ -478,8 +499,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	boolean destroyJob(Connection conn, int id, String reason) {
 		JobLifecycle.log.info("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
-			if (sql.getJob.call1(id)
-					.map(row -> row.getEnum("job_state", JobState.class))
+			if (sql.getJob.call1(id).map(enumerate("job_state", JobState.class))
 					.orElse(DESTROYED) == DESTROYED) {
 				/*
 				 * Don't do anything if the job doesn't exist or is already
@@ -576,8 +596,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean allocate(AllocSQL sql, Row task) {
 		int jobId = task.getInt("job_id");
 		int machineId = task.getInt("machine_id");
-		Rectangle max = new Rectangle(task.getInt("max_width"),
-				task.getInt("max_height"), TRIAD_DEPTH);
+		Rectangle max = new Rectangle(task);
 		int maxDeadBoards = task.getInt("max_dead_boards");
 		Integer numBoards = task.getInteger("num_boards");
 		if (nonNull(numBoards) && numBoards > 0) {
@@ -630,9 +649,9 @@ public class AllocatorTask extends DatabaseAwareBean
 		int tolerance = userMaxDead + estimate.tolerance;
 		int minArea =
 				estimate.width * estimate.height * TRIAD_DEPTH - tolerance;
-		for (Row rs : sql.getRectangles.call(estimate.width, estimate.height,
-				machineId, tolerance)) {
-			TriadCoords root = new TriadCoords(rs);
+		for (TriadCoords root : sql.getRectangles
+				.call(estimate.width, estimate.height, machineId, tolerance)
+				.map(TriadCoords::new)) {
 			if (minArea > 1) {
 				/*
 				 * Check that a minimum number of boards are reachable from the
@@ -672,7 +691,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		return sql.countConnectedBoards
 				.call1(machineId, root.x, root.y, estimate.width,
 						estimate.height)
-				.map(row -> row.getInt("connected_size")).orElse(-1);
+				.map(integer("connected_size")).orElse(-1);
 	}
 
 	private boolean allocateBoard(AllocSQL sql, int jobId, int machineId,
@@ -716,7 +735,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		List<Integer> boardsToAllocate = sql.getConnectedBoardIDs
 				.call(machineId, root.x, root.y, root.z, rect.width,
 						rect.height, rect.depth)
-				.map(row -> row.getInteger("board_id")).toList();
+				.map(integer("board_id")).toList();
 		if (boardsToAllocate.isEmpty()) {
 			return false;
 		}
@@ -763,7 +782,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		JobState sourceState = sql.getJobState.call1(jobId).get()
 				.getEnum("job_state", JobState.class);
 		List<Integer> boards = sql.getJobBoards.call(jobId)
-				.map(row -> row.getInteger("board_id")).toList();
+				.map(integer("board_id")).toList();
 		if (boards.isEmpty()) {
 			if (targetState == DESTROYED) {
 				log.debug("no boards for {} in destroy", jobId);

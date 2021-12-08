@@ -39,6 +39,7 @@ import static org.sqlite.SQLiteConfig.JournalMode.WAL;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
@@ -283,7 +284,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try (Connection conn = getConnection();
 				Query countMovements = conn.query(COUNT_MOVEMENTS)) {
 			int numMovements = conn.transaction(false,
-					() -> countMovements.call1().get().getInt("c"));
+					() -> countMovements.call1().map(integer("c"))).orElse(-1);
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
 				log.warn("database {} seems incomplete ({} != {})",
 						dbConnectionUrl, numMovements, EXPECTED_NUM_MOVEMENTS);

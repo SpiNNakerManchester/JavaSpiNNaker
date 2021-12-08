@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -120,6 +121,14 @@ class DbBasicTest {
 				rows = 0;
 				for (Row row : q.call(1, 1)) {
 					assertEquals(123, row.getInt("x"));
+					rows++;
+				}
+				assertEquals(1, rows);
+
+				// Check that it works with the row-extraction mapping too
+				rows = 0;
+				for (Integer row : q.call(1, 1).map(integer("x"))) {
+					assertEquals(123, row);
 					rows++;
 				}
 				assertEquals(1, rows);

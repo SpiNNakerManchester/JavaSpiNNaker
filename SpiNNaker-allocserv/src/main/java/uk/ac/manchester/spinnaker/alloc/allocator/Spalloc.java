@@ -26,6 +26,8 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
@@ -174,8 +176,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		rec.setNumBoards(m.getInt("board_count"));
 		rec.setNumInUse(m.getInt("in_use"));
 		rec.setNumJobs(m.getInt("num_jobs"));
-		rec.setTags(sql.getTags.call(id).map(tagRow -> tagRow.getString("tag"))
-				.toList());
+		rec.setTags(sql.getTags.call(id).map(string("tag")).toList());
 		return rec;
 	}
 
@@ -214,8 +215,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				return getBasicMachineInfo(machine, namedMachine).map(md -> {
 					md.setNumInUse(countMachineThings.call1(md.getId()).get()
 							.getInt("in_use"));
-					md.setTags(getTags.call(md.getId())
-							.map(row -> row.getString("tag")).toList());
+					md.setTags(getTags.call(md.getId()).map(string("tag"))
+							.toList());
 					md.setJobs(getJobs.call(md.getId()).map(
 							row -> getMachineJobInfo(permit, getCoords, row))
 							.toList());
@@ -403,7 +404,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private static Optional<Integer> getUser(Connection conn, String userName) {
 		try (Query getUser = conn.query(GET_USER_ID)) {
-			return getUser.call1(userName).map(row -> row.getInt("user_id"));
+			return getUser.call1(userName).map(integer("user_id"));
 		}
 	}
 
@@ -447,7 +448,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					boardId = find
 							.call1(machine.name, b.triad.x, b.triad.y,
 									b.triad.z)
-							.map(row -> row.getInteger("board_id"))
+							.map(integer("board_id"))
 							.orElseThrow(() -> new IllegalArgumentException(
 									NO_BOARD_MSG));
 				}
@@ -456,7 +457,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					boardId = find
 							.call1(machine.name, b.physical.cabinet,
 									b.physical.frame, b.physical.board)
-							.map(row -> row.getInteger("board_id"))
+							.map(integer("board_id"))
 							.orElseThrow(() -> new IllegalArgumentException(
 									NO_BOARD_MSG));
 				}
@@ -464,7 +465,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				try (Query find =
 						conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 					boardId = find.call1(machine.name, b.ip)
-							.map(row -> row.getInteger("board_id"))
+							.map(integer("board_id"))
 							.orElseThrow(() -> new IllegalArgumentException(
 									NO_BOARD_MSG));
 				}
@@ -660,8 +661,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			width = rs.getInt("width");
 			height = rs.getInt("height");
 			try (Query getTags = conn.query(GET_TAGS)) {
-				tags = getTags.call(id).map(row -> row.getString("tag"))
-						.toSet();
+				tags = getTags.call(id).map(string("tag")).toSet();
 			}
 		}
 
@@ -727,7 +727,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (Connection conn = getConnection();
 					Query rootBMPaddr = conn.query(GET_ROOT_BMP_ADDRESS)) {
 				return conn.transaction(false, () -> rootBMPaddr.call1(id)
-						.map(row -> row.getString("address")).orElse(null));
+						.map(string("address")).orElse(null));
 			}
 		}
 
@@ -736,7 +736,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			try (Connection conn = getConnection();
 					Query boardNumbers = conn.query(GET_BOARD_NUMBERS)) {
 				return conn.transaction(false, () -> boardNumbers.call(id)
-						.map(row -> row.getInteger("board_num")).toList());
+						.map(integer("board_num")).toList());
 			}
 		}
 
@@ -794,7 +794,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					Query boardNumbers =
 							conn.query(GET_AVAILABLE_BOARD_NUMBERS)) {
 				return conn.transaction(false, () -> boardNumbers.call(id)
-						.map(row -> row.getInteger("board_num")).toList());
+						.map(integer("board_num")).toList());
 			}
 		}
 
@@ -827,9 +827,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public String getBMPAddress(BMPCoords bmp) {
 			try (Connection conn = getConnection();
 					Query bmpAddr = conn.query(GET_BMP_ADDRESS)) {
-				return conn.transaction(false, () -> bmpAddr
-						.call1(id, bmp.getCabinet(), bmp.getFrame())
-						.map(row -> row.getString("address")).orElse(null));
+				return conn.transaction(false,
+						() -> bmpAddr
+								.call1(id, bmp.getCabinet(), bmp.getFrame())
+								.map(string("address")).orElse(null));
 			}
 		}
 
@@ -837,9 +838,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public List<Integer> getBoardNumbers(BMPCoords bmp) {
 			try (Connection conn = getConnection();
 					Query boardNumbers = conn.query(GET_BMP_BOARD_NUMBERS)) {
-				return conn.transaction(false, () -> boardNumbers
-						.call(id, bmp.getCabinet(), bmp.getFrame())
-						.map(row -> row.getInteger("board_num")).toList());
+				return conn.transaction(false,
+						() -> boardNumbers
+								.call(id, bmp.getCabinet(), bmp.getFrame())
+								.map(integer("board_num")).toList());
 			}
 		}
 

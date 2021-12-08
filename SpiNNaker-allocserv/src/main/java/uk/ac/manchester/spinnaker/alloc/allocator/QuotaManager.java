@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
 import org.slf4j.Logger;
@@ -57,29 +58,39 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @return True if they can make a job. False if they can't.
 	 */
 	public boolean mayCreateJob(int machineId, String user) {
-		try (Connection c = getConnection();
-				// These could be combined, but they're complicated enough
-				Query getQuota = c.query(GET_USER_QUOTA);
-				Query getCurrentUsage = c.query(GET_CURRENT_USAGE)) {
-			return c.transaction(false, () -> mayCreateJob(machineId, user,
-					getQuota, getCurrentUsage));
+		try (CreateCheckSQL sql = new CreateCheckSQL()) {
+			return sql.transaction(false,
+					() -> sql.mayCreateJob(machineId, user));
 		}
 	}
 
-	private boolean mayCreateJob(int machineId, String user, Query getQuota,
-			Query getCurrentUsage) {
-		return getQuota.call1(machineId, user).map(result -> {
-			Integer quota = result.getInteger("quota");
-			if (isNull(quota)) {
-				return true;
-			}
-			int userId = result.getInt("user_id");
-			// Quota is defined; check if current usage exceeds it
-			int usage = getCurrentUsage.call1(machineId, userId)
-					.map(row -> row.getInteger("current_usage")).orElse(0);
-			// If board-seconds are left, we're good to go
-			return (quota > usage);
-		}).orElse(true);
+	private class CreateCheckSQL extends AbstractSQL {
+		// These could be combined, but they're complicated enough
+		private final Query getQuota = conn.query(GET_USER_QUOTA);
+
+		private final Query getCurrentUsage = conn.query(GET_CURRENT_USAGE);
+
+		@Override
+		public void close() {
+			getQuota.close();
+			getCurrentUsage.close();
+			super.close();
+		}
+
+		private boolean mayCreateJob(int machineId, String user) {
+			return getQuota.call1(machineId, user).map(result -> {
+				Integer quota = result.getInteger("quota");
+				if (isNull(quota)) {
+					return true;
+				}
+				int userId = result.getInt("user_id");
+				// Quota is defined; check if current usage exceeds it
+				int usage = getCurrentUsage.call1(machineId, userId)
+						.map(integer("current_usage")).orElse(0);
+				// If board-seconds are left, we're good to go
+				return (quota > usage);
+			}).orElse(true);
+		}
 	}
 
 	/**
@@ -94,14 +105,28 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @return True if the job can continue to run. False if it can't.
 	 */
 	public boolean mayLetJobContinue(int machineId, int jobId) {
-		try (Connection c = getConnection();
-				Query getUsageAndQuota = c.query(GET_JOB_USAGE_AND_QUOTA)) {
-			return c.transaction(false, () -> getUsageAndQuota
-					.call1(machineId, jobId)
+		try (ContinueCheckSQL sql = new ContinueCheckSQL()) {
+			return sql.transaction(false,
+					() -> sql.mayLetJobContinue(machineId, jobId));
+		}
+	}
+
+	private class ContinueCheckSQL extends AbstractSQL {
+		private final Query getUsageAndQuota =
+				conn.query(GET_JOB_USAGE_AND_QUOTA);
+
+		@Override
+		public void close() {
+			getUsageAndQuota.close();
+			super.close();
+		}
+
+		private boolean mayLetJobContinue(int machineId, int jobId) {
+			return getUsageAndQuota.call1(machineId, jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
 					// Otherwise, we'll just allow it
-					.orElse(true));
+					.orElse(true);
 		}
 	}
 
@@ -126,21 +151,41 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	// Accessible for testing only
+	// Accessible for testing; do not inline
 	final void doConsolidate(Connection c) {
-		try (Query getConsoldationTargets = c.query(GET_CONSOLIDATION_TARGETS);
-				Update decrementQuota = c.update(DECREMENT_QUOTA);
-				Update markConsolidated = c.update(MARK_CONSOLIDATED)) {
-			c.transaction(() -> consolidate(getConsoldationTargets,
-					decrementQuota, markConsolidated));
+		try (ConsolidateSQL sql = new ConsolidateSQL(c)) {
+			sql.transaction(() -> sql.consolidate());
 		}
 	}
 
-	private void consolidate(Query getConsoldationTargets,
-			Update decrementQuota, Update markConsolidated) {
-		for (Row row : getConsoldationTargets.call()) {
-			decrementQuota.call(row.getObject("usage"), row.getInt("quota_id"));
-			markConsolidated.call(row.getInt("job_id"));
+	private class ConsolidateSQL extends AbstractSQL {
+		private final Query getConsoldationTargets =
+				conn.query(GET_CONSOLIDATION_TARGETS);
+
+		private final Update decrementQuota = conn.update(DECREMENT_QUOTA);
+
+		private final Update markConsolidated = conn.update(MARK_CONSOLIDATED);
+
+		ConsolidateSQL(Connection c) {
+			super(c);
+		}
+
+		@Override
+		public void close() {
+			getConsoldationTargets.close();
+			decrementQuota.close();
+			markConsolidated.close();
+			super.close();
+		}
+
+		// Result is arbitrary and ignored
+		private Void consolidate() {
+			for (Row row : getConsoldationTargets.call()) {
+				decrementQuota.call(row.getObject("usage"),
+						row.getInt("quota_id"));
+				markConsolidated.call(row.getInt("job_id"));
+			}
+			return null;
 		}
 	}
 }

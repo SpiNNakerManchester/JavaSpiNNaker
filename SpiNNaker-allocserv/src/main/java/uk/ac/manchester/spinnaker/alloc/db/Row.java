@@ -24,6 +24,8 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 /**
  * A restricted form of result set. Note that this object <em>must not</em> be
@@ -70,6 +72,17 @@ public final class Row {
 	}
 
 	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the string from the column of a row.
+	 */
+	public static Function<Row, String> string(String columnLabel) {
+		return r -> r.getString(columnLabel);
+	}
+
+	/**
 	 * Get the contents of the named column.
 	 *
 	 * @param columnLabel
@@ -82,6 +95,17 @@ public final class Row {
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
+	}
+
+	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the {@code boolean} from the column of a row.
+	 */
+	public static Function<Row, Boolean> bool(String columnLabel) {
+		return r -> r.getBoolean(columnLabel);
 	}
 
 	/**
@@ -100,6 +124,17 @@ public final class Row {
 	}
 
 	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the {@code int} from the column of a row.
+	 */
+	public static ToIntFunction<Row> int32(String columnLabel) {
+		return r -> r.getInt(columnLabel);
+	}
+
+	/**
 	 * Get the contents of the named column.
 	 *
 	 * @param columnLabel
@@ -115,6 +150,17 @@ public final class Row {
 	}
 
 	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the nullable integer from the column of a row.
+	 */
+	public static Function<Row, Integer> integer(String columnLabel) {
+		return r -> r.getInteger(columnLabel);
+	}
+
+	/**
 	 * Get the contents of the named column.
 	 *
 	 * @param columnLabel
@@ -127,6 +173,17 @@ public final class Row {
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
+	}
+
+	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the byte array from the column of a row.
+	 */
+	public static Function<Row, byte[]> bytes(String columnLabel) {
+		return r -> r.getBytes(columnLabel);
 	}
 
 	/**
@@ -149,6 +206,17 @@ public final class Row {
 	}
 
 	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the instant from the column of a row.
+	 */
+	public static Function<Row, Instant> instant(String columnLabel) {
+		return r -> r.getInstant(columnLabel);
+	}
+
+	/**
 	 * Get the contents of the named column.
 	 *
 	 * @param columnLabel
@@ -168,6 +236,17 @@ public final class Row {
 	}
 
 	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the duration from the column of a row.
+	 */
+	public static Function<Row, Duration> duration(String columnLabel) {
+		return r -> r.getDuration(columnLabel);
+	}
+
+	/**
 	 * Get the contents of the named column.
 	 *
 	 * @param columnLabel
@@ -181,6 +260,17 @@ public final class Row {
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
+	}
+
+	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the object from the column of a row.
+	 */
+	public static Function<Row, Object> object(String columnLabel) {
+		return r -> r.getObject(columnLabel);
 	}
 
 	/**
@@ -207,6 +297,22 @@ public final class Row {
 	}
 
 	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param <T>
+	 *            The enumeration type.
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @param type
+	 *            The enumeration type class.
+	 * @return A function to get the {@code enum} from the column of a row.
+	 */
+	public static <T extends Enum<T>> Function<Row, T>
+			enumerate(String columnLabel, Class<T> type) {
+		return r -> r.getEnum(columnLabel, type);
+	}
+
+	/**
 	 * Get the contents of the named column.
 	 *
 	 * @param columnLabel
@@ -223,5 +329,17 @@ public final class Row {
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
+	}
+
+	/**
+	 * Get a function to get the contents of the named column.
+	 *
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @return A function to get the nullable {@code long} from the column of a
+	 *         row.
+	 */
+	public static Function<Row, Long> int64(String columnLabel) {
+		return r -> r.getLong(columnLabel);
 	}
 }
