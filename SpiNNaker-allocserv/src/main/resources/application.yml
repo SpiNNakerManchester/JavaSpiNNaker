@@ -63,11 +63,11 @@ spring:
             authorization-grant-type: authorization_code
         provider:
           hbp-ebrains:
-            issuer-uri: https://iam.ebrains.eu/auth/realms/hbp/
+            issuer-uri: ${spalloc.auth.openid.domain}
             user-name-attribute: preferred_username
       resourceserver:
         jwt:
-          issuer-uri: https://iam.ebrains.eu/auth/realms/hbp/
+          issuer-uri: ${spalloc.auth.openid.domain}
         opaquetoken:
           client-id: ${spalloc.auth.openid.id}
           client-secret: ${spalloc.auth.openid.secret}
@@ -153,11 +153,16 @@ spalloc:
     openid:
       # Support OIDC
       enable: true
+      domain: https://iam.ebrains.eu/auth/realms/hbp
       # The credentials for HBP/EBRAINS go here
       id: spinnaker-spalloc
       secret: XYZZY_OVERRIDE_THIS
       # Prefix all OpenID-sourced names with this
       username-prefix: "openid."
+      # These are generated during build by maven; don't change
+      truststore-type: PKCS12
+      truststore-path: classpath:/truststore.p12
+      truststore-password: hunter2
   quota:
     # Default user quota in board-seconds
     default-quota: 130

@@ -22,19 +22,27 @@ import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
+import static javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.installInjectableTrustStoreAsDefault;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.trustManager;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.security.Principal;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +53,10 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,6 +109,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
 
 /**
  * The security and administration configuration of the service.
@@ -160,6 +173,54 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public static final String MVC_ERROR = "erroroccurred";
 
 	private static final String SESSION_COOKIE = "JSESSIONID";
+
+	// ------------------------------------------------------------------------
+	// What follows is UGLY stuff to make Java open HTTPS right
+	private static X509TrustManager customTm;
+
+	// Static because it has to be done very early.
+	static {
+		try {
+			installInjectableTrustStoreAsDefault(() -> customTm);
+			log.info("custom SSL trust injection point installed");
+		} catch (Exception e) {
+			throw new RuntimeException("failed to set up SSL trust", e);
+		}
+	}
+
+	/**
+	 * Builds a custom trust manager to plug into the Java runtime. This is so
+	 * that we can access resources managed by Keycloak, which is necessary
+	 * because Java doesn't trust its certificate by default (for messy
+	 * reasons).
+	 *
+	 * @param props
+	 *            Configuration properties
+	 * @return the custom trust manager, <em>already injected</em>
+	 * @throws IOException
+	 *             If the trust store can't be loaded because of I/O
+	 * @throws GeneralSecurityException
+	 *             If there is a security problem with the trust store
+	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
+	 *      Overflow</a>
+	 */
+	@Bean
+	static X509TrustManager customTrustManager(AuthProperties props)
+			throws IOException, GeneralSecurityException {
+		OpenIDProperties p = props.getOpenid();
+
+		KeyStore myTrustStore = KeyStore.getInstance(p.getTruststoreType());
+		try (InputStream myCerts = p.getTruststorePath().getInputStream()) {
+			myTrustStore.load(myCerts, p.getTruststorePassword().toCharArray());
+		}
+
+		X509TrustManager tm = trustManager(myTrustStore);
+		customTm = tm;
+		log.info("set trust store from {}", p.getTruststorePath().getURI());
+		return tm;
+	}
+
+	// ------------------------------------------------------------------------
 
 	@Autowired
 	private BasicAuthEntryPoint authenticationEntryPoint;
@@ -738,5 +799,83 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				c.setAuthentication(old);
 			}
 		}
+	}
+}
+
+/** Support utility methods. */
+abstract class SecurityConfigUtils {
+	private SecurityConfigUtils() {
+	}
+
+	/**
+	 * Load a trust store into a trust manager.
+	 *
+	 * @param truststore
+	 *            The trust store to load, or {@code null} to use the default.
+	 * @return The configured trust manager.
+	 * @throws GeneralSecurityException
+	 *             If things go wrong.
+	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
+	 *      Overflow</a>
+	 */
+	static X509TrustManager trustManager(KeyStore truststore)
+			throws GeneralSecurityException {
+		TrustManagerFactory tmf =
+				TrustManagerFactory.getInstance(getDefaultAlgorithm());
+		tmf.init(truststore);
+		for (TrustManager tm : tmf.getTrustManagers()) {
+			if (tm instanceof X509TrustManager) {
+				return (X509TrustManager) tm;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Set up the default SSL context so that we can inject our trust store for
+	 * verifying servers.
+	 *
+	 * @param injector
+	 *            How to get the value to inject.
+	 * @throws GeneralSecurityException
+	 *             If the SSL context can't be built.
+	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
+	 *      Overflow</a>
+	 */
+	static void installInjectableTrustStoreAsDefault(
+			Supplier<X509TrustManager> injector)
+			throws GeneralSecurityException {
+		X509TrustManager defaultTm = trustManager(null);
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, new TrustManager[] {
+			new X509TrustManager() {
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					return defaultTm.getAcceptedIssuers();
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] chain,
+						String authType) throws CertificateException {
+					X509TrustManager customTm = injector.get();
+					if (customTm != null) {
+						try {
+							customTm.checkServerTrusted(chain, authType);
+							// If we got here, we passed!
+							return;
+						} catch (CertificateException e) {
+						}
+					}
+					defaultTm.checkServerTrusted(chain, authType);
+				}
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] chain,
+						String authType) throws CertificateException {
+					defaultTm.checkClientTrusted(chain, authType);
+				}
+			}
+		}, null);
+		SSLContext.setDefault(sslContext);
 	}
 }

@@ -147,6 +147,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>uk.co.automatictester</groupId>
+				<artifactId>truststore-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-truststore</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<truststoreFile>${project.build.outputDirectory}/truststore.p12</truststoreFile>
+							<truststorePassword>hunter2</truststorePassword>
+							<urls>
+								<url>https://iam.ebrains.eu/auth/realms/hbp/.well-known/openid-configuration</url>
+							</urls>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -210,6 +229,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<encoding>${project.build.sourceEncoding}</encoding>
 						<outputFilename>#{basename}.#{extension}</outputFilename>
 						<closureLanguageOut>${javascript-language.version}</closureLanguageOut>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>uk.co.automatictester</groupId>
+					<artifactId>truststore-maven-plugin</artifactId>
+					<version>2.4.0</version>
+					<configuration>
+						<includeDefaultTruststore>true</includeDefaultTruststore>
+						<trustAllCertificates>true</trustAllCertificates>
+						<truststoreFormat>PKCS12</truststoreFormat>
 					</configuration>
 				</plugin>
 			</plugins>

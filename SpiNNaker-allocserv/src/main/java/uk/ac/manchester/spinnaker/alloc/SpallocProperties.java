@@ -34,6 +34,7 @@ import javax.validation.constraints.PositiveOrZero;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -801,6 +802,12 @@ public class SpallocProperties {
 		private boolean enable;
 
 		/**
+		 * The root path of the OpenID 2 Discovery domain. Referred to elsewhere
+		 * in the configuration file.
+		 */
+		private String domain;
+
+		/**
 		 * The application installation identity. Required for allowing people
 		 * to use HBP/EBRAINS identities.
 		 */
@@ -815,14 +822,33 @@ public class SpallocProperties {
 		/** Prefix for user names originating from OpenID auto-registration. */
 		private String usernamePrefix;
 
+		/** What kind of truststore is it. */
+		private String truststoreType;
+
+		/** Where the truststore is. */
+		private Resource truststorePath;
+
+		/** How to unlock the truststore. */
+		private String truststorePassword;
+
+		@SuppressWarnings("checkstyle:ParameterNumber")
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
+				@DefaultValue("") String domain, //
 				@DefaultValue("") String id, //
 				@DefaultValue("") String secret,
-				@DefaultValue("openid.") String usernamePrefix) {
+				@DefaultValue("openid.") String usernamePrefix,
+				@DefaultValue("PKCS12") String truststoreType,
+				@DefaultValue("classpath:/truststore.p12") //
+				Resource truststorePath,
+				@DefaultValue("") String truststorePassword) {
 			this.enable = enable;
+			this.domain = domain;
 			this.id = id;
 			this.secret = secret;
 			this.usernamePrefix = usernamePrefix;
+			this.truststoreType = truststoreType;
+			this.truststorePath = truststorePath;
+			this.truststorePassword = truststorePassword;
 		}
 
 		/**
@@ -880,6 +906,61 @@ public class SpallocProperties {
 
 		public void setUsernamePrefix(String usernamePrefix) {
 			this.usernamePrefix = usernamePrefix;
+		}
+
+		/**
+		 * The root path of the OpenID 2 Discovery domain. Referred to elsewhere
+		 * in the configuration file.
+		 *
+		 * @return The root path of the OpenID 2 Discovery domain.
+		 */
+		public String getDomain() {
+			return domain;
+		}
+
+		public void setDomain(String domain) {
+			this.domain = domain;
+		}
+
+		/**
+		 * What kind of truststore is it.
+		 *
+		 * @return truststore type (default: {@code PKCS12})
+		 */
+		public String getTruststoreType() {
+			return truststoreType;
+		}
+
+		public void setTruststoreType(String truststoreType) {
+			this.truststoreType = truststoreType;
+		}
+
+		/**
+		 * Where the truststore is.
+		 *
+		 * @return truststore location
+		 */
+		public Resource getTruststorePath() {
+			return truststorePath;
+		}
+
+		public void setTruststorePath(Resource truststorePath) {
+			this.truststorePath = truststorePath;
+		}
+
+		/**
+		 * How to unlock the truststore. This is not considered to be actually
+		 * secret, but rather just a technical requirement of the truststore
+		 * format.
+		 *
+		 * @return password for truststore
+		 */
+		public String getTruststorePassword() {
+			return truststorePassword;
+		}
+
+		public void setTruststorePassword(String truststorePassword) {
+			this.truststorePassword = truststorePassword;
 		}
 
 		@AssertTrue(
