@@ -44,6 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</tr>
 	</table>
 </form>
+<p>
+Alternatively, <a href="<c:url value="/spalloc/system/login_oidc"/>">log in with OpenID</a>
 
 </body>
 </html>

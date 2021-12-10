@@ -353,8 +353,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * tools (especially within the collabratory and the Jupyter
 			 * notebook).
 			 */
-			http.oauth2Login().loginPage(loginUrl)
-					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
+			http.oauth2Login().loginPage(urlMaker.systemUrl("login_oidc"))
+					.loginProcessingUrl(
+							urlMaker.systemUrl("perform_oidc_login"))
 					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
 					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler)
