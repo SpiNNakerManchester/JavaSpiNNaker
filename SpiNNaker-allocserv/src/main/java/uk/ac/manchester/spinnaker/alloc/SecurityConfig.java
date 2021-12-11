@@ -339,13 +339,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
 		String loginUrl = urlMaker.systemUrl("login.html");
-		if (properties.isLocalForm()) {
-			http.formLogin().loginPage(loginUrl)
-					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
-					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
-					.failureUrl(loginUrl + "?error=true")
-					.failureHandler(authenticationFailureHandler);
-		}
 		if (properties.getOpenid().isEnable()) {
 			/*
 			 * We're both, so we can have logins AND tokens. The logins are for
@@ -353,14 +346,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * tools (especially within the collabratory and the Jupyter
 			 * notebook).
 			 */
-			http.oauth2Login().loginPage(urlMaker.systemUrl("login_oidc"))
+			http.oauth2Login().loginPage(urlMaker.systemUrl("login_oidc.html"))
 					.loginProcessingUrl(
 							urlMaker.systemUrl("perform_oidc_login"))
 					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.failureUrl(loginUrl + "?error=true");
+			http.oauth2Client();
+			http.oauth2ResourceServer(oauth -> oauth.jwt());
+		}
+		if (properties.isLocalForm()) {
+			http.formLogin().loginPage(loginUrl)
+					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
+					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
 					.failureUrl(loginUrl + "?error=true")
-					.failureHandler(authenticationFailureHandler)
-					// The next line is shorter written like this
-					.and().oauth2ResourceServer(oauth -> oauth.jwt());
+					.failureHandler(authenticationFailureHandler);
 		}
 		/*
 		 * Logging out is common code, but pretty pointless for Basic Auth as
@@ -525,6 +524,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
 			registry.addViewController("/login.html");
+			registry.addViewController("/login_oidc.html");
 		}
 
 		@Override
