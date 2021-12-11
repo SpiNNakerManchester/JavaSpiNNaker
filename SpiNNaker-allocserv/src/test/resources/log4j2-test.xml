@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<Appenders>
 		<Console name="STDOUT" target="System_out">
-			<PatternLayout pattern="%d %p %C{1.} [%t] %m%n" />
+			<PatternLayout pattern="%d %p %C{1.} [%t] %m{nolookups}%n" />
 		</Console>
 	</Appenders>
 
