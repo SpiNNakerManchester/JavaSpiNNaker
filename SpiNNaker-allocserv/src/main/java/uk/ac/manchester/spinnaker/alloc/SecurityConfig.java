@@ -329,7 +329,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.hasRole("ADMIN")
 				// Login process and static resources are available to all
 				.antMatchers(urlMaker.systemUrl("login*"),
-						urlMaker.systemUrl("perform_**"),
+						urlMaker.systemUrl("perform_*"),
+						urlMaker.systemUrl("perform_oidc_login/**"),
 						urlMaker.systemUrl("error"),
 						urlMaker.systemUrl("resources/*"))
 				.permitAll()
