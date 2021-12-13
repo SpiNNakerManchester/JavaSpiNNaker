@@ -25,9 +25,6 @@ logging:
     # Next, two loggers that are unacceptably noisy by default
     "[org.apache.jasper.servlet.TldScanner]": WARN
     "[javax.persistence.spi]": ERROR
-  pattern:
-    console: "%clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m{nolookups}%n${sys:LOG_EXCEPTION_CONVERSION_WORD}"
-    file: "%d{${LOG_DATEFORMAT_PATTERN}} ${LOG_LEVEL_PATTERN} %pid --- [%t] %-40.40c{1.} : %m{nolookups}%n${sys:LOG_EXCEPTION_CONVERSION_WORD}"
 
 spring:
   main:
