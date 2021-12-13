@@ -63,7 +63,7 @@ spring:
             client-secret: ${spalloc.auth.openid.secret}
             scope: [ openid, profile, email ]
             authorization-grant-type: authorization_code
-            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/login/hbp-ebrains
+            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
         provider:
           hbp-ebrains:
             issuer-uri: ${spalloc.auth.openid.domain}
