@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <body>
 
-<h1>Login</h1>
+<h1>Login with HBP/EBRAINS</h1>
 <c:if test="${ error != null }">
 	<p>Please try again...</p>
 </c:if>
@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</table>
 </form>
 <p>
-Alternatively, <a href="<c:url value="/spalloc/system/login_oidc"/>">log in with OpenID</a>
+Alternatively, <a href="<c:url value="/spalloc/system/login.html"/>">log in with a Spalloc System Account</a>
 
 </body>
 </html>
