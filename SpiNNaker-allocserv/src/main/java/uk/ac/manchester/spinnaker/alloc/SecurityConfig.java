@@ -349,6 +349,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.oauth2Login().loginPage(urlMaker.systemUrl("login_oidc.html"))
 					.loginProcessingUrl(
 							urlMaker.systemUrl("perform_oidc_login"))
+					.authorizationEndpoint(c -> c
+							.baseUri(urlMaker.systemUrl("perform_oidc/auth")))
 					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();

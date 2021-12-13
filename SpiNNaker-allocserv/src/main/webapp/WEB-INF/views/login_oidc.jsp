@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <c:if test="${ error != null }">
 	<p>Please try again...</p>
 </c:if>
-<form name='f' action='<c:url value="/spalloc/system/perform_login"/>' method='POST'>
+<form name='f' action='<c:url value="/spalloc/system/perform_oidc/auth/hbp"/>' method='POST'>
 	<sec:csrfInput />
 	<table>
 		<tr>
