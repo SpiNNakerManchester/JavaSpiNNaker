@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="Log in with System Account" name="title"/>
+	<jsp:param value="Log in" name="title"/>
 </jsp:include>
 <body>
 
@@ -39,7 +39,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</tr>
 		<tr>
 			<td colspan=2>
-				<input name="submit" type="submit" value="submit" />
+				<input name="submit" type="submit" value="submit">
+					Log In
+				</input>
 			</td>
 		</tr>
 	</table>

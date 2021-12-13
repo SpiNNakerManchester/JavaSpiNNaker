@@ -346,12 +346,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * tools (especially within the collabratory and the Jupyter
 			 * notebook).
 			 */
-			http.oauth2Login().loginPage(urlMaker.systemUrl("login_oidc.html"))
+			http.oauth2Login().loginPage(urlMaker.systemUrl("login.html"))
 					.loginProcessingUrl(
 							urlMaker.systemUrl("perform_oidc_login"))
-					.authorizationEndpoint(c -> c
-							.baseUri(urlMaker.systemUrl("perform_oidc/auth")))
-					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.authorizationEndpoint(c -> {
+						c.baseUri(urlMaker.systemUrl("perform_oidc/auth"));
+					}).defaultSuccessUrl(urlMaker.systemUrl(""), true)
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
@@ -526,7 +526,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
 			registry.addViewController("/login.html");
-			registry.addViewController("/login_oidc.html");
 		}
 
 		@Override
