@@ -330,7 +330,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// Login process and static resources are available to all
 				.antMatchers(urlMaker.systemUrl("login*"),
 						urlMaker.systemUrl("perform_*"),
-						urlMaker.systemUrl("perform_oidc_login/**"),
+						urlMaker.systemUrl("perform_oidc/**"),
 						urlMaker.systemUrl("error"),
 						urlMaker.systemUrl("resources/*"))
 				.permitAll()
@@ -349,7 +349,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 */
 			http.oauth2Login().loginPage(urlMaker.systemUrl("login.html"))
 					.loginProcessingUrl(
-							urlMaker.systemUrl("perform_oidc_login"))
+							urlMaker.systemUrl("perform_oidc/auth"))
 					.authorizationEndpoint(c -> {
 						c.baseUri(urlMaker.systemUrl("perform_oidc/auth"));
 					}).defaultSuccessUrl(urlMaker.systemUrl(""), true)
