@@ -253,6 +253,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>commons-math3</artifactId>
 				<version>${commons-math.version}</version>
 			</dependency>
+
+			<!-- Something is forcing these to otherwise be wrong -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-jul</artifactId>
+				<version>${log4j.version}</version>
+				<scope>runtime</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
