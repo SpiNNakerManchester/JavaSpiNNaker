@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</table>
 </form>
 <p>
-Alternatively, <a href="<c:url value="/spalloc/system/perform_oidc/auth/hbp"/>">log in with OpenID</a>
+Alternatively, <a href="<c:url value="/spalloc/system/perform_oidc/auth/hbp-ebrains"/>">log in with OpenID</a>
 
 </body>
 </html>
