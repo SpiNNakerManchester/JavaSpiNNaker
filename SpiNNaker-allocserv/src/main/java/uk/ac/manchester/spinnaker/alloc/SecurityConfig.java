@@ -421,6 +421,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public String getAuthority() {
 			return role;
 		}
+
+		@Override
+		public String toString() {
+			return role;
+		}
 	}
 
 	/**

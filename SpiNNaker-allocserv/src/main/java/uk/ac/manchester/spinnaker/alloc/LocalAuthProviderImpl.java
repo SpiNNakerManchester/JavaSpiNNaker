@@ -678,6 +678,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						+ "transformed it to {}", a, b);
 				SecurityContextHolder.getContext().setAuthentication(b);
 			}
+			log.info("in security filtering, next in chain is {}", chain);
 		}
 		chain.doFilter(request, response);
 	}
