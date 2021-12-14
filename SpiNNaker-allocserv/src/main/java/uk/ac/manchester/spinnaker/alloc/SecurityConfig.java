@@ -529,8 +529,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					throws Exception {
 				AbstractUrlBasedView v = super.buildView(viewName);
 				String path = v.getUrl();
-				if (path.startsWith("/WEB-INFO/views/system")) {
-					v.setUrl(path.replaceFirst("/system", ""));
+				if (path.startsWith("/WEB-INF/views/system")) {
+					String path2 = path.replaceFirst("/system", "");
+					log.debug("rewrote [{}] to [{}]", path, path2);
+					v.setUrl(path2);
 				}
 				return v;
 			}
