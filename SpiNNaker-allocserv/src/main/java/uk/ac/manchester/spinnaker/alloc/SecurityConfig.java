@@ -579,7 +579,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					child.setCrossContext(true);
 					Container c = host.findChild("");
 					if (c != null) {
-						log.warn("found child at root: {}", c);
+						log.warn("replacing child at root: {}", c);
+						host.removeChild(c);
 					}
 					host.addChild(child);
 				}
