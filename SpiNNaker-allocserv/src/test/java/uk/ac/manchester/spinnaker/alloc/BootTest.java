@@ -40,7 +40,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminController;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.web.RootController;
+import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 @SpringBootTest
@@ -74,7 +74,7 @@ class BootTest {
 	private DatabaseEngine db;
 
 	@Autowired
-	private RootController root;
+	private SystemController root;
 
 	@Autowired
 	private AdminAPI admin;

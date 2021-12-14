@@ -17,21 +17,32 @@
 package uk.ac.manchester.spinnaker.alloc;
 
 import static java.time.Instant.now;
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.installInjectableTrustStoreAsDefault;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.trustManager;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.Principal;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +53,11 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,8 +79,8 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -77,22 +93,26 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
 
 /**
  * The security and administration configuration of the service.
@@ -155,6 +175,56 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
 
+	private static final String SESSION_COOKIE = "JSESSIONID";
+
+	// ------------------------------------------------------------------------
+	// What follows is UGLY stuff to make Java open HTTPS right
+	private static X509TrustManager customTm;
+
+	// Static because it has to be done very early.
+	static {
+		try {
+			installInjectableTrustStoreAsDefault(() -> customTm);
+			log.info("custom SSL trust injection point installed");
+		} catch (Exception e) {
+			throw new RuntimeException("failed to set up SSL trust", e);
+		}
+	}
+
+	/**
+	 * Builds a custom trust manager to plug into the Java runtime. This is so
+	 * that we can access resources managed by Keycloak, which is necessary
+	 * because Java doesn't trust its certificate by default (for messy
+	 * reasons).
+	 *
+	 * @param props
+	 *            Configuration properties
+	 * @return the custom trust manager, <em>already injected</em>
+	 * @throws IOException
+	 *             If the trust store can't be loaded because of I/O
+	 * @throws GeneralSecurityException
+	 *             If there is a security problem with the trust store
+	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
+	 *      Overflow</a>
+	 */
+	@Bean
+	static X509TrustManager customTrustManager(AuthProperties props)
+			throws IOException, GeneralSecurityException {
+		OpenIDProperties p = props.getOpenid();
+
+		KeyStore myTrustStore = KeyStore.getInstance(p.getTruststoreType());
+		try (InputStream myCerts = p.getTruststorePath().getInputStream()) {
+			myTrustStore.load(myCerts, p.getTruststorePassword().toCharArray());
+		}
+
+		X509TrustManager tm = trustManager(myTrustStore);
+		customTm = tm;
+		log.info("set trust store from {}", p.getTruststorePath().getURI());
+		return tm;
+	}
+
+	// ------------------------------------------------------------------------
+
 	@Autowired
 	private BasicAuthEntryPoint authenticationEntryPoint;
 
@@ -168,6 +238,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private AuthProperties properties;
 
 	@Autowired
+	private URLPathMaker urlMaker;
+
+	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
 		auth.authenticationProvider(localAuthProvider);
@@ -178,27 +251,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	public enum TrustLevel {
 		/** Grants no real permissions at all. */
-		BASIC,
+		BASIC(),
 		/**
 		 * Grants read-only permissions in addition to {@link #BASIC}.
 		 *
 		 * @see SecurityConfig#GRANT_READER
 		 */
-		READER,
+		READER(GRANT_READER),
 		/**
 		 * Grants job creation and management permissions in addition to
 		 * {@link #READER}.
 		 *
 		 * @see SecurityConfig#GRANT_USER
 		 */
-		USER,
+		USER(GRANT_READER, GRANT_USER),
 		/**
 		 * Grants service administration permissions in addition to
 		 * {@link #USER}.
 		 *
 		 * @see SecurityConfig#GRANT_ADMIN
 		 */
-		ADMIN
+		ADMIN(GRANT_READER, GRANT_USER, GRANT_ADMIN);
+
+		private List<String> grants;
+
+		TrustLevel(String... grants) {
+			this.grants = asList(grants);
+		}
+
+		Stream<GrantedAuthority> getGrants() {
+			return grants.stream().map(SimpleGrantedAuthority::new);
+		}
 	}
 
 	/**
@@ -208,7 +291,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @author Donal Fellows
 	 */
 	public interface LocalAuthenticationProvider
-			extends AuthenticationProvider {
+			extends AuthenticationProvider, Filter {
 		/**
 		 * Create a user. Only admins can create users.
 		 *
@@ -233,9 +316,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		void unlockLockedUsers();
 	}
 
-	@Autowired
-	private URLPathMaker urlMaker;
-
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		/*
@@ -253,6 +333,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// Login process and static resources are available to all
 				.antMatchers(urlMaker.systemUrl("login*"),
 						urlMaker.systemUrl("perform_*"),
+						urlMaker.systemUrl("perform_oidc/**"),
 						urlMaker.systemUrl("error"),
 						urlMaker.systemUrl("resources/*"))
 				.permitAll()
@@ -262,6 +343,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
 		String loginUrl = urlMaker.systemUrl("login.html");
+		if (properties.getOpenid().isEnable()) {
+			/*
+			 * We're both, so we can have logins AND tokens. The logins are for
+			 * using the HTML UI, and the tokens are for using from SpiNNaker
+			 * tools (especially within the collabratory and the Jupyter
+			 * notebook).
+			 */
+			http.oauth2Login().loginPage(urlMaker.systemUrl("login.html"))
+					.loginProcessingUrl(
+							urlMaker.systemUrl("perform_oidc/login/code/*"))
+					.authorizationEndpoint(c -> {
+						c.baseUri(urlMaker.systemUrl("perform_oidc/auth"));
+					}).defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.failureUrl(loginUrl + "?error=true");
+			http.oauth2Client();
+			http.oauth2ResourceServer(oauth -> oauth.jwt());
+			http.addFilterAfter(localAuthProvider,
+					BasicAuthenticationFilter.class);
+		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
 					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
@@ -275,9 +375,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * meaningful.
 		 */
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
-				.deleteCookies("JSESSIONID").invalidateHttpSession(true)
+				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
-		// FIXME add support for HBP/EBRAINS OpenID Connect
 	}
 
 	/**
@@ -323,6 +422,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public String getAuthority() {
 			return role;
 		}
+
+		@Override
+		public String toString() {
+			return role;
+		}
 	}
 
 	/**
@@ -331,7 +435,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Component
 	@Provider
-	static class SpringAccessDeniedExceptionExceptionMapper
+	static class AccessDeniedExceptionMapper
 			implements ExceptionMapper<AccessDeniedException> {
 		@Context
 		private UriInfo ui;
@@ -342,14 +446,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		public Response toResponse(AccessDeniedException exception) {
 			// Actually produce useful logging; the default is ghastly!
-			UsernamePasswordAuthenticationToken who =
-					(UsernamePasswordAuthenticationToken) req
-							.getUserPrincipal();
-			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
-					who.getName(),
-					who.getAuthorities().stream()
-							.map(GrantedAuthority::getAuthority)
-							.collect(toSet()));
+			Principal p = req.getUserPrincipal();
+			if (p instanceof AbstractAuthenticationToken) {
+				AbstractAuthenticationToken who =
+						(AbstractAuthenticationToken) p;
+				log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
+						who.getName(),
+						who.getAuthorities().stream()
+								.map(GrantedAuthority::getAuthority)
+								.collect(toSet()));
+			} else if (p instanceof OAuth2AuthenticatedPrincipal) {
+				OAuth2AuthenticatedPrincipal who =
+						(OAuth2AuthenticatedPrincipal) p;
+				log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
+						who.getName(),
+						who.getAuthorities().stream()
+								.map(GrantedAuthority::getAuthority)
+								.collect(toSet()));
+			}
 			// But the user gets a bland response
 			return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
 		}
@@ -409,7 +523,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	ViewResolver jspViewResolver() {
-		InternalResourceViewResolver bean = new InternalResourceViewResolver();
+		InternalResourceViewResolver bean = new InternalResourceViewResolver() {
+			@Override
+			protected AbstractUrlBasedView buildView(String viewName)
+					throws Exception {
+				AbstractUrlBasedView v = super.buildView(viewName);
+				String path = v.getUrl();
+				if (path.startsWith("/WEB-INF/views/system")) {
+					String path2 = path.replaceFirst("/system", "");
+					log.debug("rewrote [{}] to [{}]", path, path2);
+					v.setUrl(path2);
+				}
+				return v;
+			}
+		};
 		bean.setPrefix("/WEB-INF/views/");
 		bean.setSuffix(".jsp");
 		return bean;
@@ -422,15 +549,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	static class MvcConfig implements WebMvcConfigurer {
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
-			registry.addViewController("/login.html");
+			registry.addViewController("/system/login.html");
 		}
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/resources/**").addResourceLocations(
-					"classpath:/META-INF/public-web-resources/");
+			registry.addResourceHandler("/system/resources/**")
+					.addResourceLocations(
+							"classpath:/META-INF/public-web-resources/");
 		}
 	}
+
 
 	/**
 	 * Misc services related to password handling.
@@ -554,7 +683,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		/** What is the name of the user? */
 		public final String name;
 
-		private List<String> authorities = new ArrayList<>();
+		private List<GrantedAuthority> authorities = new ArrayList<>();
 
 		private static final String[] STDAUTH = {
 			GRANT_ADMIN, GRANT_READER, GRANT_USER
@@ -569,11 +698,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public Permit(javax.ws.rs.core.SecurityContext context) {
 			for (String role : STDAUTH) {
 				if (context.isUserInRole(role)) {
-					authorities.add(role);
+					authorities.add(new SimpleGrantedAuthority(role));
 				}
 			}
-			admin = authorities.contains(GRANT_ADMIN);
+			admin = isAdmin(authorities);
 			name = context.getUserPrincipal().getName();
+		}
+
+		private static boolean isAdmin(List<GrantedAuthority> auths) {
+			return auths.stream().map(GrantedAuthority::getAuthority)
+					.anyMatch(GRANT_ADMIN::equals);
 		}
 
 		/**
@@ -583,10 +717,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The originating security context.
 		 */
 		public Permit(SecurityContext context) {
-			context.getAuthentication().getAuthorities().stream()
-					.map(GrantedAuthority::getAuthority)
-					.forEach(authorities::add);
-			admin = authorities.contains(GRANT_ADMIN);
+			authorities = new ArrayList<>(
+					context.getAuthentication().getAuthorities());
+			admin = isAdmin(authorities);
 			name = context.getAuthentication().getName();
 		}
 
@@ -599,8 +732,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *            The user name. Must exist in order to be actually used.
 		 */
 		public Permit(String serviceUser) {
-			authorities.add(GRANT_READER);
-			authorities.add(GRANT_USER);
+			USER.getGrants().forEach(authorities::add);
 			admin = false;
 			name = serviceUser;
 		}
@@ -648,8 +780,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 				@Override
 				public Collection<? extends GrantedAuthority> getAuthorities() {
-					return authorities.stream().map(SimpleGrantedAuthority::new)
-							.collect(toList());
+					return unmodifiableCollection(authorities);
 				}
 
 				@Override
@@ -696,5 +827,83 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				c.setAuthentication(old);
 			}
 		}
+	}
+}
+
+/** Support utility methods. */
+abstract class SecurityConfigUtils {
+	private SecurityConfigUtils() {
+	}
+
+	/**
+	 * Load a trust store into a trust manager.
+	 *
+	 * @param truststore
+	 *            The trust store to load, or {@code null} to use the default.
+	 * @return The configured trust manager.
+	 * @throws GeneralSecurityException
+	 *             If things go wrong.
+	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
+	 *      Overflow</a>
+	 */
+	static X509TrustManager trustManager(KeyStore truststore)
+			throws GeneralSecurityException {
+		TrustManagerFactory tmf =
+				TrustManagerFactory.getInstance(getDefaultAlgorithm());
+		tmf.init(truststore);
+		for (TrustManager tm : tmf.getTrustManagers()) {
+			if (tm instanceof X509TrustManager) {
+				return (X509TrustManager) tm;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Set up the default SSL context so that we can inject our trust store for
+	 * verifying servers.
+	 *
+	 * @param injector
+	 *            How to get the value to inject.
+	 * @throws GeneralSecurityException
+	 *             If the SSL context can't be built.
+	 * @see <a href="https://stackoverflow.com/a/24561444/301832">Stack
+	 *      Overflow</a>
+	 */
+	static void installInjectableTrustStoreAsDefault(
+			Supplier<X509TrustManager> injector)
+			throws GeneralSecurityException {
+		X509TrustManager defaultTm = trustManager(null);
+		SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(null, new TrustManager[] {
+			new X509TrustManager() {
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+					return defaultTm.getAcceptedIssuers();
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] chain,
+						String authType) throws CertificateException {
+					X509TrustManager customTm = injector.get();
+					if (customTm != null) {
+						try {
+							customTm.checkServerTrusted(chain, authType);
+							// If we got here, we passed!
+							return;
+						} catch (CertificateException e) {
+						}
+					}
+					defaultTm.checkServerTrusted(chain, authType);
+				}
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] chain,
+						String authType) throws CertificateException {
+					defaultTm.checkClientTrusted(chain, authType);
+				}
+			}
+		}, null);
+		SSLContext.setDefault(sslContext);
 	}
 }

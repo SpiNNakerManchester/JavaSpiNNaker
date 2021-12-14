@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<artifactId>SpiNNaker-allocserv</artifactId>
 	<packaging>war</packaging>
 	<properties>
-		<spring.boot.version>2.4.6</spring.boot.version>
+		<spring.boot.version>2.4.7</spring.boot.version>
 		<spring.version>5.3.7</spring.version>
 		<jackson.version>2.12.3</jackson.version>
 		<swagger.version>3.50.0</swagger.version>
@@ -37,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<closure-compiler.version>2.21.0</closure-compiler.version>
 		<build-helper.version>3.2.0</build-helper.version>
 		<commons-math.version>3.6.1</commons-math.version>
+		<truststore-maven-plugin.version>2.4.0</truststore-maven-plugin.version>
 
 		<!-- These ought to be one, but of course they aren't. -->
 		<typescript-language.version>ES6</typescript-language.version>
@@ -44,6 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<start.class>uk.ac.manchester.spinnaker.alloc.ServiceConfig</start.class>
+		<!-- TLS-secured connection that we need to make at runtime startup. -->
+		<ebrains.wellknown.url>https://iam.ebrains.eu/auth/realms/hbp/.well-known/openid-configuration</ebrains.wellknown.url>
 	</properties>
 
 	<build>
@@ -72,6 +75,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<configuration>
 					<mainClass>${start.class}</mainClass>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-project-output-directory</id>
+						<phase>initialize</phase>
+						<configuration>
+							<tasks>
+								<delete dir="${project.build.outputDirectory}"/>
+								<mkdir dir="${project.build.outputDirectory}"/>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<!-- Typescript compiler -->
@@ -147,6 +169,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>uk.co.automatictester</groupId>
+				<artifactId>truststore-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-truststore</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<truststoreFile>${project.build.outputDirectory}/truststore.p12</truststoreFile>
+							<truststorePassword>hunter2</truststorePassword>
+							<urls>
+								<url>${ebrains.wellknown.url}</url>
+							</urls>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -210,6 +251,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<encoding>${project.build.sourceEncoding}</encoding>
 						<outputFilename>#{basename}.#{extension}</outputFilename>
 						<closureLanguageOut>${javascript-language.version}</closureLanguageOut>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>uk.co.automatictester</groupId>
+					<artifactId>truststore-maven-plugin</artifactId>
+					<version>${truststore-maven-plugin.version}</version>
+					<configuration>
+						<trustAllCertificates>true</trustAllCertificates>
+						<truststoreFormat>PKCS12</truststoreFormat>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -393,6 +443,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-resource-server</artifactId>
 		</dependency>
 	</dependencies>
 

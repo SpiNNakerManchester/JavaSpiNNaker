@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static java.lang.Thread.interrupted;
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -45,6 +46,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Implementation of the old style Spalloc interface.
@@ -55,13 +57,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityPropertie
 public class V1CompatService {
 	/** In seconds. */
 	private static final int SHUTDOWN_TIMEOUT = 3;
-
-	private static final ThreadFactory THREAD_FACTORY;
-
-	static {
-		ThreadGroup group = new ThreadGroup("spalloc-legacy-service");
-		THREAD_FACTORY = r -> new Thread(group, r);
-	}
 
 	private static final Logger log = getLogger(V1CompatService.class);
 
@@ -76,6 +71,9 @@ public class V1CompatService {
 	@Autowired
 	private ObjectProvider<V1CompatTask> taskFactory;
 
+	/** How we make threads. */
+	private final ThreadFactory threadFactory;
+
 	/** The service socket. */
 	private ServerSocket serv;
 
@@ -86,14 +84,41 @@ public class V1CompatService {
 	 * How to serialize and deserialize JSON. Would be a bean except then we'd
 	 * be wiring by name.
 	 */
-	final ObjectMapper mapper;
+	private final ObjectMapper mapper;
 
 	/** How the majority of threads are launched by the service. */
-	ExecutorService executor;
+	private ExecutorService executor;
 
 	public V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
+		ThreadGroup group = new ThreadGroup("spalloc-legacy-service");
+		ValueHolder<Integer> counter = new ValueHolder<>(1);
+		threadFactory = r -> new Thread(group, r,
+				"spalloc-legacy-" + counter.update(i -> i + 1));
+	}
+
+	/** A class that can reach into a compat service. */
+	abstract static class Aware {
+		private final V1CompatService srv;
+
+		Aware(V1CompatService service) {
+			srv = requireNonNull(service);
+		}
+
+		/**
+		 * @return The executor to use.
+		 */
+		protected final ExecutorService getExecutor() {
+			return requireNonNull(srv.executor);
+		}
+
+		/**
+		 * @return The JSON mapper to use if necessary.
+		 */
+		protected final ObjectMapper getJsonMapper() {
+			return requireNonNull(srv.mapper);
+		}
 	}
 
 	@PostConstruct
@@ -101,9 +126,9 @@ public class V1CompatService {
 		CompatibilityProperties props = mainProps.getCompat();
 		if (props.getThreadPoolSize() > 0) {
 			executor = newFixedThreadPool(props.getThreadPoolSize(),
-					THREAD_FACTORY);
+					threadFactory);
 		} else {
-			executor = newCachedThreadPool(THREAD_FACTORY);
+			executor = newCachedThreadPool(threadFactory);
 		}
 
 		if (props.isEnable()) {
@@ -111,8 +136,8 @@ public class V1CompatService {
 					new InetSocketAddress(props.getHost(), props.getPort());
 			serv = new ServerSocket();
 			serv.bind(addr);
-			servThread = THREAD_FACTORY.newThread(this::acceptConnections);
-			servThread.setName("service-master");
+			servThread = threadFactory.newThread(this::acceptConnections);
+			servThread.setName("spalloc-legacy-service");
 			log.info("launching listener thread {} on address {}", servThread,
 					addr);
 			servThread.start();
@@ -146,23 +171,13 @@ public class V1CompatService {
 		return taskFactory.getObject(this, socket);
 	}
 
+	/**
+	 * Main service loop. Accepts connections and dispatches them to workers.
+	 */
 	private void acceptConnections() {
 		try {
-			while (!interrupted()) {
-				try {
-					V1CompatTask service = getTask(serv.accept());
-					executor.execute(() -> service.handleConnection());
-				} catch (SocketException e) {
-					if (interrupted()) {
-						return;
-					}
-					if (serv.isClosed()) {
-						return;
-					}
-					log.warn("IO error", e);
-				} catch (IOException e) {
-					log.warn("IO error", e);
-				}
+			while (acceptConnection()) {
+				continue;
 			}
 		} finally {
 			try {
@@ -171,5 +186,30 @@ public class V1CompatService {
 				log.warn("IO error", e);
 			}
 		}
+	}
+
+	/**
+	 * Accept a single connection and dispatch it to a worker task in a thread.
+	 *
+	 * @return If {@code false}, we want to stop accepting connections.
+	 */
+	private boolean acceptConnection() {
+		try {
+			V1CompatTask service = getTask(serv.accept());
+			executor.execute(() -> service.handleConnection());
+		} catch (SocketException e) {
+			// Check here; interrupt = shutting down = no errors, please
+			if (interrupted()) {
+				return false;
+			}
+			if (serv.isClosed()) {
+				return false;
+			}
+			log.warn("IO error", e);
+		} catch (IOException e) {
+			log.warn("IO error", e);
+		}
+		// If we've been interrupted here, we want the main loop to stop
+		return !interrupted();
 	}
 }

@@ -294,6 +294,7 @@ public class ServiceConfig extends Application {
 			if (!prefix.endsWith("/")) {
 				prefix += "/";
 			}
+			prefix += "system/";
 			return prefix + suffix;
 		}
 

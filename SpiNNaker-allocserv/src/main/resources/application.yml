@@ -14,6 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 logging:
+  file:
+    name: ${spalloc.working-directory}/spalloc.log
   level:
     root: INFO
     # "[org.apache.catalina]": DEBUG
@@ -33,7 +35,7 @@ spring:
     name: spalloc
   mvc:
     servlet:
-      path: /spalloc/system
+      path: /spalloc
   task:
     scheduling:
       pool:
@@ -52,6 +54,26 @@ spring:
     properties:
       "[mail.smtp.auth]": true
       "[mail.smtp.starttls.enable]": true
+  security:
+    oauth2:
+      client:
+        registration:
+          hbp-ebrains:
+            client-id: ${spalloc.auth.openid.id}
+            client-secret: ${spalloc.auth.openid.secret}
+            scope: [ openid, profile, email ]
+            authorization-grant-type: authorization_code
+            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
+        provider:
+          hbp-ebrains:
+            issuer-uri: ${spalloc.auth.openid.domain}
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: ${spalloc.auth.openid.domain}
+        opaquetoken:
+          client-id: ${spalloc.auth.openid.id}
+          client-secret: ${spalloc.auth.openid.secret}
 
 server:
   port: 8080
@@ -67,15 +89,17 @@ cxf:
 
 # TODO: Don't set auth.add-dummy-user, transceiver.dummy or auth.debug-failures in production
 spalloc:
+  # Where we hold files that we write to
+  working-directory: "."
   # Where's the database?
-  database-path: spalloc.sqlite3
+  database-path: ${spalloc.working-directory}/spalloc.sqlite3
   # How long should long calls take before returning anyway?
   wait: 30s
   # Whether to pause ALL periodic callbacks; probably only useful for debugging
   pause: false
   historical-data:
     # Where to we back up old jobs to?
-    path: spalloc-history.sqlite3
+    path: ${spalloc.working-directory}/spalloc-history.sqlite3
     # How long before we move old jobs to the historical data
     # Defaults to 14 days (or thereabouts)
     grace-period: 14d
@@ -131,6 +155,19 @@ spalloc:
     account-lock-duration: 24h
     # How often do we look for users to unlock
     unlock-period: 60s
+    openid:
+      # Support OIDC
+      enable: true
+      domain: https://iam.ebrains.eu/auth/realms/hbp
+      # The credentials for HBP/EBRAINS go here
+      id: spinnaker-spalloc
+      secret: XYZZY_OVERRIDE_THIS
+      # Prefix all OpenID-sourced names with this
+      username-prefix: "openid."
+      # These are generated during build by maven; don't change
+      truststore-type: PKCS12
+      truststore-path: classpath:/truststore.p12
+      truststore-password: hunter2
   quota:
     # Default user quota in board-seconds
     default-quota: 130

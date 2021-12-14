@@ -34,6 +34,7 @@ import javax.validation.constraints.PositiveOrZero;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -535,6 +536,9 @@ public class SpallocProperties {
 
 	/** Notify an administrator about problems reported with boards. */
 	public static class ReportProperties {
+		private static final String DEFAULT_SUBJECT =
+				"NOTICE: Board taken out of service";
+
 		/** Whether to send an email about reported boards. */
 		private boolean send;
 
@@ -550,8 +554,7 @@ public class SpallocProperties {
 		public ReportProperties(@DefaultValue("false") boolean send,
 				@DefaultValue("spalloc@localhost") String from,
 				@DefaultValue("root@localhost") String to,
-				@DefaultValue("NOTICE: "
-						+ "Board taken out of service") String subject) {
+				@DefaultValue(DEFAULT_SUBJECT) String subject) {
 			this.send = send;
 			this.from = from;
 			this.to = to;
@@ -645,6 +648,12 @@ public class SpallocProperties {
 		 */
 		private Duration unlockPeriod;
 
+		/**
+		 * OpenID-related security properties. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 */
+		private OpenIDProperties openid;
+
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		public AuthProperties(//
 				@DefaultValue("true") boolean basic,
@@ -654,7 +663,8 @@ public class SpallocProperties {
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("3") int maxLoginFailures,
 				@DefaultValue("24h") Duration accountLockDuration,
-				@DefaultValue("60s") Duration unlockPeriod) {
+				@DefaultValue("60s") Duration unlockPeriod,
+				@DefaultValue OpenIDProperties openid) {
 			this.basic = basic;
 			this.localForm = localForm;
 			this.addDummyUser = addDummyUser;
@@ -663,6 +673,7 @@ public class SpallocProperties {
 			this.maxLoginFailures = maxLoginFailures;
 			this.accountLockDuration = accountLockDuration;
 			this.unlockPeriod = unlockPeriod;
+			this.setOpenid(openid);
 		}
 
 		/**
@@ -762,6 +773,201 @@ public class SpallocProperties {
 
 		public void setUnlockPeriod(Duration unlockPeriod) {
 			this.unlockPeriod = unlockPeriod;
+		}
+
+		/**
+		 * OpenID-related security properties. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 *
+		 * @return OpenID-related security properties.
+		 */
+		public OpenIDProperties getOpenid() {
+			return openid;
+		}
+
+		public void setOpenid(OpenIDProperties openid) {
+			this.openid = openid;
+		}
+	}
+
+	/**
+	 * OpenID-related security properties. Required for allowing people to use
+	 * HBP/EBRAINS identities.
+	 */
+	public static class OpenIDProperties {
+		/**
+		 * Whether to enable OIDC authentication. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 */
+		private boolean enable;
+
+		/**
+		 * The root path of the OpenID 2 Discovery domain. Referred to elsewhere
+		 * in the configuration file.
+		 */
+		private String domain;
+
+		/**
+		 * The application installation identity. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 */
+		private String id;
+
+		/**
+		 * The application installation secret. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 */
+		private String secret;
+
+		/** Prefix for user names originating from OpenID auto-registration. */
+		private String usernamePrefix;
+
+		/** What kind of truststore is it. */
+		private String truststoreType;
+
+		/** Where the truststore is. */
+		private Resource truststorePath;
+
+		/** How to unlock the truststore. */
+		private String truststorePassword;
+
+		@SuppressWarnings("checkstyle:ParameterNumber")
+		public OpenIDProperties(@DefaultValue("false") boolean enable,
+				@DefaultValue("") String domain, //
+				@DefaultValue("") String id, //
+				@DefaultValue("") String secret,
+				@DefaultValue("openid.") String usernamePrefix,
+				@DefaultValue("PKCS12") String truststoreType,
+				@DefaultValue("classpath:/truststore.p12") //
+				Resource truststorePath,
+				@DefaultValue("") String truststorePassword) {
+			this.enable = enable;
+			this.domain = domain;
+			this.id = id;
+			this.secret = secret;
+			this.usernamePrefix = usernamePrefix;
+			this.truststoreType = truststoreType;
+			this.truststorePath = truststorePath;
+			this.truststorePassword = truststorePassword;
+		}
+
+		/**
+		 * Whether to enable OIDC authentication. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 *
+		 * @return Whether to enable OIDC authentication.
+		 */
+		public boolean isEnable() {
+			return enable;
+		}
+
+		public void setEnable(boolean enable) {
+			this.enable = enable;
+		}
+
+		/**
+		 * The application installation identity. Required for allowing people
+		 * to use HBP/EBRAINS identities.
+		 *
+		 * @return The application installation identity.
+		 */
+		public String getId() {
+			return id == null ? null : id.trim();
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		/**
+		 * The application installation secret. Required for allowing people to
+		 * use HBP/EBRAINS identities.
+		 *
+		 * @return The application installation secret.
+		 */
+		public String getSecret() {
+			return secret == null ? null : secret.trim();
+		}
+
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
+
+		/**
+		 * Prefix for user names originating from OpenID auto-registration. Not
+		 * a good idea to modify this frequently!
+		 *
+		 * @return Prefix for user names originating from OpenID
+		 *         auto-registration.
+		 */
+		public String getUsernamePrefix() {
+			return usernamePrefix;
+		}
+
+		public void setUsernamePrefix(String usernamePrefix) {
+			this.usernamePrefix = usernamePrefix;
+		}
+
+		/**
+		 * The root path of the OpenID 2 Discovery domain. Referred to elsewhere
+		 * in the configuration file.
+		 *
+		 * @return The root path of the OpenID 2 Discovery domain.
+		 */
+		public String getDomain() {
+			return domain;
+		}
+
+		public void setDomain(String domain) {
+			this.domain = domain;
+		}
+
+		/**
+		 * What kind of truststore is it.
+		 *
+		 * @return truststore type (default: {@code PKCS12})
+		 */
+		public String getTruststoreType() {
+			return truststoreType;
+		}
+
+		public void setTruststoreType(String truststoreType) {
+			this.truststoreType = truststoreType;
+		}
+
+		/**
+		 * Where the truststore is.
+		 *
+		 * @return truststore location
+		 */
+		public Resource getTruststorePath() {
+			return truststorePath;
+		}
+
+		public void setTruststorePath(Resource truststorePath) {
+			this.truststorePath = truststorePath;
+		}
+
+		/**
+		 * How to unlock the truststore. This is not considered to be actually
+		 * secret, but rather just a technical requirement of the truststore
+		 * format.
+		 *
+		 * @return password for truststore
+		 */
+		public String getTruststorePassword() {
+			return truststorePassword;
+		}
+
+		public void setTruststorePassword(String truststorePassword) {
+			this.truststorePassword = truststorePassword;
+		}
+
+		@AssertTrue(
+				message = "id and secret must be given if OpenID is enabled")
+		private boolean isValid() {
+			return !enable || (nonNull(id) && !id.trim().isEmpty()
+					&& nonNull(secret) && !secret.trim().isEmpty());
 		}
 	}
 

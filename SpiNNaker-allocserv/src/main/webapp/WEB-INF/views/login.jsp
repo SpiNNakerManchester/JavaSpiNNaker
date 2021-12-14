@@ -39,11 +39,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</tr>
 		<tr>
 			<td colspan=2>
-				<input name="submit" type="submit" value="submit" />
+				<input name="submit" type="submit" value="submit">
+					Log In
+				</input>
 			</td>
 		</tr>
 	</table>
 </form>
+<p>
+Alternatively, <a href="<c:url value="/spalloc/system/perform_oidc/auth/hbp-ebrains"/>">log in with OpenID</a>
 
 </body>
 </html>

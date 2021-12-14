@@ -44,18 +44,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<td>${ job.state }</td>
 </tr>
 <tr>
-	<th class="lineTitle">Start time:</th>
+	<th class="lineTitle">
+		Start time:
+		<%-- Can't go in the element below; content will be replaced --%>
+		<script defer="defer">
+			prettyTimestamp("startTime");
+		</script>
+	</th>
 	<td id="startTime">${ job.startTime }</td>
-	<script defer="defer">
-		prettyTimestamp("startTime");
-	</script>
 </tr>
 <tr>
-	<th class="lineTitle">Keep-alive:</th>
+	<th class="lineTitle">
+		Keep-alive:
+		<%-- Can't go in the element below; content will be replaced --%>
+		<script defer="defer">
+			prettyDuration("keepAlive");
+		</script>
+	</th>
 	<td id="keepAlive">${ job.keepAlive }</td>
-	<script defer="defer">
-		prettyDuration("keepAlive");
-	</script>
 </tr>
 <tr>
 	<th class="lineTitle">Owner host:</th>
