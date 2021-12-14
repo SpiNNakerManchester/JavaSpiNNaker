@@ -35,7 +35,7 @@ spring:
     name: spalloc
   mvc:
     servlet:
-      path: /spalloc/system
+      path: /spalloc
   task:
     scheduling:
       pool:
