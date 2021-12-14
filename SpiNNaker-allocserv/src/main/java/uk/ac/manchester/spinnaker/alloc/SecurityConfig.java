@@ -89,7 +89,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -291,7 +290,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @author Donal Fellows
 	 */
 	public interface LocalAuthenticationProvider
-			extends AuthenticationProvider, GrantedAuthoritiesMapper, Filter {
+			extends AuthenticationProvider, Filter {
 		/**
 		 * Create a user. Only admins can create users.
 		 *
@@ -356,8 +355,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizationEndpoint(c -> {
 						c.baseUri(urlMaker.systemUrl("perform_oidc/auth"));
 					}).defaultSuccessUrl(urlMaker.systemUrl(""), true)
-					.failureUrl(loginUrl + "?error=true").userInfoEndpoint()
-					.userAuthoritiesMapper(localAuthProvider);
+					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
 			http.addFilterAfter(localAuthProvider,
