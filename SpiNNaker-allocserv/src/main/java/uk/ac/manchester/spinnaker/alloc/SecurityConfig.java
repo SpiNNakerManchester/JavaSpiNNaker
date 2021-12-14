@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc;
 
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -58,7 +59,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.Filter;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
@@ -67,8 +71,13 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.catalina.Host;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -542,6 +551,52 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/resources/**").addResourceLocations(
 					"classpath:/META-INF/public-web-resources/");
+		}
+	}
+
+	/**
+	 * Tricky tomcat config.
+	 *
+	 * @see <a href="https://stackoverflow.com/a/59632220/301832">SO.Q+A</a>
+	 */
+	@Configuration
+	static class RootServletConfig {
+		@Bean
+		public TomcatServletWebServerFactory servletWebServerFactory() {
+			return new TomcatServletWebServerFactory() {
+				@Override
+				protected void prepareContext(Host host,
+						ServletContextInitializer[] initializers) {
+					super.prepareContext(host, initializers);
+					StandardContext child = new StandardContext();
+					child.addLifecycleListener(new FixContextListener());
+					child.setPath("");
+					ServletContainerInitializer initializer =
+							getServletContextInitializer(getContextPath());
+					child.addServletContainerInitializer(initializer,
+							emptySet());
+					child.setCrossContext(true);
+					host.addChild(child);
+				}
+			};
+		}
+
+		private ServletContainerInitializer
+				getServletContextInitializer(String contextPath) {
+			return (c, context) -> {
+				@SuppressWarnings("serial")
+				Servlet servlet = new HttpServlet() {
+					@Override
+					protected void doGet(HttpServletRequest req,
+							HttpServletResponse resp)
+							throws ServletException, IOException {
+						log.info("redirecting from {} to {}",
+								req.getPathTranslated(), contextPath);
+						resp.sendRedirect(contextPath);
+					}
+				};
+				context.addServlet("root", servlet).addMapping("/*");
+			};
 		}
 	}
 
