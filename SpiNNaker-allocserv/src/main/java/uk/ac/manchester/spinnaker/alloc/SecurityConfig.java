@@ -93,6 +93,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -238,6 +239,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private URLPathMaker urlMaker;
 
 	@Autowired
+	private FilterSecurityInterceptor filterSecurityInterceptor;
+
+	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
 		auth.authenticationProvider(localAuthProvider);
@@ -356,6 +360,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
+			filterSecurityInterceptor.setAlwaysReauthenticate(true);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
