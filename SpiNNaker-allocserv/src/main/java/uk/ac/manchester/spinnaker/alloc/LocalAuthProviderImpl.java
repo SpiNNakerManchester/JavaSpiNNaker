@@ -194,6 +194,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
+		log.info("requesting auth decision about {}", auth);
 		try {
 			if (auth instanceof UsernamePasswordAuthenticationToken) {
 				return authenticateDirect(
