@@ -71,6 +71,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.catalina.Container;
 import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
@@ -576,6 +577,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					child.addServletContainerInitializer(initializer,
 							emptySet());
 					child.setCrossContext(true);
+					Container c = host.findChild("");
+					if (c != null) {
+						log.warn("found child at root: {}", c);
+					}
 					host.addChild(child);
 				}
 			};
