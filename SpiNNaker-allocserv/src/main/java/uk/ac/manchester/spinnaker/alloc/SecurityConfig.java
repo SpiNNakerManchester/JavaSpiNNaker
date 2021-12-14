@@ -57,6 +57,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -289,7 +290,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @author Donal Fellows
 	 */
 	public interface LocalAuthenticationProvider
-			extends AuthenticationProvider {
+			extends AuthenticationProvider, Filter {
 		/**
 		 * Create a user. Only admins can create users.
 		 *
@@ -357,7 +358,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
-			http.objectPostProcessor(this::opp);
+			http.addFilterBefore(localAuthProvider,
+					FilterSecurityInterceptor.class);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
@@ -374,15 +376,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
-	}
-
-	private <T extends Object> T opp(T o) {
-		log.info("post-processing {}", o);
-		if (o instanceof FilterSecurityInterceptor) {
-			FilterSecurityInterceptor fsi = (FilterSecurityInterceptor) o;
-			fsi.setAlwaysReauthenticate(true);
-		}
-		return o;
 	}
 
 	/**

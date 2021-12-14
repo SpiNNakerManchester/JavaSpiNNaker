@@ -30,11 +30,16 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +56,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
@@ -196,7 +203,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	public Authentication authenticate(Authentication auth)
+	public final Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
 		log.info("requesting auth decision about {}", auth);
 		if (auth instanceof AlreadyDoneMarker) {
@@ -226,12 +233,35 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
+	@Override
+	public final void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
+		SecurityContext ctx = SecurityContextHolder.getContext();
+		Authentication a = ctx.getAuthentication();
+		if (a != null && supports(a.getClass())) {
+			Authentication b = authenticate(a);
+			if (b != null && b != a) {
+				log.info("filter updated security from {} to {}", a, b);
+				ctx.setAuthentication(b);
+			}
+		}
+		try {
+			/*
+			 * The next thing in the chain is the FilterSecurityInterceptor that
+			 * dispatches into CXF or the web interface.
+			 */
+			chain.doFilter(request, response);
+		} finally {
+			ctx.setAuthentication(a);
+		}
+	}
+
 	private static final Class<?>[] SUPPORTED_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthorizationCodeAuthenticationToken.class,
 		OAuth2LoginAuthenticationToken.class,
 		OAuth2AuthenticationToken.class,
-		OpenIDDerivedAuthenticationToken.class
+		AlreadyDoneMarker.class
 	};
 
 	@Override
