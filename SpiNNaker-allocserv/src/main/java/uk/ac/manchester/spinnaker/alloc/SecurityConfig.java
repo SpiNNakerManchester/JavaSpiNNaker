@@ -105,6 +105,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -522,7 +523,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	ViewResolver jspViewResolver() {
-		InternalResourceViewResolver bean = new InternalResourceViewResolver();
+		InternalResourceViewResolver bean = new InternalResourceViewResolver() {
+			@Override
+			protected AbstractUrlBasedView buildView(String viewName)
+					throws Exception {
+				AbstractUrlBasedView v = super.buildView(viewName);
+				String path = v.getUrl();
+				if (path.startsWith("/WEB-INFO/views/system")) {
+					v.setUrl(path.replaceFirst("/system", ""));
+				}
+				return v;
+			}
+		};
 		bean.setPrefix("/WEB-INF/views/");
 		bean.setSuffix(".jsp");
 		return bean;
