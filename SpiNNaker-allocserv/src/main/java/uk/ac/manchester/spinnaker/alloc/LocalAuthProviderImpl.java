@@ -207,6 +207,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						(OAuth2AuthorizationCodeAuthenticationToken) auth);
 			} else if (auth instanceof OAuth2AuthenticationToken) {
 				return authenticateOpenId((OAuth2AuthenticationToken) auth);
+			} else if (auth instanceof OpenIDDerivedAuthenticationToken) {
+				// It's ours
+				return auth;
 			} else {
 				return null;
 			}
@@ -220,7 +223,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthorizationCodeAuthenticationToken.class,
 		OAuth2LoginAuthenticationToken.class,
-		OAuth2AuthenticationToken.class
+		OAuth2AuthenticationToken.class,
+		OpenIDDerivedAuthenticationToken.class
 	};
 
 	@Override
@@ -230,6 +234,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				return true;
 			}
 		}
+		log.info("asked about supporting {}", cls);
 		return false;
 	}
 
