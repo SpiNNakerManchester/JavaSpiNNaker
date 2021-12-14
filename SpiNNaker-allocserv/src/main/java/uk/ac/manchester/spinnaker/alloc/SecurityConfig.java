@@ -57,7 +57,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -98,7 +97,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -290,7 +288,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @author Donal Fellows
 	 */
 	public interface LocalAuthenticationProvider
-			extends AuthenticationProvider, Filter {
+			extends AuthenticationProvider {
 		/**
 		 * Create a user. Only admins can create users.
 		 *
@@ -358,8 +356,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
-			http.addFilterAfter(localAuthProvider,
-					SecurityContextHolderAwareRequestFilter.class);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)

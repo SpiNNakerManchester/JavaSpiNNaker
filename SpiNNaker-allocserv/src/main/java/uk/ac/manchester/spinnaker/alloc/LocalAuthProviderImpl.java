@@ -30,16 +30,11 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +51,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
@@ -211,6 +205,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					instanceof OAuth2AuthorizationCodeAuthenticationToken) {
 				return authenticateOpenId(
 						(OAuth2AuthorizationCodeAuthenticationToken) auth);
+			} else if (auth instanceof OAuth2AuthenticationToken) {
+				return authenticateOpenId((OAuth2AuthenticationToken) auth);
 			} else {
 				return null;
 			}
@@ -223,7 +219,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final Class<?>[] SUPPORTED_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthorizationCodeAuthenticationToken.class,
-		OAuth2LoginAuthenticationToken.class
+		OAuth2LoginAuthenticationToken.class,
+		OAuth2AuthenticationToken.class
 	};
 
 	@Override
@@ -260,7 +257,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private Authentication
 			authenticateOpenId(OAuth2LoginAuthenticationToken auth) {
-		log.debug("authenticating OpenID Login {}", auth.toString());
+		log.info("authenticating OpenID Login {}", auth);
 		OAuth2LoginAuthenticationToken authToken =
 				(OAuth2LoginAuthenticationToken) loginProvider
 						.authenticate(auth);
@@ -274,7 +271,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private Authentication authenticateOpenId(
 			OAuth2AuthorizationCodeAuthenticationToken auth) {
 		// TODO is this code ever called?
-		log.info("authenticating OpenID Token {}", auth.toString());
+		log.info("authenticating OpenID Token {}", auth);
 		OAuth2AuthorizationCodeAuthenticationToken authToken =
 				(OAuth2AuthorizationCodeAuthenticationToken) tokenProvider
 						.authenticate(auth);
@@ -286,29 +283,30 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		// FIXME how to get username from auth code token?
 		authToken.getAdditionalParameters().get("preferred_username");
 		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ authToken.getPrincipal());
+				+ authToken.getPrincipal(), null);
 	}
 
 	/**
-	 * Determine whether we want to replace the authentication. <em>At this
-	 * point, the user is already authenticated but no authorization decisions
-	 * have been made!</em>
+	 * Convert the authentication from the OpenID service into one we internally
+	 * understand.
 	 *
-	 * @param a
-	 *            The authentication under consideration.
-	 * @return The replacement authentication, or {@code null} to not replace
-	 *         anything.
+	 * @param auth
+	 *            The OpenID auth token
+	 * @return The internal auth token
 	 */
-	private Authentication postprocessAuth(OAuth2AuthenticationToken a) {
-		return authorizeOpenId(a.getPrincipal());
+	private Authentication authenticateOpenId(OAuth2AuthenticationToken auth) {
+		log.info("authenticating OpenID Login {}", auth);
+		log.debug("got principal: {}", auth.getPrincipal());
+		return authorizeOpenId(auth.getPrincipal());
 	}
 
 	private OpenIDDerivedAuthenticationToken authorizeOpenId(OAuth2User user) {
 		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ user.getAttribute("preferred_username"));
+				+ user.getAttribute("preferred_username"), user);
 	}
 
-	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name) {
+	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name,
+			OAuth2User user) {
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
@@ -322,19 +320,34 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			}
 		}
 		// Users from OpenID always have the same permissions
-		return new OpenIDDerivedAuthenticationToken(name);
+		return new OpenIDDerivedAuthenticationToken(name, user);
+	}
+
+	/**
+	 * An object that can say something about what user it was derived from.
+	 */
+	public interface OpenIDUserAware {
+		/**
+		 * Get the underlying OpenID user information.
+		 *
+		 * @return The user info, if known.
+		 */
+		Optional<OAuth2User> getOpenIdUser();
 	}
 
 	private static final class OpenIDDerivedAuthenticationToken
-			extends AbstractAuthenticationToken {
+			extends AbstractAuthenticationToken implements OpenIDUserAware {
 		private static final long serialVersionUID = 1L;
 
 		private final String who;
 
-		private OpenIDDerivedAuthenticationToken(String who) {
+		private final OAuth2User user;
+
+		private OpenIDDerivedAuthenticationToken(String who, OAuth2User user) {
 			super(asList(new SimpleGrantedAuthority(GRANT_READER),
 					new SimpleGrantedAuthority(GRANT_USER)));
 			this.who = who;
+			this.user = user;
 		}
 
 		@Override
@@ -346,6 +359,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		@Override
 		public Object getPrincipal() {
 			return who;
+		}
+
+		@Override
+		public Optional<OAuth2User> getOpenIdUser() {
+			return Optional.ofNullable(user);
 		}
 	}
 
@@ -664,22 +682,5 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 								.info("automatically unlocked user {}", user));
 			});
 		}
-	}
-
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		Authentication a =
-				SecurityContextHolder.getContext().getAuthentication();
-		if (a != null && a instanceof OAuth2AuthenticationToken) {
-			Authentication b = postprocessAuth((OAuth2AuthenticationToken) a);
-			if (b != null) {
-				log.info("in security filtering, got authentication {} and "
-						+ "transformed it to {}", a, b);
-				SecurityContextHolder.getContext().setAuthentication(b);
-			}
-			log.info("in security filtering, next in chain is {}", chain);
-		}
-		chain.doFilter(request, response);
 	}
 }
