@@ -384,7 +384,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 *      Overflow</a>
 	 */
 	@Component
-	private class ForceAuthCheckinator implements BeanPostProcessor {
+	private static class ForceAuthCheckinator implements BeanPostProcessor {
 		@Override
 		public Object postProcessBeforeInitialization(Object bean,
 				String beanName) throws BeansException {
