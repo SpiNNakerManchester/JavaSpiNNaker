@@ -246,10 +246,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			}
 		}
 		try {
-			/*
-			 * The next thing in the chain is the FilterSecurityInterceptor that
-			 * dispatches into CXF or the web interface.
-			 */
 			chain.doFilter(request, response);
 		} finally {
 			ctx.setAuthentication(a);
@@ -347,8 +343,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @return The internal auth token
 	 */
 	private Authentication authenticateOpenId(OAuth2AuthenticationToken auth) {
-		log.info("authenticating OpenID Login {}", auth);
-		log.debug("got principal: {}", auth.getPrincipal());
+		log.debug("authenticating OpenID Login {}", auth);
 		return authorizeOpenId(auth.getPrincipal());
 	}
 
