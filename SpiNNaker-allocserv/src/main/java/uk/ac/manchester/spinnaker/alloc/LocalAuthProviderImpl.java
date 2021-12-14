@@ -191,10 +191,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				}).isPresent();
 	}
 
+	/** Marks an authentication that we've already taken a decision about. */
+	private interface AlreadyDoneMarker extends Authentication {
+	}
+
 	@Override
 	public Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
 		log.info("requesting auth decision about {}", auth);
+		if (auth instanceof AlreadyDoneMarker) {
+			// It's ours; don't repeat the auth
+			return auth;
+		}
+
 		try {
 			if (auth instanceof UsernamePasswordAuthenticationToken) {
 				return authenticateDirect(
@@ -208,9 +217,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						(OAuth2AuthorizationCodeAuthenticationToken) auth);
 			} else if (auth instanceof OAuth2AuthenticationToken) {
 				return authenticateOpenId((OAuth2AuthenticationToken) auth);
-			} else if (auth instanceof OpenIDDerivedAuthenticationToken) {
-				// It's ours
-				return auth;
 			} else {
 				return null;
 			}
@@ -239,6 +245,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return false;
 	}
 
+	private static class PerformedUsernamePasswordAuthenticationToken extends
+			UsernamePasswordAuthenticationToken implements AlreadyDoneMarker {
+		private static final long serialVersionUID = -3164620207079316329L;
+
+		PerformedUsernamePasswordAuthenticationToken(String name,
+				String password, List<GrantedAuthority> authorities) {
+			super(name, password, authorities);
+		}
+	}
+
 	private UsernamePasswordAuthenticationToken
 			authenticateDirect(UsernamePasswordAuthenticationToken auth)
 					throws AuthenticationException {
@@ -257,7 +273,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				return null;
 			}
 		}
-		return new UsernamePasswordAuthenticationToken(name, password,
+		return new PerformedUsernamePasswordAuthenticationToken(name, password,
 				authorities);
 	}
 
@@ -342,8 +358,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private static final class OpenIDDerivedAuthenticationToken
-			extends AbstractAuthenticationToken implements OpenIDUserAware {
-		private static final long serialVersionUID = 1L;
+			extends AbstractAuthenticationToken
+			implements OpenIDUserAware, AlreadyDoneMarker {
+		private static final long serialVersionUID = 970898019896708267L;
 
 		private final String who;
 

@@ -67,7 +67,9 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -239,9 +241,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private URLPathMaker urlMaker;
 
 	@Autowired
-	private FilterSecurityInterceptor filterSecurityInterceptor;
-
-	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
 		auth.authenticationProvider(localAuthProvider);
@@ -360,7 +359,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
-			filterSecurityInterceptor.setAlwaysReauthenticate(true);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
@@ -377,6 +375,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
+	}
+
+	/**
+	 * Turns on a flag that ought to be more exposed but isn't. Ugly.
+	 *
+	 * @see <a href="https://stackoverflow.com/q/10322026/301832">Stack
+	 *      Overflow</a>
+	 */
+	@Component
+	private class ForceAuthCheckinator implements BeanPostProcessor {
+		@Override
+		public Object postProcessBeforeInitialization(Object bean,
+				String beanName) throws BeansException {
+			return bean;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean,
+				String beanName) throws BeansException {
+			if (beanName.endsWith(".FilterSecurityInterceptor")) {
+				log.info("setting alwaysReauthenticate=true for {}", bean);
+				((FilterSecurityInterceptor) bean)
+						.setAlwaysReauthenticate(true);
+			}
+			return bean;
+		}
 	}
 
 	/**
