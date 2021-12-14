@@ -357,8 +357,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
-			http.getSharedObject(FilterSecurityInterceptor.class)
-					.setAlwaysReauthenticate(true);
+			http.objectPostProcessor(this::opp);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
@@ -375,6 +374,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
+	}
+
+	private <T extends Object> T opp(T o) {
+		log.info("post-processing {}", o);
+		if (o instanceof FilterSecurityInterceptor) {
+			FilterSecurityInterceptor fsi = (FilterSecurityInterceptor) o;
+			fsi.setAlwaysReauthenticate(true);
+		}
+		return o;
 	}
 
 	/**
