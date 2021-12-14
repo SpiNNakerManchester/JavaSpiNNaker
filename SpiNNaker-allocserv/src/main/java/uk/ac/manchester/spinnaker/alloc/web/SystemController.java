@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
  * @author Donal Fellows
  */
 @RequestMapping("/system")
-public interface RootController {
+public interface SystemController {
 	/** The name of the main attribute supporting a password change form. */
 	String USER_PASSWORD_CHANGE_ATTR = "user";
 

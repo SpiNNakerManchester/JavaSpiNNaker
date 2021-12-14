@@ -68,8 +68,8 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
  */
 @Controller
 @RequestMapping("/system")
-public class RootControllerImpl implements RootController {
-	private static final Logger log = getLogger(RootControllerImpl.class);
+public class SystemControllerImpl implements SystemController {
+	private static final Logger log = getLogger(SystemControllerImpl.class);
 
 	private static final String MAIN_VIEW = "index";
 
@@ -88,7 +88,7 @@ public class RootControllerImpl implements RootController {
 	 *
 	 * @see MvcUriComponentsBuilder#fromMethodCall(Object)
 	 */
-	private static final RootController SELF = on(RootController.class);
+	private static final SystemController SELF = on(SystemController.class);
 
 	@Autowired
 	private SpallocAPI spallocCore;
