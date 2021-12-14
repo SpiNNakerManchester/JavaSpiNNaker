@@ -205,7 +205,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public final Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
-		log.info("requesting auth decision about {}", auth);
+		log.debug("requesting auth decision about {}", auth);
 		if (auth instanceof AlreadyDoneMarker) {
 			// It's ours; don't repeat the auth
 			return auth;
@@ -241,7 +241,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		if (a != null && supports(a.getClass())) {
 			Authentication b = authenticate(a);
 			if (b != null && b != a) {
-				log.info("filter updated security from {} to {}", a, b);
+				log.debug("filter updated security from {} to {}", a, b);
 				ctx.setAuthentication(b);
 			}
 		}
@@ -271,7 +271,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				return true;
 			}
 		}
-		log.info("asked about supporting {}", cls);
+		log.debug("asked about supporting {}", cls);
 		return false;
 	}
 
