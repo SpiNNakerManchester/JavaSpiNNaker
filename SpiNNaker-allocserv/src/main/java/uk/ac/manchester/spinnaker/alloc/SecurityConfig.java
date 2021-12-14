@@ -57,6 +57,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -88,10 +89,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -288,7 +291,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @author Donal Fellows
 	 */
 	public interface LocalAuthenticationProvider
-			extends AuthenticationProvider {
+			extends AuthenticationProvider, GrantedAuthoritiesMapper, Filter {
 		/**
 		 * Create a user. Only admins can create users.
 		 *
@@ -353,9 +356,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizationEndpoint(c -> {
 						c.baseUri(urlMaker.systemUrl("perform_oidc/auth"));
 					}).defaultSuccessUrl(urlMaker.systemUrl(""), true)
-					.failureUrl(loginUrl + "?error=true");
+					.failureUrl(loginUrl + "?error=true").userInfoEndpoint()
+					.userAuthoritiesMapper(localAuthProvider);
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
+			http.addFilter(null);
+			http.addFilterAfter(localAuthProvider,
+					OAuth2LoginAuthenticationFilter.class);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)

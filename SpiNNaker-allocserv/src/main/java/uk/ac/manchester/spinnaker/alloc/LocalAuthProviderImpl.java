@@ -20,6 +20,7 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
@@ -30,11 +31,19 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +60,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationToken;
@@ -58,6 +68,8 @@ import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuth
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
@@ -638,5 +650,50 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 								.info("automatically unlocked user {}", user));
 			});
 		}
+	}
+
+	private GrantedAuthority mapOidcAuthority(OidcUserAuthority g) {
+		log.info("got OIDC authority: {}", g);
+		if (g.getAuthority().equals("ROLE_USER")) {
+			return new OidcUserAuthority(GRANT_USER, g.getIdToken(),
+					g.getUserInfo());
+		}
+		return g;
+	}
+
+	private GrantedAuthority mapOAuth2Authority(OAuth2UserAuthority g) {
+		log.info("got OAuth2 authority: {}", g);
+		return g;
+	}
+
+	private GrantedAuthority mapAuthority(GrantedAuthority g) {
+		if (g instanceof OidcUserAuthority) {
+			return mapOidcAuthority((OidcUserAuthority) g);
+		} else if (g instanceof OAuth2UserAuthority) {
+			return mapOAuth2Authority((OAuth2UserAuthority) g);
+		} else {
+			return g;
+		}
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority>
+			mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
+		return authorities.stream().map(this::mapAuthority).collect(toList());
+	}
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
+		postprocessAuth((HttpServletRequest) request,
+				(HttpServletResponse) response);
+		chain.doFilter(request, response);
+	}
+
+	private void postprocessAuth(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
+		Authentication a =
+				SecurityContextHolder.getContext().getAuthentication();
+		log.info("in filtering, got authentication {}", a);
 	}
 }
