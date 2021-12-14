@@ -360,7 +360,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.userAuthoritiesMapper(localAuthProvider);
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
-			http.addFilter(null);
 			http.addFilterAfter(localAuthProvider,
 					OAuth2LoginAuthenticationFilter.class);
 		}
