@@ -30,16 +30,11 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +52,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
@@ -205,6 +199,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public final Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
+		if (isNull(auth)) {
+			return null;
+		}
 		log.debug("requesting auth decision about {}", auth);
 		if (auth instanceof AlreadyDoneMarker) {
 			// It's ours; don't repeat the auth
@@ -234,22 +231,17 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	public final void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		SecurityContext ctx = SecurityContextHolder.getContext();
-		Authentication a = ctx.getAuthentication();
-		if (a != null && supports(a.getClass())) {
-			Authentication b = authenticate(a);
-			if (b != null && b != a) {
-				log.debug("filter updated security from {} to {}", a, b);
-				ctx.setAuthentication(b);
+	public Authentication updateAuthentication(SecurityContext ctx) {
+		Authentication current = ctx.getAuthentication();
+		if (nonNull(current) && supports(current.getClass())) {
+			Authentication updated = authenticate(current);
+			if (nonNull(updated) && updated != current) {
+				log.debug("filter updated security from {} to {}", current,
+						updated);
+				ctx.setAuthentication(updated);
 			}
 		}
-		try {
-			chain.doFilter(request, response);
-		} finally {
-			ctx.setAuthentication(a);
-		}
+		return current;
 	}
 
 	private static final Class<?>[] SUPPORTED_CLASSES = {
@@ -305,6 +297,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private Authentication
 			authenticateOpenId(OAuth2LoginAuthenticationToken auth) {
+		// TODO is this code ever called?
 		log.info("authenticating OpenID Login {}", auth);
 		OAuth2LoginAuthenticationToken authToken =
 				(OAuth2LoginAuthenticationToken) loginProvider
@@ -343,7 +336,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @return The internal auth token
 	 */
 	private Authentication authenticateOpenId(OAuth2AuthenticationToken auth) {
-		log.debug("authenticating OpenID Login {}", auth);
+		log.debug("authenticating OpenID {}", auth);
 		return authorizeOpenId(auth.getPrincipal());
 	}
 

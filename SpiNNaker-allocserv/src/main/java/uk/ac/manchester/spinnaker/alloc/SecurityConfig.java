@@ -30,6 +30,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.installInjectableTrustStoreAsDefault;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.loadTrustStore;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.trustManager;
 
 import java.io.IOException;
@@ -39,6 +40,8 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -57,7 +60,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -100,6 +103,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -211,13 +215,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	static X509TrustManager customTrustManager(AuthProperties props)
 			throws IOException, GeneralSecurityException {
 		OpenIDProperties p = props.getOpenid();
-
-		KeyStore myTrustStore = KeyStore.getInstance(p.getTruststoreType());
-		try (InputStream myCerts = p.getTruststorePath().getInputStream()) {
-			myTrustStore.load(myCerts, p.getTruststorePassword().toCharArray());
-		}
-
-		X509TrustManager tm = trustManager(myTrustStore);
+		X509TrustManager tm = trustManager(loadTrustStore(p));
 		customTm = tm;
 		log.info("set trust store from {}", p.getTruststorePath().getURI());
 		return tm;
@@ -230,6 +228,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private LocalAuthenticationProvider localAuthProvider;
+
+	@Autowired
+	private AppAuthTransformationFilter authApplicationFilter;
 
 	@Autowired
 	private AuthenticationFailureHandler authenticationFailureHandler;
@@ -291,7 +292,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @author Donal Fellows
 	 */
 	public interface LocalAuthenticationProvider
-			extends AuthenticationProvider, Filter {
+			extends AuthenticationProvider {
 		/**
 		 * Create a user. Only admins can create users.
 		 *
@@ -314,6 +315,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Unlock any locked users whose lock period has expired.
 		 */
 		void unlockLockedUsers();
+
+		/**
+		 * Convert the type of the authentication in the security context.
+		 *
+		 * @param ctx
+		 *            The security context.
+		 * @return The original authentication.
+		 */
+		Authentication updateAuthentication(SecurityContext ctx);
 	}
 
 	@Override
@@ -359,7 +369,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
 			http.oauth2ResourceServer(oauth -> oauth.jwt());
-			http.addFilterAfter(localAuthProvider,
+			http.addFilterAfter(authApplicationFilter,
 					BasicAuthenticationFilter.class);
 		}
 		if (properties.isLocalForm()) {
@@ -377,6 +387,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
+	}
+
+	/**
+	 * A filter to apply authentication transformation as supplied by the
+	 * {@link LocalAuthenticationProvider}.
+	 *
+	 * @see LocalAuthenticationProvider#updateAuthentication(SecurityContext)
+	 */
+	@Component
+	static class AppAuthTransformationFilter extends OncePerRequestFilter {
+		@Autowired
+		private LocalAuthenticationProvider localAuthProvider;
+
+		@Override
+		protected boolean shouldNotFilter(HttpServletRequest request)
+				throws ServletException {
+			Authentication a =
+					SecurityContextHolder.getContext().getAuthentication();
+			return isNull(a) || !localAuthProvider.supports(a.getClass());
+		}
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request,
+				HttpServletResponse response, FilterChain chain)
+						throws IOException, ServletException {
+			SecurityContext ctx = SecurityContextHolder.getContext();
+			Authentication originalAuth =
+					localAuthProvider.updateAuthentication(ctx);
+			try {
+				chain.doFilter(request, response);
+			} finally {
+				ctx.setAuthentication(originalAuth);
+			}
+		}
 	}
 
 	/**
@@ -830,7 +874,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 }
 
-/** Support utility methods. */
+/** Support utility methods for working with SSL stuff. */
 abstract class SecurityConfigUtils {
 	private SecurityConfigUtils() {
 	}
@@ -886,7 +930,7 @@ abstract class SecurityConfigUtils {
 				public void checkServerTrusted(X509Certificate[] chain,
 						String authType) throws CertificateException {
 					X509TrustManager customTm = injector.get();
-					if (customTm != null) {
+					if (nonNull(customTm)) {
 						try {
 							customTm.checkServerTrusted(chain, authType);
 							// If we got here, we passed!
@@ -905,5 +949,14 @@ abstract class SecurityConfigUtils {
 			}
 		}, null);
 		SSLContext.setDefault(sslContext);
+	}
+
+	static KeyStore loadTrustStore(OpenIDProperties p) throws KeyStoreException,
+			IOException, NoSuchAlgorithmException, CertificateException {
+		KeyStore myTrustStore = KeyStore.getInstance(p.getTruststoreType());
+		try (InputStream myCerts = p.getTruststorePath().getInputStream()) {
+			myTrustStore.load(myCerts, p.getTruststorePassword().toCharArray());
+		}
+		return myTrustStore;
 	}
 }
