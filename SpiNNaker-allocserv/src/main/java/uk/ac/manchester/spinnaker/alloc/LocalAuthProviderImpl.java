@@ -245,7 +245,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 							updated);
 					ctx.setAuthentication(updated);
 				}
-			} else if (!unsupported(current.getClass())) {
+			} else if (!isUnsupportedAuthTokenClass(current.getClass())) {
 				log.warn("unexpected authentication type {} (token: {})",
 						current.getClass(), current);
 			}
@@ -254,7 +254,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	/** The classes that we know what to do about. */
-	private static final Class<?>[] SUPPORTED_CLASSES = {
+	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthorizationCodeAuthenticationToken.class,
 		OAuth2LoginAuthenticationToken.class,
@@ -262,8 +262,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		AlreadyDoneMarker.class
 	};
 
-	/** The classes that we know we don't ever want to handle. */
-	private static final Class<?>[] UNSUPPORTED_CLASSES = {
+	/** The classes that we <em>know</em> we don't ever want to handle. */
+	private static final Class<?>[] UNSUPPORTED_AUTH_TOKEN_CLASSES = {
 		AnonymousAuthenticationToken.class,
 		RememberMeAuthenticationToken.class,
 		RunAsUserToken.class,
@@ -272,17 +272,28 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Override
 	public final boolean supports(Class<?> cls) {
-		for (Class<?> c : SUPPORTED_CLASSES) {
+		for (Class<?> c : SUPPORTED_AUTH_TOKEN_CLASSES) {
 			if (c.isAssignableFrom(cls)) {
 				return true;
 			}
 		}
-		log.debug("asked about supporting {}", cls);
+		if (!isUnsupportedAuthTokenClass(cls)) {
+			log.warn("asked about supporting {}", cls);
+		}
 		return false;
 	}
 
-	private boolean unsupported(Class<? extends Authentication> cls) {
-		for (Class<?> c : UNSUPPORTED_CLASSES) {
+	/**
+	 * Check if we're talking about a class that we know we don't ever want to
+	 * handle.
+	 *
+	 * @param cls
+	 *            The class to check.
+	 * @return {@code true} if we never want to take a full auth decision about
+	 *         it.
+	 */
+	static boolean isUnsupportedAuthTokenClass(Class<?> cls) {
+		for (Class<?> c : UNSUPPORTED_AUTH_TOKEN_CLASSES) {
 			if (c.isAssignableFrom(cls)) {
 				return true;
 			}

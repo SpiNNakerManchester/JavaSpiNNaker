@@ -28,6 +28,7 @@ import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl.isUnsupportedAuthTokenClass;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.loadTrustStore;
@@ -405,7 +406,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				throws ServletException {
 			Authentication a =
 					SecurityContextHolder.getContext().getAuthentication();
-			return isNull(a) || !localAuthProvider.supports(a.getClass());
+			return isNull(a) || isUnsupportedAuthTokenClass(a.getClass());
 		}
 
 		@Override
