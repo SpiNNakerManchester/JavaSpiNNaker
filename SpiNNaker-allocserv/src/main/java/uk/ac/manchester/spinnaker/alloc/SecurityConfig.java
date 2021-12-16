@@ -498,7 +498,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						who.getName(),
 						who.getAuthorities().stream()
 								.map(GrantedAuthority::getAuthority)
-								.collect(toSet()));
+								.collect(toSet()),
+						exception);
 			} else if (p instanceof OAuth2AuthenticatedPrincipal) {
 				OAuth2AuthenticatedPrincipal who =
 						(OAuth2AuthenticatedPrincipal) p;
@@ -506,7 +507,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						who.getName(),
 						who.getAuthorities().stream()
 								.map(GrantedAuthority::getAuthority)
-								.collect(toSet()));
+								.collect(toSet()),
+						exception);
 			}
 			// But the user gets a bland response
 			return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
