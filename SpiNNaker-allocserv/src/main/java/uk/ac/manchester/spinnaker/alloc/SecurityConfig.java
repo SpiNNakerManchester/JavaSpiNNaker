@@ -84,7 +84,6 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -292,8 +291,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 *
 	 * @author Donal Fellows
 	 */
-	public interface LocalAuthenticationProvider
-			extends AuthenticationProvider {
+	public interface LocalAuthenticationProvider extends
+			org.springframework.security.authentication.AuthenticationProvider {
 		/**
 		 * Create a user. Only admins can create users.
 		 *
