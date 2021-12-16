@@ -40,13 +40,17 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -233,23 +237,37 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public Authentication updateAuthentication(SecurityContext ctx) {
 		Authentication current = ctx.getAuthentication();
-		if (nonNull(current) && supports(current.getClass())) {
-			Authentication updated = authenticate(current);
-			if (nonNull(updated) && updated != current) {
-				log.debug("filter updated security from {} to {}", current,
-						updated);
-				ctx.setAuthentication(updated);
+		if (nonNull(current)) {
+			if (supports(current.getClass())) {
+				Authentication updated = authenticate(current);
+				if (nonNull(updated) && updated != current) {
+					log.debug("filter updated security from {} to {}", current,
+							updated);
+					ctx.setAuthentication(updated);
+				}
+			} else if (!unsupported(current.getClass())) {
+				log.warn("unexpected authentication type {} (token: {})",
+						current.getClass(), current);
 			}
 		}
 		return current;
 	}
 
+	/** The classes that we know what to do about. */
 	private static final Class<?>[] SUPPORTED_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
 		OAuth2AuthorizationCodeAuthenticationToken.class,
 		OAuth2LoginAuthenticationToken.class,
 		OAuth2AuthenticationToken.class,
 		AlreadyDoneMarker.class
+	};
+
+	/** The classes that we know we don't ever want to handle. */
+	private static final Class<?>[] UNSUPPORTED_CLASSES = {
+		AnonymousAuthenticationToken.class,
+		RememberMeAuthenticationToken.class,
+		RunAsUserToken.class,
+		TestingAuthenticationToken.class
 	};
 
 	@Override
@@ -260,6 +278,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			}
 		}
 		log.debug("asked about supporting {}", cls);
+		return false;
+	}
+
+	private boolean unsupported(Class<? extends Authentication> cls) {
+		for (Class<?> c : UNSUPPORTED_CLASSES) {
+			if (c.isAssignableFrom(cls)) {
+				return true;
+			}
+		}
 		return false;
 	}
 
