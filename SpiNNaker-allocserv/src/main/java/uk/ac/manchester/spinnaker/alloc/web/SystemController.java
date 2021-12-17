@@ -52,7 +52,7 @@ public interface SystemController {
 	 * @return View name
 	 */
 	@GetMapping("/")
-	String index();
+	ModelAndView index();
 
 	/**
 	 * Get the view for the general machine list.

@@ -326,6 +326,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		Authentication updateAuthentication(SecurityContext ctx);
 	}
 
+	private String oidcPath(String suffix) {
+		return urlMaker.systemUrl("perform_oidc/" + suffix);
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		/*
@@ -343,7 +347,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// Login process and static resources are available to all
 				.antMatchers(urlMaker.systemUrl("login*"),
 						urlMaker.systemUrl("perform_*"),
-						urlMaker.systemUrl("perform_oidc/**"),
+						oidcPath("**"),
 						urlMaker.systemUrl("error"),
 						urlMaker.systemUrl("resources/*"))
 				.permitAll()
@@ -353,6 +357,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
 		String loginUrl = urlMaker.systemUrl("login.html");
+		String rootPage = urlMaker.systemUrl("");
 		if (properties.getOpenid().isEnable()) {
 			/*
 			 * We're both, so we can have logins AND tokens. The logins are for
@@ -360,22 +365,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * tools (especially within the collabratory and the Jupyter
 			 * notebook).
 			 */
-			http.oauth2Login().loginPage(urlMaker.systemUrl("login.html"))
-					.loginProcessingUrl(
-							urlMaker.systemUrl("perform_oidc/login/code/*"))
-					.authorizationEndpoint(c -> {
-						c.baseUri(urlMaker.systemUrl("perform_oidc/auth"));
-					}).defaultSuccessUrl(urlMaker.systemUrl(""), true)
+			http.oauth2Login().loginPage(loginUrl)
+					.loginProcessingUrl(oidcPath("login/code/*"))
+					.authorizationEndpoint().baseUri(oidcPath("auth")).and()
+					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
-			http.oauth2ResourceServer(oauth -> oauth.jwt());
+			http.oauth2ResourceServer().jwt();
 			http.addFilterAfter(authApplicationFilter,
 					BasicAuthenticationFilter.class);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
 					.loginProcessingUrl(urlMaker.systemUrl("perform_login"))
-					.defaultSuccessUrl(urlMaker.systemUrl(""), true)
+					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler);
 		}
@@ -498,8 +501,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						who.getName(),
 						who.getAuthorities().stream()
 								.map(GrantedAuthority::getAuthority)
-								.collect(toSet()),
-						exception);
+								.collect(toSet()));
 			} else if (p instanceof OAuth2AuthenticatedPrincipal) {
 				OAuth2AuthenticatedPrincipal who =
 						(OAuth2AuthenticatedPrincipal) p;
@@ -507,8 +509,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 						who.getName(),
 						who.getAuthorities().stream()
 								.map(GrantedAuthority::getAuthority)
-								.collect(toSet()),
-						exception);
+								.collect(toSet()));
+			} else {
+				log.warn("access denied: {} : {}", ui.getAbsolutePath(), p);
 			}
 			// But the user gets a bland response
 			return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
@@ -589,7 +592,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * Sets up the login page mapping.
+	 * Sets up the login page mapping. Note that paths in here are relative to
+	 * Spring's idea of the root of the webapp (as they're used to program path
+	 * matchers).
 	 */
 	@Configuration
 	static class MvcConfig implements WebMvcConfigurer {

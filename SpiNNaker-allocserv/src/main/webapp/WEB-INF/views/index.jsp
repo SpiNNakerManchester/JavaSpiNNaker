@@ -23,6 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <body>
 
 <h1>SpiNNaker Allocation Service</h1>
+<p class="version">
+Version: ${ version }
+<br>
+Build: ${ build }
+</p>
 <sec:authorize access="hasRole('ADMIN')">
 	<p>
 		<a href="<c:url value="admin/"/>">Service Administration</a>

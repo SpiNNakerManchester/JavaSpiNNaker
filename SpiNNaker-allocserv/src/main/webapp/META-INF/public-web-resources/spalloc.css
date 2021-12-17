@@ -31,6 +31,11 @@ footer {
 	font-size: small;
 }
 
+.version {
+	font-size: small;
+	opacity: 50%;
+	font-family: Helvetica, Arial, sans-serif;
+}
 .warningbutton {
 	background-color: #f44336;
 }

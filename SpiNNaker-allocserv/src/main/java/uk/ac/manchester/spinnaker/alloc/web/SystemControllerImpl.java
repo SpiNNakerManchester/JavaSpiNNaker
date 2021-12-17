@@ -53,6 +53,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
+import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
@@ -102,6 +103,9 @@ public class SystemControllerImpl implements SystemController {
 	@Autowired
 	private URLPathMaker urlMaker;
 
+	@Autowired
+	private ServiceVersion version;
+
 	private static URI uri(Object selfCall) {
 		// No template variables in the overall controller, so can factor out
 		return fromMethodCall(selfCall).buildAndExpand().toUri();
@@ -109,8 +113,10 @@ public class SystemControllerImpl implements SystemController {
 
 	@Override
 	@GetMapping("/")
-	public String index() {
-		return MAIN_VIEW;
+	public ModelAndView index() {
+		return new ModelAndView(MAIN_VIEW)
+				.addObject("version", version.getFullVersion())
+				.addObject("build", version.getBuildTimestamp());
 	}
 
 	@Override
