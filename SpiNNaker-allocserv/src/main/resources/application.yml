@@ -87,7 +87,6 @@ cxf:
     classes-scan-packages:
       uk.ac.manchester.spinnaker.alloc,org.apache.cxf.jaxrs.swagger,org.apache.cxf.metrics
 
-# TODO: Don't set auth.add-dummy-user, transceiver.dummy or auth.debug-failures in production
 spalloc:
   # Where we hold files that we write to
   working-directory: "."
@@ -143,10 +142,10 @@ spalloc:
     # Support HTTP Form Authentication (pretty necessary)
     local-form: true
     # Force a known local admin user to exist with a known password
-    add-dummy-user: true
+    add-dummy-user: false
     # Whether to generate a random password for the above user.
     # If so, the password will be written to the log.
-    dummy-random-pass: false
+    dummy-random-pass: true
     # Provide extra information to callers on auth failures
     debug-failures: false
     # Number of login failures before lock-out
