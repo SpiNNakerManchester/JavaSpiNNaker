@@ -30,9 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
 		<slf4j.version>1.7.32</slf4j.version>
-		<log4j.version>2.17.0</log4j.version>
+		<log4j.version>2.17.1</log4j.version>
 		<junit.version>5.8.2</junit.version>
-		<checkstyle.version>9.2</checkstyle.version>
+		<checkstyle.version>9.2.1</checkstyle.version>
 
 		<testing.version>3.0.0-M5</testing.version>
 		<jacoco.version>0.8.7</jacoco.version>
@@ -112,6 +112,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>log4j-slf4j-impl</artifactId>
 				<version>${log4j.version}</version>
 				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-jaxb-annotations</artifactId>
+				<version>2.13.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -341,7 +346,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.9.1</version>
+					<version>3.10.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
