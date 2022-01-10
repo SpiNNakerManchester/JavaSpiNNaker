@@ -61,10 +61,10 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 })
 class QuotaManagerTest extends SQLQueries {
 	/** The DB file. */
-	static final String DB = "qm_test.sqlite3";
+	static final String DB = "target/qm_test.sqlite3";
 
 	/** The DB file. */
-	static final String HIST_DB = "qm_test_hist.sqlite3";
+	static final String HIST_DB = "target/qm_test_hist.sqlite3";
 
 	@Parameter("machine_id")
 	@Parameter("user_id")

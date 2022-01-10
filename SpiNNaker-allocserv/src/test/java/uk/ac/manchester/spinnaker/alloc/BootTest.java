@@ -54,10 +54,10 @@ class BootTest {
 	private static final Logger log = getLogger(BootTest.class);
 
 	/** The DB file. */
-	static final String DB = "boot_test.sqlite3";
+	static final String DB = "target/boot_test.sqlite3";
 
 	/** The DB history file. */
-	static final String HIST_DB = "boot_test_hist.sqlite3";
+	static final String HIST_DB = "target/boot_test_hist.sqlite3";
 
 	@Configuration
 	@ComponentScan

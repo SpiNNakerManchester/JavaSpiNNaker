@@ -69,10 +69,10 @@ class AllocatorTest extends SQLQueries {
 	private static final Logger log = getLogger(AllocatorTest.class);
 
 	/** The name of the database file. */
-	static final String DB = "alloc_test.sqlite3";
+	static final String DB = "target/alloc_test.sqlite3";
 
 	/** The name of the database file. */
-	static final String HIST_DB = "alloc_test-hist.sqlite3";
+	static final String HIST_DB = "target/alloc_test-hist.sqlite3";
 
 	@Configuration
 	@ComponentScan(basePackageClasses = SpallocProperties.class)
