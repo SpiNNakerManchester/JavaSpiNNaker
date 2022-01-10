@@ -58,6 +58,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<directory>src/main/resources-filtered</directory>
 				<filtering>true</filtering>
 			</resource>
+			<resource>
+				<directory>target/generated-resources</directory>
+			</resource>
 		</resources>
 		<finalName>spalloc</finalName>
 		<plugins>
@@ -85,8 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<phase>initialize</phase>
 						<configuration>
 							<tasks>
-								<delete dir="${project.build.outputDirectory}"/>
-								<mkdir dir="${project.build.outputDirectory}"/>
+								<mkdir dir="${project.build.directory}/generated-resources"/>
 							</tasks>
 						</configuration>
 						<goals>
@@ -179,7 +181,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</goals>
 						<phase>generate-resources</phase>
 						<configuration>
-							<truststoreFile>${project.build.outputDirectory}/truststore.p12</truststoreFile>
+							<truststoreFile>${project.build.directory}/generated-resources/truststore.p12</truststoreFile>
 							<truststorePassword>hunter2</truststorePassword>
 							<urls>
 								<url>${ebrains.wellknown.url}</url>

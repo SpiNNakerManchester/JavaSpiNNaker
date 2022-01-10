@@ -16,7 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -30,7 +32,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -45,10 +47,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
-@TestPropertySource(properties = {
-	// Stop scheduled tasks from running
-	"spalloc.pause=true"
-})
+@ActiveProfiles("unittest")
 class DbBasicTest {
 	@Autowired
 	private DatabaseEngine mainDBEngine;

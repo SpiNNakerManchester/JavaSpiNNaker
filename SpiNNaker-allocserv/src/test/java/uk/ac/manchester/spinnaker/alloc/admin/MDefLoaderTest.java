@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
@@ -59,10 +59,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
-@TestPropertySource(properties = {
-	// Stop scheduled tasks from running
-	"spalloc.pause=true"
-})
+@ActiveProfiles("unittest")
 class MDefLoaderTest {
 	private static final String COUNT_LIVE_BOARDS =
 			"SELECT COUNT(*) AS c FROM boards WHERE board_num IS NOT NULL";

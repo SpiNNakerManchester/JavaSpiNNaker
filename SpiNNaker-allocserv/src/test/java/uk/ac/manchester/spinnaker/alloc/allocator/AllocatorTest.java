@@ -55,14 +55,10 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 @SpringBootTest
 @SpringJUnitWebConfig(AllocatorTest.Config.class)
-@ActiveProfiles("unittest") // Disable booting CXF
+@ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + AllocatorTest.DB,
-	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB,
-	// Stop scheduled tasks from running
-	"spalloc.pause=true",
-	// Ensure that no real BMP is talked to
-	"spalloc.transceiver.dummy=true"
+	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB
 })
 @SuppressWarnings("deprecation") // Yes, we're allowed to poke inside here
 class AllocatorTest extends SQLQueries {

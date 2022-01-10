@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableSet;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -41,7 +43,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
@@ -59,10 +61,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
-@TestPropertySource(properties = {
-	// Stop scheduled tasks from running
-	"spalloc.pause=true"
-})
+@ActiveProfiles("unittest")
 class DMLTest extends SQLQueries {
 	// Not equal to any machine_id
 	private static final int NO_MACHINE = -1;

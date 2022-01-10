@@ -52,12 +52,10 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 @SpringBootTest
 @SpringJUnitWebConfig(QuotaManagerTest.Config.class)
-@ActiveProfiles("unittest") // Disable booting CXF
+@ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + QuotaManagerTest.DB,
-	"spalloc.historical-data.path=" + QuotaManagerTest.HIST_DB,
-	// Stop scheduled tasks from running
-	"spalloc.pause=true"
+	"spalloc.historical-data.path=" + QuotaManagerTest.HIST_DB
 })
 class QuotaManagerTest extends SQLQueries {
 	/** The DB file. */

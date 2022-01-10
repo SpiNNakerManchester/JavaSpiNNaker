@@ -37,9 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<testing.version>3.0.0-M5</testing.version>
 		<jacoco.version>0.8.7</jacoco.version>
 		<javadoc.version>3.3.1</javadoc.version>
-		<cxf.version>3.4.3</cxf.version>
-		<spring.version>5.2.13.RELEASE</spring.version>
-		<jackson.version>2.13.0</jackson.version>
+		<cxf.version>3.4.5</cxf.version>
+		<spring.version>5.3.14</spring.version>
+		<jackson.version>2.13.1</jackson.version>
+		<sqlite.version>3.36.0.3</sqlite.version>
 	</properties>
 
 	<dependencyManagement>
@@ -116,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
-				<version>2.13.1</version>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -156,7 +157,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.xerial</groupId>
 				<artifactId>sqlite-jdbc</artifactId>
-				<version>3.36.0.3</version>
+				<version>${sqlite.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -186,7 +187,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-core</artifactId>
-				<version>5.4.6</version>
+				<version>5.4.10</version>
 			</dependency>
 			<dependency>
 				<groupId>javax</groupId>
@@ -201,7 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
-				<version>5.3.6</version>
+				<version>5.3.14</version>
 			</dependency>
 			<dependency>
 				<groupId>info.picocli</groupId>
@@ -236,6 +237,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<configuration>
 						<!-- This is weird, but needed. -->
 						<propertiesEncoding>ISO-8859-1</propertiesEncoding>
+						<nonFilteredFileExtensions>
+							<nonFilteredFileExtension>p12</nonFilteredFileExtension>
+						</nonFilteredFileExtensions>
 					</configuration>
 				</plugin>
 				<plugin>

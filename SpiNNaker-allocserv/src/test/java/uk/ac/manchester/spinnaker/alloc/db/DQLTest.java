@@ -19,7 +19,10 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import static java.lang.String.format;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableSet;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -36,11 +39,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
 /**
@@ -50,10 +55,7 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  */
 @SpringBootTest
 @TestInstance(PER_CLASS)
-@TestPropertySource(properties = {
-	// Stop scheduled tasks from running
-	"spalloc.pause=true"
-})
+@ActiveProfiles("unittest")
 class DQLTest extends SQLQueries {
 	// Not equal to any machine_id
 	private static final int NO_MACHINE = -1;
@@ -82,6 +84,11 @@ class DQLTest extends SQLQueries {
 	 */
 	private static final Set<String> BOARD_COORDS_REQUIRED_COLUMNS =
 			set("x", "y", "z", "cabinet", "frame", "board_num", "address");
+
+	/** Classes used in Javadoc. Technically not needed, but... */
+	static final Class<?>[] JAVADOC_ONLY_CLASSES = {
+		BoardState.class, BoardLocation.class, BoardCoords.class
+	};
 
 	@Autowired
 	private DatabaseEngine mainDBEngine;
