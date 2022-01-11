@@ -22,21 +22,34 @@ import java.util.Map;
 
 import org.keycloak.representations.idm.ClientRepresentation;
 
+/**
+ * Information about the {@code SpiNNaker-allocserv} application. Note that this
+ * information is only really usable by the administrator of the deployment at
+ * Manchester.
+ *
+ * @author Donal Fellows
+ */
 public interface SpiNNakerAllocatorApp {
+	/** The ID of the service. */
 	String SPALLOC_ID = "spinnaker-spalloc";
 
+	/** The name of the service. */
 	String SPALLOC_NAME = "SpiNNaker Board Resource Manager";
 
+	/** The description of the service. */
 	String SPALLOC_DESCRIPTION = "The SpiNNaker Board Resource Manager "
 			+ "('spalloc') handles allocation of resources within the "
 			+ "SpiNNaker1M machine at the University of Manchester.";
 
+	/** The location of the service. */
 	String SPALLOC_APP_BASE = "https://spinnaker.cs.man.ac.uk/spalloc/";
 
+	/** Contact info for the service. Semicolon-separated list. */
 	String SPALLOC_CONTACTS = "donal.k.fellows@manchester.ac.uk";
 
 	/**
-	 * From the wiki.
+	 * Create a proposed description of the service.
+	 * From the wiki:
 	 *
 	 * <pre>
 	 * # Send the creation request

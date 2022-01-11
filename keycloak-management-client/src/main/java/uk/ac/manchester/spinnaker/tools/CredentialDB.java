@@ -30,11 +30,26 @@ import org.slf4j.Logger;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 
+/**
+ * Database access code. Essential to allow us to avoid needing to query the
+ * user a lot and to keep the registration access token so we can update the
+ * client in the future (as those are deeply magical and only issued once).
+ *
+ * @author Donal Fellows
+ */
 public class CredentialDB implements AutoCloseable {
 	private static final Logger log = getLogger(CredentialDB.class);
 
 	private final SQLiteConnection db;
 
+	/**
+	 * @param databaseFile
+	 *            Where the database is.
+	 * @throws SQLException
+	 *             If we can't open the DB or set it up.
+	 * @throws IOException
+	 *             If we can't resolve the database filename properly.
+	 */
 	public CredentialDB(File databaseFile) throws SQLException, IOException {
 		SQLiteConfig config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
@@ -53,6 +68,13 @@ public class CredentialDB implements AutoCloseable {
 		db.close();
 	}
 
+	/**
+	 * Credentials loaded from the database. This assumes that there's only ever
+	 * one set of developer credentials in the DB, which is deeply simplistic,
+	 * but true in practice.
+	 *
+	 * @author Donal Fellows
+	 */
 	final class DBContainedCredentials implements EBRAINSDevCredentials {
 		private final String name;
 
@@ -82,7 +104,17 @@ public class CredentialDB implements AutoCloseable {
 		}
 	}
 
-	void saveCredentials(EBRAINSDevCredentials creds) throws SQLException {
+	/**
+	 * Save some credentials in the database. These probably shouldn't be
+	 * {@link DBContainedCredentials}.
+	 *
+	 * @param creds
+	 *            The credentials to save.
+	 * @throws SQLException
+	 *             If database access fails.
+	 */
+	final void saveCredentials(EBRAINSDevCredentials creds)
+			throws SQLException {
 		try (PreparedStatement s = db.prepareStatement(
 				"INSERT OR REPLACE INTO users(name, pass) VALUES (?, ?)")) {
 			s.setString(1, creds.getUser());
@@ -91,7 +123,14 @@ public class CredentialDB implements AutoCloseable {
 		}
 	}
 
-	String getToken(String clientId) {
+	/**
+	 * Get the registration access token for a particular client.
+	 *
+	 * @param clientId
+	 *            The client to get the token of.
+	 * @return The token, or {@code null} if no token is available.
+	 */
+	final String getToken(String clientId) {
 		try (PreparedStatement s = db.prepareStatement(
 				"SELECT token FROM tokens WHERE client = ? LIMIT 1")) {
 			s.setString(1, requireNonNull(clientId));
@@ -110,13 +149,22 @@ public class CredentialDB implements AutoCloseable {
 		}
 	}
 
-	void saveToken(String clientId, String registrationAccessToken)
-			throws SQLException {
+	/**
+	 * Save the registration access token for a client
+	 *
+	 * @param clientId
+	 *            The client to save the token of.
+	 * @param token
+	 *            The registration access token to save.
+	 * @throws SQLException
+	 *             If database access fails.
+	 */
+	final void saveToken(String clientId, String token) throws SQLException {
 		try (PreparedStatement s = db.prepareStatement(
 				"INSERT OR REPLACE INTO tokens(client, token) "
 						+ "VALUES (?, ?)")) {
 			s.setString(1, clientId);
-			s.setString(2, registrationAccessToken);
+			s.setString(2, token);
 			s.executeUpdate();
 		}
 	}

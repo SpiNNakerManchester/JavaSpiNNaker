@@ -37,9 +37,15 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * The keycloak registration client.
+ *
+ * @author Donal Fellows
+ */
 public class GetDevId extends CredentialDB {
 	private static final Logger log = getLogger(GetDevId.class);
 
+	/** Where the keycloak service is. */
 	public static final String HBP_OPENID_BASE =
 			"https://iam.ebrains.eu/auth/realms/hbp/";
 
@@ -48,17 +54,33 @@ public class GetDevId extends CredentialDB {
 	private static ObjectMapper mapper =
 			new ObjectMapper().enable(INDENT_OUTPUT);
 
+	/**
+	 * A username and password that are prompted for on the console.
+	 *
+	 * @author Donal Fellows
+	 */
 	static final class ConsoleCredentials implements EBRAINSDevCredentials {
 		private final Console console = System.console();
 
+		private String user;
+
+		private String pass;
+
 		@Override
 		public String getUser() {
-			return console.readLine("Enter your username: ");
+			if (user == null) {
+				user = console.readLine("Enter your username: ");
+			}
+			return user;
 		}
 
 		@Override
 		public String getPass() {
-			return new String(console.readPassword("Enter your password: "));
+			if (pass == null) {
+				pass = new String(
+						console.readPassword("Enter your password: "));
+			}
+			return pass;
 		}
 	}
 
@@ -100,6 +122,20 @@ public class GetDevId extends CredentialDB {
 		return client;
 	}
 
+	/**
+	 * Create a client service instance. Will remember the registration access
+	 * token for the client for you.
+	 *
+	 * @param client
+	 *            The proposed description of client.
+	 * @param credentials
+	 *            The registering developer's credentials.
+	 * @return The <em>actual</em> description of the client.
+	 * @throws IOException
+	 *             If we can't get the developer token.
+	 * @throws ClientRegistrationException
+	 *             If registration fails.
+	 */
 	public ClientRepresentation makeClient(ClientRepresentation client,
 			EBRAINSDevCredentials credentials)
 			throws IOException, ClientRegistrationException {
@@ -109,6 +145,17 @@ public class GetDevId extends CredentialDB {
 		return saveAuth(client);
 	}
 
+	/**
+	 * Update a client service registration. Will remember the registration
+	 * access token for the client for you.
+	 *
+	 * @param client
+	 *            The proposed new client service description. Must include the
+	 *            client ID.
+	 * @return The full updated client service description
+	 * @throws ClientRegistrationException
+	 *             If the update fails
+	 */
 	public ClientRepresentation updateClient(ClientRepresentation client)
 			throws ClientRegistrationException {
 		ClientRegistration reg = getRegistrationClient(client.getClientId());
@@ -116,6 +163,17 @@ public class GetDevId extends CredentialDB {
 		return saveAuth(client);
 	}
 
+	/**
+	 * Get the current client service registration for a client. Will remember
+	 * the registration access token for the client for you (if one is
+	 * provided).
+	 *
+	 * @param clientId
+	 *            The ID of the client service registration.
+	 * @return The full client service description.
+	 * @throws ClientRegistrationException
+	 *             If the read fails.
+	 */
 	public ClientRepresentation getClient(String clientId)
 			throws ClientRegistrationException {
 		ClientRegistration reg = getRegistrationClient(clientId);
@@ -123,12 +181,28 @@ public class GetDevId extends CredentialDB {
 		return saveAuth(client);
 	}
 
+	/**
+	 * Make a partial client descriptor, suitable for preparing an update.
+	 *
+	 * @param clientId
+	 *            The ID of the client to update.
+	 * @return The partial client description. Should be filled out by the
+	 *         caller with the parts to update.
+	 */
 	static ClientRepresentation makeUpdateSpallocDescriptor(String clientId) {
 		ClientRepresentation client = new ClientRepresentation();
 		client.setClientId(clientId);
 		return client;
 	}
 
+	/**
+	 * Get the developer credentials, either from the DB or by querying the
+	 * user.
+	 *
+	 * @return The developer credentials.
+	 * @throws SQLException
+	 *             If database access fails.
+	 */
 	private EBRAINSDevCredentials obtainCredentials() throws SQLException {
 		try {
 			EBRAINSDevCredentials c = new DBContainedCredentials();
@@ -139,10 +213,22 @@ public class GetDevId extends CredentialDB {
 		}
 	}
 
-	public static void main(String... strings)
+	/**
+	 * Create the client or read its current values. Write the client ID and
+	 * secret to the screen so that they can be inserted into a configuration
+	 * file.
+	 *
+	 * @param arguments
+	 *            Command line arguments
+	 * @throws IOException
+	 *             If I/O or filesystem access fails
+	 * @throws SQLException
+	 *             If database access fails
+	 */
+	public static void main(String... arguments)
 			throws IOException, SQLException {
 		String id = SPALLOC_ID;
-		File db = getDBFilename(strings);
+		File db = getDBFilename(arguments);
 		try (GetDevId gdi = new GetDevId(db)) {
 			ClientRepresentation cr;
 			if (gdi.getToken(id) != null) {

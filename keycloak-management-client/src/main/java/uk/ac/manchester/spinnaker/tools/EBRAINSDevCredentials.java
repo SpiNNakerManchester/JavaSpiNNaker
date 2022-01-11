@@ -37,11 +37,23 @@ import org.keycloak.representations.AccessTokenResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Developer credentials for initial access to client registration using the
+ * HBP/EBRAINS Keycloak service.
+ *
+ * @author Donal Fellows
+ */
 interface EBRAINSDevCredentials {
 	String OIDC_TOKEN_URL = HBP_OPENID_BASE + "protocol/openid-connect/token";
 
+	/**
+	 * @return The user that will do the registration
+	 */
 	String getUser();
 
+	/**
+	 * @return The password for the user that will do the registration.
+	 */
 	String getPass();
 
 	/**
@@ -86,6 +98,14 @@ abstract class EBRAINSDevCredentialsUtils {
 	private EBRAINSDevCredentialsUtils() {
 	}
 
+	/**
+	 * Convert a map to HTML form. Technically the target format supports a
+	 * multimap, but we don't need that!
+	 *
+	 * @param arguments
+	 *            The map of arguments.
+	 * @return The encoded form.
+	 */
 	static byte[] encodeForm(Map<String, String> arguments) {
 		StringJoiner sj = new StringJoiner("&");
 		for (Entry<String, String> entry : arguments.entrySet()) {
@@ -95,6 +115,14 @@ abstract class EBRAINSDevCredentialsUtils {
 		return sj.toString().getBytes(UTF_8);
 	}
 
+	/**
+	 * Convert a username/password pair to the contents of an
+	 * {@code Authorization} header.
+	 *
+	 * @param userPass
+	 *            The username and password, separated by a colon.
+	 * @return the header contents
+	 */
 	static String makeBasicAuth(String userPass) {
 		return "Basic " + new String(
 				getEncoder().encode(userPass.getBytes(UTF_8)), UTF_8);
