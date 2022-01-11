@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spring.version>5.3.14</spring.version>
 		<jackson.version>2.13.1</jackson.version>
 		<sqlite.version>3.36.0.3</sqlite.version>
+		<keycloak.version>14.0.0</keycloak.version>
 	</properties>
 
 	<dependencyManagement>
@@ -208,6 +209,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli</artifactId>
 				<version>4.6.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-client-registration-api</artifactId>
+				<version>${keycloak.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -753,13 +759,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
+			<!-- This module needs Java 11 to build at all. -->
+			<id>JDK11AndLater</id>
+			<activation>
+				<jdk>[1.11,)</jdk>
+			</activation>
+			<modules>
+				<module>keycloak-management-client</module>
+			</modules>
+		</profile>
+		<profile>
 			<id>JDK8</id>
 			<activation>
 				<jdk>1.8</jdk>
 			</activation>
 			<properties>
-				<maven.compiler.source>1.8</maven.compiler.source>
-				<maven.compiler.target>1.8</maven.compiler.target>
+				<java.version>1.8</java.version>
+				<maven.compiler.source>${java.version}</maven.compiler.source>
+				<maven.compiler.target>${java.version}</maven.compiler.target>
 			</properties>
 			<build>
 				<pluginManagement>
