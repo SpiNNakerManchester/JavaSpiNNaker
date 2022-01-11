@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.tools;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Base64.getEncoder;
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.encodeForm;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.makeBasicAuth;
 import static uk.ac.manchester.spinnaker.tools.GetDevId.HBP_OPENID_BASE;
@@ -30,8 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.Map.Entry;
+import java.util.StringJoiner;
 
 import org.keycloak.representations.AccessTokenResponse;
 
@@ -47,12 +48,13 @@ interface EBRAINSDevCredentials {
 	String OIDC_TOKEN_URL = HBP_OPENID_BASE + "protocol/openid-connect/token";
 
 	/**
-	 * @return The user that will do the registration
+	 * @return The user that will do the registration. Must not be {@code null}.
 	 */
 	String getUser();
 
 	/**
-	 * @return The password for the user that will do the registration.
+	 * @return The password for the user that will do the registration. Must not
+	 *         be {@code null}.
 	 */
 	String getPass();
 
@@ -61,11 +63,13 @@ interface EBRAINSDevCredentials {
 	 *
 	 * @return The access token.
 	 * @throws IOException
-	 *             If anything goes wrong.
+	 *             If anything goes wrong. In particular, the user must be known
+	 *             to the Keycloak service and be authorized to publish service
+	 *             descriptions.
 	 */
 	default String getToken() throws IOException {
-		String user = getUser();
-		String pass = getPass();
+		String user = requireNonNull(getUser(), "user must be given");
+		String pass = requireNonNull(getPass(), "password must be given");
 		ObjectMapper mapper = new ObjectMapper();
 
 		URL url = new URL(OIDC_TOKEN_URL);
