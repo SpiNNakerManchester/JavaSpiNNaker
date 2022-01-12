@@ -100,10 +100,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -175,9 +175,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * {@link #GRANT_READER}.
 	 */
 	protected static final String GRANT_ADMIN = "ROLE_ADMIN";
-
-	/** The HTTP basic authentication realm. */
-	private static final String REALM = "SpallocService";
 
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
@@ -374,7 +371,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
-			http.oauth2ResourceServer().jwt();
+			http.oauth2ResourceServer()
+					.authenticationEntryPoint(authenticationEntryPoint).jwt();
 			http.addFilterAfter(authApplicationFilter,
 					BasicAuthenticationFilter.class);
 		}
@@ -430,22 +428,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * Implements basic auth.
+	 * Implements basic and bearer auth challenge presentation.
 	 */
 	@Component
-	static class BasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
+	static class BasicAuthEntryPoint implements AuthenticationEntryPoint {
+		private static final String AUTH = "WWW-Authenticate";
+
 		@Autowired
 		private AuthProperties props;
 
 		private String basicChallenge() {
-			return format("Basic realm=%s", getRealmName());
+			return format("Basic realm=\"%s\"", props.getRealm());
 		}
 
 		private String openidChallenge() {
 			Set<String> scopes = props.getOpenid().getScopes();
-			return format("Bearer realm=%s, scope=\"%s\"", //
-					getRealmName(), //
-					scopes.stream().collect(joining(", ")));
+			return format("Bearer realm=\"%s\", scope=\"%s\"", //
+					props.getRealm(), scopes.stream().collect(joining(", ")));
 		}
 
 		@Override
@@ -459,8 +458,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * say they can be one, but that's an area where things get
 			 * "exciting" (i.e., ambiguous) so we don't!
 			 */
-			response.addHeader("WWW-Authenticate", basicChallenge());
-			response.addHeader("WWW-Authenticate", openidChallenge());
+			if (props.isBasic()) {
+				response.addHeader(AUTH, basicChallenge());
+			}
+			if (props.getOpenid().isEnable()) {
+				response.addHeader(AUTH, openidChallenge());
+			}
 			response.setStatus(SC_UNAUTHORIZED);
 
 			// Provide a basic body; NB, don't need to close the writer
@@ -468,14 +471,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			response.setContentType("text/plain");
 			PrintWriter writer = response.getWriter();
 			writer.println("log in required, "
-					+ "either with BASIC auth or HBP/EBRAINS bearer token");
+					+ "either with BASIC auth or HBP/EBRAINS bearer token "
+					+ "(if they are enabled)");
 			writer.flush(); // Commit the response
-		}
-
-		@Override
-		public void afterPropertiesSet() {
-			setRealmName(REALM);
-			super.afterPropertiesSet();
 		}
 	}
 

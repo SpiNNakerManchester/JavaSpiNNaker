@@ -117,8 +117,10 @@ spalloc:
       to: SPINNAKER@listserv.manchester.ac.uk
       subject: Spalloc Board Issue
   auth:
-    # Support HTTP Basic Authentication (bad for browsers, OK for code)
+    # Support HTTP Basic Authentication (bad for browsers, OK for code, slow)
     basic: true
+    # The authentication realm, used for both Basic and Bearer (openid) auth
+    realm: SpallocService
     # Support HTTP Form Authentication (pretty necessary)
     local-form: true
     # Force a known local admin user to exist with a known password

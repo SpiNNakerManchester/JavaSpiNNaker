@@ -618,6 +618,11 @@ public class SpallocProperties {
 		private boolean basic;
 
 		/**
+		 * The authentication realm. Must not contain quote characters!
+		 */
+		private String realm;
+
+		/**
 		 * Whether to enable HTTP form+session authentication. Much faster than
 		 * BASIC, but requires a more complex client. You must enable this if
 		 * you are supporting the Web UI.
@@ -659,6 +664,7 @@ public class SpallocProperties {
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		public AuthProperties(//
 				@DefaultValue("true") boolean basic,
+				@DefaultValue("SpallocService") String realm,
 				@DefaultValue("true") boolean localForm,
 				@DefaultValue("false") boolean addDummyUser,
 				@DefaultValue("true") boolean dummyRandomPass,
@@ -668,6 +674,7 @@ public class SpallocProperties {
 				@DefaultValue("60s") Duration unlockPeriod,
 				@DefaultValue OpenIDProperties openid) {
 			this.basic = basic;
+			this.realm = realm;
 			this.localForm = localForm;
 			this.addDummyUser = addDummyUser;
 			this.dummyRandomPass = dummyRandomPass;
@@ -690,6 +697,19 @@ public class SpallocProperties {
 
 		public void setBasic(boolean basic) {
 			this.basic = basic;
+		}
+
+		/**
+		 * The authentication realm. Must not contain quote characters!
+		 *
+		 * @return the realm.
+		 */
+		public String getRealm() {
+			return realm;
+		}
+
+		public void setRealm(String realm) {
+			this.realm = realm;
 		}
 
 		/**
