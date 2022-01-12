@@ -20,6 +20,8 @@ import static java.util.Objects.nonNull;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -808,6 +810,11 @@ public class SpallocProperties {
 		private String domain;
 
 		/**
+		 * The scopes desired. Referred to elsewhere in the configuration file.
+		 */
+		private Set<String> scopes;
+
+		/**
 		 * The application installation identity. Required for allowing people
 		 * to use HBP/EBRAINS identities.
 		 */
@@ -834,6 +841,7 @@ public class SpallocProperties {
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("") String domain, //
+				Set<String> scopes, //
 				@DefaultValue("") String id, //
 				@DefaultValue("") String secret,
 				@DefaultValue("openid.") String usernamePrefix,
@@ -843,6 +851,7 @@ public class SpallocProperties {
 				@DefaultValue("") String truststorePassword) {
 			this.enable = enable;
 			this.domain = domain;
+			this.setScopes(scopes != null ? scopes : new HashSet<>());
 			this.id = id;
 			this.secret = secret;
 			this.usernamePrefix = usernamePrefix;
@@ -920,6 +929,19 @@ public class SpallocProperties {
 
 		public void setDomain(String domain) {
 			this.domain = domain;
+		}
+
+		/**
+		 * The scopes desired. Referred to elsewhere in the configuration file.
+		 *
+		 * @return The OpenID scopes.
+		 */
+		public Set<String> getScopes() {
+			return scopes;
+		}
+
+		public void setScopes(Set<String> scopes) {
+			this.scopes = scopes;
 		}
 
 		/**

@@ -138,6 +138,7 @@ spalloc:
       # Support OIDC
       enable: true
       domain: https://iam.ebrains.eu/auth/realms/hbp
+      scopes: [ openid, profile, email ]
       # The credentials for HBP/EBRAINS go here
       id: spinnaker-spalloc
       secret: XYZZY_OVERRIDE_THIS
@@ -202,7 +203,7 @@ spring:
           hbp-ebrains:
             client-id: ${spalloc.auth.openid.id}
             client-secret: ${spalloc.auth.openid.secret}
-            scope: [ openid, profile, email ]
+            scope: ${spalloc.auth.openid.scopes}
             authorization-grant-type: authorization_code
             redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
         provider:

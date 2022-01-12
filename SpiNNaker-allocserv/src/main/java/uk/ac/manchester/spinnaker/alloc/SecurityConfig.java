@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.String.format;
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -53,6 +55,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -431,17 +434,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Component
 	static class BasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
+		@Autowired
+		private AuthProperties props;
+
+		private String basicChallenge() {
+			return format("Basic realm=%s", getRealmName());
+		}
+
+		private String openidChallenge() {
+			Set<String> scopes = props.getOpenid().getScopes();
+			return format("Bearer realm=%s, scope=\"%s\"", //
+					getRealmName(), //
+					scopes.stream().collect(joining(", ")));
+		}
+
 		@Override
 		public void commence(HttpServletRequest request,
 				HttpServletResponse response, AuthenticationException authEx)
 				throws IOException {
 			log.info("issuing request for log in to {}",
 					request.getRemoteAddr());
-			response.addHeader("WWW-Authenticate",
-					"Basic realm=" + getRealmName());
+			/*
+			 * The two API auth methods should be separate headers; the specs
+			 * say they can be one, but that's an area where things get
+			 * "exciting" (i.e., ambiguous) so we don't!
+			 */
+			response.addHeader("WWW-Authenticate", basicChallenge());
+			response.addHeader("WWW-Authenticate", openidChallenge());
 			response.setStatus(SC_UNAUTHORIZED);
+
+			// Provide a basic body; NB, don't need to close the writer
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/plain");
 			PrintWriter writer = response.getWriter();
-			writer.println("log in required");
+			writer.println("log in required, "
+					+ "either with BASIC auth or HBP/EBRAINS bearer token");
+			writer.flush(); // Commit the response
 		}
 
 		@Override
