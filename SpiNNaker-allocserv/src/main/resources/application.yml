@@ -15,7 +15,8 @@
 
 logging:
   file:
-    name: ${spalloc.working-directory}/spalloc.log
+    name: spalloc.log
+    path: ${spalloc.working-directory}
   level:
     root: INFO
     # "[org.apache.catalina]": DEBUG
@@ -57,6 +58,10 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    session:
+      # NOTE: Make sure this is longer than spalloc.keepalive.max
+      timeout: 30m
 
 cxf:
   path: /spalloc/srv
