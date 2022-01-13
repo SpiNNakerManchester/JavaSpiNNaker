@@ -210,7 +210,8 @@ spring:
           hbp-ebrains:
             client-id: ${spalloc.auth.openid.id}
             client-secret: ${spalloc.auth.openid.secret}
-            scope: ${spalloc.auth.openid.scopes}
+            # Repeated from spalloc.auth.openid.scopes, but can't share!
+            scope: [ openid, profile, email ]
             authorization-grant-type: authorization_code
             redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
         provider:
