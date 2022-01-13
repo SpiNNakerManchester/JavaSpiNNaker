@@ -41,8 +41,11 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
  *
  * @author Donal Fellows
  */
-@RequestMapping("/system")
+@RequestMapping(SystemController.ROOT_PATH)
 public interface SystemController {
+	/** The root path to the controller within the overall application. */
+	String ROOT_PATH = "/system";
+
 	/** The name of the main attribute supporting a password change form. */
 	String USER_PASSWORD_CHANGE_ATTR = "user";
 

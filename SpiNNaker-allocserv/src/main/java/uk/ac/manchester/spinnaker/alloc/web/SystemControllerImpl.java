@@ -68,7 +68,7 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
  * @author Donal Fellows
  */
 @Controller
-@RequestMapping("/system")
+@RequestMapping(SystemController.ROOT_PATH)
 public class SystemControllerImpl implements SystemController {
 	private static final Logger log = getLogger(SystemControllerImpl.class);
 
