@@ -202,7 +202,9 @@ spalloc:
 # sheer nastiness of interacting with Keycloak and the fact that it is done
 # during application boot. Putting it here makes things more reliable.
 spring:
-  profiles: default
+  config:
+    activate:
+      on-profile: default
   security:
     oauth2:
       client:
