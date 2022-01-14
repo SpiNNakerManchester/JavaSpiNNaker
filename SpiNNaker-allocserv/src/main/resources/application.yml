@@ -15,7 +15,8 @@
 
 logging:
   file:
-    name: ${spalloc.working-directory}/spalloc.log
+    name: spalloc.log
+    path: ${spalloc.working-directory}
   level:
     root: INFO
     # "[org.apache.catalina]": DEBUG
@@ -57,6 +58,10 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    session:
+      # NOTE: Make sure this is longer than spalloc.keepalive.max
+      timeout: 30m
 
 cxf:
   path: /spalloc/srv
@@ -117,8 +122,10 @@ spalloc:
       to: SPINNAKER@listserv.manchester.ac.uk
       subject: Spalloc Board Issue
   auth:
-    # Support HTTP Basic Authentication (bad for browsers, OK for code)
+    # Support HTTP Basic Authentication (bad for browsers, OK for code, slow)
     basic: true
+    # The authentication realm, used for both Basic and Bearer (openid) auth
+    realm: SpallocService
     # Support HTTP Form Authentication (pretty necessary)
     local-form: true
     # Force a known local admin user to exist with a known password
@@ -138,6 +145,7 @@ spalloc:
       # Support OIDC
       enable: true
       domain: https://iam.ebrains.eu/auth/realms/hbp
+      scopes: [ openid, profile, email ]
       # The credentials for HBP/EBRAINS go here
       id: spinnaker-spalloc
       secret: XYZZY_OVERRIDE_THIS
@@ -194,7 +202,9 @@ spalloc:
 # sheer nastiness of interacting with Keycloak and the fact that it is done
 # during application boot. Putting it here makes things more reliable.
 spring:
-  profiles: default
+  config:
+    activate:
+      on-profile: default
   security:
     oauth2:
       client:
@@ -202,6 +212,7 @@ spring:
           hbp-ebrains:
             client-id: ${spalloc.auth.openid.id}
             client-secret: ${spalloc.auth.openid.secret}
+            # Repeated from spalloc.auth.openid.scopes, but can't share!
             scope: [ openid, profile, email ]
             authorization-grant-type: authorization_code
             redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}

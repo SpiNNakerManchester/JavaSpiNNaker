@@ -36,6 +36,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
+import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 
 /**
  * The API for the controller for the admin user interface.
@@ -46,7 +47,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 @PreAuthorize(IS_ADMIN)
 public interface AdminController {
 	/** The base path of this interface within the MVC domain. */
-	String BASE_PATH = "/admin";
+	String BASE_PATH = SystemController.ROOT_PATH + "/admin";
 
 	/** Path to all-users operations. */
 	String USERS_PATH = "/users";

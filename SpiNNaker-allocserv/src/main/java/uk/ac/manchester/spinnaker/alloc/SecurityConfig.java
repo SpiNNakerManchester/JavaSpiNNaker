@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.String.format;
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -28,7 +30,7 @@ import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
-import static uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl.isUnsupportedAuthTokenClass;
+import static uk.ac.manchester.spinnaker.alloc.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.loadTrustStore;
@@ -39,6 +41,7 @@ import java.io.InputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -53,6 +56,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -61,10 +65,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -97,13 +101,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -172,9 +175,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 * {@link #GRANT_READER}.
 	 */
 	protected static final String GRANT_ADMIN = "ROLE_ADMIN";
-
-	/** The HTTP basic authentication realm. */
-	private static final String REALM = "SpallocService";
 
 	/** The name of the Spring MVC error view. */
 	public static final String MVC_ERROR = "erroroccurred";
@@ -321,7 +321,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *
 		 * @param ctx
 		 *            The security context.
-		 * @return The original authentication.
+		 * @return The new authentication (which is also installed into the
+		 *         security context), or {@code null} <em>if the authentication
+		 *         is not changed</em>.
 		 */
 		Authentication updateAuthentication(SecurityContext ctx);
 	}
@@ -371,7 +373,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.defaultSuccessUrl(rootPage, true)
 					.failureUrl(loginUrl + "?error=true");
 			http.oauth2Client();
-			http.oauth2ResourceServer().jwt();
+			http.oauth2ResourceServer()
+					.authenticationEntryPoint(authenticationEntryPoint).jwt();
 			http.addFilterAfter(authApplicationFilter,
 					BasicAuthenticationFilter.class);
 		}
@@ -388,66 +391,58 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * meaningful.
 		 */
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
+				.addLogoutHandler((req, resp, auth) -> clearToken(req))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
 	}
 
 	/**
-	 * A filter to apply authentication transformation as supplied by the
-	 * {@link LocalAuthenticationProvider}.
-	 *
-	 * @see LocalAuthenticationProvider#updateAuthentication(SecurityContext)
+	 * Implements basic and bearer auth challenge presentation.
 	 */
 	@Component
-	static class AppAuthTransformationFilter extends OncePerRequestFilter {
+	static class BasicAuthEntryPoint implements AuthenticationEntryPoint {
+		private static final String AUTH = "WWW-Authenticate";
+
 		@Autowired
-		private LocalAuthenticationProvider localAuthProvider;
+		private AuthProperties props;
 
-		@Override
-		protected boolean shouldNotFilter(HttpServletRequest request)
-				throws ServletException {
-			Authentication a =
-					SecurityContextHolder.getContext().getAuthentication();
-			return isNull(a) || isUnsupportedAuthTokenClass(a.getClass());
+		private String basicChallenge() {
+			return format("Basic realm=\"%s\"", props.getRealm());
 		}
 
-		@Override
-		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain)
-						throws IOException, ServletException {
-			SecurityContext ctx = SecurityContextHolder.getContext();
-			Authentication originalAuth =
-					localAuthProvider.updateAuthentication(ctx);
-			try {
-				chain.doFilter(request, response);
-			} finally {
-				ctx.setAuthentication(originalAuth);
-			}
+		private String openidChallenge() {
+			Set<String> scopes = props.getOpenid().getScopes();
+			return format("Bearer realm=\"%s\", scope=\"%s\"", //
+					props.getRealm(), scopes.stream().collect(joining(", ")));
 		}
-	}
 
-	/**
-	 * Implements basic auth.
-	 */
-	@Component
-	static class BasicAuthEntryPoint extends BasicAuthenticationEntryPoint {
 		@Override
 		public void commence(HttpServletRequest request,
 				HttpServletResponse response, AuthenticationException authEx)
 				throws IOException {
 			log.info("issuing request for log in to {}",
 					request.getRemoteAddr());
-			response.addHeader("WWW-Authenticate",
-					"Basic realm=" + getRealmName());
+			/*
+			 * The two API auth methods should be separate headers; the specs
+			 * say they can be one, but that's an area where things get
+			 * "exciting" (i.e., ambiguous) so we don't!
+			 */
+			if (props.isBasic()) {
+				response.addHeader(AUTH, basicChallenge());
+			}
+			if (props.getOpenid().isEnable()) {
+				response.addHeader(AUTH, openidChallenge());
+			}
 			response.setStatus(SC_UNAUTHORIZED);
-			PrintWriter writer = response.getWriter();
-			writer.println("log in required");
-		}
 
-		@Override
-		public void afterPropertiesSet() {
-			setRealmName(REALM);
-			super.afterPropertiesSet();
+			// Provide a basic body; NB, don't need to close the writer
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/plain");
+			PrintWriter writer = response.getWriter();
+			writer.println("log in required, "
+					+ "either with BASIC auth or HBP/EBRAINS bearer token "
+					+ "(if they are enabled)");
+			writer.flush(); // Commit the response
 		}
 	}
 
@@ -965,5 +960,32 @@ abstract class SecurityConfigUtils {
 			myTrustStore.load(myCerts, p.getTruststorePassword().toCharArray());
 		}
 		return myTrustStore;
+	}
+}
+
+/**
+ * A saved authentication token. Categorically only ever valid in the session
+ * for which it was created; if the session changes, it cannot be reused.
+ *
+ * @author Donal Fellows
+ */
+class Token implements Serializable {
+	private static final long serialVersionUID = -439034988839648948L;
+
+	private final String id;
+
+	private final Authentication auth;
+
+	Token(HttpSession s, Authentication a) {
+		this.auth = a;
+		this.id = s.getId();
+	}
+
+	boolean isValid(HttpSession s) {
+		return s.getId().equals(id);
+	}
+
+	Authentication getAuth() {
+		return auth;
 	}
 }

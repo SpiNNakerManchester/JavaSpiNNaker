@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<packaging>war</packaging>
 	<properties>
 		<spring.boot.version>2.4.7</spring.boot.version>
-		<spring.version>5.3.7</spring.version>
+		<spring.version>5.3.8</spring.version>
 		<jackson.version>2.12.3</jackson.version>
 		<swagger.version>3.50.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
@@ -319,6 +319,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<version>${log4j.version}</version>
 				<scope>runtime</scope>
 			</dependency>
+
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>swagger-ui</artifactId>
+				<version>${swagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.livesense</groupId>
+				<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
+				<version>${jsontaglib.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -326,10 +337,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>java-hamcrest</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -403,7 +416,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>
-			<version>${swagger.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.skyscreamer</groupId>
@@ -427,7 +440,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>com.github.livesense</groupId>
 			<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
-			<version>${jsontaglib.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -453,6 +466,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-resource-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 	</dependencies>
 

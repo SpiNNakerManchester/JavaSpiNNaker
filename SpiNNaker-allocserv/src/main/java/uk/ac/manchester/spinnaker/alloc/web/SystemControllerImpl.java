@@ -38,8 +38,10 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -51,6 +53,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import uk.ac.manchester.spinnaker.alloc.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
@@ -68,7 +71,7 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
  * @author Donal Fellows
  */
 @Controller
-@RequestMapping("/system")
+@RequestMapping(SystemController.ROOT_PATH)
 public class SystemControllerImpl implements SystemController {
 	private static final Logger log = getLogger(SystemControllerImpl.class);
 
@@ -111,10 +114,23 @@ public class SystemControllerImpl implements SystemController {
 		return fromMethodCall(selfCall).buildAndExpand().toUri();
 	}
 
+	private ModelAndView view(String name) {
+		Authentication auth =
+				SecurityContextHolder.getContext().getAuthentication();
+		return new ModelAndView(name, USER_MAY_CHANGE_PASSWORD,
+				auth instanceof UsernamePasswordAuthenticationToken);
+	}
+
+	private ModelAndView view(String name, String key, Object value) {
+		ModelAndView mav = view(name);
+		mav.addObject(key, value);
+		return mav;
+	}
+
 	@Override
 	@GetMapping("/")
 	public ModelAndView index() {
-		return new ModelAndView(MAIN_VIEW)
+		return view(MAIN_VIEW)
 				.addObject("version", version.getFullVersion())
 				.addObject("build", version.getBuildTimestamp());
 	}
@@ -122,14 +138,12 @@ public class SystemControllerImpl implements SystemController {
 	@Override
 	@GetMapping("/change_password")
 	public ModelAndView getPasswordChangeForm(Principal principal) {
-		ModelAndView mav = new ModelAndView(PASSWORD_CHANGE_VIEW);
 		try {
-			mav.addObject(USER_PASSWORD_CHANGE_ATTR,
+			return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
 					userControl.getUserForPrincipal(principal));
 		} catch (AuthenticationException | DataAccessException e) {
-			return new ModelAndView(MVC_ERROR);
+			return view(MVC_ERROR);
 		}
-		return mav;
 	}
 
 	@Override
@@ -138,17 +152,15 @@ public class SystemControllerImpl implements SystemController {
 			@Valid @ModelAttribute("user") PasswordChangeRecord user,
 			BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
-			return new ModelAndView(MVC_ERROR);
+			return view(MVC_ERROR);
 		}
 		log.info("changing password for {}", principal.getName());
-		ModelAndView mav = new ModelAndView(PASSWORD_CHANGE_VIEW);
 		try {
-			mav.addObject(USER_PASSWORD_CHANGE_ATTR,
+			return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
 					userControl.updateUserOfPrincipal(principal, user));
 		} catch (AuthenticationException | DataAccessException e) {
-			return new ModelAndView(MVC_ERROR);
+			return view(MVC_ERROR);
 		}
-		return mav;
 	}
 
 	@Override
@@ -156,6 +168,7 @@ public class SystemControllerImpl implements SystemController {
 	public String performLogout(HttpServletRequest request,
 			HttpServletResponse response) {
 		Authentication auth = getContext().getAuthentication();
+		AppAuthTransformationFilter.clearToken(request);
 		if (nonNull(auth)) {
 			log.info("logging out {}", auth.getPrincipal());
 			logoutHandler.logout(request, response, auth);
@@ -170,10 +183,10 @@ public class SystemControllerImpl implements SystemController {
 			List<MachineListEntryRecord> table = spallocCore.listMachines();
 			table.forEach(rec -> rec
 					.setDetailsUrl(uri(SELF.getMachineInfo(rec.getName()))));
-			return new ModelAndView(MACHINE_LIST_VIEW, "machineList", table);
+			return view(MACHINE_LIST_VIEW, "machineList", table);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
-			return new ModelAndView(MVC_ERROR);
+			return view(MVC_ERROR);
 		}
 	}
 
@@ -188,10 +201,10 @@ public class SystemControllerImpl implements SystemController {
 			// Owners and admins may drill down further into jobs
 			mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
 					.forEach(j -> j.setUrl(uri(SELF.getJobInfo(j.getId()))));
-			return new ModelAndView(MACHINE_VIEW, "machine", mach);
+			return view(MACHINE_VIEW, "machine", mach);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
-			return new ModelAndView(MVC_ERROR);
+			return view(MVC_ERROR);
 		}
 	}
 
@@ -206,10 +219,10 @@ public class SystemControllerImpl implements SystemController {
 				entry.setMachineUrl(
 						uri(SELF.getMachineInfo(entry.getMachineName())));
 			});
-			return new ModelAndView(JOB_LIST_VIEW, "jobList", table);
+			return view(JOB_LIST_VIEW, "jobList", table);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
-			return new ModelAndView(MVC_ERROR);
+			return view(MVC_ERROR);
 		}
 	}
 
@@ -224,10 +237,10 @@ public class SystemControllerImpl implements SystemController {
 				mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
 			}
 			mach.setMachineUrl(uri(SELF.getMachineInfo(mach.getMachine())));
-			return new ModelAndView(JOB_VIEW, "job", mach);
+			return view(JOB_VIEW, "job", mach);
 		} catch (DataAccessException e) {
 			log.error("database problem", e);
-			return new ModelAndView(MVC_ERROR);
+			return view(MVC_ERROR);
 		}
 	}
 }
