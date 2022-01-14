@@ -32,8 +32,6 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -41,6 +39,8 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
+import uk.ac.manchester.spinnaker.alloc.security.PasswordServices;
+import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 
 /**
  * User administration controller.

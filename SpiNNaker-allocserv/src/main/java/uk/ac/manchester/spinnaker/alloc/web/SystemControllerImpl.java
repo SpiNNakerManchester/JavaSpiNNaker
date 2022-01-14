@@ -53,8 +53,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import uk.ac.manchester.spinnaker.alloc.AppAuthTransformationFilter;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
@@ -64,6 +62,8 @@ import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
+import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
+import uk.ac.manchester.spinnaker.alloc.security.Permit;
 
 /**
  * The main web interface controller.

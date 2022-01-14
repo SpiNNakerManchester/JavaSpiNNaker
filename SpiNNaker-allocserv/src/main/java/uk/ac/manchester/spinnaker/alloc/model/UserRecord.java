@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.model;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
+import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.time.Instant;
 import java.util.Map;
@@ -32,7 +32,7 @@ import javax.validation.constraints.Null;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 
 /**
  * The description and model of a user. POJO class. Some things are stated
