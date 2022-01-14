@@ -220,13 +220,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					log.debug("filter updated security from {} to {}", current,
 							updated);
 					ctx.setAuthentication(updated);
+					return updated;
 				}
 			} else if (!isUnsupportedAuthTokenClass(current.getClass())) {
 				log.warn("unexpected authentication type {} (token: {})",
 						current.getClass(), current);
 			}
 		}
-		return current;
+		return null;
 	}
 
 	/** The classes that we know what to do about. */

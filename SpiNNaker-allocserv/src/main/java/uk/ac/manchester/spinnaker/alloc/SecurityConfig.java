@@ -31,6 +31,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl.isUnsupportedAuthTokenClass;
+import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfigUtils.loadTrustStore;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -68,6 +70,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -321,7 +324,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 *
 		 * @param ctx
 		 *            The security context.
-		 * @return The original authentication.
+		 * @return The new authentication (which is also installed into the
+		 *         security context), or {@code null} <em>if the authentication
+		 *         is not changed</em>.
 		 */
 		Authentication updateAuthentication(SecurityContext ctx);
 	}
@@ -389,18 +394,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * meaningful.
 		 */
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
+				.addLogoutHandler((req, resp, auth) -> clearToken(req))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
 	}
 
 	/**
 	 * A filter to apply authentication transformation as supplied by the
-	 * {@link LocalAuthenticationProvider}.
+	 * {@link LocalAuthenticationProvider}. Relies on the session ID being
+	 * updated to ensure that stale login information is not retained.
 	 *
 	 * @see LocalAuthenticationProvider#updateAuthentication(SecurityContext)
 	 */
 	@Component
-	static class AppAuthTransformationFilter extends OncePerRequestFilter {
+	public static class AppAuthTransformationFilter
+			extends OncePerRequestFilter {
+		/**
+		 * The name of session fixation tokens supported by this class.
+		 */
+		private static final String TOKEN =
+				AppAuthTransformationFilter.class.getName();
+
 		@Autowired
 		private LocalAuthenticationProvider localAuthProvider;
 
@@ -415,14 +429,57 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain chain)
-						throws IOException, ServletException {
+				throws IOException, ServletException {
+			HttpSession s = request.getSession(false);
 			SecurityContext ctx = SecurityContextHolder.getContext();
-			Authentication originalAuth =
-					localAuthProvider.updateAuthentication(ctx);
+			Authentication savedAuth = getSavedToken(s);
+			Authentication originalAuth = ctx.getAuthentication();
+			if (nonNull(savedAuth)) {
+				ctx.setAuthentication(savedAuth);
+			} else {
+				Authentication a = localAuthProvider.updateAuthentication(ctx);
+				if (nonNull(a)) {
+					saveToken(s, a);
+				}
+			}
 			try {
 				chain.doFilter(request, response);
 			} finally {
 				ctx.setAuthentication(originalAuth);
+			}
+		}
+
+		private static Authentication getSavedToken(HttpSession session) {
+			if (nonNull(session)) {
+				Object o = session.getAttribute(TOKEN);
+				if (o instanceof Token) {
+					Token t = (Token) o;
+					if (t.isValid(session)) {
+						return t.getAuth();
+					}
+				}
+			}
+			return null;
+		}
+
+		private static void saveToken(HttpSession session,
+				Authentication auth) {
+			if (nonNull(session)) {
+				session.setAttribute(TOKEN, new Token(session, auth));
+			}
+		}
+
+		/**
+		 * Ensure that any authentication token that was bound into the session
+		 * is removed.
+		 *
+		 * @param request
+		 *            the HTTP request; used for looking up the session
+		 */
+		public static void clearToken(HttpServletRequest request) {
+			HttpSession session = request.getSession(false);
+			if (nonNull(session)) {
+				session.removeAttribute(TOKEN);
 			}
 		}
 	}
@@ -991,5 +1048,32 @@ abstract class SecurityConfigUtils {
 			myTrustStore.load(myCerts, p.getTruststorePassword().toCharArray());
 		}
 		return myTrustStore;
+	}
+}
+
+/**
+ * A saved authentication token. Categorically only ever valid in the session
+ * for which it was created; if the session changes, it cannot be reused.
+ *
+ * @author Donal Fellows
+ */
+class Token implements Serializable {
+	private static final long serialVersionUID = -439034988839648948L;
+
+	private final String id;
+
+	private final Authentication auth;
+
+	Token(HttpSession s, Authentication a) {
+		this.auth = a;
+		this.id = s.getId();
+	}
+
+	boolean isValid(HttpSession s) {
+		return s.getId().equals(id);
+	}
+
+	Authentication getAuth() {
+		return auth;
 	}
 }

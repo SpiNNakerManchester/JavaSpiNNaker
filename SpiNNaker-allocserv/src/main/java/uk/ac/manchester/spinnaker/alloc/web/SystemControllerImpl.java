@@ -51,6 +51,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import uk.ac.manchester.spinnaker.alloc.SecurityConfig.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
@@ -156,6 +157,7 @@ public class SystemControllerImpl implements SystemController {
 	public String performLogout(HttpServletRequest request,
 			HttpServletResponse response) {
 		Authentication auth = getContext().getAuthentication();
+		AppAuthTransformationFilter.clearToken(request);
 		if (nonNull(auth)) {
 			log.info("logging out {}", auth.getPrincipal());
 			logoutHandler.logout(request, response, auth);
