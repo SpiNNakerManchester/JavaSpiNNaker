@@ -51,7 +51,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.AppAuthTransformationFilter;
+import uk.ac.manchester.spinnaker.alloc.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
