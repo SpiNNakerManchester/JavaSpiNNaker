@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc;
+package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl.isUnsupportedAuthTokenClass;
+import static uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.isUnsupportedAuthTokenClass;
 
 import java.io.IOException;
 
@@ -34,8 +34,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
 
 /**
  * A filter to apply authentication transformation as supplied by the

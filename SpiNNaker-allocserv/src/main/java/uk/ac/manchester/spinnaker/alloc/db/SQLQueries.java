@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
-import uk.ac.manchester.spinnaker.alloc.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
@@ -28,6 +27,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;

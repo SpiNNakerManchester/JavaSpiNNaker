@@ -14,21 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc;
+package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_READER;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.ADMIN;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel.USER;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
+import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
+import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,10 +63,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.LocalAuthenticationProvider;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.PasswordServices;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.SimpleGrantedAuthority;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
