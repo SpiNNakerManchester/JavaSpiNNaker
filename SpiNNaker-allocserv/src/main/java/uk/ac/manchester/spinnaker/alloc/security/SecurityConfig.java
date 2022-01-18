@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc;
+package uk.ac.manchester.spinnaker.alloc.security;
 
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
@@ -30,8 +30,6 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -42,20 +40,10 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.view.AbstractUrlBasedView;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
-import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
-import uk.ac.manchester.spinnaker.alloc.security.BasicAuthEntryPoint;
-import uk.ac.manchester.spinnaker.alloc.security.LocalAuthenticationProvider;
 
 /**
  * The security and administration configuration of the service.
@@ -68,9 +56,7 @@ import uk.ac.manchester.spinnaker.alloc.security.LocalAuthenticationProvider;
  *
  * @author Donal Fellows
  */
-@EnableWebMvc
 @EnableWebSecurity
-@Import(SecurityConfig.MvcConfig.class)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger log = getLogger(SecurityConfig.class);
@@ -236,46 +222,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		sclh.setClearAuthentication(true);
 		sclh.setInvalidateHttpSession(true);
 		return sclh;
-	}
-
-	@Bean
-	ViewResolver jspViewResolver() {
-		InternalResourceViewResolver bean = new InternalResourceViewResolver() {
-			@Override
-			protected AbstractUrlBasedView buildView(String viewName)
-					throws Exception {
-				AbstractUrlBasedView v = super.buildView(viewName);
-				String path = v.getUrl();
-				if (path.startsWith("/WEB-INF/views/system")) {
-					String path2 = path.replaceFirst("/system", "");
-					log.debug("rewrote [{}] to [{}]", path, path2);
-					v.setUrl(path2);
-				}
-				return v;
-			}
-		};
-		bean.setPrefix("/WEB-INF/views/");
-		bean.setSuffix(".jsp");
-		return bean;
-	}
-
-	/**
-	 * Sets up the login page mapping. Note that paths in here are relative to
-	 * Spring's idea of the root of the webapp (as they're used to program path
-	 * matchers).
-	 */
-	@Configuration
-	static class MvcConfig implements WebMvcConfigurer {
-		@Override
-		public void addViewControllers(ViewControllerRegistry registry) {
-			registry.addViewController("/system/login.html");
-		}
-
-		@Override
-		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/system/resources/**")
-					.addResourceLocations(
-							"classpath:/META-INF/public-web-resources/");
-		}
 	}
 }

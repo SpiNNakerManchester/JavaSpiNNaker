@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;

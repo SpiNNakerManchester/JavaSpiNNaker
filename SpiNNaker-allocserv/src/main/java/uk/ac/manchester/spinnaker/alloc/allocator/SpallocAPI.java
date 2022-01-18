@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.time.Duration;
 import java.time.Instant;

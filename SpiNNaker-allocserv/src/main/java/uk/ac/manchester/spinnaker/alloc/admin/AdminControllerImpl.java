@@ -23,9 +23,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MVC_ERROR;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
 
 import java.io.IOException;

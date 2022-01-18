@@ -21,12 +21,12 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 

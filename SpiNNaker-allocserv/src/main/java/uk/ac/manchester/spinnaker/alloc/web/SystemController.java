@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
 
 import java.security.Principal;
 

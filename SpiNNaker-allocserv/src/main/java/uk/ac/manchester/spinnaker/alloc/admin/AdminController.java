@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.security.Principal;
 

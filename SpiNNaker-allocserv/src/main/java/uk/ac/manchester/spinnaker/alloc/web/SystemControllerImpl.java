@@ -23,8 +23,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MVC_ERROR;
 
 import java.net.URI;
 import java.security.Principal;

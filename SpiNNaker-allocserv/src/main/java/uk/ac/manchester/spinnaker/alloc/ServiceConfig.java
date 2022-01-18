@@ -69,6 +69,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -83,6 +86,8 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.db.TerminationNotifyingThreadFactory;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
+import uk.ac.manchester.spinnaker.alloc.security.SecurityConfig;
+import uk.ac.manchester.spinnaker.alloc.web.MvcConfig;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 /**
@@ -92,7 +97,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
  * @see SecurityConfig
  * @author Donal Fellows
  */
-@Import({JaxRsConfig.class, SecurityConfig.class})
+@Import({JaxRsConfig.class, MvcConfig.class, SecurityConfig.class})
 @PropertySource("classpath:service.properties")
 @EnableScheduling
 @SpringBootApplication
@@ -352,6 +357,27 @@ public class ServiceConfig extends Application {
 	@Bean
 	AuthProperties authProperties(SpallocProperties properties) {
 		return properties.getAuth();
+	}
+
+	@Bean
+	ViewResolver jspViewResolver() {
+		InternalResourceViewResolver bean = new InternalResourceViewResolver() {
+			@Override
+			protected AbstractUrlBasedView buildView(String viewName)
+					throws Exception {
+				AbstractUrlBasedView v = super.buildView(viewName);
+				String path = v.getUrl();
+				if (path.startsWith("/WEB-INF/views/system")) {
+					String path2 = path.replaceFirst("/system", "");
+					log.debug("rewrote [{}] to [{}]", path, path2);
+					v.setUrl(path2);
+				}
+				return v;
+			}
+		};
+		bean.setPrefix("/WEB-INF/views/");
+		bean.setSuffix(".jsp");
+		return bean;
 	}
 
 	/**
