@@ -33,8 +33,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<main.class>uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter</main.class>
 		<from.py>nosuchfile.py</from.py>
 		<to.json>config.json</to.json>
-		<jython.version>2.7.2</jython.version>
-		<exec.version>3.0.0</exec.version>
 	</properties>
 
 	<dependencies>
@@ -45,7 +43,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-slim</artifactId>
-			<version>${jython.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

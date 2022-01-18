@@ -17,7 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="head.jsp">
-	<jsp:param value="SpiNNaker Machine List" name="title"/>
+	<jsp:param name="title" value="SpiNNaker Machine List"/>
+	<jsp:param name="refresh" value="30"/>
 </jsp:include>
 <body>
 

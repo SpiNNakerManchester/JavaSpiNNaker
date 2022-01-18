@@ -23,4 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<script src="<c:url value="/spalloc/system/resources/spinnaker.js"/>">
 		</script>
 	</c:if>
+	<c:if test="${ param.refresh ne null }">
+		<meta http-equiv="refresh" content="${ param.refresh }">
+	</c:if>
 </head>
