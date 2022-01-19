@@ -55,7 +55,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
@@ -66,6 +65,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.JobAPI;

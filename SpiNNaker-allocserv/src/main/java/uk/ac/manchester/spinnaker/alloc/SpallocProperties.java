@@ -20,6 +20,8 @@ import static java.util.Objects.nonNull;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -616,6 +618,11 @@ public class SpallocProperties {
 		private boolean basic;
 
 		/**
+		 * The authentication realm. Must not contain quote characters!
+		 */
+		private String realm;
+
+		/**
 		 * Whether to enable HTTP form+session authentication. Much faster than
 		 * BASIC, but requires a more complex client. You must enable this if
 		 * you are supporting the Web UI.
@@ -657,6 +664,7 @@ public class SpallocProperties {
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		public AuthProperties(//
 				@DefaultValue("true") boolean basic,
+				@DefaultValue("SpallocService") String realm,
 				@DefaultValue("true") boolean localForm,
 				@DefaultValue("false") boolean addDummyUser,
 				@DefaultValue("true") boolean dummyRandomPass,
@@ -666,6 +674,7 @@ public class SpallocProperties {
 				@DefaultValue("60s") Duration unlockPeriod,
 				@DefaultValue OpenIDProperties openid) {
 			this.basic = basic;
+			this.realm = realm;
 			this.localForm = localForm;
 			this.addDummyUser = addDummyUser;
 			this.dummyRandomPass = dummyRandomPass;
@@ -688,6 +697,19 @@ public class SpallocProperties {
 
 		public void setBasic(boolean basic) {
 			this.basic = basic;
+		}
+
+		/**
+		 * The authentication realm. Must not contain quote characters!
+		 *
+		 * @return the realm.
+		 */
+		public String getRealm() {
+			return realm;
+		}
+
+		public void setRealm(String realm) {
+			this.realm = realm;
 		}
 
 		/**
@@ -808,6 +830,11 @@ public class SpallocProperties {
 		private String domain;
 
 		/**
+		 * The scopes desired. Referred to elsewhere in the configuration file.
+		 */
+		private Set<String> scopes;
+
+		/**
 		 * The application installation identity. Required for allowing people
 		 * to use HBP/EBRAINS identities.
 		 */
@@ -834,6 +861,7 @@ public class SpallocProperties {
 		@SuppressWarnings("checkstyle:ParameterNumber")
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("") String domain, //
+				Set<String> scopes, //
 				@DefaultValue("") String id, //
 				@DefaultValue("") String secret,
 				@DefaultValue("openid.") String usernamePrefix,
@@ -843,6 +871,7 @@ public class SpallocProperties {
 				@DefaultValue("") String truststorePassword) {
 			this.enable = enable;
 			this.domain = domain;
+			this.setScopes(scopes != null ? scopes : new HashSet<>());
 			this.id = id;
 			this.secret = secret;
 			this.usernamePrefix = usernamePrefix;
@@ -920,6 +949,19 @@ public class SpallocProperties {
 
 		public void setDomain(String domain) {
 			this.domain = domain;
+		}
+
+		/**
+		 * The scopes desired. Referred to elsewhere in the configuration file.
+		 *
+		 * @return The OpenID scopes.
+		 */
+		public Set<String> getScopes() {
+			return scopes;
+		}
+
+		public void setScopes(Set<String> scopes) {
+			this.scopes = scopes;
 		}
 
 		/**

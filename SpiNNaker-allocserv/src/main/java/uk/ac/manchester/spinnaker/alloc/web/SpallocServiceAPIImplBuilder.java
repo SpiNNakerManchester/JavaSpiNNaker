@@ -35,13 +35,13 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.Permit;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
+import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.EmptyResponse;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.ItsGone;

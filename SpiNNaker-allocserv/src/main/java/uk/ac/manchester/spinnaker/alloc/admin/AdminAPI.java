@@ -20,8 +20,9 @@ import static java.util.Objects.nonNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.USER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
 
 import java.net.URI;
 import java.util.Map;
@@ -65,7 +66,7 @@ public interface AdminAPI {
 	 */
 	interface Paths {
 		/** The location of the admin "service". */
-		String BASE_PATH = "/admin";
+		String BASE_PATH = SERV + "/admin";
 
 		/** Service root. */
 		String ROOT = "/";

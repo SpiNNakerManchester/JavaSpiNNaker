@@ -27,17 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<artifactId>SpiNNaker-allocserv</artifactId>
 	<packaging>war</packaging>
 	<properties>
-		<spring.boot.version>2.4.7</spring.boot.version>
-		<spring.version>5.3.7</spring.version>
-		<jackson.version>2.12.3</jackson.version>
-		<swagger.version>3.50.0</swagger.version>
-		<jsontaglib.version>1.0.5</jsontaglib.version>
-		<npm_plugin.version>1.12.0</npm_plugin.version>
 		<node.version>v14.17.6</node.version>
-		<closure-compiler.version>2.21.0</closure-compiler.version>
-		<build-helper.version>3.2.0</build-helper.version>
-		<commons-math.version>3.6.1</commons-math.version>
-		<truststore-maven-plugin.version>2.4.0</truststore-maven-plugin.version>
 
 		<!-- These ought to be one, but of course they aren't. -->
 		<typescript-language.version>ES6</typescript-language.version>
@@ -47,6 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<start.class>uk.ac.manchester.spinnaker.alloc.ServiceConfig</start.class>
 		<!-- TLS-secured connection that we need to make at runtime startup. -->
 		<ebrains.wellknown.url>https://iam.ebrains.eu/auth/realms/hbp/.well-known/openid-configuration</ebrains.wellknown.url>
+		<truststore.file>${project.build.directory}/generated-resources/truststore.p12</truststore.file>
+		<truststore.pass>hunter2</truststore.pass>
 	</properties>
 
 	<build>
@@ -59,7 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<filtering>true</filtering>
 			</resource>
 			<resource>
-				<directory>target/generated-resources</directory>
+				<directory>${project.build.directory}/generated-resources</directory>
 			</resource>
 		</resources>
 		<finalName>spalloc</finalName>
@@ -181,8 +173,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</goals>
 						<phase>generate-resources</phase>
 						<configuration>
-							<truststoreFile>${project.build.directory}/generated-resources/truststore.p12</truststoreFile>
-							<truststorePassword>hunter2</truststorePassword>
+							<truststoreFile>${truststore.file}</truststoreFile>
+							<truststorePassword>${truststore.pass}</truststorePassword>
 							<urls>
 								<url>${ebrains.wellknown.url}</url>
 							</urls>
@@ -217,7 +209,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>${spring.boot.version}</version>
 					<configuration>
 						<systemPropertyVariables>
 							<java.util.logging.manager>org.apache.logging.log4j.jul.LogManager</java.util.logging.manager>
@@ -227,7 +218,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>com.github.eirslett</groupId>
 					<artifactId>frontend-maven-plugin</artifactId>
-					<version>${npm_plugin.version}</version>
 					<configuration>
 						<nodeVersion>${node.version}</nodeVersion>
 						<installDirectory>${project.build.directory}</installDirectory>
@@ -239,14 +229,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>build-helper-maven-plugin</artifactId>
-					<version>${build-helper.version}</version>
-				</plugin>
-				<plugin>
 					<groupId>com.github.blutorange</groupId>
 					<artifactId>closure-compiler-maven-plugin</artifactId>
-					<version>${closure-compiler.version}</version>
 					<configuration>
 						<baseSourceDir>${project.build.directory}</baseSourceDir>
 						<baseTargetDir>${project.build.buildDirectory}</baseTargetDir>
@@ -258,7 +242,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>uk.co.automatictester</groupId>
 					<artifactId>truststore-maven-plugin</artifactId>
-					<version>${truststore-maven-plugin.version}</version>
 					<configuration>
 						<trustAllCertificates>true</trustAllCertificates>
 						<truststoreFormat>PKCS12</truststoreFormat>
@@ -270,11 +253,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Import dependency management from Jackson; overrides Spring Boot -->
 			<dependency>
-				<groupId>com.fasterxml.jackson</groupId>
-				<artifactId>jackson-bom</artifactId>
-				<version>${jackson.version}</version>
+				<!-- Redo the import of the Spring POM -->
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -300,11 +283,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>spring-webmvc</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-math3</artifactId>
-				<version>${commons-math.version}</version>
-			</dependency>
 
 			<!-- Something is forcing these to otherwise be wrong -->
 			<dependency>
@@ -326,10 +304,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>java-hamcrest</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -360,8 +340,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -403,7 +383,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>swagger-ui</artifactId>
-			<version>${swagger.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.skyscreamer</groupId>
@@ -427,7 +407,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>com.github.livesense</groupId>
 			<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
-			<version>${jsontaglib.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -453,6 +433,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-resource-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 	</dependencies>
 

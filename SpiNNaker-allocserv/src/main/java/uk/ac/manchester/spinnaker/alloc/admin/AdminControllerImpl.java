@@ -23,9 +23,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_ADMIN;
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.MVC_ERROR;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MVC_ERROR;
+import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,9 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -55,7 +59,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -64,6 +67,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
+import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 
 /**
  * Implements the logic supporting the JSP views and maps them into URL space.
@@ -145,6 +149,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		mav.addObject("createUserUri", uri(SELF.getUserCreationForm()));
 		mav.addObject("boardsUri", uri(SELF.boards()));
 		mav.addObject("machineUri", uri(SELF.machineUploadForm()));
+		Authentication auth =
+				SecurityContextHolder.getContext().getAuthentication();
+		mav.addObject(USER_MAY_CHANGE_PASSWORD,
+				auth instanceof UsernamePasswordAuthenticationToken);
 		return mav;
 	}
 
@@ -206,17 +214,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			return errors("database access failed: " + e.getMessage());
 		}
 
-		ModelAndView mav = new ModelAndView(USER_LIST_VIEW);
-		mav.addObject("userlist", unmodifiableMap(result));
-		return addStandardContext(mav);
+		return addStandardContext(new ModelAndView(USER_LIST_VIEW, "userlist",
+				unmodifiableMap(result)));
 	}
 
 	@Override
 	@GetMapping(CREATE_USER_PATH)
 	public ModelAndView getUserCreationForm() {
-		ModelAndView mav = new ModelAndView(CREATE_USER_VIEW);
-		mav.addObject(USER_OBJ, new UserRecord());
-		return addStandardContext(mav);
+		return addStandardContext(
+				new ModelAndView(CREATE_USER_VIEW, USER_OBJ, new UserRecord()));
 	}
 
 	@Override

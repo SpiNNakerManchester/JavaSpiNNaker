@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static uk.ac.manchester.spinnaker.alloc.SecurityConfig.IS_READER;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
 
 import java.security.Principal;
 
@@ -41,10 +41,19 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
  *
  * @author Donal Fellows
  */
-@RequestMapping("/system")
+@RequestMapping(SystemController.ROOT_PATH)
 public interface SystemController {
+	/** The root path to the controller within the overall application. */
+	String ROOT_PATH = "/system";
+
 	/** The name of the main attribute supporting a password change form. */
 	String USER_PASSWORD_CHANGE_ATTR = "user";
+
+	/**
+	 * The name of the boolean view attribute describing whether the password
+	 * change form may be used. Only local users may change their password!
+	 */
+	String USER_MAY_CHANGE_PASSWORD = "userMayChangePassword";
 
 	/**
 	 * Get the view for the main page of the service.

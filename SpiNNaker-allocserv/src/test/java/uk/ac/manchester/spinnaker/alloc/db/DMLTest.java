@@ -46,12 +46,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.sqlite.SQLiteException;
 
-import uk.ac.manchester.spinnaker.alloc.SecurityConfig.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 
 /**
  * Tests of inserts, updates and deletes. Ensures that the SQL and the schema
