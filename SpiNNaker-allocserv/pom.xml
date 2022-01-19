@@ -254,6 +254,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<!-- Redo the import of the Spring POM -->
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
