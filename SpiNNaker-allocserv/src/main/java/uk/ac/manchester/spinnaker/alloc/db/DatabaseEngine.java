@@ -32,6 +32,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.concurrent.ConcurrentUtils.constantFuture;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 import static org.sqlite.Function.FLAG_DETERMINISTIC;
@@ -88,6 +89,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -204,8 +206,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Autowired(required = false)
 	private Map<String, Function> functions = new HashMap<>();
 
+	@Lazy
 	@Autowired
 	private ScheduledExecutorService executor;
+
+	/**
+	 * Whether to schedule a warning for long transactions. Normally want this
+	 * when this bean is in service, but not when starting up or shutting down.
+	 */
+	private boolean warnOnLongTransactions;
 
 	// If you add more autowired stuff here, make sure in-memory DBs get a copy!
 
@@ -221,6 +230,29 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * locks to write locks at the same time.
 	 */
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+	/**
+	 * Schedule a task (expected to be
+	 * {@link DatabaseEngine.Connection.Locker#warnLock()}) to be run in the
+	 * future, provided we are not initializing.
+	 *
+	 * @param task
+	 *            The task to schedule.
+	 * @param nanos
+	 *            How many nanoseconds in the future this is to happen.
+	 * @return The cancellable future. The result value of the future is
+	 *         unimportant. Never {@code null}.
+	 */
+	private Future<?> schedule(Runnable task, long nanos) {
+		try {
+			if (warnOnLongTransactions) {
+				return executor.schedule(task, nanos, NANOSECONDS);
+			}
+		} catch (RejectedExecutionException ignored) {
+			// Can't do anything about this, and it isn't too important.
+		}
+		return constantFuture(task);
+	}
 
 	/**
 	 * Records the execution time of a statement, at least to first result set.
@@ -250,6 +282,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	@PreDestroy
 	private void logStatementExecutionTimes() {
+		warnOnLongTransactions = false;
 		if (props.isPerformanceLog()) {
 			statementLengths.entrySet().stream()
 					.filter(e -> e.getValue().getMax() >= props
@@ -291,6 +324,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			} else {
 				log.debug("database {} ready", dbConnectionUrl);
 			}
+		} finally {
+			warnOnLongTransactions = true;
 		}
 	}
 
@@ -341,6 +376,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		functions = prototype.functions;
 		executor = prototype.executor;
 		setupConfig();
+		warnOnLongTransactions = true;
 	}
 
 	/**
@@ -643,12 +679,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				isLockedForWrites = lockForWriting;
 				lockingContext = getDebugContext();
 				l.lock();
-				try {
-					lockWarningTimeout = executor.schedule(this::warnLock,
-							TX_LOCK_WARN_THRESHOLD_NS, NANOSECONDS);
-				} catch (RejectedExecutionException ignored) {
-					// Can't do anything about this, and it isn't too important
-				}
+				lockWarningTimeout =
+						schedule(this::warnLock, TX_LOCK_WARN_THRESHOLD_NS);
 				lockTimestamp = nanoTime();
 			}
 
@@ -665,9 +697,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			public void close() {
 				long unlockTimestamp = nanoTime();
 				currentLock.unlock();
-				if (lockWarningTimeout != null) {
-					lockWarningTimeout.cancel(false);
-				}
+				lockWarningTimeout.cancel(false);
 				long dt = unlockTimestamp - lockTimestamp;
 				if (dt > TX_LOCK_NOTE_THRESHOLD_NS) {
 					log.info("transaction lock was held for {}ms",
@@ -675,6 +705,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				}
 			}
 
+			/**
+			 * Issue a warning that a database transaction lock has been held
+			 * for a long time.
+			 */
 			private void warnLock() {
 				long dt = nanoTime() - lockTimestamp;
 				log.warn(
