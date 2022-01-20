@@ -1,61 +1,18 @@
-{"groups": [
-  {
+{
+  "groups": [{
     "name": "spalloc",
     "description": "Configuration of the Spalloc service."
-  }
-], "properties": [
-  {
-    "name": "cxf.jaxrs.component-scan",
-    "type": "java.lang.Boolean",
-    "description": "Whether to scan for Spring components."
-  },
-  {
-    "name": "cxf.jaxrs.classes-scan-packages",
-    "type": "java.lang.String",
-    "description": "Comma-separated list (in a string) of package names to scan."
-  },
-  {"name": "spalloc.database-path"},
-  {"name": "spalloc.wait"},
-  {"name": "spalloc.pause"},
-  {"name": "spalloc.historical-data.path"},
-  {"name": "spalloc.historical-data.schedule"},
-  {"name": "spalloc.historical-data.grace-period"},
-  {"name": "spalloc.allocator.period"},
-  {"name": "spalloc.keepalive.expiry-period"},
-  {"name": "spalloc.keepalive.min"},
-  {"name": "spalloc.keepalive.max"},
-  {"name": "spalloc.allocator.importance-span"},
-  {"name": "spalloc.allocator.priority-scale.size"},
-  {"name": "spalloc.allocator.priority-scale.dimensions"},
-  {"name": "spalloc.allocator.priority-scale.specific-board"},
-  {"name": "spalloc.allocator.report-email.send"},
-  {"name": "spalloc.allocator.report-email.from"},
-  {"name": "spalloc.allocator.report-email.to"},
-  {"name": "spalloc.allocator.report-email.subject"},
-  {"name": "spalloc.transceiver.dummy"},
-  {"name": "spalloc.transceiver.period"},
-  {"name": "spalloc.transceiver.probe-interval"},
-  {"name": "spalloc.transceiver.power-attempts"},
-  {"name": "spalloc.transceiver.fpga-attempts"},
-  {"name": "spalloc.auth.basic"},
-  {"name": "spalloc.auth.local-form"},
-  {"name": "spalloc.auth.openid.enable"},
-  {"name": "spalloc.auth.openid.id"},
-  {"name": "spalloc.auth.openid.secret"},
-  {"name": "spalloc.auth.openid.username-prefix"},
-  {"name": "spalloc.auth.add-dummy-user"},
-  {"name": "spalloc.auth.dummy-random-pass"},
-  {"name": "spalloc.auth.debug-failures"},
-  {"name": "spalloc.auth.max-login-failures"},
-  {"name": "spalloc.auth.account-lock-duration"},
-  {"name": "spalloc.auth.unlock-period"},
-  {"name": "spalloc.quota.default-quota"},
-  {"name": "spalloc.quota.consolidation-schedule"},
-  {"name": "spalloc.sqlite.timeout"},
-  {"name": "spalloc.sqlite.debug-failures"},
-  {"name": "spalloc.sqlite.analysis-limit"},
-  {"name": "spalloc.compat.enable"},
-  {"name": "spalloc.compat.thread-pool-size"},
-  {"name": "spalloc.compat.port"},
-  {"name": "spalloc.compat.service-user"}
-]}
+  }],
+  "properties": [
+    {
+      "name": "cxf.jaxrs.component-scan",
+      "type": "java.lang.Boolean",
+      "description": "Whether to scan for Spring components."
+    },
+    {
+      "name": "cxf.jaxrs.classes-scan-packages",
+      "type": "java.lang.String",
+      "description": "Comma-separated list (in a string) of package names to scan."
+    }
+  ]
+}

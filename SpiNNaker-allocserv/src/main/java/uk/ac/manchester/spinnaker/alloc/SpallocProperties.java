@@ -29,6 +29,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -61,6 +62,9 @@ public class SpallocProperties {
 	 */
 	private boolean pause;
 
+	/** The main working directory. Referred to by other properties. */
+	private File workingDirectory;
+
 	private HistoricalDataProperties historicalData;
 
 	private KeepaliveProperties keepalive;
@@ -82,6 +86,7 @@ public class SpallocProperties {
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
 			@DefaultValue("false") boolean pause,
+			@DefaultValue(".") File workingDirectory,
 			@DefaultValue AllocatorProperties allocator,
 			@DefaultValue AuthProperties auth,
 			@DefaultValue CompatibilityProperties compat,
@@ -93,6 +98,7 @@ public class SpallocProperties {
 		this.databasePath = databasePath;
 		this.wait = wait;
 		this.pause = pause;
+		this.workingDirectory = workingDirectory;
 		this.allocator = allocator;
 		this.auth = auth;
 		this.compat = compat;
@@ -115,6 +121,11 @@ public class SpallocProperties {
 
 	public void setDatabasePath(File databasePath) {
 		this.databasePath = databasePath;
+	}
+
+	@AssertTrue(message = "directory of database path must exist")
+	private boolean isDatabaseInSaneLocation() {
+		return databasePath.getAbsoluteFile().getParentFile().exists();
 	}
 
 	/**
@@ -145,6 +156,25 @@ public class SpallocProperties {
 
 	public void setPause(boolean pause) {
 		this.pause = pause;
+	}
+
+	/**
+	 * The main working directory. Referred to by other properties.
+	 *
+	 * @return Main working directory.
+	 */
+	@NotNull
+	public File getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(File workingDirectory) {
+		this.workingDirectory = workingDirectory;
+	}
+
+	@AssertTrue(message = "working directory must exist")
+	private boolean isValidWorkingDirectory() {
+		return workingDirectory.exists() && workingDirectory.isDirectory();
 	}
 
 	/**
@@ -369,6 +399,11 @@ public class SpallocProperties {
 		public void setMax(Duration max) {
 			this.max = max;
 		}
+
+		@AssertTrue(message = "max must be more than min")
+		private boolean isMaxMoreThanMin() {
+			return max.compareTo(min) > 0;
+		}
 	}
 
 	/** Configuration of the main resource allocation engine. */
@@ -443,6 +478,7 @@ public class SpallocProperties {
 		 *
 		 * @return Properties relating to job priority scaling.
 		 */
+		@NotNull
 		@Valid
 		public PriorityScale getPriorityScale() {
 			return priorityScale;
@@ -466,6 +502,7 @@ public class SpallocProperties {
 		}
 
 		/** @return Properties relating to board issue reporting. */
+		@NotNull
 		@Valid
 		public ReportProperties getReportEmail() {
 			return reportEmail;
@@ -704,6 +741,7 @@ public class SpallocProperties {
 		 *
 		 * @return the realm.
 		 */
+		@NotNull
 		public String getRealm() {
 			return realm;
 		}
@@ -803,6 +841,8 @@ public class SpallocProperties {
 		 *
 		 * @return OpenID-related security properties.
 		 */
+		@NotNull
+		@Valid
 		public OpenIDProperties getOpenid() {
 			return openid;
 		}
@@ -929,6 +969,7 @@ public class SpallocProperties {
 		 * @return Prefix for user names originating from OpenID
 		 *         auto-registration.
 		 */
+		@NotNull
 		public String getUsernamePrefix() {
 			return usernamePrefix;
 		}
@@ -943,6 +984,7 @@ public class SpallocProperties {
 		 *
 		 * @return The root path of the OpenID 2 Discovery domain.
 		 */
+		@NotNull
 		public String getDomain() {
 			return domain;
 		}
@@ -956,6 +998,7 @@ public class SpallocProperties {
 		 *
 		 * @return The OpenID scopes.
 		 */
+		@NotEmpty
 		public Set<String> getScopes() {
 			return scopes;
 		}
@@ -969,6 +1012,7 @@ public class SpallocProperties {
 		 *
 		 * @return truststore type (default: {@code PKCS12})
 		 */
+		@NotNull
 		public String getTruststoreType() {
 			return truststoreType;
 		}
@@ -982,6 +1026,7 @@ public class SpallocProperties {
 		 *
 		 * @return truststore location
 		 */
+		@NotNull
 		public Resource getTruststorePath() {
 			return truststorePath;
 		}
@@ -997,6 +1042,7 @@ public class SpallocProperties {
 		 *
 		 * @return password for truststore
 		 */
+		@NotNull
 		public String getTruststorePassword() {
 			return truststorePassword;
 		}
@@ -1251,6 +1297,7 @@ public class SpallocProperties {
 		 * @return Number of nanoseconds where performance stats are not
 		 *         reported for queries with a max less than this.
 		 */
+		@Positive
 		public final double getPerformanceThreshold() {
 			return performanceThreshold;
 		}
