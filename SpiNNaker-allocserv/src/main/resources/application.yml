@@ -169,6 +169,9 @@ spalloc:
     power-attempts: 2
     # Number of attempts that will be made to bring up an FPGA
     fpga-attempts: 3
+    # Number of attempts that will be made to bring up a transceiver, provided
+    # the failures are due to timeouts and not outright network errors.
+    build-attempts: 5
     # Whether to use dummy BMPs; GREAT for testing!
     dummy: false
   sqlite:
@@ -182,6 +185,14 @@ spalloc:
     performance-log: false
     # Number of nanoseconds below which statement execution time is not important
     performance-threshold: 1e6
+    # How many times to try to get a lock
+    lock-tries: 3
+    # Delay between a lock failure and the next attempt
+    lock-failed-delay: 100ms
+    # When to note (INFO) that a lock is being held for a long time
+    lock-note-threshold: 50ms
+    # When to warn (WARN) that a lock was held for a long time
+    lock-warn-threshold: 100ms
   compat:
     # Settings relating to the v1 spalloc compatibility interface
 
@@ -194,8 +205,17 @@ spalloc:
     host: 0.0.0.0
     # What port to run the service on
     port: 22244
+    # How long to wait for a message to be received;
+    # Tune: timeout cost vs responsiveness to shutdown requests
+    receive-timeout: 2000ms
     # What user to run as; recommended that this user exists but is disabled
     service-user: ""
+    # How long to wait for the compat service to shut down
+    shutdown-timeout: 3s
+    # How long to wait in the spalloc core for a state change notification
+    notify-wait-time: 1m
+    # Jobs' default keepalive property duration
+    default-keepalive: 1m
 
 ---
 # Only enable the OpenID Connect stuff in production. This is because of the

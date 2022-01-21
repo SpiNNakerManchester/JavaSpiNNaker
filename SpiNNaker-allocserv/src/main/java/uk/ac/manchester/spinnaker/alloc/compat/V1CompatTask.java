@@ -65,14 +65,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 public abstract class V1CompatTask extends V1CompatService.Aware {
 	private static final Logger log = getLogger(V1CompatTask.class);
 
-	/**
-	 * How long to wait for a message, in milliseconds. Failure to receive in
-	 * this time triggers an exception, but it needs to be fairly frequent or
-	 * the thread can't be interrupted.
-	 */
-	private static final int TASK_BASIC_WAIT_TIMEOUT = 2000;
-
-	private static final int TRIAD = 3;
+	private static final int TRIAD_COORD_COUNT = 3;
 
 	/**
 	 * The socket that this task is handling.
@@ -107,7 +100,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		super(srv);
 		this.sock = sock;
 		sock.setTcpNoDelay(true);
-		sock.setSoTimeout(TASK_BASIC_WAIT_TIMEOUT);
+		sock.setSoTimeout((int) getProperties().getReceiveTimeout().toMillis());
 		in = new BufferedReader(
 				new InputStreamReader(sock.getInputStream(), UTF_8));
 		out = new PrintWriter(
@@ -380,7 +373,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			case 2:
 				return requireNonNull(createJobRectangle(parseDec(args, 0),
 						parseDec(args, 1), kwargs, serialCmd));
-			case TRIAD:
+			case TRIAD_COORD_COUNT:
 				return requireNonNull(
 						createJobSpecificBoard(
 								new TriadCoords(parseDec(args, 0),

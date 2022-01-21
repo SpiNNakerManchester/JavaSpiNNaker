@@ -21,6 +21,7 @@ import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
@@ -60,9 +61,6 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 @Service
 public class AllocatorTask extends DatabaseAwareBean
 		implements PowerController {
-	/** Triads contain three boards. */
-	private static final int TRIAD_DEPTH = 3;
-
 	/**
 	 * @see #setPower(Connection,int,PowerState)
 	 */

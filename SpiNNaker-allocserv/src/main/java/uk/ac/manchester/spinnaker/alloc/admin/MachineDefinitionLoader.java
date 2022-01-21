@@ -27,6 +27,8 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
+import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
+import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,8 +87,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private static final Logger log = getLogger(MachineDefinitionLoader.class);
 
 	private static final int DECIMAL = 10;
-
-	private static final int TRIAD_SIZE = 12;
 
 	/**
 	 * Parse a <em>decimal</em> integer.
@@ -152,8 +152,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		private static final int TRIAD_MINOR_OFFSET = 4;
 
 		ChipLocation chipLocation() {
-			int rootX = x * TRIAD_SIZE;
-			int rootY = y * TRIAD_SIZE;
+			int rootX = x * TRIAD_CHIP_SIZE;
+			int rootY = y * TRIAD_CHIP_SIZE;
 			switch (z) {
 			case 0:
 				break;
@@ -488,11 +488,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return height;
 		}
 
-		private static final int FULL_TRIADS = 3;
-
 		/** @return The depth of the machine, the number of boards per triad. */
 		public int getDepth() {
-			return boardLocations.size() == 1 ? 1 : FULL_TRIADS;
+			return boardLocations.size() == 1 ? 1 : TRIAD_DEPTH;
 		}
 
 		/** @return The dead boards of the machine. */
@@ -1004,16 +1002,16 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 							triad.z, root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
-			maxX = max(maxX, triad.x * TRIAD_SIZE);
-			maxY = max(maxY, triad.y * TRIAD_SIZE);
+			maxX = max(maxX, triad.x * TRIAD_CHIP_SIZE);
+			maxY = max(maxY, triad.y * TRIAD_CHIP_SIZE);
 		}
 		/*
 		 * Note that even in single-board setups, the max coordinates are as if
 		 * there's a full triad present. It's just (in that case) that two of
 		 * the boards of the triad aren't there.
 		 */
-		sql.setMaxCoords.call(maxX + TRIAD_SIZE - 1, maxY + TRIAD_SIZE - 1,
-				machineId);
+		sql.setMaxCoords.call(maxX + TRIAD_CHIP_SIZE - 1,
+				maxY + TRIAD_CHIP_SIZE - 1, machineId);
 		BoardPhysicalCoords rootPhys =
 				machine.boardLocations.get(new TriadCoords(0, 0, 0));
 		for (TriadCoords triad : machine.deadBoards) {

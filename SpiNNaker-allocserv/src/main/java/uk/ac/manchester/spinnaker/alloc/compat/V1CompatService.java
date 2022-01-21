@@ -22,7 +22,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.Executors.newFixedThreadPool;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -30,6 +30,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 
@@ -55,9 +56,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  */
 @Service("spalloc-v1-compatibility-service")
 public class V1CompatService {
-	/** In seconds. */
-	private static final int SHUTDOWN_TIMEOUT = 3;
-
 	private static final Logger log = getLogger(V1CompatService.class);
 
 	/** The overall service properties. */
@@ -89,6 +87,8 @@ public class V1CompatService {
 	/** How the majority of threads are launched by the service. */
 	private ExecutorService executor;
 
+	private Duration shutdownTimeout;
+
 	public V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
@@ -119,6 +119,11 @@ public class V1CompatService {
 		protected final ObjectMapper getJsonMapper() {
 			return requireNonNull(srv.mapper);
 		}
+
+		/** @return The relevant properties. */
+		protected final CompatibilityProperties getProperties() {
+			return srv.mainProps.getCompat();
+		}
 	}
 
 	@PostConstruct
@@ -142,6 +147,8 @@ public class V1CompatService {
 					addr);
 			servThread.start();
 		}
+
+		this.shutdownTimeout = props.getShutdownTimeout();
 	}
 
 	@PreDestroy
@@ -157,7 +164,7 @@ public class V1CompatService {
 		// Shut down the clients
 		executor.shutdown();
 		executor.shutdownNow();
-		executor.awaitTermination(SHUTDOWN_TIMEOUT, SECONDS);
+		executor.awaitTermination(shutdownTimeout.toMillis(), MILLISECONDS);
 	}
 
 	/**

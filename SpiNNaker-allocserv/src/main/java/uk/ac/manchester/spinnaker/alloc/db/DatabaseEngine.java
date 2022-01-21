@@ -157,28 +157,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	private static final double NS_PER_MS = 1000000;
 
-	/** Whether to examine the stack for transaction debugging purposes. */
-	private static final boolean ENABLE_EXPENSIVE_TX_DEBUGGING = false;
-
-	// TODO move LOCKED_TRIES, LOCK_FAILED_DELAY_MS to config
-	// TODO move TX_LOCK_NOTE_THRESHOLD_NS, TX_LOCK_WARN_THRESHOLD_NS to config
-	/** Number of times to try to take the lock in a transaction. */
-	private static final int LOCKED_TRIES = 3;
-
-	/** Delay after transaction failure before retrying, in milliseconds. */
-	private static final int LOCK_FAILED_DELAY_MS = 100;
-
-	/**
-	 * Time delay (in nanoseconds) before we issue a warning on transaction end.
-	 */
-	private static final long TX_LOCK_NOTE_THRESHOLD_NS = 50000000;
-
-	/**
-	 * Time delay (in nanoseconds) before we issue a warning during the
-	 * execution of a transaction.
-	 */
-	private static final long TX_LOCK_WARN_THRESHOLD_NS = 100000000;
-
 	private final Path dbPath;
 
 	private String tombstoneFile;
@@ -239,14 +217,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @param task
 	 *            The task to schedule.
 	 * @param nanos
-	 *            How many nanoseconds in the future this is to happen.
+	 *            How far in the future this is to happen.
 	 * @return The cancellable future. The result value of the future is
 	 *         unimportant. Never {@code null}.
 	 */
-	private Future<?> schedule(Runnable task, long nanos) {
+	private Future<?> schedule(Runnable task, Duration delay) {
 		try {
 			if (warnOnLongTransactions) {
-				return executor.schedule(task, nanos, NANOSECONDS);
+				return executor.schedule(task, delay.toNanos(), NANOSECONDS);
 			}
 		} catch (RejectedExecutionException ignored) {
 			// Can't do anything about this, and it isn't too important.
@@ -634,8 +612,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @return A printable object for debugging purposes. Might be the current
 	 *         thread or might be a useful stack frame.
 	 */
-	private static Object getDebugContext() {
-		if (ENABLE_EXPENSIVE_TX_DEBUGGING) {
+	private Object getDebugContext() {
+		if (props.isEnableExpensiveTransactionDebugging()) {
 			return getCaller();
 		} else {
 			return currentThread();
@@ -664,7 +642,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 			private final Object lockingContext;
 
-			private Future<?> lockWarningTimeout;
+			private final Future<?> lockWarningTimeout;
+
+			private final long noteThreshold;
 
 			/**
 			 * @param lockForWriting
@@ -674,13 +654,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 *            deadlocks).
 			 */
 			Locker(boolean lockForWriting) {
+				noteThreshold = props.getLockNoteThreshold().toNanos();
 				Lock l = getLock(lockForWriting);
 				currentLock = l;
 				isLockedForWrites = lockForWriting;
 				lockingContext = getDebugContext();
 				l.lock();
 				lockWarningTimeout =
-						schedule(this::warnLock, TX_LOCK_WARN_THRESHOLD_NS);
+						schedule(this::warnLock, props.getLockWarnThreshold());
 				lockTimestamp = nanoTime();
 			}
 
@@ -699,7 +680,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				currentLock.unlock();
 				lockWarningTimeout.cancel(false);
 				long dt = unlockTimestamp - lockTimestamp;
-				if (dt > TX_LOCK_NOTE_THRESHOLD_NS) {
+				if (dt > noteThreshold) {
 					log.info("transaction lock was held for {}ms",
 							dt / NS_PER_MS);
 				}
@@ -852,13 +833,13 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 						done = true;
 						return result;
 					} catch (DataAccessException e) {
-						if (tries < LOCKED_TRIES && isBusy(e)) {
+						if (tries < props.getLockTries() && isBusy(e)) {
 							log.warn("retrying transaction due to lock "
 									+ "failure: {}", context);
 							log.info("current transaction holders are {}",
 									currentTransactionHolders());
 							try {
-								sleep(LOCK_FAILED_DELAY_MS);
+								sleep(props.getLockFailedDelay().toMillis());
 							} catch (InterruptedException ignored) {
 							}
 							continue;

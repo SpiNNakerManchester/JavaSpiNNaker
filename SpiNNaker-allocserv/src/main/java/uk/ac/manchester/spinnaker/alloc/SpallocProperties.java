@@ -49,6 +49,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties("spalloc")
 @ConstructorBinding
 @Validated
+@SuppressWarnings("checkstyle:ParameterNumber")
 public class SpallocProperties {
 	/** Path to the main database file. */
 	private File databasePath;
@@ -81,7 +82,6 @@ public class SpallocProperties {
 
 	private CompatibilityProperties compat;
 
-	@SuppressWarnings("checkstyle:ParameterNumber")
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
@@ -1120,6 +1120,14 @@ public class SpallocProperties {
 		/** Number of attempts that will be made to bring up an FPGA. */
 		private int fpgaAttempts;
 
+		/**
+		 * Number of attempts that will be made to bring up a transceiver,
+		 * provided the failures are due to timeouts and not outright network
+		 * errors. Note that a failure to bring up a transceiver is lethal to
+		 * the service.
+		 */
+		private int buildAttempts;
+
 		/** Whether to use a dummy transceiver. Useful for testing only. */
 		private boolean dummy;
 
@@ -1127,11 +1135,13 @@ public class SpallocProperties {
 				@DefaultValue("15s") Duration probeInterval,
 				@DefaultValue("2") int powerAttempts,
 				@DefaultValue("3") int fpgaAttempts,
+				@DefaultValue("5") int buildAttempts,
 				@DefaultValue("false") boolean dummy) {
 			this.period = period;
 			this.probeInterval = probeInterval;
 			this.powerAttempts = powerAttempts;
 			this.fpgaAttempts = fpgaAttempts;
+			this.buildAttempts = buildAttempts;
 			this.dummy = dummy;
 		}
 
@@ -1183,6 +1193,24 @@ public class SpallocProperties {
 		}
 
 		/**
+		 * Number of attempts that will be made to bring up a transceiver,
+		 * provided the failures are due to timeouts and not outright network
+		 * errors. Note that a failure to bring up a transceiver is lethal to
+		 * the service.
+		 *
+		 * @return Number of attempts that will be made to bring up a
+		 *         transceiver.
+		 */
+		@Positive
+		public int getBuildAttempts() {
+			return buildAttempts;
+		}
+
+		public void setBuildAttempts(int value) {
+			this.buildAttempts = value;
+		}
+
+		/**
 		 * Useful for testing only.
 		 *
 		 * @return Whether to use a dummy transceiver.
@@ -1227,16 +1255,46 @@ public class SpallocProperties {
 		 */
 		private double performanceThreshold;
 
+		/** Number of times to try to take the lock in a transaction. */
+		private int lockTries;
+
+		/** Delay after transaction failure before retrying. */
+		private Duration lockFailedDelay;
+
+		/** Time delay before we issue a warning on transaction end. */
+		private Duration lockNoteThreshold;
+
+		/**
+		 * Time delay before we issue a warning during the execution of a
+		 * transaction.
+		 */
+		private Duration lockWarnThreshold;
+
+		/** Whether to determine the caller when doing transaction logging. */
+		private boolean enableExpensiveTransactionDebugging;
+
 		public DBProperties(@DefaultValue("1s") Duration timeout,
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("400") int analysisLimit,
 				@DefaultValue("false") boolean performanceLog,
-				@DefaultValue("1e6") double performanceThreshold) {
+				@DefaultValue("1e6") double performanceThreshold,
+				@DefaultValue("3") int lockTries,
+				@DefaultValue("100ms") Duration lockFailedDelay,
+				@DefaultValue("50ms") Duration lockNoteThreshold,
+				@DefaultValue("100ms") Duration lockWarnThreshold,
+				@DefaultValue("false") //
+				boolean enableExpensiveTransactionDebugging) {
 			this.timeout = timeout;
 			this.debugFailures = debugFailures;
 			this.analysisLimit = analysisLimit;
 			this.performanceLog = performanceLog;
 			this.performanceThreshold = performanceThreshold;
+			this.lockTries = lockTries;
+			this.lockFailedDelay = lockFailedDelay;
+			this.lockNoteThreshold = lockNoteThreshold;
+			this.lockWarnThreshold = lockWarnThreshold;
+			this.enableExpensiveTransactionDebugging =
+					enableExpensiveTransactionDebugging;
 		}
 
 		/** @return How long to wait to get a database lock. */
@@ -1305,6 +1363,61 @@ public class SpallocProperties {
 		public void setPerformanceThreshold(double threshold) {
 			this.performanceThreshold = threshold;
 		}
+
+		/** @return Number of times to try to take the lock in a transaction. */
+		@Positive
+		public int getLockTries() {
+			return lockTries;
+		}
+
+		public void setLockTries(int lockTries) {
+			this.lockTries = lockTries;
+		}
+
+		/** @return Delay after transaction failure before retrying. */
+		@NotNull
+		public Duration getLockFailedDelay() {
+			return lockFailedDelay;
+		}
+
+		public void setLockFailedDelay(Duration value) {
+			this.lockFailedDelay = value;
+		}
+
+		/** @return Time delay before we issue a warning on transaction end. */
+		@NotNull
+		public Duration getLockNoteThreshold() {
+			return lockNoteThreshold;
+		}
+
+		public void setLockNoteThreshold(Duration value) {
+			this.lockNoteThreshold = value;
+		}
+
+		/**
+		 * @return Time delay before we issue a warning during the execution of
+		 *         a transaction.
+		 */
+		@NotNull
+		public Duration getLockWarnThreshold() {
+			return lockWarnThreshold;
+		}
+
+		public void setLockWarnThreshold(Duration value) {
+			this.lockWarnThreshold = value;
+		}
+
+		/**
+		 * @return Whether to determine the caller when doing transaction
+		 *         logging.
+		 */
+		public boolean isEnableExpensiveTransactionDebugging() {
+			return enableExpensiveTransactionDebugging;
+		}
+
+		public void setEnableExpensiveTransactionDebugging(boolean value) {
+			this.enableExpensiveTransactionDebugging = value;
+		}
 	}
 
 	/** Settings relating to the v1 spalloc configuration interface. */
@@ -1330,6 +1443,16 @@ public class SpallocProperties {
 		/** What port to run the spalloc v1 compatibility service on. */
 		private int port;
 
+		/** How long to wait for the executor to shut down, maximum. */
+		private Duration shutdownTimeout;
+
+		/**
+		 * How long to wait for a message to be received. Making this too short
+		 * makes the service more expensive. Making this too long makes the
+		 * service difficult to shut down correctly.
+		 */
+		private Duration receiveTimeout;
+
 		/**
 		 * What user to run jobs submitted through the spalloc v1 compatibility
 		 * service with. We recommend that this user exists but is disabled
@@ -1337,16 +1460,33 @@ public class SpallocProperties {
 		 */
 		private String serviceUser;
 
+		/**
+		 * How long to pass to the spalloc core to wait for timeouts relating to
+		 * message notifications (i.e., due to machine or job status changes).
+		 */
+		private Duration notifyWaitTime;
+
+		/** The default value for the keepalive property of jobs. */
+		private Duration defaultKeepalive;
+
 		public CompatibilityProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("0") int threadPoolSize,
 				@DefaultValue("0.0.0.0") String host,
 				@DefaultValue("22244") int port,
-				@DefaultValue("") String serviceUser) {
+				@DefaultValue("") String serviceUser,
+				@DefaultValue("2000ms") Duration receiveTimeout,
+				@DefaultValue("3s") Duration shutdownTimeout,
+				@DefaultValue("1m") Duration notifyWaitTime,
+				@DefaultValue("1m") Duration defaultKeepalive) {
 			this.enable = enable;
 			this.threadPoolSize = threadPoolSize;
 			this.host = host;
 			this.port = port;
 			this.serviceUser = serviceUser;
+			this.receiveTimeout = receiveTimeout;
+			this.shutdownTimeout = shutdownTimeout;
+			this.notifyWaitTime = notifyWaitTime;
+			this.defaultKeepalive = defaultKeepalive;
 		}
 
 		/**
@@ -1419,6 +1559,61 @@ public class SpallocProperties {
 		private boolean isValidUserIfEnabled() {
 			return !enable
 					|| (nonNull(serviceUser) && !serviceUser.trim().isEmpty());
+		}
+
+		/**
+		 * @return How long to wait for the executor to shut down, maximum.
+		 */
+		@NotNull
+		public Duration getShutdownTimeout() {
+			return shutdownTimeout;
+		}
+
+		public void setShutdownTimeout(Duration value) {
+			this.shutdownTimeout = value;
+		}
+
+		/**
+		 * Making this too short makes the service more expensive. Making this
+		 * too long makes the service difficult to shut down correctly. (Failure
+		 * to receive in this time triggers an exception, but it needs to be
+		 * fairly frequent or the thread can't be interrupted.)
+		 *
+		 * @return How long to wait for a message to be received.
+		 */
+		@NotNull
+		public Duration getReceiveTimeout() {
+			return receiveTimeout;
+		}
+
+		public void setReceiveTimeout(Duration value) {
+			this.receiveTimeout = value;
+		}
+
+		/**
+		 * @return How long to pass to the spalloc core to wait for timeouts
+		 *         relating to message notifications (i.e., due to machine or
+		 *         job status changes).
+		 */
+		@NotNull
+		public Duration getNotifyWaitTime() {
+			return notifyWaitTime;
+		}
+
+		public void setNotifyWaitTime(Duration value) {
+			this.notifyWaitTime = value;
+		}
+
+		/**
+		 * @return The default value for the keepalive property of jobs.
+		 */
+		@NotNull
+		public Duration getDefaultKeepalive() {
+			return defaultKeepalive;
+		}
+
+		public void setDefaultKeepalive(Duration value) {
+			this.defaultKeepalive = value;
 		}
 	}
 }

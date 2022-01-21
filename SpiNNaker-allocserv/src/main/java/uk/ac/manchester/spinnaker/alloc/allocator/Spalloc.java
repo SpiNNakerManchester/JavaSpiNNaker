@@ -25,6 +25,8 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
+import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
@@ -72,9 +74,9 @@ import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
-import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -96,8 +98,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			"request does not identify an existing board";
 
 	private static final Logger log = getLogger(Spalloc.class);
-
-	private static final int TRIAD_SIZE = 3;
 
 	@Autowired
 	private PowerController powerController;
@@ -666,7 +666,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		private int getArea() {
-			return width * height * TRIAD_SIZE;
+			return width * height * TRIAD_DEPTH;
 		}
 
 		@Override
@@ -1481,9 +1481,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 * @author Donal Fellows
 	 */
 	private final class BoardLocationImpl implements BoardLocation {
-		/** The width and height of a triad, in chips. */
-		private static final int TRIAD_DIMENSION_FACTOR = 12;
-
 		private JobImpl job;
 
 		private final String machineName;
@@ -1536,11 +1533,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		public ChipLocation getChipRelativeTo(ChipLocation rootChip) {
 			int x = chip.getX() - rootChip.getX();
 			if (x < 0) {
-				x += machineWidth * TRIAD_DIMENSION_FACTOR;
+				x += machineWidth * TRIAD_CHIP_SIZE;
 			}
 			int y = chip.getY() - rootChip.getY();
 			if (y < 0) {
-				y += machineHeight * TRIAD_DIMENSION_FACTOR;
+				y += machineHeight * TRIAD_CHIP_SIZE;
 			}
 			return new ChipLocation(x, y);
 		}

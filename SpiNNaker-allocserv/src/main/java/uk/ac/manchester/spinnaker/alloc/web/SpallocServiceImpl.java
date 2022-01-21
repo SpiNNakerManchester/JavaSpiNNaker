@@ -135,6 +135,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		return jobFactory.getObject(j, req.getRemoteHost(), permit, ui);
 	}
 
+	// Could be configurable, but no real point
 	private static final int LIMIT_LIMIT = 200;
 
 	/**

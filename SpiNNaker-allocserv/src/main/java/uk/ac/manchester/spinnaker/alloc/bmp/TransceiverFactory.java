@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
@@ -98,6 +99,9 @@ public class TransceiverFactory
 
 	@Autowired
 	private ServiceMasterControl control;
+
+	@Autowired
+	private TxrxProperties props;
 
 	@PostConstruct
 	private void setup() {
@@ -172,8 +176,6 @@ public class TransceiverFactory
 		}
 	}
 
-	private static final int BUILD_TIMEOUT_TRIES = 5;
-
 	/**
 	 * Build a transceiver connection.
 	 * <p>
@@ -197,7 +199,7 @@ public class TransceiverFactory
 						null, null, null, null, null);
 			} catch (ProcessException e) {
 				if (e.getCause() instanceof BMPSendTimedOutException
-						&& ++count > BUILD_TIMEOUT_TRIES) {
+						&& ++count > props.getBuildAttempts()) {
 					log.error("completely failed to connect to BMP {}; "
 							+ "service is unstable!", data);
 					throw e;

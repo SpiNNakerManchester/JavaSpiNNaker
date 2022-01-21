@@ -89,15 +89,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 class V1TaskImpl extends V1CompatTask {
 	private static final double NS_PER_S = 1e9;
 
-	private static final int ONE_MINUTE = 60;
-
 	private static final int LOTS = 10000;
-
-	private static final Duration NOTIFIER_WAIT_TIME =
-			Duration.ofSeconds(ONE_MINUTE);
-
-	private static final Duration DEFAULT_KEEPALIVE =
-			Duration.ofSeconds(ONE_MINUTE);
 
 	private static final Logger log = getLogger(V1CompatService.class);
 
@@ -202,9 +194,9 @@ class V1TaskImpl extends V1CompatTask {
 	 *            The number to parse. May be {@code null} to get a default.
 	 * @return The duration. Never {@code null}.
 	 */
-	private static Duration parseKeepalive(Number keepalive) {
+	private Duration parseKeepalive(Number keepalive) {
 		if (isNull(keepalive)) {
-			return DEFAULT_KEEPALIVE;
+			return mainProps.getCompat().getDefaultKeepalive();
 		}
 		Duration d = Duration.ofSeconds(keepalive.longValue());
 		if (!(keepalive instanceof Double || keepalive instanceof Float)) {
@@ -400,8 +392,8 @@ class V1TaskImpl extends V1CompatTask {
 		}
 		manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
 			List<Integer> actual = permit.authorize(() -> {
-				spalloc.getJobs(false, LOTS, 0)
-						.waitForChange(NOTIFIER_WAIT_TIME);
+				spalloc.getJobs(false, LOTS, 0).waitForChange(
+						mainProps.getCompat().getNotifyWaitTime());
 				return spalloc.getJobs(false, LOTS, 0).ids();
 			});
 			if (nonNull(jobId)) {
@@ -419,7 +411,8 @@ class V1TaskImpl extends V1CompatTask {
 			getMachine(machine);
 		}
 		manageNotifier(machNotifiers, machine, wantNotify, () -> {
-			epochs.getMachineEpoch().waitForChange(NOTIFIER_WAIT_TIME);
+			epochs.getMachineEpoch()
+					.waitForChange(mainProps.getCompat().getNotifyWaitTime());
 			List<String> actual = new ArrayList<>(
 					permit.authorize(() -> spalloc.getMachines()).keySet());
 			if (nonNull(machine)) {
