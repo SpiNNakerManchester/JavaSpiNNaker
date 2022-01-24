@@ -40,6 +40,8 @@ import static org.sqlite.SQLiteConfig.JournalMode.WAL;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
+import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_MS;
+import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_US;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
@@ -152,10 +154,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final int EXPECTED_NUM_MOVEMENTS = 18;
 
 	private static final int TRIM_PERF_LOG_LENGTH = 120;
-
-	private static final double NS_PER_US = 1000;
-
-	private static final double NS_PER_MS = 1000000;
 
 	private final Path dbPath;
 

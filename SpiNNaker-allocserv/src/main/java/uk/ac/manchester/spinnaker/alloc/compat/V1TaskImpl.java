@@ -22,6 +22,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_S;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
@@ -87,8 +88,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 @Component
 @Prototype
 class V1TaskImpl extends V1CompatTask {
-	private static final double NS_PER_S = 1e9;
-
 	private static final int LOTS = 10000;
 
 	private static final Logger log = getLogger(V1CompatService.class);

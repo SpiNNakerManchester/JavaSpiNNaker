@@ -22,6 +22,7 @@ import static java.lang.reflect.Array.newInstance;
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_S;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -52,8 +53,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
  */
 abstract class Utils {
 	private static final int BASE_TEN = 10;
-
-	private static final double NANOFACTOR = 1e9;
 
 	private static final Logger log = getLogger(V1CompatService.class);
 
@@ -198,7 +197,7 @@ abstract class Utils {
 	 */
 	static double timestamp(Instant instant) {
 		double ts = instant.getEpochSecond();
-		ts += instant.getNano() / NANOFACTOR;
+		ts += instant.getNano() / NS_PER_S;
 		return ts;
 	}
 

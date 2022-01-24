@@ -27,4 +27,13 @@ public interface Constants {
 
 	/** The width and height of a triad, in chips. */
 	int TRIAD_CHIP_SIZE = 12;
+
+	/** Nanoseconds per microsecond. */
+	double NS_PER_US = 1000;
+
+	/** Nanoseconds per millisecond. */
+	double NS_PER_MS = 1000000;
+
+	/** Nanoseconds per second. */
+	double NS_PER_S = 1e9;
 }
