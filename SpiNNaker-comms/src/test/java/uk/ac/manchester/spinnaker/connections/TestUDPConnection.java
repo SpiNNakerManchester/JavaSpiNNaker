@@ -19,11 +19,13 @@ package uk.ac.manchester.spinnaker.connections;
 import static java.util.Collections.emptySet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -43,6 +45,8 @@ public class TestUDPConnection {
 	private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
 	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
+	private static final Integer TIMEOUT = 10000;
+
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
@@ -57,7 +61,11 @@ public class TestUDPConnection {
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
-			result = connection.receiveSCPResponse(null);
+			result = connection.receiveSCPResponse(TIMEOUT);
+		} catch (SocketTimeoutException e) {
+			assertEquals(0, e.bytesTransferred);
+			assumeTrue(false, "timed out (general connectivity issue?)");
+			throw e; // unreachable
 		}
 		Response scpResponse = result.parsePayload(scpReq);
 		System.out.println(scpResponse.versionInfo);
@@ -76,7 +84,11 @@ public class TestUDPConnection {
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
-			result = connection.receiveSCPResponse(null);
+			result = connection.receiveSCPResponse(TIMEOUT);
+		} catch (SocketTimeoutException e) {
+			assertEquals(0, e.bytesTransferred);
+			assumeTrue(false, "timed out (general connectivity issue?)");
+			throw e; // unreachable
 		}
 		assertEquals(result.getResult(), RC_OK);
 	}
@@ -91,7 +103,11 @@ public class TestUDPConnection {
 		try (SCPConnection connection =
 				new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
-			result = connection.receiveSCPResponse(null);
+			result = connection.receiveSCPResponse(TIMEOUT);
+		} catch (SocketTimeoutException e) {
+			assertEquals(0, e.bytesTransferred);
+			assumeTrue(false, "timed out (general connectivity issue?)");
+			throw e; // unreachable
 		}
 		assertEquals(result.getResult(), RC_OK);
 	}
