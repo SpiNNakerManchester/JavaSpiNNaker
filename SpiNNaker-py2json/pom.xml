@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>uk.ac.manchester.spinnaker</groupId>
-		<artifactId>SpiNNaker</artifactId>
+		<artifactId>versions</artifactId>
 		<version>6.0.1-SNAPSHOT</version>
+		<relativePath>../versions</relativePath>
 	</parent>
 	<artifactId>SpiNNaker-py2json</artifactId>
 	<name>Python Configuration to JSON Converter</name>
