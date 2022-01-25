@@ -16,7 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
+
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -29,6 +32,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @EnableWebMvc
 @Configuration
+@Role(ROLE_SUPPORT)
 public class MvcConfig implements WebMvcConfigurer {
 	// TODO check if we should use the url path maker bean
 

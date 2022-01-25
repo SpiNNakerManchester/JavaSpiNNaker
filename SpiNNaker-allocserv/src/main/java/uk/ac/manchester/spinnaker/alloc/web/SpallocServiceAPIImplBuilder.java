@@ -20,6 +20,8 @@ import static java.util.Objects.isNull;
 import static javax.ws.rs.core.Response.accepted;
 import static javax.ws.rs.core.Response.noContent;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
 import java.util.Optional;
 
@@ -31,6 +33,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
@@ -59,6 +62,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
  * factories.
  */
 @Configuration
+@Role(ROLE_SUPPORT)
 class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	private static final Logger log =
 			getLogger(SpallocServiceAPIImplBuilder.class);
@@ -84,6 +88,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	 */
 	@Bean
 	@Prototype
+	@Role(ROLE_APPLICATION)
 	public MachineAPI machine(Machine machine, UriInfo ui) {
 		return new MachineAPI() {
 			@Override
@@ -152,6 +157,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	 */
 	@Bean
 	@Prototype
+	@Role(ROLE_APPLICATION)
 	public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
 		return new JobAPI() {
 			@Override

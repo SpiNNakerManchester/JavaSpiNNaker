@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.time.Instant.now;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 
 @Component
+@Role(ROLE_SUPPORT)
 class MyAuthenticationFailureHandler implements AuthenticationFailureHandler {
 	private static final Logger log =
 			getLogger(MyAuthenticationFailureHandler.class);

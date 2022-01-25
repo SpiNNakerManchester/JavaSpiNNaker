@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -26,6 +27,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +40,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
  */
 @Component
 @Provider
+@Role(ROLE_SUPPORT)
 public class DataAccessExceptionMapper
 		implements ExceptionMapper<DataAccessException> {
 	static final Logger log = getLogger(DataAccessExceptionMapper.class);

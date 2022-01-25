@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.security;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
@@ -30,6 +32,7 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -57,6 +60,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
  * @author Donal Fellows
  */
 @EnableWebSecurity
+@Role(ROLE_APPLICATION)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger log = getLogger(SecurityConfig.class);
@@ -113,6 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 *      Overflow</a>
 	 */
 	@Bean
+	@Role(ROLE_SUPPORT)
 	static X509TrustManager customTrustManager(AuthProperties props)
 			throws IOException, GeneralSecurityException {
 		OpenIDProperties p = props.getOpenid();
@@ -217,6 +222,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
+	@Role(ROLE_SUPPORT)
 	LogoutHandler logoutHandler() {
 		SecurityContextLogoutHandler sclh = new SecurityContextLogoutHandler();
 		sclh.setClearAuthentication(true);

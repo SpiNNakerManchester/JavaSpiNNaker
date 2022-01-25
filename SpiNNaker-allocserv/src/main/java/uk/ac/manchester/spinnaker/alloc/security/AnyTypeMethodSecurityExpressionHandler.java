@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.util.Objects.isNull;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.springframework.context.annotation.Role;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -39,6 +41,7 @@ import org.springframework.stereotype.Component;
  * @see <a href="https://stackoverflow.com/q/66107075/301832">Stack Overflow</a>
  */
 @Component
+@Role(ROLE_INFRASTRUCTURE)
 class AnyTypeMethodSecurityExpressionHandler
 		extends DefaultMethodSecurityExpressionHandler
 		implements MethodSecurityExpressionHandler {

@@ -16,13 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 /** The version of the service. */
 @Service
+@Role(ROLE_SUPPORT)
 public class ServiceVersion {
 	private String fullVersion;
 

@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toSet;
 import static javax.ws.rs.core.Response.status;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
 import java.security.Principal;
 
@@ -31,6 +32,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -44,6 +46,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Provider
+@Role(ROLE_SUPPORT)
 class AccessDeniedExceptionMapper
 		implements ExceptionMapper<AccessDeniedException> {
 	private static final Logger log =

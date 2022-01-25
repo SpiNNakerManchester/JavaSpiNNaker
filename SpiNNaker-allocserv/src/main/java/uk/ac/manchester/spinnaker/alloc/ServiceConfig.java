@@ -30,6 +30,9 @@ import static org.apache.cxf.message.Message.PROTOCOL_HEADERS;
 import static org.apache.cxf.phase.Phase.RECEIVE;
 import static org.apache.cxf.transport.http.AbstractHTTPDestination.HTTP_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +70,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Role;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ViewResolver;
@@ -102,8 +106,14 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @EnableScheduling
 @SpringBootApplication
 @ApplicationPath("spalloc")
+@Role(ROLE_APPLICATION)
 @EnableConfigurationProperties(SpallocProperties.class)
 public class ServiceConfig extends Application {
+	static {
+		// DISABLE IPv6 SUPPORT; SpiNNaker can't use it and it's a pain
+		setProperty("java.net.preferIPv4Stack", "false");
+	}
+
 	private static final Logger log = getLogger(ServiceConfig.class);
 
 	/**
@@ -119,6 +129,7 @@ public class ServiceConfig extends Application {
 	 */
 	@Bean(destroyMethod = "shutdown")
 	@DependsOn("databaseEngine")
+	@Role(ROLE_INFRASTRUCTURE)
 	ScheduledExecutorService scheduledThreadPoolExecutor(
 			@Value("${spring.task.scheduling.pool.size}") int numThreads,
 			TerminationNotifyingThreadFactory threadFactory) {
@@ -133,6 +144,7 @@ public class ServiceConfig extends Application {
 	 *      Overflow</a>
 	 */
 	@Bean("ObjectMapper")
+	@Role(ROLE_INFRASTRUCTURE)
 	JsonMapper mapper() {
 		return JsonMapper.builder().findAndAddModules()
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
@@ -147,6 +159,7 @@ public class ServiceConfig extends Application {
 	 * @return A provider.
 	 */
 	@Bean("JSONProvider")
+	@Role(ROLE_INFRASTRUCTURE)
 	JacksonJsonProvider jsonProvider(ObjectMapper mapper) {
 		JacksonJsonProvider provider = new JacksonJsonProvider();
 		provider.setMapper(mapper);
@@ -170,6 +183,7 @@ public class ServiceConfig extends Application {
 	 */
 	@Bean
 	@Prototype
+	@Role(ROLE_INFRASTRUCTURE)
 	JAXRSServerFactoryBean rawFactory(SpringBus bus,
 			ProtocolUpgraderInterceptor protocolCorrector) {
 		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
@@ -194,6 +208,7 @@ public class ServiceConfig extends Application {
 	 * @author Donal Fellows
 	 */
 	@Component
+	@Role(ROLE_SUPPORT)
 	static class ProtocolUpgraderInterceptor
 			extends AbstractPhaseInterceptor<Message> {
 		ProtocolUpgraderInterceptor() {
@@ -237,6 +252,7 @@ public class ServiceConfig extends Application {
 
 	@Provider
 	@Component
+	@Role(ROLE_INFRASTRUCTURE)
 	static class ValidationExceptionMapper
 			implements ExceptionMapper<ValidationException> {
 		@Override
@@ -279,6 +295,7 @@ public class ServiceConfig extends Application {
 	 * @author Donal Fellows
 	 */
 	@Component
+	@Role(ROLE_SUPPORT)
 	public static final class URLPathMaker {
 		@Value("${spring.mvc.servlet.path}")
 		private String mvcServletPath;
@@ -325,41 +342,48 @@ public class ServiceConfig extends Application {
 
 	// Exported so we can use a short name in SpEL in @Scheduled annotations
 	@Bean
+	@Role(ROLE_SUPPORT)
 	AllocatorProperties allocatorProperties(SpallocProperties properties) {
 		return properties.getAllocator();
 	}
 
 	// Exported so we can use a short name in SpEL in @Scheduled annotations
 	@Bean
+	@Role(ROLE_SUPPORT)
 	KeepaliveProperties keepaliveProperties(SpallocProperties properties) {
 		return properties.getKeepalive();
 	}
 
 	// Exported so we can use a short name in SpEL in @Scheduled annotations
 	@Bean
+	@Role(ROLE_SUPPORT)
 	HistoricalDataProperties historyProperties(SpallocProperties properties) {
 		return properties.getHistoricalData();
 	}
 
 	// Exported so we can use a short name in SpEL in @Scheduled annotations
 	@Bean
+	@Role(ROLE_SUPPORT)
 	QuotaProperties quotaProperties(SpallocProperties properties) {
 		return properties.getQuota();
 	}
 
 	// Exported so we can use a short name in SpEL in @Scheduled annotations
 	@Bean
+	@Role(ROLE_SUPPORT)
 	TxrxProperties txrxProperties(SpallocProperties properties) {
 		return properties.getTransceiver();
 	}
 
 	// Exported so we can use a short name in SpEL in @Scheduled annotations
 	@Bean
+	@Role(ROLE_SUPPORT)
 	AuthProperties authProperties(SpallocProperties properties) {
 		return properties.getAuth();
 	}
 
 	@Bean
+	@Role(ROLE_SUPPORT)
 	ViewResolver jspViewResolver() {
 		InternalResourceViewResolver bean = new InternalResourceViewResolver() {
 			@Override
@@ -406,8 +430,6 @@ public class ServiceConfig extends Application {
 	 *            Command line arguments.
 	 */
 	public static void main(String[] args) {
-		// DISABLE IPv6 SUPPORT; SpiNNaker can't use it and it's a pain
-		setProperty("java.net.preferIPv4Stack", "false");
 		SpringApplication.run(ServiceConfig.class, args);
 	}
 }

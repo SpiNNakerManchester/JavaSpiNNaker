@@ -18,10 +18,12 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.defaultThreadFactory;
+import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Component;
  * @author Donal Fellows
  */
 @Component
+@Role(ROLE_INFRASTRUCTURE)
 public class TerminationNotifyingThreadFactory implements ThreadFactory {
 	private ThreadFactory realThreadFactory;
 
