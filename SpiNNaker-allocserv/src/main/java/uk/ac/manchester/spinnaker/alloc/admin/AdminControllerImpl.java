@@ -135,7 +135,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	private static URI uri(Object selfCall) {
 		// No template variables in the overall controller, so can factor out
-		return fromMethodCall(selfCall).buildAndExpand().toUri();
+		return fromMethodCall(selfCall).query(null).buildAndExpand().toUri();
 	}
 
 	/**
@@ -268,7 +268,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 		mav.addObject(USER_OBJ, user.get().sanitise());
 		mav.addObject("deleteUri", uri(SELF.deleteUser(id, null)));
-		mav.addObject("addQuotaUri", uri(SELF.adjustQuota(id, null, 0)));
+		mav.addObject("addQuotaUri", uri(SELF.adjustQuota(id, "", 0)));
 		return addStandardContext(mav);
 	}
 
@@ -329,6 +329,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView adjustQuota(@PathVariable int id,
 			@RequestParam String machine,
 			@RequestParam int delta) {
+		if (isNull(machine)) {
+			return errors("machine must be specified");
+		}
 		try {
 			quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
 			log.info("adjusted quota for user ID={} machine={} delta={}", id,
