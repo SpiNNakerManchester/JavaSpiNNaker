@@ -179,7 +179,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	public final Authentication authenticate(Authentication auth)
+	public Authentication authenticate(Authentication auth)
 			throws AuthenticationException {
 		if (isNull(auth)) {
 			return null;
@@ -244,7 +244,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	};
 
 	@Override
-	public final boolean supports(Class<?> cls) {
+	public boolean supports(Class<?> cls) {
 		for (Class<?> c : SUPPORTED_AUTH_TOKEN_CLASSES) {
 			if (c.isAssignableFrom(cls)) {
 				return true;
