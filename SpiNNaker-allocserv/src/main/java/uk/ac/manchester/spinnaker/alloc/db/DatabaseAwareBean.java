@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.util.Objects.requireNonNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult;
@@ -99,7 +101,7 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 
 		/** Manage a connection ourselves. */
 		protected AbstractSQL() {
-			conn = db.getConnection();
+			conn = requireNonNull(db, "DatabaseEngine not set").getConnection();
 			doClose = true;
 		}
 
@@ -110,7 +112,7 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 		 *            The connection to piggy-back onto.
 		 */
 		protected AbstractSQL(Connection conn) {
-			this.conn = conn;
+			this.conn = requireNonNull(conn, "a connection must be given");
 			doClose = false;
 		}
 
