@@ -32,8 +32,12 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
  */
 public abstract class DatabaseAwareBean extends SQLQueries {
 	/** The application database. */
-	@Autowired
 	private DatabaseEngine db;
+
+	@Autowired
+	public final void setDatabaseEngine(DatabaseEngine db) {
+		this.db = requireNonNull(db, "DatabaseEngine must not be null");
+	}
 
 	/**
 	 * Get a connection to the application database. Connections <em>may</em> be
