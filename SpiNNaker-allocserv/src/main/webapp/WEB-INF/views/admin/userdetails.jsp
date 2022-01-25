@@ -47,29 +47,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<br>
 	Last failed login: ${ user.lastFailedLogin }
 	<p>
-	<c:if test="${ not empty user.quota }">
-		<table>
-			<thead>
-				<tr>
-					<th colspan="2">Quotas</th>
-				</tr>
-				<tr>
-					<th>Machine</th>
-					<th>Remaining (board seconds)
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach items="${ user.quota }" var="q">
-					<tr>
-						<td> <c:out value="${ q.key }" escapeXml="true" /> </td>
-						<td> ${ q.value } </td>
-					</tr>
-					<%-- FIXME add support for editing user quotas --%>
-				</c:forEach>
-			</tbody>
-		</table>
-		<p>
-	</c:if>
 	<input type="submit" value="Update" />
 </form:form>
 <p>
@@ -77,6 +54,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<sec:csrfInput />
 	<input type="submit" class="warningbutton" value="Delete this user" />
 </form>
+
+<c:if test="${ not empty user.quota }">
+	<h2>Quotas</h2>
+	<table>
+		<thead>
+			<tr>
+				<th colspan="2">Quotas</th>
+			</tr>
+			<tr>
+				<th>Machine</th>
+				<th>Remaining (board seconds)
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach items="${ user.quota }" var="q">
+				<tr>
+					<td>
+						<c:out value="${ q.key }" escapeXml="true" />
+					</td>
+					<td>
+						<form method="POST" action="${ addQuotaUri }">
+							<sec:csrfInput />
+							<input name="machine" value="<c:out value="${ q.key }" escapeXml="true" />" type="hidden"/>
+							${ q.value }
+							<br>
+							Add Board-Hours
+							<button name="delta" value="1" type="submit">+1</button>
+							<button name="delta" value="10" type="submit">+10</button>
+							<button name="delta" value="100" type="submit">+100</button>
+							<br>
+							Remove Board-Hours
+							<button name="delta" value="-1" type="submit">-1</button>
+							<button name="delta" value="-10" type="submit">-10</button>
+							<button name="delta" value="-100" type="submit">-100</button>
+						</form>
+					</td>
+				</tr>
+			</c:forEach>
+		</tbody>
+	</table>
+</c:if>
 <p>
 
 <jsp:include page="footer.jsp" />

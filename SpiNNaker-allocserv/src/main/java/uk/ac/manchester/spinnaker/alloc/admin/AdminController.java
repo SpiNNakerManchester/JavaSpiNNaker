@@ -61,6 +61,9 @@ public interface AdminController {
 	/** Path to single-user-deletion operation. */
 	String USER_DELETE_PATH = USER_PATH + "/delete";
 
+	/** Path to quota-adjustment operation. */
+	String USER_QUOTA_PATH = USER_PATH + "/adjust-quota";
+
 	/** Path to boards operations. */
 	String BOARDS_PATH = "/boards";
 
@@ -147,6 +150,22 @@ public interface AdminController {
 	 */
 	@PostMapping(USER_DELETE_PATH)
 	ModelAndView deleteUser(@PathVariable("id") int id, Principal principal);
+
+	/**
+	 * Adjust the quota of a user.
+	 *
+	 * @param id
+	 *            The user ID to adjust
+	 * @param machine
+	 *            For which machine are we to adjust the user's quota?
+	 * @param delta
+	 *            By how much are we to adjust the quota. In
+	 *            <em>board-hours</em>.
+	 * @return the model and view
+	 */
+	@PostMapping(USER_QUOTA_PATH)
+	ModelAndView adjustQuota(@PathVariable int id, @RequestParam String machine,
+			@RequestParam int delta);
 
 	/**
 	 * UI for boards.

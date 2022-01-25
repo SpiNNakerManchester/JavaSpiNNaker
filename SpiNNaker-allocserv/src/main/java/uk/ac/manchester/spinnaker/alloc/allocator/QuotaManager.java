@@ -131,6 +131,38 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Adjust a user's quota on a particular machine.
+	 *
+	 * @param userId
+	 *            Which user's quota to change
+	 * @param machineName
+	 *            What machine to change for
+	 * @param delta
+	 *            Amount to change by, in board-seconds
+	 * @return The number of quotas modified
+	 */
+	public int addQuota(int userId, String machineName, int delta) {
+		try (AdjustQuotaSQL sql = new AdjustQuotaSQL()) {
+			return sql.transaction(
+					() -> sql.adjustQuota(userId, machineName, delta));
+		}
+	}
+
+	private class AdjustQuotaSQL extends AbstractSQL {
+		private final Update adjustQuota = conn.update(ADJUST_QUOTA);
+
+		@Override
+		public void close() {
+			adjustQuota.close();
+			super.close();
+		}
+
+		private Integer adjustQuota(int userId, String machineName, int delta) {
+			return adjustQuota.call(delta, machineName, userId);
+		}
+	}
+
+	/**
 	 * Consolidates usage from finished jobs onto quotas. Runs hourly.
 	 */
 	@Scheduled(cron = "#{quotaProperties.consolidationSchedule}")

@@ -896,6 +896,23 @@ public abstract class SQLQueries {
 			"UPDATE jobs SET accounted_for = 1 WHERE job_id = :job_id";
 
 	/**
+	 * Add or remove time from a quota. Used when someone's administratively
+	 * adjusting the quota.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("delta")
+	@Parameter("machine_name")
+	@Parameter("user_id")
+	protected static final String ADJUST_QUOTA = "UPDATE quotas "
+			+ "SET quota = max(0, quota + :delta) "
+			+ "FROM (SELECT machine_id FROM machines "
+			+ "WHERE machine_name = :machine_name) AS machines "
+			+ "WHERE user_id = :user_id "
+			+ "AND quotas.machine_id = machines.machine_id "
+			+ "AND quota IS NOT NULL";
+
+	/**
 	 * Get details about a user. This is pretty much everything except their
 	 * password.
 	 *
@@ -1177,6 +1194,7 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	@Parameter("issue")
 	@Parameter("user_id")
+	@GeneratesID
 	protected static final String INSERT_BOARD_REPORT =
 			"INSERT INTO board_reports("
 					+ "board_id, job_id, reported_issue, reporter) "

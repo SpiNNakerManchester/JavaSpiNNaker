@@ -61,6 +61,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -110,6 +111,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Autowired
 	private SpallocAPI spalloc;
+
+	@Autowired
+	private QuotaManager quotaManager;
 
 	private List<String> getMachineNames() {
 		try (Connection conn = getConnection();
@@ -264,6 +268,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 		mav.addObject(USER_OBJ, user.get().sanitise());
 		mav.addObject("deleteUri", uri(SELF.deleteUser(id, null)));
+		mav.addObject("addQuotaUri", uri(SELF.adjustQuota(id, null, 0)));
 		return addStandardContext(mav);
 	}
 
@@ -314,6 +319,25 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 		mav.addObject(USER_OBJ, new UserRecord());
 		return addStandardContext(mav);
+	}
+
+	/** One board-hour in board-seconds. */
+	private static final int BOARD_HOUR = 3600;
+
+	@Override
+	@PostMapping(USER_QUOTA_PATH)
+	public ModelAndView adjustQuota(@PathVariable int id,
+			@RequestParam String machine,
+			@RequestParam int delta) {
+		try {
+			quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
+			log.info("adjusted quota for user ID={} machine={} delta={}", id,
+					machine, delta);
+			return new ModelAndView(
+					"redirect:" + uri(SELF.showUserForm(id)).getPath());
+		} catch (DataAccessException e) {
+			return errors("database access failed: " + e.getMessage());
+		}
 	}
 
 	@Override

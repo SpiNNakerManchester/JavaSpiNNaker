@@ -487,6 +487,17 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
+	void adjustQuota() {
+		assumeWritable(c);
+		try (Update u = c.update(ADJUST_QUOTA)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(0, "", NO_USER));
+			});
+		}
+	}
+
+	@Test
 	void markLoginSuccess() {
 		assumeWritable(c);
 		try (Update u = c.update(MARK_LOGIN_SUCCESS)) {
