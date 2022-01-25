@@ -164,8 +164,9 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@PostMapping(USER_QUOTA_PATH)
-	ModelAndView adjustQuota(@PathVariable int id, @RequestParam String machine,
-			@RequestParam int delta);
+	ModelAndView adjustQuota(@PathVariable("id") int id,
+			@RequestParam("machine") String machine,
+			@RequestParam("delta") int delta);
 
 	/**
 	 * UI for boards.

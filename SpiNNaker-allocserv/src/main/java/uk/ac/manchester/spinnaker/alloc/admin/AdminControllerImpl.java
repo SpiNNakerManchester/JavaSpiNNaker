@@ -326,9 +326,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@PostMapping(USER_QUOTA_PATH)
-	public ModelAndView adjustQuota(@PathVariable int id,
-			@RequestParam String machine,
-			@RequestParam int delta) {
+	public ModelAndView adjustQuota(@PathVariable("id") int id,
+			@RequestParam("machine") String machine,
+			@RequestParam("delta") int delta) {
 		if (isNull(machine)) {
 			return errors("machine must be specified");
 		}
