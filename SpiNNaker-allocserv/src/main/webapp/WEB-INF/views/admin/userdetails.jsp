@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<form method="POST" action="${ addQuotaUri }">
 							<sec:csrfInput />
 							<input name="machine" value="<c:out value="${ q.key }" escapeXml="true" />" type="hidden"/>
-							${ q.value }
+							${ q.value / 3600.0 } board-hours
 							<br>
 							Add Board-Hours
 							<button name="delta" value="1" type="submit">+1</button>
