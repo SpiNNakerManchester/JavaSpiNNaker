@@ -20,12 +20,12 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
-import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MVC_ERROR;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
 
 import java.io.IOException;
@@ -57,7 +57,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
@@ -82,6 +81,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		implements AdminController {
 	private static final Logger log = getLogger(AdminControllerImpl.class);
 
+	// These are paths below src/main/webapp/WEB-INF/views
 	private static final String MAIN_VIEW = "admin/index";
 
 	private static final String USER_LIST_VIEW = "admin/listusers";
@@ -99,6 +99,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private static final String BOARD_OBJ = "board";
 
 	private static final String MACHINE_LIST_OBJ = "machineNames";
+
+	private static final String DEFINED_MACHINES_OBJ = "definedMachines";
 
 	@Autowired
 	private UserControl userController;
@@ -127,18 +129,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	/**
-	 * Special delegate for building URIs only.
-	 *
-	 * @see MvcUriComponentsBuilder#fromMethodCall(Object)
-	 */
-	private static final AdminController SELF = on(AdminController.class);
-
-	private static URI uri(Object selfCall) {
-		// No template variables in the overall controller, so can factor out
-		return fromMethodCall(selfCall).query(null).buildAndExpand().toUri();
-	}
-
-	/**
 	 * All models should contain a common set of attributes that describe where
 	 * the view is rendering and where other parts of the admin interface are.
 	 *
@@ -149,10 +139,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private static ModelAndView addStandardContext(ModelAndView mav) {
 		mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
 		mav.addObject("trustLevels", TrustLevel.values());
-		mav.addObject("usersUri", uri(SELF.listUsers()));
-		mav.addObject("createUserUri", uri(SELF.getUserCreationForm()));
-		mav.addObject("boardsUri", uri(SELF.boards()));
-		mav.addObject("machineUri", uri(SELF.machineUploadForm()));
+		mav.addObject("usersUri", uri(on(AdminController.class).listUsers()));
+		mav.addObject("createUserUri",
+				uri(on(AdminController.class).getUserCreationForm()));
+		mav.addObject("boardsUri", uri(on(AdminController.class).boards()));
+		mav.addObject("machineUri",
+				uri(on(AdminController.class).machineUploadForm()));
 		Authentication auth =
 				SecurityContextHolder.getContext().getAuthentication();
 		mav.addObject(USER_MAY_CHANGE_PASSWORD,
@@ -187,8 +179,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private static ModelAndView errors(String message) {
-		return addStandardContext(
-				new ModelAndView(MVC_ERROR, "error", message));
+		return addStandardContext(error(message));
+	}
+
+	private static ModelAndView errors(DataAccessException exception) {
+		return addStandardContext(error("database access failed: "
+				+ exception.getMostSpecificCause().getMessage()));
 	}
 
 	private static ModelAndView errors(BindingResult result) {
@@ -213,9 +209,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		try {
 			userController.listUsers()
 					.forEach(user -> result.put(user.getUserName(),
-							uri(SELF.showUserForm(user.getUserId()))));
+							uri(on(AdminController.class)
+									.showUserForm(user.getUserId()))));
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 
 		return addStandardContext(new ModelAndView(USER_LIST_VIEW, "userlist",
@@ -242,7 +239,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		try {
 			realUser = userController.createUser(user);
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 		if (!realUser.isPresent()) {
 			return errors("user creation failed (duplicate username?)");
@@ -250,7 +247,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		int id = realUser.get().getUserId();
 		log.info("created user ID={} username={}", id,
 				realUser.get().getUserName());
-		return addStandardContext(uri(SELF.showUserForm(id)));
+		return addStandardContext(
+				uri(on(AdminController.class).showUserForm(id)));
 	}
 
 	@Override
@@ -264,11 +262,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				return errors("no such user");
 			}
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 		mav.addObject(USER_OBJ, user.get().sanitise());
-		mav.addObject("deleteUri", uri(SELF.deleteUser(id, null)));
-		mav.addObject("addQuotaUri", uri(SELF.adjustQuota(id, "", 0)));
+		mav.addObject("deleteUri",
+				uri(on(AdminController.class).deleteUser(id, null)));
+		mav.addObject("addQuotaUri",
+				uri(on(AdminController.class).adjustQuota(id, "", 0)));
 		return addStandardContext(mav);
 	}
 
@@ -287,7 +287,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			log.info("updating user ID={}", id);
 			updatedUser = userController.updateUser(id, user, adminUser);
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 		if (!updatedUser.isPresent()) {
 			return errors("no such user");
@@ -301,8 +301,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@PostMapping(USER_DELETE_PATH)
 	public ModelAndView deleteUser(@PathVariable("id") int id,
 			Principal principal) {
-		ModelAndView mav = new ModelAndView(
-				"redirect:" + uri(SELF.listUsers()).getPath());
+		ModelAndView mav =
+				addStandardContext(uri(on(AdminController.class).listUsers()));
 		String adminUser = principal.getName();
 		try {
 			Optional<String> deletedUsername =
@@ -315,7 +315,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			// Not sure that these are the correct place
 			mav.addObject("notice", "deleted " + deletedUsername.get());
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 		mav.addObject(USER_OBJ, new UserRecord());
 		return addStandardContext(mav);
@@ -336,10 +336,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
 			log.info("adjusted quota for user ID={} machine={} delta={}", id,
 					machine, delta);
-			return new ModelAndView(
-					"redirect:" + uri(SELF.showUserForm(id)).getPath());
+			return addStandardContext(
+					uri(on(AdminController.class).showUserForm(id)));
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 	}
 
@@ -379,7 +379,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				throw new UnsupportedOperationException("bad address");
 			}
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 		if (isNull(bs)) {
 			return errors("no such board");
@@ -407,7 +407,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				spalloc.purgeDownCache();
 			}
 		} catch (DataAccessException e) {
-			return errors("database access failed: " + e.getMessage());
+			return errors(e);
 		}
 		model.put(BOARD_OBJ, bs);
 		model.put(MACHINE_LIST_OBJ, getMachineNames());
@@ -432,12 +432,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				machineDefiner.loadMachineDefinition(m);
 				log.info("defined machine {}", m.getName());
 			}
-		} catch (IOException | DataAccessException e) {
+		} catch (DataAccessException e) {
+			return errors(e);
+		} catch (IOException e) {
 			return errors("problem with processing file: " + e.getMessage());
 		}
 		ModelAndView mav = new ModelAndView(MACHINE_VIEW);
 		mav.addObject(MACHINE_LIST_OBJ, getMachineNames());
-		mav.addObject("definedMachines", machines);
+		mav.addObject(DEFINED_MACHINES_OBJ, machines);
 		return addStandardContext(mav);
 	}
 }

@@ -81,9 +81,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	public static final String IS_USER = "hasRole('USER')";
 
-	/** The name of the Spring MVC error view. */
-	public static final String MVC_ERROR = "erroroccurred";
-
 	private static final String SESSION_COOKIE = "JSESSIONID";
 
 	// ------------------------------------------------------------------------

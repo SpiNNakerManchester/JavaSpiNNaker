@@ -21,12 +21,11 @@ import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
-import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MVC_ERROR;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
@@ -51,7 +50,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
@@ -87,13 +85,6 @@ public class SystemControllerImpl implements SystemController {
 
 	private static final String JOB_VIEW = "jobdetails";
 
-	/**
-	 * Special delegate for building URIs only.
-	 *
-	 * @see MvcUriComponentsBuilder#fromMethodCall(Object)
-	 */
-	private static final SystemController SELF = on(SystemController.class);
-
 	@Autowired
 	private SpallocAPI spallocCore;
 
@@ -108,11 +99,6 @@ public class SystemControllerImpl implements SystemController {
 
 	@Autowired
 	private ServiceVersion version;
-
-	private static URI uri(Object selfCall) {
-		// No template variables in the overall controller, so can factor out
-		return fromMethodCall(selfCall).buildAndExpand().toUri();
-	}
 
 	private ModelAndView view(String name) {
 		Authentication auth =
@@ -130,9 +116,28 @@ public class SystemControllerImpl implements SystemController {
 	@Override
 	@GetMapping("/")
 	public ModelAndView index() {
-		return view(MAIN_VIEW)
-				.addObject("version", version.getFullVersion())
+		return view(MAIN_VIEW).addObject("version", version.getFullVersion())
 				.addObject("build", version.getBuildTimestamp());
+	}
+
+	private static ModelAndView problem(Exception e) {
+		return problem(e, new Permit(getContext()));
+	}
+
+	private static ModelAndView problem(Exception e, Permit permit) {
+		String message;
+		if (e instanceof AuthenticationException) {
+			message = "authentication problem";
+		} else if (e instanceof DataAccessException) {
+			message = "database problem";
+		} else {
+			message = "general problem";
+		}
+		if (permit.admin) {
+			return error(message + ": " + e.getMessage());
+		} else {
+			return error(message);
+		}
 	}
 
 	@Override
@@ -142,7 +147,8 @@ public class SystemControllerImpl implements SystemController {
 			return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
 					userControl.getUserForPrincipal(principal));
 		} catch (AuthenticationException | DataAccessException e) {
-			return view(MVC_ERROR);
+			log.error("couldn't get view for password change", e);
+			return problem(e);
 		}
 	}
 
@@ -152,14 +158,21 @@ public class SystemControllerImpl implements SystemController {
 			@Valid @ModelAttribute("user") PasswordChangeRecord user,
 			BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
-			return view(MVC_ERROR);
+			if (result.hasGlobalErrors()) {
+				return error(result.getGlobalError().toString());
+			}
+			if (result.hasFieldErrors()) {
+				return error(result.getFieldError().toString());
+			}
+			return error("unknown error");
 		}
 		log.info("changing password for {}", principal.getName());
 		try {
 			return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
 					userControl.updateUserOfPrincipal(principal, user));
 		} catch (AuthenticationException | DataAccessException e) {
-			return view(MVC_ERROR);
+			log.error("couldn't change password", e);
+			return problem(e);
 		}
 	}
 
@@ -181,12 +194,12 @@ public class SystemControllerImpl implements SystemController {
 	public ModelAndView getMachineList() {
 		try {
 			List<MachineListEntryRecord> table = spallocCore.listMachines();
-			table.forEach(rec -> rec
-					.setDetailsUrl(uri(SELF.getMachineInfo(rec.getName()))));
+			table.forEach(rec -> rec.setDetailsUrl(uri(
+					on(SystemController.class).getMachineInfo(rec.getName()))));
 			return view(MACHINE_LIST_VIEW, "machineList", table);
 		} catch (DataAccessException e) {
-			log.error("database problem", e);
-			return view(MVC_ERROR);
+			log.error("database problem when listing machines", e);
+			return problem(e);
 		}
 	}
 
@@ -200,11 +213,12 @@ public class SystemControllerImpl implements SystemController {
 							() -> new ResponseStatusException(NOT_FOUND));
 			// Owners and admins may drill down further into jobs
 			mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
-					.forEach(j -> j.setUrl(uri(SELF.getJobInfo(j.getId()))));
+					.forEach(j -> j.setUrl(uri(
+							on(SystemController.class).getJobInfo(j.getId()))));
 			return view(MACHINE_VIEW, "machine", mach);
 		} catch (DataAccessException e) {
-			log.error("database problem", e);
-			return view(MVC_ERROR);
+			log.error("database problem when getting machine details", e);
+			return problem(e, permit);
 		}
 	}
 
@@ -215,14 +229,15 @@ public class SystemControllerImpl implements SystemController {
 		try {
 			List<JobListEntryRecord> table = spallocCore.listJobs(permit);
 			table.forEach(entry -> {
-				entry.setDetailsUrl(uri(SELF.getJobInfo(entry.getId())));
-				entry.setMachineUrl(
-						uri(SELF.getMachineInfo(entry.getMachineName())));
+				entry.setDetailsUrl(uri(
+						on(SystemController.class).getJobInfo(entry.getId())));
+				entry.setMachineUrl(uri(on(SystemController.class)
+						.getMachineInfo(entry.getMachineName())));
 			});
 			return view(JOB_LIST_VIEW, "jobList", table);
 		} catch (DataAccessException e) {
-			log.error("database problem", e);
-			return view(MVC_ERROR);
+			log.error("database problem when listing jobs", e);
+			return problem(e, permit);
 		}
 	}
 
@@ -236,11 +251,12 @@ public class SystemControllerImpl implements SystemController {
 			if (nonNull(mach.getRequestBytes())) {
 				mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
 			}
-			mach.setMachineUrl(uri(SELF.getMachineInfo(mach.getMachine())));
+			mach.setMachineUrl(uri(on(SystemController.class)
+					.getMachineInfo(mach.getMachine())));
 			return view(JOB_VIEW, "job", mach);
 		} catch (DataAccessException e) {
-			log.error("database problem", e);
-			return view(MVC_ERROR);
+			log.error("database problem when getting job details", e);
+			return problem(e, permit);
 		}
 	}
 }
