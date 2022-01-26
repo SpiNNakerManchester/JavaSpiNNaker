@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <body>
 
 <h1>SpiNNaker Machine</h1>
+<%-- TODO: splash a warning if the current user has no quota on this machine --%>
+
 <table>
 	<tr>
 		<th class="lineTitle">Name:</th>

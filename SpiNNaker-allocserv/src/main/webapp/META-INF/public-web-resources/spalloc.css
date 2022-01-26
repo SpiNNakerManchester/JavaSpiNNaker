@@ -43,6 +43,14 @@ canvas.overlink {
 	cursor: pointer;
 }
 
+.quotawarning {
+	font-style: italic;
+	color: #800000;
+	background-color: #ffffe0;
+	border: 2px solid red;
+	border-radius: 3px;
+}
+
 /* Used to mark columns of tables as semantically containing numbers or text. */
 .numberColumn {
 	text-align: right;
