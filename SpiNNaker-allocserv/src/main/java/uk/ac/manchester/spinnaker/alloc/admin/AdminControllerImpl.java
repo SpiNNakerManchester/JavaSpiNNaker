@@ -57,6 +57,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
@@ -134,22 +135,60 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *
 	 * @param mav
 	 *            The model-and-view.
+	 * @param attrs
+	 *            The redirect attributes, or {@code null} if this is not a
+	 *            redirect.
+	 * @return The enhanced model-and-view.
+	 */
+	private static ModelAndView addStandardContext(ModelAndView mav,
+			RedirectAttributes attrs) {
+		if (attrs != null) {
+			attrs.addFlashAttribute("baseuri",
+					fromCurrentRequestUri().toUriString());
+			attrs.addFlashAttribute("trustLevels", TrustLevel.values());
+			attrs.addFlashAttribute("usersUri",
+					uri(on(AdminController.class).listUsers()));
+			attrs.addFlashAttribute("createUserUri",
+					uri(on(AdminController.class).getUserCreationForm()));
+			attrs.addFlashAttribute("boardsUri",
+					uri(on(AdminController.class).boards()));
+			attrs.addFlashAttribute("machineUri",
+					uri(on(AdminController.class).machineUploadForm()));
+			Authentication auth =
+					SecurityContextHolder.getContext().getAuthentication();
+			attrs.addFlashAttribute(USER_MAY_CHANGE_PASSWORD,
+					auth instanceof UsernamePasswordAuthenticationToken);
+		} else {
+			mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
+			mav.addObject("trustLevels", TrustLevel.values());
+			mav.addObject("usersUri",
+					uri(on(AdminController.class).listUsers()));
+			mav.addObject("createUserUri",
+					uri(on(AdminController.class).getUserCreationForm()));
+			mav.addObject("boardsUri", uri(on(AdminController.class).boards()));
+			mav.addObject("machineUri",
+					uri(on(AdminController.class).machineUploadForm()));
+			Authentication auth =
+					SecurityContextHolder.getContext().getAuthentication();
+			mav.addObject(USER_MAY_CHANGE_PASSWORD,
+					auth instanceof UsernamePasswordAuthenticationToken);
+		}
+		return mav;
+	}
+
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
+	 *
+	 * @param mav
+	 *            The model-and-view.
+	 * @param attrs
+	 *            The redirect attributes, or {@code null} if this is not a
+	 *            redirect.
 	 * @return The enhanced model-and-view.
 	 */
 	private static ModelAndView addStandardContext(ModelAndView mav) {
-		mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
-		mav.addObject("trustLevels", TrustLevel.values());
-		mav.addObject("usersUri", uri(on(AdminController.class).listUsers()));
-		mav.addObject("createUserUri",
-				uri(on(AdminController.class).getUserCreationForm()));
-		mav.addObject("boardsUri", uri(on(AdminController.class).boards()));
-		mav.addObject("machineUri",
-				uri(on(AdminController.class).machineUploadForm()));
-		Authentication auth =
-				SecurityContextHolder.getContext().getAuthentication();
-		mav.addObject(USER_MAY_CHANGE_PASSWORD,
-				auth instanceof UsernamePasswordAuthenticationToken);
-		return mav;
+		return addStandardContext(mav, null);
 	}
 
 	/**
@@ -162,29 +201,30 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 * @return The model-and-view.
 	 */
 	private static ModelAndView addStandardContext(String viewName) {
-		return addStandardContext(new ModelAndView(viewName));
+		return addStandardContext(new ModelAndView(viewName), null);
 	}
 
 	/**
-	 * All models should contain a common set of attributes that describe where
-	 * the view is rendering and where other parts of the admin interface are.
+	 * Construct a model-and-view which will redirect to a target URL. All
+	 * models should contain a common set of attributes that describe where the
+	 * view is rendering and where other parts of the admin interface are.
 	 *
 	 * @param uri
 	 *            The URI to redirect to. Only the path is currently used.
 	 * @return The model-and-view.
 	 */
-	private static ModelAndView addStandardContext(URI uri) {
-		return addStandardContext(
-				new ModelAndView("redirect:" + uri.getPath()));
+	private static ModelAndView redirectTo(URI uri, RedirectAttributes attrs) {
+		return addStandardContext(new ModelAndView("redirect:" + uri.getPath()),
+				attrs);
 	}
 
 	private static ModelAndView errors(String message) {
-		return addStandardContext(error(message));
+		return addStandardContext(error(message), null);
 	}
 
 	private static ModelAndView errors(DataAccessException exception) {
 		return addStandardContext(error("database access failed: "
-				+ exception.getMostSpecificCause().getMessage()));
+				+ exception.getMostSpecificCause().getMessage()), null);
 	}
 
 	private static ModelAndView errors(BindingResult result) {
@@ -230,7 +270,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@PostMapping(CREATE_USER_PATH)
 	public ModelAndView createUser(
 			@Valid @ModelAttribute(USER_OBJ) UserRecord user,
-			BindingResult result, ModelMap model) {
+			BindingResult result, ModelMap model, RedirectAttributes attrs) {
 		if (result.hasErrors()) {
 			return errors(result);
 		}
@@ -247,8 +287,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		int id = realUser.get().getUserId();
 		log.info("created user ID={} username={}", id,
 				realUser.get().getUserName());
-		return addStandardContext(
-				uri(on(AdminController.class).showUserForm(id)));
+		return redirectTo(uri(on(AdminController.class).showUserForm(id)),
+				attrs);
 	}
 
 	@Override
@@ -266,9 +306,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 		mav.addObject(USER_OBJ, user.get().sanitise());
 		mav.addObject("deleteUri",
-				uri(on(AdminController.class).deleteUser(id, null)));
+				uri(on(AdminController.class).deleteUser(id, null, null)));
 		mav.addObject("addQuotaUri",
-				uri(on(AdminController.class).adjustQuota(id, "", 0)));
+				uri(on(AdminController.class).adjustQuota(id, "", 0, null)));
 		return addStandardContext(mav);
 	}
 
@@ -300,9 +340,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@PostMapping(USER_DELETE_PATH)
 	public ModelAndView deleteUser(@PathVariable("id") int id,
-			Principal principal) {
+			Principal principal, RedirectAttributes attrs) {
 		ModelAndView mav =
-				addStandardContext(uri(on(AdminController.class).listUsers()));
+				redirectTo(uri(on(AdminController.class).listUsers()), attrs);
 		String adminUser = principal.getName();
 		try {
 			Optional<String> deletedUsername =
@@ -313,12 +353,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			log.info("deleted user ID={} username={}", id,
 					deletedUsername.get());
 			// Not sure that these are the correct place
-			mav.addObject("notice", "deleted " + deletedUsername.get());
+			attrs.addFlashAttribute("notice",
+					"deleted " + deletedUsername.get());
 		} catch (DataAccessException e) {
 			return errors(e);
 		}
-		mav.addObject(USER_OBJ, new UserRecord());
-		return addStandardContext(mav);
+		attrs.addFlashAttribute(USER_OBJ, new UserRecord());
+		return mav;
 	}
 
 	/** One board-hour in board-seconds. */
@@ -328,7 +369,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@PostMapping(USER_QUOTA_PATH)
 	public ModelAndView adjustQuota(@PathVariable("id") int id,
 			@RequestParam("machine") String machine,
-			@RequestParam("delta") int delta) {
+			@RequestParam("delta") int delta, RedirectAttributes attrs) {
 		if (isNull(machine)) {
 			return errors("machine must be specified");
 		}
@@ -336,8 +377,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
 			log.info("adjusted quota for user ID={} machine={} delta={}", id,
 					machine, delta);
-			return addStandardContext(
-					uri(on(AdminController.class).showUserForm(id)));
+			return redirectTo(uri(on(AdminController.class).showUserForm(id)),
+					attrs);
 		} catch (DataAccessException e) {
 			return errors(e);
 		}

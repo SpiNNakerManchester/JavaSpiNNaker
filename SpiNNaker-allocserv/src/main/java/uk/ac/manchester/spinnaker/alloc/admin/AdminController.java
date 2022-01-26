@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
@@ -103,11 +104,14 @@ public interface AdminController {
 	 *            Validation results
 	 * @param model
 	 *            Overall model
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
 	 * @return the model and view
 	 */
 	@PostMapping(CREATE_USER_PATH)
 	ModelAndView createUser(@Valid @ModelAttribute("user") UserRecord user,
-			BindingResult result, ModelMap model);
+			BindingResult result, ModelMap model, RedirectAttributes attrs);
 
 	/**
 	 * Show user details.
@@ -146,10 +150,14 @@ public interface AdminController {
 	 *            The user ID to delete
 	 * @param principal
 	 *            Who is the admin? Used for safety checks.
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
 	 * @return the model and view
 	 */
 	@PostMapping(USER_DELETE_PATH)
-	ModelAndView deleteUser(@PathVariable("id") int id, Principal principal);
+	ModelAndView deleteUser(@PathVariable("id") int id, Principal principal,
+			RedirectAttributes attrs);
 
 	/**
 	 * Adjust the quota of a user.
@@ -161,12 +169,15 @@ public interface AdminController {
 	 * @param delta
 	 *            By how much are we to adjust the quota. In
 	 *            <em>board-hours</em>.
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
 	 * @return the model and view
 	 */
 	@PostMapping(USER_QUOTA_PATH)
 	ModelAndView adjustQuota(@PathVariable("id") int id,
 			@RequestParam("machine") String machine,
-			@RequestParam("delta") int delta);
+			@RequestParam("delta") int delta, RedirectAttributes attrs);
 
 	/**
 	 * UI for boards.
