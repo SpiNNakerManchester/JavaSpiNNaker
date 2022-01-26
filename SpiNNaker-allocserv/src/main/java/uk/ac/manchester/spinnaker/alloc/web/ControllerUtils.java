@@ -16,19 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 
 import java.net.URI;
 
-import org.slf4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public abstract class ControllerUtils {
-	private static final Logger log = getLogger(ControllerUtils.class);
-
 	private ControllerUtils() {
 	}
 
@@ -51,12 +47,9 @@ public abstract class ControllerUtils {
 	 * @see MvcUriComponentsBuilder
 	 */
 	public static URI uri(Object selfCall, Object...objects) {
-		// No template variables in the overall controller, so can factor out
-		UriComponentsBuilder b = fromMethodCall(selfCall).query(null);
-		if (!b.build().getScheme().equalsIgnoreCase("https")) {
-			log.warn("forcing scheme of generated URL to https: {}", b.build());
-			b.scheme("https");
-		}
+		UriComponentsBuilder b = fromMethodCall(selfCall);
+		// Force some dumb stuff to be right
+		b.query(null).scheme("https");
 		return b.buildAndExpand(objects).toUri();
 	}
 
