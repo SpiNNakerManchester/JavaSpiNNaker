@@ -27,6 +27,7 @@ import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.int64;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
@@ -211,7 +212,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					Query getJobs = conn.query(GET_MACHINE_JOBS);
 					Query getCoords = conn.query(GET_JOB_BOARD_COORDS);
 					Query getLive = conn.query(GET_LIVE_BOARDS);
-					Query getDead = conn.query(GET_DEAD_BOARDS)) {
+					Query getDead = conn.query(GET_DEAD_BOARDS);
+					Query getQuota = conn.query(GET_USER_QUOTA)) {
 				return getBasicMachineInfo(machine, namedMachine).map(md -> {
 					md.setNumInUse(countMachineThings.call1(md.getId()).get()
 							.getInt("in_use"));
@@ -226,6 +228,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					md.setDead(getDead.call(md.getId())
 							.map(row -> new BoardCoords(row, !permit.admin))
 							.toList());
+					md.setQuota(getQuota.call1(md.getId(), permit.name)
+							.map(int64("quota")).orElse(null));
 					return md;
 				});
 			}

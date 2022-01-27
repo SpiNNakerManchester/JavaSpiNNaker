@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -26,12 +27,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <c:choose>
 	<c:when test="${ not empty machineList }">
-		<table border="1">
+		<table border="1" class="machinelist">
 			<thead>
 				<tr>
 					<th>Name</th>
 					<th>Num boards</th>
 					<th>In-use</th>
+					<th>Utilisation</th>
 					<th>Jobs</th>
 					<th>Tags</th>
 				</tr>
@@ -43,20 +45,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<c:choose>
 								<c:when test="${ machine.detailsUrl.present }">
 									<a href="${ machine.detailsUrl.get() }">
-										<code><c:out value="${ machine.name }" escapeXml="true" /></code>
+										<code><c:out value="${ machine.name }"
+											escapeXml="true" /></code>
 									</a>
 								</c:when>
 								<c:otherwise>
-									<code><c:out value="${ machine.name }" escapeXml="true" /></code>
+									<code><c:out value="${ machine.name }"
+										escapeXml="true" /></code>
 								</c:otherwise>
 							</c:choose>
 						</td>
-						<td class="numberColumn">${ machine.numBoards }</td>
-						<td class="numberColumn">${ machine.numInUse }</td>
+						<td class="numberColumn">
+							${ machine.numBoards }
+						</td>
+						<td class="numberColumn">
+							${ machine.numInUse }
+						</td>
+						<td class="numberColumn">
+							<fmt:formatNumber
+								value="${ (machine.numBoards * 100.0) / machine.numInUse }"
+								maxFractionDigits="1" />%
+						</td>
 						<td class="numberColumn">${ machine.numJobs }</td>
 						<td class="textColumn">
 						<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
-							<code><c:out value="${ tag }" escapeXml="true"/></code><c:if test="${ !loop.last }">,</c:if>
+							<%-- Careful where newlines are placed --%>
+							<code><c:out value="${ tag }"
+								escapeXml="true"/></code><c:if
+								test="${ !loop.last }">,</c:if>
 						</c:forEach>
 						</td>
 					</tr>

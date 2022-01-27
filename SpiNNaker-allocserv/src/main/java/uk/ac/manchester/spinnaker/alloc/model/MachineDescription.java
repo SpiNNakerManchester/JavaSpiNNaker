@@ -45,6 +45,8 @@ public class MachineDescription {
 
 	private List<BoardCoords> live;
 
+	private Optional<Long> quota = Optional.empty();
+
 	public MachineDescription() {
 	}
 
@@ -147,6 +149,18 @@ public class MachineDescription {
 		this.tags = tags;
 	}
 
+	/**
+	 * @return the quota (if that information is to be exposed to the current
+	 *         user and is meaningful)
+	 */
+	public Optional<Long> getQuota() {
+		return quota;
+	}
+
+	public void setQuota(Long quota) {
+		this.quota = Optional.ofNullable(quota);
+	}
+
 	/** Information about a single job. */
 	public static class JobInfo {
 		private int id;
@@ -191,7 +205,7 @@ public class MachineDescription {
 		}
 
 		/**
-		 * @return the owner
+		 * @return the owner (if that information is to be exposed)
 		 */
 		public Optional<String> getOwner() {
 			return owner;

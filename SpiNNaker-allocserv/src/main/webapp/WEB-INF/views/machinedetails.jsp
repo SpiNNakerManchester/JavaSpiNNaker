@@ -1,5 +1,6 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -29,20 +30,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <body>
 
 <h1>SpiNNaker Machine</h1>
-<%-- TODO: splash a warning if the current user has no quota on this machine --%>
 
 <table>
 	<tr>
 		<th class="lineTitle">Name:</th>
 		<td>
 			<code><c:out value="${ machine.name }" escapeXml="true" /></code>
+			<c:if test="${ machine.quota.orElse(1L) <= 0 }">
+				<span class="quotawarning">Out of quota!</span>
+			</c:if>
 		</td>
 	</tr>
 	<tr>
 		<th class="lineTitle">Tags:</th>
 		<td>
 			<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
-				<code><c:out value="${ tag }" escapeXml="true"/></code><c:if test="${ !loop.last }">,</c:if>
+				<%-- Careful where newlines are in this --%>
+				<code><c:out
+					value="${ tag }" escapeXml="true"/></code><c:if
+					test="${ !loop.last }">,</c:if>
 			</c:forEach>
 		</td>
 	</tr>
@@ -58,10 +64,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<th class="lineTitle">Running jobs:</th>
 		<td>${ machine.jobs.size() }</td>
 	</tr>
+	<c:if test="${ machine.quota.isPresent() }">
+		<tr>
+			<th class="lineTitle">Remaining Quota:</th>
+			<td>
+				<fmt:formatNumber value="${ machine.quota.get() / 3600.0 }"
+					maxFractionDigits="3" />
+				board-hours
+			</td>
+		</tr>
+	</c:if>
 </table>
 
 <p>
-	<!-- TODO: Size the map according to the machine size -->
+	<%-- TODO: Size the map according to the machine size --%>
 	<canvas id="machine_layout" width="300" height="200"></canvas>
 	<canvas id="tooltip" width="100" height="50"></canvas>
 	<script defer="defer">

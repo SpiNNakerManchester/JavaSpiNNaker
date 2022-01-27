@@ -139,7 +139,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">SpiNNaker machine:</th>
-	<td><a href="${ job.machineUrl }"><c:out value="${ job.machine }" escapeXml="true" /></a></td>
+	<td><a href="${ job.machineUrl }"><c:out value="${ job.machine }"
+		escapeXml="true" /></a></td>
 </tr>
 </table>
 

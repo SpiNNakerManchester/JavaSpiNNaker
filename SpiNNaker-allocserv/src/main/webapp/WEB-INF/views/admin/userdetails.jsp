@@ -1,5 +1,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <%--
@@ -76,8 +77,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<td>
 						<form method="POST" action="${ addQuotaUri }">
 							<sec:csrfInput />
-							<input name="machine" value="<c:out value="${ q.key }" escapeXml="true" />" type="hidden"/>
-							${ q.value / 3600.0 } board-hours
+							<input name="machine"
+								value="<c:out value="${ q.key }" escapeXml="true" />"
+								type="hidden"/>
+							<fmt:formatNumber value="${ q.value / 3600.0 }"
+								maxFractionDigits="3" /> board-hours
 							<c:if test="${ q.value < 0 }">
 								<span class="quotawarning">Out of quota!</span>
 							</c:if>
@@ -86,11 +90,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<button name="delta" value="1" type="submit">+1</button>
 							<button name="delta" value="10" type="submit">+10</button>
 							<button name="delta" value="100" type="submit">+100</button>
+							<button name="delta" value="1000" type="submit">+1000</button>
 							<br>
 							Remove Board-Hours
 							<button name="delta" value="-1" type="submit">-1</button>
 							<button name="delta" value="-10" type="submit">-10</button>
 							<button name="delta" value="-100" type="submit">-100</button>
+							<button name="delta" value="-1000" type="submit">-1000</button>
 						</form>
 					</td>
 				</tr>
