@@ -58,8 +58,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td class="textColumn">
 							<code><c:out value="${ job.machineName }" escapeXml="true" /></code>
 						</td>
-						<td class="textColumn"><code>${ job.creationTimestamp }</code></td>
-						<td class="textColumn"><code>${ job.keepaliveInterval }</code></td>
+						<td class="textColumn">
+							<script defer="defer">
+								prettyTimestamp("start-${ job.id }");
+							</script>
+							<code id="start-${ job.id }">${ job.creationTimestamp }</code>
+						</td>
+						<td class="textColumn">
+							<script defer="defer">
+								prettyDuration("alive-${ job.id }");
+							</script>
+							<code id="alive-${ job.id }">${ job.keepaliveInterval }</code>
+						</td>
 						<td class="textColumn">
 							<c:if test="${ job.owner.present }">
 								<c:out value="${ job.owner.get() }" escapeXml="true" />

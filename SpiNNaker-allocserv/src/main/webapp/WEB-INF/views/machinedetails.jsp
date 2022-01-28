@@ -78,6 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <p>
 	<%-- TODO: Size the map according to the machine size --%>
+	<%-- TODO: Redraw map with updated data periodically --%>
 	<canvas id="machine_layout" width="300" height="200"></canvas>
 	<canvas id="tooltip" width="100" height="50"></canvas>
 	<script defer="defer">

@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">State:</th>
+	<%-- TODO: Refresh state with updated data periodically; full refresh on major change to fix board map --%>
 	<td>${ job.state }</td>
 </tr>
 <tr>
