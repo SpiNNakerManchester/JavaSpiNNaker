@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</td>
 						<td class="numberColumn">
 							<fmt:formatNumber
-								value="${ (machine.numBoards * 100.0) / machine.numInUse }"
+								value="${ (machine.numInUse * 100.0) / machine.numBoards }"
 								maxFractionDigits="1" />%
 						</td>
 						<td class="numberColumn">${ machine.numJobs }</td>
