@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -44,7 +45,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td class="textColumn">
 							<c:choose>
 								<c:when test="${ machine.detailsUrl.present }">
-									<a href="${ machine.detailsUrl.get() }">
+									<a href="<spring:eval
+										expression='machine.detailsUrl.get()' />">
 										<code><c:out value="${ machine.name }"
 											escapeXml="true" /></code>
 									</a>

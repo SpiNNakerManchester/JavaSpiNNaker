@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -36,7 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<th class="lineTitle">Name:</th>
 		<td>
 			<code><c:out value="${ machine.name }" escapeXml="true" /></code>
-			<c:if test="${ machine.quota.orElse(1L) <= 0 }">
+			<c:if test="<spring:eval expression='
+				machine.quota.present && machine.quota.get() <= 0
+			' />">
 				<span class="quotawarning">Out of quota!</span>
 			</c:if>
 		</td>
@@ -62,13 +65,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</tr>
 	<tr>
 		<th class="lineTitle">Running jobs:</th>
-		<td>${ machine.jobs.size() }</td>
+		<td>
+			<spring:eval expression='machine.jobs.size()' />
+		</td>
 	</tr>
-	<c:if test="${ machine.quota.isPresent() }">
+	<c:if test="${ machine.quota.present }">
 		<tr>
 			<th class="lineTitle">Remaining Quota:</th>
 			<td>
-				<fmt:formatNumber value="${ machine.quota.get() / 3600.0 }"
+				<fmt:formatNumber value="<spring:eval
+					expression='machine.quota.get() / 3600.0' />"
 					maxFractionDigits="3" />
 				board-hours
 			</td>

@@ -82,7 +82,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								type="hidden"/>
 							<fmt:formatNumber value="${ q.value / 3600.0 }"
 								maxFractionDigits="3" /> board-hours
-							<c:if test="${ q.value < 0 }">
+							<c:if test="${ q.value <= 0 }">
 								<span class="quotawarning">Out of quota!</span>
 							</c:if>
 							<br>

@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -22,14 +23,14 @@ machine = (
 	<json:property name="name" value="${ machine.name }" />
 	<json:property name="width" value="${ machine.width }" />
 	<json:property name="height" value="${ machine.height }" />
-	<json:property name="num_in_use" value="${machine.numInUse }" />
+	<json:property name="num_in_use" value="${ machine.numInUse }" />
 	<json:array name="tags" items="${ machine.tags }" />
 	<json:array name="jobs" items="${ machine.jobs }" var="job">
 		<json:object>
 			<json:property name="id" value="${ job.id }" />
 			<c:if test="${ job.owner.present }">
-				<json:property name="url" value="${ job.url.get() }" />
-				<json:property name="owner" value="${ job.owner.get() }" />
+				<json:property name="url" value="<spring:eval expression='job.url.get()' />" />
+				<json:property name="owner" value="<spring:eval expression='job.owner.get()' />" />
 			</c:if>
 			<json:array name="boards" items="${ job.boards }" var="board">
 				<json:object>

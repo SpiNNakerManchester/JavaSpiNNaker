@@ -1,3 +1,4 @@
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
@@ -37,7 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Owner:</th>
-	<td><c:out value="${ job.owner.orElse('[SHROUDED]') }" escapeXml="true" /></td>
+	<td>
+		<spring:eval expression="job.owner.orElse('[SHROUDED]')" htmlEscape="true" />
+	</td>
 </tr>
 <tr>
 	<th class="lineTitle">State:</th>
@@ -66,7 +69,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">Owner host:</th>
-	<td><c:out value="${ job.ownerHost.orElse('[SHROUDED]') }" escapeXml="true" /></td>
+	<td>
+		<spring:eval expression="job.ownerHost.orElse('[SHROUDED]')" htmlEscape="true" />
+	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Raw request:</th>
@@ -110,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<td>
 		<c:choose>
 			<c:when test="${ job.width.present }">
-				${ job.width.get() }&times;${ job.height.get() }
+				<spring:eval expression="job.width.get()" />&times;<spring:eval expression="job.height.get()" />
 			</c:when>
 			<c:otherwise>Not currently allocated</c:otherwise>
 		</c:choose>
@@ -121,7 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<td>
 		<c:choose>
 			<c:when test="${ not empty job.boards }">
-				${ job.boards.size() }
+				<spring:eval expression="job.boards.size()" />
 			</c:when>
 			<c:otherwise>Not currently allocated</c:otherwise>
 		</c:choose>

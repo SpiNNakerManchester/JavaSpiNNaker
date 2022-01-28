@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="json" uri="http://www.atg.com/taglibs/json" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%--
 Copyright (c) 2021 The University of Manchester
 
@@ -20,15 +21,15 @@ job = (
 <json:object>
 	<json:property name="id" value="${ job.id }" />
 	<c:if test="${ job.owner.present }">
-		<json:property name="owner" value="${ job.owner.get() }" />
-		<json:property name="owner_host" value="${ job.ownerHost.get() }" />
+		<json:property name="owner" value="<spring:eval expression='job.owner.get()' />" />
+		<json:property name="owner_host" value="<spring:eval expression='job.ownerHost.get()' />" />
 	</c:if>
 	<json:property name="state" value="${ job.state }" />
 	<json:property name="start" value="${ job.startTime }" />
 	<json:property name="keep_alive" value="${ job.keepAlive }" />
 	<c:if test="${ job.width.present }">
-		<json:property name="width" value="${ job.width.get() }" />
-		<json:property name="height" value="${ job.height.get() }" />
+		<json:property name="width" value="<spring:eval expression='job.width.get()' />" />
+		<json:property name="height" value="<spring:eval expression='job.height.get()' />" />
 	</c:if>
 	<json:property name="powered" value="${ job.powered }" />
 	<json:property name="machine" value="${ job.machine }" />

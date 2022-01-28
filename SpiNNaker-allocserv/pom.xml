@@ -168,6 +168,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>truststore-maven-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>generate-truststore</id>
 						<goals>
 							<goal>generate-truststore</goal>
 						</goals>
@@ -179,6 +180,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<url>${ebrains.wellknown.url}</url>
 							</urls>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<!-- JSP syntax check via pre-compilation -->
+				<groupId>org.apache.sling</groupId>
+				<artifactId>jspc-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>check-jsp</id>
+						<goals>
+							<goal>jspc</goal>
+						</goals>
+						<phase>compile</phase>
 					</execution>
 				</executions>
 			</plugin>
@@ -245,6 +260,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<configuration>
 						<trustAllCertificates>true</trustAllCertificates>
 						<truststoreFormat>PKCS12</truststoreFormat>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.sling</groupId>
+					<artifactId>jspc-maven-plugin</artifactId>
+					<configuration>
+						<sourceDirectory>${project.basedir}/src/main/webapp/WEB-INF</sourceDirectory>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -396,9 +418,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -407,7 +432,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>com.github.livesense</groupId>
 			<artifactId>org.liveSense.scripting.jsp.taglib.jsonatg</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

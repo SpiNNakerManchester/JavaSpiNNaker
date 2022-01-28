@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <%--
 Copyright (c) 2021 The University of Manchester
@@ -45,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td class="textColumn">
 							<c:choose>
 								<c:when test="${ job.detailsUrl.present }">
-									<a href="${ job.detailsUrl.get() }"><code>${ job.id }</code></a>
+									<a href='<spring:eval expression="job.detailsUrl.get()" />'><code>${ job.id }</code></a>
 								</c:when>
 								<c:otherwise>
 									<code>${ job.id }</code>
@@ -54,7 +55,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</td>
 						<td class="textColumn">${ job.state }</td>
 						<td class="textColumn">${ job.powered ? "on" : "off" }</td>
-						<td class="numberColumn">${ job.numBoards.orElse(0) }</td>
+						<td class="numberColumn">
+							<spring:eval expression="job.numBoards.orElse(0)" />
+						</td>
 						<td class="textColumn">
 							<code><c:out value="${ job.machineName }" escapeXml="true" /></code>
 						</td>
@@ -72,10 +75,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</td>
 						<td class="textColumn">
 							<c:if test="${ job.owner.present }">
-								<c:out value="${ job.owner.get() }" escapeXml="true" />
+								<spring:eval expression="job.owner.get()" htmlEscape="true" />
 							</c:if>
 							<c:if test="${ job.host.present }">
-								(<c:out value="${ job.host.get() }" escapeXml="true" />)
+								(<spring:eval expression="job.host.get()" htmlEscape="true" />)
 							</c:if>
 						</td>
 					</tr>
