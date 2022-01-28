@@ -37,9 +37,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<th class="lineTitle">Name:</th>
 		<td>
 			<code><c:out value="${ machine.name }" escapeXml="true" /></code>
-			<c:if test="<spring:eval expression='
+			<spring:eval var="outOfQuota" expression='
 				machine.quota.present && machine.quota.get() <= 0
-			' />">
+			' />
+			<c:if test="${ outOfQuota }">
 				<span class="quotawarning">Out of quota!</span>
 			</c:if>
 		</td>
@@ -73,8 +74,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<tr>
 			<th class="lineTitle">Remaining Quota:</th>
 			<td>
-				<fmt:formatNumber value="<spring:eval
-					expression='machine.quota.get() / 3600.0' />"
+				<spring:eval var="quotaHours"
+					expression="machine.quota.get() / 3600.0" />
+				<fmt:formatNumber value="${ quotaHours }"
 					maxFractionDigits="3" />
 				board-hours
 			</td>

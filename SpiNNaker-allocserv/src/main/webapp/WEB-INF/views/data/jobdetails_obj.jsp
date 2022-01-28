@@ -21,15 +21,19 @@ job = (
 <json:object>
 	<json:property name="id" value="${ job.id }" />
 	<c:if test="${ job.owner.present }">
-		<json:property name="owner" value="<spring:eval expression='job.owner.get()' />" />
-		<json:property name="owner_host" value="<spring:eval expression='job.ownerHost.get()' />" />
+		<spring:eval var="jobOwner" expression="job.owner.get()" />
+		<spring:eval var="jobOwnerHost" expression="job.ownerHost.get()" />
+		<json:property name="owner" value="${ jobOwner }" />
+		<json:property name="owner_host" value="${ jobOwnerHost }" />
 	</c:if>
 	<json:property name="state" value="${ job.state }" />
 	<json:property name="start" value="${ job.startTime }" />
 	<json:property name="keep_alive" value="${ job.keepAlive }" />
 	<c:if test="${ job.width.present }">
-		<json:property name="width" value="<spring:eval expression='job.width.get()' />" />
-		<json:property name="height" value="<spring:eval expression='job.height.get()' />" />
+		<spring:eval var="jobWidth" expression="job.width.get()" />
+		<spring:eval var="jobHeight" expression="job.height.get()" />
+		<json:property name="width" value="${ jobWidth }" />
+		<json:property name="height" value="${ jobHeight }" />
 	</c:if>
 	<json:property name="powered" value="${ job.powered }" />
 	<json:property name="machine" value="${ job.machine }" />

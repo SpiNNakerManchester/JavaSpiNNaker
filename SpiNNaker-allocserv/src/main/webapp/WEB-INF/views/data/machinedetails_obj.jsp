@@ -29,8 +29,10 @@ machine = (
 		<json:object>
 			<json:property name="id" value="${ job.id }" />
 			<c:if test="${ job.owner.present }">
-				<json:property name="url" value="<spring:eval expression='job.url.get()' />" />
-				<json:property name="owner" value="<spring:eval expression='job.owner.get()' />" />
+				<spring:eval var="jobUrl" expression="job.url.get()" />
+				<spring:eval var="jobOwner" expression="job.owner.get()" />
+				<json:property name="url" value="${ jobUrl }" />
+				<json:property name="owner" value="${ jobOwner }" />
 			</c:if>
 			<json:array name="boards" items="${ job.boards }" var="board">
 				<json:object>

@@ -46,7 +46,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td class="textColumn">
 							<c:choose>
 								<c:when test="${ job.detailsUrl.present }">
-									<a href='<spring:eval expression="job.detailsUrl.get()" />'><code>${ job.id }</code></a>
+									<spring:eval var="jobDetailsUrl" expression="job.detailsUrl.get()" />
+									<a href="${ jobDetailsUrl }"><code>${ job.id }</code></a>
 								</c:when>
 								<c:otherwise>
 									<code>${ job.id }</code>
