@@ -72,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</tr>
 	<c:if test="${ machine.quota.present }">
 		<tr>
-			<th class="lineTitle">Remaining Quota:</th>
+			<th class="lineTitle">Remaining quota:</th>
 			<td>
 				<spring:eval var="quotaHours"
 					expression="machine.quota.get() / 3600.0" />
