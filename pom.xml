@@ -31,19 +31,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
-		<slf4j.version>1.7.33</slf4j.version>
-		<log4j.version>2.17.1</log4j.version>
-
 		<junit.version>5.8.2</junit.version>
-		<checkstyle.version>9.2.1</checkstyle.version>
+		<checkstyle.version>9.3</checkstyle.version>
 		<javadoc.version>3.3.1</javadoc.version>
 		<testing.version>3.0.0-M5</testing.version>
+
+		<slf4j.version>1.7.35</slf4j.version>
+		<log4j.version>2.17.1</log4j.version>
 
 		<spring.version>5.3.15</spring.version>
 		<spring.boot.version>2.6.2</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
-		  processor binding in SpiNNaker-allocserv:
+		  processor binding in Eclipse for SpiNNaker-allocserv:
 
 		  Properties => Java Compiler => Annotation Processing => Factory Path
 
