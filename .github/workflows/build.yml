@@ -104,7 +104,7 @@ jobs:
       run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
     - name: "Check: Code Style"
       # Dependencies are such that compile needs to run before checkstyle
-      run: mvn compile checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true
+      run: mvn compile checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true -P "!jsp-precompile"
     - name: Build
       run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
     - name: "Check: Documentation"

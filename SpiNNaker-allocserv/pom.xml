@@ -183,20 +183,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<!-- JSP syntax check via pre-compilation -->
-				<groupId>org.apache.sling</groupId>
-				<artifactId>jspc-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>check-jsp</id>
-						<goals>
-							<goal>jspc</goal>
-						</goals>
-						<phase>compile</phase>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 
 		<pluginManagement>
@@ -479,6 +465,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<artifactId>spring-boot-devtools</artifactId>
 				</dependency>
 			</dependencies>
+		</profile>
+		<profile>
+			<id>jsp-precompile</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<!-- JSP syntax check via pre-compilation -->
+						<groupId>org.apache.sling</groupId>
+						<artifactId>jspc-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>jspc</goal>
+								</goals>
+								<phase>compile</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 </project>

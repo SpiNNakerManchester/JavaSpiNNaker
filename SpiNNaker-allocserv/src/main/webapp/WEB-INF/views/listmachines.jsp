@@ -26,19 +26,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <h1>SpiNNaker Machines</h1>
 
-<c:choose>
-	<table border="1" class="machinelist">
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Num boards</th>
-				<th>In-use</th>
-				<th>Utilisation</th>
-				<th>Jobs</th>
-				<th>Tags</th>
-			</tr>
-		</thead>
-		<tbody>
+<table border="1" class="machinelist">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Num boards</th>
+			<th>In-use</th>
+			<th>Utilisation</th>
+			<th>Jobs</th>
+			<th>Tags</th>
+		</tr>
+	</thead>
+	<tbody>
+		<c:choose>
 			<c:when test="${ not empty machineList }">
 				<c:forEach items="${ machineList }" var="machine">
 					<tr>
@@ -91,9 +91,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</td>
 				</tr>
 			</c:otherwise>
-		</tbody>
-	</table>
-</c:choose>
+		</c:choose>
+	</tbody>
+</table>
 
 <jsp:include page="basicfooter.jsp" />
 </body>
