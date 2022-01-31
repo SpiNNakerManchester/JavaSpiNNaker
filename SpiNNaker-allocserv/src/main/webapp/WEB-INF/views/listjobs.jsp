@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <jsp:include page="head.jsp">
 	<jsp:param name="title" value="SpiNNaker Job List"/>
 	<jsp:param name="refresh" value="30"/>
+	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
 <body>
 
@@ -46,7 +47,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td class="textColumn">
 							<c:choose>
 								<c:when test="${ job.detailsUrl.present }">
-									<spring:eval var="jobDetailsUrl" expression="job.detailsUrl.get()" />
+									<spring:eval var="jobDetailsUrl"
+											expression="job.detailsUrl.get()" />
 									<a href="${ jobDetailsUrl }"><code>${ job.id }</code></a>
 								</c:when>
 								<c:otherwise>
@@ -76,10 +78,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</td>
 						<td class="textColumn">
 							<c:if test="${ job.owner.present }">
-								<spring:eval expression="job.owner.get()" htmlEscape="true" />
+								<spring:eval htmlEscape="true"
+										expression="job.owner.get()" />
 							</c:if>
 							<c:if test="${ job.host.present }">
-								(<spring:eval expression="job.host.get()" htmlEscape="true" />)
+								(<spring:eval htmlEscape="true"
+										expression="job.host.get()" />)
 							</c:if>
 						</td>
 					</tr>

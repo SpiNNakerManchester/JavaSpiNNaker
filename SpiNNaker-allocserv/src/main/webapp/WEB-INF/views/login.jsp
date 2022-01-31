@@ -26,19 +26,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <c:if test="${ error != null }">
 	<p>Please try again...</p>
 </c:if>
-<form name='f' action='<c:url value="/spalloc/system/perform_login"/>' method='POST'>
+<form name="f" method="POST"
+		action="<c:url value='/spalloc/system/perform_login' />">
 	<sec:csrfInput />
 	<table>
 		<tr>
 			<td>User:</td>
-			<td><input type='text' name='username' value=''></td>
+			<td><input type="text" name="username" value=""></td>
 		</tr>
 		<tr>
 			<td>Password:</td>
-			<td><input type='password' name='password' /></td>
+			<td><input type="password" name="password" /></td>
 		</tr>
 		<tr>
-			<td colspan=2>
+			<td colspan="2">
 				<input name="submit" type="submit" value="submit">
 					Log In
 				</input>
@@ -47,7 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</table>
 </form>
 <p>
-<form method="GET" action='<c:url value="/spalloc/system/perform_oidc/auth/hbp-ebrains"/>'>
+<form method="GET"
+		action="<c:url value='/spalloc/system/perform_oidc/auth/hbp-ebrains' />">
 	Alternatively, <input type="submit" value="log in with HBP/EBRAINS">
 </form>
 

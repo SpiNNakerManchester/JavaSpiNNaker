@@ -27,34 +27,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>SpiNNaker Machines</h1>
 
 <c:choose>
-	<c:when test="${ not empty machineList }">
-		<table border="1" class="machinelist">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Num boards</th>
-					<th>In-use</th>
-					<th>Utilisation</th>
-					<th>Jobs</th>
-					<th>Tags</th>
-				</tr>
-			</thead>
-			<tbody>
+	<table border="1" class="machinelist">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Num boards</th>
+				<th>In-use</th>
+				<th>Utilisation</th>
+				<th>Jobs</th>
+				<th>Tags</th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:when test="${ not empty machineList }">
 				<c:forEach items="${ machineList }" var="machine">
 					<tr>
 						<td class="textColumn">
 							<c:choose>
 								<c:when test="${ machine.detailsUrl.present }">
 									<spring:eval var="machineDetailsUrl"
-										expression="machine.detailsUrl.get()" />
+											expression="machine.detailsUrl.get()" />
 									<a href="${ machineDetailsUrl }">
-										<code><c:out value="${ machine.name }"
-											escapeXml="true" /></code>
+										<code><c:out escapeXml="true"
+												value="${ machine.name }" /></code>
 									</a>
 								</c:when>
 								<c:otherwise>
-									<code><c:out value="${ machine.name }"
-										escapeXml="true" /></code>
+									<code><c:out escapeXml="true"
+											value="${ machine.name }" /></code>
 								</c:otherwise>
 							</c:choose>
 						</td>
@@ -65,27 +65,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							${ machine.numInUse }
 						</td>
 						<td class="numberColumn">
-							<fmt:formatNumber
-								value="${ (machine.numInUse * 100.0) / machine.numBoards }"
-								maxFractionDigits="1" />%
+							<spring:eval var="usePercent"
+									expression="(machine.numInUse * 100.0) / machine.numBoards" />
+							<fmt:formatNumber maxFractionDigits="1"
+									value="${ usePercent }" />%
 						</td>
-						<td class="numberColumn">${ machine.numJobs }</td>
+						<td class="numberColumn">
+							${ machine.numJobs }
+						</td>
 						<td class="textColumn">
-						<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
-							<%-- Careful where newlines are placed --%>
-							<code><c:out value="${ tag }"
-								escapeXml="true"/></code><c:if
-								test="${ !loop.last }">,</c:if>
-						</c:forEach>
+							<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
+								<%-- Careful where newlines are placed --%>
+								<code><c:out escapeXml="true"
+										value="${ tag }" /></code><c:if
+										test="${ !loop.last }">,</c:if>
+							</c:forEach>
 						</td>
 					</tr>
 				</c:forEach>
-			</tbody>
-		</table>
-	</c:when>
-	<c:otherwise>
-		<p>No machines are defined!</p>
-	</c:otherwise>
+			</c:when>
+			<c:otherwise>
+				<tr>
+					<td colspan="6">
+						<p>No machines are defined!</p>
+					</td>
+				</tr>
+			</c:otherwise>
+		</tbody>
+	</table>
 </c:choose>
 
 <jsp:include page="basicfooter.jsp" />

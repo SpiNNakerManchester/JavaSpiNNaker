@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</table>
 </form>
 
-<!-- TODO: Allow machines to be taken out of service entirely or retagged? -->
+<%-- TODO: Allow machines to be taken out of service entirely or retagged? --%>
 
 <jsp:include page="footer.jsp" />
 </body>

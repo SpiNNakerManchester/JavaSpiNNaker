@@ -22,11 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <h1>Spalloc Service Administration</h1>
 <p>
-<a href="${ machineUri }">Machines</a>
+<a href="${ machineUri }">Define Machines</a>
 <p>
-<a href="${ boardsUri }">Boards</a>
+<a href="${ boardsUri }">Manage Boards</a>
 <p>
-<a href="${ usersUri }">Users</a>
+<a href="${ usersUri }">Manage Users</a>
 
 <jsp:include page="../basicfooter.jsp" />
 </body>

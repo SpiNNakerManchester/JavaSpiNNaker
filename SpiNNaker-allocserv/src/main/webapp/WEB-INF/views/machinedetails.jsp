@@ -37,9 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<th class="lineTitle">Name:</th>
 		<td>
 			<code><c:out value="${ machine.name }" escapeXml="true" /></code>
-			<spring:eval var="outOfQuota" expression='
+			<spring:eval var="outOfQuota" expression="
 				machine.quota.present && machine.quota.get() <= 0
-			' />
+			" />
 			<c:if test="${ outOfQuota }">
 				<span class="quotawarning">Out of quota!</span>
 			</c:if>
@@ -50,9 +50,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<td>
 			<c:forEach items="${ machine.tags }" var="tag" varStatus="loop">
 				<%-- Careful where newlines are in this --%>
-				<code><c:out
-					value="${ tag }" escapeXml="true"/></code><c:if
-					test="${ !loop.last }">,</c:if>
+				<code><c:out escapeXml="true"
+						value="${ tag }" /></code><c:if
+						test="${ !loop.last }">,</c:if>
 			</c:forEach>
 		</td>
 	</tr>
@@ -67,17 +67,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<tr>
 		<th class="lineTitle">Running jobs:</th>
 		<td>
-			<spring:eval expression='machine.jobs.size()' />
+			<spring:eval expression="machine.jobs.size()" />
 		</td>
 	</tr>
 	<c:if test="${ machine.quota.present }">
+		<spring:eval var="quotaHours"
+				expression="machine.quota.get() / 3600.0" />
 		<tr>
 			<th class="lineTitle">Remaining quota:</th>
 			<td>
-				<spring:eval var="quotaHours"
-					expression="machine.quota.get() / 3600.0" />
-				<fmt:formatNumber value="${ quotaHours }"
-					maxFractionDigits="3" />
+				<fmt:formatNumber value="${ quotaHours }" maxFractionDigits="3" />
 				board-hours
 			</td>
 		</tr>

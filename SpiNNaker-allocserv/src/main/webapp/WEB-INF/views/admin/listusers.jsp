@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<c:forEach items="${ userlist }" var="item">
 		<tr>
 			<td>
-				<c:out value="${ item.key }" escapeXml='true' />
+				<c:out value="${ item.key }" escapeXml="true" />
 			</td>
 			<td>
 				<button onclick="location.href='${ item.value }'"

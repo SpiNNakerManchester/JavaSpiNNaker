@@ -17,11 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <footer>
 <hr>
-<a href="<c:url value="/spalloc/system/"/>">Main page</a>
+<a href="<c:url value='/spalloc/system/'/>">Main page</a>
 <c:if test="${ userMayChangePassword }">
-&mdash;
-<a href="<c:url value="/spalloc/system/change_password"/>">Change password</a>
+	&mdash;
+	<a href="<c:url value='/spalloc/system/change_password'/>">Change password</a>
 </c:if>
 &mdash;
-<a href="<c:url value="/spalloc/system/perform_logout"/>">Log out</a>
+<a href="<c:url value='/spalloc/system/perform_logout'/>">Log out</a>
 </footer>

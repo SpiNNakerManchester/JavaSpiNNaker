@@ -39,7 +39,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <tr>
 	<th class="lineTitle">Owner:</th>
 	<td>
-		<spring:eval expression="job.owner.orElse('[SHROUDED]')" htmlEscape="true" />
+		<spring:eval htmlEscape="true"
+				expression="job.owner.orElse('[SHROUDED]')" />
 	</td>
 </tr>
 <tr>
@@ -70,14 +71,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <tr>
 	<th class="lineTitle">Owner host:</th>
 	<td>
-		<spring:eval expression="job.ownerHost.orElse('[SHROUDED]')" htmlEscape="true" />
+		<spring:eval expression="job.ownerHost.orElse('[SHROUDED]')"
+				htmlEscape="true" />
 	</td>
 </tr>
 <tr>
 	<th class="lineTitle">Raw request:</th>
 	<td><details><summary><em>Click to show</em></summary>
 	<c:if test="${ not empty job.request }">
-		<pre id="rawRequest"><c:out value="${ job.request }" escapeXml="true" /></pre>
+		<pre id="rawRequest"><c:out escapeXml="true"
+				value="${ job.request }" /></pre>
 		<script defer="defer">
 			prettyJson("rawRequest");
 		</script>
@@ -115,7 +118,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<td>
 		<c:choose>
 			<c:when test="${ job.width.present }">
-				<spring:eval expression="job.width.get()" />&times;<spring:eval expression="job.height.get()" />
+				<spring:eval
+						expression="job.width.get()"
+				/>&times;<spring:eval
+						expression="job.height.get()" />
 			</c:when>
 			<c:otherwise>Not currently allocated</c:otherwise>
 		</c:choose>
@@ -145,8 +151,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 <tr>
 	<th class="lineTitle">SpiNNaker machine:</th>
-	<td><a href="${ job.machineUrl }"><c:out value="${ job.machine }"
-		escapeXml="true" /></a></td>
+	<td><a href="${ job.machineUrl }"><c:out
+			value="${ job.machine }" escapeXml="true" /></a></td>
 </tr>
 </table>
 

@@ -78,10 +78,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<form method="POST" action="${ addQuotaUri }">
 							<sec:csrfInput />
 							<input name="machine"
-								value="<c:out value="${ q.key }" escapeXml="true" />"
-								type="hidden"/>
+									value="<c:out value="${ q.key }" escapeXml="true" />"
+									type="hidden"/>
 							<fmt:formatNumber value="${ q.value / 3600.0 }"
-								maxFractionDigits="3" /> board-hours
+									maxFractionDigits="3" /> board-hours
 							<c:if test="${ q.value <= 0 }">
 								<span class="quotawarning">Out of quota!</span>
 							</c:if>

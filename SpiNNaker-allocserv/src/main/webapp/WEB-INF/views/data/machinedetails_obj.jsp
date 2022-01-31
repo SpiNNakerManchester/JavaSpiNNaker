@@ -18,7 +18,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<c:if test="${ empty param.json }"><%-- Pass json=true to emit pure JSON --%>
 machine = (
+</c:if>
 <json:object>
 	<json:property name="name" value="${ machine.name }" />
 	<json:property name="width" value="${ machine.width }" />
@@ -94,4 +96,6 @@ machine = (
 		</json:object>
 	</json:array>
 </json:object>
+<c:if test="${ empty param.json }">
 );
+</c:if>

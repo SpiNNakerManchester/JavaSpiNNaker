@@ -17,7 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<c:if test="${ empty param.json }"><%-- Pass json=true to emit pure JSON --%>
 job = (
+</c:if>
 <json:object>
 	<json:property name="id" value="${ job.id }" />
 	<c:if test="${ job.owner.present }">
@@ -60,4 +62,6 @@ job = (
 	<json:property name="triad_width" value="${ job.triadWidth }"/>
 	<json:property name="triad_height" value="${ job.triadHeight }"/>
 </json:object>
+<c:if test="${ empty param.json }">
 );
+</c:if>
