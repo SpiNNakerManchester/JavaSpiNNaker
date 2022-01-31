@@ -108,7 +108,7 @@ jobs:
     - name: Build
       run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
     - name: "Check: Documentation"
-      run: mvn javadoc:aggregate --settings $SETTINGS_FILE
+      run: mvn javadoc:aggregate --settings $SETTINGS_FILE -P "!jsp-precompile"
 
     - name: "Post: Purge SNAPSHOTs"
       # Do not cache SNAPSHOT dependencies; we don't use external snapshots and
