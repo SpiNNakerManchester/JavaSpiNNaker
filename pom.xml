@@ -29,6 +29,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
+		<!-- What does the CheckForFIXME profile look for? -->
+		<forbidden.keywords.re>FIXME|Auto-generated method stub</forbidden.keywords.re>
+
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
 		<junit.version>5.8.2</junit.version>
@@ -59,7 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<swagger.version>3.50.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.2</jython.version>
-		<exec.version>3.0.0</exec.version>
 	</properties>
 
 	<dependencyManagement>
@@ -885,6 +887,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</plugin>
 					</plugins>
 				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>CheckForFIXME</id>
+			<!-- See https://stackoverflow.com/q/18129106/301832-->
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>${exec.version}</version>
+						<executions>
+							<execution>
+								<id>check-for-fixme</id>
+								<phase>process-sources</phase>
+								<configuration>
+									<executable>egrep</executable>
+									<successCodes>
+										<successCode>1</successCode>
+									</successCodes>
+									<arguments>
+										<argument>-rn</argument>
+										<!-- Forbidden Keywords -->
+										<argument>${forbidden.keywords.re}</argument>
+										<!-- search path -->
+										<argument>src</argument>
+									</arguments>
+								</configuration>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 	</profiles>
