@@ -43,6 +43,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Access to the enablement-state of a board.
 	 */
 	public final class BoardState {
+		/** The name of the containing SpiNNaker machine. */
+		public final String machineName;
+
 		/** The board ID. Unique. */
 		public final int id;
 
@@ -76,6 +79,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			this.frame = row.getInt("frame");
 			this.board = row.getInteger("board_num");
 			this.address = row.getString("address");
+			this.machineName = row.getString("machine_name");
 		}
 
 		/**
@@ -84,8 +88,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public boolean getState() {
 			return execute(false, conn -> {
 				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
-					return q.call1(id).map(bool("functioning"))
-							.orElse(false);
+					return q.call1(id).map(bool("functioning")).orElse(false);
 				}
 			});
 		}
@@ -144,11 +147,16 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Look up a board for management.
 	 *
 	 * @param id
-	 *            The unique ID of the board.
+	 *            The unique ID of the board. Because this is fully unique, the
+	 *            machine name is not needed.
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findId(int id) {
-		return Optional.empty(); // FIXME
+		return execute(false, conn -> {
+			try (Query q = conn.query(FIND_BOARD_BY_ID)) {
+				return q.call1(id).map(BoardState::new);
+			}
+		});
 	}
 
 	/**

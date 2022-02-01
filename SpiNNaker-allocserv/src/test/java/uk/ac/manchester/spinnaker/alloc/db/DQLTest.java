@@ -76,8 +76,9 @@ class DQLTest extends SQLQueries {
 					"job_id", "job_root_chip_x", "job_root_chip_y");
 
 	/** Columns expected when building {@link BoardState} from a {@link Row}. */
-	private static final Set<String> MSC_BOARD_COORDS = set("board_id", "x",
-			"y", "z", "cabinet", "frame", "board_num", "address");
+	private static final Set<String> MSC_BOARD_COORDS =
+			set("board_id", "x", "y", "z", "cabinet", "frame", "board_num",
+					"address", "machine_name");
 
 	/**
 	 * Columns expected when building {@link BoardCoords} from a {@link Row}.
@@ -751,6 +752,17 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void findBoardById() {
+		try (Query q = c.query(FIND_BOARD_BY_ID)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
 		}
 	}

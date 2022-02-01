@@ -438,6 +438,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		board.setFrame(bs.frame);
 		board.setBoard(bs.board);
 		board.setIpAddress(bs.address);
+		board.setMachineName(bs.machineName);
 
 		// Inflate the other properties
 		board.setPowered(bs.getPower());

@@ -461,14 +461,15 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_BOARD_POWER_INFO =
 			"SELECT board_power, power_off_timestamp, power_on_timestamp "
-					+ "FROM boards WHERE board_id = :board_id";
+					+ "FROM boards WHERE board_id = :board_id LIMIT 1";
 
 	/** Get What job is allocated to a board. */
 	@Parameter("board_id")
 	@ResultColumn("allocated_job")
 	@SingleRowResult
 	protected static final String GET_BOARD_JOB =
-			"SELECT allocated_job FROM boards WHERE board_id = :board_id";
+			"SELECT allocated_job FROM boards WHERE board_id = :board_id "
+					+ "LIMIT 1";
 
 	/** Get the problem reports about a board. */
 	@Parameter("board_id")
@@ -476,7 +477,6 @@ public abstract class SQLQueries {
 	@ResultColumn("reported_issue")
 	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
-	// FIXME test
 	protected static final String GET_BOARD_REPORTS =
 			"SELECT report_id, reported_issue,report_timestamp, "
 					+ "user_name AS reporter_name "
@@ -754,6 +754,26 @@ public abstract class SQLQueries {
 			"UPDATE machines SET max_chip_x = :max_x, max_chip_y = :max_y "
 					+ "WHERE machine_id = :machine_id";
 
+	/** Get a board's full coordinate info given it's ID. */
+	@Parameter("board_id")
+	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	@ResultColumn("machine_name")
+	@SingleRowResult
+	protected static final String FIND_BOARD_BY_ID =
+			"SELECT board_id, boards.x, boards.y, boards.z, "
+					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
+					+ "machines.machine_name "
+					+ "FROM boards JOIN machines USING (machine_id) "
+					+ "JOIN bmp USING (bmp_id) "
+					+ "WHERE board_id = :board_id LIMIT 1";
+
 	/** Get a board's ID given it's triad coordinates. */
 	@Parameter("machine_name")
 	@Parameter("x")
@@ -770,7 +790,8 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_XYZ =
 			"SELECT board_id, boards.x, boards.y, boards.z, "
-					+ "bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
+					+ "machines.machine_name "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE machine_name = :machine_name "
@@ -792,7 +813,8 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_CFB =
 			"SELECT board_id, boards.x, boards.y, boards.z, "
-					+ "bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
+					+ "machines.machine_name "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE machine_name = :machine_name "
@@ -814,7 +836,8 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_IP_ADDRESS =
 			"SELECT board_id, boards.x, boards.y, boards.z, "
-					+ "bmp.cabinet, bmp.frame, board_num, boards.address "
+					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
+					+ "machines.machine_name "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE machine_name = :machine_name "
