@@ -30,7 +30,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
-import uk.ac.manchester.spinnaker.alloc.model.BoardRecord.Report;
+import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 
 /**
  * How to manage the state of a machine and boards in it.
@@ -101,6 +101,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
+		/** @return What job has been allocated to the board? */
 		public Optional<Integer> getAllocatedJob() {
 			return execute(false, conn -> {
 				try (Query q = conn.query(GET_BOARD_JOB)) {
@@ -118,6 +119,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
+		/** @return When was the board last switched on? */
 		public Optional<Instant> getPowerOnTime() {
 			return execute(false, conn -> {
 				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -126,6 +128,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
+		/** @return When was the board last switched off? */
 		public Optional<Instant> getPowerOffTime() {
 			return execute(false, conn -> {
 				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
@@ -134,10 +137,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 			});
 		}
 
-		public List<Report> getReports() {
+		/** @return What issues have been logged against the board? */
+		public List<BoardIssueReport> getReports() {
 			return execute(false, conn -> {
 				try (Query q = conn.query(GET_BOARD_REPORTS)) {
-					return q.call(id).map(Report::new).toList();
+					return q.call(id).map(BoardIssueReport::new).toList();
 				}
 			});
 		}

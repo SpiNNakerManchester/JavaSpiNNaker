@@ -25,9 +25,6 @@ import java.util.List;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
-import uk.ac.manchester.spinnaker.alloc.db.Row;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
-
 /**
  * Model of a board, for configuration purposes.
  *
@@ -62,82 +59,7 @@ public class BoardRecord {
 
 	private Instant lastPowerOff;
 
-	private List<Report> reports = new ArrayList<>();
-
-	/** A report of an issue with a board. */
-	public static class Report {
-		private int id;
-
-		private String issue;
-
-		private String reporter;
-
-		private Instant timestamp;
-
-		public Report() {
-		}
-
-		/**
-		 * Create a record from a row.
-		 *
-		 * @param row
-		 *            The database row.
-		 * @see SQLQueries#GET_BOARD_REPORTS
-		 */
-		public Report(Row row) {
-			id = row.getInt("report_id");
-			issue = row.getString("reported_issue");
-			reporter = row.getString("reporter_name");
-			timestamp = row.getInstant("report_timestamp");
-		}
-
-		/** @return The report ID. */
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		/**
-		 * @return What did they report?
-		 */
-		public String getIssue() {
-			return issue;
-		}
-
-		public void setIssue(String issue) {
-			this.issue = issue;
-		}
-
-		/**
-		 * @return Who reported it?
-		 */
-		public String getReporter() {
-			return reporter;
-		}
-
-		public void setReporter(String reporter) {
-			this.reporter = reporter;
-		}
-
-		/**
-		 * @return When was it reported?
-		 */
-		public Instant getTimestamp() {
-			return timestamp;
-		}
-
-		public void setTimestamp(Instant timestamp) {
-			this.timestamp = timestamp;
-		}
-	}
-
-	// TODO What other attributes should be in here?
-	// Allocated job?
-	// Last time turned on and off?
-	// Number of reports outstanding?
+	private List<BoardIssueReport> reports = new ArrayList<>();
 
 	/** @return The board ID. */
 	public Integer getId() {
@@ -329,11 +251,11 @@ public class BoardRecord {
 
 	/** @return The reports associated with this board. */
 	@NotNull
-	public List<Report> getReports() {
+	public List<BoardIssueReport> getReports() {
 		return reports;
 	}
 
-	public void setReports(List<Report> reports) {
+	public void setReports(List<BoardIssueReport> reports) {
 		this.reports = nonNull(reports) ? reports : new ArrayList<>();
 	}
 
