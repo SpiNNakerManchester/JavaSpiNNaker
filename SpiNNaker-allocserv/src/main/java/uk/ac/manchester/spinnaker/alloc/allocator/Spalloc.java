@@ -1459,7 +1459,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			@Override
 			public PowerState getPower() {
 				try (Connection conn = getConnection();
-						Query power = conn.query(GET_BOARD_POWER)) {
+						Query power = conn.query(GET_SUM_BOARDS_POWERED)) {
 					return conn.transaction(false, () -> power.call1(id)
 							.map(row -> row.getInt("total_on") < boardIds.size()
 									? OFF

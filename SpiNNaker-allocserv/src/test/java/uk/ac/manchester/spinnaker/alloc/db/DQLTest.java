@@ -344,6 +344,41 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getBoardPowerInfo() {
+		try (Query q = c.query(GET_BOARD_POWER_INFO)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("board_power", "power_off_timestamp",
+					"power_on_timestamp"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getBoardJob() {
+		try (Query q = c.query(GET_BOARD_JOB)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("allocated_job"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getBoardReports() {
+		try (Query q = c.query(GET_BOARD_REPORTS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("report_id", "report_timestamp",
+					"reported_issue", "reporter_name"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getBoardNumbers() {
 		try (Query q = c.query(GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
@@ -428,9 +463,9 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
-	void getBoardPower() {
+	void getSumBoardsPowered() {
 		// This query always produces one row
-		try (Query q = c.query(GET_BOARD_POWER)) {
+		try (Query q = c.query(GET_SUM_BOARDS_POWERED)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("total_on"), q.getRowColumnNames());
 			c.transaction(() -> {

@@ -17,7 +17,11 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -26,6 +30,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.model.BoardRecord.Report;
 
 /**
  * How to manage the state of a machine and boards in it.
@@ -38,7 +43,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Access to the enablement-state of a board.
 	 */
 	public final class BoardState {
-		private final int boardId;
+		/** The board ID. Unique. */
+		public final int id;
 
 		/** The X triad coordinate. */
 		public final int x;
@@ -62,7 +68,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public final String address;
 
 		private BoardState(Row row) {
-			this.boardId = row.getInt("board_id");
+			this.id = row.getInt("board_id");
 			this.x = row.getInt("x");
 			this.y = row.getInt("y");
 			this.z = row.getInt("z");
@@ -78,7 +84,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public boolean getState() {
 			return execute(false, conn -> {
 				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
-					return q.call1(boardId).map(bool("functioning"))
+					return q.call1(id).map(bool("functioning"))
 							.orElse(false);
 				}
 			});
@@ -87,10 +93,62 @@ public class MachineStateControl extends DatabaseAwareBean {
 		public void setState(boolean newValue) {
 			execute(conn -> {
 				try (Update u = conn.update(SET_FUNCTIONING_FIELD)) {
-					return u.call(newValue, boardId);
+					return u.call(newValue, id);
 				}
 			});
 		}
+
+		public Optional<Integer> getAllocatedJob() {
+			return execute(false, conn -> {
+				try (Query q = conn.query(GET_BOARD_JOB)) {
+					return q.call1(id).map(integer("allocated_job"));
+				}
+			});
+		}
+
+		/** @return Is the board switched on? */
+		public boolean getPower() {
+			return execute(false, conn -> {
+				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
+					return q.call1(id).map(bool("board_power")).orElse(false);
+				}
+			});
+		}
+
+		public Optional<Instant> getPowerOnTime() {
+			return execute(false, conn -> {
+				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
+					return q.call1(id).map(instant("power_on_timestamp"));
+				}
+			});
+		}
+
+		public Optional<Instant> getPowerOffTime() {
+			return execute(false, conn -> {
+				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
+					return q.call1(id).map(instant("power_off_timestamp"));
+				}
+			});
+		}
+
+		public List<Report> getReports() {
+			return execute(false, conn -> {
+				try (Query q = conn.query(GET_BOARD_REPORTS)) {
+					return q.call(id).map(Report::new).toList();
+				}
+			});
+		}
+	}
+
+	/**
+	 * Look up a board for management.
+	 *
+	 * @param id
+	 *            The unique ID of the board.
+	 * @return Board state manager
+	 */
+	public Optional<BoardState> findId(int id) {
+		return Optional.empty(); // FIXME
 	}
 
 	/**

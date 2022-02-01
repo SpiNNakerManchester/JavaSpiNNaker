@@ -420,7 +420,7 @@ public abstract class SQLQueries {
 	@Parameter("job_id")
 	@ResultColumn("total_on")
 	@SingleRowResult
-	protected static final String GET_BOARD_POWER =
+	protected static final String GET_SUM_BOARDS_POWERED =
 			"SELECT sum(board_power) AS total_on FROM boards "
 					+ "WHERE allocated_job = :job_id";
 
@@ -452,6 +452,36 @@ public abstract class SQLQueries {
 	protected static final String GET_ROOT_COORDS =
 			"SELECT x, y, z, root_x, root_y FROM boards "
 					+ "WHERE board_id = :board_id LIMIT 1";
+
+	/** Get whether a board is powered. */
+	@Parameter("board_id")
+	@ResultColumn("board_power")
+	@ResultColumn("power_off_timestamp")
+	@ResultColumn("power_on_timestamp")
+	@SingleRowResult
+	protected static final String GET_BOARD_POWER_INFO =
+			"SELECT board_power, power_off_timestamp, power_on_timestamp "
+					+ "FROM boards WHERE board_id = :board_id";
+
+	/** Get What job is allocated to a board. */
+	@Parameter("board_id")
+	@ResultColumn("allocated_job")
+	@SingleRowResult
+	protected static final String GET_BOARD_JOB =
+			"SELECT allocated_job FROM boards WHERE board_id = :board_id";
+
+	/** Get the problem reports about a board. */
+	@Parameter("board_id")
+	@ResultColumn("report_id")
+	@ResultColumn("reported_issue")
+	@ResultColumn("reporter_name")
+	@ResultColumn("report_timestamp")
+	// FIXME test
+	protected static final String GET_BOARD_REPORTS =
+			"SELECT report_id, reported_issue,report_timestamp, "
+					+ "user_name AS reporter_name "
+					+ "FROM board_reports JOIN user_info ON reporter = user_id "
+					+ "WHERE board_id = :board_id";
 
 	/** Delete an allocation task. */
 	@Parameter("request_id")

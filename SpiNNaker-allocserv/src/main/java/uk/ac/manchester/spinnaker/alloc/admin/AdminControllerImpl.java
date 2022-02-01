@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
@@ -404,7 +405,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 		BoardState bs = null;
 		try {
-			if (board.isTriadCoordPresent()) {
+			if (nonNull(board.getId())) {
+				bs = machineController.findId(board.getId()).orElse(null);
+			} else if (board.isTriadCoordPresent()) {
 				bs = machineController.findTriad(board.getMachineName(),
 						board.getX(), board.getY(), board.getZ()).orElse(null);
 			} else if (board.isPhysicalCoordPresent()) {
@@ -427,6 +430,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 
 		// Inflate the coordinates
+		board.setId(bs.id);
 		board.setX(bs.x);
 		board.setY(bs.y);
 		board.setZ(bs.z);
@@ -434,6 +438,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		board.setFrame(bs.frame);
 		board.setBoard(bs.board);
 		board.setIpAddress(bs.address);
+
+		// Inflate the other properties
+		board.setPowered(bs.getPower());
+		board.setLastPowerOff(bs.getPowerOffTime().orElse(null));
+		board.setLastPowerOn(bs.getPowerOnTime().orElse(null));
+		board.setJobId(bs.getAllocatedJob().orElse(null));
+		board.setReports(bs.getReports());
 
 		// Get or set
 		try {
