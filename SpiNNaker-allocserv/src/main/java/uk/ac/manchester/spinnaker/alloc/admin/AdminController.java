@@ -71,6 +71,9 @@ public interface AdminController {
 	/** Path to machine-instantiation operations. */
 	String MACHINE_PATH = "/machine";
 
+	/** Naoe of parameter used when submitting a new machine definition. */
+	String MACHINE_FILE_PARAM = "file";
+
 	/**
 	 * Get supported ops.
 	 *
@@ -208,7 +211,7 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@GetMapping(MACHINE_PATH)
-	ModelAndView machineUploadForm();
+	ModelAndView machineManagement();
 
 	/**
 	 * Handle the upload of a machine. Note that no user has any quota set on a
@@ -220,7 +223,8 @@ public interface AdminController {
 	 *            the model of the form
 	 * @return the model and view
 	 */
-	@PostMapping(MACHINE_PATH)
-	ModelAndView defineMachine(@RequestParam("file") MultipartFile file,
+	@PostMapping(path = MACHINE_PATH, params = MACHINE_FILE_PARAM)
+	ModelAndView defineMachine(
+			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file,
 			ModelMap modelMap);
 }

@@ -83,6 +83,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		implements AdminController {
 	private static final Logger log = getLogger(AdminControllerImpl.class);
 
+	/** One board-hour in board-seconds. */
+	private static final int BOARD_HOUR = 3600;
+
 	// These are paths below src/main/webapp/WEB-INF/views
 	private static final String MAIN_VIEW = "admin/index";
 
@@ -103,6 +106,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private static final String MACHINE_LIST_OBJ = "machineNames";
 
 	private static final String DEFINED_MACHINES_OBJ = "definedMachines";
+
+	private static final String MACHINE_TAGGING_OBJ = "machineTagging";
+
+	private static final String DEFAULT_TAGGING_COUNT = "defaultCount";
+
+	private static final String MACHINE_REPORTS_OBJ = "machineReports";
 
 	@Autowired
 	private UserControl userController;
@@ -154,7 +163,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			attrs.addFlashAttribute("boardsUri",
 					uri(on(AdminController.class).boards()));
 			attrs.addFlashAttribute("machineUri",
-					uri(on(AdminController.class).machineUploadForm()));
+					uri(on(AdminController.class).machineManagement()));
 			Authentication auth =
 					SecurityContextHolder.getContext().getAuthentication();
 			attrs.addFlashAttribute(USER_MAY_CHANGE_PASSWORD,
@@ -168,7 +177,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 					uri(on(AdminController.class).getUserCreationForm()));
 			mav.addObject("boardsUri", uri(on(AdminController.class).boards()));
 			mav.addObject("machineUri",
-					uri(on(AdminController.class).machineUploadForm()));
+					uri(on(AdminController.class).machineManagement()));
 			Authentication auth =
 					SecurityContextHolder.getContext().getAuthentication();
 			mav.addObject(USER_MAY_CHANGE_PASSWORD,
@@ -363,9 +372,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return mav;
 	}
 
-	/** One board-hour in board-seconds. */
-	private static final int BOARD_HOUR = 3600;
-
 	@Override
 	@PostMapping(USER_QUOTA_PATH)
 	public ModelAndView adjustQuota(@PathVariable("id") int id,
@@ -467,16 +473,30 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return addStandardContext(mav);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <strong>Implementation note:</strong>
+	 * This is the baseline information that {@code admin/machine.jsp} needs.
+	 */
 	@Override
 	@GetMapping(MACHINE_PATH)
-	public ModelAndView machineUploadForm() {
-		return addStandardContext(new ModelAndView(MACHINE_VIEW,
-				MACHINE_LIST_OBJ, getMachineNames()));
+	public ModelAndView machineManagement() {
+		ModelAndView mav = new ModelAndView(MACHINE_VIEW,
+				MACHINE_LIST_OBJ, getMachineNames());
+		List<MachineTagging> tagging = machineController.getMachineTagging();
+		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
+		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
+				.filter(MachineTagging::isTaggedAsDefault).count());
+		mav.addObject(MACHINE_REPORTS_OBJ,
+				machineController.getMachineReports());
+		return addStandardContext(mav);
 	}
 
 	@Override
-	@PostMapping(MACHINE_PATH)
-	public ModelAndView defineMachine(@RequestParam("file") MultipartFile file,
+	@PostMapping(value = MACHINE_PATH, params = MACHINE_FILE_PARAM)
+	public ModelAndView defineMachine(
+			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file,
 			ModelMap modelMap) {
 		List<Machine> machines;
 		try (InputStream input = file.getInputStream()) {
@@ -490,9 +510,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		} catch (IOException e) {
 			return errors("problem with processing file: " + e.getMessage());
 		}
-		ModelAndView mav = new ModelAndView(MACHINE_VIEW);
-		mav.addObject(MACHINE_LIST_OBJ, getMachineNames());
+		ModelAndView mav = machineManagement();
+		// Tailor with extra objects here
 		mav.addObject(DEFINED_MACHINES_OBJ, machines);
-		return addStandardContext(mav);
+		return mav;
 	}
 }

@@ -19,10 +19,14 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
 
@@ -219,6 +223,44 @@ public class MachineStateControl extends DatabaseAwareBean {
 		return execute(false, conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				return q.call1(machine, address).map(BoardState::new);
+			}
+		});
+	}
+
+	/**
+	 * @return The mapping from machine names+IDs to tags.
+	 */
+	public List<MachineTagging> getMachineTagging() {
+		return execute(false, conn -> {
+			try (Query getMachines = conn.query(GET_ALL_MACHINES);
+					Query getTags = conn.query(GET_TAGS)) {
+				List<MachineTagging> infos = new ArrayList<>();
+				getMachines.call().map(MachineTagging::new).forEach(infos::add);
+				for (MachineTagging t : infos) {
+					t.setTags(
+							getTags.call(t.getId()).map(string("tag")).toSet());
+				}
+				return infos;
+			}
+		});
+	}
+
+	/**
+	 * @return The unacknowledged reports about boards with potential problems
+	 *         in existing machines, categorised by machine.
+	 */
+	public Map<String, List<BoardIssueReport>> getMachineReports() {
+		return execute(false, conn -> {
+			try (Query getMachines = conn.query(GET_ALL_MACHINES);
+					Query getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
+				Map<String, List<BoardIssueReport>> reports = new TreeMap<>();
+				getMachines.call()
+						.forEach(machine -> reports.put(
+								machine.getString("machine_name"),
+								getMachineReports
+										.call(machine.getInt("machine_id"))
+										.map(BoardIssueReport::new).toList()));
+				return reports;
 			}
 		});
 	}

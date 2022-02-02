@@ -471,14 +471,37 @@ public abstract class SQLQueries {
 			"SELECT allocated_job FROM boards WHERE board_id = :board_id "
 					+ "LIMIT 1";
 
-	/** Get the problem reports about a board. */
+	/**
+	 * Get the problem reports about boards in a machine.
+	 *
+	 * @see BoardIssueReport
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("board_id")
+	@ResultColumn("report_id")
+	@ResultColumn("reported_issue")
+	@ResultColumn("reporter_name")
+	@ResultColumn("report_timestamp")
+	protected static final String GET_MACHINE_REPORTS =
+			"SELECT board_id, report_id, reported_issue, report_timestamp, "
+					+ "user_name AS reporter_name "
+					+ "FROM board_reports JOIN user_info ON reporter = user_id "
+					+ "JOIN boards USING (board_id) "
+					+ "WHERE machine_id = :machine_id GROUP BY board_id";
+
+	/**
+	 * Get the problem reports about a board.
+	 *
+	 * @see BoardIssueReport
+	 */
 	@Parameter("board_id")
+	@ResultColumn("board_id")
 	@ResultColumn("report_id")
 	@ResultColumn("reported_issue")
 	@ResultColumn("reporter_name")
 	@ResultColumn("report_timestamp")
 	protected static final String GET_BOARD_REPORTS =
-			"SELECT report_id, reported_issue,report_timestamp, "
+			"SELECT board_id, report_id, reported_issue, report_timestamp, "
 					+ "user_name AS reporter_name "
 					+ "FROM board_reports JOIN user_info ON reporter = user_id "
 					+ "WHERE board_id = :board_id";

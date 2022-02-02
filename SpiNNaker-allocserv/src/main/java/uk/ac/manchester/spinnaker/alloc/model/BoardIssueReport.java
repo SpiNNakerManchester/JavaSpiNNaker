@@ -29,6 +29,8 @@ import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 public class BoardIssueReport {
 	private int id;
 
+	private int boardId;
+
 	private String issue;
 
 	private String reporter;
@@ -47,6 +49,7 @@ public class BoardIssueReport {
 	 */
 	public BoardIssueReport(Row row) {
 		id = row.getInt("report_id");
+		boardId = row.getInt("board_id");
 		issue = row.getString("reported_issue");
 		reporter = row.getString("reporter_name");
 		timestamp = row.getInstant("report_timestamp");
@@ -59,6 +62,15 @@ public class BoardIssueReport {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	/** @return The board ID. */
+	public int getBoardId() {
+		return boardId;
+	}
+
+	public void setBoardId(int id) {
+		this.boardId = id;
 	}
 
 	/**

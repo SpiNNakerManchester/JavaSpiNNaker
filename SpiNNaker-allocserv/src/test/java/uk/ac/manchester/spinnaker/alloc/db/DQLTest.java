@@ -223,6 +223,18 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getMachineReports() {
+		try (Query q = c.query(GET_MACHINE_REPORTS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("board_id", "report_id", "report_timestamp",
+					"reported_issue", "reporter_name"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getJobIds() {
 		try (Query q = c.query(GET_JOB_IDS)) {
 			assertEquals(2, q.getNumArguments());
@@ -371,7 +383,7 @@ class DQLTest extends SQLQueries {
 	void getBoardReports() {
 		try (Query q = c.query(GET_BOARD_REPORTS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("report_id", "report_timestamp",
+			assertSetEquals(set("board_id", "report_id", "report_timestamp",
 					"reported_issue", "reporter_name"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());

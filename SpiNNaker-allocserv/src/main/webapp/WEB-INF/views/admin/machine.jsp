@@ -44,6 +44,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </form>
 
 <%-- TODO: Allow machines to be taken out of service entirely or retagged? --%>
+<%-- TODO: add in support for retagging machines --%>
+<%-- TODO: warning when either less or more than one board is default --%>
 
 <jsp:include page="footer.jsp" />
 </body>
