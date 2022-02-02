@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
 import uk.ac.manchester.spinnaker.storage.Parameter;
@@ -757,12 +758,23 @@ public abstract class SQLQueries {
 	 * Insert a tag.
 	 *
 	 * @see MachineDefinitionLoader
+	 * @see MachineStateController
 	 */
 	@Parameter("machine_id")
 	@Parameter("tag")
 	@GeneratesID
 	protected static final String INSERT_TAG =
 			"INSERT INTO tags(machine_id, tag) VALUES(:machine_id, :tag)";
+
+	/**
+	 * Delete all tags for a machine.
+	 *
+	 * @see MachineStateController
+	 */
+	@Parameter("machine_id")
+	// FIXME test
+	protected static final String DELETE_MACHINE_TAGS =
+			"DELETE FROM tags WHERE machine_id = :machine_id";
 
 	/**
 	 * Note down the maximum chip coordinates so we can calculate wraparounds

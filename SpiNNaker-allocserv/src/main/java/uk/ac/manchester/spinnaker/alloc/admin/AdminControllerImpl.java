@@ -33,9 +33,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.validation.Valid;
@@ -400,6 +402,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return addStandardContext(mav);
 	}
 
+	// TODO refactor into multiple methods
 	@Override
 	@PostMapping(BOARDS_PATH)
 	public ModelAndView board(
@@ -491,6 +494,29 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		mav.addObject(MACHINE_REPORTS_OBJ,
 				machineController.getMachineReports());
 		return addStandardContext(mav);
+	}
+
+	@Override
+	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
+	public ModelAndView retagMachine(
+			@ModelAttribute("machine") int machineId,
+			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags,
+			ModelMap modelMap) {
+		Set<String> tags = new HashSet<>();
+		for (String tag : newTags.split(",")) {
+			tag = tag.trim();
+			if (tag.matches("\\w+")) {
+				tags.add(tag);
+			} else {
+				return errors("tag \"" + tag + "\" is illegal");
+			}
+		}
+		try {
+			machineController.updateTags(machineId, tags);
+		} catch (DataAccessException e) {
+			return errors(e);
+		}
+		return machineManagement();
 	}
 
 	@Override

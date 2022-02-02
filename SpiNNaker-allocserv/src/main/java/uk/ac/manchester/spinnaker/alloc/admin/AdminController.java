@@ -71,8 +71,11 @@ public interface AdminController {
 	/** Path to machine-instantiation operations. */
 	String MACHINE_PATH = "/machine";
 
-	/** Naoe of parameter used when submitting a new machine definition. */
+	/** Name of parameter used when submitting a new machine definition. */
 	String MACHINE_FILE_PARAM = "file";
+
+	/** Name of parameter used to mark a retagging. */
+	String MACHINE_RETAG_PARAM = "retag";
 
 	/**
 	 * Get supported ops.
@@ -214,8 +217,26 @@ public interface AdminController {
 	ModelAndView machineManagement();
 
 	/**
-	 * Handle the upload of a machine. Note that no user has any quota set on a
-	 * newly defined machine; it's totally free to use by default.
+	 * Handle the change of the tags of a machine.
+	 *
+	 * @param machineId
+	 *            The ID of the machine being retagged
+	 * @param newTags
+	 *            The tags of the machine; comma-separated list
+	 * @param modelMap
+	 *            the model of the form
+	 * @return the model and view
+	 */
+	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
+	ModelAndView retagMachine(
+			@ModelAttribute("machine") int machineId,
+			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags,
+			ModelMap modelMap);
+
+	/**
+	 * Handle the upload of a machine definition. Note that no user has any
+	 * quota set on a newly defined machine; it's totally free to use by
+	 * default.
 	 *
 	 * @param file
 	 *            The file being uploaded

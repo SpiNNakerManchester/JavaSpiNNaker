@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.util.stream.Collectors.joining;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,8 +63,8 @@ public class MachineTagging {
 	}
 
 	/** @return The tags of the machine. */
-	public Set<String> getTags() {
-		return tags;
+	public String getTags() {
+		return tags.stream().collect(joining(", "));
 	}
 
 	public void setTags(Set<String> tags) {

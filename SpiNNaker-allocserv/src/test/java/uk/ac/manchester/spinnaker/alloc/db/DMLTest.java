@@ -392,13 +392,25 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void insertTags() {
+	void insertTag() {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_TAG)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
 				assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp"));
+			});
+		}
+	}
+
+	@Test
+	void deleteMachineTags() {
+		assumeWritable(c);
+		try (Update u = c.update(DELETE_MACHINE_TAGS)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No machine, no tags for it
+				assertEquals(0, u.call(NO_MACHINE));
 			});
 		}
 	}

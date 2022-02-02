@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
@@ -261,6 +262,27 @@ public class MachineStateControl extends DatabaseAwareBean {
 										.call(machine.getInt("machine_id"))
 										.map(BoardIssueReport::new).toList()));
 				return reports;
+			}
+		});
+	}
+
+	/**
+	 * Replace the tags on a machine with a given set.
+	 *
+	 * @param machineId
+	 *            The ID of the machine to update the tags of.
+	 * @param tags
+	 *            The tags to apply. Existing tags will be removed.
+	 */
+	public void updateTags(int machineId, Set<String> tags) {
+		execute(conn -> {
+			try (Update delete = conn.update(DELETE_MACHINE_TAGS);
+					Update add = conn.update(INSERT_TAG)) {
+				delete.call(machineId);
+				for (String tag : tags) {
+					add.call(machineId, tag);
+				}
+				return this; // Unimportant value
 			}
 		});
 	}

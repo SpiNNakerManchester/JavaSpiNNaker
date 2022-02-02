@@ -51,6 +51,16 @@ canvas.overlink {
 	border-radius: 3px;
 }
 
+.hiddensubmit {
+    border: 0 none;
+    height: 0;
+    width: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+
 /* Used to mark columns of tables as semantically containing numbers or text. */
 .numberColumn {
 	text-align: right;
