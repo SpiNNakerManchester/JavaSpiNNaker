@@ -772,7 +772,6 @@ public abstract class SQLQueries {
 	 * @see MachineStateController
 	 */
 	@Parameter("machine_id")
-	// FIXME test
 	protected static final String DELETE_MACHINE_TAGS =
 			"DELETE FROM tags WHERE machine_id = :machine_id";
 
