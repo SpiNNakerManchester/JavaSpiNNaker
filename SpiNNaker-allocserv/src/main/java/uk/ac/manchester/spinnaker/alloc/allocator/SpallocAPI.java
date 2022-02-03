@@ -54,36 +54,45 @@ public interface SpallocAPI {
 	/**
 	 * List the machines.
 	 *
+	 * @param allowOutOfService
+	 *            Whether to include machines marked as out of service.
 	 * @return A mapping from names to machines (which are live objects).
 	 */
-	Map<String, Machine> getMachines();
+	Map<String, Machine> getMachines(boolean allowOutOfService);
 
 	/**
 	 * List the machines.
 	 *
+	 * @param allowOutOfService
+	 *            Whether to include machines marked as out of service.
 	 * @return A description of all the machines.
 	 */
-	List<MachineListEntryRecord> listMachines();
+	List<MachineListEntryRecord> listMachines(boolean allowOutOfService);
 
 	/**
 	 * Get a specific machine.
 	 *
 	 * @param name
 	 *            The name of the machine to get.
+	 * @param allowOutOfService
+	 *            Whether to include machines marked as out of service.
 	 * @return A machine, on which more operations can be done.
 	 */
-	Optional<Machine> getMachine(String name);
+	Optional<Machine> getMachine(String name, boolean allowOutOfService);
 
 	/**
 	 * Get info about a specific machine.
 	 *
 	 * @param machine
 	 *            The name of the machine to get.
+	 * @param allowOutOfService
+	 *            Whether to include machines marked as out of service.
 	 * @param permit
 	 *            Encodes what the caller may do.
 	 * @return A machine description model.
 	 */
-	Optional<MachineDescription> getMachineInfo(String machine, Permit permit);
+	Optional<MachineDescription> getMachineInfo(String machine,
+			boolean allowOutOfService, Permit permit);
 
 	/**
 	 * List the jobs.
@@ -136,7 +145,9 @@ public interface SpallocAPI {
 	Optional<JobDescription> getJobInfo(Permit permit, int id);
 
 	/**
-	 * Create a job.
+	 * Create a job. Note that jobs <em>cannot</em> be created on machines that
+	 * are out of service, but marking a machine as out of service does not stop
+	 * the jobs that are already running on it.
 	 *
 	 * @param owner
 	 *            Who is making this job.

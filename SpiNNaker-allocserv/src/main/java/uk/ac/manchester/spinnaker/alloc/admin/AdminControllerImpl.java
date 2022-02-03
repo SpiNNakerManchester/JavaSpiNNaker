@@ -130,11 +130,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Autowired
 	private QuotaManager quotaManager;
 
-	private List<String> getMachineNames() {
+	private List<String> getMachineNames(boolean allowOutOfService) {
 		try (Connection conn = getConnection();
 				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return conn.transaction(false, () -> listMachines.call()
-					.map(string("machine_name")).toList());
+			return conn.transaction(false,
+					() -> listMachines.call(allowOutOfService)
+							.map(string("machine_name")).toList());
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
 			return emptyList();
@@ -398,7 +399,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView boards() {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW);
 		mav.addObject(BOARD_OBJ, new BoardRecord());
-		mav.addObject(MACHINE_LIST_OBJ, getMachineNames());
+		mav.addObject(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
 	}
 
@@ -472,21 +473,21 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			return errors(e);
 		}
 		model.put(BOARD_OBJ, bs);
-		model.put(MACHINE_LIST_OBJ, getMachineNames());
+		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * <strong>Implementation note:</strong>
-	 * This is the baseline information that {@code admin/machine.jsp} needs.
+	 * <strong>Implementation note:</strong> This is the baseline information
+	 * that {@code admin/machine.jsp} needs.
 	 */
 	@Override
 	@GetMapping(MACHINE_PATH)
 	public ModelAndView machineManagement() {
-		ModelAndView mav = new ModelAndView(MACHINE_VIEW,
-				MACHINE_LIST_OBJ, getMachineNames());
+		ModelAndView mav = new ModelAndView(MACHINE_VIEW, MACHINE_LIST_OBJ,
+				getMachineNames(true));
 		List<MachineTagging> tagging = machineController.getMachineTagging();
 		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
 		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
@@ -498,8 +499,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
-	public ModelAndView retagMachine(
-			@ModelAttribute("machine") int machineId,
+	public ModelAndView retagMachine(@ModelAttribute("machine") int machineId,
 			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags,
 			ModelMap modelMap) {
 		Set<String> tags = new HashSet<>();

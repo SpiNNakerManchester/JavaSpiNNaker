@@ -236,7 +236,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 			try (Query getMachines = conn.query(GET_ALL_MACHINES);
 					Query getTags = conn.query(GET_TAGS)) {
 				List<MachineTagging> infos = new ArrayList<>();
-				getMachines.call().map(MachineTagging::new).forEach(infos::add);
+				getMachines.call(true).map(MachineTagging::new)
+						.forEach(infos::add);
 				for (MachineTagging t : infos) {
 					t.setTags(
 							getTags.call(t.getId()).map(string("tag")).toSet());
@@ -255,7 +256,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			try (Query getMachines = conn.query(GET_ALL_MACHINES);
 					Query getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
 				Map<String, List<BoardIssueReport>> reports = new TreeMap<>();
-				getMachines.call()
+				getMachines.call(true)
 						.forEach(machine -> reports.put(
 								machine.getString("machine_name"),
 								getMachineReports

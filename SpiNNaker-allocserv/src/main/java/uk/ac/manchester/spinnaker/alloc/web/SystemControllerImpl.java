@@ -193,7 +193,8 @@ public class SystemControllerImpl implements SystemController {
 	@PreAuthorize(IS_READER)
 	public ModelAndView getMachineList() {
 		try {
-			List<MachineListEntryRecord> table = spallocCore.listMachines();
+			List<MachineListEntryRecord> table =
+					spallocCore.listMachines(false);
 			table.forEach(rec -> rec.setDetailsUrl(uri(
 					on(SystemController.class).getMachineInfo(rec.getName()))));
 			return view(MACHINE_LIST_VIEW, "machineList", table);
@@ -208,9 +209,13 @@ public class SystemControllerImpl implements SystemController {
 	public ModelAndView getMachineInfo(String machine) {
 		Permit permit = new Permit(getContext());
 		try {
-			MachineDescription mach =
-					spallocCore.getMachineInfo(machine, permit).orElseThrow(
-							() -> new ResponseStatusException(NOT_FOUND));
+			/*
+			 * Admins can get the view for disabled machines, but if they know
+			 * it is there.
+			 */
+			MachineDescription mach = spallocCore
+					.getMachineInfo(machine, permit.admin, permit)
+					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 			// Owners and admins may drill down further into jobs
 			mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
 					.forEach(j -> j.setUrl(uri(

@@ -164,12 +164,12 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getAllMachines() {
 		try (Query q = c.query(GET_ALL_MACHINES)) {
-			assertEquals(0, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1().isPresent());
+				assertFalse(q.call1(false).isPresent());
 			});
 		}
 	}
@@ -177,10 +177,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void listMachineNames() {
 		try (Query q = c.query(LIST_MACHINE_NAMES)) {
-			assertEquals(0, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("machine_name"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1().isPresent());
+				assertFalse(q.call1(false).isPresent());
 			});
 		}
 	}
@@ -188,12 +188,12 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getMachineById() {
 		try (Query q = c.query(GET_MACHINE_BY_ID)) {
-			assertEquals(1, q.getNumArguments());
+			assertEquals(2, q.getNumArguments());
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_MACHINE).isPresent());
+				assertFalse(q.call1(NO_MACHINE, false).isPresent());
 			});
 		}
 	}
@@ -201,12 +201,12 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getNamedMachine() {
 		try (Query q = c.query(GET_NAMED_MACHINE)) {
-			assertEquals(1, q.getNumArguments());
+			assertEquals(2, q.getNumArguments());
 			assertSetEquals(
 					set("machine_id", "machine_name", "width", "height"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp").isPresent());
+				assertFalse(q.call1("gorp", false).isPresent());
 			});
 		}
 	}

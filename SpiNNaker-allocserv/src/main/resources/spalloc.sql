@@ -53,6 +53,8 @@ CREATE TABLE IF NOT EXISTS machines (
 	default_quota INTEGER, -- NULL for no quota
 	max_chip_x INTEGER NOT NULL DEFAULT (0),
 	max_chip_y INTEGER NOT NULL DEFAULT (0)
+	-- Definition in in-service-column.sql
+	-- in_service INTEGER NOT NULL DEFAULT (1) CHECK (in_service IN (0, 1))
 );
 CREATE TABLE IF NOT EXISTS tags (
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
