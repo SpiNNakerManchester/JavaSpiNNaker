@@ -655,6 +655,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private class MachineImpl implements Machine {
 		private final int id;
 
+		private final boolean inService;
+
 		private final String name;
 
 		private final Set<String> tags;
@@ -672,6 +674,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			name = rs.getString("machine_name");
 			width = rs.getInt("width");
 			height = rs.getInt("height");
+			inService = rs.getBoolean("in_service");
 			try (Query getTags = conn.query(GET_TAGS)) {
 				tags = getTags.call(id).map(string("tag")).toSet();
 			}
@@ -833,6 +836,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public int getHeight() {
 			return height;
+		}
+
+		@Override
+		public boolean isInService() {
+			return inService;
 		}
 
 		@Override

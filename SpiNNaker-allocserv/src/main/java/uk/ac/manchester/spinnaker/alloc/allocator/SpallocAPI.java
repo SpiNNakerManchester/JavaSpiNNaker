@@ -520,6 +520,9 @@ public interface SpallocAPI {
 		 */
 		int getHeight();
 
+		/** @return Whether this machine is currently in service. */
+		boolean isInService();
+
 		/**
 		 * The IDs of boards marked as dead or otherwise taken out of service.
 		 *

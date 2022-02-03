@@ -50,8 +50,10 @@ public abstract class SQLQueries {
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
 	@ResultColumn("height")
+	@ResultColumn("in_service")
 	protected static final String GET_ALL_MACHINES =
-			"SELECT machine_id, machine_name, width, height FROM machines "
+			"SELECT machine_id, machine_name, width, height, in_service "
+					+ "FROM machines "
 					+ "WHERE in_service OR :allow_out_of_service "
 					+ "ORDER BY machine_name ASC";
 
@@ -70,10 +72,11 @@ public abstract class SQLQueries {
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
 	@ResultColumn("height")
+	@ResultColumn("in_service")
 	@SingleRowResult
 	protected static final String GET_MACHINE_BY_ID =
-			"SELECT machine_id, machine_name, width, height FROM machines "
-					+ "WHERE machine_id = :machine_id "
+			"SELECT machine_id, machine_name, width, height, in_service "
+					+ "FROM machines WHERE machine_id = :machine_id "
 					+ "AND (in_service OR :allow_out_of_service) LIMIT 1";
 
 	/** Get basic information about a specific machine. Looks up by name. */
@@ -83,10 +86,11 @@ public abstract class SQLQueries {
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
 	@ResultColumn("height")
+	@ResultColumn("in_service")
 	@SingleRowResult
 	protected static final String GET_NAMED_MACHINE =
-			"SELECT machine_id, machine_name, width, height FROM machines "
-					+ "WHERE machine_name = :machine_name "
+			"SELECT machine_id, machine_name, width, height, in_service "
+					+ "FROM machines WHERE machine_name = :machine_name "
 					+ "AND (in_service OR :allow_out_of_service) LIMIT 1";
 
 	/** Count things on a machine. */
