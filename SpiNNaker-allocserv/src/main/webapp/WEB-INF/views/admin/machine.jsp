@@ -65,7 +65,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<c:choose>
 				<c:when test="${ empty reportlist }">
 					<tr>
-						<td><c:out value="${ tagging.name }" /></td>
+						<td>
+							<%-- TODO: Make into link --%>
+							<c:out value="${ tagging.name }" />
+							<c:choose>
+								<%-- TODO: Make into button --%>
+								<c:when test="${ machineNames[tagging.name] }">
+									(ENABLED)
+								</c:when>
+								<c:otherwise>
+									(DISABLED)
+								</c:otherwise>
+							</c:choose>
+						</td>
 						<td>
 							<form method="POST" action="updateTags">
 								<sec:csrfInput/>
@@ -87,7 +99,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<spring:eval var="nrows"
 										expression="reportlist.size()" />
 								<td rowspan="${ nrows }">
+									<%-- TODO: Make into link --%>
 									<c:out value="${ tagging.name }" />
+									<c:choose>
+										<%-- TODO: Make into button --%>
+										<c:when test="${ machineNames[tagging.name] }">
+											(ENABLED)
+										</c:when>
+										<c:otherwise>
+											(DISABLED)
+										</c:otherwise>
+									</c:choose>
 								</td>
 								<td rowspan="${ nrows }">
 									<form method="POST">

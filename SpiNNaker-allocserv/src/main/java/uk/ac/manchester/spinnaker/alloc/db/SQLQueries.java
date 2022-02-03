@@ -60,8 +60,9 @@ public abstract class SQLQueries {
 	/** Get the machine names in alphabetical order. */
 	@Parameter("allow_out_of_service")
 	@ResultColumn("machine_name")
+	@ResultColumn("in_service")
 	protected static final String LIST_MACHINE_NAMES =
-			"SELECT machine_name FROM machines "
+			"SELECT machine_name, in_service FROM machines "
 					+ "WHERE in_service OR :allow_out_of_service "
 					+ "ORDER BY machine_name ASC";
 

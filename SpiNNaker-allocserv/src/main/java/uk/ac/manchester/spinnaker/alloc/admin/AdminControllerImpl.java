@@ -16,14 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
@@ -69,6 +68,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
@@ -130,15 +130,20 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Autowired
 	private QuotaManager quotaManager;
 
-	private List<String> getMachineNames(boolean allowOutOfService) {
+	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
 		try (Connection conn = getConnection();
 				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return conn.transaction(false,
-					() -> listMachines.call(allowOutOfService)
-							.map(string("machine_name")).toList());
+			return conn.transaction(false, () -> {
+				Map<String, Boolean> map = new TreeMap<>();
+				for (Row row : listMachines.call(allowOutOfService)) {
+					map.put(row.getString("machine_name"),
+							row.getBoolean("in_service"));
+				}
+				return map;
+			});
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
-			return emptyList();
+			return emptyMap();
 		}
 	}
 

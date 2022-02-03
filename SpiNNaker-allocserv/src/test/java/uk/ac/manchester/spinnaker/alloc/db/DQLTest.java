@@ -178,7 +178,8 @@ class DQLTest extends SQLQueries {
 	void listMachineNames() {
 		try (Query q = c.query(LIST_MACHINE_NAMES)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("machine_name"), q.getRowColumnNames());
+			assertSetEquals(set("machine_name", "in_service"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(false).isPresent());
 			});

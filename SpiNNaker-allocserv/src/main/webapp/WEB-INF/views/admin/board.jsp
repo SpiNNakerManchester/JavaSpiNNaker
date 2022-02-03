@@ -1,8 +1,9 @@
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <%--
-Copyright (c) 2021 The University of Manchester
+Copyright (c) 2021-2022 The University of Manchester
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,14 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <h1>Spalloc Board Management</h1>
 
+<spring:eval expression="machineNames.keySet()" var="names" />
 <c:choose>
 	<c:when test="${ board.idPresent }">
 		<form:form method="POST" modelAttribute="board">
 			<form:input path="id" type="hidden" />
 			<h2>Board Location</h2>
 			<form:label path="machineName">Machine:</form:label>
+
 			<form:select path="machineName" disabled="true">
-				<form:options items="${ machineNames }" />
+				<form:options items="${ names }" />
 			</form:select>
 			<br>
 			Triad coordinates:
@@ -133,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<h2>Specify a machine...</h2>
 			<form:label path="machineName">Machine:</form:label>
 			<form:select path="machineName">
-				<form:options items="${ machineNames }"/>
+				<form:options items="${ names }"/>
 			</form:select>
 			<h2>...and the coordinates within a machine</h2>
 			<br>
