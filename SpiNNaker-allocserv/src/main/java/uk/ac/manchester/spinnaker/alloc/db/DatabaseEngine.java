@@ -96,6 +96,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Service;
 import org.sqlite.Function;
@@ -169,6 +170,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
+
+	@Value("classpath:/in-service-column.sql")
+	private Resource sqlInServiceColumnDDLFile;
 
 	@Value("classpath:/spalloc-tombstone.sql")
 	private Resource tombstoneDDLFile;
@@ -347,6 +351,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		log.info("will manage pure in-memory database");
 		props = prototype.props;
 		sqlDDLFile = prototype.sqlDDLFile;
+		sqlInServiceColumnDDLFile = prototype.sqlInServiceColumnDDLFile;
 		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
 		functions = prototype.functions;
@@ -496,7 +501,25 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				wrapper.exec("SELECT COUNT(*) FROM jobs");
 				log.info("verifying historical DB integrity");
 				wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
+				execSchemaUpdates(wrapper, sqlInServiceColumnDDLFile);
 			});
+		}
+	}
+
+	/**
+	 * Applies schema updates from files.
+	 * @param wrapper Where to apply the updates.
+	 * @param schemaUpdates What updates to apply.
+	 */
+	private static void execSchemaUpdates(Connection wrapper,
+			Resource... schemaUpdates) {
+		for (Resource r : schemaUpdates) {
+			try {
+				wrapper.exec(r);
+				log.info("applied schema update from {}", r);
+			} catch (UncategorizedSQLException e) {
+				log.debug("failed to apply schema update from {}", r, e);
+			}
 		}
 	}
 
@@ -1431,7 +1454,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private String readSQL(Resource resource) {
 		synchronized (queryCache) {
-			if (queryCache.containsKey(resource)) {
+			if (queryCache.containsKey(requireNonNull(resource,
+					"undefined resource; check your constructors!"))) {
 				return queryCache.get(resource);
 			}
 		}
