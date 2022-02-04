@@ -287,4 +287,21 @@ public class MachineStateControl extends DatabaseAwareBean {
 			}
 		});
 	}
+
+	/**
+	 * Sets whether a machine is in service.
+	 *
+	 * @param machineId
+	 *            The ID of the machine to control
+	 * @param inService
+	 *            Whether to put the machine in or out of service.
+	 */
+	public void setMachineState(int machineId, boolean inService) {
+		execute(conn -> {
+			try (Update setState = conn.update(SET_MACHINE_STATE)) {
+				setState.call(inService, machineId);
+				return this; // Unimportant value
+			}
+		});
+	}
 }

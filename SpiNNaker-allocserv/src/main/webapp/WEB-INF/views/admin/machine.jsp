@@ -69,17 +69,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<%-- TODO: Make into link --%>
 							<c:out value="${ tagging.name }" />
 							<c:choose>
-								<%-- TODO: Make into button --%>
 								<c:when test="${ machineNames[tagging.name] }">
-									(ENABLED)
+									<form method="POST">
+										(ENABLED
+										<input type="hidden" name="machine" value="${ tagging.id }" />
+										<input type="submit" name="outOfService" value="Disable" />)
+									</form>
 								</c:when>
 								<c:otherwise>
-									(DISABLED)
+									<form method="POST">
+										(DISABLED
+										<input type="hidden" name="machine" value="${ tagging.id }" />
+										<input type="submit" name="intoService" value="Enable" />)
+									</form>
 								</c:otherwise>
 							</c:choose>
 						</td>
 						<td>
-							<form method="POST" action="updateTags">
+							<form method="POST">
 								<sec:csrfInput/>
 								<input type="hidden" name="machine" value="${ tagging.id }" />
 								<input name="retag" value="${ tagging.tags }" />
@@ -102,12 +109,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 									<%-- TODO: Make into link --%>
 									<c:out value="${ tagging.name }" />
 									<c:choose>
-										<%-- TODO: Make into button --%>
 										<c:when test="${ machineNames[tagging.name] }">
-											(ENABLED)
+											<form method="POST">
+												(ENABLED
+												<input type="hidden" name="machine" value="${ tagging.id }" />
+												<input type="submit" name="outOfService" value="Disable" />)
+											</form>
 										</c:when>
 										<c:otherwise>
-											(DISABLED)
+											<form method="POST">
+												(DISABLED
+												<input type="hidden" name="machine" value="${ tagging.id }" />
+												<input type="submit" name="intoService" value="Enable" />)
+											</form>
 										</c:otherwise>
 									</c:choose>
 								</td>

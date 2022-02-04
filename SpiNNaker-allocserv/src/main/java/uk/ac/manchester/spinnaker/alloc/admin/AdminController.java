@@ -24,7 +24,6 @@ import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -106,8 +105,6 @@ public interface AdminController {
 	 *
 	 * @param user
 	 *            The description of the user to create
-	 * @param result
-	 *            Validation results
 	 * @param model
 	 *            Overall model
 	 * @param attrs
@@ -117,7 +114,7 @@ public interface AdminController {
 	 */
 	@PostMapping(CREATE_USER_PATH)
 	ModelAndView createUser(@Valid @ModelAttribute("user") UserRecord user,
-			BindingResult result, ModelMap model, RedirectAttributes attrs);
+			ModelMap model, RedirectAttributes attrs);
 
 	/**
 	 * Show user details.
@@ -136,8 +133,6 @@ public interface AdminController {
 	 *            The user ID
 	 * @param user
 	 *            The description of the user to update
-	 * @param result
-	 *            Validation results
 	 * @param model
 	 *            Overall model
 	 * @param principal
@@ -146,8 +141,8 @@ public interface AdminController {
 	 */
 	@PostMapping(USER_PATH)
 	ModelAndView submitUserForm(@PathVariable("id") int id,
-			@Valid @ModelAttribute("user") UserRecord user,
-			BindingResult result, ModelMap model, Principal principal);
+			@Valid @ModelAttribute("user") UserRecord user, ModelMap model,
+			Principal principal);
 
 	/**
 	 * Delete a user.
@@ -198,15 +193,13 @@ public interface AdminController {
 	 *
 	 * @param board
 	 *            The board coordinates, and possibly the state change
-	 * @param result
-	 *            Validation results
 	 * @param model
 	 *            Overall model
 	 * @return the model and view
 	 */
 	@PostMapping(BOARDS_PATH)
 	ModelAndView board(@Valid @ModelAttribute("board") BoardRecord board,
-			BindingResult result, ModelMap model);
+			ModelMap model);
 
 	/**
 	 * Provide the form for uploading a machine definition.
@@ -228,10 +221,29 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
-	ModelAndView retagMachine(
-			@ModelAttribute("machine") int machineId,
+	ModelAndView retagMachine(@ModelAttribute("machine") int machineId,
 			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags,
 			ModelMap modelMap);
+
+	/**
+	 * Mark a machine as out of service.
+	 *
+	 * @param machineId
+	 *            The ID of the machine
+	 * @return the model and view
+	 */
+	@PostMapping(value = MACHINE_PATH, params = "outOfService")
+	ModelAndView disableMachine(@ModelAttribute("machine") int machineId);
+
+	/**
+	 * Mark a machine as in service.
+	 *
+	 * @param machineId
+	 *            The ID of the machine
+	 * @return the model and view
+	 */
+	@PostMapping(value = MACHINE_PATH, params = "intoService")
+	ModelAndView enableMachine(@ModelAttribute("machine") int machineId);
 
 	/**
 	 * Handle the upload of a machine definition. Note that no user has any

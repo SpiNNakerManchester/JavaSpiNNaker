@@ -50,7 +50,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -245,7 +247,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				+ exception.getMostSpecificCause().getMessage()), null);
 	}
 
-	private static ModelAndView errors(BindingResult result) {
+	@ExceptionHandler(BindException.class)
+	ModelAndView errors(BindingResult result) {
 		if (result.hasGlobalErrors()) {
 			return errors(result.getGlobalError().toString());
 		}
@@ -253,6 +256,19 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			return errors(result.getFieldError().toString());
 		}
 		return errors("unknown error");
+	}
+
+	/**
+	 * Convert thrown exceptions from the DB layer to views so the rest of the
+	 * code doesn't have to.
+	 *
+	 * @param e
+	 *            A database access exception.
+	 * @return The view to render.
+	 */
+	@ExceptionHandler(DataAccessException.class)
+	ModelAndView dbException(DataAccessException e) {
+		return errors(e);
 	}
 
 	@Override
@@ -264,14 +280,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@GetMapping(USERS_PATH)
 	public ModelAndView listUsers() {
 		Map<String, URI> result = new TreeMap<>();
-		try {
-			userController.listUsers()
-					.forEach(user -> result.put(user.getUserName(),
-							uri(on(AdminController.class)
-									.showUserForm(user.getUserId()))));
-		} catch (DataAccessException e) {
-			return errors(e);
-		}
+		userController.listUsers().forEach(user -> result.put(
+				user.getUserName(),
+				uri(on(AdminController.class).showUserForm(user.getUserId()))));
 
 		return addStandardContext(new ModelAndView(USER_LIST_VIEW, "userlist",
 				unmodifiableMap(result)));
@@ -287,18 +298,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@PostMapping(CREATE_USER_PATH)
 	public ModelAndView createUser(
-			@Valid @ModelAttribute(USER_OBJ) UserRecord user,
-			BindingResult result, ModelMap model, RedirectAttributes attrs) {
-		if (result.hasErrors()) {
-			return errors(result);
-		}
+			@Valid @ModelAttribute(USER_OBJ) UserRecord user, ModelMap model,
+			RedirectAttributes attrs) {
 		user.initCreationDefaults();
-		Optional<UserRecord> realUser;
-		try {
-			realUser = userController.createUser(user);
-		} catch (DataAccessException e) {
-			return errors(e);
-		}
+		Optional<UserRecord> realUser = userController.createUser(user);
 		if (!realUser.isPresent()) {
 			return errors("user creation failed (duplicate username?)");
 		}
@@ -313,14 +316,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@GetMapping(USER_PATH)
 	public ModelAndView showUserForm(@PathVariable("id") int id) {
 		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
-		Optional<UserRecord> user;
-		try {
-			user = userController.getUser(id);
-			if (!user.isPresent()) {
-				return errors("no such user");
-			}
-		} catch (DataAccessException e) {
-			return errors(e);
+		Optional<UserRecord> user = userController.getUser(id);
+		if (!user.isPresent()) {
+			return errors("no such user");
 		}
 		mav.addObject(USER_OBJ, user.get().sanitise());
 		mav.addObject("deleteUri",
@@ -333,20 +331,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@PostMapping(USER_PATH)
 	public ModelAndView submitUserForm(@PathVariable("id") int id,
-			@Valid @ModelAttribute(USER_OBJ) UserRecord user,
-			BindingResult result, ModelMap model, Principal principal) {
-		if (result.hasErrors()) {
-			return errors(result);
-		}
+			@Valid @ModelAttribute(USER_OBJ) UserRecord user, ModelMap model,
+			Principal principal) {
 		String adminUser = principal.getName();
 		user.setUserId(null);
-		Optional<UserRecord> updatedUser;
-		try {
-			log.info("updating user ID={}", id);
-			updatedUser = userController.updateUser(id, user, adminUser);
-		} catch (DataAccessException e) {
-			return errors(e);
-		}
+		log.info("updating user ID={}", id);
+		Optional<UserRecord> updatedUser =
+				userController.updateUser(id, user, adminUser);
 		if (!updatedUser.isPresent()) {
 			return errors("no such user");
 		}
@@ -362,20 +353,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		ModelAndView mav =
 				redirectTo(uri(on(AdminController.class).listUsers()), attrs);
 		String adminUser = principal.getName();
-		try {
-			Optional<String> deletedUsername =
-					userController.deleteUser(id, adminUser);
-			if (!deletedUsername.isPresent()) {
-				return errors("could not delete that user");
-			}
-			log.info("deleted user ID={} username={}", id,
-					deletedUsername.get());
-			// Not sure that these are the correct place
-			attrs.addFlashAttribute("notice",
-					"deleted " + deletedUsername.get());
-		} catch (DataAccessException e) {
-			return errors(e);
+		Optional<String> deletedUsername =
+				userController.deleteUser(id, adminUser);
+		if (!deletedUsername.isPresent()) {
+			return errors("could not delete that user");
 		}
+		log.info("deleted user ID={} username={}", id, deletedUsername.get());
+		// Not sure that these are the correct place
+		attrs.addFlashAttribute("notice", "deleted " + deletedUsername.get());
 		attrs.addFlashAttribute(USER_OBJ, new UserRecord());
 		return mav;
 	}
@@ -388,15 +373,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		if (isNull(machine)) {
 			return errors("machine must be specified");
 		}
-		try {
-			quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
-			log.info("adjusted quota for user ID={} machine={} delta={}", id,
-					machine, delta);
-			return redirectTo(uri(on(AdminController.class).showUserForm(id)),
-					attrs);
-		} catch (DataAccessException e) {
-			return errors(e);
-		}
+		quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
+		log.info("adjusted quota for user ID={} machine={} delta={}", id,
+				machine, delta);
+		return redirectTo(uri(on(AdminController.class).showUserForm(id)),
+				attrs);
 	}
 
 	@Override
@@ -408,38 +389,34 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return addStandardContext(mav);
 	}
 
-	// TODO refactor into multiple methods
+	private BoardState getBoardState(BoardRecord board) {
+		if (nonNull(board.getId())) {
+			return machineController.findId(board.getId()).orElse(null);
+		} else if (board.isTriadCoordPresent()) {
+			return machineController.findTriad(board.getMachineName(),
+					board.getX(), board.getY(), board.getZ()).orElse(null);
+		} else if (board.isPhysicalCoordPresent()) {
+			return machineController.findPhysical(board.getMachineName(),
+					board.getCabinet(), board.getFrame(), board.getBoard())
+					.orElse(null);
+		} else if (board.isAddressPresent()) {
+			return machineController
+					.findIP(board.getMachineName(), board.getIpAddress())
+					.orElse(null);
+		} else {
+			// unreachable because of validation
+			throw new UnsupportedOperationException("bad address");
+		}
+	}
+
+	// TODO should we refactor into multiple methods?
 	@Override
 	@PostMapping(BOARDS_PATH)
 	public ModelAndView board(
 			@Valid @ModelAttribute(BOARD_OBJ) BoardRecord board,
-			BindingResult result, ModelMap model) {
+			ModelMap model) {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW, model);
-		if (result.hasErrors()) {
-			return errors(result);
-		}
-		BoardState bs = null;
-		try {
-			if (nonNull(board.getId())) {
-				bs = machineController.findId(board.getId()).orElse(null);
-			} else if (board.isTriadCoordPresent()) {
-				bs = machineController.findTriad(board.getMachineName(),
-						board.getX(), board.getY(), board.getZ()).orElse(null);
-			} else if (board.isPhysicalCoordPresent()) {
-				bs = machineController.findPhysical(board.getMachineName(),
-						board.getCabinet(), board.getFrame(), board.getBoard())
-						.orElse(null);
-			} else if (board.isAddressPresent()) {
-				bs = machineController
-						.findIP(board.getMachineName(), board.getIpAddress())
-						.orElse(null);
-			} else {
-				// unreachable because of validation
-				throw new UnsupportedOperationException("bad address");
-			}
-		} catch (DataAccessException e) {
-			return errors(e);
-		}
+		BoardState bs = getBoardState(board);
 		if (isNull(bs)) {
 			return errors("no such board");
 		}
@@ -516,11 +493,23 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				return errors("tag \"" + tag + "\" is illegal");
 			}
 		}
-		try {
-			machineController.updateTags(machineId, tags);
-		} catch (DataAccessException e) {
-			return errors(e);
-		}
+		machineController.updateTags(machineId, tags);
+		return machineManagement();
+	}
+
+	@Override
+	@PostMapping(value = MACHINE_PATH, params = "outOfService")
+	public ModelAndView
+			disableMachine(@ModelAttribute("machine") int machineId) {
+		machineController.setMachineState(machineId, false);
+		return machineManagement();
+	}
+
+	@Override
+	@PostMapping(value = MACHINE_PATH, params = "intoService")
+	public ModelAndView
+			enableMachine(@ModelAttribute("machine") int machineId) {
+		machineController.setMachineState(machineId, true);
 		return machineManagement();
 	}
 
@@ -532,14 +521,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		List<Machine> machines;
 		try (InputStream input = file.getInputStream()) {
 			machines = machineDefiner.readMachineDefinitions(input);
-			for (Machine m : machines) {
-				machineDefiner.loadMachineDefinition(m);
-				log.info("defined machine {}", m.getName());
-			}
-		} catch (DataAccessException e) {
-			return errors(e);
 		} catch (IOException e) {
 			return errors("problem with processing file: " + e.getMessage());
+		}
+		for (Machine m : machines) {
+			machineDefiner.loadMachineDefinition(m);
+			log.info("defined machine {}", m.getName());
 		}
 		ModelAndView mav = machineManagement();
 		// Tailor with extra objects here

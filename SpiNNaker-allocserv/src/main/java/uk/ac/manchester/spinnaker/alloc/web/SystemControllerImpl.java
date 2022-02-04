@@ -43,7 +43,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -152,20 +154,29 @@ public class SystemControllerImpl implements SystemController {
 		}
 	}
 
+	/**
+	 * Handle {@linkplain Valid invalid} arguments.
+	 *
+	 * @param result
+	 *            The result of validation.
+	 * @return How to render this to the user.
+	 */
+	@ExceptionHandler(BindException.class)
+	private ModelAndView bindingError(BindingResult result) {
+		if (result.hasGlobalErrors()) {
+			return error(result.getGlobalError().toString());
+		}
+		if (result.hasFieldErrors()) {
+			return error(result.getFieldError().toString());
+		}
+		return error("unknown error");
+	}
+
 	@Override
 	@PostMapping("/change_password")
 	public ModelAndView postPasswordChangeForm(
 			@Valid @ModelAttribute("user") PasswordChangeRecord user,
-			BindingResult result, Principal principal) {
-		if (result.hasErrors()) {
-			if (result.hasGlobalErrors()) {
-				return error(result.getGlobalError().toString());
-			}
-			if (result.hasFieldErrors()) {
-				return error(result.getFieldError().toString());
-			}
-			return error("unknown error");
-		}
+			Principal principal) {
 		log.info("changing password for {}", principal.getName());
 		try {
 			return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,

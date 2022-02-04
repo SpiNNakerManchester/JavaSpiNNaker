@@ -26,7 +26,6 @@ import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -118,17 +117,14 @@ public interface SystemController {
 	 *
 	 * @param user
 	 *            The description of what to change.
-	 * @param result
-	 *            Description of whether the {@code user} is actually valid.
 	 * @param principal
 	 *            Who is changing their password.
 	 * @return View and model
 	 */
 	@PostMapping("/change_password")
-	ModelAndView postPasswordChangeForm(
-			@ModelAttribute(USER_PASSWORD_CHANGE_ATTR)
-			@Valid PasswordChangeRecord user, BindingResult result,
-			Principal principal);
+	ModelAndView
+			postPasswordChangeForm(@ModelAttribute(USER_PASSWORD_CHANGE_ATTR)
+			@Valid PasswordChangeRecord user, Principal principal);
 
 	/**
 	 * Log the user out.
