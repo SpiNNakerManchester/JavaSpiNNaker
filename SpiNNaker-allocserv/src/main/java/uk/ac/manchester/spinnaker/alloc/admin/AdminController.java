@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import java.security.Principal;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
@@ -35,6 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 
@@ -177,7 +180,7 @@ public interface AdminController {
 	 */
 	@PostMapping(USER_QUOTA_PATH)
 	ModelAndView adjustQuota(@PathVariable("id") int id,
-			@RequestParam("machine") String machine,
+			@NotEmpty @RequestParam("machine") String machine,
 			@RequestParam("delta") int delta, RedirectAttributes attrs);
 
 	/**
@@ -212,38 +215,39 @@ public interface AdminController {
 	/**
 	 * Handle the change of the tags of a machine.
 	 *
-	 * @param machineId
-	 *            The ID of the machine being retagged
+	 * @param machineName
+	 *            The name of the machine being retagged
 	 * @param newTags
 	 *            The tags of the machine; comma-separated list
-	 * @param modelMap
-	 *            the model of the form
 	 * @return the model and view
 	 */
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
-	ModelAndView retagMachine(@ModelAttribute("machine") int machineId,
-			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags,
-			ModelMap modelMap);
+	ModelAndView retagMachine(
+			@NotEmpty @ModelAttribute("machine") String machineName,
+			@TagList @NotNull
+			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags);
 
 	/**
 	 * Mark a machine as out of service.
 	 *
-	 * @param machineId
-	 *            The ID of the machine
+	 * @param machineName
+	 *            The name of the machine being disabled
 	 * @return the model and view
 	 */
 	@PostMapping(value = MACHINE_PATH, params = "outOfService")
-	ModelAndView disableMachine(@ModelAttribute("machine") int machineId);
+	ModelAndView disableMachine(
+			@NotEmpty @ModelAttribute("machine") String machineName);
 
 	/**
 	 * Mark a machine as in service.
 	 *
-	 * @param machineId
-	 *            The ID of the machine
+	 * @param machineName
+	 *            The name of the machine being enabled
 	 * @return the model and view
 	 */
 	@PostMapping(value = MACHINE_PATH, params = "intoService")
-	ModelAndView enableMachine(@ModelAttribute("machine") int machineId);
+	ModelAndView enableMachine(
+			@NotEmpty @ModelAttribute("machine") String machineName);
 
 	/**
 	 * Handle the upload of a machine definition. Note that no user has any
@@ -252,12 +256,9 @@ public interface AdminController {
 	 *
 	 * @param file
 	 *            The file being uploaded
-	 * @param modelMap
-	 *            the model of the form
 	 * @return the model and view
 	 */
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_FILE_PARAM)
 	ModelAndView defineMachine(
-			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file,
-			ModelMap modelMap);
+			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
 }

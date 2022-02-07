@@ -607,7 +607,7 @@ public class Machine implements MappableIterable<Chip> {
 			}
 			Chip chip10 = getChipAt(new ChipLocation(1, 0));
 			if (!chip10.router.hasLink(Direction.EAST)) {
-				// As in Python the Ethernet adddress of chip 0 0 is used.
+				// As in Python the Ethernet address of chip 0 0 is used.
 				spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 1),
 						new SpinnakerLinkData(1, chip10, Direction.WEST,
 								chip00.ipAddress));

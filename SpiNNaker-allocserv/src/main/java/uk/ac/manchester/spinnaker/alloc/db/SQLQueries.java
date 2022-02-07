@@ -793,10 +793,10 @@ public abstract class SQLQueries {
 	 * @see MachineStateController
 	 */
 	@Parameter("in_service")
-	@Parameter("machine_id")
+	@Parameter("machine_name")
 	protected static final String SET_MACHINE_STATE =
 			"UPDATE machines SET in_service = :in_service "
-					+ "WHERE machine_id = :machine_id";
+					+ "WHERE machine_name = :machine_name";
 
 	/**
 	 * Note down the maximum chip coordinates so we can calculate wraparounds

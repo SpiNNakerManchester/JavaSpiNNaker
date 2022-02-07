@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
 
@@ -36,6 +35,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
+import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 
 /**
  * How to manage the state of a machine and boards in it.
@@ -255,14 +255,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 		return execute(false, conn -> {
 			try (Query getMachines = conn.query(GET_ALL_MACHINES);
 					Query getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
-				Map<String, List<BoardIssueReport>> reports = new TreeMap<>();
-				getMachines.call(true)
-						.forEach(machine -> reports.put(
-								machine.getString("machine_name"),
-								getMachineReports
-										.call(machine.getInt("machine_id"))
-										.map(BoardIssueReport::new).toList()));
-				return reports;
+				return getMachines.call(true).toMap(string("machine_name"),
+						machine -> getMachineReports
+								.call(machine.getInt("machine_id"))
+								.map(BoardIssueReport::new).toList());
 			}
 		});
 	}
@@ -270,18 +266,24 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Replace the tags on a machine with a given set.
 	 *
-	 * @param machineId
-	 *            The ID of the machine to update the tags of.
+	 * @param machineName
+	 *            The name of the machine to update the tags of.
 	 * @param tags
 	 *            The tags to apply. Existing tags will be removed.
+	 * @throws IllegalArgumentException
+	 *             If the machine with that name doesn't exist.
 	 */
-	public void updateTags(int machineId, Set<String> tags) {
+	public void updateTags(String machineName, Set<String> tags) {
 		execute(conn -> {
-			try (Update delete = conn.update(DELETE_MACHINE_TAGS);
-					Update add = conn.update(INSERT_TAG)) {
-				delete.call(machineId);
+			try (Query getMachine = conn.query(GET_NAMED_MACHINE);
+					Update deleteTags = conn.update(DELETE_MACHINE_TAGS);
+					Update addTag = conn.update(INSERT_TAG)) {
+				int machineId = getMachine.call1(machineName, true).orElseThrow(
+						() -> new IllegalArgumentException("no such machine"))
+						.getInt("machine_id");
+				deleteTags.call(machineId);
 				for (String tag : tags) {
-					add.call(machineId, tag);
+					addTag.call(machineId, tag);
 				}
 				return this; // Unimportant value
 			}
@@ -291,15 +293,15 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Sets whether a machine is in service.
 	 *
-	 * @param machineId
-	 *            The ID of the machine to control
+	 * @param machineName
+	 *            The name of the machine to control
 	 * @param inService
 	 *            Whether to put the machine in or out of service.
 	 */
-	public void setMachineState(int machineId, boolean inService) {
+	public void setMachineState(String machineName, boolean inService) {
 		execute(conn -> {
 			try (Update setState = conn.update(SET_MACHINE_STATE)) {
-				setState.call(inService, machineId);
+				setState.call(inService, machineName);
 				return this; // Unimportant value
 			}
 		});

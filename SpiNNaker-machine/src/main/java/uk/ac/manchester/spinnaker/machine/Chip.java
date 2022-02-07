@@ -123,9 +123,9 @@ public class Chip implements HasChipLocation {
 		userProcessors = new TreeMap<>();
 		processors.forEach((processor) -> {
 			if (monitorProcessors.containsKey(processor.processorId)) {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("duplicate processor");
 			} else if (userProcessors.containsKey(processor.processorId)) {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("duplicate processor");
 			}
 			if (processor.isMonitor) {
 				monitorProcessors.put(processor.processorId, processor);

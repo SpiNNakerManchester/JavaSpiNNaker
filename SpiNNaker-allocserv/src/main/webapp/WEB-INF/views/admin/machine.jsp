@@ -66,20 +66,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<c:when test="${ empty reportlist }">
 					<tr>
 						<td>
-							<%-- TODO: Make into link --%>
-							<c:out value="${ tagging.name }" />
+							<a href="${ tagging.url }">
+								<code><c:out value="${ tagging.name }" /></code>
+							</a>
 							<c:choose>
 								<c:when test="${ machineNames[tagging.name] }">
 									<form method="POST">
 										(ENABLED
-										<input type="hidden" name="machine" value="${ tagging.id }" />
+										<input type="hidden" name="machine" value="${ tagging.name }" />
 										<input type="submit" name="outOfService" value="Disable" />)
 									</form>
 								</c:when>
 								<c:otherwise>
 									<form method="POST">
 										(DISABLED
-										<input type="hidden" name="machine" value="${ tagging.id }" />
+										<input type="hidden" name="machine" value="${ tagging.name }" />
 										<input type="submit" name="intoService" value="Enable" />)
 									</form>
 								</c:otherwise>
@@ -88,7 +89,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td>
 							<form method="POST">
 								<sec:csrfInput/>
-								<input type="hidden" name="machine" value="${ tagging.id }" />
+								<input type="hidden" name="machine" value="${ tagging.name }" />
 								<input name="retag" value="${ tagging.tags }" />
 								<div class="hiddensubmit">
 									<input type="submit" class="hiddensubmit" />
@@ -106,20 +107,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<spring:eval var="nrows"
 										expression="reportlist.size()" />
 								<td rowspan="${ nrows }">
-									<%-- TODO: Make into link --%>
-									<c:out value="${ tagging.name }" />
+									<a href="${ tagging.url }">
+										<code><c:out value="${ tagging.name }" /></code>
+									</a>
 									<c:choose>
 										<c:when test="${ machineNames[tagging.name] }">
 											<form method="POST">
 												(ENABLED
-												<input type="hidden" name="machine" value="${ tagging.id }" />
+												<input type="hidden" name="machine" value="${ tagging.name }" />
 												<input type="submit" name="outOfService" value="Disable" />)
 											</form>
 										</c:when>
 										<c:otherwise>
 											<form method="POST">
 												(DISABLED
-												<input type="hidden" name="machine" value="${ tagging.id }" />
+												<input type="hidden" name="machine" value="${ tagging.name }" />
 												<input type="submit" name="intoService" value="Enable" />)
 											</form>
 										</c:otherwise>
@@ -128,7 +130,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<td rowspan="${ nrows }">
 									<form method="POST">
 										<sec:csrfInput/>
-										<input type="hidden" name="machine" value="${ tagging.id }" />
+										<input type="hidden" name="machine" value="${ tagging.name }" />
 										<input name="retag" value="${ tagging.tags }" />
 										<div class="hiddensubmit">
 											<input type="submit" class="hiddensubmit" />
@@ -159,7 +161,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		Clients may get unexpected results.
 	</c:when>
 </c:choose>
-<%-- TODO: Allow machines to be taken out of service entirely? --%>
 
 <jsp:include page="footer.jsp" />
 </body>

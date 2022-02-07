@@ -128,18 +128,18 @@ public abstract class SpallocConnection implements Closeable {
 	}
 
 	private TextSocket getConnection(Integer timeout) throws IOException {
-		TextSocket sock = null;
+		TextSocket sock;
 		Thread key = currentThread();
 		/*
 		 * This loop will keep trying to connect until the socket exists and is
-		 * in a connected state. It's labelled just for clarity.
+		 * in a connected state.
 		 */
-		while (sock == null) {
+		do {
 			if (dead) {
 				throw new EOFException("not connected");
 			}
 			sock = getConnectedSocket(key, timeout);
-		}
+		} while (sock == null);
 
 		if (timeout != null) {
 			sock.setSoTimeout(timeout);

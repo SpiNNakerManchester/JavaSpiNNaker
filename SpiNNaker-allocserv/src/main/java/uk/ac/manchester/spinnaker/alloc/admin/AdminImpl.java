@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BASE_PATH;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -148,11 +147,9 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Map<String, URI> listUsers(UriInfo ui) {
 		log.info("CALLED listUsers()");
-		Map<String, URI> result = new TreeMap<>();
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
-		userController.listUsers().forEach(user -> result
-				.put(user.getUserName(), ub.build(user.getUserId())));
-		return unmodifiableMap(result);
+		return unmodifiableMap(
+				userController.listUsers(user -> ub.build(user.getUserId())));
 	}
 
 	@Override

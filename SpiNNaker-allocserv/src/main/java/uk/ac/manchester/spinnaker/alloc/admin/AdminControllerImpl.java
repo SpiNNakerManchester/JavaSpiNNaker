@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
@@ -32,14 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +72,11 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 
 /**
  * Implements the logic supporting the JSP views and maps them into URL space.
@@ -135,18 +138,23 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
 		try (Connection conn = getConnection();
 				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
-			return conn.transaction(false, () -> {
-				Map<String, Boolean> map = new TreeMap<>();
-				for (Row row : listMachines.call(allowOutOfService)) {
-					map.put(row.getString("machine_name"),
-							row.getBoolean("in_service"));
-				}
-				return map;
-			});
+			return conn.transaction(false,
+					() -> listMachines.call(allowOutOfService)
+							.toMap(string("machine_name"), bool("in_service")));
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
 			return emptyMap();
 		}
+	}
+
+	private static AdminController admin() {
+		// Do not refactor to a constant; request-aware!
+		return on(AdminController.class);
+	}
+
+	private static SystemController system() {
+		// Do not refactor to a constant; request-aware!
+		return on(SystemController.class);
 	}
 
 	/**
@@ -166,14 +174,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			attrs.addFlashAttribute("baseuri",
 					fromCurrentRequestUri().toUriString());
 			attrs.addFlashAttribute("trustLevels", TrustLevel.values());
-			attrs.addFlashAttribute("usersUri",
-					uri(on(AdminController.class).listUsers()));
+			attrs.addFlashAttribute("usersUri", uri(admin().listUsers()));
 			attrs.addFlashAttribute("createUserUri",
-					uri(on(AdminController.class).getUserCreationForm()));
-			attrs.addFlashAttribute("boardsUri",
-					uri(on(AdminController.class).boards()));
+					uri(admin().getUserCreationForm()));
+			attrs.addFlashAttribute("boardsUri", uri(admin().boards()));
 			attrs.addFlashAttribute("machineUri",
-					uri(on(AdminController.class).machineManagement()));
+					uri(admin().machineManagement()));
 			Authentication auth =
 					SecurityContextHolder.getContext().getAuthentication();
 			attrs.addFlashAttribute(USER_MAY_CHANGE_PASSWORD,
@@ -181,13 +187,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		} else {
 			mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
 			mav.addObject("trustLevels", TrustLevel.values());
-			mav.addObject("usersUri",
-					uri(on(AdminController.class).listUsers()));
-			mav.addObject("createUserUri",
-					uri(on(AdminController.class).getUserCreationForm()));
-			mav.addObject("boardsUri", uri(on(AdminController.class).boards()));
-			mav.addObject("machineUri",
-					uri(on(AdminController.class).machineManagement()));
+			mav.addObject("usersUri", uri(admin().listUsers()));
+			mav.addObject("createUserUri", uri(admin().getUserCreationForm()));
+			mav.addObject("boardsUri", uri(admin().boards()));
+			mav.addObject("machineUri", uri(admin().machineManagement()));
 			Authentication auth =
 					SecurityContextHolder.getContext().getAuthentication();
 			mav.addObject(USER_MAY_CHANGE_PASSWORD,
@@ -271,6 +274,19 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return errors(e);
 	}
 
+	private static class AdminException extends RuntimeException {
+		private static final long serialVersionUID = 8401068773689159840L;
+
+		AdminException(String message) {
+			super(message);
+		}
+	}
+
+	@ExceptionHandler(AdminException.class)
+	ModelAndView adminException(AdminException e) {
+		return errors(e.getMessage());
+	}
+
 	@Override
 	public ModelAndView mainUI() {
 		return addStandardContext(MAIN_VIEW);
@@ -279,13 +295,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@GetMapping(USERS_PATH)
 	public ModelAndView listUsers() {
-		Map<String, URI> result = new TreeMap<>();
-		userController.listUsers().forEach(user -> result.put(
-				user.getUserName(),
-				uri(on(AdminController.class).showUserForm(user.getUserId()))));
-
 		return addStandardContext(new ModelAndView(USER_LIST_VIEW, "userlist",
-				unmodifiableMap(result)));
+				unmodifiableMap(userController.listUsers(
+						user -> uri(admin().showUserForm(user.getUserId()))))));
 	}
 
 	@Override
@@ -301,30 +313,23 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			@Valid @ModelAttribute(USER_OBJ) UserRecord user, ModelMap model,
 			RedirectAttributes attrs) {
 		user.initCreationDefaults();
-		Optional<UserRecord> realUser = userController.createUser(user);
-		if (!realUser.isPresent()) {
-			return errors("user creation failed (duplicate username?)");
-		}
-		int id = realUser.get().getUserId();
-		log.info("created user ID={} username={}", id,
-				realUser.get().getUserName());
-		return redirectTo(uri(on(AdminController.class).showUserForm(id)),
-				attrs);
+		UserRecord realUser = userController.createUser(user)
+				.orElseThrow(() -> new AdminException(
+						"user creation failed (duplicate username?)"));
+		int id = realUser.getUserId();
+		log.info("created user ID={} username={}", id, realUser.getUserName());
+		return redirectTo(uri(admin().showUserForm(id)), attrs);
 	}
 
 	@Override
 	@GetMapping(USER_PATH)
 	public ModelAndView showUserForm(@PathVariable("id") int id) {
 		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
-		Optional<UserRecord> user = userController.getUser(id);
-		if (!user.isPresent()) {
-			return errors("no such user");
-		}
-		mav.addObject(USER_OBJ, user.get().sanitise());
-		mav.addObject("deleteUri",
-				uri(on(AdminController.class).deleteUser(id, null, null)));
-		mav.addObject("addQuotaUri",
-				uri(on(AdminController.class).adjustQuota(id, "", 0, null)));
+		UserRecord user = userController.getUser(id)
+				.orElseThrow(() -> new AdminException("no such user"));
+		mav.addObject(USER_OBJ, user.sanitise());
+		mav.addObject("deleteUri", uri(admin().deleteUser(id, null, null)));
+		mav.addObject("addQuotaUri", uri(admin().adjustQuota(id, "", 0, null)));
 		return addStandardContext(mav);
 	}
 
@@ -336,13 +341,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		String adminUser = principal.getName();
 		user.setUserId(null);
 		log.info("updating user ID={}", id);
-		Optional<UserRecord> updatedUser =
-				userController.updateUser(id, user, adminUser);
-		if (!updatedUser.isPresent()) {
-			return errors("no such user");
-		}
+		UserRecord updatedUser = userController.updateUser(id, user, adminUser)
+				.orElseThrow(() -> new AdminException("no such user"));
 		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW, model);
-		mav.addObject(USER_OBJ, updatedUser.get().sanitise());
+		mav.addObject(USER_OBJ, updatedUser.sanitise());
 		return addStandardContext(mav);
 	}
 
@@ -350,17 +352,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@PostMapping(USER_DELETE_PATH)
 	public ModelAndView deleteUser(@PathVariable("id") int id,
 			Principal principal, RedirectAttributes attrs) {
-		ModelAndView mav =
-				redirectTo(uri(on(AdminController.class).listUsers()), attrs);
 		String adminUser = principal.getName();
-		Optional<String> deletedUsername =
-				userController.deleteUser(id, adminUser);
-		if (!deletedUsername.isPresent()) {
-			return errors("could not delete that user");
-		}
-		log.info("deleted user ID={} username={}", id, deletedUsername.get());
+		String deletedUsername =
+				userController.deleteUser(id, adminUser).orElseThrow(
+						() -> new AdminException("could not delete that user"));
+		log.info("deleted user ID={} username={}", id, deletedUsername);
 		// Not sure that these are the correct place
-		attrs.addFlashAttribute("notice", "deleted " + deletedUsername.get());
+		ModelAndView mav = redirectTo(uri(admin().listUsers()), attrs);
+		attrs.addFlashAttribute("notice", "deleted " + deletedUsername);
 		attrs.addFlashAttribute(USER_OBJ, new UserRecord());
 		return mav;
 	}
@@ -368,16 +367,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@PostMapping(USER_QUOTA_PATH)
 	public ModelAndView adjustQuota(@PathVariable("id") int id,
-			@RequestParam("machine") String machine,
+			@NotEmpty @RequestParam("machine") String machine,
 			@RequestParam("delta") int delta, RedirectAttributes attrs) {
-		if (isNull(machine)) {
-			return errors("machine must be specified");
-		}
 		quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
 		log.info("adjusted quota for user ID={} machine={} delta={}", id,
 				machine, delta);
-		return redirectTo(uri(on(AdminController.class).showUserForm(id)),
-				attrs);
+		return redirectTo(uri(admin().showUserForm(id)), attrs);
 	}
 
 	@Override
@@ -389,23 +384,21 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return addStandardContext(mav);
 	}
 
-	private BoardState getBoardState(BoardRecord board) {
+	private Optional<BoardState> getBoardState(BoardRecord board) {
 		if (nonNull(board.getId())) {
-			return machineController.findId(board.getId()).orElse(null);
+			return machineController.findId(board.getId());
 		} else if (board.isTriadCoordPresent()) {
 			return machineController.findTriad(board.getMachineName(),
-					board.getX(), board.getY(), board.getZ()).orElse(null);
+					board.getX(), board.getY(), board.getZ());
 		} else if (board.isPhysicalCoordPresent()) {
 			return machineController.findPhysical(board.getMachineName(),
-					board.getCabinet(), board.getFrame(), board.getBoard())
-					.orElse(null);
+					board.getCabinet(), board.getFrame(), board.getBoard());
 		} else if (board.isAddressPresent()) {
-			return machineController
-					.findIP(board.getMachineName(), board.getIpAddress())
-					.orElse(null);
+			return machineController.findIP(board.getMachineName(),
+					board.getIpAddress());
 		} else {
 			// unreachable because of validation
-			throw new UnsupportedOperationException("bad address");
+			return Optional.empty();
 		}
 	}
 
@@ -416,10 +409,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			@Valid @ModelAttribute(BOARD_OBJ) BoardRecord board,
 			ModelMap model) {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW, model);
-		BoardState bs = getBoardState(board);
-		if (isNull(bs)) {
-			return errors("no such board");
-		}
+		BoardState bs = getBoardState(board)
+				.orElseThrow(() -> new AdminException("no such board"));
 
 		// Inflate the coordinates
 		board.setId(bs.id);
@@ -440,19 +431,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		board.setReports(bs.getReports());
 
 		// Get or set
-		try {
-			if (!board.isEnabledDefined()) {
-				board.setEnabled(bs.getState());
-			} else {
-				log.info(
-						"setting board-allocatable state for board "
-								+ "({},{},{}) to {}",
-						bs.x, bs.y, bs.z, board.isEnabled());
-				bs.setState(board.isEnabled());
-				spalloc.purgeDownCache();
-			}
-		} catch (DataAccessException e) {
-			return errors(e);
+		if (!board.isEnabledDefined()) {
+			board.setEnabled(bs.getState());
+		} else {
+			log.info(
+					"setting board-allocatable state for board "
+							+ "({},{},{}) to {}",
+					bs.x, bs.y, bs.z, board.isEnabled());
+			bs.setState(board.isEnabled());
+			spalloc.purgeDownCache();
 		}
 		model.put(BOARD_OBJ, bs);
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
@@ -471,6 +458,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		ModelAndView mav = new ModelAndView(MACHINE_VIEW, MACHINE_LIST_OBJ,
 				getMachineNames(true));
 		List<MachineTagging> tagging = machineController.getMachineTagging();
+		tagging.forEach(t -> {
+			t.setUrl(uri(system().getMachineInfo(t.getName())));
+		});
 		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
 		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
 				.filter(MachineTagging::isTaggedAsDefault).count());
@@ -481,49 +471,39 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
-	public ModelAndView retagMachine(@ModelAttribute("machine") int machineId,
-			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags,
-			ModelMap modelMap) {
-		Set<String> tags = new HashSet<>();
-		for (String tag : newTags.split(",")) {
-			tag = tag.trim();
-			if (tag.matches("\\w+")) {
-				tags.add(tag);
-			} else {
-				return errors("tag \"" + tag + "\" is illegal");
-			}
-		}
-		machineController.updateTags(machineId, tags);
+	public ModelAndView retagMachine(
+			@ModelAttribute("machine") String machineName,
+			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags) {
+		Set<String> tags = stream(newTags.split(",")).map(String::trim)
+				.collect(toSet());
+		machineController.updateTags(machineName, tags);
+		log.info("retagged {} to have tags {}", machineName, tags);
 		return machineManagement();
 	}
 
 	@Override
 	@PostMapping(value = MACHINE_PATH, params = "outOfService")
 	public ModelAndView
-			disableMachine(@ModelAttribute("machine") int machineId) {
-		machineController.setMachineState(machineId, false);
+			disableMachine(@ModelAttribute("machine") String machineName) {
+		machineController.setMachineState(machineName, false);
+		log.info("marked {} as out of service", machineName);
 		return machineManagement();
 	}
 
 	@Override
 	@PostMapping(value = MACHINE_PATH, params = "intoService")
 	public ModelAndView
-			enableMachine(@ModelAttribute("machine") int machineId) {
-		machineController.setMachineState(machineId, true);
+			enableMachine(@ModelAttribute("machine") String machineName) {
+		machineController.setMachineState(machineName, true);
+		log.info("marked {} as in service", machineName);
 		return machineManagement();
 	}
 
 	@Override
 	@PostMapping(value = MACHINE_PATH, params = MACHINE_FILE_PARAM)
 	public ModelAndView defineMachine(
-			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file,
-			ModelMap modelMap) {
-		List<Machine> machines;
-		try (InputStream input = file.getInputStream()) {
-			machines = machineDefiner.readMachineDefinitions(input);
-		} catch (IOException e) {
-			return errors("problem with processing file: " + e.getMessage());
-		}
+			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file) {
+		List<Machine> machines = extractMachineDefinitions(file);
 		for (Machine m : machines) {
 			machineDefiner.loadMachineDefinition(m);
 			log.info("defined machine {}", m.getName());
@@ -532,5 +512,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		// Tailor with extra objects here
 		mav.addObject(DEFINED_MACHINES_OBJ, machines);
 		return mav;
+	}
+
+	private List<Machine> extractMachineDefinitions(MultipartFile file) {
+		try (InputStream input = file.getInputStream()) {
+			return machineDefiner.readMachineDefinitions(input);
+		} catch (IOException e) {
+			throw new AdminException(
+					"problem with processing file: " + e.getMessage());
+		}
 	}
 }

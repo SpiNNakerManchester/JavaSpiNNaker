@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.admin;
+package uk.ac.manchester.spinnaker.alloc.model;
 
 import static java.util.stream.Collectors.joining;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +33,8 @@ public class MachineTagging {
 	private String name;
 
 	private int id;
+
+	private URI url;
 
 	private Set<String> tags = new HashSet<>();
 
@@ -60,6 +63,15 @@ public class MachineTagging {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	/** @return The URL to the page about the machine. */
+	public URI getUrl() {
+		return url;
+	}
+
+	public void setUrl(URI url) {
+		this.url = url;
 	}
 
 	/** @return The tags of the machine. */

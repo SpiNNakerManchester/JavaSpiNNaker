@@ -129,13 +129,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private Map<String, Machine> getMachines(Connection conn,
 			boolean allowOutOfService) {
 		Epoch me = epochs.getMachineEpoch();
-		Map<String, Machine> map = new HashMap<>();
 		try (Query listMachines = conn.query(GET_ALL_MACHINES)) {
-			listMachines.call(allowOutOfService)
-					.forEach(row -> map.put(row.getString("machine_name"),
-							new MachineImpl(conn, row, me)));
+			return listMachines.call(allowOutOfService).toMap(
+					string("machine_name"),
+					row -> new MachineImpl(conn, row, me));
 		}
-		return map;
 	}
 
 	private final class ListMachinesSQL extends AbstractSQL {

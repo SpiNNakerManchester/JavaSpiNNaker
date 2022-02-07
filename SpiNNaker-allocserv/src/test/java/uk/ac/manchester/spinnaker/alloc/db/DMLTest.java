@@ -472,7 +472,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertEquals(0, u.call(true, NO_MACHINE));
+				assertEquals(0, u.call(true, "gorp"));
 			});
 		}
 	}
