@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <body>
 
 <h1>Error</h1>
-<pre>
+<pre style="white-space: pre-wrap">
 <c:out value="${ error }" escapeXml="true"/>
 </pre>
 
