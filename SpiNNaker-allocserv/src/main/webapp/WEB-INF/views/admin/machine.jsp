@@ -24,7 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <body>
 
-<h1>Machine Import</h1>
+<h1>Machine Management</h1>
+<h2>Define Machines</h2>
 <c:if test="${ not empty definedMachines }">
 	<c:forEach items="${ definedMachines }" var="m">
 		Machine called "<code><c:out value="${ m.name }" escapeXml="true" /></code>"
@@ -44,6 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</table>
 </form>
 
+<h2>Existing Machines</h2>
 <table>
 	<thead>
 		<tr>

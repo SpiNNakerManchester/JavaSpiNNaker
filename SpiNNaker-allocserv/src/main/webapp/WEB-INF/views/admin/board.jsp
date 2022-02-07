@@ -31,10 +31,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<form:input path="id" type="hidden" />
 			<h2>Board Location</h2>
 			<form:label path="machineName">Machine:</form:label>
-
 			<form:select path="machineName" disabled="true">
 				<form:options items="${ names }" />
 			</form:select>
+			<form:input type="hidden" path="machineName" />
 			<br>
 			Triad coordinates:
 			<form:label path="x">X:</form:label>
@@ -56,9 +56,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<form:label path="ipAddress">IP Address:</form:label>
 			<form:input path="ipAddress" type="text" disabled="true" />
 			<c:if test="${ not board.addressPresent }">
-			<p>
-			<strong>No IP address for board!</strong>
-			Might be no actual hardware present.
+				<p>
+				<strong>No IP address for board!</strong>
+				Might be no actual hardware present.
 			</c:if>
 			<p>
 			<h2>Current State (read only)</h2>
