@@ -76,11 +76,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<input type="hidden" name="machine" value="${ tagging.name }" />
 								<c:choose>
 									<c:when test="${ machineNames[tagging.name] }">
-										(&#9745;
+										(<span class="componentenabled">&#9745;</span>
 										<input type="submit" name="outOfService" value="Disable" />)
 									</c:when>
 									<c:otherwise>
-										(&#8999;
+										(<span class="componentdisabled">&#8999;</span>
 										<input type="submit" name="intoService" value="Enable" />)
 									</c:otherwise>
 								</c:choose>
@@ -115,11 +115,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										<input type="hidden" name="machine" value="${ tagging.name }" />
 										<c:choose>
 											<c:when test="${ machineNames[tagging.name] }">
-												(&#9745;
+												(<span class="componentenabled">&#9745;</span>
 												<input type="submit" name="outOfService" value="Disable" />)
 											</c:when>
 											<c:otherwise>
-												(&#8999;
+												(<span class="componentdisabled">&#8999;</span>
 												<input type="submit" name="intoService" value="Enable" />)
 											</c:otherwise>
 										</c:choose>

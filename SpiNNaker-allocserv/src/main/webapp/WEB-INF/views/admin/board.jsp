@@ -122,13 +122,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<p>
 			</c:if>
 			<h2>Control State</h2>
-			<form:label path="enabled">Enable:</form:label>
-			<form:checkbox path="enabled" />
+			<c:choose>
+				<c:when test="${ board.enabled }">
+					Enabled: <span class="componentenabled">&#9745;</span>
+					<form:input path="enabled" type="hidden" value="false" />
+					<input type="submit" value="Disable" />
+				</c:when>
+				<c:otherwise>
+					Enabled: <span class="componentdisabled">&#8999;</span>
+					<form:input path="enabled" type="hidden" value="true" />
+					<input type="submit" value="Enable" />
+				</c:otherwise>
+			</c:choose>
 			<br>
 			Note that disabling a board only means that it will not be handed
 			out in future allocations.
-			<p>
-			<input type="submit" value="Change State" />
 		</form:form>
 	</c:when>
 	<c:otherwise>

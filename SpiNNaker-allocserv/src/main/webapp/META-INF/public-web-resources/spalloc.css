@@ -16,7 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 body {
+	font-size: 16pt;
 	font-family: Times, "Times New Roman", serif;
+	background-color: white;
 }
 h1 {
 	font-family: Helvetica, Arial, sans-serif;
@@ -49,6 +51,13 @@ canvas.overlink {
 	background-color: #ffffe0;
 	border: 2px solid red;
 	border-radius: 3px;
+}
+
+.componentenabled {
+	color: #60e060;
+}
+.componentdisabled {
+	color: #c04040;
 }
 
 .hiddensubmit {
