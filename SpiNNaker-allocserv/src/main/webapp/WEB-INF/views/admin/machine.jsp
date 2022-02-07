@@ -69,22 +69,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<a href="${ tagging.url }">
 								<code><c:out value="${ tagging.name }" /></code>
 							</a>
-							<c:choose>
-								<c:when test="${ machineNames[tagging.name] }">
-									<form method="POST">
-										(ENABLED
-										<input type="hidden" name="machine" value="${ tagging.name }" />
+							<form method="POST">
+								<sec:csrfInput/>
+								<input type="hidden" name="machine" value="${ tagging.name }" />
+								<c:choose>
+									<c:when test="${ machineNames[tagging.name] }">
+										(&#9745;
 										<input type="submit" name="outOfService" value="Disable" />)
-									</form>
-								</c:when>
-								<c:otherwise>
-									<form method="POST">
-										(DISABLED
-										<input type="hidden" name="machine" value="${ tagging.name }" />
+									</c:when>
+									<c:otherwise>
+										(&#8999;
 										<input type="submit" name="intoService" value="Enable" />)
-									</form>
-								</c:otherwise>
-							</c:choose>
+									</c:otherwise>
+								</c:choose>
+							</form>
 						</td>
 						<td>
 							<form method="POST">
@@ -110,22 +108,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 									<a href="${ tagging.url }">
 										<code><c:out value="${ tagging.name }" /></code>
 									</a>
-									<c:choose>
-										<c:when test="${ machineNames[tagging.name] }">
-											<form method="POST">
-												(ENABLED
-												<input type="hidden" name="machine" value="${ tagging.name }" />
+									<form method="POST">
+										<sec:csrfInput/>
+										<input type="hidden" name="machine" value="${ tagging.name }" />
+										<c:choose>
+											<c:when test="${ machineNames[tagging.name] }">
+												(&#9745;
 												<input type="submit" name="outOfService" value="Disable" />)
-											</form>
-										</c:when>
-										<c:otherwise>
-											<form method="POST">
-												(DISABLED
-												<input type="hidden" name="machine" value="${ tagging.name }" />
+											</c:when>
+											<c:otherwise>
+												(&#8999;
 												<input type="submit" name="intoService" value="Enable" />)
-											</form>
-										</c:otherwise>
-									</c:choose>
+											</c:otherwise>
+										</c:choose>
+									</form>
 								</td>
 								<td rowspan="${ nrows }">
 									<form method="POST">

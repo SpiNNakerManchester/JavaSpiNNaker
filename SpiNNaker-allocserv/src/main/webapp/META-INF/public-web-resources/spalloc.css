@@ -61,6 +61,9 @@ canvas.overlink {
     visibility: hidden;
 }
 
+.subheading {
+	font-size: smaller;
+}
 /* Used to mark columns of tables as semantically containing numbers or text. */
 .numberColumn {
 	text-align: right;
