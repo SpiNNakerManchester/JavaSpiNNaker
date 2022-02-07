@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 body {
 	font-size: 16pt;
+	text-size-adjust: none;
 	font-family: Times, "Times New Roman", serif;
 	background-color: white;
 }
