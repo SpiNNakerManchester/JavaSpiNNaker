@@ -61,6 +61,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -76,6 +77,7 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
+import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 
 /**
@@ -251,7 +253,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@ExceptionHandler(BindException.class)
-	ModelAndView errors(BindingResult result) {
+	ModelAndView validationError(BindingResult result) {
 		if (result.hasGlobalErrors()) {
 			return errors(result.getGlobalError().toString());
 		}
@@ -267,10 +269,19 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *
 	 * @param e
 	 *            A database access exception.
+	 * @param hm
+	 *            What method generated the problem? Used to look up what was
+	 *            supposed to happen.
 	 * @return The view to render.
 	 */
 	@ExceptionHandler(DataAccessException.class)
-	ModelAndView dbException(DataAccessException e) {
+	ModelAndView dbException(DataAccessException e, HandlerMethod hm) {
+		Action a = hm.getMethodAnnotation(Action.class);
+		if (nonNull(a)) {
+			log.warn("database access issue when {}", a.value(), e);
+		} else {
+			log.warn("database access issue", e);
+		}
 		return errors(e);
 	}
 
@@ -282,17 +293,36 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 	}
 
+	/**
+	 * Convert thrown admin issues to views so the rest of the
+	 * code doesn't have to.
+	 *
+	 * @param e
+	 *            An admin exception.
+	 * @param hm
+	 *            What method generated the problem? Used to look up what was
+	 *            supposed to happen.
+	 * @return The view to render.
+	 */
 	@ExceptionHandler(AdminException.class)
-	ModelAndView adminException(AdminException e) {
+	ModelAndView adminException(AdminException e, HandlerMethod hm) {
+		Action a = hm.getMethodAnnotation(Action.class);
+		if (nonNull(a)) {
+			log.warn("general issue when {}", a.value(), e);
+		} else {
+			log.warn("general issue", e);
+		}
 		return errors(e.getMessage());
 	}
 
 	@Override
+	@Action("getting the main admin UI")
 	public ModelAndView mainUI() {
 		return addStandardContext(MAIN_VIEW);
 	}
 
 	@Override
+	@Action("listing the users")
 	@GetMapping(USERS_PATH)
 	public ModelAndView listUsers() {
 		return addStandardContext(new ModelAndView(USER_LIST_VIEW, "userlist",
@@ -301,6 +331,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("getting the user-creation UI")
 	@GetMapping(CREATE_USER_PATH)
 	public ModelAndView getUserCreationForm() {
 		return addStandardContext(
@@ -308,6 +339,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("creating a user")
 	@PostMapping(CREATE_USER_PATH)
 	public ModelAndView createUser(
 			@Valid @ModelAttribute(USER_OBJ) UserRecord user, ModelMap model,
@@ -322,6 +354,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("getting info about a user")
 	@GetMapping(USER_PATH)
 	public ModelAndView showUserForm(@PathVariable("id") int id) {
 		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
@@ -334,6 +367,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("updating a user's details")
 	@PostMapping(USER_PATH)
 	public ModelAndView submitUserForm(@PathVariable("id") int id,
 			@Valid @ModelAttribute(USER_OBJ) UserRecord user, ModelMap model,
@@ -349,6 +383,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("deleting a user")
 	@PostMapping(USER_DELETE_PATH)
 	public ModelAndView deleteUser(@PathVariable("id") int id,
 			Principal principal, RedirectAttributes attrs) {
@@ -365,6 +400,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("adjusting a user's quota")
 	@PostMapping(USER_QUOTA_PATH)
 	public ModelAndView adjustQuota(@PathVariable("id") int id,
 			@NotEmpty @RequestParam("machine") String machine,
@@ -376,6 +412,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("getting the UI for finding boards")
 	@GetMapping(BOARDS_PATH)
 	public ModelAndView boards() {
 		ModelAndView mav = new ModelAndView(BOARD_VIEW);
@@ -404,6 +441,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	// TODO should we refactor into multiple methods?
 	@Override
+	@Action("processing changes to a board's configuration")
 	@PostMapping(BOARDS_PATH)
 	public ModelAndView board(
 			@Valid @ModelAttribute(BOARD_OBJ) BoardRecord board,
@@ -453,14 +491,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 * that {@code admin/machine.jsp} needs.
 	 */
 	@Override
+	@Action("getting a machine's configuration")
 	@GetMapping(MACHINE_PATH)
 	public ModelAndView machineManagement() {
 		ModelAndView mav = new ModelAndView(MACHINE_VIEW, MACHINE_LIST_OBJ,
 				getMachineNames(true));
 		List<MachineTagging> tagging = machineController.getMachineTagging();
-		tagging.forEach(t -> {
-			t.setUrl(uri(system().getMachineInfo(t.getName())));
-		});
+		tagging.forEach(
+				t -> t.setUrl(uri(system().getMachineInfo(t.getName()))));
 		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
 		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
 				.filter(MachineTagging::isTaggedAsDefault).count());
@@ -470,18 +508,20 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("retagging a machine")
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
 	public ModelAndView retagMachine(
 			@ModelAttribute("machine") String machineName,
 			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags) {
-		Set<String> tags = stream(newTags.split(",")).map(String::trim)
-				.collect(toSet());
+		Set<String> tags =
+				stream(newTags.split(",")).map(String::trim).collect(toSet());
 		machineController.updateTags(machineName, tags);
 		log.info("retagged {} to have tags {}", machineName, tags);
 		return machineManagement();
 	}
 
 	@Override
+	@Action("disabling a machine")
 	@PostMapping(value = MACHINE_PATH, params = "outOfService")
 	public ModelAndView
 			disableMachine(@ModelAttribute("machine") String machineName) {
@@ -491,6 +531,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("enabling a machine")
 	@PostMapping(value = MACHINE_PATH, params = "intoService")
 	public ModelAndView
 			enableMachine(@ModelAttribute("machine") String machineName) {
@@ -500,6 +541,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
+	@Action("defining a machine")
 	@PostMapping(value = MACHINE_PATH, params = MACHINE_FILE_PARAM)
 	public ModelAndView defineMachine(
 			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file) {

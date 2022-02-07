@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,8 +26,6 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.security.Principal;
 import java.util.List;
 
@@ -105,13 +101,6 @@ public class SystemControllerImpl implements SystemController {
 
 	@Autowired
 	private ServiceVersion version;
-
-	@Target(METHOD)
-	@Retention(RUNTIME)
-	private @interface Action {
-		/** The action we do in the annotated method. */
-		String value();
-	}
 
 	private ModelAndView view(String name) {
 		Authentication auth = getContext().getAuthentication();
