@@ -30,31 +30,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<form:form method="POST" modelAttribute="board">
 			<form:input path="id" type="hidden" />
 			<h2>Board Location</h2>
-			<form:label path="machineName">Machine:</form:label>
-			<form:select path="machineName" disabled="true">
+			<form:label path="machineName">Machine:&nbsp;</form:label><form:select
+					path="machineName" disabled="true">
 				<form:options items="${ names }" />
 			</form:select>
 			<form:input type="hidden" path="machineName" />
 			<br>
-			Triad coordinates:
-			<form:label path="x">X:</form:label>
-			<form:input path="x" type="number" disabled="true" />
-			<form:label path="y">Y:</form:label>
-			<form:input path="y" type="number" disabled="true" />
-			<form:label path="z">Z:</form:label>
-			<form:input path="z" type="number" disabled="true" />
+			<h3>Triad coordinates:</h3>
+			<form:label path="x">X:&nbsp;</form:label><form:input
+					path="x" type="number" disabled="true" min="0" max="255" />
+			<form:label path="y">Y:&nbsp;</form:label><form:input
+					path="y" type="number" disabled="true" min="0" max="255" />
+			<form:label path="z">Z:&nbsp;</form:label><form:input
+					path="z" type="number" disabled="true" min="0" max="255" />
 			<br>
-			Physical coordinates:
-			<form:label path="cabinet">Cabinet:</form:label>
-			<form:input path="cabinet" type="number" disabled="true" />
-			<form:label path="frame">Frame:</form:label>
-			<form:input path="frame" type="number" disabled="true" />
-			<form:label path="board">Board:</form:label>
-			<form:input path="board" type="number" disabled="true" />
+			<h3>Physical coordinates:</h3>
+			<form:label path="cabinet">Cabinet:&nbsp;</form:label><form:input
+					path="cabinet" type="number" disabled="true" min="0" max="255" />
+			<form:label path="frame">Frame:&nbsp;</form:label><form:input
+					path="frame" type="number" disabled="true" min="0" max="255" />
+			<form:label path="board">Board:&nbsp;</form:label><form:input
+					path="board" type="number" disabled="true" min="0" max="255" />
 			<br>
-			Network coordinates:
-			<form:label path="ipAddress">IP Address:</form:label>
-			<form:input path="ipAddress" type="text" disabled="true" />
+			<h3>Network coordinates:</h3>
+			<form:label path="ipAddress">IP&nbsp;Address:&nbsp;</form:label><form:input
+					path="ipAddress" type="text" disabled="true" size="15" />
 			<c:if test="${ not board.addressPresent }">
 				<p>
 				<strong>No IP address for board!</strong>
@@ -124,13 +124,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<h2>Control State</h2>
 			<c:choose>
 				<c:when test="${ board.enabled }">
-					Enabled: <span class="componentenabled">&#9745;</span>
 					<form:input path="enabled" type="hidden" value="false" />
+					Enabled: <span class="componentenabled">&#9745;</span>
 					<input type="submit" value="Disable" />
 				</c:when>
 				<c:otherwise>
-					Enabled: <span class="componentdisabled">&#8999;</span>
 					<form:input path="enabled" type="hidden" value="true" />
+					Enabled: <span class="componentdisabled">&#8999;</span>
 					<input type="submit" value="Enable" />
 				</c:otherwise>
 			</c:choose>
@@ -142,31 +142,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<c:otherwise>
 		<form:form method="POST" modelAttribute="board">
 			<h2>Specify a machine...</h2>
-			<form:label path="machineName">Machine:</form:label>
-			<form:select path="machineName">
+			<form:label path="machineName">Machine:&nbsp;</form:label><form:select
+					path="machineName">
 				<form:options items="${ names }"/>
 			</form:select>
 			<h2>...and the coordinates within a machine</h2>
 			<br>
-			Triad coordinates:
-			<form:label path="x">X:</form:label>
-			<form:input path="x" type="number"/>
-			<form:label path="y">Y:</form:label>
-			<form:input path="y" type="number"/>
-			<form:label path="z">Z:</form:label>
-			<form:input path="z" type="number"/>
+			<h3>Triad coordinates:</h3>
+			<form:label path="x">X:&nbsp;</form:label><form:input
+					path="x" type="number" min="0" max="255" />
+			<form:label path="y">Y:&nbsp;</form:label><form:input
+					path="y" type="number" min="0" max="255" />
+			<form:label path="z">Z:&nbsp;</form:label><form:input
+					path="z" type="number" min="0" max="255" />
 			<br>
-			Physical coordinates:
-			<form:label path="cabinet">Cabinet:</form:label>
-			<form:input path="cabinet" type="number"/>
-			<form:label path="frame">Frame:</form:label>
-			<form:input path="frame" type="number"/>
-			<form:label path="board">Board:</form:label>
-			<form:input path="board" type="number"/>
+			<h3>Physical coordinates:</h3>
+			<form:label path="cabinet">Cabinet:&nbsp;</form:label><form:input
+					path="cabinet" type="number" min="0" max="255" />
+			<form:label path="frame">Frame:&nbsp;</form:label><form:input
+					path="frame" type="number" min="0" max="255" />
+			<form:label path="board">Board:&nbsp;</form:label><form:input
+					path="board" type="number" min="0" max="255" />
 			<br>
-			Network coordinates:
-			<form:label path="ipAddress">IP Address:</form:label>
-			<form:input path="ipAddress" type="text"/>
+			<h3>Network coordinates:</h3>
+			<form:label path="ipAddress">IP&nbsp;Address:&nbsp;</form:label><form:input
+					path="ipAddress" type="text" size="15" />
 			<p>
 			<input type="submit" value="Look Up Board" />
 		</form:form>

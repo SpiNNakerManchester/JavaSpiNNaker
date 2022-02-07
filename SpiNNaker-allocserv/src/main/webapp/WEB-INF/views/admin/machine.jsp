@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="../head.jsp">
 	<jsp:param value="Spalloc Machine Management" name="title"/>
+	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
 <body>
 
@@ -138,7 +139,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</c:if>
 							<td><c:out value="${ report.boardId }" /></td>
 							<td><c:out value="${ report.reporter }" /></td>
-							<td><c:out value="${ report.timestamp }" /></td>
+							<td>
+								<span id="report-timestamp-${ report.id }"></span><c:out value="${ report.timestamp }" /></span>
+								<script defer="defer">
+									prettyTimestamp("report-timestamp-${ report.id }");
+								</script>
+							</td>
 							<td>
 								<pre><c:out value="${ report.issue }" /></pre>
 							</td>
