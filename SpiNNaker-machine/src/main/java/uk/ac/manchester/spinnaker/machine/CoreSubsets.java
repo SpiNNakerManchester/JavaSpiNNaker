@@ -57,6 +57,17 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	}
 
 	/**
+	 * Constructor which adds a single location.
+	 *
+	 * @param location
+	 *            The location of the processor to add.
+	 */
+	public CoreSubsets(HasCoreLocation location) {
+		this();
+		addCore(location.asCoreLocation());
+	}
+
+	/**
 	 * Constructor which adds the locations.
 	 *
 	 * @param locations

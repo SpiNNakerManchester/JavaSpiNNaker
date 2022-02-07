@@ -114,12 +114,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	@Override
 	public MachinesResponse getMachines(UriInfo ui) {
-		return new MachinesResponse(core.getMachines(), ui);
+		return new MachinesResponse(core.getMachines(false), ui);
 	}
 
 	@Override
-	public MachineAPI getMachine(String name, UriInfo ui) {
-		Machine machine = core.getMachine(name)
+	public MachineAPI getMachine(String name, UriInfo ui, SecurityContext sec) {
+		Permit permit = new Permit(sec);
+		Machine machine = core.getMachine(name, permit.admin)
 				.orElseThrow(() -> new NotFound("no such machine"));
 		// Wrap so we can use security annotations
 		return machineFactory.getObject(machine, ui);

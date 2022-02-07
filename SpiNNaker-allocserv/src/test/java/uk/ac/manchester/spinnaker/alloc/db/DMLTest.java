@@ -466,6 +466,18 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
+	void setMachineState() {
+		assumeWritable(c);
+		try (Update u = c.update(SET_MACHINE_STATE)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				// No machine
+				assertEquals(0, u.call(true, "gorp"));
+			});
+		}
+	}
+
+	@Test
 	void setFunctioningField() {
 		assumeWritable(c);
 		try (Update u = c.update(SET_FUNCTIONING_FIELD)) {

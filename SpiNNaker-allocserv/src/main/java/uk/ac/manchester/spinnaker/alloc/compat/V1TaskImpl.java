@@ -358,7 +358,7 @@ class V1TaskImpl extends V1CompatTask {
 
 		private Machine[] listMachines() {
 			// Messy; hits the database many times
-			return mapArrayTx(() -> spalloc.getMachines().values(),
+			return mapArrayTx(() -> spalloc.getMachines(false).values(),
 					Machine.class, (m, md) -> {
 						md.setName(m.getName());
 						md.setTags(new ArrayList<>(m.getTags()));
@@ -412,8 +412,8 @@ class V1TaskImpl extends V1CompatTask {
 		manageNotifier(machNotifiers, machine, wantNotify, () -> {
 			epochs.getMachineEpoch()
 					.waitForChange(mainProps.getCompat().getNotifyWaitTime());
-			List<String> actual = new ArrayList<>(
-					permit.authorize(() -> spalloc.getMachines()).keySet());
+			List<String> actual = new ArrayList<>(permit
+					.authorize(() -> spalloc.getMachines(false)).keySet());
 			if (nonNull(machine)) {
 				actual.retainAll(singleton(machine));
 			}
@@ -507,7 +507,7 @@ class V1TaskImpl extends V1CompatTask {
 
 	private SpallocAPI.Machine getMachine(String machineName)
 			throws TaskException {
-		return permit.authorize(() -> spalloc.getMachine(machineName))
+		return permit.authorize(() -> spalloc.getMachine(machineName, false))
 				.orElseThrow(() -> new TaskException("no such machine"));
 	}
 

@@ -530,7 +530,7 @@ public class BMPController extends DatabaseAwareBean {
 	 */
 	private List<Request> takeRequests() {
 		List<Machine> machines =
-				new ArrayList<>(spallocCore.getMachines().values());
+				new ArrayList<>(spallocCore.getMachines(true).values());
 		try (TakeReqsSQL sql = new TakeReqsSQL()) {
 			return sql.transaction(() -> {
 				List<Request> requestCollector = new ArrayList<>();

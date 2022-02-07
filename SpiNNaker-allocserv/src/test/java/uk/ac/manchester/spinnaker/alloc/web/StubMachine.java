@@ -65,6 +65,11 @@ public class StubMachine implements SpallocAPI.Machine {
 	}
 
 	@Override
+	public boolean isInService() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public List<BoardCoords> getDeadBoards() {
 		throw new UnsupportedOperationException();
 	}

@@ -45,40 +45,54 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public abstract class SQLQueries {
 	/** Get basic information about all machines. */
+	@Parameter("allow_out_of_service")
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
 	@ResultColumn("height")
+	@ResultColumn("in_service")
 	protected static final String GET_ALL_MACHINES =
-			"SELECT machine_id, machine_name, width, height FROM machines "
+			"SELECT machine_id, machine_name, width, height, in_service "
+					+ "FROM machines "
+					+ "WHERE in_service OR :allow_out_of_service "
 					+ "ORDER BY machine_name ASC";
 
 	/** Get the machine names in alphabetical order. */
+	@Parameter("allow_out_of_service")
 	@ResultColumn("machine_name")
+	@ResultColumn("in_service")
 	protected static final String LIST_MACHINE_NAMES =
-			"SELECT machine_name FROM machines ORDER BY machine_name ASC";
+			"SELECT machine_name, in_service FROM machines "
+					+ "WHERE in_service OR :allow_out_of_service "
+					+ "ORDER BY machine_name ASC";
 
 	/** Get basic information about a specific machine. Looks up by ID. */
 	@Parameter("machine_id")
+	@Parameter("allow_out_of_service")
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
 	@ResultColumn("height")
+	@ResultColumn("in_service")
 	@SingleRowResult
 	protected static final String GET_MACHINE_BY_ID =
-			"SELECT machine_id, machine_name, width, height FROM machines "
-					+ "WHERE machine_id = :machine_id LIMIT 1";
+			"SELECT machine_id, machine_name, width, height, in_service "
+					+ "FROM machines WHERE machine_id = :machine_id "
+					+ "AND (in_service OR :allow_out_of_service) LIMIT 1";
 
 	/** Get basic information about a specific machine. Looks up by name. */
 	@Parameter("machine_name")
+	@Parameter("allow_out_of_service")
 	@ResultColumn("machine_id")
 	@ResultColumn("machine_name")
 	@ResultColumn("width")
 	@ResultColumn("height")
+	@ResultColumn("in_service")
 	@SingleRowResult
 	protected static final String GET_NAMED_MACHINE =
-			"SELECT machine_id, machine_name, width, height FROM machines "
-					+ "WHERE machine_name = :machine_name LIMIT 1";
+			"SELECT machine_id, machine_name, width, height, in_service "
+					+ "FROM machines WHERE machine_name = :machine_name "
+					+ "AND (in_service OR :allow_out_of_service) LIMIT 1";
 
 	/** Count things on a machine. */
 	@Parameter("machine_id")
@@ -158,12 +172,12 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_JOB_CHIP_DIMENSIONS =
 			"WITH b AS (SELECT * FROM boards WHERE allocated_job = :job_id), "
-			+ "c AS (SELECT root_x + chip_x AS x, root_y + chip_y AS y "
-			+ "FROM b JOIN machines USING (machine_id) "
-			+ "JOIN board_model_coords ON "
-			+ "machines.board_model = board_model_coords.model) "
-			+ "SELECT MAX(x) - MIN(x) + 1 AS width, "
-			+ "MAX(y) - MIN(y) + 1 AS height FROM c LIMIT 1";
+					+ "c AS (SELECT root_x + chip_x AS x, root_y + chip_y AS y "
+					+ "FROM b JOIN machines USING (machine_id) "
+					+ "JOIN board_model_coords ON "
+					+ "machines.board_model = board_model_coords.model) "
+					+ "SELECT MAX(x) - MIN(x) + 1 AS width, "
+					+ "MAX(y) - MIN(y) + 1 AS height FROM c LIMIT 1";
 
 	/** Get what boards are allocated to a job (that is queued or ready). */
 	@Parameter("job_id")
@@ -188,8 +202,7 @@ public abstract class SQLQueries {
 			"SELECT job_id, jobs.machine_id, create_timestamp, "
 					+ "keepalive_interval, job_state, allocation_size, "
 					+ "keepalive_host, user_name, machines.machine_name "
-					+ "FROM jobs "
-					+ "JOIN machines USING (machine_id) "
+					+ "FROM jobs " + "JOIN machines USING (machine_id) "
 					+ "JOIN user_info ON jobs.owner = user_info.user_id "
 					+ "WHERE job_state != 4"; // DESTROYED
 
@@ -221,8 +234,7 @@ public abstract class SQLQueries {
 			+ "keepalive_timestamp, create_timestamp, job_state) "
 			+ "VALUES(:machine_id, :owner, :keepalive_interval, "
 			+ ":original_request, CAST(strftime('%s','now') AS INTEGER), "
-			+ "CAST(strftime('%s','now') AS INTEGER), "
-			+ /* QUEUED */ "1)";
+			+ "CAST(strftime('%s','now') AS INTEGER), " + /* QUEUED */ "1)";
 
 	/** Create a request to allocate a number of boards. */
 	@Parameter("job_id")
@@ -776,6 +788,17 @@ public abstract class SQLQueries {
 			"DELETE FROM tags WHERE machine_id = :machine_id";
 
 	/**
+	 * Set the in-service flag for a machine.
+	 *
+	 * @see MachineStateController
+	 */
+	@Parameter("in_service")
+	@Parameter("machine_name")
+	protected static final String SET_MACHINE_STATE =
+			"UPDATE machines SET in_service = :in_service "
+					+ "WHERE machine_name = :machine_name";
+
+	/**
 	 * Note down the maximum chip coordinates so we can calculate wraparounds
 	 * correctly.
 	 *
@@ -991,13 +1014,13 @@ public abstract class SQLQueries {
 	@Parameter("delta")
 	@Parameter("machine_name")
 	@Parameter("user_id")
-	protected static final String ADJUST_QUOTA = "UPDATE quotas "
-			+ "SET quota = max(0, quota + :delta) "
-			+ "FROM (SELECT machine_id FROM machines "
-			+ "WHERE machine_name = :machine_name) AS machines "
-			+ "WHERE user_id = :user_id "
-			+ "AND quotas.machine_id = machines.machine_id "
-			+ "AND quota IS NOT NULL";
+	protected static final String ADJUST_QUOTA =
+			"UPDATE quotas SET quota = max(0, quota + :delta) "
+					+ "FROM (SELECT machine_id FROM machines "
+					+ "WHERE machine_name = :machine_name) AS machines "
+					+ "WHERE user_id = :user_id "
+					+ "AND quotas.machine_id = machines.machine_id "
+					+ "AND quota IS NOT NULL";
 
 	/**
 	 * Get details about a user. This is pretty much everything except their
@@ -1204,9 +1227,9 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("password")
 	@Parameter("user_id")
-	protected static final String SET_USER_PASS = "UPDATE user_info "
-			+ "SET encrypted_password = :password "
-			+ "WHERE user_id = :user_id";
+	protected static final String SET_USER_PASS =
+			"UPDATE user_info SET encrypted_password = :password "
+					+ "WHERE user_id = :user_id";
 
 	/**
 	 * Set a user's name.

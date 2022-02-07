@@ -21,13 +21,16 @@ import static uk.ac.manchester.spinnaker.utils.IteratorWrapper.wrap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Extends iterable with the ability to be mapped to different values.
@@ -142,7 +145,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this iterable to a list.
+	 * Convert this iterable to a list. The order of elements in the list will
+	 * be the same as the order of items in this iterable.
 	 *
 	 * @return A list of the elements in the iterable. Note that this must be
 	 *         finite!
@@ -156,18 +160,102 @@ public interface MappableIterable<T> extends Iterable<T> {
 	}
 
 	/**
-	 * Convert this iterable to a set.
+	 * Convert this iterable to a list. Items will be added to the list in the
+	 * order of this iterable.
 	 *
-	 * @return A set of the elements in the iterable. Note that this must be
-	 *         finite! Also note that the set preserves the iteration order of
-	 *         the elements if they are all unique.
+	 * @param supplier
+	 *            How to make the list itself.
+	 * @return A list of the elements in the iterable. Note that this must be
+	 *         finite!
 	 */
-	default Set<T> toSet() {
-		Set<T> list = new LinkedHashSet<>();
+	default List<T> toList(Supplier<List<T>> supplier) {
+		List<T> list = supplier.get();
 		for (T val : this) {
 			list.add(val);
 		}
 		return list;
+	}
+
+	/**
+	 * Convert this iterable to a set. The natural order of elements in the set
+	 * will be the same as the order of items in this iterable.
+	 *
+	 * @return A set of the elements in the iterable. Note that this must be
+	 *         finite!
+	 */
+	default Set<T> toSet() {
+		Set<T> set = new LinkedHashSet<>();
+		for (T val : this) {
+			set.add(val);
+		}
+		return set;
+	}
+
+	/**
+	 * Convert this iterable to a set. Items will be added to the set in the
+	 * order of this iterable.
+	 *
+	 * @param supplier
+	 *            How to make the set itself.
+	 * @return A set of the elements in the iterable. Note that this must be
+	 *         finite!
+	 */
+	default Set<T> toSet(Supplier<Set<T>> supplier) {
+		Set<T> set = supplier.get();
+		for (T val : this) {
+			set.add(val);
+		}
+		return set;
+	}
+
+	/**
+	 * Convert this iterable to a map. The natural order of entries will be the
+	 * same as the natural order of elements in this iterable.
+	 *
+	 * @param <K>
+	 *            The type of keys.
+	 * @param <V>
+	 *            The type of values.
+	 * @param keyMapper
+	 *            How to get a key from an element of the iterable.
+	 * @param valueMapper
+	 *            How to get a value from an element of the iterable.
+	 * @return A map derived from elements in the iterable. Note that this must
+	 *         be finite!
+	 */
+	default <K, V> Map<K, V> toMap(Function<T, K> keyMapper,
+			Function<T, V> valueMapper) {
+		Map<K, V> map = new LinkedHashMap<>();
+		for (T val : this) {
+			map.put(keyMapper.apply(val), valueMapper.apply(val));
+		}
+		return map;
+	}
+
+	/**
+	 * Convert this iterable to a map. Items will be added to the map in the
+	 * order of this iterable.
+	 *
+	 * @param <K>
+	 *            The type of keys.
+	 * @param <V>
+	 *            The type of values.
+	 * @param supplier
+	 *            How to make the map itself.
+	 * @param keyMapper
+	 *            How to get a key from an element of the iterable.
+	 * @param valueMapper
+	 *            How to get a value from an element of the iterable.
+	 * @return A map derived from the elements in the iterable. Note that this
+	 *         must be finite!
+	 */
+	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier,
+			Function<T, K> keyMapper, Function<T, V> valueMapper) {
+		Map<K, V> map = supplier.get();
+		for (T val : this) {
+			map.put(keyMapper.apply(val), valueMapper.apply(val));
+		}
+		return map;
 	}
 }
 

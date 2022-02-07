@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,11 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import java.security.Principal;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 
@@ -106,8 +108,6 @@ public interface AdminController {
 	 *
 	 * @param user
 	 *            The description of the user to create
-	 * @param result
-	 *            Validation results
 	 * @param model
 	 *            Overall model
 	 * @param attrs
@@ -117,7 +117,7 @@ public interface AdminController {
 	 */
 	@PostMapping(CREATE_USER_PATH)
 	ModelAndView createUser(@Valid @ModelAttribute("user") UserRecord user,
-			BindingResult result, ModelMap model, RedirectAttributes attrs);
+			ModelMap model, RedirectAttributes attrs);
 
 	/**
 	 * Show user details.
@@ -136,8 +136,6 @@ public interface AdminController {
 	 *            The user ID
 	 * @param user
 	 *            The description of the user to update
-	 * @param result
-	 *            Validation results
 	 * @param model
 	 *            Overall model
 	 * @param principal
@@ -146,8 +144,8 @@ public interface AdminController {
 	 */
 	@PostMapping(USER_PATH)
 	ModelAndView submitUserForm(@PathVariable("id") int id,
-			@Valid @ModelAttribute("user") UserRecord user,
-			BindingResult result, ModelMap model, Principal principal);
+			@Valid @ModelAttribute("user") UserRecord user, ModelMap model,
+			Principal principal);
 
 	/**
 	 * Delete a user.
@@ -182,7 +180,7 @@ public interface AdminController {
 	 */
 	@PostMapping(USER_QUOTA_PATH)
 	ModelAndView adjustQuota(@PathVariable("id") int id,
-			@RequestParam("machine") String machine,
+			@NotEmpty @RequestParam("machine") String machine,
 			@RequestParam("delta") int delta, RedirectAttributes attrs);
 
 	/**
@@ -198,15 +196,13 @@ public interface AdminController {
 	 *
 	 * @param board
 	 *            The board coordinates, and possibly the state change
-	 * @param result
-	 *            Validation results
 	 * @param model
 	 *            Overall model
 	 * @return the model and view
 	 */
 	@PostMapping(BOARDS_PATH)
 	ModelAndView board(@Valid @ModelAttribute("board") BoardRecord board,
-			BindingResult result, ModelMap model);
+			ModelMap model);
 
 	/**
 	 * Provide the form for uploading a machine definition.
@@ -219,19 +215,39 @@ public interface AdminController {
 	/**
 	 * Handle the change of the tags of a machine.
 	 *
-	 * @param machineId
-	 *            The ID of the machine being retagged
+	 * @param machineName
+	 *            The name of the machine being retagged
 	 * @param newTags
 	 *            The tags of the machine; comma-separated list
-	 * @param modelMap
-	 *            the model of the form
 	 * @return the model and view
 	 */
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
 	ModelAndView retagMachine(
-			@ModelAttribute("machine") int machineId,
-			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags,
-			ModelMap modelMap);
+			@NotEmpty @ModelAttribute("machine") String machineName,
+			@TagList @NotNull
+			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags);
+
+	/**
+	 * Mark a machine as out of service.
+	 *
+	 * @param machineName
+	 *            The name of the machine being disabled
+	 * @return the model and view
+	 */
+	@PostMapping(value = MACHINE_PATH, params = "outOfService")
+	ModelAndView disableMachine(
+			@NotEmpty @ModelAttribute("machine") String machineName);
+
+	/**
+	 * Mark a machine as in service.
+	 *
+	 * @param machineName
+	 *            The name of the machine being enabled
+	 * @return the model and view
+	 */
+	@PostMapping(value = MACHINE_PATH, params = "intoService")
+	ModelAndView enableMachine(
+			@NotEmpty @ModelAttribute("machine") String machineName);
 
 	/**
 	 * Handle the upload of a machine definition. Note that no user has any
@@ -240,12 +256,9 @@ public interface AdminController {
 	 *
 	 * @param file
 	 *            The file being uploaded
-	 * @param modelMap
-	 *            the model of the form
 	 * @return the model and view
 	 */
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_FILE_PARAM)
 	ModelAndView defineMachine(
-			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file,
-			ModelMap modelMap);
+			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
 }

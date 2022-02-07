@@ -17,11 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <footer>
 <hr>
-<a href="${ machineUri }">Machines</a>
+<a href="${ machineUri }">Manage Machines</a>
 &mdash;
-<a href="${ boardsUri }">Boards</a>
+<a href="${ boardsUri }">Manage Boards</a>
 &mdash;
-<a href="${ usersUri }">Users</a>
+<a href="${ usersUri }">Manage Users</a>
 <br>
 <a href="<c:url value='/spalloc/system/' />">Main page</a>
 &mdash;

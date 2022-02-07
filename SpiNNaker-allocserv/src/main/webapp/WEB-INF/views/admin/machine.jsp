@@ -21,10 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="../head.jsp">
 	<jsp:param value="Spalloc Machine Management" name="title"/>
+	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
 <body>
 
-<h1>Machine Import</h1>
+<h1>Machine Management</h1>
+<h2>Define Machines</h2>
 <c:if test="${ not empty definedMachines }">
 	<c:forEach items="${ definedMachines }" var="m">
 		Machine called "<code><c:out value="${ m.name }" escapeXml="true" /></code>"
@@ -44,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</table>
 </form>
 
+<h2>Existing Machines</h2>
 <table>
 	<thead>
 		<tr>
@@ -65,11 +68,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<c:choose>
 				<c:when test="${ empty reportlist }">
 					<tr>
-						<td><c:out value="${ tagging.name }" /></td>
 						<td>
-							<form method="POST" action="updateTags">
+							<a href="${ tagging.url }">
+								<code><c:out value="${ tagging.name }" /></code>
+							</a>
+							<form method="POST">
 								<sec:csrfInput/>
-								<input type="hidden" name="machine" value="${ tagging.id }" />
+								<input type="hidden" name="machine" value="${ tagging.name }" />
+								<c:choose>
+									<c:when test="${ machineNames[tagging.name] }">
+										(<span class="componentenabled">&#9745;</span>
+										<input type="submit" name="outOfService" value="Disable" />)
+									</c:when>
+									<c:otherwise>
+										(<span class="componentdisabled">&#8999;</span>
+										<input type="submit" name="intoService" value="Enable" />)
+									</c:otherwise>
+								</c:choose>
+							</form>
+						</td>
+						<td>
+							<form method="POST">
+								<sec:csrfInput/>
+								<input type="hidden" name="machine" value="${ tagging.name }" />
 								<input name="retag" value="${ tagging.tags }" />
 								<div class="hiddensubmit">
 									<input type="submit" class="hiddensubmit" />
@@ -87,12 +108,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<spring:eval var="nrows"
 										expression="reportlist.size()" />
 								<td rowspan="${ nrows }">
-									<c:out value="${ tagging.name }" />
+									<a href="${ tagging.url }">
+										<code><c:out value="${ tagging.name }" /></code>
+									</a>
+									<form method="POST">
+										<sec:csrfInput/>
+										<input type="hidden" name="machine" value="${ tagging.name }" />
+										<c:choose>
+											<c:when test="${ machineNames[tagging.name] }">
+												(<span class="componentenabled">&#9745;</span>
+												<input type="submit" name="outOfService" value="Disable" />)
+											</c:when>
+											<c:otherwise>
+												(<span class="componentdisabled">&#8999;</span>
+												<input type="submit" name="intoService" value="Enable" />)
+											</c:otherwise>
+										</c:choose>
+									</form>
 								</td>
 								<td rowspan="${ nrows }">
 									<form method="POST">
 										<sec:csrfInput/>
-										<input type="hidden" name="machine" value="${ tagging.id }" />
+										<input type="hidden" name="machine" value="${ tagging.name }" />
 										<input name="retag" value="${ tagging.tags }" />
 										<div class="hiddensubmit">
 											<input type="submit" class="hiddensubmit" />
@@ -102,7 +139,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</c:if>
 							<td><c:out value="${ report.boardId }" /></td>
 							<td><c:out value="${ report.reporter }" /></td>
-							<td><c:out value="${ report.timestamp }" /></td>
+							<td>
+								<span id="report-timestamp-${ report.id }"></span><c:out value="${ report.timestamp }" /></span>
+								<script defer="defer">
+									prettyTimestamp("report-timestamp-${ report.id }");
+								</script>
+							</td>
 							<td>
 								<pre><c:out value="${ report.issue }" /></pre>
 							</td>
@@ -123,7 +165,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		Clients may get unexpected results.
 	</c:when>
 </c:choose>
-<%-- TODO: Allow machines to be taken out of service entirely? --%>
 
 <jsp:include page="footer.jsp" />
 </body>

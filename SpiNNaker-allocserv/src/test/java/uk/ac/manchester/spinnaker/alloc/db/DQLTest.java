@@ -42,6 +42,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -68,6 +69,12 @@ class DQLTest extends SQLQueries {
 
 	// Not equal to any user_id
 	private static final int NO_USER = -1;
+
+	/**
+	 * The columns needed to make a {@link SpallocAPI.Machine} implementation.
+	 */
+	private static final Set<String> BASIC_MACHINE_INFO =
+			set("in_service", "machine_id", "machine_name", "width", "height");
 
 	/** The columns the {@link BoardLocation} constructor expects to find. */
 	private static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS =
@@ -164,12 +171,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getAllMachines() {
 		try (Query q = c.query(GET_ALL_MACHINES)) {
-			assertEquals(0, q.getNumArguments());
-			assertSetEquals(
-					set("machine_id", "machine_name", "width", "height"),
-					q.getRowColumnNames());
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(BASIC_MACHINE_INFO, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1().isPresent());
+				assertFalse(q.call1(false).isPresent());
 			});
 		}
 	}
@@ -177,10 +182,11 @@ class DQLTest extends SQLQueries {
 	@Test
 	void listMachineNames() {
 		try (Query q = c.query(LIST_MACHINE_NAMES)) {
-			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("machine_name"), q.getRowColumnNames());
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("machine_name", "in_service"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1().isPresent());
+				assertFalse(q.call1(false).isPresent());
 			});
 		}
 	}
@@ -188,12 +194,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getMachineById() {
 		try (Query q = c.query(GET_MACHINE_BY_ID)) {
-			assertEquals(1, q.getNumArguments());
-			assertSetEquals(
-					set("machine_id", "machine_name", "width", "height"),
-					q.getRowColumnNames());
+			assertEquals(2, q.getNumArguments());
+			assertSetEquals(BASIC_MACHINE_INFO, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_MACHINE).isPresent());
+				assertFalse(q.call1(NO_MACHINE, false).isPresent());
 			});
 		}
 	}
@@ -201,12 +205,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getNamedMachine() {
 		try (Query q = c.query(GET_NAMED_MACHINE)) {
-			assertEquals(1, q.getNumArguments());
-			assertSetEquals(
-					set("machine_id", "machine_name", "width", "height"),
-					q.getRowColumnNames());
+			assertEquals(2, q.getNumArguments());
+			assertSetEquals(BASIC_MACHINE_INFO, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp").isPresent());
+				assertFalse(q.call1("gorp", false).isPresent());
 			});
 		}
 	}

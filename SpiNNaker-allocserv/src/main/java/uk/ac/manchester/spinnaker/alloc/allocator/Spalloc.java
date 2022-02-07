@@ -122,19 +122,18 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			new HashMap<>();
 
 	@Override
-	public Map<String, Machine> getMachines() {
-		return execute(this::getMachines);
+	public Map<String, Machine> getMachines(boolean allowOutOfService) {
+		return execute(c -> getMachines(c, allowOutOfService));
 	}
 
-	private Map<String, Machine> getMachines(Connection conn) {
+	private Map<String, Machine> getMachines(Connection conn,
+			boolean allowOutOfService) {
 		Epoch me = epochs.getMachineEpoch();
-		Map<String, Machine> map = new HashMap<>();
 		try (Query listMachines = conn.query(GET_ALL_MACHINES)) {
-			listMachines.call()
-					.forEach(row -> map.put(row.getString("machine_name"),
-							new MachineImpl(conn, row, me)));
+			return listMachines.call(allowOutOfService).toMap(
+					string("machine_name"),
+					row -> new MachineImpl(conn, row, me));
 		}
-		return map;
 	}
 
 	private final class ListMachinesSQL extends AbstractSQL {
@@ -158,10 +157,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public List<MachineListEntryRecord> listMachines() {
+	public List<MachineListEntryRecord>
+			listMachines(boolean allowOutOfService) {
 		return execute(false, conn -> {
 			try (ListMachinesSQL sql = new ListMachinesSQL(conn)) {
-				return sql.listMachines.call()
+				return sql.listMachines.call(allowOutOfService)
 						.map(row -> makeMachineListEntryRecord(sql, row))
 						.toList();
 			}
@@ -182,29 +182,33 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Machine> getMachine(String name) {
-		return execute(false, conn -> getMachine(name, conn).map(m -> m));
+	public Optional<Machine> getMachine(String name,
+			boolean allowOutOfService) {
+		return execute(false,
+				conn -> getMachine(name, allowOutOfService, conn).map(m -> m));
 	}
 
-	private Optional<MachineImpl> getMachine(int id, Connection conn) {
+	private Optional<MachineImpl> getMachine(int id, boolean allowOutOfService,
+			Connection conn) {
 		Epoch me = epochs.getMachineEpoch();
 		try (Query idMachine = conn.query(GET_MACHINE_BY_ID)) {
-			return idMachine.call1(id)
+			return idMachine.call1(id, allowOutOfService)
 					.map(row -> new MachineImpl(conn, row, me));
 		}
 	}
 
-	private Optional<MachineImpl> getMachine(String name, Connection conn) {
+	private Optional<MachineImpl> getMachine(String name,
+			boolean allowOutOfService, Connection conn) {
 		Epoch me = epochs.getMachineEpoch();
 		try (Query namedMachine = conn.query(GET_NAMED_MACHINE)) {
-			return namedMachine.call1(name)
+			return namedMachine.call1(name, allowOutOfService)
 					.map(row -> new MachineImpl(conn, row, me));
 		}
 	}
 
 	@Override
 	public Optional<MachineDescription> getMachineInfo(String machine,
-			Permit permit) {
+			boolean allowOutOfService, Permit permit) {
 		return execute(false, conn -> {
 			try (Query namedMachine = conn.query(GET_NAMED_MACHINE);
 					Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
@@ -214,31 +218,34 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					Query getLive = conn.query(GET_LIVE_BOARDS);
 					Query getDead = conn.query(GET_DEAD_BOARDS);
 					Query getQuota = conn.query(GET_USER_QUOTA)) {
-				return getBasicMachineInfo(machine, namedMachine).map(md -> {
-					md.setNumInUse(countMachineThings.call1(md.getId()).get()
-							.getInt("in_use"));
-					md.setTags(getTags.call(md.getId()).map(string("tag"))
-							.toList());
-					md.setJobs(getJobs.call(md.getId()).map(
-							row -> getMachineJobInfo(permit, getCoords, row))
-							.toList());
-					md.setLive(getLive.call(md.getId())
-							.map(row -> new BoardCoords(row, !permit.admin))
-							.toList());
-					md.setDead(getDead.call(md.getId())
-							.map(row -> new BoardCoords(row, !permit.admin))
-							.toList());
-					md.setQuota(getQuota.call1(md.getId(), permit.name)
-							.map(int64("quota")).orElse(null));
-					return md;
-				});
+				return getBasicMachineInfo(machine, allowOutOfService,
+						namedMachine).map(md -> {
+							md.setNumInUse(countMachineThings.call1(md.getId())
+									.get().getInt("in_use"));
+							md.setTags(getTags.call(md.getId())
+									.map(string("tag")).toList());
+							md.setJobs(
+									getJobs.call(md.getId())
+											.map(row -> getMachineJobInfo(
+													permit, getCoords, row))
+											.toList());
+							md.setLive(getLive.call(md.getId()).map(
+									row -> new BoardCoords(row, !permit.admin))
+									.toList());
+							md.setDead(getDead.call(md.getId()).map(
+									row -> new BoardCoords(row, !permit.admin))
+									.toList());
+							md.setQuota(getQuota.call1(md.getId(), permit.name)
+									.map(int64("quota")).orElse(null));
+							return md;
+						});
 			}
 		});
 	}
 
-	private static Optional<MachineDescription>
-			getBasicMachineInfo(String machine, Query namedMachine) {
-		return namedMachine.call1(machine).map(row -> {
+	private static Optional<MachineDescription> getBasicMachineInfo(
+			String machine, boolean allowOutOfService, Query namedMachine) {
+		return namedMachine.call1(machine, allowOutOfService).map(row -> {
 			MachineDescription md = new MachineDescription();
 			md.setId(row.getInt("machine_id"));
 			md.setName(row.getString("machine_name"));
@@ -335,8 +342,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		return execute(conn -> {
 			try (Query s = conn.query(GET_JOB);
 					Query chipDimensions = conn.query(GET_JOB_CHIP_DIMENSIONS);
-					Query countPoweredBoards =
-							conn.query(COUNT_POWERED_BOARDS);
+					Query countPoweredBoards = conn.query(COUNT_POWERED_BOARDS);
 					Query getCoords = conn.query(GET_JOB_BOARD_COORDS)) {
 				return s.call1(id).map(job -> jobDescription(id, job,
 						chipDimensions, countPoweredBoards, getCoords));
@@ -492,9 +498,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private Optional<MachineImpl> selectMachine(Connection conn,
 			String machineName, List<String> tags) {
 		if (nonNull(machineName)) {
-			return getMachine(machineName, conn);
+			return getMachine(machineName, false, conn);
 		} else if (!tags.isEmpty()) {
-			for (Machine m : getMachines(conn).values()) {
+			for (Machine m : getMachines(conn, false).values()) {
 				MachineImpl mi = (MachineImpl) m;
 				if (mi.tags.containsAll(tags)) {
 					/*
@@ -540,7 +546,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			String desc = mergeDescription(coreLocation, description);
 			Optional<EmailBuilder> email = sql.transaction(() -> {
 				Collection<Machine> machines =
-						getMachines(sql.getConnection()).values();
+						getMachines(sql.getConnection(), true).values();
 				for (Machine m : machines) {
 					Optional<EmailBuilder> mail =
 							sql.findBoardNet.call1(m.getId(), address)
@@ -647,6 +653,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private class MachineImpl implements Machine {
 		private final int id;
 
+		private final boolean inService;
+
 		private final String name;
 
 		private final Set<String> tags;
@@ -664,6 +672,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			name = rs.getString("machine_name");
 			width = rs.getInt("width");
 			height = rs.getInt("height");
+			inService = rs.getBoolean("in_service");
 			try (Query getTags = conn.query(GET_TAGS)) {
 				tags = getTags.call(id).map(string("tag")).toSet();
 			}
@@ -828,6 +837,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 
 		@Override
+		public boolean isInService() {
+			return inService;
+		}
+
+		@Override
 		public String getBMPAddress(BMPCoords bmp) {
 			try (Connection conn = getConnection();
 					Query bmpAddr = conn.query(GET_BMP_ADDRESS)) {
@@ -938,23 +952,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	/** Used to assemble an issue-report email for sending. */
 	private static final class EmailBuilder {
 		/**
-		 * More efficient than several String.format() calls, and much
-		 * clearer than a mess of direct {@link StringBuilder} calls!
+		 * More efficient than several String.format() calls, and much clearer
+		 * than a mess of direct {@link StringBuilder} calls!
 		 */
 		private final Formatter b = new Formatter(Locale.UK);
 
 		private final int id;
 
 		/**
-		 * @param id The job ID
+		 * @param id
+		 *            The job ID
 		 */
 		EmailBuilder(int id) {
 			this.id = id;
 		}
 
 		void header(String issue, int numBoards, String who) {
-			b.format("Issues \"%s\" with %d boards reported by %s\n\n",
-					issue, numBoards, who);
+			b.format("Issues \"%s\" with %d boards reported by %s\n\n", issue,
+					numBoards, who);
 		}
 
 		void chip(ReportedBoard board) {
@@ -1176,10 +1191,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			}
 			try (Connection conn = getConnection();
 					Query findBoard = conn.query(findBoardByJobChip)) {
-				return conn.transaction(false,
-						() -> findBoard.call1(id, root, x, y).map(
-								row -> new BoardLocationImpl(row, Spalloc.this
-										.getMachine(machineId, conn).get())));
+				return conn.transaction(false, () -> findBoard
+						.call1(id, root, x, y)
+						.map(row -> new BoardLocationImpl(row, Spalloc.this
+								.getMachine(machineId, true, conn).get())));
 			}
 		}
 
@@ -1373,7 +1388,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			private List<Integer> boardIds;
 
 			private SubMachineImpl(Connection conn) {
-				machine = Spalloc.this.getMachine(machineId, conn).get();
+				machine = Spalloc.this.getMachine(machineId, true, conn).get();
 				try (Query getRootXY = conn.query(GET_ROOT_COORDS);
 						Query getBoardInfo =
 								conn.query(GET_BOARD_CONNECT_INFO)) {

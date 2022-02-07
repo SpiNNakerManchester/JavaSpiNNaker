@@ -18,12 +18,17 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.int64;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
+import java.net.URI;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -153,6 +158,22 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
+	/**
+	 * List the users in the database.
+	 *
+	 * @param uriMapper
+	 *            How to construct a URL for the user.
+	 * @return Map of users to URLs.
+	 */
+	public Map<String, URI> listUsers(Function<UserRecord, URI> uriMapper) {
+		try (Connection c = getConnection();
+				Query q = c.query(LIST_ALL_USERS)) {
+			return c.transaction(false,
+					() -> q.call().map(UserControl::sketchUser).toMap(
+							TreeMap::new, UserRecord::getUserName, uriMapper));
+		}
+	}
+
 	private static UserRecord sketchUser(Row row) {
 		UserRecord userSketch = new UserRecord();
 		userSketch.setUserId(row.getInt("user_id"));
@@ -231,11 +252,8 @@ public class UserControl extends DatabaseAwareBean {
 			user.setLastSuccessfulLogin(
 					row.getInstant("last_successful_login_timestamp"));
 			user.setLastFailedLogin(row.getInstant("last_fail_timestamp"));
-			HashMap<String, Long> quotas = new HashMap<>();
-			sql.getQuotas.call(user.getUserId())
-					.forEach(qrow -> quotas.put(qrow.getString("machine_name"),
-							qrow.getLong("quota")));
-			user.setQuota(quotas);
+			user.setQuota(sql.getQuotas.call(user.getUserId())
+					.toMap(string("machine_name"), int64("quota")));
 		} finally {
 			// I mean it!
 			user.setPassword(null);

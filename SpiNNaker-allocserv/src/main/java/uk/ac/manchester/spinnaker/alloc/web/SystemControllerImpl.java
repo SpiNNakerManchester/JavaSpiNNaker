@@ -40,14 +40,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -101,8 +103,7 @@ public class SystemControllerImpl implements SystemController {
 	private ServiceVersion version;
 
 	private ModelAndView view(String name) {
-		Authentication auth =
-				SecurityContextHolder.getContext().getAuthentication();
+		Authentication auth = getContext().getAuthentication();
 		return new ModelAndView(name, USER_MAY_CHANGE_PASSWORD,
 				auth instanceof UsernamePasswordAuthenticationToken);
 	}
@@ -120,20 +121,65 @@ public class SystemControllerImpl implements SystemController {
 				.addObject("build", version.getBuildTimestamp());
 	}
 
-	private static ModelAndView problem(Exception e) {
-		return problem(e, new Permit(getContext()));
+	@Override
+	@GetMapping("/change_password")
+	@Action("preparing for password change")
+	public ModelAndView getPasswordChangeForm(Principal principal) {
+		return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
+				userControl.getUserForPrincipal(principal));
 	}
 
-	private static ModelAndView problem(Exception e, Permit permit) {
+	/**
+	 * Handle {@linkplain Valid invalid} arguments.
+	 *
+	 * @param result
+	 *            The result of validation.
+	 * @return How to render this to the user.
+	 */
+	@ExceptionHandler(BindException.class)
+	private ModelAndView bindingError(BindingResult result) {
+		if (result.hasGlobalErrors()) {
+			return error(result.getGlobalError().toString());
+		} else if (result.hasFieldErrors()) {
+			return error(result.getFieldError().toString());
+		}
+		return error("unknown error");
+	}
+
+	/**
+	 * Handle database and auth exceptions flowing out through this controller.
+	 *
+	 * @param e
+	 *            The exception that happened.
+	 * @param hm
+	 *            What was happening to cause a problem.
+	 * @return View to describe what's going on to the user.
+	 */
+	@ExceptionHandler({
+		AuthenticationException.class, DataAccessException.class
+	})
+	private ModelAndView dbError(RuntimeException e, HandlerMethod hm) {
+		Action a = hm.getMethodAnnotation(Action.class);
 		String message;
 		if (e instanceof AuthenticationException) {
 			message = "authentication problem";
+			if (nonNull(a)) {
+				log.error("auth problem when {}", a.value(), e);
+			} else {
+				log.error("general authentication problem", e);
+			}
 		} else if (e instanceof DataAccessException) {
 			message = "database problem";
+			if (nonNull(a)) {
+				log.error("database problem when {}", a.value(), e);
+			} else {
+				log.error("general database problem", e);
+			}
 		} else {
 			message = "general problem";
+			log.error("general problem", e);
 		}
-		if (permit.admin) {
+		if (new Permit(getContext()).admin) {
 			return error(message + ": " + e.getMessage());
 		} else {
 			return error(message);
@@ -141,43 +187,19 @@ public class SystemControllerImpl implements SystemController {
 	}
 
 	@Override
-	@GetMapping("/change_password")
-	public ModelAndView getPasswordChangeForm(Principal principal) {
-		try {
-			return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
-					userControl.getUserForPrincipal(principal));
-		} catch (AuthenticationException | DataAccessException e) {
-			log.error("couldn't get view for password change", e);
-			return problem(e);
-		}
-	}
-
-	@Override
 	@PostMapping("/change_password")
+	@Action("changing password")
 	public ModelAndView postPasswordChangeForm(
 			@Valid @ModelAttribute("user") PasswordChangeRecord user,
-			BindingResult result, Principal principal) {
-		if (result.hasErrors()) {
-			if (result.hasGlobalErrors()) {
-				return error(result.getGlobalError().toString());
-			}
-			if (result.hasFieldErrors()) {
-				return error(result.getFieldError().toString());
-			}
-			return error("unknown error");
-		}
+			Principal principal) {
 		log.info("changing password for {}", principal.getName());
-		try {
-			return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
-					userControl.updateUserOfPrincipal(principal, user));
-		} catch (AuthenticationException | DataAccessException e) {
-			log.error("couldn't change password", e);
-			return problem(e);
-		}
+		return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
+				userControl.updateUserOfPrincipal(principal, user));
 	}
 
 	@Override
 	@GetMapping("/perform_logout")
+	@Action("logging out")
 	public String performLogout(HttpServletRequest request,
 			HttpServletResponse response) {
 		Authentication auth = getContext().getAuthentication();
@@ -189,74 +211,64 @@ public class SystemControllerImpl implements SystemController {
 		return "redirect:" + urlMaker.systemUrl("login.html");
 	}
 
-	@Override
-	@PreAuthorize(IS_READER)
-	public ModelAndView getMachineList() {
-		try {
-			List<MachineListEntryRecord> table = spallocCore.listMachines();
-			table.forEach(rec -> rec.setDetailsUrl(uri(
-					on(SystemController.class).getMachineInfo(rec.getName()))));
-			return view(MACHINE_LIST_VIEW, "machineList", table);
-		} catch (DataAccessException e) {
-			log.error("database problem when listing machines", e);
-			return problem(e);
-		}
+	private static SystemController self() {
+		// Do not refactor to a constant; request context aware!
+		return on(SystemController.class);
 	}
 
 	@Override
 	@PreAuthorize(IS_READER)
+	@Action("listing machines")
+	public ModelAndView getMachineList() {
+		List<MachineListEntryRecord> table = spallocCore.listMachines(false);
+		table.forEach(rec -> rec
+				.setDetailsUrl(uri(self().getMachineInfo(rec.getName()))));
+		return view(MACHINE_LIST_VIEW, "machineList", table);
+	}
+
+	@Override
+	@PreAuthorize(IS_READER)
+	@Action("getting machine details")
 	public ModelAndView getMachineInfo(String machine) {
 		Permit permit = new Permit(getContext());
-		try {
-			MachineDescription mach =
-					spallocCore.getMachineInfo(machine, permit).orElseThrow(
-							() -> new ResponseStatusException(NOT_FOUND));
-			// Owners and admins may drill down further into jobs
-			mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
-					.forEach(j -> j.setUrl(uri(
-							on(SystemController.class).getJobInfo(j.getId()))));
-			return view(MACHINE_VIEW, "machine", mach);
-		} catch (DataAccessException e) {
-			log.error("database problem when getting machine details", e);
-			return problem(e, permit);
-		}
+		/*
+		 * Admins can get the view for disabled machines, but if they know it is
+		 * there.
+		 */
+		MachineDescription mach = spallocCore
+				.getMachineInfo(machine, permit.admin, permit)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		// Owners and admins may drill down further into jobs
+		mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
+				.forEach(j -> j.setUrl(uri(self().getJobInfo(j.getId()))));
+		return view(MACHINE_VIEW, "machine", mach);
 	}
 
 	@Override
 	@PreAuthorize(IS_READER)
+	@Action("listing jobs")
 	public ModelAndView getJobList() {
-		Permit permit = new Permit(getContext());
-		try {
-			List<JobListEntryRecord> table = spallocCore.listJobs(permit);
-			table.forEach(entry -> {
-				entry.setDetailsUrl(uri(
-						on(SystemController.class).getJobInfo(entry.getId())));
-				entry.setMachineUrl(uri(on(SystemController.class)
-						.getMachineInfo(entry.getMachineName())));
-			});
-			return view(JOB_LIST_VIEW, "jobList", table);
-		} catch (DataAccessException e) {
-			log.error("database problem when listing jobs", e);
-			return problem(e, permit);
-		}
+		List<JobListEntryRecord> table =
+				spallocCore.listJobs(new Permit(getContext()));
+		table.forEach(entry -> {
+			entry.setDetailsUrl(uri(self().getJobInfo(entry.getId())));
+			entry.setMachineUrl(
+					uri(self().getMachineInfo(entry.getMachineName())));
+		});
+		return view(JOB_LIST_VIEW, "jobList", table);
 	}
 
 	@Override
 	@PreAuthorize(IS_READER)
+	@Action("getting job details")
 	public ModelAndView getJobInfo(int id) {
 		Permit permit = new Permit(getContext());
-		try {
-			JobDescription mach = spallocCore.getJobInfo(permit, id)
-					.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
-			if (nonNull(mach.getRequestBytes())) {
-				mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
-			}
-			mach.setMachineUrl(uri(on(SystemController.class)
-					.getMachineInfo(mach.getMachine())));
-			return view(JOB_VIEW, "job", mach);
-		} catch (DataAccessException e) {
-			log.error("database problem when getting job details", e);
-			return problem(e, permit);
+		JobDescription mach = spallocCore.getJobInfo(permit, id)
+				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
+		if (nonNull(mach.getRequestBytes())) {
+			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
 		}
+		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
+		return view(JOB_VIEW, "job", mach);
 	}
 }

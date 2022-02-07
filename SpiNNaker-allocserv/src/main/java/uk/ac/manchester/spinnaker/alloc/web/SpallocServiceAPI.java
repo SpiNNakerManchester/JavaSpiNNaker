@@ -144,6 +144,8 @@ public interface SpallocServiceAPI {
 	 *            The name of the machine
 	 * @param ui
 	 *            How to build URIs
+	 * @param security
+	 *            What are the user's identity and granted permissions?
 	 * @return The sub-resource
 	 */
 	@Path(MACH + "/{name}")
@@ -152,7 +154,7 @@ public interface SpallocServiceAPI {
 	MachineAPI getMachine(
 			@Description("The name of the machine.") @PathParam(NAME)
 			@NotBlank(message = "machine name must not be blank") String name,
-			@Context UriInfo ui);
+			@Context UriInfo ui, @Context SecurityContext security);
 
 	/**
 	 * List jobs.

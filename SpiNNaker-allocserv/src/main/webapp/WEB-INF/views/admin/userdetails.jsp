@@ -20,7 +20,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="User Details" name="title"/>
+	<jsp:param value="User Details" name="title" />
+	<jsp:param name="spalloclib" value="true" />
 </jsp:include>
 <body>
 
@@ -44,9 +45,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<form:label path="isLocked">Is temporarily locked? </form:label>
 	<form:checkbox path="isLocked"/>
 	<br>
-	Last successful login: ${ user.lastSuccessfulLogin }
+	Last successful login: <span id="lastSuccessfulLogin">${ user.lastSuccessfulLogin }</span>
 	<br>
-	Last failed login: ${ user.lastFailedLogin }
+	Last failed login: <span id="lastFailedLogin">${ user.lastFailedLogin }</span>
+	<script defer="defer">
+		prettyTimestamp("lastSuccessfulLogin");
+		prettyTimestamp("lastFailedLogin");
+	</script>
 	<p>
 	<input type="submit" value="Update" />
 </form:form>

@@ -103,28 +103,31 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 		this.retryTracker = retryTracker;
 	}
 
-	private SCPRequestPipeline getPipeline(T connection) {
-		SCPRequestPipeline pipeline = requestPipelines.get(connection);
-		if (pipeline == null) {
-			pipeline = new SCPRequestPipeline(connection, numChannels, numWaits,
-					numRetries, timeout, retryTracker);
-			requestPipelines.put(connection, pipeline);
-		}
-		return pipeline;
+	/**
+	 * Manufacture a pipeline to handle a request using the configured pipeline
+	 * parameters.
+	 *
+	 * @param request
+	 *            The connection.
+	 * @return The new pipeline.
+	 */
+	private SCPRequestPipeline getPipeline(SCPRequest<?> request) {
+		return requestPipelines.computeIfAbsent(
+				selector.getNextConnection(request),
+				c -> new SCPRequestPipeline(c, numChannels, numWaits,
+						numRetries, timeout, retryTracker));
 	}
 
 	@Override
 	protected <R extends CheckOKResponse> void sendRequest(
 			SCPRequest<R> request, Consumer<R> callback) throws IOException {
-		getPipeline(selector.getNextConnection(request)).sendRequest(request,
-				callback, this::receiveError);
+		getPipeline(request).sendRequest(request, callback, this::receiveError);
 	}
 
 	@Override
 	protected void sendOneWayRequest(SCPRequest<? extends NoResponse> request)
 			throws IOException {
-		getPipeline(selector.getNextConnection(request))
-				.sendOneWayRequest(request);
+		getPipeline(request).sendOneWayRequest(request);
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
@@ -461,9 +462,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		return getCPUInformation(coreSubsets).first().get();
+		return getCPUInformation(new CoreSubsets(core)).first().get();
 	}
 
 	/**
@@ -598,9 +597,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		return getIobuf(coreSubsets).first().get();
+		return getIobuf(new CoreSubsets(core)).first().get();
 	}
 
 	/**
@@ -645,9 +642,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void clearIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		clearIobuf(coreSubsets);
+		clearIobuf(new CoreSubsets(core));
 	}
 
 	/**
@@ -1348,9 +1343,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void updateRuntime(Integer runTimesteps, HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		updateRuntime(runTimesteps, coreSubsets);
+		updateRuntime(runTimesteps, new CoreSubsets(core));
 	}
 
 	/**
@@ -1402,9 +1395,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void updateProvenanceAndExit(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		updateProvenanceAndExit(coreSubsets);
+		updateProvenanceAndExit(new CoreSubsets(core));
 	}
 
 	/**
@@ -3165,13 +3156,9 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, ProcessException {
-		CoreSubsets coresInState = new CoreSubsets();
-		for (CPUInfo coreInfo : getCPUInformation(allCoreSubsets)) {
-			if (states.contains(coreInfo.getState())) {
-				coresInState.addCore(coreInfo.asCoreLocation());
-			}
-		}
-		return coresInState;
+		return new CoreSubsets(getCPUInformation(allCoreSubsets)
+				.filter(info -> states.contains(info.getState()))
+				.map(CPUInfo::asCoreLocation));
 	}
 
 	/**
@@ -3219,13 +3206,9 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
 			throws IOException, ProcessException {
-		Map<CoreLocation, CPUInfo> coresNotInState = new TreeMap<>();
-		for (CPUInfo coreInfo : getCPUInformation(allCoreSubsets)) {
-			if (!states.contains(coreInfo.getState())) {
-				coresNotInState.put(coreInfo.asCoreLocation(), coreInfo);
-			}
-		}
-		return coresNotInState;
+		return getCPUInformation(allCoreSubsets)
+				.filter(info -> !states.contains(info.getState()))
+				.toMap(TreeMap::new, CPUInfo::asCoreLocation, identity());
 	}
 
 	/**

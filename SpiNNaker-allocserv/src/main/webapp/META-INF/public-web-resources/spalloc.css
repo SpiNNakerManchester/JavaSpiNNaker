@@ -16,7 +16,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 body {
+	font-size: 16pt;
+	text-size-adjust: none;
 	font-family: Times, "Times New Roman", serif;
+	background-color: white;
 }
 h1 {
 	font-family: Helvetica, Arial, sans-serif;
@@ -51,6 +54,13 @@ canvas.overlink {
 	border-radius: 3px;
 }
 
+.componentenabled {
+	color: #60e060;
+}
+.componentdisabled {
+	color: #c04040;
+}
+
 .hiddensubmit {
     border: 0 none;
     height: 0;
@@ -61,6 +71,9 @@ canvas.overlink {
     visibility: hidden;
 }
 
+.subheading {
+	font-size: smaller;
+}
 /* Used to mark columns of tables as semantically containing numbers or text. */
 .numberColumn {
 	text-align: right;
