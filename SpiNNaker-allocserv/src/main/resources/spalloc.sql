@@ -176,7 +176,8 @@ CREATE TABLE IF NOT EXISTS jobs (
 	allocation_timestamp INTEGER, -- timestamp
 	allocation_size INTEGER,
 	allocated_root INTEGER, -- set by trigger
-	accounted_for INTEGER NOT NULL DEFAULT (0) CHECK (accounted_for IN (0, 1))
+	accounted_for INTEGER NOT NULL DEFAULT (0) CHECK (accounted_for IN (0, 1)),
+	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE RESTRICT
 );
 
 CREATE VIEW IF NOT EXISTS jobs_usage(
@@ -302,16 +303,31 @@ CREATE TABLE IF NOT EXISTS user_info (
 	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1))
 );
 
-CREATE TABLE IF NOT EXISTS quotas (
-	quota_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS groups (
+	group_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	group_name TEXT UNIQUE NOT NULL,
+	quota INTEGER, -- If NULL, no quota applies; care required, could be LARGE
+	is_internal INTEGER NOT NULL DEFAULT (0) CHECK (is_internal IN (0, 1))
+);
+
+-- Many-to-many relationship model
+CREATE TABLE IF NOT EXISTS group_memberships (
+	membership_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	user_id INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE CASCADE,
-	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
-	quota INTEGER -- If NULL, no quota applies; care required, could be large
+	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE
 );
--- No user can have more than one quota for a particular machine
-CREATE UNIQUE INDEX IF NOT EXISTS quotaSanity ON quotas(
-    user_id, machine_id
+
+-- No user can be in a group more than once!
+CREATE UNIQUE INDEX IF NOT EXISTS membershipSanity ON group_memberships(
+	user_id, group_id
 );
+
+CREATE VIEW IF NOT EXISTS quotas (quota_id, user_id, machine_id, quota)
+AS SELECT
+	groups.group_id, user_info.user_id, machines.machine_id, groups.quota
+FROM groups LEFT JOIN group_memberships USING (group_id)
+LEFT JOIN user_info USING (user_id)
+LEFT JOIN machines;
 
 -- Automatically suggested indices
 CREATE INDEX IF NOT EXISTS 'boards_allocated_job' ON 'boards'('allocated_job'); --> jobs(job_id)
