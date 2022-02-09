@@ -171,8 +171,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@Value("classpath:/spalloc.sql")
 	private Resource sqlDDLFile;
 
-	@Value("classpath:/in-service-column.sql")
-	private Resource sqlInServiceColumnDDLFile;
+	/** The list of files containing schema updates. */
+	@Value("classpath*:spalloc-schema-update-*.sql")
+	private Resource[] schemaUpdates;
 
 	@Value("classpath:/spalloc-tombstone.sql")
 	private Resource tombstoneDDLFile;
@@ -351,7 +352,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		log.info("will manage pure in-memory database");
 		props = prototype.props;
 		sqlDDLFile = prototype.sqlDDLFile;
-		sqlInServiceColumnDDLFile = prototype.sqlInServiceColumnDDLFile;
+		schemaUpdates = prototype.schemaUpdates;
 		tombstoneDDLFile = prototype.tombstoneDDLFile;
 		sqlInitDataFile = prototype.sqlInitDataFile;
 		functions = prototype.functions;
@@ -487,7 +488,6 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			throw mapException(e, null);
 		}
 		// Note that we don't close the wrapper; this is deliberate!
-		@SuppressWarnings("resource")
 		Connection wrapper = new Connection(conn);
 		synchronized (this) {
 			wrapper.transaction(true, () -> {
@@ -501,18 +501,19 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				wrapper.exec("SELECT COUNT(*) FROM jobs");
 				log.info("verifying historical DB integrity");
 				wrapper.exec("SELECT COUNT(*) FROM tombstone.jobs");
-				execSchemaUpdates(wrapper, sqlInServiceColumnDDLFile);
+				execSchemaUpdates(wrapper);
 			});
 		}
 	}
 
 	/**
-	 * Applies schema updates from files.
-	 * @param wrapper Where to apply the updates.
-	 * @param schemaUpdates What updates to apply.
+	 * Applies schema updates from discovered schema update files.
+	 *
+	 * @param wrapper
+	 *            Where to apply the updates.
+	 * @see #schemaUpdates
 	 */
-	private static void execSchemaUpdates(Connection wrapper,
-			Resource... schemaUpdates) {
+	private void execSchemaUpdates(Connection wrapper) {
 		for (Resource r : schemaUpdates) {
 			try {
 				wrapper.exec(r);
