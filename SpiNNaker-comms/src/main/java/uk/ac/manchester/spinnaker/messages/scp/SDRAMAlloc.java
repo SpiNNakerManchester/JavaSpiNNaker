@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static uk.ac.manchester.spinnaker.messages.model.AllocFree.ALLOC_SDRAM;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
+import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 
 import java.nio.ByteBuffer;
@@ -31,6 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException
 /** An SCP Request to allocate space in the SDRAM space. */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private static final int MAX_SDRAM_TAG = 255;
+	private static final int FLAG_TAG_RETRY = 4;
 
 	private final int size;
 
@@ -71,7 +73,8 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	}
 
 	private static int argument1(AppID appID) {
-		return (appID.appID << BYTE1) | (ALLOC_SDRAM.value << BYTE0);
+		return (FLAG_TAG_RETRY << BYTE2) | (appID.appID << BYTE1)
+				| (ALLOC_SDRAM.value << BYTE0);
 	}
 
 	@Override
