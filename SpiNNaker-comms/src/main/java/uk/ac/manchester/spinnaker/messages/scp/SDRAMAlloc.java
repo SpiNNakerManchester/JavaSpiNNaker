@@ -32,6 +32,7 @@ import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException
 /** An SCP Request to allocate space in the SDRAM space. */
 public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	private static final int MAX_SDRAM_TAG = 255;
+
 	private static final int FLAG_TAG_RETRY = 4;
 
 	private final int size;
