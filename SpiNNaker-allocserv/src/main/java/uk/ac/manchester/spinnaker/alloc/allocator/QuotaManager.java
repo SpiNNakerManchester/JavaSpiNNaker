@@ -55,12 +55,14 @@ public class QuotaManager extends DatabaseAwareBean {
 	 *            theoretically per-machine.
 	 * @param user
 	 *            Who wants to create the job.
+	 * @param groupId
+	 *            What group will the job be accounted against.
 	 * @return True if they can make a job. False if they can't.
 	 */
-	public boolean mayCreateJob(int machineId, String user) {
+	public boolean mayCreateJob(int machineId, String user, int groupId) {
 		try (CreateCheckSQL sql = new CreateCheckSQL()) {
 			return sql.transaction(false,
-					() -> sql.mayCreateJob(machineId, user));
+					() -> sql.mayCreateJob(machineId, user, groupId));
 		}
 	}
 
@@ -77,7 +79,8 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private boolean mayCreateJob(int machineId, String user) {
+		private boolean mayCreateJob(int machineId, String user, int groupId) {
+			// FIXME use groupId
 			return getQuota.call1(machineId, user).map(result -> {
 				Integer quota = result.getInteger("quota");
 				if (isNull(quota)) {
@@ -94,7 +97,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Has the execution of a job exceeded its owner's resource allocation at
+	 * Has the execution of a job exceeded its group's resource allocation at
 	 * this point?
 	 *
 	 * @param machineId
@@ -105,6 +108,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @return True if the job can continue to run. False if it can't.
 	 */
 	public boolean mayLetJobContinue(int machineId, int jobId) {
+		// FIXME shouldn't need machineId
 		try (ContinueCheckSQL sql = new ContinueCheckSQL()) {
 			return sql.transaction(false,
 					() -> sql.mayLetJobContinue(machineId, jobId));
@@ -122,6 +126,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		private boolean mayLetJobContinue(int machineId, int jobId) {
+			// FIXME shouldn't need machineId
 			return getUsageAndQuota.call1(machineId, jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
@@ -142,6 +147,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @return The number of quotas modified
 	 */
 	public int addQuota(int userId, String machineName, int delta) {
+		// FIXME this is just wrong now
 		try (AdjustQuotaSQL sql = new AdjustQuotaSQL()) {
 			return sql.transaction(
 					() -> sql.adjustQuota(userId, machineName, delta));
@@ -186,7 +192,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	// Accessible for testing; do not inline
 	final void doConsolidate(Connection c) {
 		try (ConsolidateSQL sql = new ConsolidateSQL(c)) {
-			sql.transaction(() -> sql.consolidate());
+			sql.transaction(sql::consolidate);
 		}
 	}
 
@@ -197,6 +203,8 @@ public class QuotaManager extends DatabaseAwareBean {
 		private final Update decrementQuota = conn.update(DECREMENT_QUOTA);
 
 		private final Update markConsolidated = conn.update(MARK_CONSOLIDATED);
+
+		// FIXME update these queries
 
 		ConsolidateSQL(Connection c) {
 			super(c);

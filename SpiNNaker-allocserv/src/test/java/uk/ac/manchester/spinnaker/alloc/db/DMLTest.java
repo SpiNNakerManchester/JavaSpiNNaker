@@ -81,6 +81,9 @@ class DMLTest extends SQLQueries {
 	// Not equal to any user_id
 	private static final int NO_USER = -1;
 
+	// Not equal to any group_id
+	private static final int NO_GROUP = -1;
+
 	@Autowired
 	private DatabaseEngine mainDBEngine;
 
@@ -175,11 +178,11 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		Duration d = Duration.ofSeconds(100);
 		try (Update u = c.update(INSERT_JOB)) {
-			assertEquals(4, u.getNumArguments());
+			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// No such machine
-				assertThrowsFK(
-						() -> u.keys(NO_MACHINE, NO_USER, d, new byte[0]));
+				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_USER, NO_GROUP, d,
+						new byte[0]));
 			});
 		}
 	}

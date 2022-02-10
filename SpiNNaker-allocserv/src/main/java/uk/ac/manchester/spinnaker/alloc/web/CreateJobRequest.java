@@ -48,6 +48,14 @@ public class CreateJobRequest {
 	public String owner;
 
 	/**
+	 * What group will the job be accounted against; the owner <em>must</em> be
+	 * a member of the group. If {@code null}, the single group that the owner
+	 * is a member of will be used (with it being an error for that to not exist
+	 * or not be unique).
+	 */
+	public String group;
+
+	/**
 	 * How long after a keepalive message will the job be auto-deleted?
 	 * <em>Required.</em> Must be between 30 and 300 seconds.
 	 */

@@ -225,14 +225,16 @@ public abstract class SQLQueries {
 
 	/** Create a job. */
 	@Parameter("machine_id")
-	@Parameter("owner")
+	@Parameter("user_id")
+	@Parameter("group_id")
 	@Parameter("keepalive_interval")
 	@Parameter("original_request")
 	@GeneratesID
 	protected static final String INSERT_JOB = "INSERT INTO jobs("
-			+ "machine_id, owner, keepalive_interval, original_request, "
-			+ "keepalive_timestamp, create_timestamp, job_state) "
-			+ "VALUES(:machine_id, :owner, :keepalive_interval, "
+			+ "machine_id, owner, group_id, keepalive_interval, "
+			+ "original_request, keepalive_timestamp, create_timestamp, "
+			+ "job_state) "
+			+ "VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, "
 			+ ":original_request, CAST(strftime('%s','now') AS INTEGER), "
 			+ "CAST(strftime('%s','now') AS INTEGER), " + /* QUEUED */ "1)";
 
@@ -1060,6 +1062,35 @@ public abstract class SQLQueries {
 			"SELECT user_id, user_name, encrypted_password FROM user_info "
 					+ "WHERE user_name = :user_name "
 					+ "AND encrypted_password IS NOT NULL LIMIT 1";
+
+	/**
+	 * Get the ID of a particular group that a particular user must be a member
+	 * of.
+	 *
+	 * @see Spalloc
+	 */
+	@Parameter("user_name")
+	@Parameter("group_name")
+	@ResultColumn("group_id")
+	@SingleRowResult
+	protected static final String GET_GROUP_BY_NAME_AND_MEMBER =
+			"SELECT groups.group_id FROM groups "
+					+ "JOIN group_memberships USING (group_id) "
+					+ "JOIN user_info USING (user_id) "
+					+ "WHERE user_name = :user_name "
+					+ "AND group_name = :group_name LIMIT 1";
+
+	/**
+	 * List all the groups that a user is a member of.
+	 *
+	 * @see Spalloc
+	 */
+	@Parameter("user_name")
+	@ResultColumn("group_id")
+	protected static final String GET_GROUPS_OF_USER =
+			"SELECT group_id FROM group_memberships "
+					+ "JOIN user_info USING (user_id) "
+					+ "WHERE user_name = :user_name";
 
 	/**
 	 * Get a user's quotas.

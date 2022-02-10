@@ -926,6 +926,28 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getGroupByNameAndMember() {
+		try (Query q = c.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
+			assertEquals(2, q.getNumArguments());
+			assertSetEquals(set("group_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1("gorp", "gorp").isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getGroupsOfUser() {
+		try (Query q = c.query(GET_GROUPS_OF_USER)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("group_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1("gorp").isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getQuotaDetails() {
 		try (Query q = c.query(GET_QUOTA_DETAILS)) {
 			assertEquals(1, q.getNumArguments());

@@ -151,6 +151,13 @@ public interface SpallocAPI {
 	 *
 	 * @param owner
 	 *            Who is making this job.
+	 * @param group
+	 *            What group is associated with this job for accounting
+	 *            purposes. If {@code null} then a guess is made based on the
+	 *            owner's memberships (i.e., if the owner is a member of a
+	 *            single group, with it being an error for a job to be submitted
+	 *            where there is a choice of groups available yet the job
+	 *            doesn't say which to use).
 	 * @param descriptor
 	 *            What sort of allocation is desired?
 	 * @param machineName
@@ -170,9 +177,11 @@ public interface SpallocAPI {
 	 *            database for later retrieval.
 	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
 	 */
-	Optional<Job> createJob(String owner, CreateDescriptor descriptor,
-			String machineName, List<String> tags, Duration keepaliveInterval,
-			Integer maxDeadBoards, byte[] originalRequest);
+	@SuppressWarnings("checkstyle:ParameterNumber")
+	Optional<Job> createJob(String owner, String group,
+			CreateDescriptor descriptor, String machineName, List<String> tags,
+			Duration keepaliveInterval, Integer maxDeadBoards,
+			byte[] originalRequest);
 
 	/** Purge the cache of what boards are down. */
 	void purgeDownCache();
