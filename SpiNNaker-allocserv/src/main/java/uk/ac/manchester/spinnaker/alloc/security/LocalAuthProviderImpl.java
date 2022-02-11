@@ -134,11 +134,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		String encPass = passServices.encodePassword(password);
 		try (Connection conn = getConnection();
-				Update createUser = conn.update(CREATE_USER);
-				Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
-			// FIXME addQuota is broken
+				Update createUser = conn.update(CREATE_USER)) {
 			return conn.transaction(() -> createUser(username, encPass,
-					trustLevel, quota, createUser, addQuota));
+					trustLevel, quota, createUser));
 		}
 	}
 
@@ -162,12 +160,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @return Whether the user was successfully created.
 	 */
 	private Boolean createUser(String username, String encPass,
-			TrustLevel trustLevel, long quota, Update createUser,
-			Update addQuota) {
+			TrustLevel trustLevel, long quota, Update createUser) {
 		return createUser.key(username, encPass, trustLevel, false)
 				.map(userId -> {
-					// FIXME addQuota is broken
-					addQuota.call(userId, quota);
 					log.info(
 							"added user {} with trust level {} and "
 									+ "quota {} board-seconds",
@@ -232,17 +227,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/** The classes that we know what to do about. */
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
-		OAuth2AuthenticationToken.class,
-		JwtAuthenticationToken.class,
+		OAuth2AuthenticationToken.class, JwtAuthenticationToken.class,
 		AlreadyDoneMarker.class
 	};
 
 	/** The classes that we <em>know</em> we don't ever want to handle. */
 	private static final Class<?>[] UNSUPPORTED_AUTH_TOKEN_CLASSES = {
-		AnonymousAuthenticationToken.class,
-		RememberMeAuthenticationToken.class,
-		RunAsUserToken.class,
-		TestingAuthenticationToken.class
+		AnonymousAuthenticationToken.class, RememberMeAuthenticationToken.class,
+		RunAsUserToken.class, TestingAuthenticationToken.class
 	};
 
 	@Override
@@ -333,9 +325,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private Authentication authenticateOpenId(JwtAuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
-		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ auth.getToken().getClaimAsString("preferred_username"), null,
-				auth.getToken());
+		return authorizeOpenId(
+				authProps.getOpenid().getUsernamePrefix() + auth.getToken()
+						.getClaimAsString("preferred_username"),
+				null, auth.getToken());
 	}
 
 	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name,
@@ -500,9 +493,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final Update createUser = conn.update(CREATE_USER);
 
-		// FIXME completely broken
-		private final Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES);
-
 		/**
 		 * Make an instance.
 		 */
@@ -511,7 +501,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		@Override
 		public void close() {
-			addQuota.close();
 			createUser.close();
 			loginFailure.close();
 			loginSuccess.close();
@@ -742,8 +731,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * the user, they're also immediately authorised.
 			 */
 			return createUser(username, null, USER,
-					quotaProps.getDefaultQuota(), queries.createUser,
-					queries.addQuota);
+					quotaProps.getDefaultQuota(), queries.createUser);
 		}
 		Row userInfo = r.get();
 

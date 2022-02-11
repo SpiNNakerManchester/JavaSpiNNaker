@@ -16,11 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.int64;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.net.URI;
 import java.security.Principal;
@@ -73,18 +70,11 @@ public class UserControl extends DatabaseAwareBean {
 	private final class CreateSQL extends AccessQuotaSQL {
 		private final Update createUser = conn.update(CREATE_USER);
 
-		private final Update makeQuotas = conn.update(CREATE_QUOTA);
-
-		private final Update makeDefaultQuotas =
-				conn.update(CREATE_QUOTAS_FROM_DEFAULTS);
-
 		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
 
 		@Override
 		public void close() {
 			createUser.close();
-			makeQuotas.close();
-			makeDefaultQuotas.close();
 			getUserDetails.close();
 			super.close();
 		}
@@ -203,13 +193,7 @@ public class UserControl extends DatabaseAwareBean {
 				.key(user.getUserName(), encPass, user.getTrustLevel(),
 						!user.isEnabled())
 				.flatMap(userId -> {
-					if (isNull(user.getQuota())) {
-						sql.makeDefaultQuotas.call(userId);
-					} else {
-						user.getQuota()
-								.forEach((machineName, quota) -> sql.makeQuotas
-										.call(userId, quota, machineName));
-					}
+					// TODO inflate the groups
 					return sql.getUserDetails.call1(userId)
 							.map(row -> getUser(sql, row));
 				});
@@ -252,8 +236,6 @@ public class UserControl extends DatabaseAwareBean {
 			user.setLastSuccessfulLogin(
 					row.getInstant("last_successful_login_timestamp"));
 			user.setLastFailedLogin(row.getInstant("last_fail_timestamp"));
-			user.setQuota(sql.getQuotas.call(user.getUserId())
-					.toMap(string("machine_name"), int64("quota")));
 		} finally {
 			// I mean it!
 			user.setPassword(null);
@@ -320,11 +302,6 @@ public class UserControl extends DatabaseAwareBean {
 		if (nonNull(user.getTrustLevel()) && adminId != id) {
 			// Admins can't change their own trust level
 			sql.setUserTrust.call(user.getTrustLevel(), id);
-		}
-
-		if (nonNull(user.getQuota())) {
-			user.getQuota().forEach((machineName, quota) -> sql.setUserQuota
-					.call(quota, id, machineName));
 		}
 
 		return sql.getUserDetails.call1(id).map(row -> getUser(sql, row));

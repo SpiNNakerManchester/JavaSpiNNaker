@@ -1182,18 +1182,6 @@ public abstract class SQLQueries {
 					+ "AND locked RETURNING user_name";
 
 	/**
-	 * Set a quota for a user on each defined machine.
-	 *
-	 * @see LocalAuthProviderImpl
-	 */
-	// FIXME broken
-	@Parameter("user_id")
-	@Parameter("quota")
-	protected static final String ADD_QUOTA_FOR_ALL_MACHINES =
-			"INSERT OR IGNORE INTO quotas(user_id, machine_id, quota) "
-					+ "SELECT :user_id, machine_id, :quota FROM machines";
-
-	/**
 	 * Delete a user.
 	 *
 	 * @see UserControl
@@ -1309,34 +1297,6 @@ public abstract class SQLQueries {
 			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
 					+ "trust_level, disabled) VALUES(:user_name, "
 					+ ":encoded_password, :trust_level, :disabled)";
-
-	/**
-	 * Create a quota (in board-seconds) for a user on a machine.
-	 *
-	 * @see UserControl
-	 */
-	// FIXME broken
-	@Parameter("user_id")
-	@Parameter("quota")
-	@Parameter("machine_name")
-	@GeneratesID
-	protected static final String CREATE_QUOTA =
-			"INSERT INTO quotas(user_id, quota, machine_id) "
-					+ "SELECT :user_id, :quota, machine_id FROM machines "
-					+ "WHERE machine_name = :machine_name";
-
-	/**
-	 * Create quotas (in board-seconds) for a user for all known machines.
-	 *
-	 * @see UserControl
-	 */
-	// FIXME broken
-	@Parameter("user_id")
-	@GeneratesID
-	protected static final String CREATE_QUOTAS_FROM_DEFAULTS =
-			"INSERT INTO quotas(user_id, quota, machine_id) "
-					+ "SELECT :user_id, default_quota, machine_id "
-					+ "FROM machines";
 
 	/**
 	 * Create a board issue report.

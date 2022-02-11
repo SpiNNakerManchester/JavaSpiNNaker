@@ -651,39 +651,6 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void createQuota() {
-		assumeWritable(c);
-		try (Update u = c.update(CREATE_QUOTA)) {
-			assertEquals(3, u.getNumArguments());
-			c.transaction(() -> {
-				assertEquals(0, u.call(NO_USER, 0, "gorp"));
-			});
-		}
-	}
-
-	@Test
-	void createQuotasFromDefaults() {
-		assumeWritable(c);
-		try (Update u = c.update(CREATE_QUOTAS_FROM_DEFAULTS)) {
-			assertEquals(1, u.getNumArguments());
-			c.transaction(() -> {
-				assertEquals(0, u.call(NO_USER));
-			});
-		}
-	}
-
-	@Test
-	void addQuotaForAllMachines() {
-		assumeWritable(c);
-		try (Update u = c.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
-			assertEquals(2, u.getNumArguments());
-			c.transaction(() -> {
-				assertEquals(0, u.call(NO_USER, 0));
-			});
-		}
-	}
-
-	@Test
 	void insertBoardReport() {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_BOARD_REPORT)) {

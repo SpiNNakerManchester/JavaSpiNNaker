@@ -22,7 +22,6 @@ import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.time.Instant;
-import java.util.Map;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
@@ -41,6 +40,7 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
  * being asked to change them.
  */
 public final class UserRecord {
+	// TODO list group memberships
 	private Integer userId;
 
 	private String userName;
@@ -54,8 +54,6 @@ public final class UserRecord {
 	private Boolean isLocked;
 
 	private TrustLevel trustLevel;
-
-	private Map<String, Long> quota;
 
 	private Instant lastSuccessfulLogin;
 
@@ -147,18 +145,6 @@ public final class UserRecord {
 
 	public void setTrustLevel(TrustLevel trustLevel) {
 		this.trustLevel = trustLevel;
-	}
-
-	/**
-	 * @return The quota map of the account, saying how many board-seconds
-	 *         can be used on each machine.
-	 */
-	public Map<String, Long> getQuota() {
-		return quota;
-	}
-
-	public void setQuota(Map<String, Long> quota) {
-		this.quota = quota;
 	}
 
 	/**
