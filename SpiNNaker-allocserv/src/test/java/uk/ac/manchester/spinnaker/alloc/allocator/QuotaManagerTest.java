@@ -160,13 +160,13 @@ class QuotaManagerTest extends SQLQueries {
 	 */
 	private int makeJob(Connection c, int size, int time) {
 		try (Update u = c.update(
-				"INSERT INTO jobs(machine_id, owner, root_id, job_state, "
-						+ "create_timestamp, allocation_timestamp, "
+				"INSERT INTO jobs(machine_id, owner, group_id, root_id, "
+						+ "job_state, create_timestamp, allocation_timestamp, "
 						+ "death_timestamp, allocation_size, "
 						+ "keepalive_interval) VALUES "
-						+ "(?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+						+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
 			int t0 = 0;
-			return u.key(MACHINE, USER, BOARD, JobState.DESTROYED, t0,
+			return u.key(MACHINE, USER, GROUP, BOARD, JobState.DESTROYED, t0,
 					t0 + time, t0 + time + time, size, time).orElseThrow(
 							() -> new RuntimeException("failed to insert job"));
 		}
@@ -179,9 +179,9 @@ class QuotaManagerTest extends SQLQueries {
 	}
 
 	private void setQuota(Connection c, Integer quota) {
-		try (Update u = c.update("UPDATE quotas SET quota = :quota "
-				+ "WHERE machine_id = :machine AND user_id = :user")) {
-			u.call(quota, MACHINE, USER);
+		try (Update u = c.update("UPDATE groups SET quota = :quota "
+				+ "WHERE group_id = :group")) {
+			u.call(quota, GROUP);
 		}
 	}
 
