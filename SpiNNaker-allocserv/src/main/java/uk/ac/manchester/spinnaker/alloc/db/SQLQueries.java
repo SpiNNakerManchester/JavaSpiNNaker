@@ -930,8 +930,9 @@ public abstract class SQLQueries {
 	/**
 	 * Get the quota for a user.
 	 *
-	 * @see QuotaManager
+	 * @see Spalloc
 	 */
+	// FIXME
 	@Parameter("machine_id")
 	@Parameter("user_name")
 	@ResultColumn("quota")
@@ -944,34 +945,42 @@ public abstract class SQLQueries {
 					+ "AND user_info.user_name = :user_name LIMIT 1";
 
 	/**
-	 * Get the current non-consolidated usage for a user.
+	 * Get the quota for a group.
 	 *
 	 * @see QuotaManager
 	 */
-	@Parameter("machine_id")
-	@Parameter("user_id")
+	// FIXME test
+	@Parameter("group_id")
+	@ResultColumn("quota")
+	@SingleRowResult
+	protected static final String GET_GROUP_QUOTA =
+			"SELECT quota FROM groups WHERE group_id = :group_id LIMIT 1";
+
+	/**
+	 * Get the current non-consolidated usage for a group.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("group_id")
 	@ResultColumn("current_usage")
 	@SingleRowResult
 	protected static final String GET_CURRENT_USAGE =
 			"SELECT SUM(usage) AS current_usage FROM jobs_usage "
-					+ "WHERE machine_id = :machine_id AND owner = :user_id";
+					+ "WHERE group_id = :group_id";
 
 	/**
 	 * Get usage of a job and the quota against which that applies.
 	 *
 	 * @see QuotaManager
 	 */
-	@Parameter("machine_id")
 	@Parameter("job_id")
 	@ResultColumn("usage")
 	@ResultColumn("quota")
 	@SingleRowResult
 	protected static final String GET_JOB_USAGE_AND_QUOTA =
-			"SELECT [usage], quota FROM jobs_usage JOIN quotas "
-					+ "ON quotas.machine_id = jobs_usage.machine_id "
-					+ "AND quotas.user_id = jobs_usage.owner "
-					+ "WHERE jobs_usage.machine_id = :machine_id "
-					+ "AND :job_id = :job_id AND [usage] IS NOT NULL "
+			"SELECT [usage], quota FROM jobs_usage "
+					+ "JOIN groups USING (group_id) "
+					+ "WHERE :job_id = :job_id AND [usage] IS NOT NULL "
 					+ "AND quota IS NOT NULL LIMIT 1";
 
 	/**
@@ -981,22 +990,22 @@ public abstract class SQLQueries {
 	 * @see QuotaManager
 	 */
 	@ResultColumn("job_id")
-	@ResultColumn("quota_id")
+	@ResultColumn("group_id")
 	@ResultColumn("usage")
 	protected static final String GET_CONSOLIDATION_TARGETS =
-			"SELECT job_id, quota_id, [usage] FROM jobs_usage "
-					+ "WHERE complete AND quota_id IS NOT NULL";
+			"SELECT job_id, group_id, [usage] FROM jobs_usage "
+					+ "WHERE complete AND quota IS NOT NULL";
 
 	/**
-	 * Reduce a user's quota on a machine by a specified amount.
+	 * Reduce a group's quota on a machine by a specified amount.
 	 *
 	 * @see QuotaManager
 	 */
 	@Parameter("usage")
-	@Parameter("quota_id")
+	@Parameter("group_id")
 	protected static final String DECREMENT_QUOTA =
-			"UPDATE quotas SET quota = quota - :usage "
-					+ "WHERE quota_id = :quota_id AND quota IS NOT NULL";
+			"UPDATE groups SET quota = quota - :usage "
+					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
 
 	/**
 	 * Mark a job as having had its resource usage consolidated.
@@ -1013,6 +1022,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see QuotaManager
 	 */
+	// FIXME broken
 	@Parameter("delta")
 	@Parameter("machine_name")
 	@Parameter("user_id")
@@ -1177,6 +1187,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see LocalAuthProviderImpl
 	 */
+	// FIXME broken
 	@Parameter("user_id")
 	@Parameter("quota")
 	protected static final String ADD_QUOTA_FOR_ALL_MACHINES =
@@ -1305,6 +1316,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see UserControl
 	 */
+	// FIXME broken
 	@Parameter("user_id")
 	@Parameter("quota")
 	@Parameter("machine_name")
@@ -1319,6 +1331,7 @@ public abstract class SQLQueries {
 	 *
 	 * @see UserControl
 	 */
+	// FIXME broken
 	@Parameter("user_id")
 	@GeneratesID
 	protected static final String CREATE_QUOTAS_FROM_DEFAULTS =

@@ -47,28 +47,22 @@ public class QuotaManager extends DatabaseAwareBean {
 	private ServiceMasterControl control;
 
 	/**
-	 * Can the user create another job at this point? If not, they're currently
-	 * out of resources.
+	 * Can the user (in a specific group) create another job at this point? If
+	 * not, they're currently out of resources.
 	 *
-	 * @param machineId
-	 *            On what machine do they want to create the job? Quotas are
-	 *            theoretically per-machine.
-	 * @param user
-	 *            Who wants to create the job.
 	 * @param groupId
 	 *            What group will the job be accounted against.
 	 * @return True if they can make a job. False if they can't.
 	 */
-	public boolean mayCreateJob(int machineId, String user, int groupId) {
+	public boolean mayCreateJob(int groupId) {
 		try (CreateCheckSQL sql = new CreateCheckSQL()) {
-			return sql.transaction(false,
-					() -> sql.mayCreateJob(machineId, user, groupId));
+			return sql.transaction(false, () -> sql.mayCreateJob(groupId));
 		}
 	}
 
 	private class CreateCheckSQL extends AbstractSQL {
-		// These could be combined, but they're complicated enough
-		private final Query getQuota = conn.query(GET_USER_QUOTA);
+		// TODO These should be combined (but one is an aggregate so...)
+		private final Query getQuota = conn.query(GET_GROUP_QUOTA);
 
 		private final Query getCurrentUsage = conn.query(GET_CURRENT_USAGE);
 
@@ -79,16 +73,14 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private boolean mayCreateJob(int machineId, String user, int groupId) {
-			// FIXME use groupId
-			return getQuota.call1(machineId, user).map(result -> {
+		private boolean mayCreateJob(int groupId) {
+			return getQuota.call1(groupId).map(result -> {
 				Integer quota = result.getInteger("quota");
 				if (isNull(quota)) {
 					return true;
 				}
-				int userId = result.getInt("user_id");
 				// Quota is defined; check if current usage exceeds it
-				int usage = getCurrentUsage.call1(machineId, userId)
+				int usage = getCurrentUsage.call1(groupId)
 						.map(integer("current_usage")).orElse(0);
 				// If board-seconds are left, we're good to go
 				return (quota > usage);
@@ -100,18 +92,14 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * Has the execution of a job exceeded its group's resource allocation at
 	 * this point?
 	 *
-	 * @param machineId
-	 *            On what machine is the job running? Quotas are theoretically
-	 *            per-machine.
 	 * @param jobId
 	 *            What job is consuming resources?
 	 * @return True if the job can continue to run. False if it can't.
 	 */
-	public boolean mayLetJobContinue(int machineId, int jobId) {
-		// FIXME shouldn't need machineId
+	public boolean mayLetJobContinue(int jobId) {
 		try (ContinueCheckSQL sql = new ContinueCheckSQL()) {
 			return sql.transaction(false,
-					() -> sql.mayLetJobContinue(machineId, jobId));
+					() -> sql.mayLetJobContinue(jobId));
 		}
 	}
 
@@ -125,9 +113,9 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private boolean mayLetJobContinue(int machineId, int jobId) {
+		private boolean mayLetJobContinue(int jobId) {
 			// FIXME shouldn't need machineId
-			return getUsageAndQuota.call1(machineId, jobId)
+			return getUsageAndQuota.call1(jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
 					// Otherwise, we'll just allow it
@@ -222,7 +210,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		private Void consolidate() {
 			for (Row row : getConsoldationTargets.call()) {
 				decrementQuota.call(row.getObject("usage"),
-						row.getInt("quota_id"));
+						row.getInt("group_id"));
 				markConsolidated.call(row.getInt("job_id"));
 			}
 			return null;

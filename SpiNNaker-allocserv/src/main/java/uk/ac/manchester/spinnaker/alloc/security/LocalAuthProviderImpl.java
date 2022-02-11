@@ -136,6 +136,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		try (Connection conn = getConnection();
 				Update createUser = conn.update(CREATE_USER);
 				Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
+			// FIXME addQuota is broken
 			return conn.transaction(() -> createUser(username, encPass,
 					trustLevel, quota, createUser, addQuota));
 		}
@@ -165,6 +166,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			Update addQuota) {
 		return createUser.key(username, encPass, trustLevel, false)
 				.map(userId -> {
+					// FIXME addQuota is broken
 					addQuota.call(userId, quota);
 					log.info(
 							"added user {} with trust level {} and "
@@ -498,6 +500,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final Update createUser = conn.update(CREATE_USER);
 
+		// FIXME completely broken
 		private final Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES);
 
 		/**

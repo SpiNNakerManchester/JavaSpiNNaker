@@ -384,37 +384,37 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new RuntimeException("no such user: " + owner));
 			int group = selectGroup(conn, owner, groupName);
-
-			Optional<MachineImpl> mach = selectMachine(conn, machineName, tags);
-			if (!mach.isPresent()) {
-				// Cannot find machine!
-				return Optional.empty();
-			}
-
-			MachineImpl m = mach.get();
-			if (!quotaManager.mayCreateJob(m.id, owner, group)) {
+			if (!quotaManager.mayCreateJob(group)) {
 				// No quota left
 				return Optional.empty();
 			}
 
-			Optional<Integer> id =
-					insertJob(conn, m, user, group, keepaliveInterval, req);
+			Optional<MachineImpl> m = selectMachine(conn, machineName, tags);
+			if (!m.isPresent()) {
+				// Cannot find machine!
+				return Optional.empty();
+			}
+			MachineImpl machine = m.get();
+
+			Optional<Integer> id = insertJob(conn, machine, user, group,
+					keepaliveInterval, req);
 			if (!id.isPresent()) {
 				// Insert failed
 				return Optional.empty();
 			}
+			int jobId = id.get();
 
 			epochs.nextJobsEpoch();
 
 			// Ask the allocator engine to do the allocation
-			int numBoards =
-					insertRequest(conn, m, id.get(), descriptor, maxDeadBoards);
-			return getJob(id.get(), conn).map(ji -> {
-				JobLifecycle.log.info(
-						"created job {} on {} for {} asking for {} board(s)",
-						ji.id, m.name, owner, numBoards);
-				return (Job) ji;
-			});
+			int numBoards = insertRequest(conn, machine, jobId, descriptor,
+					maxDeadBoards);
+
+			// DB now changed; can report success
+			JobLifecycle.log.info(
+					"created job {} on {} for {} asking for {} board(s)",
+					jobId, machine.name, owner, numBoards);
+			return getJob(jobId, conn).map(ji -> (Job) ji);
 		});
 	}
 
@@ -430,35 +430,38 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 *            What group did they specify? (May be {@code null} to say "pick
 	 *            the unique valid possibility for the owner".)
 	 * @return The group ID.
+	 * @throws GroupsException
+	 *             If we can't get a definite group to account against.
 	 */
 	private int selectGroup(Connection conn, String user, String groupName) {
 		try (Query getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER);
 				Query listGroupsForUser = conn.query(GET_GROUPS_OF_USER)) {
-			if (isNull(groupName)) {
-				int groupId = -1;
-				for (int g : listGroupsForUser.call(user)
-						.map(integer("group_id"))) {
-					if (groupId >= 0) {
-						throw new MultipleGroupsExn(
-								"user {} has multiple groups available; "
-										+ "one must be selected explicitly "
-										+ "in the request",
-								user);
-					}
-					groupId = g;
-				}
-				if (groupId < 0) {
-					throw new NoSuchGroupException(
-							"user {} is not a member of any groups", user);
-				}
-				return groupId;
-			} else {
+			if (nonNull(groupName)) {
 				return getGroup.call1(user, groupName).map(integer("group_id"))
 						.orElseThrow(() -> new NoSuchGroupException(
 								"group {} does not exist or {} "
 										+ "is not a member of it",
 								groupName, user));
 			}
+
+			// No name given; need to guess.
+			int groupId = -1;
+			for (int g : listGroupsForUser.call(user)
+					.map(integer("group_id"))) {
+				if (groupId >= 0) {
+					throw new MultipleGroupsException(
+							"user {} has multiple groups available; "
+									+ "one must be selected explicitly "
+									+ "in the request",
+							user);
+				}
+				groupId = g;
+			}
+			if (groupId < 0) {
+				throw new NoSuchGroupException(
+						"user {} is not a member of any groups", user);
+			}
+			return groupId;
 		}
 	}
 
@@ -1679,10 +1682,10 @@ class NoSuchGroupException extends GroupsException {
 	}
 }
 
-class MultipleGroupsExn extends GroupsException {
+class MultipleGroupsException extends GroupsException {
 	private static final long serialVersionUID = 6284332340565334236L;
 
-	MultipleGroupsExn(String msg, Object... args) {
+	MultipleGroupsException(String msg, Object... args) {
 		super(format(msg, args));
 	}
 }

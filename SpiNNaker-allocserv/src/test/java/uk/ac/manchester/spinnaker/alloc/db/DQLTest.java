@@ -70,6 +70,9 @@ class DQLTest extends SQLQueries {
 	// Not equal to any user_id
 	private static final int NO_USER = -1;
 
+	// Not equal to any group_id
+	private static final int NO_GROUP = -1;
+
 	/**
 	 * The columns needed to make a {@link SpallocAPI.Machine} implementation.
 	 */
@@ -828,10 +831,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getCurrentUsage() {
 		try (Query q = c.query(GET_CURRENT_USAGE)) {
-			assertEquals(2, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("current_usage"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertNull(q.call1(NO_MACHINE, "gorp").get()
+				assertNull(q.call1(NO_GROUP).get()
 						.getObject("current_usage"));
 			});
 		}
@@ -840,10 +843,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getJobUsageAndQuota() {
 		try (Query q = c.query(GET_JOB_USAGE_AND_QUOTA)) {
-			assertEquals(2, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("quota", "usage"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_MACHINE, NO_JOB).isPresent());
+				assertFalse(q.call1(NO_JOB).isPresent());
 			});
 		}
 	}
@@ -852,7 +855,7 @@ class DQLTest extends SQLQueries {
 	void getConsolidationTargets() {
 		try (Query q = c.query(GET_CONSOLIDATION_TARGETS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("job_id", "quota_id", "usage"),
+			assertSetEquals(set("job_id", "group_id", "usage"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Empty DB has no consolidation targets
