@@ -93,4 +93,10 @@ public abstract class Constants {
 	 */
 	public static final int SMALL_RETRIEVE_THRESHOLD =
 			max(1, getInteger(SMALL_RETRIEVE_PROPERTY, SMALL_RETRIEVE_DEFAULT));
+
+	/**
+	 * Base SDRAM tag to use for core data.  This matches the constant in
+	 * SpiNNFrontEndCommon.
+	 */
+	public static final int CORE_DATA_SDRAM_BASE_TAG = 200;
 }
