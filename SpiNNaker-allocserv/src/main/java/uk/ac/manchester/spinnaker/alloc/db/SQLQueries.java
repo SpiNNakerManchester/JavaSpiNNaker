@@ -979,7 +979,6 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_JOB_USAGE_AND_QUOTA =
 			"SELECT [usage], quota FROM jobs_usage "
-					+ "JOIN groups USING (group_id) "
 					+ "WHERE :job_id = :job_id AND [usage] IS NOT NULL "
 					+ "AND quota IS NOT NULL LIMIT 1";
 

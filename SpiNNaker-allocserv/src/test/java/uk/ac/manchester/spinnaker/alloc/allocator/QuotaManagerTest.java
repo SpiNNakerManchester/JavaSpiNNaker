@@ -108,6 +108,10 @@ class QuotaManagerTest extends SQLQueries {
 
 	private static final int USER = 4000;
 
+	private static final int GROUP = 5000;
+
+	private static final int MEMBERSHIP = 6000;
+
 	private void setupDB(Connection c) {
 		// A simple machine
 		try (Update u = c.update("INSERT OR IGNORE INTO machines("
@@ -133,9 +137,13 @@ class QuotaManagerTest extends SQLQueries {
 				+ "VALUES (?, ?, ?, ?)")) {
 			u.call(USER, "bar", TrustLevel.BASIC, true);
 		}
-		try (Update u = c.update("INSERT OR REPLACE INTO quotas("
-				+ "user_id, machine_id, quota) VALUES (?, ?, ?)")) {
-			u.call(USER, MACHINE, 1024);
+		try (Update u = c.update("INSERT OR REPLACE INTO groups("
+				+ "group_id, group_name, quota) VALUES (?, ?, ?)")) {
+			u.call(GROUP, "grill", 1024);
+		}
+		try (Update u = c.update("INSERT OR REPLACE INTO group_memberships("
+				+ "membership_id, user_id, group_id) VALUES (?, ?, ?)")) {
+			u.call(MEMBERSHIP, USER, GROUP);
 		}
 	}
 
