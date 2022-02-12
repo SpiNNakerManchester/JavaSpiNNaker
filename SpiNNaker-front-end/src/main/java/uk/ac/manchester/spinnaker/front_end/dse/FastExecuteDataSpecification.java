@@ -26,6 +26,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.dse.ExecutionContext.TOTAL_HEADER_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
@@ -271,7 +272,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private int malloc(CoreToLoad ctl, Integer bytesUsed)
 			throws IOException, ProcessException {
 		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
-				new AppID(ctl.appID));
+				new AppID(ctl.appID),
+				ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
 	}
 
 	@Override
