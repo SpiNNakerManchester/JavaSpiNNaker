@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
@@ -161,5 +162,9 @@ class ThrottledConnection implements Closeable {
 				log.warn("failed to close connection", e);
 			}
 		}, 1, SECONDS);
+	}
+
+	public DatagramPacket receiveWithAddress() throws IOException {
+		return connection.receiveWithAddress(TIMEOUT_MS);
 	}
 }

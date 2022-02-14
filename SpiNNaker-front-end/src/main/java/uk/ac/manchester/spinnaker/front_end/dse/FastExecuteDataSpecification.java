@@ -21,6 +21,7 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -36,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -692,60 +694,68 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Wait for confirmation and do required retransmits
 				innerLoop: while (true) {
 					try {
-						IntBuffer received = connection.receive();
+						DatagramPacket packet = connection.receiveWithAddress();
+						ByteBuffer buf = ByteBuffer.wrap(packet.getData(),
+								packet.getLength(), packet.getOffset());
+						IntBuffer received = buf.order(LITTLE_ENDIAN).asIntBuffer();
 						timeoutCount = 0; // Reset the timeout counter
+						int command = received.get();
+						try {
+							// read transaction id
+							FastDataInCommandID commandCode =
+									FastDataInCommandID.forValue(command);
+							int thisTransactionId = received.get();
 
-						// read transaction id
-						FastDataInCommandID commandCode =
-								FastDataInCommandID.forValue(received.get());
-						int thisTransactionId = received.get();
-
-						// if wrong transaction id, ignore packet
-						if (thisTransactionId != transactionId) {
-							continue innerLoop;
-						}
-
-						// Decide what to do with the packet
-						switch (commandCode) {
-						case RECEIVE_FINISHED_DATA_IN:
-							// We're done!
-							break outerLoop;
-
-						case RECEIVE_MISSING_SEQ_DATA_IN:
-							if (!received.hasRemaining()) {
-								throw new BadDataInMessageException(
-										received.get(0), received);
+							// if wrong transaction id, ignore packet
+							if (thisTransactionId != transactionId) {
+								continue innerLoop;
 							}
-							log.debug(
-									"another packet (#{}) of missing "
-											+ "sequence numbers;",
-									received.get(1));
-							break;
-						default:
-							throw new BadDataInMessageException(received.get(0),
-									received);
-						}
 
-						/*
-						 * The currently received packet has missing sequence
-						 * numbers. Accumulate and dispatch transactionId when
-						 * we've got them all.
-						 */
-						if (missing == null) {
-							missing =
-									missingSequenceNumbers.issueNew(numPackets);
-						}
-						SeenFlags flags =
-								addMissedSeqNums(received, missing, numPackets);
+							// Decide what to do with the packet
+							switch (commandCode) {
+							case RECEIVE_FINISHED_DATA_IN:
+								// We're done!
+								break outerLoop;
 
-						/*
-						 * Check that you've seen something that implies ready
-						 * to retransmit.
-						 */
-						if (flags.seenAll || flags.seenEnd) {
-							retransmitMissingPackets(protocol, data, missing,
-									transactionId, baseAddress, numPackets);
-							missing.clear();
+							case RECEIVE_MISSING_SEQ_DATA_IN:
+								if (!received.hasRemaining()) {
+									throw new BadDataInMessageException(
+											received.get(0), received);
+								}
+								log.debug(
+										"another packet (#{}) of missing "
+												+ "sequence numbers;",
+										received.get(1));
+								break;
+							default:
+								throw new BadDataInMessageException(received.get(0),
+										received);
+							}
+
+							/*
+							 * The currently received packet has missing sequence
+							 * numbers. Accumulate and dispatch transactionId when
+							 * we've got them all.
+							 */
+							if (missing == null) {
+								missing =
+										missingSequenceNumbers.issueNew(numPackets);
+							}
+							SeenFlags flags =
+									addMissedSeqNums(received, missing, numPackets);
+
+							/*
+							 * Check that you've seen something that implies ready
+							 * to retransmit.
+							 */
+							if (flags.seenAll || flags.seenEnd) {
+								retransmitMissingPackets(protocol, data, missing,
+										transactionId, baseAddress, numPackets);
+								missing.clear();
+							}
+						} catch (IllegalArgumentException e) {
+							log.error("Unexpected command code " + command +
+									" received from " + packet.getSocketAddress());
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {

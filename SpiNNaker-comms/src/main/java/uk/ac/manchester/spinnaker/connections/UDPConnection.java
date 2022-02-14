@@ -368,8 +368,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (addr == null) {
 			throw new SocketTimeoutException();
 		}
+		buffer.flip();
 		logRecv(buffer, addr);
-		return new DatagramPacket(buffer.array(), 0, buffer.position(), addr);
+		return new DatagramPacket(buffer.order(LITTLE_ENDIAN).array(), 0,
+				buffer.position(), addr);
 	}
 
 	/**
