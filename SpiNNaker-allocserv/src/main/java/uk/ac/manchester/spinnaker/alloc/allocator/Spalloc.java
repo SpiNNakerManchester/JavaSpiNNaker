@@ -235,8 +235,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 							md.setDead(getDead.call(md.getId()).map(
 									row -> new BoardCoords(row, !permit.admin))
 									.toList());
-							md.setQuota(getQuota.call1(md.getId(), permit.name)
-									.map(int64("quota")).orElse(null));
+							getQuota.call1(permit.name)
+									.map(int64("quota_total"))
+									.ifPresent(md::setQuota);
 							return md;
 						});
 			}

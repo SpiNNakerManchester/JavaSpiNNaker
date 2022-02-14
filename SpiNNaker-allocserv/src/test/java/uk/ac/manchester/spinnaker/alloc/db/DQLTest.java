@@ -73,6 +73,9 @@ class DQLTest extends SQLQueries {
 	// Not equal to any group_id
 	private static final int NO_GROUP = -1;
 
+	// Not the name of anything
+	private static final String NO_NAME = "gorp";
+
 	/**
 	 * The columns needed to make a {@link SpallocAPI.Machine} implementation.
 	 */
@@ -211,7 +214,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(BASIC_MACHINE_INFO, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", false).isPresent());
+				assertFalse(q.call1(NO_NAME, false).isPresent());
 			});
 		}
 	}
@@ -768,7 +771,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+				assertFalse(q.call1(NO_NAME, -1, -1, -1).isPresent());
 			});
 		}
 	}
@@ -790,7 +793,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+				assertFalse(q.call1(NO_NAME, -1, -1, -1).isPresent());
 			});
 		}
 	}
@@ -801,7 +804,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", "256.256.256.256").isPresent());
+				assertFalse(q.call1(NO_NAME, "256.256.256.256").isPresent());
 			});
 		}
 	}
@@ -820,10 +823,11 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getUserQuota() {
 		try (Query q = c.query(GET_USER_QUOTA)) {
-			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("quota", "user_id"), q.getRowColumnNames());
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("quota_total", "user_id"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_MACHINE, "gorp").isPresent());
+				assertFalse(q.call1(NO_NAME).isPresent());
 			});
 		}
 	}
@@ -908,7 +912,7 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(set("user_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				// Testing DB has no users by default
-				assertFalse(q.call1("gorp").isPresent());
+				assertFalse(q.call1(NO_NAME).isPresent());
 			});
 		}
 	}
@@ -934,7 +938,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(set("group_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", "gorp").isPresent());
+				assertFalse(q.call1(NO_NAME, NO_NAME).isPresent());
 			});
 		}
 	}
@@ -945,7 +949,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("group_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp").isPresent());
+				assertFalse(q.call1(NO_NAME).isPresent());
 			});
 		}
 	}

@@ -84,6 +84,9 @@ class DMLTest extends SQLQueries {
 	// Not equal to any group_id
 	private static final int NO_GROUP = -1;
 
+	// Not the name of anything
+	private static final String NO_NAME = "gorp";
+
 	@Autowired
 	private DatabaseEngine mainDBEngine;
 
@@ -231,7 +234,7 @@ class DMLTest extends SQLQueries {
 		try (Update u = c.update(UPDATE_KEEPALIVE)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call("gorp", NO_JOB));
+				assertEquals(0, u.call(NO_NAME, NO_JOB));
 			});
 		}
 	}
@@ -242,7 +245,7 @@ class DMLTest extends SQLQueries {
 		try (Update u = c.update(DESTROY_JOB)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call("gorp", NO_JOB));
+				assertEquals(0, u.call("anything", NO_JOB));
 			});
 		}
 	}
@@ -389,7 +392,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// Bad depth
-				assertThrowsCheck(() -> u.keys("gorp", -1, -1, -1));
+				assertThrowsCheck(() -> u.keys(NO_NAME, -1, -1, -1));
 			});
 		}
 	}
@@ -401,7 +404,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp"));
+				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_NAME));
 			});
 		}
 	}
@@ -425,7 +428,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", 0, 0));
+				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_NAME, 0, 0));
 			});
 		}
 	}
@@ -437,8 +440,8 @@ class DMLTest extends SQLQueries {
 			assertEquals(10, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertThrowsFK(() -> u.keys(NO_MACHINE, "gorp", NO_BMP, 0, 0, 0,
-						0, 0, 0, true));
+				assertThrowsFK(() -> u.keys(NO_MACHINE, NO_NAME, NO_BMP, 0, 0,
+						0, 0, 0, 0, true));
 			});
 		}
 	}
@@ -475,7 +478,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
-				assertEquals(0, u.call(true, "gorp"));
+				assertEquals(0, u.call(true, NO_NAME));
 			});
 		}
 	}
@@ -622,7 +625,7 @@ class DMLTest extends SQLQueries {
 		try (Update u = c.update(SET_USER_NAME)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call("gorp", NO_USER));
+				assertEquals(0, u.call(NO_NAME, NO_USER));
 			});
 		}
 	}
@@ -634,7 +637,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was userless; this makes one
-				assertEquals(1, u.call("gorp", "*", TrustLevel.BASIC, true));
+				assertEquals(1, u.call(NO_NAME, "*", TrustLevel.BASIC, true));
 			});
 		}
 	}
@@ -645,7 +648,8 @@ class DMLTest extends SQLQueries {
 		try (Update u = c.update(INSERT_BOARD_REPORT)) {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
-				assertThrowsFK(() -> u.call(NO_BOARD, NO_JOB, "gorp", NO_USER));
+				assertThrowsFK(
+						() -> u.call(NO_BOARD, NO_JOB, NO_NAME, NO_USER));
 			});
 		}
 	}

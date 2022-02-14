@@ -932,17 +932,15 @@ public abstract class SQLQueries {
 	 *
 	 * @see Spalloc
 	 */
-	// FIXME
-	@Parameter("machine_id")
 	@Parameter("user_name")
-	@ResultColumn("quota")
+	@ResultColumn("quota_total")
 	@ResultColumn("user_id")
 	@SingleRowResult
-	protected static final String GET_USER_QUOTA =
-			"SELECT quota, user_info.user_id AS user_id FROM quotas "
-					+ "JOIN user_info USING (user_id) "
-					+ "WHERE quotas.machine_id = :machine_id "
-					+ "AND user_info.user_name = :user_name LIMIT 1";
+	protected static final String GET_USER_QUOTA = "SELECT * FROM ("
+			+ "SELECT SUM(quota) AS quota_total, quotas.user_id FROM quotas "
+			+ "JOIN user_info USING (user_id) "
+			+ "WHERE user_info.user_name = :user_name"
+			+ ") WHERE user_id IS NOT NULL";
 
 	/**
 	 * Get the quota for a group.
