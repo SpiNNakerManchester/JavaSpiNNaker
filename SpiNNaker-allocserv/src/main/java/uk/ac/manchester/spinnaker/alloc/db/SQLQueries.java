@@ -1198,19 +1198,6 @@ public abstract class SQLQueries {
 			+ "WHERE user_name = :user_name LIMIT 1";
 
 	/**
-	 * Set a quota on a machine.
-	 *
-	 * @see UserControl
-	 */
-	@Parameter("quota")
-	@Parameter("user_id")
-	@Parameter("machine_name")
-	protected static final String SET_USER_QUOTA =
-			"UPDATE quotas SET quota = :quota WHERE user_id = :user_id "
-					+ "AND machine_id = (SELECT machine_id FROM machines "
-					+ "WHERE machine_name = :machine_name)";
-
-	/**
 	 * Set the amount a user is trusted.
 	 *
 	 * @see UserControl

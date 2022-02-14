@@ -91,8 +91,6 @@ public class UserControl extends DatabaseAwareBean {
 
 		private final Update setUserTrust = conn.update(SET_USER_TRUST);
 
-		private final Update setUserQuota = conn.update(SET_USER_QUOTA);
-
 		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
 
 		@Override
@@ -102,7 +100,6 @@ public class UserControl extends DatabaseAwareBean {
 			setUserDisabled.close();
 			setUserLocked.close();
 			setUserTrust.close();
-			setUserQuota.close();
 			getUserDetails.close();
 			super.close();
 		}
