@@ -31,7 +31,6 @@ import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
@@ -41,6 +40,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -164,7 +164,7 @@ class ThrottledConnection implements Closeable {
 		}, 1, SECONDS);
 	}
 
-	public DatagramPacket receiveWithAddress() throws IOException {
+	public UDPPacket receiveWithAddress() throws IOException {
 		return connection.receiveWithAddress(TIMEOUT_MS);
 	}
 }

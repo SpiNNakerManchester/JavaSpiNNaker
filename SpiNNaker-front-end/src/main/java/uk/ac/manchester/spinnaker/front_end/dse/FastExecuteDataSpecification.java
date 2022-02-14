@@ -37,7 +37,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.DatagramPacket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -55,6 +54,7 @@ import difflib.Chunk;
 import difflib.DeleteDelta;
 import difflib.Delta;
 import difflib.InsertDelta;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
@@ -694,9 +694,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Wait for confirmation and do required retransmits
 				innerLoop: while (true) {
 					try {
-						DatagramPacket packet = connection.receiveWithAddress();
-						ByteBuffer buf = ByteBuffer.wrap(packet.getData(),
-								packet.getLength(), packet.getOffset());
+						UDPPacket packet = connection.receiveWithAddress();
+						ByteBuffer buf = packet.getByteBuffer();
 						IntBuffer received = buf.order(LITTLE_ENDIAN).asIntBuffer();
 						timeoutCount = 0; // Reset the timeout counter
 						int command = received.get();
@@ -755,7 +754,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 							}
 						} catch (IllegalArgumentException e) {
 							log.error("Unexpected command code " + command +
-									" received from " + packet.getSocketAddress());
+									" received from " + packet.getAddress());
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {

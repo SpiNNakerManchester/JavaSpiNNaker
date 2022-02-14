@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
@@ -75,7 +74,7 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	DatagramPacket doReceiveWithAddress(int timeout)
+	UDPPacket doReceiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
 		return delegate.doReceiveWithAddress(timeout);
 	}

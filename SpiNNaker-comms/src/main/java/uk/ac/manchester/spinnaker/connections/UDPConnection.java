@@ -330,7 +330,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	public final DatagramPacket receiveWithAddress(Integer timeout)
+	public final UDPPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
@@ -357,7 +357,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	DatagramPacket doReceiveWithAddress(int timeout)
+	UDPPacket doReceiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
@@ -370,8 +370,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		}
 		buffer.flip();
 		logRecv(buffer, addr);
-		return new DatagramPacket(buffer.order(LITTLE_ENDIAN).array(), 0,
-				buffer.position(), addr);
+		return new UDPPacket(buffer.order(LITTLE_ENDIAN), addr);
 	}
 
 	/**
