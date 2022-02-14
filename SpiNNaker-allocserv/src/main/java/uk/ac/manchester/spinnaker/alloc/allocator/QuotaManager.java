@@ -124,21 +124,18 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Adjust a user's quota on a particular machine.
+	 * Adjust a group's quota.
 	 *
-	 * @param userId
-	 *            Which user's quota to change
-	 * @param machineName
-	 *            What machine to change for
+	 * @param groupId
+	 *            Which group's quota to change
 	 * @param delta
 	 *            Amount to change by, in board-seconds
 	 * @return The number of quotas modified
 	 */
-	public int addQuota(int userId, String machineName, int delta) {
-		// FIXME this is just wrong now
+	public int addQuota(int groupId, int delta) {
 		try (AdjustQuotaSQL sql = new AdjustQuotaSQL()) {
 			return sql.transaction(
-					() -> sql.adjustQuota(userId, machineName, delta));
+					() -> sql.adjustQuota(groupId, delta));
 		}
 	}
 
@@ -151,8 +148,8 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private Integer adjustQuota(int userId, String machineName, int delta) {
-			return adjustQuota.call(delta, machineName, userId);
+		private Integer adjustQuota(int groupId, int delta) {
+			return adjustQuota.call(delta, groupId);
 		}
 	}
 

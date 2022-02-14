@@ -517,9 +517,9 @@ class DMLTest extends SQLQueries {
 	void adjustQuota() {
 		assumeWritable(c);
 		try (Update u = c.update(ADJUST_QUOTA)) {
-			assertEquals(3, u.getNumArguments());
+			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call(0, "", NO_USER));
+				assertEquals(0, u.call(0, NO_GROUP));
 			});
 		}
 	}

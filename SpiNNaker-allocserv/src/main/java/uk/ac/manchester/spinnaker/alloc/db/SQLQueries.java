@@ -1021,16 +1021,11 @@ public abstract class SQLQueries {
 	 *
 	 * @see QuotaManager
 	 */
-	// FIXME broken
 	@Parameter("delta")
-	@Parameter("machine_name")
-	@Parameter("user_id")
+	@Parameter("group_id")
 	protected static final String ADJUST_QUOTA =
-			"UPDATE quotas SET quota = max(0, quota + :delta) "
-					+ "FROM (SELECT machine_id FROM machines "
-					+ "WHERE machine_name = :machine_name) AS machines "
-					+ "WHERE user_id = :user_id "
-					+ "AND quotas.machine_id = machines.machine_id "
+			"UPDATE groups SET quota = max(0, quota + :delta) "
+					+ "WHERE group_id = :group_id "
 					+ "AND quota IS NOT NULL";
 
 	/**

@@ -400,14 +400,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	@Action("adjusting a user's quota")
+	@Action("adjusting a group's quota")
 	@PostMapping(USER_QUOTA_PATH)
 	public ModelAndView adjustQuota(@PathVariable("id") int id,
 			@NotEmpty @RequestParam("machine") String machine,
 			@RequestParam("delta") int delta, RedirectAttributes attrs) {
-		quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
-		log.info("adjusted quota for user ID={} machine={} delta={}", id,
-				machine, delta);
+		// FIXME: this is now based on group, not on user; doesn't use machine
+		if (quotaManager.addQuota(id, delta * BOARD_HOUR) > 0) {
+			log.info("adjusted quota for user ID={} delta={}", id, delta);
+		}
 		return redirectTo(uri(admin().showUserForm(id)), attrs);
 	}
 
