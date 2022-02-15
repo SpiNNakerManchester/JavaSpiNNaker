@@ -42,6 +42,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  *
  * @author Donal Fellows
  */
+// FUXME update schema picture
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public abstract class SQLQueries {
 	/** Get basic information about all machines. */
@@ -947,7 +948,6 @@ public abstract class SQLQueries {
 	 *
 	 * @see QuotaManager
 	 */
-	// FIXME test
 	@Parameter("group_id")
 	@ResultColumn("quota")
 	@SingleRowResult

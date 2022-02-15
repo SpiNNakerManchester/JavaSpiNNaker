@@ -821,6 +821,17 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getGroupQuota() {
+		try (Query q = c.query(GET_GROUP_QUOTA)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("quota"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getUserQuota() {
 		try (Query q = c.query(GET_USER_QUOTA)) {
 			assertEquals(1, q.getNumArguments());

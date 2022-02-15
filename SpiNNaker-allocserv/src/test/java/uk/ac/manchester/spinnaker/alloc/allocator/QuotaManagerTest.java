@@ -18,10 +18,20 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
+import static java.time.Duration.ofSeconds;
+import static java.time.Instant.ofEpochSecond;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.GROUP;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.INITIAL_QUOTA;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.USER;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.makeJob;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -41,12 +51,11 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
-import uk.ac.manchester.spinnaker.alloc.model.JobState;
-import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
@@ -69,6 +78,11 @@ class QuotaManagerTest extends SQLQueries {
 	@ResultColumn("quota")
 	private static final String GET_QUOTA =
 			"SELECT quota FROM quotas WHERE machine_id = ? AND user_id = ?";
+
+	@Parameter("quota")
+	@Parameter("group")
+	private static final String SET_QUOTA =
+			"UPDATE groups SET quota = :quota WHERE group_id = :group";
 
 	private static final Logger log = getLogger(QuotaManagerTest.class);
 
@@ -96,54 +110,7 @@ class QuotaManagerTest extends SQLQueries {
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
-			c.transaction(() -> setupDB(c));
-		}
-	}
-
-	private static final int MACHINE = 1000;
-
-	private static final int BMP = 2000;
-
-	private static final int BOARD = 3000;
-
-	private static final int USER = 4000;
-
-	private static final int GROUP = 5000;
-
-	private static final int MEMBERSHIP = 6000;
-
-	private void setupDB(Connection c) {
-		// A simple machine
-		try (Update u = c.update("INSERT OR IGNORE INTO machines("
-				+ "machine_id, machine_name, width, height, [depth], "
-				+ "board_model) VALUES (?, ?, ?, ?, ?, 5)")) {
-			u.call(MACHINE, "foo", 1, 1, 1);
-		}
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO bmp(bmp_id, machine_id, address, "
-						+ "cabinet, frame) VALUES (?, ?, ?, ?, ?)")) {
-			u.call(BMP, MACHINE, "1.1.1.1", 1, 1);
-		}
-		try (Update u =
-				c.update("INSERT OR IGNORE INTO boards(board_id, address, "
-						+ "bmp_id, board_num, machine_id, x, y, z, "
-						+ "root_x, root_y, board_power) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-			u.call(BOARD, "2.2.2.2", BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
-		}
-		// A disabled permission-less user with a quota
-		try (Update u = c.update("INSERT OR IGNORE INTO user_info("
-				+ "user_id, user_name, trust_level, disabled) "
-				+ "VALUES (?, ?, ?, ?)")) {
-			u.call(USER, "bar", TrustLevel.BASIC, true);
-		}
-		try (Update u = c.update("INSERT OR REPLACE INTO groups("
-				+ "group_id, group_name, quota) VALUES (?, ?, ?)")) {
-			u.call(GROUP, "grill", 1024);
-		}
-		try (Update u = c.update("INSERT OR REPLACE INTO group_memberships("
-				+ "membership_id, user_id, group_id) VALUES (?, ?, ?)")) {
-			u.call(MEMBERSHIP, USER, GROUP);
+			c.transaction(() -> setupDB1(c));
 		}
 	}
 
@@ -158,18 +125,10 @@ class QuotaManagerTest extends SQLQueries {
 	 *            Length of time (seconds)
 	 * @return Job ID
 	 */
-	private int makeJob(Connection c, int size, int time) {
-		try (Update u = c.update(
-				"INSERT INTO jobs(machine_id, owner, group_id, root_id, "
-						+ "job_state, create_timestamp, allocation_timestamp, "
-						+ "death_timestamp, allocation_size, "
-						+ "keepalive_interval) VALUES "
-						+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-			int t0 = 0;
-			return u.key(MACHINE, USER, GROUP, BOARD, JobState.DESTROYED, t0,
-					t0 + time, t0 + time + time, size, time).orElseThrow(
-							() -> new RuntimeException("failed to insert job"));
-		}
+	private int makeFinishedJob(Connection c, int size, int time) {
+		return makeJob(c, BOARD, DESTROYED, size, ofEpochSecond(0),
+				ofEpochSecond(time), ofEpochSecond(time + time),
+				ofSeconds(time), null);
 	}
 
 	private Object getQuota(Connection c) {
@@ -179,43 +138,45 @@ class QuotaManagerTest extends SQLQueries {
 	}
 
 	private void setQuota(Connection c, Integer quota) {
-		try (Update u = c.update("UPDATE groups SET quota = :quota "
-				+ "WHERE group_id = :group")) {
+		try (Update u = c.update(SET_QUOTA)) {
 			u.call(quota, GROUP);
 		}
 	}
 
-	@Test
-	void testDoConsolidate() {
+	private void checkAndRollback(Connected act) {
 		db.executeVoid(c -> {
-			// Does a job get consolidated once and only once
 			try {
-				makeJob(c, 1, 100);
-				assertEquals(1024, getQuota(c));
-				qm.doConsolidate(c);
-				assertEquals(924, getQuota(c));
-				qm.doConsolidate(c);
-				assertEquals(924, getQuota(c));
+				act.act(c);
 			} finally {
 				c.rollback();
 			}
 		});
 	}
 
+	/** Does a job get consolidated once and only once. */
 	@Test
-	void testDoNoConsolidate() {
-		db.executeVoid(c -> {
-			try {
-				// Delete the quota
-				setQuota(c, null);
-				makeJob(c, 1, 100);
-				// Does a job NOT get consolidated if there's no quota
-				assertNull(getQuota(c));
-				qm.doConsolidate(c);
-				assertNull(getQuota(c));
-			} finally {
-				c.rollback();
-			}
+	public void consolidate() {
+		checkAndRollback(c -> {
+			int used = 100;
+			makeFinishedJob(c, 1, used);
+			assertEquals(INITIAL_QUOTA, getQuota(c));
+			qm.doConsolidate(c);
+			assertEquals(INITIAL_QUOTA - used, getQuota(c));
+			qm.doConsolidate(c);
+			assertEquals(INITIAL_QUOTA - used, getQuota(c));
+		});
+	}
+
+	/** Does a job <em>not</em> get consolidated if there's no quota. */
+	@Test
+	public void noConsolidate() {
+		checkAndRollback(c -> {
+			// Delete the quota
+			setQuota(c, null);
+			makeFinishedJob(c, 1, 100);
+			assertNull(getQuota(c));
+			qm.doConsolidate(c);
+			assertNull(getQuota(c));
 		});
 	}
 
