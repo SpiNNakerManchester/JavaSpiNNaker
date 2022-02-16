@@ -21,6 +21,7 @@ import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -98,6 +99,12 @@ class DQLTest extends SQLQueries {
 	 */
 	private static final Set<String> BOARD_COORDS_REQUIRED_COLUMNS =
 			set("x", "y", "z", "cabinet", "frame", "board_num", "address");
+
+	/**
+	 * Columns expected when building a {@link GroupRecord} from a {@link Row}.
+	 */
+	private static final Set<String> GROUP_COLUMNS =
+			set("group_id", "group_name", "is_internal", "quota");
 
 	/** Classes used in Javadoc. Technically not needed, but... */
 	static final Class<?>[] JAVADOC_ONLY_CLASSES = {
@@ -234,8 +241,10 @@ class DQLTest extends SQLQueries {
 	void getMachineReports() {
 		try (Query q = c.query(GET_MACHINE_REPORTS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_id", "report_id", "report_timestamp",
-					"reported_issue", "reporter_name"), q.getRowColumnNames());
+			assertSetEquals(
+					set("board_id", "report_id", "report_timestamp",
+							"reported_issue", "reporter_name"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -391,8 +400,10 @@ class DQLTest extends SQLQueries {
 	void getBoardReports() {
 		try (Query q = c.query(GET_BOARD_REPORTS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_id", "report_id", "report_timestamp",
-					"reported_issue", "reporter_name"), q.getRowColumnNames());
+			assertSetEquals(
+					set("board_id", "report_id", "report_timestamp",
+							"reported_issue", "reporter_name"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
@@ -832,6 +843,51 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void listAllGroups() {
+		try (Query q = c.query(LIST_ALL_GROUPS)) {
+			assertEquals(0, q.getNumArguments());
+			assertSetEquals(GROUP_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				// Not sure what default state is, but this should not error
+				assertNotNull(q.call().toList());
+			});
+		}
+	}
+
+	@Test
+	void getGroupById() {
+		try (Query q = c.query(GET_GROUP_BY_ID)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(GROUP_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getGroupByName() {
+		try (Query q = c.query(GET_GROUP_BY_NAME)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(GROUP_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_NAME).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getUsersOfGroup() {
+		try (Query q = c.query(GET_USERS_OF_GROUP)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("user_id", "user_name"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getUserQuota() {
 		try (Query q = c.query(GET_USER_QUOTA)) {
 			assertEquals(1, q.getNumArguments());
@@ -849,8 +905,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("current_usage"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertNull(q.call1(NO_GROUP).get()
-						.getObject("current_usage"));
+				assertNull(q.call1(NO_GROUP).get().getObject("current_usage"));
 			});
 		}
 	}

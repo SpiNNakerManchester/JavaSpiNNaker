@@ -1023,8 +1023,7 @@ public abstract class SQLQueries {
 	@Parameter("group_id")
 	protected static final String ADJUST_QUOTA =
 			"UPDATE groups SET quota = max(0, quota + :delta) "
-					+ "WHERE group_id = :group_id "
-					+ "AND quota IS NOT NULL";
+					+ "WHERE group_id = :group_id " + "AND quota IS NOT NULL";
 
 	/**
 	 * Get details about a user. This is pretty much everything except their
@@ -1093,6 +1092,19 @@ public abstract class SQLQueries {
 			"SELECT group_id FROM group_memberships "
 					+ "JOIN user_info USING (user_id) "
 					+ "WHERE user_name = :user_name";
+
+	/**
+	 * List the members of a group.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_id")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	protected static final String GET_USERS_OF_GROUP =
+			"SELECT user_info.user_id, user_info.user_name "
+					+ "FROM group_memberships JOIN user_info USING (user_id) "
+					+ "WHERE group_id = :group_id";
 
 	/**
 	 * Get a user's quotas.
@@ -1277,6 +1289,48 @@ public abstract class SQLQueries {
 			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
 					+ "trust_level, disabled) VALUES(:user_name, "
 					+ ":encoded_password, :trust_level, :disabled)";
+
+	/**
+	 * Get a list of all groups.
+	 *
+	 * @see UserControl
+	 */
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("is_internal")
+	protected static final String LIST_ALL_GROUPS =
+			"SELECT group_id, group_name, quota, is_internal FROM groups";
+
+	/**
+	 * Get a group by it's ID.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("is_internal")
+	@SingleRowResult
+	protected static final String GET_GROUP_BY_ID =
+			"SELECT group_id, group_name, quota, is_internal FROM groups "
+					+ "WHERE group_id = :group_id LIMIT 1";
+
+	/**
+	 * Get a group by it's name.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_name")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("is_internal")
+	@SingleRowResult
+	protected static final String GET_GROUP_BY_NAME =
+			"SELECT group_id, group_name, quota, is_internal FROM groups "
+					+ "WHERE group_name = :group_name LIMIT 1";
 
 	/**
 	 * Create a board issue report.

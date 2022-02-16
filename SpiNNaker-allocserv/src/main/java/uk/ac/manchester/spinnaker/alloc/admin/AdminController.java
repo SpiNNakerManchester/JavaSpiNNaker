@@ -65,7 +65,17 @@ public interface AdminController {
 	String USER_DELETE_PATH = USER_PATH + "/delete";
 
 	/** Path to quota-adjustment operation. */
+	// FIXME broken by concept
 	String USER_QUOTA_PATH = USER_PATH + "/adjust-quota";
+
+	/** Path to all-groups operations. */
+	String GROUPS_PATH = "/groups";
+
+	/** Path to single-group operations. */
+	String GROUP_PATH = GROUPS_PATH + "/{id}";
+
+	/** Path to quota-adjustment operation. */
+	String GROUP_QUOTA_PATH = GROUP_PATH + "/adjust-quota";
 
 	/** Path to boards operations. */
 	String BOARDS_PATH = "/boards";
@@ -178,9 +188,45 @@ public interface AdminController {
 	 *            respected after the redirect without being present in the URL.
 	 * @return the model and view
 	 */
+	// FIXME this is now broken
 	@PostMapping(USER_QUOTA_PATH)
-	ModelAndView adjustQuota(@PathVariable("id") int id,
+	ModelAndView adjustUserQuota(@PathVariable("id") int id,
 			@NotEmpty @RequestParam("machine") String machine,
+			@RequestParam("delta") int delta, RedirectAttributes attrs);
+
+	/**
+	 * List all groups.
+	 *
+	 * @return the model and view
+	 */
+	@GetMapping(GROUPS_PATH)
+	ModelAndView listGroups();
+
+	/**
+	 * Get info about a particular group.
+	 *
+	 * @param id
+	 *            The ID of the group to get info about.
+	 * @return the model and view
+	 */
+	@GetMapping(GROUP_PATH)
+	ModelAndView showGroupInfo(@PathVariable("id") int id);
+
+	/**
+	 * Adjust the quota of a group.
+	 *
+	 * @param id
+	 *            The group ID to adjust
+	 * @param delta
+	 *            By how much are we to adjust the quota. In
+	 *            <em>board-hours</em>.
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
+	 * @return the model and view
+	 */
+	@PostMapping(GROUP_QUOTA_PATH)
+	ModelAndView adjustGroupQuota(@PathVariable("id") int id,
 			@RequestParam("delta") int delta, RedirectAttributes attrs);
 
 	/**

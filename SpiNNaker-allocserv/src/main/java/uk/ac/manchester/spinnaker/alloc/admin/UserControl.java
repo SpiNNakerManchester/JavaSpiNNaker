@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.PasswordServices;
@@ -186,10 +187,8 @@ public class UserControl extends DatabaseAwareBean {
 
 	private Optional<UserRecord> createUser(UserRecord user, String encPass,
 			CreateSQL sql) {
-		return sql.createUser
-				.key(user.getUserName(), encPass, user.getTrustLevel(),
-						!user.isEnabled())
-				.flatMap(userId -> {
+		return sql.createUser.key(user.getUserName(), encPass,
+				user.getTrustLevel(), !user.isEnabled()).flatMap(userId -> {
 					// TODO inflate the groups
 					return sql.getUserDetails.call1(userId)
 							.map(row -> getUser(sql, row));
@@ -415,5 +414,82 @@ public class UserControl extends DatabaseAwareBean {
 			}
 			return result.baseUser;
 		});
+	}
+
+	/**
+	 * List the groups in the database. Does not include membership data.
+	 *
+	 * @return List of groups.
+	 */
+	public List<GroupRecord> listGroups() {
+		try (Connection c = getConnection();
+				Query q = c.query(LIST_ALL_GROUPS)) {
+			return c.transaction(false,
+					() -> q.call().map(this::makeGroup).toList());
+		}
+	}
+
+	/**
+	 * List the groups in the database.
+	 *
+	 * @param uriMapper
+	 *            How to construct a URL for the group.
+	 * @return Map of group names to URLs.
+	 */
+	public Map<String, URI> listGroups(Function<GroupRecord, URI> uriMapper) {
+		try (Connection c = getConnection();
+				Query q = c.query(LIST_ALL_GROUPS)) {
+			return c.transaction(false, () -> q.call().map(this::makeGroup)
+					.toMap(TreeMap::new, GroupRecord::getGroupName, uriMapper));
+		}
+	}
+
+	private GroupRecord makeGroup(Row row) {
+		GroupRecord group = new GroupRecord();
+		group.setGroupId(row.getInteger("group_id"));
+		group.setGroupName(row.getString("group_name"));
+		group.setQuota(row.getLong("quota"));
+		group.setInternal(row.getBoolean("is_internal"));
+		return group;
+	}
+
+	private GroupRecord populateMemberships(Connection c, GroupRecord group) {
+		try (Query q = c.query(GET_USERS_OF_GROUP)) {
+			group.setMembers(q.call(group.getGroupId())
+					.map(UserControl::sketchUser).toList());
+			return group;
+		}
+	}
+
+	/**
+	 * Get a description of a group. Includes group membership data.
+	 *
+	 * @param id
+	 *            The ID of the group.
+	 * @return A description of the group, or {@link Optional#empty()} if the
+	 *         group doesn't exist.
+	 */
+	public Optional<GroupRecord> getGroup(int id) {
+		try (Connection c = getConnection();
+				Query q = c.query(GET_GROUP_BY_ID)) {
+			return c.transaction(false, () -> q.call1(id).map(this::makeGroup)
+					.map(g -> populateMemberships(c, g)));
+		}
+	}
+
+	/**
+	 * Get a description of a group. Includes group membership data.
+	 *
+	 * @param name
+	 *            The name of the group.
+	 * @return A description of the group, or {@link Optional#empty()} if the
+	 *         group doesn't exist.
+	 */
+	public Optional<GroupRecord> getGroup(String name) {
+		try (Connection c = getConnection();
+				Query q = c.query(GET_GROUP_BY_NAME)) {
+			return c.transaction(false, () -> q.call1(name).map(this::makeGroup)
+					.map(g -> populateMemberships(c, g)));
+		}
 	}
 }

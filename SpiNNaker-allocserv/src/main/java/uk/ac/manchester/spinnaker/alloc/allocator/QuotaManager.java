@@ -114,7 +114,6 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 
 		private boolean mayLetJobContinue(int jobId) {
-			// FIXME shouldn't need machineId
 			return getUsageAndQuota.call1(jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
@@ -188,8 +187,6 @@ public class QuotaManager extends DatabaseAwareBean {
 		private final Update decrementQuota = conn.update(DECREMENT_QUOTA);
 
 		private final Update markConsolidated = conn.update(MARK_CONSOLIDATED);
-
-		// FIXME update these queries
 
 		ConsolidateSQL(Connection c) {
 			super(c);

@@ -362,7 +362,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 				.orElseThrow(() -> new AdminException("no such user"));
 		mav.addObject(USER_OBJ, user.sanitise());
 		mav.addObject("deleteUri", uri(admin().deleteUser(id, null, null)));
-		mav.addObject("addQuotaUri", uri(admin().adjustQuota(id, "", 0, null)));
+		mav.addObject("addQuotaUri",
+				uri(admin().adjustUserQuota(id, "", 0, null)));
 		return addStandardContext(mav);
 	}
 
@@ -400,9 +401,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	@Action("adjusting a group's quota")
+	@Action("adjusting a user's quota")
 	@PostMapping(USER_QUOTA_PATH)
-	public ModelAndView adjustQuota(@PathVariable("id") int id,
+	public ModelAndView adjustUserQuota(@PathVariable("id") int id,
 			@NotEmpty @RequestParam("machine") String machine,
 			@RequestParam("delta") int delta, RedirectAttributes attrs) {
 		// FIXME: this is now based on group, not on user; doesn't use machine
@@ -410,6 +411,40 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			log.info("adjusted quota for user ID={} delta={}", id, delta);
 		}
 		return redirectTo(uri(admin().showUserForm(id)), attrs);
+	}
+
+	@Override
+	@Action("listing the groups")
+	@GetMapping(GROUPS_PATH)
+	public ModelAndView listGroups() {
+		return addStandardContext(new ModelAndView(USER_LIST_VIEW, "userlist",
+				unmodifiableMap(userController.listGroups(group -> uri(
+						admin().showGroupInfo(group.getGroupId()))))));
+	}
+
+	@Override
+	@Action("getting info about a group")
+	@GetMapping(GROUP_PATH)
+	public ModelAndView showGroupInfo(@PathVariable("id") int id) {
+		// FIXME
+		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
+		mav.addObject(USER_OBJ, userController.getGroup(id)
+				.orElseThrow(() -> new AdminException("no such group")));
+		mav.addObject("addQuotaUri",
+				uri(admin().adjustGroupQuota(id, 0, null)));
+		return addStandardContext(mav);
+	}
+
+	@Override
+	@Action("adjusting a group's quota")
+	@PostMapping(GROUP_QUOTA_PATH)
+	public ModelAndView adjustGroupQuota(@PathVariable("id") int id,
+			@RequestParam("delta") int delta, RedirectAttributes attrs) {
+		// TODO make this query return the group name for logging?
+		if (quotaManager.addQuota(id, delta * BOARD_HOUR) > 0) {
+			log.info("adjusted quota for group ID={} delta={}", id, delta);
+		}
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
 	}
 
 	@Override
