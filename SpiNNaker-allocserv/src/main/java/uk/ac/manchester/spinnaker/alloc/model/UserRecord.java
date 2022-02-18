@@ -22,6 +22,7 @@ import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.time.Instant;
+import java.util.List;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
@@ -34,10 +35,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 
 /**
- * The description and model of a user. POJO class. Some things are stated
- * to be not settable despite having setters; they're settable <em>in
- * instances of this class</em> but the service itself will not respect
- * being asked to change them.
+ * The description and model of a user. POJO class. Some things are stated to be
+ * not settable despite having setters; they're settable <em>in instances of
+ * this class</em> but the service itself will not respect being asked to change
+ * them.
  */
 public final class UserRecord {
 	// TODO list group memberships
@@ -58,6 +59,8 @@ public final class UserRecord {
 	private Instant lastSuccessfulLogin;
 
 	private Instant lastFailedLogin;
+
+	private List<GroupRecord> groups;
 
 	/**
 	 * @return The user identifier. Read-only; cannot be set by the service.
@@ -85,8 +88,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The user's unencrypted password. <em>Never</em> returned by
-	 *         the service, but may be written.
+	 * @return The user's unencrypted password. <em>Never</em> returned by the
+	 *         service, but may be written.
 	 */
 	@JsonInclude(NON_NULL)
 	public String getPassword() {
@@ -98,9 +101,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether the user has a password set. If they don't, they'll
-	 *         have to log in by other mechanisms (e.g., HBP/EBRAINS OpenID
-	 *         Connect).
+	 * @return Whether the user has a password set. If they don't, they'll have
+	 *         to log in by other mechanisms (e.g., HBP/EBRAINS OpenID Connect).
 	 */
 	public Boolean getHasPassword() {
 		return hasPassword;
@@ -124,8 +126,8 @@ public final class UserRecord {
 
 	/**
 	 * @return Whether this account is temporarily locked. Locked accounts
-	 *         should unlock automatically after 24 hours. Can be explicitly
-	 *         set to {@code false} to force an unlock.
+	 *         should unlock automatically after 24 hours. Can be explicitly set
+	 *         to {@code false} to force an unlock.
 	 */
 	public Boolean isLocked() {
 		return isLocked;
@@ -148,8 +150,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The time that the last successful login was. Read-only;
-	 *         cannot be set via the admin API.
+	 * @return The time that the last successful login was. Read-only; cannot be
+	 *         set via the admin API.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -162,8 +164,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The time that the last failed login was. Read-only; cannot be
-	 *         set via the admin API.
+	 * @return The time that the last failed login was. Read-only; cannot be set
+	 *         via the admin API.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -176,8 +178,24 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether this represents a request to use external
-	 *         authentication (instead of just not setting the password).
+	 * Note that no API that sets a user's information using a
+	 * {@link UserRecord} allows setting the groups that user is a member of at
+	 * the same time.
+	 *
+	 * @return The groups that the user is a member of. May be {@code null} if
+	 *         this information is not being reported.
+	 */
+	public List<GroupRecord> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<GroupRecord> groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * @return Whether this represents a request to use external authentication
+	 *         (instead of just not setting the password).
 	 */
 	@JsonIgnore
 	public boolean isExternallyAuthenticated() {

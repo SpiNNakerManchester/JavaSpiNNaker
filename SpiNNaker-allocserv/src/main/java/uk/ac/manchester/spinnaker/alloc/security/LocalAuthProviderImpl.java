@@ -66,11 +66,13 @@ import org.springframework.stereotype.Service;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
+import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 
 /**
  * Does authentication against users defined entirely in the database. This
@@ -97,6 +99,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Autowired
 	private PasswordServices passServices;
 
+	@Autowired
+	private UserControl userController;
+
 	private static final String DUMMY_USER = "user1";
 
 	private static final String DUMMY_PASSWORD = "user1Pass";
@@ -119,6 +124,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				if (poorPassword) {
 					log.warn("user {} has default password!", DUMMY_USER);
 				}
+				GroupRecord group = new GroupRecord();
+				group.setGroupName(authProps.getSystemGroup());
+				group.setQuota(null);
+				group = userController.createGroup(group, true)
+						.orElseThrow(() -> new RuntimeException(
+								"failed to construct default group!"));
+				// FIXME assign default user to default group here
 			}
 		}
 	}

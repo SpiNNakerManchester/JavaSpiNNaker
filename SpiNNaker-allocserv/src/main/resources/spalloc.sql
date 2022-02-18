@@ -314,11 +314,24 @@ CREATE TABLE IF NOT EXISTS group_memberships (
 	user_id INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE CASCADE,
 	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE
 );
-
 -- No user can be in a group more than once!
 CREATE UNIQUE INDEX IF NOT EXISTS membershipSanity ON group_memberships(
 	user_id, group_id
 );
+-- Internal users can only be in internal groups.
+-- External (OIDC) users can only be in external groups.
+CREATE TRIGGER IF NOT EXISTS userGroupSanity
+AFTER INSERT ON group_memberships
+WHEN
+	EXISTS(SELECT 1 FROM user_info
+		WHERE user_info.user_id = NEW.user_id
+		AND user_info.encrypted_password IS NOT NULL)
+	!= (SELECT is_internal FROM groups
+		WHERE groups.group_id = NEW.group_id)
+BEGIN
+	SELECT RAISE(FAIL, 'group and user type don''t match');
+END;
+
 
 CREATE VIEW IF NOT EXISTS quotas (quota_id, user_id, machine_id, quota)
 AS SELECT

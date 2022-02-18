@@ -678,6 +678,12 @@ public class SpallocProperties {
 		 */
 		private boolean dummyRandomPass;
 
+		/**
+		 * The name of the system default group. Only made if the
+		 * {@linkplain #addDummyUser dummy user} is made.
+		 */
+		private String systemGroup;
+
 		/** Provide extra information to callers on auth failures. */
 		private boolean debugFailures;
 
@@ -705,6 +711,7 @@ public class SpallocProperties {
 				@DefaultValue("true") boolean localForm,
 				@DefaultValue("false") boolean addDummyUser,
 				@DefaultValue("true") boolean dummyRandomPass,
+				@DefaultValue("wheel") String systemGroup,
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("3") int maxLoginFailures,
 				@DefaultValue("24h") Duration accountLockDuration,
@@ -715,6 +722,7 @@ public class SpallocProperties {
 			this.localForm = localForm;
 			this.addDummyUser = addDummyUser;
 			this.dummyRandomPass = dummyRandomPass;
+			this.systemGroup = systemGroup;
 			this.debugFailures = debugFailures;
 			this.maxLoginFailures = maxLoginFailures;
 			this.accountLockDuration = accountLockDuration;
@@ -790,6 +798,21 @@ public class SpallocProperties {
 
 		public void setDummyRandomPass(boolean dummyRandomPass) {
 			this.dummyRandomPass = dummyRandomPass;
+		}
+
+		/**
+		 * The name of the system default group, that is internal and has no
+		 * quota (initially). Only made if the {@linkplain #addDummyUser dummy
+		 * user} is made.
+		 *
+		 * @return the name of the system group
+		 */
+		public String getSystemGroup() {
+			return systemGroup;
+		}
+
+		public void setSystemGroup(String systemGroup) {
+			this.systemGroup = systemGroup;
 		}
 
 		/** @return Provide extra information to callers on auth failures. */

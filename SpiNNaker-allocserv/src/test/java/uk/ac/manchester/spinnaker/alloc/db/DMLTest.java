@@ -643,6 +643,18 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
+	void createGroup() {
+		assumeWritable(c);
+		try (Update u = c.update(CREATE_GROUP)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				// DB was groupless; this makes one
+				assertEquals(1, u.call(NO_NAME, 0, true));
+			});
+		}
+	}
+
+	@Test
 	void insertBoardReport() {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_BOARD_REPORT)) {

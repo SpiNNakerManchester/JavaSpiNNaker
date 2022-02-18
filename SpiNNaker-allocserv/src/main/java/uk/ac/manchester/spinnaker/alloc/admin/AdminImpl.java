@@ -25,6 +25,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BASE_PATH;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.MEMBER;
 
 import java.net.URI;
 import java.util.Map;
@@ -45,6 +46,8 @@ import org.springframework.stereotype.Service;
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
+import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
@@ -83,6 +86,10 @@ public class AdminImpl implements AdminAPI {
 
 	private static WebApplicationException noUser() {
 		return new WebApplicationException("no such user", NOT_FOUND);
+	}
+
+	private static WebApplicationException noGroup() {
+		return new WebApplicationException("no such group", NOT_FOUND);
 	}
 
 	@Override
@@ -187,6 +194,56 @@ public class AdminImpl implements AdminAPI {
 		log.warn("CALLED deleteUser({})", id);
 		String adminUser = security.getUserPrincipal().getName();
 		userController.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
+		return noContent().build();
+	}
+
+	@Override
+	public Map<String, URI> listGroups(UriInfo ui) {
+		log.warn("CALLED listGroups()");
+		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
+		return userController.listGroups(g -> ub.build(g.getGroupId()));
+	}
+
+	@Override
+	public Response createGroup(GroupRecord group, UriInfo ui) {
+		log.warn("CALLED createGroup({})", group.getGroupName());
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public GroupRecord describeGroup(int groupId, UriInfo ui) {
+		log.warn("CALLED describeGroup({})", groupId);
+		UriBuilder ub = ui.getAbsolutePathBuilder().path(MEMBER + "/{id}");
+		return userController.getGroup(groupId, m -> ub.build(m.getId()))
+				.orElseThrow(AdminImpl::noGroup);
+	}
+
+	@Override
+	public Response deleteGroup(int groupId) {
+		log.warn("CALLED deleteGroup({})", groupId);
+		// TODO Auto-generated method stub
+		return noContent().build();
+	}
+
+	@Override
+	public Response addMember(int groupId, MemberRecord user, UriInfo ui) {
+		log.warn("CALLED addMember({},{})", groupId, user.getUserName());
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MemberRecord describeMember(int groupId, int memberId, UriInfo ui) {
+		log.warn("CALLED describeMember({},{})", groupId, memberId);
+		// TODO Auto-generated method stub
+		return new MemberRecord();
+	}
+
+	@Override
+	public Response removeMember(int groupId, int memberId) {
+		log.warn("CALLED removeMember({groupId},{memberId})");
+		// TODO Auto-generated method stub
 		return noContent().build();
 	}
 }

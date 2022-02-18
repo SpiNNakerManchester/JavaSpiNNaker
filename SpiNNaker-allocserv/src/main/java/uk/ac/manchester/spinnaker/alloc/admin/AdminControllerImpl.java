@@ -426,9 +426,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("getting info about a group")
 	@GetMapping(GROUP_PATH)
 	public ModelAndView showGroupInfo(@PathVariable("id") int id) {
-		// FIXME
+		// TODO add mapper for membership URLs?
 		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
-		mav.addObject(USER_OBJ, userController.getGroup(id)
+		mav.addObject(USER_OBJ, userController.getGroup(id, null)
 				.orElseThrow(() -> new AdminException("no such group")));
 		mav.addObject("addQuotaUri",
 				uri(admin().adjustGroupQuota(id, 0, null)));

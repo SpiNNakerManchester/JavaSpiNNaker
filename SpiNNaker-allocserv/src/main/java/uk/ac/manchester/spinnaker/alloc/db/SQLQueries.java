@@ -1099,11 +1099,16 @@ public abstract class SQLQueries {
 	 * @see UserControl
 	 */
 	@Parameter("group_id")
+	@ResultColumn("membership_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
 	@ResultColumn("user_id")
 	@ResultColumn("user_name")
 	protected static final String GET_USERS_OF_GROUP =
-			"SELECT user_info.user_id, user_info.user_name "
+			"SELECT membership_id, groups.group_id, groups.group_name, "
+					+ "user_info.user_id, user_info.user_name "
 					+ "FROM group_memberships JOIN user_info USING (user_id) "
+					+ "JOIN groups USING (group_id) "
 					+ "WHERE group_id = :group_id";
 
 	/**
@@ -1118,6 +1123,44 @@ public abstract class SQLQueries {
 			"SELECT machines.machine_name, quotas.quota "
 					+ "FROM quotas JOIN machines USING (machine_id) "
 					+ "WHERE quotas.user_id = :user_id";
+
+	/**
+	 * Create a group record.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_name")
+	@Parameter("quota")
+	@Parameter("is_internal")
+	@GeneratesID
+	protected static final String CREATE_GROUP =
+			"INSERT INTO groups(group_name, quota, is_internal) "
+					+ "VALUES(:group_name, :quota, :is_internal)";
+
+	/**
+	 * Adds a user to a group.
+	 *
+	 * @see UserControl
+	 */
+	// FIXME test
+	@Parameter("user_id")
+	@Parameter("group_id")
+	@GeneratesID
+	protected static final String ADD_USER_TO_GROUP =
+			"INSERT INTO group_memberships(user_id, group_id) "
+					+ "VALUES (:user_id, :group_id)";
+
+	/**
+	 * Removes a user from a group.
+	 *
+	 * @see UserControl
+	 */
+	// FIXME test
+	@Parameter("user_id")
+	@Parameter("group_id")
+	protected static final String REMOVE_USER_FROM_GROUP =
+			"DELETE FROM group_memberships "
+					+ "WHERE user_id = :user_id AND group_id = :group_id";
 
 	/**
 	 * Test if a user account is locked or disabled.

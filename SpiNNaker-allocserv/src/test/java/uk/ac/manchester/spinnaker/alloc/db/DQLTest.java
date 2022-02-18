@@ -49,6 +49,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 
 /**
  * Tests of queries. Ensures that the SQL and the schema remain synchronized.
@@ -105,6 +106,12 @@ class DQLTest extends SQLQueries {
 	 */
 	private static final Set<String> GROUP_COLUMNS =
 			set("group_id", "group_name", "is_internal", "quota");
+
+	/**
+	 * Columns expected when building a {@link MemberRecord} from a {@link Row}.
+	 */
+	private static final Set<String> MEMBER_COLUMNS = set("group_id",
+			"group_name", "user_id", "user_name", "membership_id");
 
 	/** Classes used in Javadoc. Technically not needed, but... */
 	static final Class<?>[] JAVADOC_ONLY_CLASSES = {
@@ -880,7 +887,7 @@ class DQLTest extends SQLQueries {
 	void getUsersOfGroup() {
 		try (Query q = c.query(GET_USERS_OF_GROUP)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("user_id", "user_name"), q.getRowColumnNames());
+			assertSetEquals(MEMBER_COLUMNS, q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_GROUP).isPresent());
 			});

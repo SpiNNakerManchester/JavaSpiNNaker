@@ -17,10 +17,10 @@
 package uk.ac.manchester.spinnaker.alloc.model;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
 
-import java.util.List;
+import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.constraints.NotBlank;
@@ -41,7 +41,7 @@ public final class GroupRecord {
 
 	private boolean internal;
 
-	private List<UserRecord> members = emptyList();
+	private Map<String, URI> members;
 
 	/**
 	 * @return The group identifier. Read-only; cannot be set by the service.
@@ -79,15 +79,6 @@ public final class GroupRecord {
 		this.quota = quota;
 	}
 
-	/** @return The members of the group, if populated. */
-	public List<UserRecord> getMembers() {
-		return unmodifiableList(members);
-	}
-
-	public void setMembers(List<UserRecord> members) {
-		this.members = members;
-	}
-
 	/** @return Whether this is an internally-defined group. */
 	public boolean isInternal() {
 		return internal;
@@ -95,5 +86,14 @@ public final class GroupRecord {
 
 	public void setInternal(boolean internal) {
 		this.internal = internal;
+	}
+
+	/** @return The members of the group, if populated. */
+	public Map<String, URI> getMembers() {
+		return unmodifiableMap(members);
+	}
+
+	public void setMembers(Map<String, URI> members) {
+		this.members = members;
 	}
 }
