@@ -77,6 +77,9 @@ public interface AdminController {
 	/** Path to quota-adjustment operation. */
 	String GROUP_QUOTA_PATH = GROUP_PATH + "/adjust-quota";
 
+	/** Path to single-user-deletion operation. */
+	String GROUP_DELETE_PATH = GROUP_PATH + "/delete";
+
 	/** Path to boards operations. */
 	String BOARDS_PATH = "/boards";
 
@@ -228,6 +231,20 @@ public interface AdminController {
 	@PostMapping(GROUP_QUOTA_PATH)
 	ModelAndView adjustGroupQuota(@PathVariable("id") int id,
 			@RequestParam("delta") int delta, RedirectAttributes attrs);
+
+	/**
+	 * Delete a group. It is legal for a user to not be a member of any group;
+	 * they just won't be able to submit jobs if that's the case.
+	 *
+	 * @param id
+	 *            The group ID to delete
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
+	 * @return the model and view
+	 */
+	@PostMapping(GROUP_DELETE_PATH)
+	ModelAndView deleteGroup(int id, RedirectAttributes attrs);
 
 	/**
 	 * UI for boards.
