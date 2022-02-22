@@ -21,6 +21,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -98,8 +100,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 */
 	public boolean mayLetJobContinue(int jobId) {
 		try (ContinueCheckSQL sql = new ContinueCheckSQL()) {
-			return sql.transaction(false,
-					() -> sql.mayLetJobContinue(jobId));
+			return sql.transaction(false, () -> sql.mayLetJobContinue(jobId));
 		}
 	}
 
@@ -129,17 +130,45 @@ public class QuotaManager extends DatabaseAwareBean {
 	 *            Which group's quota to change
 	 * @param delta
 	 *            Amount to change by, in board-seconds
-	 * @return The number of quotas modified
+	 * @return Information about what group's quota was adjusted and what it has
+	 *         become.
 	 */
-	public int addQuota(int groupId, int delta) {
+	public Optional<AdjustedQuota> addQuota(int groupId, int delta) {
 		try (AdjustQuotaSQL sql = new AdjustQuotaSQL()) {
-			return sql.transaction(
-					() -> sql.adjustQuota(groupId, delta));
+			return sql.transaction(() -> sql.adjustQuota(groupId, delta)
+					.map(AdjustedQuota::new));
+		}
+	}
+
+	/**
+	 * Describes the result of the {@link QuotaManager#addQuota(int,int)}
+	 * operation.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static final class AdjustedQuota {
+		private final String name;
+
+		private final Long quota;
+
+		private AdjustedQuota(Row row) {
+			this.name = row.getString("group_name");
+			this.quota = row.getLong("quota");
+		}
+
+		/** @return The name of the group. */
+		public String getName() {
+			return name;
+		}
+
+		/** @return The new quota of the group. */
+		public Long getQuota() {
+			return quota;
 		}
 	}
 
 	private class AdjustQuotaSQL extends AbstractSQL {
-		private final Update adjustQuota = conn.update(ADJUST_QUOTA);
+		private final Query adjustQuota = conn.query(ADJUST_QUOTA);
 
 		@Override
 		public void close() {
@@ -147,8 +176,8 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private Integer adjustQuota(int groupId, int delta) {
-			return adjustQuota.call(delta, groupId);
+		private Optional<Row> adjustQuota(int groupId, int delta) {
+			return adjustQuota.call1(delta, groupId);
 		}
 	}
 

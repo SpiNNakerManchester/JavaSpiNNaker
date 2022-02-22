@@ -519,10 +519,11 @@ class DMLTest extends SQLQueries {
 	@Test
 	void adjustQuota() {
 		assumeWritable(c);
-		try (Update u = c.update(ADJUST_QUOTA)) {
+		try (Query u = c.query(ADJUST_QUOTA)) {
 			assertEquals(2, u.getNumArguments());
+			assertSetEquals(set("group_name", "quota"), u.getRowColumnNames());
 			c.transaction(() -> {
-				assertEquals(0, u.call(0, NO_GROUP));
+				assertFalse(u.call1(0, NO_GROUP).isPresent());
 			});
 		}
 	}
@@ -650,6 +651,41 @@ class DMLTest extends SQLQueries {
 			c.transaction(() -> {
 				// DB was groupless; this makes one
 				assertEquals(1, u.call(NO_NAME, 0, true));
+			});
+		}
+	}
+
+	@Test
+	void deleteGroup() {
+		assumeWritable(c);
+		try (Query u = c.query(DELETE_GROUP)) {
+			assertEquals(1, u.getNumArguments());
+			assertSetEquals(set("group_name"), u.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(u.call1(NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void addUserToGroup() {
+		assumeWritable(c);
+		try (Update u = c.update(ADD_USER_TO_GROUP)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				// Can't do this; neither exists
+				assertThrowsFK(() -> u.call(NO_USER, NO_GROUP));
+			});
+		}
+	}
+
+	@Test
+	void removeUserFromGroup() {
+		assumeWritable(c);
+		try (Update u = c.update(REMOVE_USER_FROM_GROUP)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_USER, NO_GROUP));
 			});
 		}
 	}

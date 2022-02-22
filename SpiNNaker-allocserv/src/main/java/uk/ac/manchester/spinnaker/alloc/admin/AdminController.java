@@ -19,10 +19,13 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.security.Principal;
+import java.util.Objects;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
@@ -37,6 +40,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
@@ -64,15 +68,20 @@ public interface AdminController {
 	/** Path to single-user-deletion operation. */
 	String USER_DELETE_PATH = USER_PATH + "/delete";
 
-	/** Path to quota-adjustment operation. */
-	// FIXME broken by concept
-	String USER_QUOTA_PATH = USER_PATH + "/adjust-quota";
-
 	/** Path to all-groups operations. */
 	String GROUPS_PATH = "/groups";
 
+	/** Path to group creation operations. */
+	String CREATE_GROUP_PATH = "/create-group";
+
 	/** Path to single-group operations. */
 	String GROUP_PATH = GROUPS_PATH + "/{id}";
+
+	/** Path to user-add-to-group operation. */
+	String GROUP_ADD_USER_PATH = GROUP_PATH + "/add-user";
+
+	/** Path to user-remove-from-group operation. */
+	String GROUP_REMOVE_USER_PATH = GROUP_PATH + "/remove-user/{userid}";
 
 	/** Path to quota-adjustment operation. */
 	String GROUP_QUOTA_PATH = GROUP_PATH + "/adjust-quota";
@@ -177,27 +186,6 @@ public interface AdminController {
 			RedirectAttributes attrs);
 
 	/**
-	 * Adjust the quota of a user.
-	 *
-	 * @param id
-	 *            The user ID to adjust
-	 * @param machine
-	 *            For which machine are we to adjust the user's quota?
-	 * @param delta
-	 *            By how much are we to adjust the quota. In
-	 *            <em>board-hours</em>.
-	 * @param attrs
-	 *            Where to put attributes of the model so that they are
-	 *            respected after the redirect without being present in the URL.
-	 * @return the model and view
-	 */
-	// FIXME this is now broken
-	@PostMapping(USER_QUOTA_PATH)
-	ModelAndView adjustUserQuota(@PathVariable("id") int id,
-			@NotEmpty @RequestParam("machine") String machine,
-			@RequestParam("delta") int delta, RedirectAttributes attrs);
-
-	/**
 	 * List all groups.
 	 *
 	 * @return the model and view
@@ -214,6 +202,126 @@ public interface AdminController {
 	 */
 	@GetMapping(GROUP_PATH)
 	ModelAndView showGroupInfo(@PathVariable("id") int id);
+
+	/**
+	 * Get the form for creating a group.
+	 *
+	 * @return the model (a {@link CreateGroupModel}) and view
+	 */
+	@GetMapping(CREATE_GROUP_PATH)
+	ModelAndView getGroupCreationForm();
+
+	/**
+	 * Create a group.
+	 *
+	 * @param group
+	 *            The description of the group to create
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
+	 * @return the model and view
+	 */
+	@PostMapping(CREATE_GROUP_PATH)
+	ModelAndView createGroup(
+			@Valid @ModelAttribute("group") CreateGroupModel group,
+			RedirectAttributes attrs);
+
+	/**
+	 * Model used when creating a group. No other purpose.
+	 *
+	 * @author Donal Fellows
+	 */
+	class CreateGroupModel {
+		private String name = "";
+
+		@PositiveOrZero
+		private Long quota = null;
+
+		private boolean quotaDefined = false;
+
+		private static final int DECIMAL = 10;
+
+		/** @return The name of the group to create. */
+		@NotBlank
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name.trim();
+		}
+
+		/**
+		 * @return The quota of the group to create, as a {@link String}. Empty
+		 *         if the group is quota-less.
+		 */
+		public String getQuota() {
+			return Objects.toString(quota, "");
+		}
+
+		public void setQuota(String quota) {
+			try {
+				this.quota = Long.parseLong(quota, DECIMAL);
+			} catch (NumberFormatException e) {
+				this.quota = null;
+			}
+		}
+
+		/**
+		 * @return This request, as a partial group record.
+		 */
+		public GroupRecord toGroupRecord() {
+			GroupRecord gr = new GroupRecord();
+			gr.setGroupName(name);
+			if (quotaDefined) {
+				gr.setQuota(quota);
+			}
+			return gr;
+		}
+
+		/** @return Whether the group has a quota. */
+		public boolean isQuotad() {
+			return quotaDefined;
+		}
+
+		public void setQuotad(boolean value) {
+			quotaDefined = value;
+		}
+	}
+
+	/**
+	 * Add a user to a group.
+	 *
+	 * @param id
+	 *            The group ID to adjust
+	 * @param user
+	 *            The name of the user to add
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
+	 * @return the model and view
+	 */
+	@PostMapping(GROUP_ADD_USER_PATH)
+	ModelAndView addUserToGroup(@PathVariable("id") int id,
+			@NotBlank @RequestParam("user") String user,
+			RedirectAttributes attrs);
+
+	/**
+	 * Remove a user from a group.
+	 *
+	 * @param id
+	 *            The group ID to adjust
+	 * @param userid
+	 *            The ID of the user to remove
+	 * @param attrs
+	 *            Where to put attributes of the model so that they are
+	 *            respected after the redirect without being present in the URL.
+	 * @return the model and view
+	 */
+	@PostMapping(GROUP_REMOVE_USER_PATH)
+	ModelAndView removeUserFromGroup(@PathVariable("id") int id,
+			@PathVariable("userid") int userid,
+			RedirectAttributes attrs);
 
 	/**
 	 * Adjust the quota of a group.
@@ -286,9 +394,8 @@ public interface AdminController {
 	 */
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
 	ModelAndView retagMachine(
-			@NotEmpty @ModelAttribute("machine") String machineName,
-			@TagList @NotNull
-			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags);
+			@NotEmpty @ModelAttribute("machine") String machineName, @TagList
+			@NotNull @ModelAttribute(MACHINE_RETAG_PARAM) String newTags);
 
 	/**
 	 * Mark a machine as out of service.

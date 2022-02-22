@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.net.URI;
 import java.security.Principal;
@@ -162,6 +163,8 @@ public class UserControl extends DatabaseAwareBean {
 
 		private final Update insertGroup = conn.update(CREATE_GROUP);
 
+		private final Query deleteGroup = conn.query(DELETE_GROUP);
+
 		@Override
 		public void close() {
 			listGroups.close();
@@ -169,6 +172,7 @@ public class UserControl extends DatabaseAwareBean {
 			getGroupId.close();
 			getGroupName.close();
 			insertGroup.close();
+			deleteGroup.close();
 			super.close();
 		}
 
@@ -187,6 +191,10 @@ public class UserControl extends DatabaseAwareBean {
 		Optional<Integer> insertGroup(String name, Optional<Long> quota,
 				boolean internal) {
 			return insertGroup.key(name, quota, internal);
+		}
+
+		Optional<Row> deleteGroup(int id) {
+			return deleteGroup.call1(id);
 		}
 
 		GroupRecord asGroupRecord(Row row) {
@@ -283,9 +291,12 @@ public class UserControl extends DatabaseAwareBean {
 	private final class GetUserSQL extends UserCheckSQL {
 		Query getUserDetails = conn.query(GET_USER_DETAILS);
 
+		Query getUserDetailsByName = conn.query(GET_USER_DETAILS_BY_NAME);
+
 		@Override
 		public void close() {
 			getUserDetails.close();
+			getUserDetailsByName.close();
 			super.close();
 		}
 	}
@@ -301,6 +312,21 @@ public class UserControl extends DatabaseAwareBean {
 	public Optional<UserRecord> getUser(int id) {
 		try (GetUserSQL sql = new GetUserSQL()) {
 			return sql.transaction(() -> sql.getUserDetails.call1(id)
+					.map(row -> getUser(sql, row)));
+		}
+	}
+
+	/**
+	 * Get a description of a user.
+	 *
+	 * @param user
+	 *            The name of the user.
+	 * @return A description of the user, or {@link Optional#empty()} if the
+	 *         user doesn't exist.
+	 */
+	public Optional<UserRecord> getUser(String user) {
+		try (GetUserSQL sql = new GetUserSQL()) {
+			return sql.transaction(() -> sql.getUserDetailsByName.call1(user)
 					.map(row -> getUser(sql, row)));
 		}
 	}
@@ -589,6 +615,21 @@ public class UserControl extends DatabaseAwareBean {
 					.insertGroup(groupTemplate.getGroupName(),
 							groupTemplate.getQuota(), internal)
 					.flatMap(sql::getGroupId).map(sql::asGroupRecord));
+		}
+	}
+
+	/**
+	 * Delete a group. This removes all users from that group automatically.
+	 *
+	 * @param groupId
+	 *            The ID of the group to delete.
+	 * @return The deleted group name on success; {@link Optional#empty()} on
+	 *         failure.
+	 */
+	public Optional<String> deleteGroup(int groupId) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(
+					() -> sql.deleteGroup(groupId).map(string("group_name")));
 		}
 	}
 

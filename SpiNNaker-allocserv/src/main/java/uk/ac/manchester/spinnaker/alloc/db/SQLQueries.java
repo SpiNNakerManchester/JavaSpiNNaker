@@ -1021,9 +1021,12 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("delta")
 	@Parameter("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA =
 			"UPDATE groups SET quota = max(0, quota + :delta) "
-					+ "WHERE group_id = :group_id " + "AND quota IS NOT NULL";
+					+ "WHERE group_id = :group_id AND quota IS NOT NULL "
+					+ "RETURNING group_name, quota";
 
 	/**
 	 * Get details about a user. This is pretty much everything except their
@@ -1048,6 +1051,30 @@ public abstract class SQLQueries {
 					+ "last_successful_login_timestamp, "
 					+ "last_fail_timestamp FROM user_info "
 					+ "WHERE user_id = :user_id LIMIT 1";
+
+	/**
+	 * Get details about a user. This is pretty much everything except their
+	 * password.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_name")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	@ResultColumn("has_password")
+	@ResultColumn("trust_level")
+	@ResultColumn("locked")
+	@ResultColumn("disabled")
+	@ResultColumn("last_successful_login_timestamp")
+	@ResultColumn("last_fail_timestamp")
+	@SingleRowResult
+	protected static final String GET_USER_DETAILS_BY_NAME =
+			"SELECT user_id, user_name, "
+					+ "encrypted_password IS NOT NULL AS has_password, "
+					+ "trust_level, locked, disabled, "
+					+ "last_successful_login_timestamp, "
+					+ "last_fail_timestamp FROM user_info "
+					+ "WHERE user_name = :user_name LIMIT 1";
 
 	/**
 	 * Get a local user's basic details.
@@ -1138,11 +1165,22 @@ public abstract class SQLQueries {
 					+ "VALUES(:group_name, :quota, :is_internal)";
 
 	/**
+	 * Delete a single group record and returns the name of the deleted group.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_id")
+	@ResultColumn("group_name")
+	protected static final String DELETE_GROUP =
+			"DELETE FROM groups WHERE group_id = :group_id "
+					// + "LIMIT 1 " // Not supported in Xerial driver build
+					+ "RETURNING group_name";
+
+	/**
 	 * Adds a user to a group.
 	 *
 	 * @see UserControl
 	 */
-	// FIXME test
 	@Parameter("user_id")
 	@Parameter("group_id")
 	@GeneratesID
@@ -1155,7 +1193,6 @@ public abstract class SQLQueries {
 	 *
 	 * @see UserControl
 	 */
-	// FIXME test
 	@Parameter("user_id")
 	@Parameter("group_id")
 	protected static final String REMOVE_USER_FROM_GROUP =

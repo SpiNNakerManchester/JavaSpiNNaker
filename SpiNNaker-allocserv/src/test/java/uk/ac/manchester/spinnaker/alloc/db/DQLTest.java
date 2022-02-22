@@ -1006,6 +1006,21 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getUserDetailsByName() {
+		try (Query q = c.query(GET_USER_DETAILS_BY_NAME)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(
+					set("disabled", "has_password", "last_fail_timestamp",
+							"last_successful_login_timestamp", "locked",
+							"trust_level", "user_id", "user_name"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_NAME).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getGroupByNameAndMember() {
 		try (Query q = c.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
 			assertEquals(2, q.getNumArguments());

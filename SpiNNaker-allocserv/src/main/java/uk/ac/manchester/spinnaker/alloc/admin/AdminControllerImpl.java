@@ -16,12 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
@@ -46,7 +48,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
@@ -107,6 +108,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			// FIXME define view
 			new ViewFactory("admin/groupdetails");
 
+	private static final ViewFactory CREATE_GROUP_VIEW =
+			new ViewFactory("admin/creategroup");
+
 	private static final ViewFactory BOARD_VIEW =
 			new ViewFactory("admin/board");
 
@@ -143,12 +147,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	private static final String GROUPS_URI = "groupsUri";
 
+	private static final String CREATE_GROUP_URI = "createUserUri";
+
 	private static final String BOARDS_URI = "boardsUri";
 
 	private static final String MACHINE_URI = "machineUri";
 
 	@Autowired
-	private UserControl userController;
+	private UserControl userManager;
 
 	@Autowired
 	private MachineStateControl machineController;
@@ -197,23 +203,20 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private static ModelAndView addStandardContext(ModelAndView mav,
 			RedirectAttributes attrs) {
-		Authentication auth =
-				SecurityContextHolder.getContext().getAuthentication();
+		Authentication auth = getContext().getAuthentication();
 		boolean mayChangePassword =
 				auth instanceof UsernamePasswordAuthenticationToken;
 
 		// Real implementation of these is always a ModelMap
-		ModelMap model;
-		if (attrs != null) {
-			model = (ModelMap) attrs.getFlashAttributes();
-		} else {
-			model = (ModelMap) mav.getModel();
-		}
+		ModelMap model = (ModelMap) (nonNull(attrs) ? attrs.getFlashAttributes()
+				: mav.getModel());
 
 		model.addAttribute(BASE_URI, fromCurrentRequestUri().toUriString());
 		model.addAttribute(TRUST_LEVELS, TrustLevel.values());
 		model.addAttribute(USERS_URI, uri(admin().listUsers()));
 		model.addAttribute(CREATE_USER_URI, uri(admin().getUserCreationForm()));
+		model.addAttribute(CREATE_GROUP_URI,
+				uri(admin().getGroupCreationForm()));
 		model.addAttribute(GROUPS_URI, uri(admin().listGroups()));
 		model.addAttribute(BOARDS_URI, uri(admin().boards()));
 		model.addAttribute(MACHINE_URI, uri(admin().machineManagement()));
@@ -332,7 +335,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("listing the users")
 	public ModelAndView listUsers() {
 		return addStandardContext(USER_LIST_VIEW.view(USER_LIST_OBJ,
-				unmodifiableMap(userController.listUsers(
+				unmodifiableMap(userManager.listUsers(
 						user -> uri(admin().showUserForm(user.getUserId()))))));
 	}
 
@@ -348,7 +351,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView createUser(UserRecord user, ModelMap model,
 			RedirectAttributes attrs) {
 		user.initCreationDefaults();
-		UserRecord realUser = userController.createUser(user)
+		UserRecord realUser = userManager.createUser(user)
 				.orElseThrow(() -> new AdminException(
 						"user creation failed (duplicate username?)"));
 		int id = realUser.getUserId();
@@ -360,13 +363,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("getting info about a user")
 	public ModelAndView showUserForm(int id) {
 		ModelAndView mav = USER_DETAILS_VIEW.view();
-		UserRecord user = userController.getUser(id)
+		UserRecord user = userManager.getUser(id)
 				.orElseThrow(() -> new AdminException("no such user"));
 		mav.addObject(USER_OBJ, user.sanitise());
 		assert mav.getModel().get(USER_OBJ) instanceof UserRecord;
 		mav.addObject("deleteUri", uri(admin().deleteUser(id, null, null)));
-		mav.addObject("addQuotaUri",
-				uri(admin().adjustUserQuota(id, "", 0, null)));
 		return addStandardContext(mav);
 	}
 
@@ -377,7 +378,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		String adminUser = principal.getName();
 		user.setUserId(null);
 		log.info("updating user ID={}", id);
-		UserRecord updatedUser = userController.updateUser(id, user, adminUser)
+		UserRecord updatedUser = userManager.updateUser(id, user, adminUser)
 				.orElseThrow(() -> new AdminException("no such user"));
 		ModelAndView mav = USER_DETAILS_VIEW.view(model);
 		mav.addObject(USER_OBJ, updatedUser.sanitise());
@@ -390,7 +391,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			RedirectAttributes attrs) {
 		String adminUser = principal.getName();
 		String deletedUsername =
-				userController.deleteUser(id, adminUser).orElseThrow(
+				userManager.deleteUser(id, adminUser).orElseThrow(
 						() -> new AdminException("could not delete that user"));
 		log.info("deleted user ID={} username={}", id, deletedUsername);
 		// Not sure that these are the correct place
@@ -401,55 +402,115 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	@Action("adjusting a user's quota")
-	public ModelAndView adjustUserQuota(int id, String machine, int delta,
-			RedirectAttributes attrs) {
-		// FIXME: this is now based on group, not on user; doesn't use machine
-		if (quotaManager.addQuota(id, delta * BOARD_HOUR) > 0) {
-			log.info("adjusted quota for user ID={} delta={}", id, delta);
-		}
-		return redirectTo(uri(admin().showUserForm(id)), attrs);
-	}
-
-	@Override
 	@Action("listing the groups")
 	public ModelAndView listGroups() {
 		return addStandardContext(GROUP_LIST_VIEW.view(GROUP_LIST_OBJ,
-				unmodifiableMap(userController.listGroups(group -> uri(
+				unmodifiableMap(userManager.listGroups(group -> uri(
 						admin().showGroupInfo(group.getGroupId()))))));
 	}
 
 	@Override
 	@Action("getting info about a group")
 	public ModelAndView showGroupInfo(int id) {
-		// TODO add mapper for membership URLs?
 		ModelAndView mav = GROUP_DETAILS_VIEW.view();
-		mav.addObject(GROUP_OBJ, userController.getGroup(id, null)
+		mav.addObject(GROUP_OBJ, userManager
+				.getGroup(id,
+						m -> uri(admin().removeUserFromGroup(id, m.getUserId(),
+								null)))
 				.orElseThrow(() -> new AdminException("no such group")));
 		assert mav.getModel().get(GROUP_OBJ) instanceof GroupRecord;
 		mav.addObject("deleteUri", uri(admin().deleteGroup(id, null)));
+		mav.addObject("addUserUri",
+				uri(admin().addUserToGroup(id, null, null)));
 		mav.addObject("addQuotaUri",
 				uri(admin().adjustGroupQuota(id, 0, null)));
 		return addStandardContext(mav);
 	}
 
 	@Override
+	@Action("getting the group-creation UI")
+	public ModelAndView getGroupCreationForm() {
+		return addStandardContext(
+				CREATE_GROUP_VIEW.view(GROUP_OBJ, new CreateGroupModel()));
+	}
+
+	@Override
+	@Action("creating a group")
+	public ModelAndView createGroup(CreateGroupModel groupRequest,
+			RedirectAttributes attrs) {
+		GroupRecord realGroup =
+				userManager.createGroup(groupRequest.toGroupRecord(), true)
+						.orElseThrow(() -> new AdminException(
+								"group creation failed (duplicate name?)"));
+		int id = realGroup.getGroupId();
+		log.info("created group ID={} name={}", id, realGroup.getGroupName());
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+	}
+
+	@Override
+	@Action("adding a user to a group")
+	public ModelAndView addUserToGroup(int id, String user,
+			RedirectAttributes attrs) {
+		GroupRecord g = userManager.getGroup(id, null)
+				.orElseThrow(() -> new AdminException("no such group"));
+		UserRecord u = userManager.getUser(user)
+				.orElseThrow(() -> new AdminException("no such user"));
+		String notice;
+		if (userManager.addUserToGroup(u, g)) {
+			log.info("added user {} to group {}", u.getUserName(),
+					g.getGroupName());
+			notice = format("added user %s to group %s", u.getUserName(),
+					g.getGroupName());
+		} else {
+			notice = format("user %s is already a member of group %s",
+					u.getUserName(), g.getGroupName());
+		}
+		attrs.addFlashAttribute("notice", notice);
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+	}
+
+	@Override
+	@Action("removing a user from a group")
+	public ModelAndView removeUserFromGroup(int id, int userid,
+			RedirectAttributes attrs) {
+		GroupRecord g = userManager.getGroup(id, null)
+				.orElseThrow(() -> new AdminException("no such group"));
+		UserRecord u = userManager.getUser(userid)
+				.orElseThrow(() -> new AdminException("no such user"));
+		String notice;
+		if (userManager.removeUserFromGroup(u, g)) {
+			log.info("removed user {} from group {}", u.getUserName(),
+					g.getGroupName());
+			notice = format("removed user %s from group %s", u.getUserName(),
+					g.getGroupName());
+		} else {
+			notice = format("user %s is already not a member of group %s",
+					u.getUserName(), g.getGroupName());
+		}
+		attrs.addFlashAttribute("notice", notice);
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+	}
+
+	@Override
 	@Action("adjusting a group's quota")
 	public ModelAndView adjustGroupQuota(int id, int delta,
 			RedirectAttributes attrs) {
-		// TODO make this query return the group name for logging?
-		if (quotaManager.addQuota(id, delta * BOARD_HOUR) > 0) {
-			log.info("adjusted quota for group ID={} delta={}", id, delta);
-		}
+		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -> {
+			log.info("adjusted quota for group {} to {}", aq.getName(),
+					aq.getQuota());
+			// attrs.addFlashAttribute("notice", "quota updated");
+		});
 		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
 	}
 
 	@Override
 	@Action("deleting a group")
 	public ModelAndView deleteGroup(int id, RedirectAttributes attrs) {
-		// FIXME implement this
+		String deletedGroupName = userManager.deleteGroup(id)
+				.orElseThrow(() -> new AdminException("no such group"));
+		log.info("deleted group ID={} groupname={}", id, deletedGroupName);
 		ModelAndView mav = redirectTo(uri(admin().listGroups()), attrs);
-		attrs.addFlashAttribute("notice", "not yet implemented");
+		attrs.addFlashAttribute("notice", "deleted " + deletedGroupName);
 		return mav;
 	}
 
