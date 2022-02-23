@@ -163,6 +163,8 @@ public class UserControl extends DatabaseAwareBean {
 
 		private final Update insertGroup = conn.update(CREATE_GROUP);
 
+		private final Query updateGroup = conn.query(UPDATE_GROUP);
+
 		private final Query deleteGroup = conn.query(DELETE_GROUP);
 
 		@Override
@@ -172,6 +174,7 @@ public class UserControl extends DatabaseAwareBean {
 			getGroupId.close();
 			getGroupName.close();
 			insertGroup.close();
+			updateGroup.close();
 			deleteGroup.close();
 			super.close();
 		}
@@ -193,6 +196,11 @@ public class UserControl extends DatabaseAwareBean {
 			return insertGroup.key(name, quota, internal);
 		}
 
+		public Optional<Row> updateGroup(int id, String name,
+				Optional<Long> quota) {
+			return updateGroup.call1(name, quota.orElse(null), id);
+		}
+
 		Optional<Row> deleteGroup(int id) {
 			return deleteGroup.call1(id);
 		}
@@ -206,15 +214,15 @@ public class UserControl extends DatabaseAwareBean {
 			return group;
 		}
 
-		GroupRecord populateMemberships(GroupRecord group,
-				Function<MemberRecord, URI> urlGen) {
-			if (nonNull(urlGen)) {
-				UserControl uc = UserControl.this;
+		Function<GroupRecord, GroupRecord>
+				populateMemberships(Function<MemberRecord, URI> urlGen) {
+			UserControl uc = UserControl.this;
+			return group -> {
 				group.setMembers(getUsers.call(group.getGroupId())
 						.map(uc::member).toMap(TreeMap::new,
 								MemberRecord::getUserName, urlGen));
-			}
-			return group;
+				return group;
+			};
 		}
 	}
 
@@ -573,7 +581,7 @@ public class UserControl extends DatabaseAwareBean {
 		try (GroupsSQL sql = new GroupsSQL()) {
 			return sql.transaction(false,
 					() -> sql.getGroupId(id).map(sql::asGroupRecord)
-							.map(g -> sql.populateMemberships(g, urlGen)));
+							.map(sql.populateMemberships(urlGen)));
 		}
 	}
 
@@ -593,7 +601,7 @@ public class UserControl extends DatabaseAwareBean {
 		try (GroupsSQL sql = new GroupsSQL()) {
 			return sql.transaction(false,
 					() -> sql.getGroupName(name).map(sql::asGroupRecord)
-							.map(g -> sql.populateMemberships(g, urlGen)));
+							.map(sql.populateMemberships(urlGen)));
 		}
 	}
 
@@ -615,6 +623,31 @@ public class UserControl extends DatabaseAwareBean {
 					.insertGroup(groupTemplate.getGroupName(),
 							groupTemplate.getQuota(), internal)
 					.flatMap(sql::getGroupId).map(sql::asGroupRecord));
+		}
+	}
+
+	/**
+	 * Update a group from a supplied description.
+	 *
+	 * @param id
+	 *            The ID of the group to update
+	 * @param group
+	 *            The template of what the group is to be updated to.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership in the
+	 *            response. If {@code null}, the memberships will be omitted.
+	 * @return A description of the updated group, or {@link Optional#empty()}
+	 *         if the group doesn't exist.
+	 */
+	public Optional<GroupRecord> updateGroup(int id, GroupRecord group,
+			Function<MemberRecord, URI> urlGen) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql
+							.updateGroup(id, group.getGroupName(),
+									group.getQuota())
+							.map(sql::asGroupRecord)
+							.map(sql.populateMemberships(urlGen)));
 		}
 	}
 

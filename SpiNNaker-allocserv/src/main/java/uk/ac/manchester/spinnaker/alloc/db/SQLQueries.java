@@ -1177,6 +1177,25 @@ public abstract class SQLQueries {
 					+ "RETURNING group_name";
 
 	/**
+	 * Update a single group record's name and quota.
+	 *
+	 * @see UserControl
+	 */
+	// FIXME test
+	@Parameter("group_name")
+	@Parameter("quota")
+	@Parameter("group_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("is_internal")
+	@SingleRowResult
+	protected static final String UPDATE_GROUP = "UPDATE groups SET "
+			+ "group_name = COALESCE(:group_name, group_name), "
+			+ "quota = :quota WHERE group_id = :group_id LIMIT 1 "
+			+ "RETURNING group_id, group_name, quota, is_internal";
+
+	/**
 	 * Adds a user to a group.
 	 *
 	 * @see UserControl

@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.created;
 import static javax.ws.rs.core.Response.noContent;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NOT_MODIFIED;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -207,8 +208,13 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Response createGroup(GroupRecord group, UriInfo ui) {
 		log.warn("CALLED createGroup({})", group.getGroupName());
-		// TODO Auto-generated method stub
-		return null;
+		GroupRecord realGroup =
+				userController.createGroup(group, group.isInternal())
+						.orElseThrow(() -> new WebApplicationException(
+								"group already exists", BAD_REQUEST));
+		UriBuilder ub = ui.getAbsolutePathBuilder().path("{id}");
+		return created(ub.build(realGroup.getGroupId())).type(APPLICATION_JSON)
+				.entity(realGroup).build();
 	}
 
 	@Override
@@ -220,30 +226,39 @@ public class AdminImpl implements AdminAPI {
 	}
 
 	@Override
+	public GroupRecord updateGroup(int groupId, GroupRecord group, UriInfo ui) {
+		log.warn("CALLED updateGroup({})", groupId);
+		UriBuilder ub = ui.getAbsolutePathBuilder().path(MEMBER + "/{id}");
+		return userController
+				.updateGroup(groupId, group, m -> ub.build(m.getId()))
+				.orElseThrow(AdminImpl::noGroup);
+	}
+
+	@Override
 	public Response deleteGroup(int groupId) {
 		log.warn("CALLED deleteGroup({})", groupId);
-		// TODO Auto-generated method stub
+		userController.deleteGroup(groupId).orElseThrow(AdminImpl::noGroup);
 		return noContent().build();
 	}
 
 	@Override
 	public Response addMember(int groupId, MemberRecord user, UriInfo ui) {
 		log.warn("CALLED addMember({},{})", groupId, user.getUserName());
-		// TODO Auto-generated method stub
+		// FIXME Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public MemberRecord describeMember(int groupId, int memberId, UriInfo ui) {
 		log.warn("CALLED describeMember({},{})", groupId, memberId);
-		// TODO Auto-generated method stub
+		// FIXME Auto-generated method stub
 		return new MemberRecord();
 	}
 
 	@Override
 	public Response removeMember(int groupId, int memberId) {
 		log.warn("CALLED removeMember({groupId},{memberId})");
-		// TODO Auto-generated method stub
+		// FIXME Auto-generated method stub
 		return noContent().build();
 	}
 }

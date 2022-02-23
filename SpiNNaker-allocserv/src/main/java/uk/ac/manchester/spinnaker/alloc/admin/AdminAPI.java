@@ -455,6 +455,26 @@ public interface AdminAPI {
 			@Context UriInfo ui);
 
 	/**
+	 * Update a particular group's details. This particularly includes the name
+	 * and the quota, but <em>excludes the memberships;</em> those are separate
+	 * resources.
+	 *
+	 * @param groupId
+	 *            The ID of the group
+	 * @param group
+	 *            The description of the group to update to be like.
+	 * @param ui
+	 *            For building URIs.
+	 * @return Description of the group.
+	 */
+	@PUT
+	@Path(GROUP + "/{groupId}")
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
+	GroupRecord updateGroup(@PathParam("groupId") int groupId,
+			@Valid GroupRecord group, @Context UriInfo ui);
+
+	/**
 	 * Delete a user.
 	 *
 	 * @param groupId
