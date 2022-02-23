@@ -656,6 +656,20 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
+	void updateGroup() {
+		assumeWritable(c);
+		try (Query u = c.query(UPDATE_GROUP)) {
+			assertEquals(3, u.getNumArguments());
+			assertSetEquals(
+					set("group_id", "group_name", "quota", "is_internal"),
+					u.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(u.call1(NO_NAME, 0, NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void deleteGroup() {
 		assumeWritable(c);
 		try (Query u = c.query(DELETE_GROUP)) {

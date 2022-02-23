@@ -1181,7 +1181,6 @@ public abstract class SQLQueries {
 	 *
 	 * @see UserControl
 	 */
-	// FIXME test
 	@Parameter("group_name")
 	@Parameter("quota")
 	@Parameter("group_id")
@@ -1192,7 +1191,8 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String UPDATE_GROUP = "UPDATE groups SET "
 			+ "group_name = COALESCE(:group_name, group_name), "
-			+ "quota = :quota WHERE group_id = :group_id LIMIT 1 "
+			+ "quota = :quota WHERE group_id = :group_id "
+			// + "LIMIT 1 " // Not supported in Xerial driver build
 			+ "RETURNING group_id, group_name, quota, is_internal";
 
 	/**
