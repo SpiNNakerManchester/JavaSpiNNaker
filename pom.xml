@@ -36,10 +36,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<junit.version>5.8.2</junit.version>
 		<checkstyle.version>9.3</checkstyle.version>
-		<javadoc.version>3.3.1</javadoc.version>
+		<javadoc.version>3.3.2</javadoc.version>
 		<testing.version>3.0.0-M5</testing.version>
 
-		<slf4j.version>1.7.35</slf4j.version>
+		<slf4j.version>1.7.36</slf4j.version>
 		<log4j.version>2.17.1</log4j.version>
 
 		<spring.version>5.3.15</spring.version>
@@ -267,7 +267,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.9.0</version>
+					<version>3.10.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -399,7 +399,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.10.0</version>
+					<version>3.11.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
