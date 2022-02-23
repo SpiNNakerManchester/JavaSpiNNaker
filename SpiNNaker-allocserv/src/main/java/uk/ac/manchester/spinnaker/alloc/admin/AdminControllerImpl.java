@@ -89,44 +89,61 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private static final int BOARD_HOUR = 3600;
 
 	// These are paths below src/main/webapp/WEB-INF/views
+	/** View: {@code admin/index.jsp}. */
 	private static final ViewFactory MAIN_VIEW = new ViewFactory("admin/index");
 
+	/** View: {@code admin/listusers.jsp}. */
 	private static final ViewFactory USER_LIST_VIEW =
 			new ViewFactory("admin/listusers");
 
+	/** View: {@code admin/userdetails.jsp}. */
 	private static final ViewFactory USER_DETAILS_VIEW =
 			new ViewFactory("admin/userdetails");
 
+	/** View: {@code admin/createuser.jsp}. */
 	private static final ViewFactory CREATE_USER_VIEW =
 			new ViewFactory("admin/createuser");
 
+	/** View: {@code admin/listgroups.jsp}. */
 	private static final ViewFactory GROUP_LIST_VIEW =
-			// FIXME define view
 			new ViewFactory("admin/listgroups");
 
+	/** View: {@code admin/groupdetails.jsp}. */
 	private static final ViewFactory GROUP_DETAILS_VIEW =
 			// FIXME define view
 			new ViewFactory("admin/groupdetails");
 
+	/** View: {@code admin/creategroup.jsp}. */
 	private static final ViewFactory CREATE_GROUP_VIEW =
 			new ViewFactory("admin/creategroup");
 
+	/** View: {@code admin/board.jsp}. */
 	private static final ViewFactory BOARD_VIEW =
 			new ViewFactory("admin/board");
 
+	/** View: {@code admin/machine.jsp}. */
 	private static final ViewFactory MACHINE_VIEW =
 			new ViewFactory("admin/machine");
 
+	/** User list in {@link #USER_LIST_VIEW}. */
 	private static final String USER_LIST_OBJ = "userlist";
 
+	/** User details in {@link #USER_DETAILS_VIEW}. */
 	private static final String USER_OBJ = "user";
 
+	/** Group list in {@link #GROUP_LIST_VIEW}. */
 	private static final String GROUP_LIST_OBJ = "grouplist";
 
+	/**
+	 * Group details in {@link #GROUP_DETAILS_VIEW}. Group creation info in
+	 * {@link #CREATE_GROUP_VIEW}.
+	 */
 	private static final String GROUP_OBJ = "group";
 
+	/** State in {@link #BOARD_VIEW}. */
 	private static final String BOARD_OBJ = "board";
 
+	/** State in {@link #MACHINE_VIEW}. */
 	private static final String MACHINE_LIST_OBJ = "machineNames";
 
 	private static final String DEFINED_MACHINES_OBJ = "definedMachines";
@@ -147,7 +164,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	private static final String GROUPS_URI = "groupsUri";
 
-	private static final String CREATE_GROUP_URI = "createUserUri";
+	private static final String CREATE_GROUP_URI = "createGroupUri";
 
 	private static final String BOARDS_URI = "boardsUri";
 

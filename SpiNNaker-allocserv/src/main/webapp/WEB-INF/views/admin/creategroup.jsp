@@ -1,7 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
 <%--
-Copyright (c) 2021 The University of Manchester
+Copyright (c) 2022 The University of Manchester
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

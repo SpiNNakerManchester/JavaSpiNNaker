@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <%--
-Copyright (c) 2021 The University of Manchester
+Copyright (c) 2022 The University of Manchester
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,18 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="User List" name="title"/>
+	<jsp:param value="Group List" name="title"/>
 </jsp:include>
 <body>
 
 <h1>Spalloc Groups</h1>
-<%--
-<!-- TODO define add group -->
 <p>
-<button onclick="location.href='${ createUserUri }'"
-		type="button">Create a new user</button>
+<button onclick="location.href='${ createGroupUri }'"
+		type="button">Create a new group</button>
 <p>
- --%>
 <table>
 	<thead>
 		<tr>
