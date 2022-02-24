@@ -1139,17 +1139,23 @@ public abstract class SQLQueries {
 					+ "WHERE group_id = :group_id";
 
 	/**
-	 * Get a user's quotas.
+	 * Get the details from a specific membership.
 	 *
 	 * @see UserControl
 	 */
-	@Parameter("user_id")
-	@ResultColumn("machine_name")
-	@ResultColumn("quota")
-	protected static final String GET_QUOTA_DETAILS =
-			"SELECT machines.machine_name, quotas.quota "
-					+ "FROM quotas JOIN machines USING (machine_id) "
-					+ "WHERE quotas.user_id = :user_id";
+	@Parameter("membership_id")
+	@ResultColumn("membership_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	@SingleRowResult
+	protected static final String GET_MEMBERSHIP =
+			"SELECT membership_id, user_info.user_id, groups.group_id, "
+					+ "user_name, group_name FROM group_memberships "
+					+ "JOIN user_info USING (user_id) "
+					+ "JOIN groups USING (group_id) "
+					+ "WHERE membership_id = :membership_id";
 
 	/**
 	 * Create a group record.
@@ -1171,6 +1177,7 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("group_id")
 	@ResultColumn("group_name")
+	@SingleRowResult
 	protected static final String DELETE_GROUP =
 			"DELETE FROM groups WHERE group_id = :group_id "
 					// + "LIMIT 1 " // Not supported in Xerial driver build

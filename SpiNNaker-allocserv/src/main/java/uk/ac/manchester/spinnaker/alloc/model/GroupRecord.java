@@ -28,11 +28,12 @@ import javax.validation.constraints.Null;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import uk.ac.manchester.spinnaker.alloc.db.Row;
+
 /**
  * The description and model of a group. POJO class.
  */
 public final class GroupRecord {
-	// TODO list group memberships
 	private Integer groupId;
 
 	private String groupName;
@@ -42,6 +43,23 @@ public final class GroupRecord {
 	private boolean internal;
 
 	private Map<String, URI> members;
+
+	/** Make an empty record. */
+	public GroupRecord() {
+	}
+
+	/**
+	 * Make a record from a database query result.
+	 *
+	 * @param row
+	 *            The query result.
+	 */
+	public GroupRecord(Row row) {
+		setGroupId(row.getInteger("group_id"));
+		setGroupName(row.getString("group_name"));
+		setQuota(row.getLong("quota"));
+		setInternal(row.getBoolean("is_internal"));
+	}
 
 	/**
 	 * @return The group identifier. Read-only; cannot be set by the service.

@@ -257,7 +257,7 @@ class V1TaskImpl extends V1CompatTask {
 		String machineName = (String) kwargs.get("machine");
 		List<String> ts = tags(kwargs.get("tags"), isNull(machineName));
 
-		// TODO get the group from config?
+		// FIXME get the group from config
 		return permit
 				.authorize(() -> spalloc.createJob(permit.name, null, create,
 						machineName, ts, keepalive, maxDead, cmd))

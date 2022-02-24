@@ -110,7 +110,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/** View: {@code admin/groupdetails.jsp}. */
 	private static final ViewFactory GROUP_DETAILS_VIEW =
-			// FIXME define view
 			new ViewFactory("admin/groupdetails");
 
 	/** View: {@code admin/creategroup.jsp}. */
@@ -380,7 +379,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("getting info about a user")
 	public ModelAndView showUserForm(int id) {
 		ModelAndView mav = USER_DETAILS_VIEW.view();
-		UserRecord user = userManager.getUser(id)
+		UserRecord user = userManager
+				.getUser(id, m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(() -> new AdminException("no such user"));
 		mav.addObject(USER_OBJ, user.sanitise());
 		assert mav.getModel().get(USER_OBJ) instanceof UserRecord;
@@ -395,7 +395,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		String adminUser = principal.getName();
 		user.setUserId(null);
 		log.info("updating user ID={}", id);
-		UserRecord updatedUser = userManager.updateUser(id, user, adminUser)
+		UserRecord updatedUser = userManager
+				.updateUser(id, user, adminUser,
+						m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(() -> new AdminException("no such user"));
 		ModelAndView mav = USER_DETAILS_VIEW.view(model);
 		mav.addObject(USER_OBJ, updatedUser.sanitise());
@@ -470,10 +472,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			RedirectAttributes attrs) {
 		GroupRecord g = userManager.getGroup(id, null)
 				.orElseThrow(() -> new AdminException("no such group"));
-		UserRecord u = userManager.getUser(user)
+		UserRecord u = userManager.getUser(user, null)
 				.orElseThrow(() -> new AdminException("no such user"));
 		String notice;
-		if (userManager.addUserToGroup(u, g)) {
+		if (userManager.addUserToGroup(u, g).isPresent()) {
 			log.info("added user {} to group {}", u.getUserName(),
 					g.getGroupName());
 			notice = format("added user %s to group %s", u.getUserName(),
@@ -492,7 +494,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			RedirectAttributes attrs) {
 		GroupRecord g = userManager.getGroup(id, null)
 				.orElseThrow(() -> new AdminException("no such group"));
-		UserRecord u = userManager.getUser(userid)
+		UserRecord u = userManager.getUser(userid, null)
 				.orElseThrow(() -> new AdminException("no such user"));
 		String notice;
 		if (userManager.removeUserFromGroup(u, g)) {

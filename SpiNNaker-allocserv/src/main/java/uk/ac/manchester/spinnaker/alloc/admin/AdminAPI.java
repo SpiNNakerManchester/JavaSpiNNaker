@@ -373,12 +373,14 @@ public interface AdminAPI {
 	 *
 	 * @param id
 	 *            The ID of the user
+	 * @param ui
+	 *            For building URIs.
 	 * @return Description of the user.
 	 */
 	@GET
 	@Path(USER + "/{id}")
 	@Produces(APPLICATION_JSON)
-	UserRecord describeUser(@PathParam("id") int id);
+	UserRecord describeUser(@PathParam("id") int id, @Context UriInfo ui);
 
 	/**
 	 * Update a particular user's details.
@@ -387,6 +389,8 @@ public interface AdminAPI {
 	 *            The ID of the user
 	 * @param user
 	 *            What to set the details to. {@code null} fields are ignored.
+	 * @param ui
+	 *            For building URIs.
 	 * @param security
 	 *            Used to check who the current user actually is.
 	 * @return The updated user details.
@@ -396,7 +400,7 @@ public interface AdminAPI {
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
 	UserRecord updateUser(@PathParam("id") int id, @Valid UserRecord user,
-			@Context SecurityContext security);
+			@Context UriInfo ui, @Context SecurityContext security);
 
 	/**
 	 * Delete a user.

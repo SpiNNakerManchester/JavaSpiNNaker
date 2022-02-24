@@ -75,6 +75,9 @@ class DQLTest extends SQLQueries {
 	// Not equal to any group_id
 	private static final int NO_GROUP = -1;
 
+	// Not equal to any membership_id
+	private static final int NO_MEMBER = -1;
+
 	// Not the name of anything
 	private static final String NO_NAME = "gorp";
 
@@ -895,6 +898,17 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getMembership() {
+		try (Query q = c.query(GET_MEMBERSHIP)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(MEMBER_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MEMBER).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getUserQuota() {
 		try (Query q = c.query(GET_USER_QUOTA)) {
 			assertEquals(1, q.getNumArguments());
@@ -1038,18 +1052,6 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(set("group_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_NAME).isPresent());
-			});
-		}
-	}
-
-	@Test
-	void getQuotaDetails() {
-		try (Query q = c.query(GET_QUOTA_DETAILS)) {
-			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("machine_name", "quota"),
-					q.getRowColumnNames());
-			c.transaction(() -> {
-				assertFalse(q.call1(NO_USER).isPresent());
 			});
 		}
 	}

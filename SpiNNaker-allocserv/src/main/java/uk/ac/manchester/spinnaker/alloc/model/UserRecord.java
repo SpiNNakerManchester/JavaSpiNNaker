@@ -21,8 +21,9 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
+import java.net.URI;
 import java.time.Instant;
-import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
@@ -32,6 +33,8 @@ import javax.validation.constraints.Null;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 
 /**
@@ -41,7 +44,6 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
  * them.
  */
 public final class UserRecord {
-	// TODO list group memberships
 	private Integer userId;
 
 	private String userName;
@@ -60,7 +62,36 @@ public final class UserRecord {
 
 	private Instant lastFailedLogin;
 
-	private List<GroupRecord> groups;
+	private Map<String, URI> groups;
+
+	/** Create an empty instance. */
+	public UserRecord() {
+	}
+
+	/**
+	 * Inflate the result of a {@link SQLQueries#GET_USER_DETAILS} query (or
+	 * anything else that includes the same columns) into an object. Doesn't
+	 * include inflating the groups that the user is a member of.
+	 *
+	 * @param row
+	 *            The row with the result.
+	 */
+	public UserRecord(Row row) {
+		try {
+			setUserId(row.getInt("user_id"));
+			setUserName(row.getString("user_name"));
+			setHasPassword(row.getBoolean("has_password"));
+			setTrustLevel(row.getEnum("trust_level", TrustLevel.class));
+			setEnabled(!row.getBoolean("disabled"));
+			setLocked(row.getBoolean("locked"));
+			setLastSuccessfulLogin(
+					row.getInstant("last_successful_login_timestamp"));
+			setLastFailedLogin(row.getInstant("last_fail_timestamp"));
+		} finally {
+			// I mean it!
+			setPassword(null);
+		}
+	}
 
 	/**
 	 * @return The user identifier. Read-only; cannot be set by the service.
@@ -185,11 +216,11 @@ public final class UserRecord {
 	 * @return The groups that the user is a member of. May be {@code null} if
 	 *         this information is not being reported.
 	 */
-	public List<GroupRecord> getGroups() {
+	public Map<String, URI> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(List<GroupRecord> groups) {
+	public void setGroups(Map<String, URI> groups) {
 		this.groups = groups;
 	}
 

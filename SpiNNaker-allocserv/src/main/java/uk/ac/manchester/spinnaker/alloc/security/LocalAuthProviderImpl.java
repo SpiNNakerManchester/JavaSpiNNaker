@@ -65,7 +65,6 @@ import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -73,6 +72,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
+import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 
 /**
  * Does authentication against users defined entirely in the database. This
@@ -94,9 +94,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private AuthProperties authProps;
 
 	@Autowired
-	private QuotaProperties quotaProps;
-
-	@Autowired
 	private PasswordServices passServices;
 
 	@Autowired
@@ -106,39 +103,74 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	private static final String DUMMY_PASSWORD = "user1Pass";
 
+	private Optional<UserRecord> makeInitUser(String username) {
+		if (!authProps.isAddDummyUser()) {
+			return Optional.empty();
+		}
+		String pass = DUMMY_PASSWORD;
+		boolean poorPassword = true;
+		if (authProps.isDummyRandomPass()) {
+			pass = passServices.generatePassword();
+			poorPassword = false;
+		}
+		if (!createUser(username, pass, ADMIN)) {
+			// User creation failed; probably already exists, which is OK
+			return Optional.empty();
+		}
+		if (authProps.isDummyRandomPass()) {
+			log.info("admin user {} has password: {}", username, pass);
+		}
+		if (poorPassword) {
+			log.warn("user {} has default password!", username);
+		}
+		return Optional.of(userController.getUser(username, null)
+				.orElseThrow(() -> new SetupException(
+						"default user was created, yet wasn't found!")));
+	}
+
+	private Optional<GroupRecord> makeInitGroup(String groupname) {
+		if (groupname.isEmpty()) {
+			// No system group name, so ignore group setup
+			return Optional.empty();
+		}
+		GroupRecord groupTemplate = new GroupRecord();
+		groupTemplate.setGroupName(groupname);
+		// What should the default quota be here? Using no-quota-at-all for now
+		groupTemplate.setQuota(null);
+		return userController.createGroup(groupTemplate, true).map(g -> {
+			log.info("system group {} created", groupname);
+			return g;
+		});
+	}
+
 	@PostConstruct
 	private void initUserIfNecessary() {
-		if (authProps.isAddDummyUser()) {
-			String pass = DUMMY_PASSWORD;
-			boolean poorPassword = true;
-			if (authProps.isDummyRandomPass()) {
-				pass = passServices.generatePassword();
-				poorPassword = false;
-			}
-			if (createUser(DUMMY_USER, pass, ADMIN,
-					quotaProps.getDefaultQuota())) {
-				if (authProps.isDummyRandomPass()) {
-					log.info("admin user {} has password: {}", DUMMY_USER,
-							pass);
-				}
-				if (poorPassword) {
-					log.warn("user {} has default password!", DUMMY_USER);
-				}
-				GroupRecord group = new GroupRecord();
-				group.setGroupName(authProps.getSystemGroup());
-				group.setQuota(null);
-				group = userController.createGroup(group, true)
-						.orElseThrow(() -> new RuntimeException(
-								"failed to construct default group!"));
-				// FIXME assign default user to default group here
-			}
+		// User setup
+		Optional<UserRecord> user = makeInitUser(DUMMY_USER);
+
+		// Group setup
+		Optional<GroupRecord> group = makeInitGroup(authProps.getSystemGroup());
+
+		// Connect the two if we made them both
+		if (user.isPresent() && group.isPresent() && !userController
+				.addUserToGroup(user.get(), group.get()).isPresent()) {
+			log.warn("user {} was not added to default group {}",
+					user.get().getUserName(), group.get().getGroupName());
+		}
+	}
+
+	private static class SetupException extends RuntimeException {
+		private static final long serialVersionUID = -3915472090182223715L;
+
+		SetupException(String message) {
+			super(message);
 		}
 	}
 
 	@Override
 	@PreAuthorize(IS_ADMIN)
 	public boolean createUser(String username, String password,
-			TrustLevel trustLevel, long quota) {
+			TrustLevel trustLevel) {
 		String name = username.trim();
 		if (name.isEmpty()) {
 			// Won't touch the DB if the username is empty
@@ -147,8 +179,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		String encPass = passServices.encodePassword(password);
 		try (Connection conn = getConnection();
 				Update createUser = conn.update(CREATE_USER)) {
-			return conn.transaction(() -> createUser(username, encPass,
-					trustLevel, quota, createUser));
+			return conn.transaction(
+					() -> createUser(username, encPass, trustLevel, createUser)
+							.isPresent());
 		}
 	}
 
@@ -163,24 +196,20 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            that needs to authenticate by another mechanism.
 	 * @param trustLevel
 	 *            What level of permissions to grant
-	 * @param quota
-	 *            How much quota to allocate
 	 * @param createUser
 	 *            SQL statement
 	 * @param addQuota
 	 *            SQL statement
 	 * @return Whether the user was successfully created.
 	 */
-	private Boolean createUser(String username, String encPass,
-			TrustLevel trustLevel, long quota, Update createUser) {
+	private Optional<Integer> createUser(String username, String encPass,
+			TrustLevel trustLevel, Update createUser) {
 		return createUser.key(username, encPass, trustLevel, false)
 				.map(userId -> {
-					log.info(
-							"added user {} with trust level {} and "
-									+ "quota {} board-seconds",
-							username, trustLevel, quota);
+					log.info("added user {} with trust level {}", username,
+							trustLevel);
 					return userId;
-				}).isPresent();
+				});
 	}
 
 	/** Marks an authentication that we've already taken a decision about. */
@@ -742,8 +771,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No such user; need to inflate one now. If we successfully make
 			 * the user, they're also immediately authorised.
 			 */
-			return createUser(username, null, USER,
-					quotaProps.getDefaultQuota(), queries.createUser);
+			// TODO inflate the groups for this user
+			return createUser(username, null, USER, queries.createUser)
+					.isPresent();
 		}
 		Row userInfo = r.get();
 
