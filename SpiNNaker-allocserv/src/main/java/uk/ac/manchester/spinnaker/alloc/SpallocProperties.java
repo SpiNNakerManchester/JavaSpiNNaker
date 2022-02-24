@@ -1484,6 +1484,13 @@ public class SpallocProperties {
 		private String serviceUser;
 
 		/**
+		 * What group to run jobs submitted through the spalloc v1 compatibility
+		 * service against. This group needs to exist, and the service user
+		 * needs to be a member of it, but does not need to have a quota set.
+		 */
+		private String serviceGroup;
+
+		/**
 		 * How long to pass to the spalloc core to wait for timeouts relating to
 		 * message notifications (i.e., due to machine or job status changes).
 		 */
@@ -1497,6 +1504,7 @@ public class SpallocProperties {
 				@DefaultValue("0.0.0.0") String host,
 				@DefaultValue("22244") int port,
 				@DefaultValue("") String serviceUser,
+				@DefaultValue("") String serviceGroup,
 				@DefaultValue("2000ms") Duration receiveTimeout,
 				@DefaultValue("3s") Duration shutdownTimeout,
 				@DefaultValue("1m") Duration notifyWaitTime,
@@ -1506,6 +1514,7 @@ public class SpallocProperties {
 			this.host = host;
 			this.port = port;
 			this.serviceUser = serviceUser;
+			this.serviceGroup = serviceGroup;
 			this.receiveTimeout = receiveTimeout;
 			this.shutdownTimeout = shutdownTimeout;
 			this.notifyWaitTime = notifyWaitTime;
@@ -1582,6 +1591,29 @@ public class SpallocProperties {
 		private boolean isValidUserIfEnabled() {
 			return !enable
 					|| (nonNull(serviceUser) && !serviceUser.trim().isEmpty());
+		}
+
+		/**
+		 * What group to run jobs submitted through the spalloc v1 compatibility
+		 * service against. This group needs to exist, and the service user
+		 * needs to be a member of it, but does not need to have a quota set.
+		 *
+		 * @return What group to run jobs submitted through the spalloc v1
+		 *         compatibility service against.
+		 */
+		public String getServiceGroup() {
+			return serviceGroup;
+		}
+
+		public void setServiceGroup(String serviceUser) {
+			this.serviceGroup = serviceUser;
+		}
+
+		@AssertTrue(message = "a service group must be given "
+				+ "if the v1 service is enabled")
+		private boolean isValidGroupIfEnabled() {
+			return !enable || (nonNull(serviceGroup)
+					&& !serviceGroup.trim().isEmpty());
 		}
 
 		/**

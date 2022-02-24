@@ -366,13 +366,13 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			byte[] serialCmd = getJsonMapper().writeValueAsBytes(cmd);
 			switch (args.size()) {
 			case 0:
-				return requireNonNull(createJobNumBoards(1, kwargs, serialCmd));
+				return createJobNumBoards(1, kwargs, serialCmd).orElse(null);
 			case 1:
-				return requireNonNull(createJobNumBoards(parseDec(args, 0),
-						kwargs, serialCmd));
+				return createJobNumBoards(parseDec(args, 0), kwargs, serialCmd)
+						.orElse(null);
 			case 2:
-				return requireNonNull(createJobRectangle(parseDec(args, 0),
-						parseDec(args, 1), kwargs, serialCmd));
+				return createJobRectangle(parseDec(args, 0), parseDec(args, 1),
+						kwargs, serialCmd).orElse(null);
 			case TRIAD_COORD_COUNT:
 				return requireNonNull(
 						createJobSpecificBoard(
@@ -483,11 +483,11 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *            Keyword argument map.
 	 * @param cmd
 	 *            The actual command, as serialised JSON.
-	 * @return Job identifier. Never {@code null}.
+	 * @return Job identifier.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Integer createJobNumBoards(int numBoards,
+	protected abstract Optional<Integer> createJobNumBoards(int numBoards,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException;
 
 	/**
@@ -501,12 +501,13 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *            Keyword argument map.
 	 * @param cmd
 	 *            The actual command, as serialised JSON.
-	 * @return Job identifier. Never {@code null}.
+	 * @return Job identifier.
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Integer createJobRectangle(int width, int height,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException;
+	protected abstract Optional<Integer> createJobRectangle(int width,
+			int height, Map<String, Object> kwargs, byte[] cmd)
+			throws TaskException;
 
 	/**
 	 * Create a job asking for a specific board.
@@ -521,8 +522,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @throws TaskException
 	 *             If anything goes wrong.
 	 */
-	protected abstract Integer createJobSpecificBoard(TriadCoords coords,
-			Map<String, Object> kwargs, byte[] cmd) throws TaskException;
+	protected abstract Optional<Integer> createJobSpecificBoard(
+			TriadCoords coords, Map<String, Object> kwargs, byte[] cmd)
+			throws TaskException;
 
 	/**
 	 * Destroy a job.

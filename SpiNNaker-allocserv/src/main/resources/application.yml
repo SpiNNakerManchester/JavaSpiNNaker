@@ -210,6 +210,8 @@ spalloc:
     receive-timeout: 2000ms
     # What user to run as; recommended that this user exists but is disabled
     service-user: ""
+    # What group to run against; service-user must be a member of this group
+    service-group: ""
     # How long to wait for the compat service to shut down
     shutdown-timeout: 3s
     # How long to wait in the spalloc core for a state change notification
