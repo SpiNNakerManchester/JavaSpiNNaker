@@ -40,6 +40,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -137,10 +138,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		groupTemplate.setGroupName(groupname);
 		// What should the default quota be here? Using no-quota-at-all for now
 		groupTemplate.setQuota(null);
-		return userController.createGroup(groupTemplate, true).map(g -> {
-			log.info("system group {} created", groupname);
-			return g;
-		});
+		try {
+			return userController.createGroup(groupTemplate, true).map(g -> {
+				log.info("system group '{}' created", groupname);
+				return g;
+			});
+		} catch (DataIntegrityViolationException e) {
+			if (e.getMessage().contains("A UNIQUE constraint failed")) {
+				// Already exists; no big deal
+				return Optional.empty();
+			}
+			throw e;
+		}
 	}
 
 	@PostConstruct
