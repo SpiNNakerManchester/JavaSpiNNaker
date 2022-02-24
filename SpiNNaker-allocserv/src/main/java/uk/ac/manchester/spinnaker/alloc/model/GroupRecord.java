@@ -90,7 +90,7 @@ public final class GroupRecord {
 	 * @return The quota of the group in board-seconds, if one exists.
 	 */
 	public Optional<Long> getQuota() {
-		return Optional.of(quota);
+		return Optional.ofNullable(quota);
 	}
 
 	public void setQuota(Long quota) {
