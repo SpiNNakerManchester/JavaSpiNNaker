@@ -361,6 +361,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private Authentication authenticateOpenId(OAuth2AuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
 		OAuth2User user = auth.getPrincipal();
+		log.info("CHECK attributes: {}", user.getAttributes());
 		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
 				+ user.getAttribute("preferred_username"), user, null);
 	}
@@ -375,6 +376,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private Authentication authenticateOpenId(JwtAuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
+		log.info("CHECK token claims: {}", auth.getToken().getClaims());
 		return authorizeOpenId(
 				authProps.getOpenid().getUsernamePrefix() + auth.getToken()
 						.getClaimAsString("preferred_username"),
