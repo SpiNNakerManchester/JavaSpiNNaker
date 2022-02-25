@@ -35,7 +35,9 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -44,6 +46,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -198,10 +202,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.loginProcessingUrl(oidcPath("login/code/*"))
 					.authorizationEndpoint().baseUri(oidcPath("auth")).and()
 					.defaultSuccessUrl(rootPage, true)
-					.failureUrl(loginUrl + "?error=true");
+					.failureUrl(loginUrl + "?error=true")
+					.userInfoEndpoint()
+					.userAuthoritiesMapper(userAuthoritiesMapper());
 			http.oauth2Client();
 			http.oauth2ResourceServer()
-					.authenticationEntryPoint(authenticationEntryPoint).jwt();
+					.authenticationEntryPoint(authenticationEntryPoint).jwt()
+					.jwtAuthenticationConverter(authConverter());
 			http.addFilterAfter(authApplicationFilter,
 					BasicAuthenticationFilter.class);
 		}
@@ -223,6 +230,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.logoutSuccessUrl(loginUrl);
 	}
 
+	@Bean
+	@Role(ROLE_SUPPORT)
+	Converter<Jwt, ? extends AbstractAuthenticationToken> authConverter() {
+		return jwt -> {
+			Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+			localAuthProvider.mapAuthorities(jwt, mappedAuthorities);
+			return new JwtAuthenticationToken(jwt, mappedAuthorities);
+		};
+	}
+
+	@Bean
+	@Role(ROLE_SUPPORT)
 	GrantedAuthoritiesMapper userAuthoritiesMapper() {
 		return authorities -> {
 			Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
@@ -235,9 +254,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				if (authority instanceof OidcUserAuthority) {
 					localAuthProvider.mapAuthorities(
 							(OidcUserAuthority) authority, mappedAuthorities);
-				} else {
-					mappedAuthorities.add(authority);
 				}
+				mappedAuthorities.add(authority);
 			});
 			return mappedAuthorities;
 		};

@@ -31,10 +31,10 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -581,12 +581,20 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Override
 	public void mapAuthorities(OidcUserAuthority authority,
-			Set<GrantedAuthority> resultCollection) {
+			Collection<GrantedAuthority> resultCollection) {
 		log.info("NOTE: claimed teams from user info: {}",
 				authority.getUserInfo().getClaimAsStringList("team"));
 		log.info("NOTE: claimed teams from id token: {}",
 				authority.getIdToken().getClaimAsStringList("team"));
-		resultCollection.add(authority);
+		resultCollection.add(new SimpleGrantedAuthority(GRANT_READER));
+		resultCollection.add(new SimpleGrantedAuthority(GRANT_USER));
+	}
+
+	@Override
+	public void mapAuthorities(Jwt authority,
+			Collection<GrantedAuthority> resultCollection) {
+		log.info("NOTE: claimed teams from jwt: {}",
+				authority.getClaimAsStringList("team"));
 		resultCollection.add(new SimpleGrantedAuthority(GRANT_READER));
 		resultCollection.add(new SimpleGrantedAuthority(GRANT_USER));
 	}
