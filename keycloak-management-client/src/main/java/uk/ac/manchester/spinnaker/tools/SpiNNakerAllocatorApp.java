@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.tools;
 
 import static java.util.Arrays.asList;
 
+import java.util.List;
 import java.util.Map;
 
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -46,6 +47,12 @@ public interface SpiNNakerAllocatorApp {
 
 	/** Contact info for the service. Semicolon-separated list. */
 	String SPALLOC_CONTACTS = "donal.k.fellows@manchester.ac.uk";
+
+	/** Scopes we require. */
+	List<String> SPALLOC_DEFAULT_SCOPES = asList("openid", "profile", "email");
+
+	/** Scopes we can ask for. */
+	List<String> SPALLOC_OPTIONAL_SCOPES = asList("team", "group");
 
 	/**
 	 * Create a proposed description of the service.
@@ -108,8 +115,8 @@ public interface SpiNNakerAllocatorApp {
 		client.setImplicitFlowEnabled(false);
 		client.setDirectAccessGrantsEnabled(false);
 
-		client.setDefaultClientScopes(asList("openid", "profile", "email"));
-		client.setOptionalClientScopes(asList("team", "group"));
+		client.setDefaultClientScopes(SPALLOC_DEFAULT_SCOPES);
+		client.setOptionalClientScopes(SPALLOC_OPTIONAL_SCOPES);
 
 		return client;
 	}
