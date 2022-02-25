@@ -18,10 +18,14 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
+import java.util.Set;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 
 /**
  * Locally-defined authentication providers include the capability to create
@@ -62,4 +66,15 @@ public interface LocalAuthenticationProvider extends AuthenticationProvider {
 	 *         changed</em>.
 	 */
 	Authentication updateAuthentication(SecurityContext ctx);
+
+	/**
+	 * Map the authorities, adding them to the result.
+	 *
+	 * @param authority
+	 *            The overall authority to map.
+	 * @param resultCollection
+	 *            Where to add the authorities.
+	 */
+	void mapAuthorities(OidcUserAuthority authority,
+			Set<GrantedAuthority> resultCollection);
 }

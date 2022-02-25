@@ -32,8 +32,9 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -58,6 +59,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -377,21 +379,33 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		Optional<Jwt> getOpenIdToken();
 
 		/**
+		 * Get a claim/attribute that is a string.
+		 *
+		 * @param claimName
+		 *            The name of the claim.
+		 * @return The string.
+		 * @throws IllegalStateException
+		 *             If neither {@link #getOpenIdUser()} nor
+		 *             {@link #getOpenIdToken()} provide anything we can get
+		 *             claims from.
+		 */
+		default String getStringClaim(String claimName) {
+			return getOpenIdUser()
+					.map(u -> Objects.toString(u.getAttribute(claimName)))
+					.orElseGet(() -> getOpenIdToken()
+							.map(t -> t.getClaimAsString(claimName))
+							.orElseThrow(() -> new IllegalStateException(
+									"no user or token to supply claim")));
+		}
+
+		/**
 		 * @return The preferred OpenID user name. <em>We don't use this
 		 *         directly</em> as it may clash with other user names.
 		 * @throws IllegalStateException
 		 *             If the object was made without either a user or a token.
 		 */
 		default String getOpenIdUserName() {
-			Optional<OAuth2User> u = getOpenIdUser();
-			if (u.isPresent()) {
-				return u.get().getAttribute("preferred_username");
-			}
-			Optional<Jwt> t = getOpenIdToken();
-			if (t.isPresent()) {
-				return t.get().getClaimAsString("preferred_username");
-			}
-			throw new IllegalStateException("no user or token");
+			return getStringClaim("preferred_username");
 		}
 
 		/**
@@ -400,36 +414,23 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *             If the object was made without either a user or a token.
 		 */
 		default String getOpenIdName() {
-			Optional<OAuth2User> u = getOpenIdUser();
-			if (u.isPresent()) {
-				return u.get().getAttribute("name");
-			}
-			Optional<Jwt> t = getOpenIdToken();
-			if (t.isPresent()) {
-				return t.get().getClaimAsString("name");
-			}
-			throw new IllegalStateException("no user or token");
+			return getStringClaim("name");
 		}
 
 		/**
 		 * @return The verified email address of the OpenID user, if available.
 		 */
 		default Optional<String> getOpenIdEmail() {
-			Optional<OAuth2User> u = getOpenIdUser();
-			if (u.isPresent()) {
-				Map<String, Object> attrs = u.get().getAttributes();
-				if (attrs.containsKey("email_verified")
-						&& (Boolean) attrs.get("email_verified")) {
-					return Optional.of(attrs.get("email").toString());
-				}
+			Optional<String> email =
+					getOpenIdUser().map(uu -> uu.getAttributes())
+							.filter(uu -> uu.containsKey("email_verified"))
+							.filter(uu -> (boolean) uu.get("email_verified"))
+							.map(uu -> uu.get("email").toString());
+			if (email.isPresent()) {
+				return email;
 			}
-			Optional<Jwt> t = getOpenIdToken();
-			if (t.isPresent()) {
-				if (t.get().getClaimAsBoolean("email_verified")) {
-					return Optional.of(t.get().getClaimAsString("email"));
-				}
-			}
-			return Optional.empty();
+			return getOpenIdToken().filter(t -> t.getClaim("email_verified"))
+					.map(t -> t.getClaimAsString("email"));
 		}
 	}
 
@@ -576,6 +577,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						authProps.getAccountLockDuration());
 			}
 		}
+	}
+
+	@Override
+	public void mapAuthorities(OidcUserAuthority authority,
+			Set<GrantedAuthority> resultCollection) {
+		log.info("NOTE: claimed teams from user info: {}",
+				authority.getUserInfo().getClaimAsStringList("team"));
+		log.info("NOTE: claimed teams from id token: {}",
+				authority.getIdToken().getClaimAsStringList("team"));
+		resultCollection.add(authority);
+		resultCollection.add(new SimpleGrantedAuthority(GRANT_READER));
+		resultCollection.add(new SimpleGrantedAuthority(GRANT_USER));
 	}
 
 	private static final class LocalAuthResult {

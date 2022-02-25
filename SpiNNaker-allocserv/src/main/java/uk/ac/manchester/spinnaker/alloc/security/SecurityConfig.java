@@ -26,6 +26,8 @@ import static uk.ac.manchester.spinnaker.alloc.security.Utils.trustManager;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.net.ssl.X509TrustManager;
 
@@ -39,6 +41,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -216,6 +221,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.addLogoutHandler((req, resp, auth) -> clearToken(req))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
+	}
+
+	GrantedAuthoritiesMapper userAuthoritiesMapper() {
+		return authorities -> {
+			Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+			authorities.forEach(authority -> {
+				/*
+				 * Check for OidcUserAuthority because Spring Security 5.2
+				 * returns each scope as a GrantedAuthority, which we don't care
+				 * about.
+				 */
+				if (authority instanceof OidcUserAuthority) {
+					localAuthProvider.mapAuthorities(
+							(OidcUserAuthority) authority, mappedAuthorities);
+				} else {
+					mappedAuthorities.add(authority);
+				}
+			});
+			return mappedAuthorities;
+		};
 	}
 
 	@Bean
