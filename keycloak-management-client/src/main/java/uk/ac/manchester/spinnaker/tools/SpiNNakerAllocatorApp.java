@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.tools;
 
 import static java.util.Arrays.asList;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.keycloak.representations.idm.ClientRepresentation;
 
@@ -31,7 +33,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
  */
 public interface SpiNNakerAllocatorApp {
 	/** The ID of the service. */
-	String SPALLOC_ID = "spinnaker-spalloc";
+	String SPALLOC_ID = "spalloc";
 
 	/** The name of the service. */
 	String SPALLOC_NAME = "SpiNNaker Board Resource Manager";
@@ -47,9 +49,14 @@ public interface SpiNNakerAllocatorApp {
 	/** Contact info for the service. Semicolon-separated list. */
 	String SPALLOC_CONTACTS = "donal.k.fellows@manchester.ac.uk";
 
+	/** Scopes we require: "openid", "profile", "roles". */
+	List<String> SPALLOC_DEFAULT_SCOPES = asList("openid", "profile", "roles");
+
+	/** Scopes we can ask for: "team", "group", "email". */
+	List<String> SPALLOC_OPTIONAL_SCOPES = asList("team", "group", "email");
+
 	/**
-	 * Create a proposed description of the service.
-	 * From the wiki:
+	 * Create a proposed description of the service. From the wiki:
 	 *
 	 * <pre>
 	 * # Send the creation request
@@ -108,9 +115,86 @@ public interface SpiNNakerAllocatorApp {
 		client.setImplicitFlowEnabled(false);
 		client.setDirectAccessGrantsEnabled(false);
 
-		client.setDefaultClientScopes(asList("openid", "profile", "email"));
-		client.setOptionalClientScopes(asList("team", "group"));
+		client.setDefaultClientScopes(SPALLOC_DEFAULT_SCOPES);
+		client.setOptionalClientScopes(SPALLOC_OPTIONAL_SCOPES);
 
 		return client;
+	}
+
+	/**
+	 * Create a new client registration that is a delta from an old client
+	 * registration.
+	 *
+	 * @param oldClient
+	 *            The old client registration.
+	 * @return The delta client registration document.
+	 */
+	static ClientRepresentation
+			makeSpallocDescriptor(ClientRepresentation oldClient) {
+		ClientRepresentation newClient =
+				makeSpallocDescriptor(oldClient.getClientId());
+		ClientRepresentation compressedClient = new ClientRepresentation();
+		// Client ID must always be present
+		compressedClient.setClientId(oldClient.getClientId());
+		compressedClient.setId(oldClient.getId());
+		if (!Objects.equals(oldClient.getName(), newClient.getName())) {
+			compressedClient.setName(newClient.getName());
+		}
+		if (!Objects.equals(oldClient.getDescription(),
+				newClient.getDescription())) {
+			compressedClient.setDescription(newClient.getDescription());
+		}
+		if (!Objects.equals(oldClient.getAttributes(),
+				newClient.getAttributes())) {
+			compressedClient.setAttributes(newClient.getAttributes());
+		}
+		if (!Objects.equals(oldClient.getRootUrl(), newClient.getRootUrl())) {
+			compressedClient.setRootUrl(newClient.getRootUrl());
+		}
+		if (!Objects.equals(oldClient.getBaseUrl(), newClient.getBaseUrl())) {
+			compressedClient.setBaseUrl(newClient.getBaseUrl());
+		}
+		if (!Objects.equals(oldClient.getRedirectUris(),
+				newClient.getRedirectUris())) {
+			compressedClient.setRedirectUris(newClient.getRedirectUris());
+		}
+		if (!Objects.equals(oldClient.getWebOrigins(),
+				newClient.getWebOrigins())) {
+			compressedClient.setWebOrigins(newClient.getWebOrigins());
+		}
+		if (!Objects.equals(oldClient.isBearerOnly(),
+				newClient.isBearerOnly())) {
+			compressedClient.setBearerOnly(newClient.isBearerOnly());
+		}
+		if (!Objects.equals(oldClient.isConsentRequired(),
+				newClient.isConsentRequired())) {
+			compressedClient.setConsentRequired(newClient.isConsentRequired());
+		}
+		if (!Objects.equals(oldClient.isStandardFlowEnabled(),
+				newClient.isStandardFlowEnabled())) {
+			compressedClient
+					.setStandardFlowEnabled(newClient.isStandardFlowEnabled());
+		}
+		if (!Objects.equals(oldClient.isImplicitFlowEnabled(),
+				newClient.isImplicitFlowEnabled())) {
+			compressedClient
+					.setImplicitFlowEnabled(newClient.isImplicitFlowEnabled());
+		}
+		if (!Objects.equals(oldClient.isDirectAccessGrantsEnabled(),
+				newClient.isDirectAccessGrantsEnabled())) {
+			compressedClient.setDirectAccessGrantsEnabled(
+					newClient.isDirectAccessGrantsEnabled());
+		}
+		if (!Objects.equals(oldClient.getDefaultClientScopes(),
+				newClient.getDefaultClientScopes())) {
+			compressedClient
+					.setDefaultClientScopes(newClient.getDefaultClientScopes());
+		}
+		if (!Objects.equals(oldClient.getOptionalClientScopes(),
+				newClient.getOptionalClientScopes())) {
+			compressedClient.setOptionalClientScopes(
+					newClient.getOptionalClientScopes());
+		}
+		return compressedClient;
 	}
 }

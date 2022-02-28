@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -31,9 +32,14 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
@@ -59,6 +65,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -209,7 +217,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            SQL statement
 	 * @param addQuota
 	 *            SQL statement
-	 * @return Whether the user was successfully created.
+	 * @return The user ID if the user was successfully created.
 	 */
 	private Optional<Integer> createUser(String username, String encPass,
 			TrustLevel trustLevel, Update createUser) {
@@ -361,9 +369,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private Authentication authenticateOpenId(OAuth2AuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
 		OAuth2User user = auth.getPrincipal();
-		log.info("CHECK attributes: {}", user.getAttributes());
-		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ user.getAttribute("preferred_username"), user, null);
+		return authorizeOpenId(
+				authProps.getOpenid().getUsernamePrefix()
+						+ user.getAttribute("preferred_username"),
+				user, null, auth.getAuthorities());
 	}
 
 	/**
@@ -376,15 +385,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private Authentication authenticateOpenId(JwtAuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
-		log.info("CHECK token claims: {}", auth.getToken().getClaims());
 		return authorizeOpenId(
 				authProps.getOpenid().getUsernamePrefix() + auth.getToken()
 						.getClaimAsString("preferred_username"),
-				null, auth.getToken());
+				null, auth.getToken(), auth.getAuthorities());
 	}
 
 	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name,
-			OAuth2User user, Jwt bearerToken) {
+			OAuth2User user, Jwt bearerToken,
+			Collection<GrantedAuthority> authorities) {
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
@@ -393,7 +402,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		try (AuthQueries queries = new AuthQueries()) {
 			if (!queries.transaction(//
-					() -> authOpenIDAgainstDB(name, queries))) {
+					() -> authOpenIDAgainstDB(name, authorities, queries))) {
 				return null;
 			}
 		}
@@ -422,21 +431,33 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		Optional<Jwt> getOpenIdToken();
 
 		/**
+		 * Get a claim/attribute that is a string.
+		 *
+		 * @param claimName
+		 *            The name of the claim.
+		 * @return The string.
+		 * @throws IllegalStateException
+		 *             If neither {@link #getOpenIdUser()} nor
+		 *             {@link #getOpenIdToken()} provide anything we can get
+		 *             claims from.
+		 */
+		default String getStringClaim(String claimName) {
+			return getOpenIdUser()
+					.map(u -> Objects.toString(u.getAttribute(claimName)))
+					.orElseGet(() -> getOpenIdToken()
+							.map(t -> t.getClaimAsString(claimName))
+							.orElseThrow(() -> new IllegalStateException(
+									"no user or token to supply claim")));
+		}
+
+		/**
 		 * @return The preferred OpenID user name. <em>We don't use this
 		 *         directly</em> as it may clash with other user names.
 		 * @throws IllegalStateException
 		 *             If the object was made without either a user or a token.
 		 */
 		default String getOpenIdUserName() {
-			Optional<OAuth2User> u = getOpenIdUser();
-			if (u.isPresent()) {
-				return u.get().getAttribute("preferred_username");
-			}
-			Optional<Jwt> t = getOpenIdToken();
-			if (t.isPresent()) {
-				return t.get().getClaimAsString("preferred_username");
-			}
-			throw new IllegalStateException("no user or token");
+			return getStringClaim("preferred_username");
 		}
 
 		/**
@@ -445,36 +466,23 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *             If the object was made without either a user or a token.
 		 */
 		default String getOpenIdName() {
-			Optional<OAuth2User> u = getOpenIdUser();
-			if (u.isPresent()) {
-				return u.get().getAttribute("name");
-			}
-			Optional<Jwt> t = getOpenIdToken();
-			if (t.isPresent()) {
-				return t.get().getClaimAsString("name");
-			}
-			throw new IllegalStateException("no user or token");
+			return getStringClaim("name");
 		}
 
 		/**
 		 * @return The verified email address of the OpenID user, if available.
 		 */
 		default Optional<String> getOpenIdEmail() {
-			Optional<OAuth2User> u = getOpenIdUser();
-			if (u.isPresent()) {
-				Map<String, Object> attrs = u.get().getAttributes();
-				if (attrs.containsKey("email_verified")
-						&& (Boolean) attrs.get("email_verified")) {
-					return Optional.of(attrs.get("email").toString());
-				}
+			Optional<String> email =
+					getOpenIdUser().map(uu -> uu.getAttributes())
+							.filter(uu -> uu.containsKey("email_verified"))
+							.filter(uu -> (boolean) uu.get("email_verified"))
+							.map(uu -> uu.get("email").toString());
+			if (email.isPresent()) {
+				return email;
 			}
-			Optional<Jwt> t = getOpenIdToken();
-			if (t.isPresent()) {
-				if (t.get().getClaimAsBoolean("email_verified")) {
-					return Optional.of(t.get().getClaimAsString("email"));
-				}
-			}
-			return Optional.empty();
+			return getOpenIdToken().filter(t -> t.getClaim("email_verified"))
+					.map(t -> t.getClaimAsString("email"));
 		}
 	}
 
@@ -620,6 +628,137 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
+	private static String makeCollabAuthorityName(String collabClaimed) {
+		return "COLLAB_" + collabClaimed;
+	}
+
+	private static String makeOrgAuthorityName(String collabClaimed) {
+		return "ORG_" + collabClaimed;
+	}
+
+	class CollabratoryAuthority extends SimpleGrantedAuthority {
+		private static final long serialVersionUID = 4964366746649162092L;
+
+		private final String collabratory;
+
+		CollabratoryAuthority(String collabClaimed) {
+			super(makeCollabAuthorityName(collabClaimed));
+			collabratory = collabClaimed;
+		}
+
+		String getCollabratory() {
+			return collabratory;
+		}
+	}
+
+	class OrganisationAuthority extends SimpleGrantedAuthority {
+		private static final long serialVersionUID = 8260068770503054502L;
+
+		private final String organisation;
+
+		OrganisationAuthority(String orgClaimed) {
+			super(makeOrgAuthorityName(orgClaimed));
+			organisation = orgClaimed;
+		}
+
+		String getOrganisation() {
+			return organisation;
+		}
+	}
+
+	private static final Pattern COLLAB_MATCHER =
+			Pattern.compile("^collab-(.*)-(admin|editor|viewer)$");
+
+	private boolean collabToAuthority(String source, List<String> claim,
+			Collection<GrantedAuthority> results) {
+		if (isNull(claim)) {
+			return false;
+		}
+		Set<String> seen = new HashSet<>();
+		for (String collab : claim) {
+			String reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
+			if (!seen.contains(reduced)) {
+				log.info("CLAIMED MEMBERSHIP OF COLLABRATORY from {}: {}",
+						source, collab);
+				results.add(new CollabratoryAuthority(reduced));
+				seen.add(reduced);
+			}
+		}
+		return true;
+	}
+
+	private boolean orgToAuthority(String source, List<String> claim,
+			Collection<GrantedAuthority> results) {
+		if (isNull(claim)) {
+			return false;
+		}
+		for (String org : claim) {
+			log.info("CLAIMED MEMBERSHIP OF ORGANIZATION from {}: {}", source,
+					org);
+			results.add(new OrganisationAuthority(org));
+		}
+		return true;
+	}
+
+	/**
+	 * Extract the {@code team/roles} sub-claim.
+	 *
+	 * @param rolesClaim
+	 *            Overall claim.
+	 * @return The {@code team/roles} sub-claim, provided it exists and really
+	 *         looks like a list of strings.
+	 */
+	private static List<String>
+			getTeamsFromClaim(Map<String, List<String>> rolesClaim) {
+		// Messy; all the implicit types and hidden casts!
+		try {
+			if (rolesClaim instanceof Map) {
+				List<String> teamsClaim = rolesClaim.get("team");
+				if (teamsClaim instanceof List) {
+					if (!teamsClaim.isEmpty()) {
+						// Dummy check to determine if first element is string
+						teamsClaim.get(0).isEmpty();
+					}
+					return teamsClaim;
+				}
+			}
+		} catch (ClassCastException e) {
+			log.debug("failed to convert claim", e);
+		}
+		return emptyList();
+	}
+
+	@Override
+	public void mapAuthorities(OidcUserAuthority user,
+			Collection<GrantedAuthority> results) {
+		OidcUserInfo userInfo = user.getUserInfo();
+		if (!collabToAuthority("userInfo",
+				getTeamsFromClaim(userInfo.getClaim("roles")), results)) {
+			log.info("no team in authority");
+		}
+		if (!orgToAuthority("userInfo", userInfo.getClaimAsStringList("unit"),
+				results)) {
+			log.info("no unit in authority");
+		}
+		results.add(new SimpleGrantedAuthority(GRANT_READER));
+		results.add(new SimpleGrantedAuthority(GRANT_USER));
+	}
+
+	@Override
+	public void mapAuthorities(Jwt token,
+			Collection<GrantedAuthority> results) {
+		if (!collabToAuthority("token",
+				getTeamsFromClaim(token.getClaim("roles")), results)) {
+			log.info("no team in token");
+		}
+		if (!orgToAuthority("token", token.getClaimAsStringList("unit"),
+				results)) {
+			log.info("no unit in token");
+		}
+		results.add(new SimpleGrantedAuthority(GRANT_READER));
+		results.add(new SimpleGrantedAuthority(GRANT_USER));
+	}
+
 	private static final class LocalAuthResult {
 		final int userId;
 
@@ -761,10 +900,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	/**
-	 * Check if an OpenID user can use the service.
+	 * Check if an OpenID user can use the service. A transaction <em>must</em>
+	 * be held open when calling this.
 	 *
 	 * @param username
 	 *            The username, already obtained and verified.
+	 * @param authorities
+	 *            The claimed authorities derived from the HBP OpenID service.
+	 *            Interesting because they include claims about organisation and
+	 *            collabratory membership.
 	 * @param queries
 	 *            How to access the database.
 	 * @return Whether the user is allowed to use the service. If {@code false},
@@ -775,20 +919,37 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @throws LockedException
 	 *             If the account is temporarily locked.
 	 */
-	private boolean authOpenIDAgainstDB(String username, AuthQueries queries) {
+	private boolean authOpenIDAgainstDB(String username,
+			Collection<GrantedAuthority> authorities, AuthQueries queries) {
+		List<String> collabs = new ArrayList<>();
+		List<String> orgs = new ArrayList<>();
+		authorities.forEach(ga -> {
+			if (ga instanceof CollabratoryAuthority) {
+				CollabratoryAuthority collab = (CollabratoryAuthority) ga;
+				inflateCollabratoryGroup(collab.getCollabratory(), queries);
+				collabs.add(collab.getCollabratory());
+			} else if (ga instanceof OrganisationAuthority) {
+				OrganisationAuthority org = (OrganisationAuthority) ga;
+				inflateOrganisationGroup(org.getOrganisation(), queries);
+				orgs.add(org.getOrganisation());
+			}
+		});
 		Optional<Row> r = queries.getUser(username);
 		if (!r.isPresent()) {
 			/*
 			 * No such user; need to inflate one now. If we successfully make
 			 * the user, they're also immediately authorised.
 			 */
-			// TODO inflate the groups for this user
-			return createUser(username, null, USER, queries.createUser)
-					.isPresent();
+			Optional<Integer> createdUser = createUser(username, null, USER,
+					queries.createUser);
+			createdUser.ifPresent(
+					id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
+			return createdUser.isPresent();
 		}
 		Row userInfo = r.get();
 
 		int userId = userInfo.getInt("user_id");
+		synchOrgsAndCollabs(userId, orgs, collabs, queries);
 		if (userInfo.getBoolean("disabled")) {
 			throw new DisabledException("account is disabled");
 		}
@@ -813,6 +974,23 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			log.info("login failure for {}", username, e);
 			throw e;
 		}
+	}
+
+	private void inflateCollabratoryGroup(String collab, AuthQueries queries) {
+		// TODO create a collab (with default props) if it doesn't exist
+		log.info("would create collabratory '{}' here", collab);
+	}
+
+	private void inflateOrganisationGroup(String org, AuthQueries queries) {
+		// TODO create an org (with default props) if it doesn't exist
+		log.info("would create organisation '{}' here", org);
+	}
+
+	private void synchOrgsAndCollabs(int userId, List<String> orgs,
+			List<String> collabs, AuthQueries queries) {
+		// TODO make this user's orgs and collabs be exactly these
+		log.info("would set user {} to have orgs = {} and collabs = {}", userId,
+				orgs, collabs);
 	}
 
 	@Override
