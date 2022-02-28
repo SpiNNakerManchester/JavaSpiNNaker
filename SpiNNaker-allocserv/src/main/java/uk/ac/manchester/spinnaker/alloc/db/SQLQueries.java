@@ -1164,11 +1164,11 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("group_name")
 	@Parameter("quota")
-	@Parameter("is_internal")
+	@Parameter("group_type")
 	@GeneratesID
 	protected static final String CREATE_GROUP =
-			"INSERT INTO groups(group_name, quota, is_internal) "
-					+ "VALUES(:group_name, :quota, :is_internal)";
+			"INSERT INTO groups(group_name, quota, group_type) "
+					+ "VALUES(:group_name, :quota, :group_type)";
 
 	/**
 	 * Delete a single group record and returns the name of the deleted group.
@@ -1194,13 +1194,13 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@ResultColumn("group_name")
 	@ResultColumn("quota")
-	@ResultColumn("is_internal")
+	@ResultColumn("group_type")
 	@SingleRowResult
 	protected static final String UPDATE_GROUP = "UPDATE groups SET "
 			+ "group_name = COALESCE(:group_name, group_name), "
 			+ "quota = :quota WHERE group_id = :group_id "
 			// + "LIMIT 1 " // Not supported in Xerial driver build
-			+ "RETURNING group_id, group_name, quota, is_internal";
+			+ "RETURNING group_id, group_name, quota, group_type";
 
 	/**
 	 * Adds a user to a group.
@@ -1404,9 +1404,9 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@ResultColumn("group_name")
 	@ResultColumn("quota")
-	@ResultColumn("is_internal")
+	@ResultColumn("group_type")
 	protected static final String LIST_ALL_GROUPS =
-			"SELECT group_id, group_name, quota, is_internal FROM groups";
+			"SELECT group_id, group_name, quota, group_type FROM groups";
 
 	/**
 	 * Get a group by it's ID.
@@ -1417,10 +1417,10 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@ResultColumn("group_name")
 	@ResultColumn("quota")
-	@ResultColumn("is_internal")
+	@ResultColumn("group_type")
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_ID =
-			"SELECT group_id, group_name, quota, is_internal FROM groups "
+			"SELECT group_id, group_name, quota, group_type FROM groups "
 					+ "WHERE group_id = :group_id LIMIT 1";
 
 	/**
@@ -1432,10 +1432,10 @@ public abstract class SQLQueries {
 	@ResultColumn("group_id")
 	@ResultColumn("group_name")
 	@ResultColumn("quota")
-	@ResultColumn("is_internal")
+	@ResultColumn("group_type")
 	@SingleRowResult
 	protected static final String GET_GROUP_BY_NAME =
-			"SELECT group_id, group_name, quota, is_internal FROM groups "
+			"SELECT group_id, group_name, quota, group_type FROM groups "
 					+ "WHERE group_name = :group_name LIMIT 1";
 
 	/**

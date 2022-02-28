@@ -28,6 +28,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
@@ -458,7 +459,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView createGroup(CreateGroupModel groupRequest,
 			RedirectAttributes attrs) {
 		GroupRecord realGroup =
-				userManager.createGroup(groupRequest.toGroupRecord(), true)
+				userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
 						.orElseThrow(() -> new AdminException(
 								"group creation failed (duplicate name?)"));
 		int id = realGroup.getGroupId();

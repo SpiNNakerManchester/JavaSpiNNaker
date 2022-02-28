@@ -43,6 +43,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
@@ -210,8 +211,8 @@ public class UserControl extends DatabaseAwareBean {
 		}
 
 		Optional<Integer> insertGroup(String name, Optional<Long> quota,
-				boolean internal) {
-			return insertGroup.key(name, quota, internal);
+				GroupType groupType) {
+			return insertGroup.key(name, quota, groupType);
 		}
 
 		public Optional<Row> updateGroup(int id, String name,
@@ -615,17 +616,18 @@ public class UserControl extends DatabaseAwareBean {
 	 * @param groupTemplate
 	 *            Description of what the group should look like. Only the
 	 *            {@code groupName} and the {@code quota} properties are used.
-	 * @param internal
-	 *            Whether this should be an internal group; internal groups hold
-	 *            internal users, external groups hold external users.
+	 * @param type
+	 *            What type of group is this; internal groups hold internal
+	 *            users, external groups hold external users and come in two
+	 *            kinds.
 	 * @return The full group description, assuming all went well.
 	 */
 	public Optional<GroupRecord> createGroup(GroupRecord groupTemplate,
-			boolean internal) {
+			GroupType type) {
 		try (GroupsSQL sql = new GroupsSQL()) {
 			return sql.transaction(() -> sql
 					.insertGroup(groupTemplate.getGroupName(),
-							groupTemplate.getQuota(), internal)
+							groupTemplate.getQuota(), type)
 					.flatMap(sql::getGroupId).map(GroupRecord::new));
 		}
 	}

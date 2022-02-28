@@ -305,7 +305,7 @@ CREATE TABLE IF NOT EXISTS groups (
 	group_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	group_name TEXT UNIQUE NOT NULL,
 	quota INTEGER, -- If NULL, no quota applies; care required, could be LARGE
-	is_internal INTEGER NOT NULL DEFAULT (0) CHECK (is_internal IN (0, 1))
+	group_type INTEGER NOT NULL DEFAULT (0) CHECK (group_type IN (0, 1, 2))
 );
 
 -- Many-to-many relationship model
@@ -326,7 +326,7 @@ WHEN
 	EXISTS(SELECT 1 FROM user_info
 		WHERE user_info.user_id = NEW.user_id
 		AND user_info.encrypted_password IS NOT NULL)
-	!= (SELECT is_internal FROM groups
+	!= (SELECT NOT group_type AS is_internal FROM groups
 		WHERE groups.group_id = NEW.group_id)
 BEGIN
 	SELECT RAISE(FAIL, 'group and user type don''t match');

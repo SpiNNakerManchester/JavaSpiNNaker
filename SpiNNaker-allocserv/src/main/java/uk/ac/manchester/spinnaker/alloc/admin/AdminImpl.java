@@ -237,7 +237,7 @@ public class AdminImpl implements AdminAPI {
 	public Response createGroup(GroupRecord group, UriInfo ui) {
 		log.warn("CALLED createGroup({})", group.getGroupName());
 		GroupRecord realGroup =
-				userManager.createGroup(group, group.isInternal())
+				userManager.createGroup(group, group.getType())
 						.orElseThrow(() -> new WebApplicationException(
 								"group already exists", BAD_REQUEST));
 		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);

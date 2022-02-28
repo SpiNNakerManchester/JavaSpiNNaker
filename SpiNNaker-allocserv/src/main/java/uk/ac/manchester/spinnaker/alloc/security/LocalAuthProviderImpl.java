@@ -25,6 +25,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
@@ -74,6 +75,7 @@ import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -101,6 +103,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Autowired
 	private AuthProperties authProps;
+
+	@Autowired
+	private QuotaProperties quotaProps;
 
 	@Autowired
 	private PasswordServices passServices;
@@ -142,12 +147,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			// No system group name, so ignore group setup
 			return Optional.empty();
 		}
-		GroupRecord groupTemplate = new GroupRecord();
-		groupTemplate.setGroupName(groupname);
+		GroupRecord template = new GroupRecord();
+		template.setGroupName(groupname);
 		// What should the default quota be here? Using no-quota-at-all for now
-		groupTemplate.setQuota(null);
+		template.setQuota(null);
 		try {
-			return userController.createGroup(groupTemplate, true).map(g -> {
+			return userController.createGroup(template, INTERNAL).map(g -> {
 				log.info("system group '{}' created", groupname);
 				return g;
 			});
@@ -940,8 +945,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No such user; need to inflate one now. If we successfully make
 			 * the user, they're also immediately authorised.
 			 */
-			Optional<Integer> createdUser = createUser(username, null, USER,
-					queries.createUser);
+			Optional<Integer> createdUser =
+					createUser(username, null, USER, queries.createUser);
 			createdUser.ifPresent(
 					id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
 			return createdUser.isPresent();
@@ -979,11 +984,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private void inflateCollabratoryGroup(String collab, AuthQueries queries) {
 		// TODO create a collab (with default props) if it doesn't exist
 		log.info("would create collabratory '{}' here", collab);
+		quotaProps.getDefaultCollabQuota();
 	}
 
 	private void inflateOrganisationGroup(String org, AuthQueries queries) {
 		// TODO create an org (with default props) if it doesn't exist
 		log.info("would create organisation '{}' here", org);
+		quotaProps.getDefaultOrgQuota();
 	}
 
 	private void synchOrgsAndCollabs(int userId, List<String> orgs,

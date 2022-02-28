@@ -108,7 +108,7 @@ class DQLTest extends SQLQueries {
 	 * Columns expected when building a {@link GroupRecord} from a {@link Row}.
 	 */
 	private static final Set<String> GROUP_COLUMNS =
-			set("group_id", "group_name", "is_internal", "quota");
+			set("group_id", "group_name", "group_type", "quota");
 
 	/**
 	 * Columns expected when building a {@link MemberRecord} from a {@link Row}.

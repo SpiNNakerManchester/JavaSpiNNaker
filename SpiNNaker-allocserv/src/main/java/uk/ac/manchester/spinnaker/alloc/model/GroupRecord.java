@@ -34,13 +34,23 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  * The description and model of a group. POJO class.
  */
 public final class GroupRecord {
+	/** The type of a group. */
+	public enum GroupType {
+		/** Marks a group that can contain local users. */
+		INTERNAL,
+		/** Marks a group that represents a real-world organisation. */
+		ORGANISATION,
+		/** Marks an EBRAINS/HBP collabratory. */
+		COLLABRATORY
+	}
+
 	private Integer groupId;
 
 	private String groupName;
 
 	private Long quota;
 
-	private boolean internal;
+	private GroupType type;
 
 	private Map<String, URI> members;
 
@@ -58,7 +68,7 @@ public final class GroupRecord {
 		setGroupId(row.getInteger("group_id"));
 		setGroupName(row.getString("group_name"));
 		setQuota(row.getLong("quota"));
-		setInternal(row.getBoolean("is_internal"));
+		setType(row.getEnum("group_type", GroupType.class));
 	}
 
 	/**
@@ -97,13 +107,13 @@ public final class GroupRecord {
 		this.quota = quota;
 	}
 
-	/** @return Whether this is an internally-defined group. */
-	public boolean isInternal() {
-		return internal;
+	/** @return What type of group is this. */
+	public GroupType getType() {
+		return type;
 	}
 
-	public void setInternal(boolean internal) {
-		this.internal = internal;
+	public void setType(GroupType type) {
+		this.type = type;
 	}
 
 	/** @return The members of the group, if populated. */
