@@ -62,7 +62,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -679,11 +678,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public void mapAuthorities(OidcUserAuthority user,
 			Collection<GrantedAuthority> results) {
-		Authentication auth =
-				SecurityContextHolder.getContext().getAuthentication();
 		// https://stackoverflow.com/a/62921030/301832
 		OAuth2AuthorizedClient client = authorizedClientService
-				.loadAuthorizedClient("spinnaker-spalloc", auth.getName());
+				.loadAuthorizedClient("spinnaker-spalloc",
+						user.getIdToken().getSubject());
 		if (client == null) {
 			log.warn("null client");
 		} else {
