@@ -30,6 +30,10 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +42,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -59,6 +64,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -647,9 +653,27 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return true;
 	}
 
+	private static final String USERINFO =
+			"https://iam.ebrains.eu/auth/realms/hbp/protocol/"
+					+ "openid-connect/userinfo";
+
+	private void fetchRawUserInfo(String token) {
+		try {
+			URLConnection conn = new URL(USERINFO).openConnection();
+			conn.addRequestProperty("Authorization", "Bearer " + token);
+			try (Reader is = new InputStreamReader(conn.getInputStream())) {
+				log.info("raw response: {}", IOUtils.toString(is));
+			}
+		} catch (Exception e) {
+			log.error("failure to direct-fetch user info", e);
+		}
+	}
+
 	@Override
 	public void mapAuthorities(OidcUserAuthority user,
 			Collection<GrantedAuthority> results) {
+		OidcIdToken tok = user.getIdToken();
+		fetchRawUserInfo(tok.getTokenValue());
 		if (!collabToAuthority("userInfo",
 				user.getUserInfo().getClaimAsStringList("team"), results)
 				// Note: not a shortcut AND; always call both sides
@@ -916,8 +940,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private void synchOrgsAndCollabs(int userId, List<String> orgs,
 			List<String> collabs, AuthQueries queries) {
 		// TODO make this user's orgs and collabs be exactly these
-		log.info("would set user {} to have orgs = {} and collabs = {}", orgs,
-				collabs);
+		log.info("would set user {} to have orgs = {} and collabs = {}", userId,
+				orgs, collabs);
 	}
 
 	@Override
