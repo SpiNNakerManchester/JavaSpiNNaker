@@ -139,7 +139,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				Update createUser = conn.update(CREATE_USER);
 				Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
 			return conn.transaction(() -> createUser(username, encPass,
-					trustLevel, quota, createUser, addQuota));
+					trustLevel, quota, createUser, addQuota).isPresent());
 		}
 	}
 
@@ -160,20 +160,21 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            SQL statement
 	 * @param addQuota
 	 *            SQL statement
-	 * @return Whether the user was successfully created.
+	 * @return The user ID if the user was successfully created.
 	 */
-	private Boolean createUser(String username, String encPass,
+	private Optional<Integer> createUser(String username, String encPass,
 			TrustLevel trustLevel, long quota, Update createUser,
 			Update addQuota) {
-		return createUser.key(username, encPass, trustLevel, false)
-				.map(userId -> {
-					addQuota.call(userId, quota);
-					log.info(
-							"added user {} with trust level {} and "
-									+ "quota {} board-seconds",
-							username, trustLevel, quota);
-					return userId;
-				}).isPresent();
+		Optional<Integer> userId =
+				createUser.key(username, encPass, trustLevel, false);
+		userId.ifPresent(id -> {
+			addQuota.call(userId, quota);
+			log.info(
+					"added user {} with trust level {} and "
+							+ "quota {} board-seconds",
+					username, trustLevel, quota);
+		});
+		return userId;
 	}
 
 	/** Marks an authentication that we've already taken a decision about. */
@@ -232,17 +233,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	/** The classes that we know what to do about. */
 	private static final Class<?>[] SUPPORTED_AUTH_TOKEN_CLASSES = {
 		UsernamePasswordAuthenticationToken.class,
-		OAuth2AuthenticationToken.class,
-		JwtAuthenticationToken.class,
+		OAuth2AuthenticationToken.class, JwtAuthenticationToken.class,
 		AlreadyDoneMarker.class
 	};
 
 	/** The classes that we <em>know</em> we don't ever want to handle. */
 	private static final Class<?>[] UNSUPPORTED_AUTH_TOKEN_CLASSES = {
-		AnonymousAuthenticationToken.class,
-		RememberMeAuthenticationToken.class,
-		RunAsUserToken.class,
-		TestingAuthenticationToken.class
+		AnonymousAuthenticationToken.class, RememberMeAuthenticationToken.class,
+		RunAsUserToken.class, TestingAuthenticationToken.class
 	};
 
 	@Override
@@ -320,8 +318,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		log.debug("authenticating OpenID {}", auth);
 		OAuth2User user = auth.getPrincipal();
 		log.info("CHECK attributes: {}", user.getAttributes());
-		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ user.getAttribute("preferred_username"), user, null);
+		log.info("POSSIBLE AUTHORITIES: {}", auth.getAuthorities());
+		return authorizeOpenId(
+				authProps.getOpenid().getUsernamePrefix()
+						+ user.getAttribute("preferred_username"),
+				user, null, auth.getAuthorities());
 	}
 
 	/**
@@ -335,13 +336,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private Authentication authenticateOpenId(JwtAuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
 		log.info("CHECK token claims: {}", auth.getToken().getClaims());
-		return authorizeOpenId(authProps.getOpenid().getUsernamePrefix()
-				+ auth.getToken().getClaimAsString("preferred_username"), null,
-				auth.getToken());
+		log.info("POSSIBLE AUTHORITIES: {}", auth.getAuthorities());
+		return authorizeOpenId(
+				authProps.getOpenid().getUsernamePrefix() + auth.getToken()
+						.getClaimAsString("preferred_username"),
+				null, auth.getToken(), auth.getAuthorities());
 	}
 
 	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name,
-			OAuth2User user, Jwt bearerToken) {
+			OAuth2User user, Jwt bearerToken,
+			Collection<GrantedAuthority> authorities) {
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
@@ -350,7 +354,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		try (AuthQueries queries = new AuthQueries()) {
 			if (!queries.transaction(//
-					() -> authOpenIDAgainstDB(name, queries))) {
+					() -> authOpenIDAgainstDB(name, authorities, queries))) {
 				return null;
 			}
 		}
@@ -579,24 +583,106 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	@Override
-	public void mapAuthorities(OidcUserAuthority authority,
-			Collection<GrantedAuthority> resultCollection) {
-		log.info("NOTE: claimed teams from user info: {}",
-				authority.getUserInfo().getClaimAsStringList("team"));
-		log.info("NOTE: claimed teams from id token: {}",
-				authority.getIdToken().getClaimAsStringList("team"));
-		resultCollection.add(new SimpleGrantedAuthority(GRANT_READER));
-		resultCollection.add(new SimpleGrantedAuthority(GRANT_USER));
+	private static String makeCollabAuthorityName(String collabClaimed) {
+		return "COLLAB_" + collabClaimed;
+	}
+
+	private static String makeOrgAuthorityName(String collabClaimed) {
+		return "ORG_" + collabClaimed;
+	}
+
+	class CollabratoryAuthority extends SimpleGrantedAuthority {
+		private static final long serialVersionUID = 4964366746649162092L;
+
+		private final String collabratory;
+
+		CollabratoryAuthority(String collabClaimed) {
+			super(makeCollabAuthorityName(collabClaimed));
+			collabratory = collabClaimed;
+		}
+
+		String getCollabratory() {
+			return collabratory;
+		}
+	}
+
+	class OrganisationAuthority extends SimpleGrantedAuthority {
+		private static final long serialVersionUID = 8260068770503054502L;
+
+		private final String organisation;
+
+		OrganisationAuthority(String orgClaimed) {
+			super(makeOrgAuthorityName(orgClaimed));
+			organisation = orgClaimed;
+		}
+
+		String getOrganisation() {
+			return organisation;
+		}
+	}
+
+	private boolean collabToAuthority(String source, List<String> claim,
+			Collection<GrantedAuthority> results) {
+		if (isNull(claim)) {
+			return false;
+		}
+		for (String collab : claim) {
+			log.info("CLAIMED MEMBERSHIP OF COLLAB from {}: {}", source,
+					collab);
+			results.add(new CollabratoryAuthority(collab));
+		}
+		return true;
+	}
+
+	private boolean orgToAuthority(String source, List<String> claim,
+			Collection<GrantedAuthority> results) {
+		if (isNull(claim)) {
+			return false;
+		}
+		for (String org : claim) {
+			log.info("CLAIMED MEMBERSHIP OF ORGANIZATION from {}: {}", source,
+					org);
+			results.add(new OrganisationAuthority(org));
+		}
+		return true;
 	}
 
 	@Override
-	public void mapAuthorities(Jwt authority,
-			Collection<GrantedAuthority> resultCollection) {
-		log.info("NOTE: claimed teams from jwt: {}",
-				authority.getClaimAsStringList("team"));
-		resultCollection.add(new SimpleGrantedAuthority(GRANT_READER));
-		resultCollection.add(new SimpleGrantedAuthority(GRANT_USER));
+	public void mapAuthorities(OidcUserAuthority user,
+			Collection<GrantedAuthority> results) {
+		if (!collabToAuthority("userInfo",
+				user.getUserInfo().getClaimAsStringList("team"), results)
+				// Note: not a shortcut AND; always call both sides
+				& !collabToAuthority("idToken",
+						user.getIdToken().getClaimAsStringList("team"),
+						results)) {
+			log.info("no team in authority");
+		}
+		if (!orgToAuthority("userInfo",
+				user.getUserInfo().getClaimAsStringList("unit"), results)
+				// Note: not a shortcut AND; always call both sides
+				& !orgToAuthority("idToken",
+						user.getIdToken().getClaimAsStringList("unit"),
+						results)) {
+			log.info("no unit in authority");
+		}
+		results.add(new SimpleGrantedAuthority(GRANT_READER));
+		results.add(new SimpleGrantedAuthority(GRANT_USER));
+	}
+
+	@Override
+	public void mapAuthorities(Jwt token,
+			Collection<GrantedAuthority> results) {
+		if (!collabToAuthority("token", token.getClaimAsStringList("team"),
+				results)) {
+			log.info("no team in token");
+		}
+		if (!orgToAuthority("token", token.getClaimAsStringList("unit"),
+				results)) {
+			log.info("no unit in token");
+		}
+		results.add(new SimpleGrantedAuthority(GRANT_READER));
+		results.add(new SimpleGrantedAuthority(GRANT_USER));
 	}
 
 	private static final class LocalAuthResult {
@@ -740,10 +826,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	/**
-	 * Check if an OpenID user can use the service.
+	 * Check if an OpenID user can use the service. A transaction <em>must</em>
+	 * be held open when calling this.
 	 *
 	 * @param username
 	 *            The username, already obtained and verified.
+	 * @param authorities
+	 *            The claimed authorities derived from the HBP OpenID service.
+	 *            Interesting because they include claims about organisation and
+	 *            collabratory membership.
 	 * @param queries
 	 *            How to access the database.
 	 * @return Whether the user is allowed to use the service. If {@code false},
@@ -754,20 +845,38 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @throws LockedException
 	 *             If the account is temporarily locked.
 	 */
-	private boolean authOpenIDAgainstDB(String username, AuthQueries queries) {
+	private boolean authOpenIDAgainstDB(String username,
+			Collection<GrantedAuthority> authorities, AuthQueries queries) {
+		List<String> collabs = new ArrayList<>();
+		List<String> orgs = new ArrayList<>();
+		authorities.forEach(ga -> {
+			if (ga instanceof CollabratoryAuthority) {
+				CollabratoryAuthority collab = (CollabratoryAuthority) ga;
+				inflateCollabratoryGroup(collab.getCollabratory(), queries);
+				collabs.add(collab.getCollabratory());
+			} else if (ga instanceof OrganisationAuthority) {
+				OrganisationAuthority org = (OrganisationAuthority) ga;
+				inflateOrganisationGroup(org.getOrganisation(), queries);
+				orgs.add(org.getOrganisation());
+			}
+		});
 		Optional<Row> r = queries.getUser(username);
 		if (!r.isPresent()) {
 			/*
 			 * No such user; need to inflate one now. If we successfully make
 			 * the user, they're also immediately authorised.
 			 */
-			return createUser(username, null, USER,
+			Optional<Integer> createdUser = createUser(username, null, USER,
 					quotaProps.getDefaultQuota(), queries.createUser,
 					queries.addQuota);
+			createdUser.ifPresent(
+					id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
+			return createdUser.isPresent();
 		}
 		Row userInfo = r.get();
 
 		int userId = userInfo.getInt("user_id");
+		synchOrgsAndCollabs(userId, orgs, collabs, queries);
 		if (userInfo.getBoolean("disabled")) {
 			throw new DisabledException("account is disabled");
 		}
@@ -792,6 +901,23 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			log.info("login failure for {}", username, e);
 			throw e;
 		}
+	}
+
+	private void inflateCollabratoryGroup(String collab, AuthQueries queries) {
+		// TODO create a collab (with default props) if it doesn't exist
+		log.info("would create collabratory '{}' here", collab);
+	}
+
+	private void inflateOrganisationGroup(String org, AuthQueries queries) {
+		// TODO create an org (with default props) if it doesn't exist
+		log.info("would create organisation '{}' here", org);
+	}
+
+	private void synchOrgsAndCollabs(int userId, List<String> orgs,
+			List<String> collabs, AuthQueries queries) {
+		// TODO make this user's orgs and collabs be exactly these
+		log.info("would set user {} to have orgs = {} and collabs = {}", orgs,
+				collabs);
 	}
 
 	@Override
