@@ -47,7 +47,7 @@ public class GetDevId extends CredentialDB {
 
 	/** Where the keycloak service is. */
 	public static final String HBP_OPENID_BASE =
-			"https://iam.ebrains.eu/auth/realms/hbp/";
+			"https://iam.ebrains.eu/auth/";
 
 	private static final String DEFAULT_DB = "ebrains-keycloak.sqlite3";
 
@@ -92,7 +92,7 @@ public class GetDevId extends CredentialDB {
 
 	private ClientRegistration getRegistrationClient(String clientId) {
 		ClientRegistration cr = ClientRegistration.create()
-				.url(HBP_OPENID_BASE + "clients-registrations/").build();
+				.url(HBP_OPENID_BASE, "hbp").build();
 		if (nextAuth != null) {
 			cr.auth(nextAuth);
 		} else if (clientId != null) {

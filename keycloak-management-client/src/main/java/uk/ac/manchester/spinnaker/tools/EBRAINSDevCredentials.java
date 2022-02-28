@@ -45,7 +45,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Donal Fellows
  */
 interface EBRAINSDevCredentials {
-	String OIDC_TOKEN_URL = HBP_OPENID_BASE + "protocol/openid-connect/token";
+	String OIDC_TOKEN_URL =
+			HBP_OPENID_BASE + "realms/hbp/protocol/openid-connect/token";
 
 	/**
 	 * @return The user that will do the registration. Must not be {@code null}.

@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -32,10 +33,13 @@ import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
@@ -60,6 +64,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -318,8 +323,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private Authentication authenticateOpenId(OAuth2AuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
 		OAuth2User user = auth.getPrincipal();
-		log.info("CHECK attributes: {}", user.getAttributes());
-		log.info("POSSIBLE AUTHORITIES: {}", auth.getAuthorities());
 		return authorizeOpenId(
 				authProps.getOpenid().getUsernamePrefix()
 						+ user.getAttribute("preferred_username"),
@@ -336,8 +339,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private Authentication authenticateOpenId(JwtAuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
-		log.info("CHECK token claims: {}", auth.getToken().getClaims());
-		log.info("POSSIBLE AUTHORITIES: {}", auth.getAuthorities());
 		return authorizeOpenId(
 				authProps.getOpenid().getUsernamePrefix() + auth.getToken()
 						.getClaimAsString("preferred_username"),
@@ -622,15 +623,23 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
+	private static final Pattern COLLAB_MATCHER =
+			Pattern.compile("^collab-(.*)-(admin|editor|viewer)$");
+
 	private boolean collabToAuthority(String source, List<String> claim,
 			Collection<GrantedAuthority> results) {
 		if (isNull(claim)) {
 			return false;
 		}
+		Set<String> seen = new HashSet<>();
 		for (String collab : claim) {
-			log.info("CLAIMED MEMBERSHIP OF COLLAB from {}: {}", source,
-					collab);
-			results.add(new CollabratoryAuthority(collab));
+			String reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
+			if (!seen.contains(reduced)) {
+				log.info("CLAIMED MEMBERSHIP OF COLLABRATORY from {}: {}",
+						source, collab);
+				results.add(new CollabratoryAuthority(reduced));
+				seen.add(reduced);
+			}
 		}
 		return true;
 	}
@@ -648,27 +657,44 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return true;
 	}
 
+	/**
+	 * Extract the {@code team/roles} sub-claim.
+	 *
+	 * @param rolesClaim
+	 *            Overall claim.
+	 * @return The {@code team/roles} sub-claim, provided it exists and really
+	 *         looks like a list of strings.
+	 */
+	private static List<String>
+			getTeamsFromClaim(Map<String, List<String>> rolesClaim) {
+		// Messy; all the implicit types and hidden casts!
+		try {
+			if (rolesClaim instanceof Map) {
+				List<String> teamsClaim = rolesClaim.get("team");
+				if (teamsClaim instanceof List) {
+					if (!teamsClaim.isEmpty()) {
+						// Dummy check to determine if first element is string
+						teamsClaim.get(0).isEmpty();
+					}
+					return teamsClaim;
+				}
+			}
+		} catch (ClassCastException e) {
+			log.debug("failed to convert claim", e);
+		}
+		return emptyList();
+	}
+
 	@Override
 	public void mapAuthorities(OidcUserAuthority user,
 			Collection<GrantedAuthority> results) {
-		log.info("raw claims: {}", user.getUserInfo().getClaims());
-		Map<String, Object> openIdRoles =
-				user.getUserInfo().getClaimAsMap("roles");
-		log.info("role map = {}", openIdRoles);
+		OidcUserInfo userInfo = user.getUserInfo();
 		if (!collabToAuthority("userInfo",
-				user.getUserInfo().getClaimAsStringList("team"), results)) {
+				getTeamsFromClaim(userInfo.getClaim("roles")), results)) {
 			log.info("no team in authority");
 		}
-		if (!collabToAuthority("userInfo",
-				user.getUserInfo().getClaimAsStringList("group"), results)) {
-			log.info("no group in authority");
-		}
-		if (!orgToAuthority("userInfo",
-				user.getUserInfo().getClaimAsStringList("unit"), results)
-				// Note: not a shortcut AND; always call both sides
-				& !orgToAuthority("idToken",
-						user.getIdToken().getClaimAsStringList("unit"),
-						results)) {
+		if (!orgToAuthority("userInfo", userInfo.getClaimAsStringList("unit"),
+				results)) {
 			log.info("no unit in authority");
 		}
 		results.add(new SimpleGrantedAuthority(GRANT_READER));
@@ -678,8 +704,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public void mapAuthorities(Jwt token,
 			Collection<GrantedAuthority> results) {
-		if (!collabToAuthority("token", token.getClaimAsStringList("team"),
-				results)) {
+		if (!collabToAuthority("token",
+				getTeamsFromClaim(token.getClaim("roles")), results)) {
 			log.info("no team in token");
 		}
 		if (!orgToAuthority("token", token.getClaimAsStringList("unit"),
