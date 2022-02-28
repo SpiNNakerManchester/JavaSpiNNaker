@@ -697,6 +697,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 						results)) {
 			log.info("no team in authority");
 		}
+		if (!collabToAuthority("userInfo",
+				user.getUserInfo().getClaimAsStringList("group"), results)
+				// Note: not a shortcut AND; always call both sides
+				& !collabToAuthority("idToken",
+						user.getIdToken().getClaimAsStringList("group"),
+						results)) {
+			log.info("no group in authority");
+		}
 		if (!orgToAuthority("userInfo",
 				user.getUserInfo().getClaimAsStringList("unit"), results)
 				// Note: not a shortcut AND; always call both sides
