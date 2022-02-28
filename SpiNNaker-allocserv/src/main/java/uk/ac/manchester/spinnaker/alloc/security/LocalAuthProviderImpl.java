@@ -30,19 +30,15 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -63,10 +59,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -655,38 +648,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return true;
 	}
 
-	private static final String USERINFO =
-			"https://iam.ebrains.eu/auth/realms/hbp/protocol/"
-					+ "openid-connect/userinfo";
-
-	@Autowired
-	private OAuth2AuthorizedClientService authorizedClientService;
-
-	private void fetchRawUserInfo(OAuth2AccessToken token) {
-		try {
-			URLConnection conn = new URL(USERINFO).openConnection();
-			conn.addRequestProperty("Authorization",
-					"Bearer " + token.getTokenValue());
-			try (Reader is = new InputStreamReader(conn.getInputStream())) {
-				log.info("raw response: {}", IOUtils.toString(is));
-			}
-		} catch (Exception e) {
-			log.error("failure to direct-fetch user info", e);
-		}
-	}
-
 	@Override
 	public void mapAuthorities(OidcUserAuthority user,
 			Collection<GrantedAuthority> results) {
-		// https://stackoverflow.com/a/62921030/301832
-		OAuth2AuthorizedClient client = authorizedClientService
-				.loadAuthorizedClient("spinnaker-spalloc",
-						user.getIdToken().getSubject());
-		if (client == null) {
-			log.warn("null client");
-		} else {
-			fetchRawUserInfo(client.getAccessToken());
-		}
+		log.info("raw roles: {}",
+				(Object) user.getUserInfo().getClaim("roles"));
+		Map<String, Object> openIdRoles =
+				user.getUserInfo().getClaimAsMap("roles");
+		log.info("role map = {}", openIdRoles);
 		if (!collabToAuthority("userInfo",
 				user.getUserInfo().getClaimAsStringList("team"), results)
 				// Note: not a shortcut AND; always call both sides
