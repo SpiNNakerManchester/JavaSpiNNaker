@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<testing.version>3.0.0-M5</testing.version>
 
 		<slf4j.version>1.7.36</slf4j.version>
-		<log4j.version>2.17.1</log4j.version>
+		<log4j.version>2.17.2</log4j.version>
 
 		<spring.version>5.3.15</spring.version>
 		<spring.boot.version>2.6.2</spring.boot.version>
@@ -730,7 +730,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.2.2</version>
 				<reportSets>
 					<reportSet>
 						<reports><!-- select reports -->
