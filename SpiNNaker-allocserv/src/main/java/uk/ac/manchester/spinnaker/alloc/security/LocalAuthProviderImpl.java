@@ -67,6 +67,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -662,10 +663,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Autowired
 	private OAuth2AuthorizedClientService authorizedClientService;
 
-	private void fetchRawUserInfo(String token) {
+	private void fetchRawUserInfo(OAuth2AccessToken token) {
 		try {
 			URLConnection conn = new URL(USERINFO).openConnection();
-			conn.addRequestProperty("Authorization", "Bearer " + token);
+			conn.addRequestProperty("Authorization",
+					"Bearer " + token.getTokenValue());
 			try (Reader is = new InputStreamReader(conn.getInputStream())) {
 				log.info("raw response: {}", IOUtils.toString(is));
 			}
@@ -679,13 +681,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			Collection<GrantedAuthority> results) {
 		Authentication auth =
 				SecurityContextHolder.getContext().getAuthentication();
-		if (auth instanceof OAuth2AuthenticationToken) {
-			// https://stackoverflow.com/a/62921030/301832
-			OAuth2AuthenticationToken t = (OAuth2AuthenticationToken) auth;
-			OAuth2AuthorizedClient client =
-					authorizedClientService.loadAuthorizedClient(
-							t.getAuthorizedClientRegistrationId(), t.getName());
-			fetchRawUserInfo(client.getAccessToken().getTokenValue());
+		// https://stackoverflow.com/a/62921030/301832
+		OAuth2AuthorizedClient client = authorizedClientService
+				.loadAuthorizedClient("spinnaker-spalloc", auth.getName());
+		if (client == null) {
+			log.warn("null client");
+		} else {
+			fetchRawUserInfo(client.getAccessToken());
 		}
 		if (!collabToAuthority("userInfo",
 				user.getUserInfo().getClaimAsStringList("team"), results)
