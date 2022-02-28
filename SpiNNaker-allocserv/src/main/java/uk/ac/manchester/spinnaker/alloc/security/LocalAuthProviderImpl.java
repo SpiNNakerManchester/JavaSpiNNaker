@@ -25,7 +25,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.ORGANISATION;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
@@ -83,6 +85,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 
 /**
@@ -558,6 +561,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final Update createUser = conn.update(CREATE_USER);
 
+		private final Update createGroup =
+				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
+
 		/**
 		 * Make an instance.
 		 */
@@ -566,6 +572,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		@Override
 		public void close() {
+			createGroup.close();
 			createUser.close();
 			loginFailure.close();
 			loginSuccess.close();
@@ -584,6 +591,21 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		Optional<Row> getUser(String username) {
 			return getUserBlocked.call1(username);
+		}
+
+		/**
+		 * Create a group if it doesn't already exist.
+		 *
+		 * @param name
+		 *            Unique name of the group
+		 * @param type
+		 *            Type of group
+		 * @param quota
+		 *            Size of quota
+		 * @return Whether a group was created.
+		 */
+		boolean createGroup(String name, GroupType type, Long quota) {
+			return createGroup.call(name, quota, type) > 0;
 		}
 
 		/**
@@ -982,15 +1004,17 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private void inflateCollabratoryGroup(String collab, AuthQueries queries) {
-		// TODO create a collab (with default props) if it doesn't exist
-		log.info("would create collabratory '{}' here", collab);
-		quotaProps.getDefaultCollabQuota();
+		if (queries.createGroup(collab, COLLABRATORY,
+				quotaProps.getDefaultCollabQuota())) {
+			log.info("created collabratory '{}' here", collab);
+		}
 	}
 
 	private void inflateOrganisationGroup(String org, AuthQueries queries) {
-		// TODO create an org (with default props) if it doesn't exist
-		log.info("would create organisation '{}' here", org);
-		quotaProps.getDefaultOrgQuota();
+		if (queries.createGroup(org, ORGANISATION,
+				quotaProps.getDefaultOrgQuota())) {
+			log.info("created organisation '{}' here", org);
+		}
 	}
 
 	private void synchOrgsAndCollabs(int userId, List<String> orgs,

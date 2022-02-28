@@ -1091,13 +1091,13 @@ public class SpallocProperties {
 		 * Default quota for organisations inflated from OpenID, in
 		 * board-seconds.
 		 */
-		private int orgQuota;
+		private long orgQuota;
 
 		/**
 		 * Default quota for collabratories inflated from OpenID, in
 		 * board-seconds.
 		 */
-		private int collabQuota;
+		private long collabQuota;
 
 		/**
 		 * Cron expression that says when we consolidate job quotas into the
@@ -1106,8 +1106,8 @@ public class SpallocProperties {
 		private String consolidationSchedule;
 
 		public QuotaProperties(@DefaultValue("100") int defaultQuota,
-				@DefaultValue("0") int defaultOrgQuota,
-				@DefaultValue("3600000") int defaultCollabQuota,
+				@DefaultValue("0") long defaultOrgQuota,
+				@DefaultValue("3600000") long defaultCollabQuota,
 				@DefaultValue("0 0 * * * *") String consolidationSchedule) {
 			this.defaultQuota = defaultQuota;
 			this.orgQuota = defaultOrgQuota;
@@ -1135,11 +1135,11 @@ public class SpallocProperties {
 		 * @return Default quota for organisations inflated from OpenID, in
 		 *         board-seconds.
 		 */
-		public int getDefaultOrgQuota() {
+		public long getDefaultOrgQuota() {
 			return orgQuota;
 		}
 
-		public void setDefaultOrgQuota(int orgQuota) {
+		public void setDefaultOrgQuota(long orgQuota) {
 			this.orgQuota = orgQuota;
 		}
 
@@ -1149,11 +1149,11 @@ public class SpallocProperties {
 		 * @return Default quota for collabratories inflated from OpenID, in
 		 *         board-seconds.
 		 */
-		public int getDefaultCollabQuota() {
+		public long getDefaultCollabQuota() {
 			return collabQuota;
 		}
 
-		public void setDefaultCollabQuota(int collabQuota) {
+		public void setDefaultCollabQuota(long collabQuota) {
 			this.collabQuota = collabQuota;
 		}
 

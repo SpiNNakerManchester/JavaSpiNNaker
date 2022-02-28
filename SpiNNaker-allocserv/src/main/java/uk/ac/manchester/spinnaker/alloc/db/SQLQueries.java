@@ -1167,6 +1167,18 @@ public abstract class SQLQueries {
 	@Parameter("group_type")
 	@GeneratesID
 	protected static final String CREATE_GROUP =
+			"INSERT OR IGNORE INTO groups(group_name, quota, group_type) "
+					+ "VALUES(:group_name, :quota, :group_type)";
+
+	/**
+	 * Create a group record.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_name")
+	@Parameter("quota")
+	@Parameter("group_type")
+	protected static final String CREATE_GROUP_IF_NOT_EXISTS =
 			"INSERT INTO groups(group_name, quota, group_type) "
 					+ "VALUES(:group_name, :quota, :group_type)";
 

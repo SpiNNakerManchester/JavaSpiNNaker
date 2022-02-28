@@ -650,7 +650,21 @@ class DMLTest extends SQLQueries {
 			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was groupless; this makes one
-				assertEquals(1, u.call(NO_NAME, 0, true));
+				assertEquals(1, u.call(NO_NAME, 0, 0));
+			});
+		}
+	}
+
+	@Test
+	void createGroupIfNotExists() {
+		assumeWritable(c);
+		try (Update u = c.update(CREATE_GROUP_IF_NOT_EXISTS)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				// DB was groupless; this makes one
+				assertEquals(1, u.call(NO_NAME, 0, 0));
+				// Second time does NOT create a group
+				assertEquals(0, u.call(NO_NAME, 0, 0));
 			});
 		}
 	}
