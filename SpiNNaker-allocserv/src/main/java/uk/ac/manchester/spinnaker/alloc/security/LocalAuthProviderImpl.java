@@ -651,25 +651,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public void mapAuthorities(OidcUserAuthority user,
 			Collection<GrantedAuthority> results) {
-		log.info("raw roles: {}",
-				(Object) user.getUserInfo().getClaim("roles"));
+		log.info("raw claims: {}", user.getUserInfo().getClaims());
 		Map<String, Object> openIdRoles =
 				user.getUserInfo().getClaimAsMap("roles");
 		log.info("role map = {}", openIdRoles);
 		if (!collabToAuthority("userInfo",
-				user.getUserInfo().getClaimAsStringList("team"), results)
-				// Note: not a shortcut AND; always call both sides
-				& !collabToAuthority("idToken",
-						user.getIdToken().getClaimAsStringList("team"),
-						results)) {
+				user.getUserInfo().getClaimAsStringList("team"), results)) {
 			log.info("no team in authority");
 		}
 		if (!collabToAuthority("userInfo",
-				user.getUserInfo().getClaimAsStringList("group"), results)
-				// Note: not a shortcut AND; always call both sides
-				& !collabToAuthority("idToken",
-						user.getIdToken().getClaimAsStringList("group"),
-						results)) {
+				user.getUserInfo().getClaimAsStringList("group"), results)) {
 			log.info("no group in authority");
 		}
 		if (!orgToAuthority("userInfo",
