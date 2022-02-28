@@ -62,9 +62,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -657,6 +659,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			"https://iam.ebrains.eu/auth/realms/hbp/protocol/"
 					+ "openid-connect/userinfo";
 
+	@Autowired
+	private OAuth2AuthorizedClientService authorizedClientService;
+
 	private void fetchRawUserInfo(String token) {
 		try {
 			URLConnection conn = new URL(USERINFO).openConnection();
@@ -672,8 +677,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Override
 	public void mapAuthorities(OidcUserAuthority user,
 			Collection<GrantedAuthority> results) {
-		OidcIdToken tok = user.getIdToken();
-		fetchRawUserInfo(tok.getTokenValue());
+		Authentication auth =
+				SecurityContextHolder.getContext().getAuthentication();
+		if (auth instanceof OAuth2AuthenticationToken) {
+			// https://stackoverflow.com/a/62921030/301832
+			OAuth2AuthenticationToken t = (OAuth2AuthenticationToken) auth;
+			OAuth2AuthorizedClient client =
+					authorizedClientService.loadAuthorizedClient(
+							t.getAuthorizedClientRegistrationId(), t.getName());
+			fetchRawUserInfo(client.getAccessToken().getTokenValue());
+		}
 		if (!collabToAuthority("userInfo",
 				user.getUserInfo().getClaimAsStringList("team"), results)
 				// Note: not a shortcut AND; always call both sides
