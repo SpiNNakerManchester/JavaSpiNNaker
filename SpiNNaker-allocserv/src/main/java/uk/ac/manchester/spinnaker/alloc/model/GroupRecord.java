@@ -41,7 +41,11 @@ public final class GroupRecord {
 		/** Marks a group that represents a real-world organisation. */
 		ORGANISATION,
 		/** Marks an EBRAINS/HBP collabratory. */
-		COLLABRATORY
+		COLLABRATORY;
+
+		public boolean isInternal() {
+			return ordinal() == 0;
+		}
 	}
 
 	private Integer groupId;

@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <h1>Spalloc Group Details</h1>
 
 <c:choose>
-	<c:when test="${ group.internal }">
+	<c:when test="${ group.type.internal }">
 		<form:form method="POST" modelAttribute="group">
 			<form:label path="groupName">Group Name: </form:label>
 			<form:input path="groupName" type="text"/>
@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</c:when>
 	<c:otherwise>
 		Group Name: <c:out value="${ group.groupName }" />
-		<em>(managed externally)</em>
+		<em>(${ group.type }: managed externally)</em>
 	</c:otherwise>
 </c:choose>
 <p>
@@ -74,8 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </c:if>
 <p>
 <h2>Members</h2>
-<c:if test="${ group.internal }">
-	Add a user to this group:
+<c:if test="${ group.type.internal }">
+	Add a <em>local</em> user to this group:
 	<form method="POST" action="${ addUserUri }">
 		<sec:csrfInput />
 		<input name="user" type="text">
@@ -85,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </c:if>
 <c:choose>
 	<c:when test="${ empty group.members }">
-		<p><em>No <c:if test="${ not group.internal }">currently-known</c:if> current members!</em></p>
+		<p><em>No <c:if test="${ not group.type.internal }">currently-known</c:if> current members!</em></p>
 	</c:when>
 	<c:otherwise>
 		<table>
@@ -105,7 +105,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<td>
 							<form method="POST" action="${ mem.value }">
 								<c:choose>
-									<c:when test="${ group.internal }">
+									<c:when test="${ group.type.internal }">
 										<sec:csrfInput />
 										<input type="submit" class="warningbutton"
 											value="Remove" />
