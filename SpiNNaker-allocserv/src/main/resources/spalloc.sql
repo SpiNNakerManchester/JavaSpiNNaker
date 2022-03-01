@@ -303,14 +303,18 @@ CREATE TABLE IF NOT EXISTS user_info (
 	locked INTEGER NOT NULL DEFAULT (0) CHECK (locked IN (0, 1)),
 	last_fail_timestamp INTEGER NOT NULL DEFAULT (0),
 	-- Administrative disablement support
-	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1))
+	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1)),
+	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
+		encrypted_password IS NOT NULL) VIRTUAL
 );
 
 CREATE TABLE IF NOT EXISTS groups (
 	group_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	group_name TEXT UNIQUE NOT NULL,
 	quota INTEGER, -- If NULL, no quota applies; care required, could be LARGE
-	group_type INTEGER NOT NULL DEFAULT (0) REFERENCES group_types(id) ON DELETE RESTRICT
+	group_type INTEGER NOT NULL DEFAULT (0) REFERENCES group_types(id) ON DELETE RESTRICT,
+	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
+		group_type = 0) VIRTUAL
 );
 
 -- Many-to-many relationship model
@@ -328,10 +332,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS membershipSanity ON group_memberships(
 CREATE TRIGGER IF NOT EXISTS userGroupSanity
 AFTER INSERT ON group_memberships
 WHEN
-	EXISTS(SELECT 1 FROM user_info
-		WHERE user_info.user_id = NEW.user_id
-		AND user_info.encrypted_password IS NOT NULL)
-	!= (SELECT NOT group_type AS is_internal FROM groups
+	(SELECT user_info.is_internal FROM user_info
+		WHERE user_info.user_id = NEW.user_id) != (
+	SELECT groups.is_internal FROM groups
 		WHERE groups.group_id = NEW.group_id)
 BEGIN
 	SELECT RAISE(FAIL, 'group and user type don''t match');
