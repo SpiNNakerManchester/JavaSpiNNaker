@@ -1167,7 +1167,7 @@ public abstract class SQLQueries {
 	@Parameter("group_type")
 	@GeneratesID
 	protected static final String CREATE_GROUP =
-			"INSERT OR IGNORE INTO groups(group_name, quota, group_type) "
+			"INSERT INTO groups(group_name, quota, group_type) "
 					+ "VALUES(:group_name, :quota, :group_type)";
 
 	/**
@@ -1179,7 +1179,7 @@ public abstract class SQLQueries {
 	@Parameter("quota")
 	@Parameter("group_type")
 	protected static final String CREATE_GROUP_IF_NOT_EXISTS =
-			"INSERT INTO groups(group_name, quota, group_type) "
+			"INSERT OR IGNORE INTO groups(group_name, quota, group_type) "
 					+ "VALUES(:group_name, :quota, :group_type)";
 
 	/**
@@ -1236,6 +1236,69 @@ public abstract class SQLQueries {
 	protected static final String REMOVE_USER_FROM_GROUP =
 			"DELETE FROM group_memberships "
 					+ "WHERE user_id = :user_id AND group_id = :group_id";
+
+	/**
+	 * Step 1 of group synchronisation: make a temporary table. Should be
+	 * performed in a transaction with the other group synch steps.
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	protected static final String GROUP_SYNC_MAKE_TEMP_TABLE =
+			"CREATE TEMP TABLE usergroup(group_id INTEGER)";
+
+	/**
+	 * Step 2 of group synchronisation: add a desired group to the temp table.
+	 * Should be performed in a transaction with the other group synch steps.
+	 * <em>Requires that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first and
+	 * that {@link #GROUP_SYNC_DROP_TEMP_TABLE} has not yet run.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	@Parameter("group_name")
+	@Parameter("group_type")
+	protected static final String GROUP_SYNC_INSERT_TEMP_ROW =
+			"INSERT INTO temp.usergroup SELECT group_id FROM groups "
+					+ "WHERE group_name = :group_name "
+					+ "AND group_type = :group_type";
+
+	/**
+	 * Step 3 of group synchronisation: add real missing groups. Requires the
+	 * temporary table to have been set up already. Should be performed in a
+	 * transaction with the other group synch steps. <em>Requires that
+	 * {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first and that
+	 * {@link #GROUP_SYNC_DROP_TEMP_TABLE} has not yet run.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	@Parameter("user_id")
+	protected static final String GROUP_SYNC_ADD_GROUPS =
+			"INSERT OR IGNORE INTO group_memberships(user_id, group_id) "
+					+ "SELECT :user_id AS user_id, "
+					+ "group_id FROM temp.usergroup";
+
+	/**
+	 * Step 4 of group synchronisation: remove real groups no longer wanted.
+	 * Requires the temporary table to have been set up already. Should be
+	 * performed in a transaction with the other group synch steps. <em>Requires
+	 * that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first and that
+	 * {@link #GROUP_SYNC_DROP_TEMP_TABLE} has not yet run.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	@Parameter("user_id")
+	protected static final String GROUP_SYNC_REMOVE_GROUPS =
+			"DELETE FROM group_memberships WHERE user_id = :user_id AND "
+					+ "group_id NOT IN (SELECT group_id FROM temp.usergroup)";
+
+	/**
+	 * Step 5 of group synchronisation: drop the temporary table. Should be
+	 * performed in a transaction with the other group synch steps. <em>Requires
+	 * that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	protected static final String GROUP_SYNC_DROP_TEMP_TABLE =
+			"DROP TABLE temp.usergroup";
 
 	/**
 	 * Test if a user account is locked or disabled.

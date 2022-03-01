@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.test.context.ActiveProfiles;
 import org.sqlite.SQLiteException;
 
@@ -714,6 +716,40 @@ class DMLTest extends SQLQueries {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_USER, NO_GROUP));
+			});
+		}
+	}
+
+	@Test
+	void synchGroups() {
+		// Compound test: these statements are designed to be used together
+		assumeWritable(c);
+		try (Update u1 = c.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
+			c.transaction(() -> {
+				assertEquals(0, u1.getNumArguments());
+				u1.call();
+				try (Update u2 = c.update(GROUP_SYNC_INSERT_TEMP_ROW);
+						Update u3 = c.update(GROUP_SYNC_ADD_GROUPS);
+						Update u4 = c.update(GROUP_SYNC_REMOVE_GROUPS);
+						Update u5 = c.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
+					assertEquals(2, u2.getNumArguments());
+					assertEquals(1, u3.getNumArguments());
+					assertEquals(1, u4.getNumArguments());
+					assertEquals(0, u5.getNumArguments());
+					assertEquals(0, u2.call(NO_NAME, INTERNAL));
+					assertEquals(0, u3.call(NO_USER));
+					assertEquals(0, u4.call(NO_USER));
+					u5.call();
+					// temp table dropped; the other calls shouldn't work
+					assertThrows(BadSqlGrammarException.class,
+							() -> u2.call(NO_NAME, INTERNAL));
+					assertThrows(BadSqlGrammarException.class,
+							() -> u3.call(NO_USER));
+					assertThrows(BadSqlGrammarException.class,
+							() -> u4.call(NO_USER));
+					assertThrows(BadSqlGrammarException.class,
+							() -> u5.call());
+				}
 			});
 		}
 	}

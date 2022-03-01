@@ -49,6 +49,10 @@ INSERT OR IGNORE INTO job_states("id", name)
 VALUES
 	(0, 'UNKNOWN'), (1, 'QUEUED'), (2, 'POWER'), (3, 'READY'), (4, 'DESTROYED');
 
+INSERT OR IGNORE INTO group_types("id", name)
+VALUES
+	(0, 'INTERNAL'), (1, 'ORGANISATION'), (2, 'COLLABRATORY');
+
 INSERT OR IGNORE INTO movement_directions(z, direction, dx, dy, dz)
 VALUES
 	-- Z = 0
@@ -145,6 +149,25 @@ END;
 
 CREATE TRIGGER IF NOT EXISTS "job_states_is_static no_delete"
 BEFORE DELETE ON job_states
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+-- Lock down the group_types
+CREATE TRIGGER IF NOT EXISTS "group_types_is_static no_update"
+BEFORE UPDATE ON group_types
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS "group_types_is_static no_insert"
+BEFORE INSERT ON group_types
+BEGIN
+	SELECT RAISE(IGNORE);
+END;
+
+CREATE TRIGGER IF NOT EXISTS "group_types_is_static no_delete"
+BEFORE DELETE ON group_types
 BEGIN
 	SELECT RAISE(IGNORE);
 END;

@@ -68,7 +68,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -655,12 +655,77 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	private static String makeCollabAuthorityName(String collabClaimed) {
-		return "COLLAB_" + collabClaimed;
-	}
+	/**
+	 * Collection of queries for setting the group memberships of a user. These
+	 * are queries that would be part of {@link AuthQueries} except for the
+	 * dance of handling temporary database tables.
+	 * <p>
+	 * Use this class by calling {@link #define(String,GroupType)} several
+	 * times, and then calling {@link #apply(int)} once. Closing this resource
+	 * removes temporary storage; it does not support nested use.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class GroupSynch extends AbstractSQL {
+		private final Update make;
 
-	private static String makeOrgAuthorityName(String collabClaimed) {
-		return "ORG_" + collabClaimed;
+		private final Update insert;
+
+		private final Update add;
+
+		private final Update remove;
+
+		private final Update drop;
+
+		GroupSynch(AuthQueries sql) {
+			super(sql.getConnection());
+			make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE);
+			make.call();
+			insert = conn.update(GROUP_SYNC_INSERT_TEMP_ROW);
+			add = conn.update(GROUP_SYNC_ADD_GROUPS);
+			remove = conn.update(GROUP_SYNC_REMOVE_GROUPS);
+			drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE);
+		}
+
+		@Override
+		public void close() {
+			drop.call();
+			drop.close();
+			remove.close();
+			add.close();
+			insert.close();
+			make.close();
+			super.close();
+		}
+
+		/**
+		 * List one of the groups that we want a user to be a member of. We're
+		 * building a set of these.
+		 *
+		 * @param name
+		 *            The name of the group
+		 * @param type
+		 *            The type of the group
+		 */
+		void define(String name, GroupType type) {
+			insert.call(name, type);
+		}
+
+		/**
+		 * Apply the set of groups to a user. This will become (with minimal
+		 * changes) the set of groups that they are members of.
+		 *
+		 * @param userId
+		 *            What user are we talking about
+		 */
+		void apply(int userId) {
+			int added = add.call(userId);
+			int removed = remove.call(userId);
+			if (added > 0 || removed > 0) {
+				log.info("changed count of groups for user {}: +{}/-{}", userId,
+						added, removed);
+			}
+		}
 	}
 
 	class CollabratoryAuthority extends SimpleGrantedAuthority {
@@ -669,7 +734,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		private final String collabratory;
 
 		CollabratoryAuthority(String collabClaimed) {
-			super(makeCollabAuthorityName(collabClaimed));
+			super("COLLAB_" + collabClaimed);
 			collabratory = collabClaimed;
 		}
 
@@ -684,7 +749,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		private final String organisation;
 
 		OrganisationAuthority(String orgClaimed) {
-			super(makeOrgAuthorityName(orgClaimed));
+			super("ORG_" + orgClaimed);
 			organisation = orgClaimed;
 		}
 
@@ -696,7 +761,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final Pattern COLLAB_MATCHER =
 			Pattern.compile("^collab-(.*)-(admin|editor|viewer)$");
 
-	private boolean collabToAuthority(String source, List<String> claim,
+	/**
+	 * Convert a list of claimed collabs into authorities.
+	 *
+	 * @param claim
+	 *            The (sub-)claim of collabs.
+	 * @param results
+	 *            Where to add the generated authorities.
+	 * @return Whether we processed a claim.
+	 */
+	private boolean collabToAuthority(List<String> claim,
 			Collection<GrantedAuthority> results) {
 		if (isNull(claim)) {
 			return false;
@@ -705,8 +779,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		for (String collab : claim) {
 			String reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
 			if (!seen.contains(reduced)) {
-				log.info("CLAIMED MEMBERSHIP OF COLLABRATORY from {}: {}",
-						source, collab);
 				results.add(new CollabratoryAuthority(reduced));
 				seen.add(reduced);
 			}
@@ -714,14 +786,25 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return true;
 	}
 
-	private boolean orgToAuthority(String source, List<String> claim,
+	/**
+	 * Convert a list of claimed organisations into authorities.
+	 *
+	 * @param claim
+	 *            The claim of organisations.
+	 * @param results
+	 *            Where to add the generated authorities.
+	 * @return Whether we processed a claim.
+	 */
+	private boolean orgToAuthority(List<String> claim,
 			Collection<GrantedAuthority> results) {
 		if (isNull(claim)) {
 			return false;
 		}
 		for (String org : claim) {
-			log.info("CLAIMED MEMBERSHIP OF ORGANIZATION from {}: {}", source,
-					org);
+			/*
+			 * No special processing required; orgs start with / in name and are
+			 * already guaranteed to be unique.
+			 */
 			results.add(new OrganisationAuthority(org));
 		}
 		return true;
@@ -755,35 +838,30 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return emptyList();
 	}
 
-	@Override
-	public void mapAuthorities(OidcUserAuthority user,
+	private void mapAuthorities(String source, ClaimAccessor claimSet,
 			Collection<GrantedAuthority> results) {
-		OidcUserInfo userInfo = user.getUserInfo();
-		if (!collabToAuthority("userInfo",
-				getTeamsFromClaim(userInfo.getClaim("roles")), results)) {
-			log.info("no team in authority");
-		}
-		if (!orgToAuthority("userInfo", userInfo.getClaimAsStringList("unit"),
+		if (!collabToAuthority(getTeamsFromClaim(claimSet.getClaim("roles")),
 				results)) {
-			log.info("no unit in authority");
+			log.warn("no team in {}", source);
 		}
+		if (!orgToAuthority(claimSet.getClaimAsStringList("unit"), results)) {
+			log.warn("no unit in {}", source);
+		}
+		// All OpenID users get read-write access
 		results.add(new SimpleGrantedAuthority(GRANT_READER));
 		results.add(new SimpleGrantedAuthority(GRANT_USER));
 	}
 
 	@Override
+	public void mapAuthorities(OidcUserAuthority user,
+			Collection<GrantedAuthority> results) {
+		mapAuthorities("userinfo", user.getUserInfo(), results);
+	}
+
+	@Override
 	public void mapAuthorities(Jwt token,
 			Collection<GrantedAuthority> results) {
-		if (!collabToAuthority("token",
-				getTeamsFromClaim(token.getClaim("roles")), results)) {
-			log.info("no team in token");
-		}
-		if (!orgToAuthority("token", token.getClaimAsStringList("unit"),
-				results)) {
-			log.info("no unit in token");
-		}
-		results.add(new SimpleGrantedAuthority(GRANT_READER));
-		results.add(new SimpleGrantedAuthority(GRANT_USER));
+		mapAuthorities("token", token, results);
 	}
 
 	private static final class LocalAuthResult {
@@ -1006,22 +1084,41 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private void inflateCollabratoryGroup(String collab, AuthQueries queries) {
 		if (queries.createGroup(collab, COLLABRATORY,
 				quotaProps.getDefaultCollabQuota())) {
-			log.info("created collabratory '{}' here", collab);
+			log.info("created collabratory '{}'", collab);
 		}
 	}
 
 	private void inflateOrganisationGroup(String org, AuthQueries queries) {
 		if (queries.createGroup(org, ORGANISATION,
 				quotaProps.getDefaultOrgQuota())) {
-			log.info("created organisation '{}' here", org);
+			log.info("created organisation '{}'", org);
 		}
 	}
 
+	/**
+	 * Synchronise the lists of different types of groups for a user. Messy
+	 * because we want to do minimal inserts and deletes.
+	 *
+	 * @param userId
+	 *            Which user?
+	 * @param orgs
+	 *            The list of organisation names
+	 * @param collabs
+	 *            The list of collab names
+	 * @param queries
+	 *            How to touch the DB
+	 */
 	private void synchOrgsAndCollabs(int userId, List<String> orgs,
 			List<String> collabs, AuthQueries queries) {
-		// TODO make this user's orgs and collabs be exactly these
-		log.info("would set user {} to have orgs = {} and collabs = {}", userId,
-				orgs, collabs);
+		try (GroupSynch synch = new GroupSynch(queries)) {
+			for (String org : orgs) {
+				synch.define(org, ORGANISATION);
+			}
+			for (String collab : collabs) {
+				synch.define(collab, COLLABRATORY);
+			}
+			synch.apply(userId);
+		}
 	}
 
 	@Override

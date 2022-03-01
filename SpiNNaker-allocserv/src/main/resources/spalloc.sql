@@ -38,6 +38,11 @@ CREATE TABLE IF NOT EXISTS board_models (
 	model INTEGER PRIMARY KEY
 );
 
+CREATE TABLE IF NOT EXISTS group_types (
+	"id" INTEGER PRIMARY KEY,
+	"name" TEXT UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS machines (
 	machine_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_name TEXT UNIQUE NOT NULL CHECK (
@@ -305,7 +310,7 @@ CREATE TABLE IF NOT EXISTS groups (
 	group_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	group_name TEXT UNIQUE NOT NULL,
 	quota INTEGER, -- If NULL, no quota applies; care required, could be LARGE
-	group_type INTEGER NOT NULL DEFAULT (0) CHECK (group_type IN (0, 1, 2))
+	group_type INTEGER NOT NULL DEFAULT (0) REFERENCES group_types(id) ON DELETE RESTRICT
 );
 
 -- Many-to-many relationship model
@@ -332,7 +337,7 @@ BEGIN
 	SELECT RAISE(FAIL, 'group and user type don''t match');
 END;
 
-
+-- Simulate legacy view
 CREATE VIEW IF NOT EXISTS quotas (quota_id, user_id, machine_id, quota)
 AS SELECT
 	groups.group_id, user_info.user_id, machines.machine_id, groups.quota
