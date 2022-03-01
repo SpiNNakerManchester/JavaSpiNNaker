@@ -99,15 +99,16 @@ abstract class Cfg {
 	@GeneratesID
 	private static final String INSERT_USER =
 			"INSERT OR IGNORE INTO user_info(user_id, user_name, "
-					+ "trust_level, disabled) VALUES (?, ?, ?, ?)";
+					+ "trust_level, disabled, encrypted_password) "
+					+ "VALUES (?, ?, ?, ?, '*')";
 
 	@Parameter("group_id")
 	@Parameter("group_name")
 	@Parameter("quota")
 	@GeneratesID
-	private static final String INSERT_GROUP =
-			"INSERT OR IGNORE INTO groups(group_id, group_name, quota) "
-					+ "VALUES (?, ?, ?)";
+	private static final String INSERT_GROUP = "INSERT OR IGNORE INTO "
+			+ "groups(group_id, group_name, quota, group_type) "
+			+ "VALUES (?, ?, ?, 0)";
 
 	@Parameter("membership_id")
 	@Parameter("user_id")
