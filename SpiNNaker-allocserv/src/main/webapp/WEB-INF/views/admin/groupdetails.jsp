@@ -1,3 +1,4 @@
+<%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -32,13 +33,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<form:form method="POST" modelAttribute="group">
 			<form:label path="groupName">Group Name: </form:label>
 			<form:input path="groupName" type="text"/>
+			<span class="minordetail">
+				<em>(${ group.type })</em>
+			</span>
 			<p>
 			<input type="submit" value="Update" />
 		</form:form>
 	</c:when>
 	<c:otherwise>
 		Group Name: <c:out value="${ group.groupName }" />
-		<em>(${ group.type }: managed externally)</em>
+		<span class="minordetail">
+			<em>(${ group.type }: managed externally)</em>
+		</span>
 	</c:otherwise>
 </c:choose>
 <p>
@@ -85,7 +91,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </c:if>
 <c:choose>
 	<c:when test="${ empty group.members }">
-		<p><em>No <c:if test="${ not group.type.internal }">currently-known</c:if> current members!</em></p>
+		<p>
+			<em>No
+			<c:if test="${ not group.type.internal }">currently-known</c:if>
+			current members!</em>
+		</p>
 	</c:when>
 	<c:otherwise>
 		<table>
@@ -99,8 +109,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<c:forEach items="${ group.members }" var="mem">
 					<tr>
 						<td>
-							<%-- TODO Could do with this being a link, but info not available in model --%>
-							<code><c:out value="${ mem.key }" /></code>
+							<a href="${ userlist[mem.key] }">
+								<code><c:out value="${ mem.key }" /></code>
+							</a>
 						</td>
 						<td>
 							<form method="POST" action="${ mem.value }">

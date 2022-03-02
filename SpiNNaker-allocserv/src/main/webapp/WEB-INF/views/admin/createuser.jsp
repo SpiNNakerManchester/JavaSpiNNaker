@@ -43,6 +43,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<input type="submit" value="Create" />
 </form:form>
 
+<p>
+<em>Note that users created with this form are not added to any group by default.</em>
+
 <jsp:include page="footer.jsp" />
 </body>
 </html>

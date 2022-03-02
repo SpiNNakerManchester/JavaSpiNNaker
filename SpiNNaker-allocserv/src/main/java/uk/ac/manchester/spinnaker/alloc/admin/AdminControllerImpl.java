@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -433,12 +434,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("getting info about a group")
 	public ModelAndView showGroupInfo(int id) {
 		ModelAndView mav = GROUP_DETAILS_VIEW.view();
-		mav.addObject(GROUP_OBJ, userManager
-				.getGroup(id,
-						m -> uri(admin().removeUserFromGroup(id, m.getUserId(),
-								null)))
-				.orElseThrow(() -> new AdminException("no such group")));
+		Map<String, URI> userLocations = new HashMap<>();
+		mav.addObject(GROUP_OBJ, userManager.getGroup(id, m -> {
+			userLocations.put(m.getUserName(),
+					uri(admin().showUserForm(m.getUserId())));
+			return uri(admin().removeUserFromGroup(id, m.getUserId(), null));
+		}).orElseThrow(() -> new AdminException("no such group")));
 		assert mav.getModel().get(GROUP_OBJ) instanceof GroupRecord;
+		mav.addObject(USER_LIST_OBJ, userLocations);
 		mav.addObject("deleteUri", uri(admin().deleteGroup(id, null)));
 		mav.addObject("addUserUri",
 				uri(admin().addUserToGroup(id, null, null)));
