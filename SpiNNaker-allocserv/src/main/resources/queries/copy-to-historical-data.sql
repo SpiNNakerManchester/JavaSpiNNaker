@@ -22,7 +22,7 @@ INSERT OR IGNORE INTO tombstone.jobs(
 	death_reason, death_timestamp,
 	original_request,
 	allocation_timestamp, allocation_size,
-	machine_name, owner_name)
+	machine_name, owner_name, "group", group_name)
 SELECT
 	jobs.job_id, jobs.machine_id, jobs.owner, jobs.create_timestamp,
 	jobs.width, jobs.height, jobs."depth", jobs.allocated_root,
@@ -30,9 +30,11 @@ SELECT
 	jobs.death_reason, jobs.death_timestamp,
 	original_request,
 	allocation_timestamp, allocation_size,
-	machines.machine_name, user_info.user_name
+	machines.machine_name, user_info.user_name,
+	groups.group_id, groups.group_name
 FROM
 	jobs
+	JOIN groups USING (group_id)
 	JOIN machines USING (machine_id)
 	JOIN user_info ON jobs.owner = user_info.user_id
 	JOIN t
