@@ -16,37 +16,37 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
-import static java.util.Collections.sort;
-import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
-import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BMP;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_CHANGE;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_GROUP;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_JOB;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_MACHINE;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_NAME;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_USER;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertSetEquals;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertThrowsCheck;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertThrowsFK;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assumeWritable;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.set;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.test.context.ActiveProfiles;
-import org.sqlite.SQLiteException;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -65,97 +65,12 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
 class DMLTest extends SQLQueries {
-	// Not equal to any machine_id
-	private static final int NO_MACHINE = -1;
-
-	// Not equal to any job_id
-	private static final int NO_JOB = -1;
-
-	// Not equal to any board_id
-	private static final int NO_BOARD = -1;
-
-	// Not equal to any bmp_id
-	private static final int NO_BMP = -1;
-
-	// Not equal to any change_id
-	private static final int NO_CHANGE = -1;
-
-	// Not equal to any user_id
-	private static final int NO_USER = -1;
-
-	// Not equal to any group_id
-	private static final int NO_GROUP = -1;
-
-	// Not the name of anything
-	private static final String NO_NAME = "gorp";
-
 	@Autowired
 	private DatabaseEngine mainDBEngine;
 
 	private DatabaseEngine memdb;
 
 	private Connection c;
-
-	/**
-	 * Easy set builder.
-	 *
-	 * @param strings
-	 *            The values in the set.
-	 * @return An unmodifiable set.
-	 */
-	private static Set<String> set(String... strings) {
-		return unmodifiableSet(new HashSet<>(Arrays.asList(strings)));
-	}
-
-	/**
-	 * Compares two sets by converting them into sorted lists. This produces the
-	 * most comprehensible results.
-	 *
-	 * @param <T>
-	 *            The type of elements in the sets.
-	 * @param expected
-	 *            The set of expected elements.
-	 * @param actual
-	 *            The actual results of the operation.
-	 */
-	private static <T extends Comparable<T>> void
-			assertSetEquals(Set<T> expected, Set<T> actual) {
-		List<T> e = new ArrayList<>(expected);
-		sort(e);
-		List<T> a = new ArrayList<>(actual);
-		sort(a);
-		assertEquals(e, a);
-	}
-
-	/**
-	 * <em>Assert</em> that execution of the supplied executable throws an
-	 * exception due to a foreign key constraint failure.
-	 *
-	 * @param op
-	 *            The executable operation being tested.
-	 */
-	private static void assertThrowsFK(Executable op) {
-		DataAccessException e = assertThrows(DataAccessException.class, op);
-		assertEquals(SQLiteException.class,
-				e.getMostSpecificCause().getClass());
-		SQLiteException exn = (SQLiteException) e.getMostSpecificCause();
-		assertEquals(SQLITE_CONSTRAINT_FOREIGNKEY, exn.getResultCode());
-	}
-
-	/**
-	 * <em>Assert</em> that execution of the supplied executable throws an
-	 * exception due to a CHECK constraint failure.
-	 *
-	 * @param op
-	 *            The executable operation being tested.
-	 */
-	private static void assertThrowsCheck(Executable op) {
-		DataAccessException e = assertThrows(DataAccessException.class, op);
-		assertEquals(SQLiteException.class,
-				e.getMostSpecificCause().getClass());
-		SQLiteException exn = (SQLiteException) e.getMostSpecificCause();
-		assertEquals(SQLITE_CONSTRAINT_CHECK, exn.getResultCode());
-	}
 
 	@BeforeAll
 	void getMemoryDatabase() {
@@ -172,10 +87,6 @@ class DMLTest extends SQLQueries {
 	@AfterEach
 	void closeConnection() {
 		c.close();
-	}
-
-	private static void assumeWritable(Connection c) {
-		assumeFalse(c.isReadOnly(), "connection is read-only");
 	}
 
 	@Test
