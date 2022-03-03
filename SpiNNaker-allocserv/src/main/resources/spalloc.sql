@@ -182,6 +182,9 @@ CREATE TABLE IF NOT EXISTS jobs (
 	allocated_root INTEGER, -- set by trigger
 	accounted_for INTEGER NOT NULL DEFAULT (0) CHECK (accounted_for IN (0, 1)),
 	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE RESTRICT
+	-- We do not check that the user is necessarily still a member of the group;
+	-- that's only a check carried out by the application on job creation. This
+	-- is *by design*; users may leave groups, but their jobs do not.
 );
 
 CREATE VIEW IF NOT EXISTS jobs_usage(
