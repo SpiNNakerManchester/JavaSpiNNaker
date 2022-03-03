@@ -61,39 +61,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<input type="submit" class="warningbutton" value="Delete this user" />
 </form>
 
-<%-- TODO Does this even make sense? --%>
-<c:if test="${ not empty user.quota }">
-	<h2>Quotas</h2>
-	<table>
-		<thead>
-			<tr>
-				<th colspan="2">Quotas</th>
-			</tr>
-			<tr>
-				<th>Machine</th>
-				<th>Remaining (board seconds)
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach items="${ user.quota }" var="q">
-				<tr>
-					<td>
-						<c:out value="${ q.key }" escapeXml="true" />
-					</td>
-					<td>
-						<fmt:formatNumber value="${ q.value / 3600.0 }"
-								maxFractionDigits="3" /> board-hours
-						<c:if test="${ q.value <= 0 }">
-							<span class="quotawarning">Out of quota!</span>
-						</c:if>
-					</td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-</c:if>
-<p>
-
 <jsp:include page="footer.jsp" />
 </body>
 </html>

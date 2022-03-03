@@ -22,6 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <a href="${ boardsUri }">Manage Boards</a>
 &mdash;
 <a href="${ usersUri }">Manage Users</a>
+&mdash;
+<a href="${ groupsUri }">Manage Groups</a>
 <br>
 <a href="<c:url value='/spalloc/system/' />">Main page</a>
 &mdash;
