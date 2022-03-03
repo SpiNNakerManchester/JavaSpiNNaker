@@ -63,6 +63,31 @@ ALTER TABLE user_info ADD COLUMN
 	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
 		encrypted_password IS NOT NULL) VIRTUAL;
 
+CREATE TABLE group_memberships (
+	membership_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE CASCADE,
+	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE
+);
+-- No user can be in a group more than once!
+CREATE UNIQUE INDEX membershipSanity ON group_memberships(
+	user_id, group_id
+);
+-- Internal users can only be in internal groups.
+-- External (OIDC) users can only be in external groups.
+CREATE TRIGGER userGroupSanity
+AFTER INSERT ON group_memberships
+WHEN
+	(SELECT user_info.is_internal FROM user_info
+		WHERE user_info.user_id = NEW.user_id) != (
+	SELECT groups.is_internal FROM groups
+		WHERE groups.group_id = NEW.group_id)
+BEGIN
+	SELECT RAISE(FAIL, 'group and user type don''t match');
+END;
+
+DROP TABLE quotas;
+SAVEPOINT user_info_updated;
+
 CREATE TABLE new_jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
@@ -144,29 +169,6 @@ END;
 CREATE INDEX IF NOT EXISTS 'jobs_root_id' ON 'jobs'('root_id'); --> boards(board_id)
 CREATE INDEX IF NOT EXISTS 'jobs_machine_id' ON 'jobs'('machine_id'); --> machines(machine_id)
 
-CREATE TABLE group_memberships (
-	membership_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	user_id INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE CASCADE,
-	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE
-);
--- No user can be in a group more than once!
-CREATE UNIQUE INDEX membershipSanity ON group_memberships(
-	user_id, group_id
-);
--- Internal users can only be in internal groups.
--- External (OIDC) users can only be in external groups.
-CREATE TRIGGER userGroupSanity
-AFTER INSERT ON group_memberships
-WHEN
-	(SELECT user_info.is_internal FROM user_info
-		WHERE user_info.user_id = NEW.user_id) != (
-	SELECT groups.is_internal FROM groups
-		WHERE groups.group_id = NEW.group_id)
-BEGIN
-	SELECT RAISE(FAIL, 'group and user type don''t match');
-END;
-
-DROP TABLE quotas;
 CREATE VIEW quotas (quota_id, user_id, machine_id, quota)
 AS SELECT
 	groups.group_id, user_info.user_id, machines.machine_id, groups.quota
