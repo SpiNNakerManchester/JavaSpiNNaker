@@ -19,7 +19,7 @@
 PRAGMA foreign_keys=OFF;
 BEGIN;
 -- First, check we're operating on the right database!
-SELECT sum(machine_id) FROM machines;
+SELECT count(machine_id) FROM machines;
 
 CREATE TABLE group_types (
 	"id" INTEGER PRIMARY KEY,
@@ -87,7 +87,9 @@ END;
 
 DROP TABLE quotas;
 COMMIT;
+PRAGMA integrity_check;
 -- Need the user_info.is_internal column to exist to proceed
+SELECT count(*) FROM user_info WHERE is_internal;
 
 BEGIN;
 CREATE TABLE new_jobs (
