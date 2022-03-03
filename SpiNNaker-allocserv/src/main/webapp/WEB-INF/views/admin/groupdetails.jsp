@@ -1,4 +1,5 @@
 <%@ page trimDirectiveWhitespaces="true" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -53,13 +54,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<input type="submit" class="warningbutton" value="Delete this group" />
 </form>
 
-<c:if test="${ not empty group.quota }">
+<spring:eval expression="group.quota.isPresent()" var="hasQuota" />
+<c:if test="${ hasQuota }">
+	<spring:eval expression="group.quota.get()" var="quotaValue" />
 	<h2>Quota</h2>
 	<form method="POST" action="${ addQuotaUri }">
 		<sec:csrfInput />
-		<fmt:formatNumber value="${ group.quota / 3600.0 }"
+		<fmt:formatNumber value="${ quotaValue / 3600.0 }"
 				maxFractionDigits="3" /> board-hours
-		<c:if test="${ group.quota <= 0 }">
+		<c:if test="${ quotaValue <= 0 }">
 			<span class="quotawarning">Out of quota!</span>
 		</c:if>
 		<br>
