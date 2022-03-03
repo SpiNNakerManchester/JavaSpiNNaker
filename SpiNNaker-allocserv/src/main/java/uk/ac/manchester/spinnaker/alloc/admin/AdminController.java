@@ -352,7 +352,8 @@ public interface AdminController {
 	 * @return the model and view
 	 */
 	@PostMapping(GROUP_DELETE_PATH)
-	ModelAndView deleteGroup(int id, RedirectAttributes attrs);
+	ModelAndView deleteGroup(@PathVariable("id") int id,
+			RedirectAttributes attrs);
 
 	/**
 	 * UI for boards.
