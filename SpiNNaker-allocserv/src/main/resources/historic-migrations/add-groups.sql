@@ -85,13 +85,6 @@ BEGIN
 	SELECT RAISE(FAIL, 'group and user type don''t match');
 END;
 
-DROP TABLE quotas;
-COMMIT;
-PRAGMA integrity_check;
--- Need the user_info.is_internal column to exist to proceed
-SELECT count(*) FROM user_info WHERE is_internal;
-
-BEGIN;
 CREATE TABLE new_jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
@@ -132,7 +125,7 @@ SELECT
 		WHEN user_info.is_internal THEN 1 -- = LEGACY-1
 		ELSE 2 -- = LEGACY-2
 	END AS group_id
-FROM jobs;
+FROM jobs JOIN user_info ON jobs.owner = user_info.user_id;
 DROP TABLE jobs;
 ALTER TABLE new_jobs RENAME TO jobs;
 --==-- IMPORTANT! REBUILD THE TRIGGERS HERE! --==--
@@ -173,6 +166,7 @@ END;
 CREATE INDEX IF NOT EXISTS 'jobs_root_id' ON 'jobs'('root_id'); --> boards(board_id)
 CREATE INDEX IF NOT EXISTS 'jobs_machine_id' ON 'jobs'('machine_id'); --> machines(machine_id)
 
+DROP TABLE quotas;
 CREATE VIEW quotas (quota_id, user_id, machine_id, quota)
 AS SELECT
 	groups.group_id, user_info.user_id, machines.machine_id, groups.quota
