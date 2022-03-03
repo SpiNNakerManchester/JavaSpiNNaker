@@ -126,6 +126,7 @@ SELECT
 		ELSE 2 -- = LEGACY-2
 	END AS group_id
 FROM jobs JOIN user_info ON jobs.owner = user_info.user_id;
+DROP VIEW jobs_usage;
 DROP TABLE jobs;
 ALTER TABLE new_jobs RENAME TO jobs;
 --==-- IMPORTANT! REBUILD THE TRIGGERS HERE! --==--
@@ -176,7 +177,6 @@ FROM groups
 	LEFT JOIN machines;
 
 
-DROP VIEW jobs_usage;
 CREATE VIEW jobs_usage(
 	machine_id, job_id, owner, group_id, quota, "size", "start", "finish",
 	"duration", "usage", "complete") AS
