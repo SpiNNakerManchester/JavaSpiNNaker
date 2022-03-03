@@ -33,7 +33,11 @@ function modname {
 	echo "$(dirname "$1")/mod-$(basename "$1")"
 }
 function applysql {
-	cp "$1" "$2" && $SQLITE "$2" ".read $3;.exit;" || exit 2
+	cp "$1" "$2" && { $SQLITE "$2" <<EOF
+.read $3
+.exit
+EOF
+} || exit 2
 }
 
 applysql "$src_db_1" $(modname "$src_db_1") "$migrate_1"
