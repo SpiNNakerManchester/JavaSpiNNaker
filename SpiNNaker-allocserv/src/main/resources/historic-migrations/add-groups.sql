@@ -129,7 +129,41 @@ FROM jobs JOIN user_info ON jobs.owner = user_info.user_id;
 DROP VIEW jobs_usage;
 DROP TABLE jobs;
 ALTER TABLE new_jobs RENAME TO jobs;
---==-- IMPORTANT! REBUILD THE TRIGGERS HERE! --==--
+--==-- IMPORTANT! DON'T REBUILD THE TRIGGERS HERE! --==--
+CREATE INDEX IF NOT EXISTS 'jobs_root_id' ON 'jobs'('root_id'); --> boards(board_id)
+CREATE INDEX IF NOT EXISTS 'jobs_machine_id' ON 'jobs'('machine_id'); --> machines(machine_id)
+
+DROP TABLE quotas;
+CREATE VIEW quotas (quota_id, user_id, machine_id, quota)
+AS SELECT
+	groups.group_id, user_info.user_id, machines.machine_id, groups.quota
+FROM groups
+	LEFT JOIN group_memberships USING (group_id)
+	LEFT JOIN user_info USING (user_id)
+	LEFT JOIN machines;
+
+
+CREATE VIEW jobs_usage(
+	machine_id, job_id, owner, group_id, quota, "size", "start", "finish",
+	"duration", "usage", "complete") AS
+SELECT
+	machine_id, job_id, owner, group_id, groups.quota, allocation_size,
+	allocation_timestamp, death_timestamp,
+	COALESCE(
+		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
+		0),
+	COALESCE(allocation_size, 0) * COALESCE(
+		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
+		0),
+	job_state = 4 -- DESTROYED
+FROM jobs JOIN groups USING (group_id)
+WHERE NOT accounted_for;
+
+PRAGMA integrity_check;
+PRAGMA foreign_key_check;
+COMMIT;
+-- The triggers have to go in after the data has been moved
+BEGIN;
 -- When the job is created, update the right timestamp
 CREATE TRIGGER IF NOT EXISTS jobCreateTimestamping
 AFTER INSERT ON jobs
@@ -164,37 +198,7 @@ BEGIN
 		SET allocated_root = NEW.root_id
 	WHERE job_id = OLD.job_id AND NEW.root_id IS NOT NULL;
 END;
-CREATE INDEX IF NOT EXISTS 'jobs_root_id' ON 'jobs'('root_id'); --> boards(board_id)
-CREATE INDEX IF NOT EXISTS 'jobs_machine_id' ON 'jobs'('machine_id'); --> machines(machine_id)
 
-DROP TABLE quotas;
-CREATE VIEW quotas (quota_id, user_id, machine_id, quota)
-AS SELECT
-	groups.group_id, user_info.user_id, machines.machine_id, groups.quota
-FROM groups
-	LEFT JOIN group_memberships USING (group_id)
-	LEFT JOIN user_info USING (user_id)
-	LEFT JOIN machines;
-
-
-CREATE VIEW jobs_usage(
-	machine_id, job_id, owner, group_id, quota, "size", "start", "finish",
-	"duration", "usage", "complete") AS
-SELECT
-	machine_id, job_id, owner, group_id, groups.quota, allocation_size,
-	allocation_timestamp, death_timestamp,
-	COALESCE(
-		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
-		0),
-	COALESCE(allocation_size, 0) * COALESCE(
-		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
-		0),
-	job_state = 4 -- DESTROYED
-FROM jobs JOIN groups USING (group_id)
-WHERE NOT accounted_for;
-
-PRAGMA integrity_check;
-PRAGMA foreign_key_check;
 PRAGMA user_version=2;
 COMMIT;
 PRAGMA foreign_keys=ON;
