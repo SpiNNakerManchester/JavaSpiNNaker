@@ -34,6 +34,8 @@ function modname {
 }
 function applysql {
 	cp "$1" "$2" && { $SQLITE "$2" <<EOF
+.echo on
+.bail on
 .read $3
 .exit
 EOF
