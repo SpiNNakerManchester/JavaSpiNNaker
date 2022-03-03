@@ -80,7 +80,8 @@ public class UserControl extends DatabaseAwareBean {
 
 		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
 
-		private final Query getMembershipsOfUser = conn.query("");
+		private final Query getMembershipsOfUser =
+				conn.query(GET_MEMBERSHIPS_OF_USER);
 
 		@Override
 		public void close() {

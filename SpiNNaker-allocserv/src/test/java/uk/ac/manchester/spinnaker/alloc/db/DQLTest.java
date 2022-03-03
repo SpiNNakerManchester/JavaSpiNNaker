@@ -807,6 +807,17 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getMembershipsOfUser() {
+		try (Query q = c.query(GET_MEMBERSHIPS_OF_USER)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(MEMBER_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_USER).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getUserQuota() {
 		try (Query q = c.query(GET_USER_QUOTA)) {
 			assertEquals(1, q.getNumArguments());

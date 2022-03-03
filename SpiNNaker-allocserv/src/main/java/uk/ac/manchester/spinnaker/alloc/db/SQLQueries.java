@@ -42,7 +42,6 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  *
  * @author Donal Fellows
  */
-// FIXME update schema picture
 @SuppressWarnings("checkstyle:visibilitymodifier")
 public abstract class SQLQueries {
 	/** Get basic information about all machines. */
@@ -1145,10 +1144,10 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("membership_id")
 	@ResultColumn("membership_id")
-	@ResultColumn("group_id")
-	@ResultColumn("group_name")
 	@ResultColumn("user_id")
+	@ResultColumn("group_id")
 	@ResultColumn("user_name")
+	@ResultColumn("group_name")
 	@SingleRowResult
 	protected static final String GET_MEMBERSHIP =
 			"SELECT membership_id, user_info.user_id, groups.group_id, "
@@ -1156,6 +1155,24 @@ public abstract class SQLQueries {
 					+ "JOIN user_info USING (user_id) "
 					+ "JOIN groups USING (group_id) "
 					+ "WHERE membership_id = :membership_id";
+
+	/**
+	 * Get the memberships of a user.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@ResultColumn("membership_id")
+	@ResultColumn("user_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("user_name")
+	protected static final String GET_MEMBERSHIPS_OF_USER =
+			"SELECT membership_id, user_info.user_id, groups.group_id, "
+					+ "user_name, group_name FROM group_memberships "
+					+ "JOIN user_info USING (user_id) "
+					+ "JOIN groups USING (group_id) "
+					+ "WHERE group_memberships.user_id = :user_id";
 
 	/**
 	 * Create a group record.
