@@ -86,8 +86,10 @@ BEGIN
 END;
 
 DROP TABLE quotas;
-SAVEPOINT user_info_updated;
+COMMIT;
+-- Need the user_info.is_internal column to exist to proceed
 
+BEGIN;
 CREATE TABLE new_jobs (
 	job_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER REFERENCES machines(machine_id) ON DELETE RESTRICT,
