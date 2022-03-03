@@ -444,7 +444,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		mav.addObject(USER_LIST_OBJ, userLocations);
 		mav.addObject("deleteUri", uri(admin().deleteGroup(id, null)));
 		mav.addObject("addUserUri",
-				uri(admin().addUserToGroup(id, null, null)));
+				uri(admin().addUserToGroup(id, "gorp", null)));
 		mav.addObject("addQuotaUri",
 				uri(admin().adjustGroupQuota(id, 0, null)));
 		return addStandardContext(mav);
