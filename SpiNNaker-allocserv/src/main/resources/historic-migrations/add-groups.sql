@@ -128,6 +128,7 @@ SELECT
 FROM jobs JOIN user_info ON jobs.owner = user_info.user_id;
 DROP VIEW jobs_usage;
 DROP TABLE jobs;
+DROP TRIGGER boardDeallocation;
 ALTER TABLE new_jobs RENAME TO jobs;
 --==-- IMPORTANT! DON'T REBUILD THE TRIGGERS HERE! --==--
 CREATE INDEX IF NOT EXISTS 'jobs_root_id' ON 'jobs'('root_id'); --> boards(board_id)
@@ -161,44 +162,6 @@ WHERE NOT accounted_for;
 
 PRAGMA integrity_check;
 PRAGMA foreign_key_check;
-COMMIT;
--- The triggers have to go in after the data has been moved
-BEGIN;
--- When the job is created, update the right timestamp
-CREATE TRIGGER IF NOT EXISTS jobCreateTimestamping
-AFTER INSERT ON jobs
-BEGIN
-	UPDATE jobs
-		SET create_timestamp = CAST(strftime('%s','now') AS INTEGER)
-	WHERE job_id = NEW.job_id;
-END;
--- When the job is allocated, update the right timestamp
-CREATE TRIGGER IF NOT EXISTS jobAllocationTimestamping
-AFTER UPDATE OF allocation_size ON jobs
-BEGIN
-	UPDATE jobs
-		SET allocation_timestamp = CAST(strftime('%s','now') AS INTEGER)
-	WHERE job_id = OLD.job_id
-		AND (OLD.allocation_size IS NULL OR OLD.allocation_size = 0);
-END;
--- When the job is destroyed, update the right timestamp
-CREATE TRIGGER IF NOT EXISTS jobDeathTimestamping
-AFTER UPDATE OF job_state ON jobs
-BEGIN
-	UPDATE jobs
-		SET death_timestamp = CAST(strftime('%s','now') AS INTEGER)
-	WHERE job_id = NEW.job_id AND OLD.job_state IS NOT 4 -- DESTROYED
-		AND NEW.job_state IS 4; -- DESTROYED
-END;
--- When a job is given a root board, remember that permanently
-CREATE TRIGGER IF NOT EXISTS jobAllocationRememberRoot
-AFTER UPDATE OF root_id ON jobs
-BEGIN
-	UPDATE jobs
-		SET allocated_root = NEW.root_id
-	WHERE job_id = OLD.job_id AND NEW.root_id IS NOT NULL;
-END;
-
 PRAGMA user_version=2;
 COMMIT;
 PRAGMA foreign_keys=ON;
