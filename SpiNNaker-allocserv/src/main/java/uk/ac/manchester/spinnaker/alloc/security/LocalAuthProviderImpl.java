@@ -694,12 +694,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			insert.close();
 			/*
 			 * Seems we can only drop a temporary table if there are no (other)
-			 * open statements that refer to it.
-			 * https://sqlite.org/forum/forumpost/433d2fdb07fc8f13
+			 * open statements that refer to it *AND* there is no transaction
+			 * open that used it.
+			 *
+			 * https://sqlite.org/forum/forumpost/433d2fdb07fc8f13 says some of
+			 * the constraints, but not all; the need for the transaction to be
+			 * closed comes from elsewhere in that thread.
 			 */
-			try (Update drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
-				drop.call();
-			}
+			schedulePostCommitAction(() -> {
+				try (Update drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
+					drop.call();
+				}
+			});
 			super.close();
 		}
 

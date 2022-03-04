@@ -66,10 +66,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -652,6 +654,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		private boolean isLockedForWrites;
 
+		private List<Runnable> postCommits;
+
 		private Connection(java.sql.Connection c) {
 			super(c);
 			inTransaction = false;
@@ -839,6 +843,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				// Already in a transaction; just run the operation
 				return operation.act();
 			}
+			postCommits = null;
 			int tries = 0;
 			while (true) {
 				tries++;
@@ -853,6 +858,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 						log.debug("commence commit: {}", context);
 						realCommit();
 						done = true;
+						if (nonNull(postCommits)) {
+							log.debug("running {} post-commit actions",
+									postCommits.size());
+							for (Runnable r : postCommits) {
+								try {
+									r.run();
+								} catch (DataAccessException e) {
+									log.warn("post-commit action failed", e);
+								}
+							}
+						}
 						return result;
 					} catch (DataAccessException e) {
 						if (tries < props.getLockTries() && isBusy(e)) {
@@ -882,6 +898,29 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					}
 				}
 			}
+		}
+
+		/**
+		 * Schedule an action to be called after the current transaction is
+		 * committed. Should only be called if there is a transaction open on
+		 * this connection.
+		 *
+		 * @param action
+		 *            The action to be called after the commit.
+		 * @throws IllegalStateException
+		 *             if not in a transaction
+		 */
+		void schedulePostCommitAction(Runnable action) {
+			if (!inTransaction) {
+				throw new IllegalStateException(
+						"can only schedule a post-commit action "
+								+ "during a transaction");
+			}
+			// TODO check that we're called from the right thread
+			if (isNull(postCommits)) {
+				postCommits = new ArrayList<>();
+			}
+			postCommits.add(action);
 		}
 
 		private void cantWarning(String op, DataAccessException e) {
