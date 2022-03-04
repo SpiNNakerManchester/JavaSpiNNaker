@@ -59,10 +59,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</c:otherwise>
 	</c:choose>
 	<br>
-	<form:label path="isEnabled">Is enabled? </form:label>
-	<form:checkbox path="isEnabled"/>
-	<form:label path="isLocked">Is temporarily locked? </form:label>
-	<form:checkbox path="isLocked"/>
+	<form:label path="enabled">Is enabled? </form:label>
+	<form:checkbox path="enabled"/>
+	<form:label path="locked">Is temporarily locked? </form:label>
+	<form:checkbox path="locked"/>
 	<br>
 	Last successful login: <span id="lastSuccessfulLogin">${ user.lastSuccessfulLogin }</span>
 	<br>
