@@ -1261,7 +1261,7 @@ public abstract class SQLQueries {
 	 * @see LocalAuthProviderImpl
 	 */
 	protected static final String GROUP_SYNC_MAKE_TEMP_TABLE =
-			"CREATE TEMP TABLE usergroup(group_id INTEGER)";
+			"CREATE TEMP TABLE IF NOT EXISTS usergroupids(group_id INTEGER)";
 
 	/**
 	 * Step 2 of group synchronisation: add a desired group to the temp table.
@@ -1274,7 +1274,7 @@ public abstract class SQLQueries {
 	@Parameter("group_name")
 	@Parameter("group_type")
 	protected static final String GROUP_SYNC_INSERT_TEMP_ROW =
-			"INSERT INTO temp.usergroup SELECT group_id FROM groups "
+			"INSERT INTO temp.usergroupids SELECT group_id FROM groups "
 					+ "WHERE group_name = :group_name "
 					+ "AND group_type = :group_type";
 
@@ -1291,7 +1291,7 @@ public abstract class SQLQueries {
 	protected static final String GROUP_SYNC_ADD_GROUPS =
 			"INSERT OR IGNORE INTO group_memberships(user_id, group_id) "
 					+ "SELECT :user_id AS user_id, "
-					+ "group_id FROM temp.usergroup";
+					+ "group_id FROM temp.usergroupids";
 
 	/**
 	 * Step 4 of group synchronisation: remove real groups no longer wanted.
@@ -1304,18 +1304,22 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("user_id")
 	protected static final String GROUP_SYNC_REMOVE_GROUPS =
-			"DELETE FROM group_memberships WHERE user_id = :user_id AND "
-					+ "group_id NOT IN (SELECT group_id FROM temp.usergroup)";
+			"DELETE FROM group_memberships "
+					+ "WHERE user_id = :user_id AND group_id NOT IN ("
+					+ "SELECT group_id FROM temp.usergroupids)";
 
 	/**
-	 * Step 5 of group synchronisation: drop the temporary table. Should be
+	 * Step 5 of group synchronisation: drop the temporary table. Except we
+	 * don't because that doesn't work in a transaction; squelching the contents
+	 * works though (the table itself is dropped automatically when the
+	 * connection is dropped so we don't need to clean it up here). Should be
 	 * performed in a transaction with the other group synch steps. <em>Requires
 	 * that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first.</em>
 	 *
 	 * @see LocalAuthProviderImpl
 	 */
 	protected static final String GROUP_SYNC_DROP_TEMP_TABLE =
-			"DROP TABLE temp.usergroup";
+			"DELETE FROM temp.usergroupids";
 
 	/**
 	 * Test if a user account is locked or disabled.

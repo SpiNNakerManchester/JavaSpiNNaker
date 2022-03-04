@@ -695,17 +695,20 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			/*
 			 * Seems we can only drop a temporary table if there are no (other)
 			 * open statements that refer to it *AND* there is no transaction
-			 * open that used it.
+			 * open that used it. Or is that no connection? Either way,
+			 * SQLITE_LOCKED is not a desired failure state!
 			 *
 			 * https://sqlite.org/forum/forumpost/433d2fdb07fc8f13 says some of
 			 * the constraints, but not all; the need for the transaction to be
 			 * closed comes from elsewhere in that thread.
+			 *
+			 * Fortunately, we can just delete the contents of the temporary
+			 * table instead, and that's just as good *and can be done in the
+			 * transaction*.
 			 */
-			schedulePostCommitAction(() -> {
-				try (Update drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
-					drop.call();
-				}
-			});
+			try (Update drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
+				drop.call();
+			}
 			super.close();
 		}
 

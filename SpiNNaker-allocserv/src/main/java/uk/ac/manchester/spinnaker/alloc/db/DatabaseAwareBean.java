@@ -162,19 +162,6 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 			return conn;
 		}
 
-		/**
-		 * Schedule an action to be called after the current transaction is
-		 * committed. The connection will still be open.
-		 *
-		 * @param action
-		 *            The action to be called after the commit.
-		 * @throws IllegalStateException
-		 *             if not in a transaction
-		 */
-		protected void schedulePostCommitAction(Runnable action) {
-			conn.schedulePostCommitAction(action);
-		}
-
 		@Override
 		public void close() {
 			if (doClose) {
