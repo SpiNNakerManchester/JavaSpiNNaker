@@ -671,34 +671,35 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @author Donal Fellows
 	 */
 	private final class GroupSynch extends AbstractSQL {
-		private final Update make;
-
 		private final Update insert;
 
 		private final Update add;
 
 		private final Update remove;
 
-		private final Update drop;
-
 		GroupSynch(AuthQueries sql) {
 			super(sql.getConnection());
-			make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE);
-			make.call();
+			try (Update make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
+				make.call();
+			}
 			insert = conn.update(GROUP_SYNC_INSERT_TEMP_ROW);
 			add = conn.update(GROUP_SYNC_ADD_GROUPS);
 			remove = conn.update(GROUP_SYNC_REMOVE_GROUPS);
-			drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE);
 		}
 
 		@Override
 		public void close() {
-			drop.call();
-			drop.close();
 			remove.close();
 			add.close();
 			insert.close();
-			make.close();
+			/*
+			 * Seems we can only drop a temporary table if there are no (other)
+			 * open statements that refer to it.
+			 * https://sqlite.org/forum/forumpost/433d2fdb07fc8f13
+			 */
+			try (Update drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
+				drop.call();
+			}
 			super.close();
 		}
 
