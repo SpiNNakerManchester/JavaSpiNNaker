@@ -221,10 +221,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		DSEStorage storage = connection.getStorageInterface();
 		List<Ethernet> ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
-				ExecutionContext context = new ExecutionContext(txrx)) {
+		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
 			executor.submitTasks(ethernets.stream().map(
-					board -> () -> loadBoard(board, storage, bar, context)))
+					board -> () -> loadBoard(board, storage, bar)))
 					.awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
@@ -234,8 +233,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
-			ExecutionContext execContext) throws IOException, ProcessException,
+	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
+			throws IOException, ProcessException,
 			DataSpecificationException, StorageException {
 		List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
@@ -243,8 +242,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			return;
 		}
 		log.info("loading data onto {} cores on board", cores.size());
-		try (BoardWorker worker =
-				new BoardWorker(board, storage, bar, execContext)) {
+		try (BoardWorker worker = new BoardWorker(board, storage, bar)) {
 			HashMap<CoreToLoad, Integer> addresses =
 					new HashMap<CoreToLoad, Integer>();
 			for (CoreToLoad ctl : cores) {
@@ -430,20 +428,21 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private ExecutionContext execContext;
 
-		BoardWorker(Ethernet board, DSEStorage storage, Progress bar,
-				ExecutionContext execContext)
+		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException, ProcessException {
 			this.board = board;
 			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
 			this.bar = bar;
-			this.execContext = execContext;
+			this.execContext = new ExecutionContext(txrx);
 			connection = new ThrottledConnection(txrx, board,
 					gathererForChip.get(board.location).getIptag());
 		}
 
 		@Override
-		public void close() throws IOException {
+		public void close() throws IOException, ProcessException,
+		        DataSpecificationException {
+			execContext.close();
 			logContext.close();
 			connection.close();
 		}

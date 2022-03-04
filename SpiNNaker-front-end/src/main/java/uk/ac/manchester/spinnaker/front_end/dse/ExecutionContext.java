@@ -138,7 +138,8 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws DataSpecificationException, ProcessException,
+	        IOException {
 		// Check for missing
 		List<String> errors = new ArrayList<>();
 		for (CoreToFill toFill : regionsToFill) {
