@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BMP;
@@ -45,7 +44,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -651,15 +649,6 @@ class DMLTest extends SQLQueries {
 					assertEquals(0, u3.call(NO_USER));
 					assertEquals(0, u4.call(NO_USER));
 					u5.call();
-					// temp table dropped; the other calls shouldn't work
-					assertThrows(BadSqlGrammarException.class,
-							() -> u2.call(NO_NAME, INTERNAL));
-					assertThrows(BadSqlGrammarException.class,
-							() -> u3.call(NO_USER));
-					assertThrows(BadSqlGrammarException.class,
-							() -> u4.call(NO_USER));
-					assertThrows(BadSqlGrammarException.class,
-							() -> u5.call());
 				}
 			});
 		}
