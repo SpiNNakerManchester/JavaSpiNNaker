@@ -35,10 +35,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<form:options items="${ trustLevels }"/>
 	</form:select>
 	<br>
-	<form:label path="password">Password: </form:label>
-	<form:input path="password" type="password" />
-	<form:label path="hasPassword">Has Password: </form:label>
-	<form:checkbox path="hasPassword"/>
+	<c:choose>
+		<c:when test="${ user.internal }">
+			<form:label path="password">Password: </form:label>
+			<form:input path="password" type="password" />
+			<form:label path="hasPassword">Has Password: </form:label>
+			<form:checkbox path="hasPassword" />
+		</c:when>
+		<c:otherwise>
+			<%-- Apparently, we can't have readonly checkboxes. The reasons why
+				appear murky but are approximately "because Google doesn't feel
+				like it and is happy doing horrible workarounds" according to
+				https://github.com/whatwg/html/issues/2311
+
+				I could scream.
+			--%>
+			<label for="password">Password: </label>
+			<input id="password" type="password" disabled="true" />
+			<form:input path="password" type="hidden" />
+			<label for="hasPassword">Has Password: </label>
+			<input id="hasPassword" type="checkbox" value="false" disabled="disabled" />
+			<form:input path="hasPassword" type="hidden" />
+		</c:otherwise>
+	</c:choose>
 	<br>
 	<form:label path="isEnabled">Is enabled? </form:label>
 	<form:checkbox path="isEnabled"/>

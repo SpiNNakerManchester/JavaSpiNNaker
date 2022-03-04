@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import static java.util.Objects.isNull;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 
 import java.net.URI;
 
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -66,6 +68,18 @@ public abstract class ControllerUtils {
 	 */
 	public static ModelAndView error(String message) {
 		return new ModelAndView(MVC_ERROR, "error", message);
+	}
+
+	/**
+	 * Convert a problem with validation into a user-suitable error message.
+	 *
+	 * @param error
+	 *            The error detail.
+	 * @return The message.
+	 */
+	public static String errorMessage(ObjectError error) {
+		String msg = error.getDefaultMessage();
+		return isNull(msg) ? error.toString() : msg;
 	}
 
 	/**

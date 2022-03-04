@@ -24,6 +24,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_READER;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 
 import java.security.Principal;
@@ -43,7 +44,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.method.HandlerMethod;
@@ -151,13 +151,17 @@ public class SystemControllerImpl implements SystemController {
 	 * @return How to render this to the user.
 	 */
 	@ExceptionHandler(BindException.class)
-	private ModelAndView bindingError(BindingResult result) {
+	private ModelAndView bindingError(BindException result) {
 		if (result.hasGlobalErrors()) {
-			return error(result.getGlobalError().toString());
+			log.debug("binding problem", result);
+			return error(errorMessage(result.getGlobalError()));
 		} else if (result.hasFieldErrors()) {
-			return error(result.getFieldError().toString());
+			log.debug("binding problem", result);
+			return error(errorMessage(result.getFieldError()));
+		} else {
+			log.error("unknown binding error", result);
+			return error("unknown error");
 		}
-		return error("unknown error");
 	}
 
 	/**

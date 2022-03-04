@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
+import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
 
@@ -53,7 +54,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -281,14 +281,19 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@ExceptionHandler(BindException.class)
-	ModelAndView validationError(BindingResult result) {
+	ModelAndView validationError(BindException result) {
 		if (result.hasGlobalErrors()) {
-			return errors(result.getGlobalError().toString());
+			// I don't believe this is really reachable code
+			log.debug("binding problem", result);
+			return errors(errorMessage(result.getGlobalError()));
+		} else if (result.hasFieldErrors()) {
+			log.debug("binding problem", result);
+			return errors(errorMessage(result.getFieldError()));
+		} else {
+			// This should definitely be unreachable
+			log.error("unknown binding error", result);
+			return errors("unknown error");
 		}
-		if (result.hasFieldErrors()) {
-			return errors(result.getFieldError().toString());
-		}
-		return errors("unknown error");
 	}
 
 	/**

@@ -42,6 +42,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
@@ -78,6 +79,7 @@ public class UserControl extends DatabaseAwareBean {
 	private abstract class UserCheckSQL extends AbstractSQL {
 		private final Query userCheck = conn.query(GET_USER_ID);
 
+		/** See {@link SQLQueries#GET_USER_DETAILS}. */
 		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
 
 		private final Query getMembershipsOfUser =
@@ -91,6 +93,14 @@ public class UserControl extends DatabaseAwareBean {
 			super.close();
 		}
 
+		/**
+		 * Get a user.
+		 *
+		 * @param id
+		 *            User ID
+		 * @return Database row, if user exists.
+		 * @see SQLQueries#GET_USER_DETAILS
+		 */
 		Optional<Row> getUser(int id) {
 			return getUserDetails.call1(id);
 		}
@@ -309,8 +319,10 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	private final class GetUserSQL extends UserCheckSQL {
+		/** See {@link SQLQueries#GET_USER_DETAILS}. */
 		Query getUserDetails = conn.query(GET_USER_DETAILS);
 
+		/** See {@link SQLQueries#GET_USER_DETAILS_BY_NAME}. */
 		Query getUserDetailsByName = conn.query(GET_USER_DETAILS_BY_NAME);
 
 		@Override

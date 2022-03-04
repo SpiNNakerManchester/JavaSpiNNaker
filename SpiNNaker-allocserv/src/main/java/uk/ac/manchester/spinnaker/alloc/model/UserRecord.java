@@ -62,6 +62,8 @@ public final class UserRecord {
 
 	private Instant lastFailedLogin;
 
+	private boolean isInternal;
+
 	private Map<String, URI> groups;
 
 	/** Create an empty instance. */
@@ -87,6 +89,7 @@ public final class UserRecord {
 			setLastSuccessfulLogin(
 					row.getInstant("last_successful_login_timestamp"));
 			setLastFailedLogin(row.getInstant("last_fail_timestamp"));
+			isInternal = row.getBoolean("is_internal");
 		} finally {
 			// I mean it!
 			setPassword(null);
@@ -224,22 +227,43 @@ public final class UserRecord {
 		this.groups = groups;
 	}
 
+	/** @return Whether this is an internal user. */
+	@JsonIgnore
+	public boolean isInternal() {
+		return isInternal;
+	}
+
+	public void setInternal(boolean internal) {
+		this.isInternal = internal;
+	}
+
+	@JsonIgnore
+	private boolean isPasswordSetForAccount() {
+		return nonNull(hasPassword) && hasPassword;
+	}
+
 	/**
 	 * @return Whether this represents a request to use external authentication
 	 *         (instead of just not setting the password).
 	 */
 	@JsonIgnore
 	public boolean isExternallyAuthenticated() {
-		return isNull(password) && nonNull(hasPassword) && hasPassword;
+		return !isInternal;
 	}
 
+	@JsonIgnore
 	boolean isPasswordSet() {
 		return nonNull(password) && !password.trim().isEmpty();
 	}
 
-	@AssertTrue(message = "either set a password or mark for using OpenID")
+	@AssertTrue(message = "only set a password for non-OpenID accounts")
+	@JsonIgnore
 	boolean isAuthenticationSane() {
-		return isPasswordSet() || isExternallyAuthenticated();
+		if (isInternal) {
+			return isPasswordSet() || isPasswordSetForAccount();
+		} else {
+			return !isPasswordSet();
+		}
 	}
 
 	/**

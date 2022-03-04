@@ -1042,13 +1042,14 @@ public abstract class SQLQueries {
 	@ResultColumn("disabled")
 	@ResultColumn("last_successful_login_timestamp")
 	@ResultColumn("last_fail_timestamp")
+	@ResultColumn("is_internal")
 	@SingleRowResult
 	protected static final String GET_USER_DETAILS =
 			"SELECT user_id, user_name, "
 					+ "encrypted_password IS NOT NULL AS has_password, "
 					+ "trust_level, locked, disabled, "
 					+ "last_successful_login_timestamp, "
-					+ "last_fail_timestamp FROM user_info "
+					+ "last_fail_timestamp, is_internal FROM user_info "
 					+ "WHERE user_id = :user_id LIMIT 1";
 
 	/**
@@ -1066,13 +1067,14 @@ public abstract class SQLQueries {
 	@ResultColumn("disabled")
 	@ResultColumn("last_successful_login_timestamp")
 	@ResultColumn("last_fail_timestamp")
+	@ResultColumn("is_internal")
 	@SingleRowResult
 	protected static final String GET_USER_DETAILS_BY_NAME =
 			"SELECT user_id, user_name, "
 					+ "encrypted_password IS NOT NULL AS has_password, "
 					+ "trust_level, locked, disabled, "
 					+ "last_successful_login_timestamp, "
-					+ "last_fail_timestamp FROM user_info "
+					+ "last_fail_timestamp, is_internal FROM user_info "
 					+ "WHERE user_name = :user_name LIMIT 1";
 
 	/**
@@ -1087,8 +1089,7 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_LOCAL_USER_DETAILS =
 			"SELECT user_id, user_name, encrypted_password FROM user_info "
-					+ "WHERE user_name = :user_name "
-					+ "AND encrypted_password IS NOT NULL LIMIT 1";
+					+ "WHERE user_name = :user_name AND is_internal LIMIT 1";
 
 	/**
 	 * Get the ID of a particular group that a particular user must be a member
