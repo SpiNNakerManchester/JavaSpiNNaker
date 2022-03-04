@@ -413,6 +413,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					() -> authOpenIDAgainstDB(name, authorities, queries))) {
 				return null;
 			}
+		} catch (RuntimeException e) {
+			log.warn("serious problem when processing login for OpenID user {}",
+					name, e);
+			return null;
 		}
 		// Users from OpenID always have the same permissions
 		return new OpenIDDerivedAuthenticationToken(name, user, bearerToken);
@@ -1047,8 +1051,17 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 */
 			Optional<Integer> createdUser =
 					createUser(username, null, USER, queries.createUser);
-			createdUser.ifPresent(
-					id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
+			try {
+				createdUser.ifPresent(
+						id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
+			} catch (RuntimeException e) {
+				log.warn("problem when synchronizing group memberships for {}",
+						username, e);
+				throw e;
+			}
+			if (!createdUser.isPresent()) {
+				log.warn("failed to make user {}", username);
+			}
 			return createdUser.isPresent();
 		}
 		Row userInfo = r.get();
@@ -1056,6 +1069,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		int userId = userInfo.getInt("user_id");
 		synchOrgsAndCollabs(userId, orgs, collabs, queries);
 		if (userInfo.getBoolean("disabled")) {
+			log.info("user {} has a disabled account", username);
 			throw new DisabledException("account is disabled");
 		}
 		try {
