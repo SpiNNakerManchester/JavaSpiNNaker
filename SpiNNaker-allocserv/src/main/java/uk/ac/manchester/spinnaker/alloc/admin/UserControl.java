@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
@@ -30,6 +31,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -59,6 +61,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  */
 @Service
 public class UserControl extends DatabaseAwareBean {
+	private static final Logger log = getLogger(UserControl.class);
+
 	@Autowired
 	private PasswordServices passServices;
 
@@ -409,14 +413,21 @@ public class UserControl extends DatabaseAwareBean {
 		int adminId = getCurrentUserId(sql, adminUser);
 
 		if (nonNull(user.getUserName())) {
-			sql.setUserName.call(user.getUserName(), id);
+			if (sql.setUserName.call(user.getUserName(), id) > 0) {
+				log.info("setting user {} to name '{}'", id,
+						user.getUserName());
+			}
 		}
 
 		if (nonNull(user.getPassword())) {
-			sql.setUserPass.call(encPass, id);
+			if (sql.setUserPass.call(encPass, id) > 0) {
+				log.info("setting user {} to have password", id);
+			}
 		} else if (user.isExternallyAuthenticated()) {
 			// Forces external authentication
-			sql.setUserPass.call(null, id);
+			if (sql.setUserPass.call(null, id) > 0) {
+				log.info("setting user {} to NULL password", id);
+			}
 		} else {
 			// Weren't told to set the password
 			assert true;
@@ -424,16 +435,24 @@ public class UserControl extends DatabaseAwareBean {
 
 		if (nonNull(user.isEnabled()) && adminId != id) {
 			// Admins can't change their own disable state
-			sql.setUserDisabled.call(!user.isEnabled(), id);
+			if (sql.setUserDisabled.call(!user.isEnabled(), id) > 0) {
+				log.info("setting user {}( to {}", id,
+						user.isEnabled() ? "enabled" : "disabled");
+			}
 		}
 		if (nonNull(user.isLocked()) && !user.isLocked() && adminId != id) {
 			// Admins can't change their own locked state
-			sql.setUserLocked.call(user.isLocked(), id);
+			if (sql.setUserLocked.call(user.isLocked(), id) > 0) {
+				log.info("setting user {}( to {}", id,
+						user.isLocked() ? "locked" : "unlocked");
+			}
 		}
 
 		if (nonNull(user.getTrustLevel()) && adminId != id) {
 			// Admins can't change their own trust level
-			sql.setUserTrust.call(user.getTrustLevel(), id);
+			if (sql.setUserTrust.call(user.getTrustLevel(), id) > 0) {
+				log.info("setting user {}( to {}", id, user.getTrustLevel());
+			}
 		}
 
 		return sql.getUser(id).map(UserRecord::new)
