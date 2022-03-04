@@ -61,56 +61,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	<input type="submit" class="warningbutton" value="Delete this user" />
 </form>
 
-<c:if test="${ not empty user.quota }">
-	<h2>Quotas</h2>
-	<table>
-		<thead>
-			<tr>
-				<th colspan="2">Quotas</th>
-			</tr>
-			<tr>
-				<th>Machine</th>
-				<th>Remaining (board seconds)
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach items="${ user.quota }" var="q">
-				<tr>
-					<td>
-						<c:out value="${ q.key }" escapeXml="true" />
-					</td>
-					<td>
-						<form method="POST" action="${ addQuotaUri }">
-							<sec:csrfInput />
-							<input name="machine"
-									value="<c:out value="${ q.key }" escapeXml="true" />"
-									type="hidden"/>
-							<fmt:formatNumber value="${ q.value / 3600.0 }"
-									maxFractionDigits="3" /> board-hours
-							<c:if test="${ q.value <= 0 }">
-								<span class="quotawarning">Out of quota!</span>
-							</c:if>
-							<br>
-							Add Board-Hours
-							<button name="delta" value="1" type="submit">+1</button>
-							<button name="delta" value="10" type="submit">+10</button>
-							<button name="delta" value="100" type="submit">+100</button>
-							<button name="delta" value="1000" type="submit">+1000</button>
-							<br>
-							Remove Board-Hours
-							<button name="delta" value="-1" type="submit">-1</button>
-							<button name="delta" value="-10" type="submit">-10</button>
-							<button name="delta" value="-100" type="submit">-100</button>
-							<button name="delta" value="-1000" type="submit">-1000</button>
-						</form>
-					</td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-</c:if>
-<p>
-
 <jsp:include page="footer.jsp" />
 </body>
 </html>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,10 @@ import static java.util.Objects.nonNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.BOARD;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.GROUP;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.IMPORT;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.MEMBER;
 import static uk.ac.manchester.spinnaker.alloc.admin.AdminAPI.Paths.USER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
@@ -49,7 +53,9 @@ import javax.ws.rs.core.UriInfo;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
+import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 
@@ -61,9 +67,7 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 @Hidden
 @PreAuthorize(IS_ADMIN)
 public interface AdminAPI {
-	/**
-	 * Common paths in the interface.
-	 */
+	/** Common paths in the interface. */
 	interface Paths {
 		/** The location of the admin "service". */
 		String BASE_PATH = SERV + "/admin";
@@ -79,6 +83,12 @@ public interface AdminAPI {
 
 		/** User account control. */
 		String USER = "users";
+
+		/** User group control. */
+		String GROUP = "groups";
+
+		/** Group membership control. */
+		String MEMBER = "members";
 	}
 
 	/**
@@ -93,8 +103,8 @@ public interface AdminAPI {
 
 		private Description(UriInfo ui) {
 			UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
-			importMachines = b.build(Paths.IMPORT);
-			setBoardEnabled = b.build(Paths.BOARD);
+			importMachines = b.build(IMPORT);
+			setBoardEnabled = b.build(BOARD);
 		}
 	}
 
@@ -120,7 +130,7 @@ public interface AdminAPI {
 	@Hidden
 	@GET
 	@Produces(TEXT_PLAIN)
-	@Path(Paths.IMPORT)
+	@Path(IMPORT)
 	default String describeImport() {
 		return "This resource only really supports POST.";
 	}
@@ -133,7 +143,7 @@ public interface AdminAPI {
 	 */
 	@POST
 	@Consumes(APPLICATION_JSON)
-	@Path(Paths.IMPORT)
+	@Path(IMPORT)
 	void importMachinesByContent(
 			@NotNull @Valid MachineDefinitionLoader.Configuration definitions);
 
@@ -162,7 +172,7 @@ public interface AdminAPI {
 	 */
 	@GET
 	@Produces(TEXT_PLAIN)
-	@Path(Paths.BOARD)
+	@Path(BOARD)
 	@SuppressWarnings("checkstyle:parameternumber")
 	default boolean getBoardState(
 			@NotBlank(message = "machine name is required")
@@ -256,7 +266,7 @@ public interface AdminAPI {
 	@PUT
 	@Consumes(TEXT_PLAIN)
 	@Produces(TEXT_PLAIN)
-	@Path(Paths.BOARD)
+	@Path(BOARD)
 	@SuppressWarnings("checkstyle:parameternumber")
 	default boolean setBoardState(
 			@NotBlank(message = "machine name is required")
@@ -363,12 +373,14 @@ public interface AdminAPI {
 	 *
 	 * @param id
 	 *            The ID of the user
+	 * @param ui
+	 *            For building URIs.
 	 * @return Description of the user.
 	 */
 	@GET
 	@Path(USER + "/{id}")
 	@Produces(APPLICATION_JSON)
-	UserRecord describeUser(@PathParam("id") int id);
+	UserRecord describeUser(@PathParam("id") int id, @Context UriInfo ui);
 
 	/**
 	 * Update a particular user's details.
@@ -377,6 +389,8 @@ public interface AdminAPI {
 	 *            The ID of the user
 	 * @param user
 	 *            What to set the details to. {@code null} fields are ignored.
+	 * @param ui
+	 *            For building URIs.
 	 * @param security
 	 *            Used to check who the current user actually is.
 	 * @return The updated user details.
@@ -386,7 +400,7 @@ public interface AdminAPI {
 	@Consumes(APPLICATION_JSON)
 	@Produces(APPLICATION_JSON)
 	UserRecord updateUser(@PathParam("id") int id, @Valid UserRecord user,
-			@Context SecurityContext security);
+			@Context UriInfo ui, @Context SecurityContext security);
 
 	/**
 	 * Delete a user.
@@ -401,4 +415,126 @@ public interface AdminAPI {
 	@Path(USER + "/{id}")
 	Response deleteUser(@PathParam("id") int id,
 			@Context SecurityContext security);
+
+	/**
+	 * List the groups and the URIs used to describe and manipulate them.
+	 *
+	 * @param ui
+	 *            For building URIs.
+	 * @return A sorted map from group name to details-handling URI
+	 */
+	@GET
+	@Path(GROUP)
+	@Produces(APPLICATION_JSON)
+	Map<String, URI> listGroups(@Context UriInfo ui);
+
+	/**
+	 * Create a new group.
+	 *
+	 * @param group
+	 *            Description of group to create. Group name must be unique.
+	 * @param ui
+	 *            For building URIs.
+	 * @return REST response (CREATED on success)
+	 */
+	@POST
+	@Path(GROUP)
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
+	Response createGroup(@Valid GroupRecord group, @Context UriInfo ui);
+
+	/**
+	 * Read a particular group's details.
+	 *
+	 * @param groupId
+	 *            The ID of the group
+	 * @param ui
+	 *            For building URIs.
+	 * @return Description of the group.
+	 */
+	@GET
+	@Path(GROUP + "/{groupId}")
+	@Produces(APPLICATION_JSON)
+	GroupRecord describeGroup(@PathParam("groupId") int groupId,
+			@Context UriInfo ui);
+
+	/**
+	 * Update a particular group's details. This particularly includes the name
+	 * and the quota, but <em>excludes the memberships;</em> those are separate
+	 * resources.
+	 *
+	 * @param groupId
+	 *            The ID of the group
+	 * @param group
+	 *            The description of the group to update to be like.
+	 * @param ui
+	 *            For building URIs.
+	 * @return Description of the group.
+	 */
+	@PUT
+	@Path(GROUP + "/{groupId}")
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
+	GroupRecord updateGroup(@PathParam("groupId") int groupId,
+			@Valid GroupRecord group, @Context UriInfo ui);
+
+	/**
+	 * Delete a user.
+	 *
+	 * @param groupId
+	 *            The ID of the user
+	 * @return REST response
+	 */
+	@DELETE
+	@Path(GROUP + "/{groupId}")
+	Response deleteGroup(@PathParam("groupId") int groupId);
+
+	/**
+	 * Add a user to a group.
+	 *
+	 * @param groupId
+	 *            Which group to add to.
+	 * @param user
+	 *            Description of user to add. User name must be present.
+	 * @param ui
+	 *            For building URIs.
+	 * @return REST response (CREATED on success)
+	 */
+	@POST
+	@Path(GROUP + "/{groupId}/" + MEMBER)
+	@Consumes(APPLICATION_JSON)
+	@Produces(APPLICATION_JSON)
+	Response addMember(@PathParam("groupId") int groupId,
+			@Valid MemberRecord user, @Context UriInfo ui);
+
+	/**
+	 * Read a particular group's details.
+	 *
+	 * @param groupId
+	 *            The ID of the group
+	 * @param memberId
+	 *            The ID of the membership.
+	 * @param ui
+	 *            For building URIs.
+	 * @return Description of the membership.
+	 */
+	@GET
+	@Path(GROUP + "/{groupId}/" + MEMBER + "/{memberId}")
+	@Produces(APPLICATION_JSON)
+	MemberRecord describeMember(@PathParam("groupId") int groupId,
+			@PathParam("memberId") int memberId, @Context UriInfo ui);
+
+	/**
+	 * Delete a membership of a group.
+	 *
+	 * @param groupId
+	 *            The ID of the group
+	 * @param memberId
+	 *            The ID of the membership
+	 * @return REST response
+	 */
+	@DELETE
+	@Path(GROUP + "/{groupId}/" + MEMBER + "/{memberId}")
+	Response removeMember(@PathParam("groupId") int groupId,
+			@PathParam("memberId") int memberId);
 }

@@ -1,8 +1,8 @@
+<%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
 <%--
-Copyright (c) 2021 The University of Manchester
+Copyright (c) 2022 The University of Manchester
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,33 +18,29 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <jsp:include page="../head.jsp">
-	<jsp:param value="Create Local User" name="title"/>
+	<jsp:param value="Create Local Group" name="title"/>
 </jsp:include>
 <body>
 
-<h1>Create User</h1>
+<h1>Create Group</h1>
 
-<form:form method="POST" modelAttribute="user">
-	<form:label path="userName">User Name: </form:label>
-	<form:input path="userName" type="text"/>
-	<form:select path="trustLevel">
-		<form:option value="">pick a level</form:option>
-		<form:options items="${ trustLevels }"/>
-	</form:select>
+<form:form method="POST" modelAttribute="group">
+	<form:label path="name">Group Name: </form:label>
+	<form:input path="name" type="text" />
 	<br>
-	<form:label path="password">Password: </form:label>
-	<form:input path="password" type="password" />
-	<form:label path="hasPassword">Has Password: </form:label>
-	<form:checkbox path="hasPassword"/>
-	<br>
-	<form:label path="isEnabled">Is enabled? </form:label>
-	<form:checkbox path="isEnabled"/>
+	<form:label path="quota">Group Quota: </form:label>
+	<form:input path="quota" type="text" id="quotainput" />
+	&nbsp;
+	<form:label path="quotad">Is quota enabled? </form:label>
+	<form:checkbox path="quotad" onchange="quotachange(this.value);" />
+	<script type="text/javascript">
+		function quotachange(value) {
+			document.getElementById("quotainput").disabled = !value;
+		}
+	</script>
 	<p>
 	<input type="submit" value="Create" />
 </form:form>
-
-<p>
-<em>Note that users created with this form are not added to any group by default.</em>
 
 <jsp:include page="footer.jsp" />
 </body>

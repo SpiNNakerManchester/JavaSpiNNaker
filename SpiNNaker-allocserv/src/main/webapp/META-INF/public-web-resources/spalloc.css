@@ -34,6 +34,10 @@ footer {
 	font-size: small;
 }
 
+.minordetail {
+	font-size: small;
+	color: #909090;
+}
 .version {
 	font-size: x-small;
 	opacity: 50%;

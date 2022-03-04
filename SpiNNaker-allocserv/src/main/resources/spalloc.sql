@@ -1,4 +1,4 @@
--- Copyright (c) 2021 The University of Manchester
+-- Copyright (c) 2021-2022 The University of Manchester
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -36,6 +36,11 @@ FROM movement_directions JOIN directions
 
 CREATE TABLE IF NOT EXISTS board_models (
 	model INTEGER PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS group_types (
+	"id" INTEGER PRIMARY KEY,
+	"name" TEXT UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS machines (
@@ -175,14 +180,18 @@ CREATE TABLE IF NOT EXISTS jobs (
 	allocation_timestamp INTEGER, -- timestamp
 	allocation_size INTEGER,
 	allocated_root INTEGER, -- set by trigger
-	accounted_for INTEGER NOT NULL DEFAULT (0) CHECK (accounted_for IN (0, 1))
+	accounted_for INTEGER NOT NULL DEFAULT (0) CHECK (accounted_for IN (0, 1)),
+	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE RESTRICT
+	-- We do not check that the user is necessarily still a member of the group;
+	-- that's only a check carried out by the application on job creation. This
+	-- is *by design*; users may leave groups, but their jobs do not.
 );
 
 CREATE VIEW IF NOT EXISTS jobs_usage(
-	machine_id, job_id, owner, quota_id, "size", "start", "finish", "duration",
-	"usage", "complete") AS
+	machine_id, job_id, owner, group_id, quota, "size", "start", "finish",
+	"duration", "usage", "complete") AS
 SELECT
-	jobs.machine_id, job_id, owner, quota_id, allocation_size,
+	machine_id, job_id, owner, group_id, groups.quota, allocation_size,
 	allocation_timestamp, death_timestamp,
 	COALESCE(
 		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
@@ -191,8 +200,7 @@ SELECT
 		COALESCE(death_timestamp, CAST(strftime('%s','now') AS INTEGER)) - allocation_timestamp,
 		0),
 	job_state = 4 -- DESTROYED
-FROM jobs LEFT JOIN quotas
-	ON jobs.owner = quotas.user_id AND jobs.machine_id = quotas.machine_id
+FROM jobs JOIN groups USING (group_id)
 WHERE NOT accounted_for;
 
 -- When the job is created, update the right timestamp
@@ -298,19 +306,50 @@ CREATE TABLE IF NOT EXISTS user_info (
 	locked INTEGER NOT NULL DEFAULT (0) CHECK (locked IN (0, 1)),
 	last_fail_timestamp INTEGER NOT NULL DEFAULT (0),
 	-- Administrative disablement support
-	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1))
+	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1)),
+	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
+		encrypted_password IS NOT NULL) VIRTUAL
 );
 
-CREATE TABLE IF NOT EXISTS quotas (
-	quota_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS groups (
+	group_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	group_name TEXT UNIQUE NOT NULL,
+	quota INTEGER, -- If NULL, no quota applies; care required, could be LARGE
+	group_type INTEGER NOT NULL DEFAULT (0) REFERENCES group_types(id) ON DELETE RESTRICT,
+	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
+		group_type = 0) VIRTUAL
+);
+
+-- Many-to-many relationship model
+CREATE TABLE IF NOT EXISTS group_memberships (
+	membership_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	user_id INTEGER NOT NULL REFERENCES user_info(user_id) ON DELETE CASCADE,
-	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE CASCADE,
-	quota INTEGER -- If NULL, no quota applies; care required, could be large
+	group_id INTEGER NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE
 );
--- No user can have more than one quota for a particular machine
-CREATE UNIQUE INDEX IF NOT EXISTS quotaSanity ON quotas(
-    user_id, machine_id
+-- No user can be in a group more than once!
+CREATE UNIQUE INDEX IF NOT EXISTS membershipSanity ON group_memberships(
+	user_id, group_id
 );
+-- Internal users can only be in internal groups.
+-- External (OIDC) users can only be in external groups.
+CREATE TRIGGER IF NOT EXISTS userGroupSanity
+AFTER INSERT ON group_memberships
+WHEN
+	(SELECT user_info.is_internal FROM user_info
+		WHERE user_info.user_id = NEW.user_id) != (
+	SELECT groups.is_internal FROM groups
+		WHERE groups.group_id = NEW.group_id)
+BEGIN
+	SELECT RAISE(FAIL, 'group and user type don''t match');
+END;
+
+-- Simulate legacy view
+CREATE VIEW IF NOT EXISTS quotas (quota_id, user_id, machine_id, quota)
+AS SELECT
+	groups.group_id, user_info.user_id, machines.machine_id, groups.quota
+FROM groups LEFT JOIN group_memberships USING (group_id)
+LEFT JOIN user_info USING (user_id)
+LEFT JOIN machines;
 
 -- Automatically suggested indices
 CREATE INDEX IF NOT EXISTS 'boards_allocated_job' ON 'boards'('allocated_job'); --> jobs(job_id)

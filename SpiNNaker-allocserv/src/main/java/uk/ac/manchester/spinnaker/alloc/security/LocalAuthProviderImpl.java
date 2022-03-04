@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.ORGANISATION;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
@@ -46,6 +49,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -64,7 +68,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -74,11 +78,15 @@ import org.springframework.stereotype.Service;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
+import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
+import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 
 /**
  * Does authentication against users defined entirely in the database. This
@@ -105,36 +113,89 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@Autowired
 	private PasswordServices passServices;
 
+	@Autowired
+	private UserControl userController;
+
 	private static final String DUMMY_USER = "user1";
 
 	private static final String DUMMY_PASSWORD = "user1Pass";
 
+	private Optional<UserRecord> makeInitUser(String username) {
+		if (!authProps.isAddDummyUser()) {
+			return Optional.empty();
+		}
+		String pass = DUMMY_PASSWORD;
+		boolean poorPassword = true;
+		if (authProps.isDummyRandomPass()) {
+			pass = passServices.generatePassword();
+			poorPassword = false;
+		}
+		if (!createUser(username, pass, ADMIN)) {
+			// User creation failed; probably already exists, which is OK
+			return Optional.empty();
+		}
+		if (authProps.isDummyRandomPass()) {
+			log.info("admin user {} has password: {}", username, pass);
+		}
+		if (poorPassword) {
+			log.warn("user {} has default password!", username);
+		}
+		return Optional.of(userController.getUser(username, null)
+				.orElseThrow(() -> new SetupException(
+						"default user was created, yet wasn't found!")));
+	}
+
+	private Optional<GroupRecord> makeInitGroup(String groupname) {
+		if (groupname.isEmpty()) {
+			// No system group name, so ignore group setup
+			return Optional.empty();
+		}
+		GroupRecord template = new GroupRecord();
+		template.setGroupName(groupname);
+		// What should the default quota be here? Using no-quota-at-all for now
+		template.setQuota(null);
+		try {
+			return userController.createGroup(template, INTERNAL).map(g -> {
+				log.info("system group '{}' created", groupname);
+				return g;
+			});
+		} catch (DataIntegrityViolationException e) {
+			if (e.getMessage().contains("A UNIQUE constraint failed")) {
+				// Already exists; no big deal
+				return Optional.empty();
+			}
+			throw e;
+		}
+	}
+
 	@PostConstruct
 	private void initUserIfNecessary() {
-		if (authProps.isAddDummyUser()) {
-			String pass = DUMMY_PASSWORD;
-			boolean poorPassword = true;
-			if (authProps.isDummyRandomPass()) {
-				pass = passServices.generatePassword();
-				poorPassword = false;
-			}
-			if (createUser(DUMMY_USER, pass, ADMIN,
-					quotaProps.getDefaultQuota())) {
-				if (authProps.isDummyRandomPass()) {
-					log.info("admin user {} has password: {}", DUMMY_USER,
-							pass);
-				}
-				if (poorPassword) {
-					log.warn("user {} has default password!", DUMMY_USER);
-				}
-			}
+		// User setup
+		Optional<UserRecord> user = makeInitUser(DUMMY_USER);
+
+		// Group setup
+		Optional<GroupRecord> group = makeInitGroup(authProps.getSystemGroup());
+
+		// Connect the two if we made them both
+		if (user.isPresent() && group.isPresent() && !userController
+				.addUserToGroup(user.get(), group.get()).isPresent()) {
+			log.warn("user {} was not added to default group {}",
+					user.get().getUserName(), group.get().getGroupName());
+		}
+	}
+
+	private static class SetupException extends RuntimeException {
+		private static final long serialVersionUID = -3915472090182223715L;
+
+		SetupException(String message) {
+			super(message);
 		}
 	}
 
 	@Override
 	@PreAuthorize(IS_ADMIN)
 	public boolean createUser(String username, String password,
-			TrustLevel trustLevel, long quota) {
+			TrustLevel trustLevel) {
 		String name = username.trim();
 		if (name.isEmpty()) {
 			// Won't touch the DB if the username is empty
@@ -142,10 +203,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		String encPass = passServices.encodePassword(password);
 		try (Connection conn = getConnection();
-				Update createUser = conn.update(CREATE_USER);
-				Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES)) {
-			return conn.transaction(() -> createUser(username, encPass,
-					trustLevel, quota, createUser, addQuota).isPresent());
+				Update createUser = conn.update(CREATE_USER)) {
+			return conn.transaction(
+					() -> createUser(username, encPass, trustLevel, createUser)
+							.isPresent());
 		}
 	}
 
@@ -160,8 +221,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            that needs to authenticate by another mechanism.
 	 * @param trustLevel
 	 *            What level of permissions to grant
-	 * @param quota
-	 *            How much quota to allocate
 	 * @param createUser
 	 *            SQL statement
 	 * @param addQuota
@@ -169,18 +228,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @return The user ID if the user was successfully created.
 	 */
 	private Optional<Integer> createUser(String username, String encPass,
-			TrustLevel trustLevel, long quota, Update createUser,
-			Update addQuota) {
-		Optional<Integer> userId =
-				createUser.key(username, encPass, trustLevel, false);
-		userId.ifPresent(id -> {
-			addQuota.call(userId, quota);
-			log.info(
-					"added user {} with trust level {} and "
-							+ "quota {} board-seconds",
-					username, trustLevel, quota);
-		});
-		return userId;
+			TrustLevel trustLevel, Update createUser) {
+		return createUser.key(username, encPass, trustLevel, false)
+				.map(userId -> {
+					log.info("added user {} with trust level {}", username,
+							trustLevel);
+					return userId;
+				});
 	}
 
 	/** Marks an authentication that we've already taken a decision about. */
@@ -359,6 +413,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					() -> authOpenIDAgainstDB(name, authorities, queries))) {
 				return null;
 			}
+		} catch (RuntimeException e) {
+			log.warn("serious problem when processing login for OpenID user {}",
+					name, e);
+			return null;
 		}
 		// Users from OpenID always have the same permissions
 		return new OpenIDDerivedAuthenticationToken(name, user, bearerToken);
@@ -507,7 +565,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final Update createUser = conn.update(CREATE_USER);
 
-		private final Update addQuota = conn.update(ADD_QUOTA_FOR_ALL_MACHINES);
+		private final Update createGroup =
+				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
 
 		/**
 		 * Make an instance.
@@ -517,7 +576,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		@Override
 		public void close() {
-			addQuota.close();
+			createGroup.close();
 			createUser.close();
 			loginFailure.close();
 			loginSuccess.close();
@@ -536,6 +595,21 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		Optional<Row> getUser(String username) {
 			return getUserBlocked.call1(username);
+		}
+
+		/**
+		 * Create a group if it doesn't already exist.
+		 *
+		 * @param name
+		 *            Unique name of the group
+		 * @param type
+		 *            Type of group
+		 * @param quota
+		 *            Size of quota
+		 * @return Whether a group was created.
+		 */
+		boolean createGroup(String name, GroupType type, Long quota) {
+			return createGroup.call(name, quota, type) > 0;
 		}
 
 		/**
@@ -585,12 +659,87 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	private static String makeCollabAuthorityName(String collabClaimed) {
-		return "COLLAB_" + collabClaimed;
-	}
+	/**
+	 * Collection of queries for setting the group memberships of a user. These
+	 * are queries that would be part of {@link AuthQueries} except for the
+	 * dance of handling temporary database tables.
+	 * <p>
+	 * Use this class by calling {@link #define(String,GroupType)} several
+	 * times, and then calling {@link #apply(int)} once. Closing this resource
+	 * removes temporary storage; it does not support nested use.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class GroupSynch extends AbstractSQL {
+		private final Update insert;
 
-	private static String makeOrgAuthorityName(String collabClaimed) {
-		return "ORG_" + collabClaimed;
+		private final Update add;
+
+		private final Update remove;
+
+		GroupSynch(AuthQueries sql) {
+			super(sql.getConnection());
+			try (Update make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
+				make.call();
+			}
+			insert = conn.update(GROUP_SYNC_INSERT_TEMP_ROW);
+			add = conn.update(GROUP_SYNC_ADD_GROUPS);
+			remove = conn.update(GROUP_SYNC_REMOVE_GROUPS);
+		}
+
+		@Override
+		public void close() {
+			remove.close();
+			add.close();
+			insert.close();
+			/*
+			 * Seems we can only drop a temporary table if there are no (other)
+			 * open statements that refer to it *AND* there is no transaction
+			 * open that used it. Or is that no connection? Either way,
+			 * SQLITE_LOCKED is not a desired failure state!
+			 *
+			 * https://sqlite.org/forum/forumpost/433d2fdb07fc8f13 says some of
+			 * the constraints, but not all; the need for the transaction to be
+			 * closed comes from elsewhere in that thread.
+			 *
+			 * Fortunately, we can just delete the contents of the temporary
+			 * table instead, and that's just as good *and can be done in the
+			 * transaction*.
+			 */
+			try (Update drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
+				drop.call();
+			}
+			super.close();
+		}
+
+		/**
+		 * List one of the groups that we want a user to be a member of. We're
+		 * building a set of these.
+		 *
+		 * @param name
+		 *            The name of the group
+		 * @param type
+		 *            The type of the group
+		 */
+		void define(String name, GroupType type) {
+			insert.call(name, type);
+		}
+
+		/**
+		 * Apply the set of groups to a user. This will become (with minimal
+		 * changes) the set of groups that they are members of.
+		 *
+		 * @param userId
+		 *            What user are we talking about
+		 */
+		void apply(int userId) {
+			int added = add.call(userId);
+			int removed = remove.call(userId);
+			if (added > 0 || removed > 0) {
+				log.info("changed count of groups for user {}: +{}/-{}", userId,
+						added, removed);
+			}
+		}
 	}
 
 	class CollabratoryAuthority extends SimpleGrantedAuthority {
@@ -599,7 +748,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		private final String collabratory;
 
 		CollabratoryAuthority(String collabClaimed) {
-			super(makeCollabAuthorityName(collabClaimed));
+			super("COLLAB_" + collabClaimed);
 			collabratory = collabClaimed;
 		}
 
@@ -614,7 +763,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		private final String organisation;
 
 		OrganisationAuthority(String orgClaimed) {
-			super(makeOrgAuthorityName(orgClaimed));
+			super("ORG_" + orgClaimed);
 			organisation = orgClaimed;
 		}
 
@@ -626,7 +775,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private static final Pattern COLLAB_MATCHER =
 			Pattern.compile("^collab-(.*)-(admin|editor|viewer)$");
 
-	private boolean collabToAuthority(String source, List<String> claim,
+	/**
+	 * Convert a list of claimed collabs into authorities.
+	 *
+	 * @param claim
+	 *            The (sub-)claim of collabs.
+	 * @param results
+	 *            Where to add the generated authorities.
+	 * @return Whether we processed a claim.
+	 */
+	private boolean collabToAuthority(List<String> claim,
 			Collection<GrantedAuthority> results) {
 		if (isNull(claim)) {
 			return false;
@@ -635,8 +793,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		for (String collab : claim) {
 			String reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
 			if (!seen.contains(reduced)) {
-				log.info("CLAIMED MEMBERSHIP OF COLLABRATORY from {}: {}",
-						source, collab);
 				results.add(new CollabratoryAuthority(reduced));
 				seen.add(reduced);
 			}
@@ -644,14 +800,25 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return true;
 	}
 
-	private boolean orgToAuthority(String source, List<String> claim,
+	/**
+	 * Convert a list of claimed organisations into authorities.
+	 *
+	 * @param claim
+	 *            The claim of organisations.
+	 * @param results
+	 *            Where to add the generated authorities.
+	 * @return Whether we processed a claim.
+	 */
+	private boolean orgToAuthority(List<String> claim,
 			Collection<GrantedAuthority> results) {
 		if (isNull(claim)) {
 			return false;
 		}
 		for (String org : claim) {
-			log.info("CLAIMED MEMBERSHIP OF ORGANIZATION from {}: {}", source,
-					org);
+			/*
+			 * No special processing required; orgs start with / in name and are
+			 * already guaranteed to be unique.
+			 */
 			results.add(new OrganisationAuthority(org));
 		}
 		return true;
@@ -685,35 +852,30 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return emptyList();
 	}
 
-	@Override
-	public void mapAuthorities(OidcUserAuthority user,
+	private void mapAuthorities(String source, ClaimAccessor claimSet,
 			Collection<GrantedAuthority> results) {
-		OidcUserInfo userInfo = user.getUserInfo();
-		if (!collabToAuthority("userInfo",
-				getTeamsFromClaim(userInfo.getClaim("roles")), results)) {
-			log.info("no team in authority");
-		}
-		if (!orgToAuthority("userInfo", userInfo.getClaimAsStringList("unit"),
+		if (!collabToAuthority(getTeamsFromClaim(claimSet.getClaim("roles")),
 				results)) {
-			log.info("no unit in authority");
+			log.warn("no team in {}", source);
 		}
+		if (!orgToAuthority(claimSet.getClaimAsStringList("unit"), results)) {
+			log.warn("no unit in {}", source);
+		}
+		// All OpenID users get read-write access
 		results.add(new SimpleGrantedAuthority(GRANT_READER));
 		results.add(new SimpleGrantedAuthority(GRANT_USER));
 	}
 
 	@Override
+	public void mapAuthorities(OidcUserAuthority user,
+			Collection<GrantedAuthority> results) {
+		mapAuthorities("userinfo", user.getUserInfo(), results);
+	}
+
+	@Override
 	public void mapAuthorities(Jwt token,
 			Collection<GrantedAuthority> results) {
-		if (!collabToAuthority("token",
-				getTeamsFromClaim(token.getClaim("roles")), results)) {
-			log.info("no team in token");
-		}
-		if (!orgToAuthority("token", token.getClaimAsStringList("unit"),
-				results)) {
-			log.info("no unit in token");
-		}
-		results.add(new SimpleGrantedAuthority(GRANT_READER));
-		results.add(new SimpleGrantedAuthority(GRANT_USER));
+		mapAuthorities("token", token, results);
 	}
 
 	private static final class LocalAuthResult {
@@ -897,11 +1059,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No such user; need to inflate one now. If we successfully make
 			 * the user, they're also immediately authorised.
 			 */
-			Optional<Integer> createdUser = createUser(username, null, USER,
-					quotaProps.getDefaultQuota(), queries.createUser,
-					queries.addQuota);
-			createdUser.ifPresent(
-					id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
+			Optional<Integer> createdUser =
+					createUser(username, null, USER, queries.createUser);
+			try {
+				createdUser.ifPresent(
+						id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
+			} catch (RuntimeException e) {
+				log.warn("problem when synchronizing group memberships for {}",
+						username, e);
+				throw e;
+			}
+			if (!createdUser.isPresent()) {
+				log.warn("failed to make user {}", username);
+			}
 			return createdUser.isPresent();
 		}
 		Row userInfo = r.get();
@@ -909,6 +1079,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		int userId = userInfo.getInt("user_id");
 		synchOrgsAndCollabs(userId, orgs, collabs, queries);
 		if (userInfo.getBoolean("disabled")) {
+			log.info("user {} has a disabled account", username);
 			throw new DisabledException("account is disabled");
 		}
 		try {
@@ -935,20 +1106,43 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private void inflateCollabratoryGroup(String collab, AuthQueries queries) {
-		// TODO create a collab (with default props) if it doesn't exist
-		log.info("would create collabratory '{}' here", collab);
+		if (queries.createGroup(collab, COLLABRATORY,
+				quotaProps.getDefaultCollabQuota())) {
+			log.info("created collabratory '{}'", collab);
+		}
 	}
 
 	private void inflateOrganisationGroup(String org, AuthQueries queries) {
-		// TODO create an org (with default props) if it doesn't exist
-		log.info("would create organisation '{}' here", org);
+		if (queries.createGroup(org, ORGANISATION,
+				quotaProps.getDefaultOrgQuota())) {
+			log.info("created organisation '{}'", org);
+		}
 	}
 
+	/**
+	 * Synchronise the lists of different types of groups for a user. Messy
+	 * because we want to do minimal inserts and deletes.
+	 *
+	 * @param userId
+	 *            Which user?
+	 * @param orgs
+	 *            The list of organisation names
+	 * @param collabs
+	 *            The list of collab names
+	 * @param queries
+	 *            How to touch the DB
+	 */
 	private void synchOrgsAndCollabs(int userId, List<String> orgs,
 			List<String> collabs, AuthQueries queries) {
-		// TODO make this user's orgs and collabs be exactly these
-		log.info("would set user {} to have orgs = {} and collabs = {}", userId,
-				orgs, collabs);
+		try (GroupSynch synch = new GroupSynch(queries)) {
+			for (String org : orgs) {
+				synch.define(org, ORGANISATION);
+			}
+			for (String collab : collabs) {
+				synch.define(collab, COLLABRATORY);
+			}
+			synch.apply(userId);
+		}
 	}
 
 	@Override

@@ -19,9 +19,9 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assumeWritable;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
 import org.junit.jupiter.api.AfterEach;
@@ -87,10 +87,6 @@ class DbBasicTest {
 				assertEquals(1, rows, "should be only one row in query result");
 			});
 		}
-	}
-
-	private static void assumeWritable(Connection c) {
-		assumeFalse(c.isReadOnly(), "connection is read-only");
 	}
 
 	@Test

@@ -202,6 +202,13 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 	}
 
+	private static String trim(String str) {
+		if (isNull(str)) {
+			return null;
+		}
+		return str.trim();
+	}
+
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
@@ -210,8 +217,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 		// Async because it involves getting a write lock
 		bgAction(response, () -> {
-			Optional<Job> jj = core.createJob(req.owner.trim(), crds,
-					req.machineName, req.tags, req.keepaliveInterval,
+			Optional<Job> jj = core.createJob(trim(req.owner), trim(req.group),
+					crds, req.machineName, req.tags, req.keepaliveInterval,
 					req.maxDeadBoards, mapper.writeValueAsBytes(req));
 			if (!jj.isPresent()) {
 				// Most likely reason for failure

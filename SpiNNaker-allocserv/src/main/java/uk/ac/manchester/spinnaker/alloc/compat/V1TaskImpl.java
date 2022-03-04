@@ -53,6 +53,7 @@ import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -118,13 +119,18 @@ class V1TaskImpl extends V1CompatTask {
 	/** Encoded form of our special permissions token. */
 	private Permit permit;
 
+	/** Name of the group for accounting purposes. */
+	private String groupName;
+
 	V1TaskImpl(V1CompatService srv, Socket sock) throws IOException {
 		super(srv, sock);
 	}
 
 	@PostConstruct
 	void initUser() {
-		permit = new Permit(mainProps.getCompat().getServiceUser());
+		CompatibilityProperties props = mainProps.getCompat();
+		permit = new Permit(props.getServiceUser());
+		groupName = props.getServiceGroup();
 	}
 
 	@Override
@@ -230,37 +236,39 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	@Override
-	protected final Integer createJobNumBoards(int numBoards,
+	protected final Optional<Integer> createJobNumBoards(int numBoards,
 			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(new CreateNumBoards(numBoards), kwargs, cmd)
-				.orElse(null);
+		return createJob(new CreateNumBoards(numBoards), kwargs, cmd);
 	}
 
 	@Override
-	protected final Integer createJobRectangle(int width, int height,
+	protected final Optional<Integer> createJobRectangle(int width, int height,
 			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(new CreateDimensions(width, height), kwargs, cmd)
-				.orElse(null);
+		return createJob(new CreateDimensions(width, height), kwargs, cmd);
 	}
 
 	@Override
-	protected final Integer createJobSpecificBoard(TriadCoords coords,
+	protected final Optional<Integer> createJobSpecificBoard(TriadCoords coords,
 			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd)
-				.orElse(null);
+		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd);
 	}
 
 	private Optional<Integer> createJob(SpallocAPI.CreateDescriptor create,
 			Map<String, Object> kwargs, byte[] cmd) {
+		String owner = kwargs.get("owner").toString();
 		Integer maxDead = parseDec(kwargs.get("max_dead_boards"));
 		Duration keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
 		String machineName = (String) kwargs.get("machine");
 		List<String> ts = tags(kwargs.get("tags"), isNull(machineName));
-
-		return permit
-				.authorize(() -> spalloc.createJob(permit.name, create,
-						machineName, ts, keepalive, maxDead, cmd))
-				.map(Job::getId);
+		Optional<Job> result =
+				permit.authorize(() -> spalloc.createJob(permit.name, groupName,
+						create, machineName, ts, keepalive, maxDead, cmd));
+		result.ifPresent(
+				j -> log.info(
+						"made compatibility-mode job {} "
+								+ "on behalf of claimed user {}",
+						j.getId(), owner));
+		return result.map(Job::getId);
 	}
 
 	@Override

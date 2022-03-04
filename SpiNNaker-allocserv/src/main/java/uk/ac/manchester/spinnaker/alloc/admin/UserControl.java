@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.int64;
+import static java.util.function.Function.identity;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
@@ -42,13 +42,17 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
+import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
- * User administration controller.
+ * User and group administration DAO.
  *
  * @author Donal Fellows
  */
@@ -57,40 +61,70 @@ public class UserControl extends DatabaseAwareBean {
 	@Autowired
 	private PasswordServices passServices;
 
-	private abstract class AccessQuotaSQL extends AbstractSQL {
-		private final Query getQuotas = conn.query(GET_QUOTA_DETAILS);
-
-		private final Query userCheck = conn.query(GET_USER_ID);
+	private final class AllUsersSQL extends AbstractSQL {
+		private final Query allUsers = conn.query(LIST_ALL_USERS);
 
 		@Override
 		public void close() {
-			getQuotas.close();
-			userCheck.close();
+			allUsers.close();
 			super.close();
+		}
+
+		MappableIterable<Row> allUsers() {
+			return allUsers.call();
 		}
 	}
 
-	private final class CreateSQL extends AccessQuotaSQL {
-		private final Update createUser = conn.update(CREATE_USER);
-
-		private final Update makeQuotas = conn.update(CREATE_QUOTA);
-
-		private final Update makeDefaultQuotas =
-				conn.update(CREATE_QUOTAS_FROM_DEFAULTS);
+	private abstract class UserCheckSQL extends AbstractSQL {
+		private final Query userCheck = conn.query(GET_USER_ID);
 
 		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
+
+		private final Query getMembershipsOfUser =
+				conn.query(GET_MEMBERSHIPS_OF_USER);
+
+		@Override
+		public void close() {
+			userCheck.close();
+			getUserDetails.close();
+			getMembershipsOfUser.close();
+			super.close();
+		}
+
+		Optional<Row> getUser(int id) {
+			return getUserDetails.call1(id);
+		}
+
+		Function<UserRecord, UserRecord>
+				populateMemberships(Function<MemberRecord, URI> urlGen) {
+			if (isNull(urlGen)) {
+				return identity();
+			}
+			return user -> {
+				user.setGroups(getMembershipsOfUser.call(user.getUserId())
+						.map(UserControl::member).toMap(TreeMap::new,
+								MemberRecord::getGroupName, urlGen));
+				return user;
+			};
+		}
+	}
+
+	private final class CreateSQL extends UserCheckSQL {
+		private final Update createUser = conn.update(CREATE_USER);
 
 		@Override
 		public void close() {
 			createUser.close();
-			makeQuotas.close();
-			makeDefaultQuotas.close();
-			getUserDetails.close();
 			super.close();
+		}
+
+		Optional<Integer> createUser(String name, String encPass,
+				TrustLevel trustLevel, boolean disabled) {
+			return createUser.key(name, encPass, trustLevel, disabled);
 		}
 	}
 
-	private final class UpdateAllSQL extends AccessQuotaSQL {
+	private final class UpdateAllSQL extends UserCheckSQL {
 		private final Update setUserName = conn.update(SET_USER_NAME);
 
 		private final Update setUserPass = conn.update(SET_USER_PASS);
@@ -101,10 +135,6 @@ public class UserControl extends DatabaseAwareBean {
 
 		private final Update setUserTrust = conn.update(SET_USER_TRUST);
 
-		private final Update setUserQuota = conn.update(SET_USER_QUOTA);
-
-		private final Query getUserDetails = conn.query(GET_USER_DETAILS);
-
 		@Override
 		public void close() {
 			setUserName.close();
@@ -112,13 +142,11 @@ public class UserControl extends DatabaseAwareBean {
 			setUserDisabled.close();
 			setUserLocked.close();
 			setUserTrust.close();
-			setUserQuota.close();
-			getUserDetails.close();
 			super.close();
 		}
 	}
 
-	private final class UpdatePassSQL extends AccessQuotaSQL {
+	private final class UpdatePassSQL extends UserCheckSQL {
 		private Query getPasswordedUser = conn.query(GET_LOCAL_USER_DETAILS);
 
 		private Update setPassword = conn.update(SET_USER_PASS);
@@ -131,7 +159,7 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
-	private final class DeleteUserSQL extends AccessQuotaSQL {
+	private final class DeleteUserSQL extends UserCheckSQL {
 		private final Query getUserName = conn.query(GET_USER_DETAILS);
 
 		private final Update deleteUser = conn.update(DELETE_USER);
@@ -144,6 +172,83 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
+	private final class GroupsSQL extends AbstractSQL {
+		private final Query listGroups = conn.query(LIST_ALL_GROUPS);
+
+		private final Query getUsers = conn.query(GET_USERS_OF_GROUP);
+
+		private final Query getGroupId = conn.query(GET_GROUP_BY_ID);
+
+		private final Query getGroupName = conn.query(GET_GROUP_BY_NAME);
+
+		private final Update insertGroup = conn.update(CREATE_GROUP);
+
+		private final Query updateGroup = conn.query(UPDATE_GROUP);
+
+		private final Query deleteGroup = conn.query(DELETE_GROUP);
+
+		@Override
+		public void close() {
+			listGroups.close();
+			getUsers.close();
+			getGroupId.close();
+			getGroupName.close();
+			insertGroup.close();
+			updateGroup.close();
+			deleteGroup.close();
+			super.close();
+		}
+
+		MappableIterable<Row> listGroups() {
+			return listGroups.call();
+		}
+
+		Optional<Row> getGroupId(int id) {
+			return getGroupId.call1(id);
+		}
+
+		Optional<Row> getGroupName(String name) {
+			return getGroupName.call1(name);
+		}
+
+		Optional<Integer> insertGroup(String name, Optional<Long> quota,
+				GroupType groupType) {
+			return insertGroup.key(name, quota, groupType);
+		}
+
+		public Optional<Row> updateGroup(int id, String name,
+				Optional<Long> quota) {
+			return updateGroup.call1(name, quota.orElse(null), id);
+		}
+
+		Optional<Row> deleteGroup(int id) {
+			return deleteGroup.call1(id);
+		}
+
+		Function<GroupRecord, GroupRecord>
+				populateMemberships(Function<MemberRecord, URI> urlGen) {
+			if (isNull(urlGen)) {
+				return identity();
+			}
+			return group -> {
+				group.setMembers(getUsers.call(group.getGroupId())
+						.map(UserControl::member).toMap(TreeMap::new,
+								MemberRecord::getUserName, urlGen));
+				return group;
+			};
+		}
+	}
+
+	private static MemberRecord member(Row row) {
+		MemberRecord m = new MemberRecord();
+		m.setId(row.getInt("membership_id"));
+		m.setGroupId(row.getInt("group_id"));
+		m.setGroupName(row.getString("group_name"));
+		m.setUserId(row.getInt("user_id"));
+		m.setUserName(row.getString("user_name"));
+		return m;
+	}
+
 	/**
 	 * List the users in the database.
 	 *
@@ -151,10 +256,9 @@ public class UserControl extends DatabaseAwareBean {
 	 *         {@link UserRecord#userName} fields are inflated.
 	 */
 	public List<UserRecord> listUsers() {
-		try (Connection c = getConnection();
-				Query q = c.query(LIST_ALL_USERS)) {
-			return c.transaction(false,
-					() -> q.call().map(UserControl::sketchUser).toList());
+		try (AllUsersSQL sql = new AllUsersSQL()) {
+			return sql.transaction(false,
+					() -> sql.allUsers().map(UserControl::sketchUser).toList());
 		}
 	}
 
@@ -166,10 +270,9 @@ public class UserControl extends DatabaseAwareBean {
 	 * @return Map of users to URLs.
 	 */
 	public Map<String, URI> listUsers(Function<UserRecord, URI> uriMapper) {
-		try (Connection c = getConnection();
-				Query q = c.query(LIST_ALL_USERS)) {
-			return c.transaction(false,
-					() -> q.call().map(UserControl::sketchUser).toMap(
+		try (AllUsersSQL sql = new AllUsersSQL()) {
+			return sql.transaction(false,
+					() -> sql.allUsers().map(UserControl::sketchUser).toMap(
 							TreeMap::new, UserRecord::getUserName, uriMapper));
 		}
 	}
@@ -199,28 +302,21 @@ public class UserControl extends DatabaseAwareBean {
 
 	private Optional<UserRecord> createUser(UserRecord user, String encPass,
 			CreateSQL sql) {
-		return sql.createUser
-				.key(user.getUserName(), encPass, user.getTrustLevel(),
+		return sql
+				.createUser(user.getUserName(), encPass, user.getTrustLevel(),
 						!user.isEnabled())
-				.flatMap(userId -> {
-					if (isNull(user.getQuota())) {
-						sql.makeDefaultQuotas.call(userId);
-					} else {
-						user.getQuota()
-								.forEach((machineName, quota) -> sql.makeQuotas
-										.call(userId, quota, machineName));
-					}
-					return sql.getUserDetails.call1(userId)
-							.map(row -> getUser(sql, row));
-				});
+				.flatMap(sql::getUser).map(UserRecord::new);
 	}
 
-	private final class GetUserSQL extends AccessQuotaSQL {
+	private final class GetUserSQL extends UserCheckSQL {
 		Query getUserDetails = conn.query(GET_USER_DETAILS);
+
+		Query getUserDetailsByName = conn.query(GET_USER_DETAILS_BY_NAME);
 
 		@Override
 		public void close() {
 			getUserDetails.close();
+			getUserDetailsByName.close();
 			super.close();
 		}
 	}
@@ -230,35 +326,37 @@ public class UserControl extends DatabaseAwareBean {
 	 *
 	 * @param id
 	 *            The ID of the user.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership in the
+	 *            response. If {@code null}, the memberships will be omitted.
 	 * @return A description of the user, or {@link Optional#empty()} if the
 	 *         user doesn't exist.
 	 */
-	public Optional<UserRecord> getUser(int id) {
+	public Optional<UserRecord> getUser(int id,
+			Function<MemberRecord, URI> urlGen) {
 		try (GetUserSQL sql = new GetUserSQL()) {
 			return sql.transaction(() -> sql.getUserDetails.call1(id)
-					.map(row -> getUser(sql, row)));
+					.map(UserRecord::new).map(sql.populateMemberships(urlGen)));
 		}
 	}
 
-	private static UserRecord getUser(AccessQuotaSQL sql, Row row) {
-		UserRecord user = new UserRecord();
-		try {
-			user.setUserId(row.getInt("user_id"));
-			user.setUserName(row.getString("user_name"));
-			user.setHasPassword(row.getBoolean("has_password"));
-			user.setTrustLevel(row.getEnum("trust_level", TrustLevel.class));
-			user.setEnabled(!row.getBoolean("disabled"));
-			user.setLocked(row.getBoolean("locked"));
-			user.setLastSuccessfulLogin(
-					row.getInstant("last_successful_login_timestamp"));
-			user.setLastFailedLogin(row.getInstant("last_fail_timestamp"));
-			user.setQuota(sql.getQuotas.call(user.getUserId())
-					.toMap(string("machine_name"), int64("quota")));
-		} finally {
-			// I mean it!
-			user.setPassword(null);
+	/**
+	 * Get a description of a user.
+	 *
+	 * @param user
+	 *            The name of the user.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership in the
+	 *            response. If {@code null}, the memberships will be omitted.
+	 * @return A description of the user, or {@link Optional#empty()} if the
+	 *         user doesn't exist.
+	 */
+	public Optional<UserRecord> getUser(String user,
+			Function<MemberRecord, URI> urlGen) {
+		try (GetUserSQL sql = new GetUserSQL()) {
+			return sql.transaction(() -> sql.getUserDetailsByName.call1(user)
+					.map(UserRecord::new).map(sql.populateMemberships(urlGen)));
 		}
-		return user;
 	}
 
 	/**
@@ -271,27 +369,31 @@ public class UserControl extends DatabaseAwareBean {
 	 * @param adminUser
 	 *            The <em>name</em> of the current user doing this call. Used to
 	 *            prohibit any admin from doing major damage to themselves.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership in the
+	 *            response. If {@code null}, the memberships will be omitted.
 	 * @return The updated user
 	 */
 	public Optional<UserRecord> updateUser(int id, UserRecord user,
-			String adminUser) {
+			String adminUser, Function<MemberRecord, URI> urlGen) {
 		// Encode the password outside of any transaction; this is a slow op!
 		String encPass = passServices.encodePassword(user.getPassword());
 		try (UpdateAllSQL sql = new UpdateAllSQL()) {
-			return sql.transaction(
-					() -> updateUser(id, user, adminUser, encPass, sql));
+			return sql.transaction(() -> updateUser(id, user, adminUser,
+					encPass, urlGen, sql));
 		}
 	}
 
 	// Use this for looking up the current user, who should exist!
-	private static int getCurrentUserId(AccessQuotaSQL sql, String userName) {
+	private static int getCurrentUserId(UserCheckSQL sql, String userName) {
 		return sql.userCheck.call1(userName).map(integer("user_id"))
 				.orElseThrow(() -> new RuntimeException(
 						"current user has unexpectedly vanshed"));
 	}
 
 	private Optional<UserRecord> updateUser(int id, UserRecord user,
-			String adminUser, String encPass, UpdateAllSQL sql) {
+			String adminUser, String encPass,
+			Function<MemberRecord, URI> urlGen, UpdateAllSQL sql) {
 		int adminId = getCurrentUserId(sql, adminUser);
 
 		if (nonNull(user.getUserName())) {
@@ -322,12 +424,8 @@ public class UserControl extends DatabaseAwareBean {
 			sql.setUserTrust.call(user.getTrustLevel(), id);
 		}
 
-		if (nonNull(user.getQuota())) {
-			user.getQuota().forEach((machineName, quota) -> sql.setUserQuota
-					.call(quota, id, machineName));
-		}
-
-		return sql.getUserDetails.call1(id).map(row -> getUser(sql, row));
+		return sql.getUser(id).map(UserRecord::new)
+				.map(sql.populateMemberships(urlGen));
 	}
 
 	/**
@@ -357,6 +455,11 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
+	private static PasswordChangeRecord passChange(Row row) {
+		return new PasswordChangeRecord(row.getInt("user_id"),
+				row.getString("user_name"));
+	}
+
 	/**
 	 * Get a model for updating the local password of the current user.
 	 *
@@ -372,9 +475,7 @@ public class UserControl extends DatabaseAwareBean {
 		try (Connection c = getConnection();
 				Query q = c.query(GET_LOCAL_USER_DETAILS)) {
 			return c.transaction(false, () -> q.call1(principal.getName())
-					.map(row -> new PasswordChangeRecord(
-							row.getInt("user_id"), row.getString("user_name")))
-					.orElseThrow(
+					.map(UserControl::passChange).orElseThrow(
 							// OpenID-authenticated user; go away
 							() -> new AuthenticationServiceException(
 									"user is managed externally; "
@@ -408,8 +509,7 @@ public class UserControl extends DatabaseAwareBean {
 		final String oldEncPass;
 
 		GetUserResult(Row row) {
-			baseUser = new PasswordChangeRecord(row.getInt("user_id"),
-					row.getString("user_name"));
+			baseUser = passChange(row);
 			oldEncPass = row.getString("encrypted_password");
 		}
 	}
@@ -441,5 +541,235 @@ public class UserControl extends DatabaseAwareBean {
 			}
 			return result.baseUser;
 		});
+	}
+
+	/**
+	 * List the groups in the database. Does not include membership data.
+	 *
+	 * @return List of groups.
+	 */
+	public List<GroupRecord> listGroups() {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql.listGroups().map(GroupRecord::new).toList());
+		}
+	}
+
+	/**
+	 * List the groups in the database.
+	 *
+	 * @param uriMapper
+	 *            How to construct a URL for the group.
+	 * @return Map of group names to URLs.
+	 */
+	public Map<String, URI> listGroups(Function<GroupRecord, URI> uriMapper) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql.listGroups().map(GroupRecord::new).toMap(
+							TreeMap::new, GroupRecord::getGroupName,
+							uriMapper));
+		}
+	}
+
+	/**
+	 * Get a description of a group. Includes group membership data.
+	 *
+	 * @param id
+	 *            The ID of the group.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership. If
+	 *            {@code null}, the memberships will be omitted.
+	 * @return A description of the group, or {@link Optional#empty()} if the
+	 *         group doesn't exist.
+	 */
+	public Optional<GroupRecord> getGroup(int id,
+			Function<MemberRecord, URI> urlGen) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql.getGroupId(id).map(GroupRecord::new)
+							.map(sql.populateMemberships(urlGen)));
+		}
+	}
+
+	/**
+	 * Get a description of a group. Includes group membership data.
+	 *
+	 * @param name
+	 *            The name of the group.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership. If
+	 *            {@code null}, the memberships will be omitted.
+	 * @return A description of the group, or {@link Optional#empty()} if the
+	 *         group doesn't exist.
+	 */
+	public Optional<GroupRecord> getGroup(String name,
+			Function<MemberRecord, URI> urlGen) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql.getGroupName(name).map(GroupRecord::new)
+							.map(sql.populateMemberships(urlGen)));
+		}
+	}
+
+	/**
+	 * Create a group from a supplied group.
+	 *
+	 * @param groupTemplate
+	 *            Description of what the group should look like. Only the
+	 *            {@code groupName} and the {@code quota} properties are used.
+	 * @param type
+	 *            What type of group is this; internal groups hold internal
+	 *            users, external groups hold external users and come in two
+	 *            kinds.
+	 * @return The full group description, assuming all went well.
+	 */
+	public Optional<GroupRecord> createGroup(GroupRecord groupTemplate,
+			GroupType type) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(() -> sql
+					.insertGroup(groupTemplate.getGroupName(),
+							groupTemplate.getQuota(), type)
+					.flatMap(sql::getGroupId).map(GroupRecord::new));
+		}
+	}
+
+	/**
+	 * Update a group from a supplied description.
+	 *
+	 * @param id
+	 *            The ID of the group to update
+	 * @param group
+	 *            The template of what the group is to be updated to.
+	 * @param urlGen
+	 *            How to construct the URL for a group membership in the
+	 *            response. If {@code null}, the memberships will be omitted.
+	 * @return A description of the updated group, or {@link Optional#empty()}
+	 *         if the group doesn't exist.
+	 */
+	public Optional<GroupRecord> updateGroup(int id, GroupRecord group,
+			Function<MemberRecord, URI> urlGen) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql
+							.updateGroup(id, group.getGroupName(),
+									group.getQuota())
+							.map(GroupRecord::new)
+							.map(sql.populateMemberships(urlGen)));
+		}
+	}
+
+	/**
+	 * Delete a group. This removes all users from that group automatically.
+	 *
+	 * @param groupId
+	 *            The ID of the group to delete.
+	 * @return The deleted group name on success; {@link Optional#empty()} on
+	 *         failure.
+	 */
+	public Optional<String> deleteGroup(int groupId) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(
+					() -> sql.deleteGroup(groupId).map(string("group_name")));
+		}
+	}
+
+	/**
+	 * Adds a user to a group.
+	 *
+	 * @param user
+	 *            What user to add.
+	 * @param group
+	 *            What group to add to.
+	 * @return Description of the created membership, or empty if adding failed.
+	 *         Note that this doesn't set the URLs.
+	 */
+	public Optional<MemberRecord> addUserToGroup(UserRecord user,
+			GroupRecord group) {
+		try (Connection c = getConnection();
+				Update insert = c.update(ADD_USER_TO_GROUP)) {
+			return c.transaction(
+					() -> insert.key(user.getUserId(), group.getGroupId()))
+					.map(id -> {
+						MemberRecord mr = new MemberRecord();
+						// Don't need to fetch this stuff; already have it!
+						mr.setId(id);
+						mr.setGroupId(group.getGroupId());
+						mr.setGroupName(group.getGroupName());
+						mr.setUserId(user.getUserId());
+						mr.setUserName(user.getUserName());
+						return mr;
+					});
+		}
+	}
+
+	/**
+	 * Removes a user from a group.
+	 *
+	 * @param user
+	 *            What user to remove.
+	 * @param group
+	 *            What group to remove from.
+	 * @return Whether the removing succeeded.
+	 */
+	public boolean removeUserFromGroup(UserRecord user, GroupRecord group) {
+		try (Connection c = getConnection();
+				Update delete = c.update(REMOVE_USER_FROM_GROUP)) {
+			return c.transaction(() -> delete.call(user.getUserId(),
+					group.getGroupId())) > 0;
+		}
+	}
+
+	/**
+	 * Removes a user from a group.
+	 *
+	 * @param member
+	 *            What membership to remove.
+	 * @param group
+	 *            What group to remove from.
+	 * @return Whether the removing succeeded.
+	 */
+	public boolean removeMembershipOfGroup(MemberRecord member,
+			GroupRecord group) {
+		if (member.getGroupId() != group.getGroupId()) {
+			// Sanity check
+			return false;
+		}
+		try (Connection c = getConnection();
+				Update delete = c.update(REMOVE_USER_FROM_GROUP)) {
+			return c.transaction(() -> delete.call(member.getUserId(),
+					group.getGroupId())) > 0;
+		}
+	}
+
+	/**
+	 * Describe the details of a particular group membership.
+	 *
+	 * @param memberId
+	 *            The ID of the membership record.
+	 * @param groupUriGen
+	 *            How to generate the URL for the group. Ignored if
+	 *            {@code null}.
+	 * @param userUriGen
+	 *            How to generate the URL for the user. Ignored if {@code null}.
+	 * @return The membership description
+	 */
+	public Optional<MemberRecord> describeMembership(int memberId,
+			Function<MemberRecord, URI> groupUriGen,
+			Function<MemberRecord, URI> userUriGen) {
+		Optional<MemberRecord> mr;
+		try (Connection c = getConnection();
+				Query q = c.query(GET_MEMBERSHIP)) {
+			mr = c.transaction(false,
+					() -> q.call1(memberId).map(UserControl::member));
+		}
+		mr.ifPresent(member -> {
+			if (nonNull(groupUriGen)) {
+				member.setGroupUrl(groupUriGen.apply(member));
+			}
+			if (nonNull(userUriGen)) {
+				member.setUserUrl(userUriGen.apply(member));
+			}
+		});
+		return mr;
 	}
 }

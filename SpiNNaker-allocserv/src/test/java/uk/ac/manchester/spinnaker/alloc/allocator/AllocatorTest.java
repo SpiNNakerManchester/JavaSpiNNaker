@@ -16,13 +16,25 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.lang.String.format;
 import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
+import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
+import static java.time.Instant.ofEpochMilli;
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.makeJob;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB3;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -45,13 +57,15 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
-import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
+import uk.ac.manchester.spinnaker.storage.Parameter;
+import uk.ac.manchester.spinnaker.storage.ResultColumn;
+import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
 @SpringBootTest
 @SpringJUnitWebConfig(AllocatorTest.Config.class)
@@ -86,7 +100,7 @@ class AllocatorTest extends SQLQueries {
 	@Autowired
 	private BMPController bmpCtrl;
 
-	void doTest(Transacted action) {
+	private void doTest(Transacted action) {
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> {
 				try {
@@ -116,104 +130,57 @@ class AllocatorTest extends SQLQueries {
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
-			c.transaction(() -> setupDB(c));
-		}
-	}
-
-	private static final int MACHINE = 1000;
-
-	private static final int BMP = 2000;
-
-	private static final int BOARD = 3000;
-
-	private static final int USER = 4000;
-
-	private void setupDB(Connection c) {
-		// A simple machine
-		try (Update u = c.update("INSERT OR IGNORE INTO machines("
-				+ "machine_id, machine_name, width, height, [depth], "
-				+ "default_quota, board_model) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, 5)")) {
-			u.call(MACHINE, "foo", 1, 1, 3, 10000);
-		}
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO bmp(bmp_id, machine_id, address, "
-						+ "cabinet, frame) VALUES (?, ?, ?, ?, ?)")) {
-			u.call(BMP, MACHINE, "1.1.1.1", 1, 1);
-		}
-		int b0 = BOARD, b1 = BOARD + 1, b2 = BOARD + 2;
-		try (Update u =
-				c.update("INSERT OR IGNORE INTO boards(board_id, address, "
-						+ "bmp_id, board_num, machine_id, x, y, z, "
-						+ "root_x, root_y, board_power) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-			u.call(b0, "2.2.2.2", BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
-			u.call(b1, "2.2.2.3", BMP, 1, MACHINE, 0, 0, 1, 8, 4, false);
-			u.call(b2, "2.2.2.4", BMP, 2, MACHINE, 0, 0, 2, 4, 8, false);
-		}
-		try (Update u = c.update(
-				"INSERT OR IGNORE INTO links(board_1, dir_1, board_2, dir_2) "
-						+ "VALUES (?, ?, ?, ?)")) {
-			u.call(b0, 0, b1, 3);
-			u.call(b0, 1, b2, 4);
-			u.call(b1, 2, b2, 5);
-		}
-		// A disabled permission-less user with a quota
-		try (Update u = c.update("INSERT OR IGNORE INTO user_info("
-				+ "user_id, user_name, trust_level, disabled) "
-				+ "VALUES (?, ?, ?, ?)")) {
-			u.call(USER, "bar", TrustLevel.BASIC, true);
-		}
-		try (Update u = c.update("INSERT OR REPLACE INTO quotas("
-				+ "user_id, machine_id, quota) VALUES (?, ?, ?)")) {
-			u.call(USER, MACHINE, 1024);
+			c.transaction(() -> setupDB3(c));
 		}
 	}
 
 	/**
-	 * Insert a live job of a given size and length.
+	 * Insert a live job. Needs a matching allocation request.
 	 *
 	 * @param c
 	 *            DB connection
-	 * @param size
-	 *            Number of boards
 	 * @param time
-	 *            Length of time (seconds)
+	 *            Length of time for keepalive (seconds)
 	 * @return Job ID
 	 */
-	private int makeJob(int time) {
-		try (Update u =
-				conn.update("INSERT INTO jobs(machine_id, owner, job_state, "
-						+ "create_timestamp, keepalive_interval, "
-						+ "keepalive_timestamp) "
-						+ "VALUES (?, ?, ?, 0, ?, ?)")) {
-			return conn.transaction(
-					() -> u.key(MACHINE, USER, JobState.QUEUED, time, now())
-							.orElseThrow(() -> new RuntimeException(
-									"failed to insert job")));
-		}
+	private int makeQueuedJob(int time) {
+		return makeJob(conn, null, QUEUED, null, ofEpochMilli(0), null, null,
+				ofSeconds(time), now());
 	}
 
+	@Parameter("job_id")
+	@Parameter("num_boards")
+	private static final String INSERT_REQ_SIZE =
+			"INSERT INTO job_request(job_id, num_boards) VALUES (?, ?)";
+
+	@Parameter("job_id")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("max_dead_boards")
+	private static final String INSERT_REQ_DIMS =
+			"INSERT INTO job_request(job_id, width, height, "
+					+ "max_dead_boards) VALUES (?, ?, ?, ?)";
+
+	@Parameter("job_id")
+	@Parameter("board_id")
+	private static final String INSERT_REQ_BOARD =
+			"INSERT INTO job_request(job_id, board_id) VALUES (?, ?)";
+
 	private void makeAllocBySizeRequest(int job, int size) {
-		try (Update u =
-				conn.update("INSERT INTO job_request(job_id, num_boards) "
-						+ "VALUES (?, ?)")) {
+		try (Update u = conn.update(INSERT_REQ_SIZE)) {
 			conn.transaction(() -> u.call(job, size));
 		}
 	}
 
 	private void makeAllocByDimensionsRequest(int job, int width, int height,
 			int allowedDead) {
-		try (Update u =
-				conn.update("INSERT INTO job_request(job_id, width, height, "
-						+ "max_dead_boards) VALUES (?, ?, ?, ?)")) {
+		try (Update u = conn.update(INSERT_REQ_DIMS)) {
 			conn.transaction(() -> u.call(job, width, height, allowedDead));
 		}
 	}
 
 	private void makeAllocByBoardIdRequest(int job, int board) {
-		try (Update u = conn.update("INSERT INTO job_request(job_id, board_id) "
-				+ "VALUES (?, ?)")) {
+		try (Update u = conn.update(INSERT_REQ_BOARD)) {
 			conn.transaction(() -> u.call(job, board));
 		}
 	}
@@ -225,15 +192,24 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
+	@ResultColumn("cnt")
+	@SingleRowResult
+	private static final String COUNT_REQUESTS =
+			"SELECT COUNT(*) AS cnt FROM job_request";
+
 	private int getJobRequestCount() {
-		try (Query q = conn.query("SELECT COUNT(*) AS cnt FROM job_request")) {
+		try (Query q = conn.query(COUNT_REQUESTS)) {
 			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
 
+	@ResultColumn("cnt")
+	@SingleRowResult
+	private static final String COUNT_POWER_CHANGES =
+			"SELECT COUNT(*) AS cnt FROM pending_changes";
+
 	private int getPendingPowerChanges() {
-		try (Query q =
-				conn.query("SELECT COUNT(*) AS cnt FROM pending_changes")) {
+		try (Query q = conn.query(COUNT_POWER_CHANGES)) {
 			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
@@ -254,138 +230,7 @@ class AllocatorTest extends SQLQueries {
 		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assumeTrue(expected.equals(got),
-				() -> "expected " + expected + " but got " + got);
-	}
-
-	@Test
-	void testDoAllocBySize1() {
-		doTest(() -> {
-			int job = makeJob(100);
-			alloc.allocate(conn);
-
-			assertState(job, JobState.QUEUED, 0, 0);
-
-			makeAllocBySizeRequest(job, 1);
-
-			assertState(job, JobState.QUEUED, 1, 0);
-
-			assertTrue(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 1);
-
-			assertFalse(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 1);
-
-			alloc.destroyJob(conn, job, "test");
-
-			assertState(job, JobState.DESTROYED, 0, 0);
-		});
-	}
-
-	@Test
-	void testDoAllocBySize3() {
-		doTest(() -> {
-			int job = makeJob(100);
-			alloc.allocate(conn);
-
-			assertState(job, JobState.QUEUED, 0, 0);
-
-			makeAllocBySizeRequest(job, 3);
-
-			assertState(job, JobState.QUEUED, 1, 0);
-
-			assertTrue(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 3);
-
-			assertFalse(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 3);
-
-			alloc.destroyJob(conn, job, "test");
-
-			assertState(job, JobState.DESTROYED, 0, 0);
-		});
-	}
-
-	@Test
-	void testDoAllocByDimensions() {
-		doTest(() -> {
-			int job = makeJob(100);
-			alloc.allocate(conn);
-
-			assertState(job, JobState.QUEUED, 0, 0);
-
-			makeAllocByDimensionsRequest(job, 1, 1, 0);
-
-			assertState(job, JobState.QUEUED, 1, 0);
-
-			assertTrue(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 1);
-
-			assertFalse(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 1);
-
-			alloc.destroyJob(conn, job, "test");
-
-			assertState(job, JobState.DESTROYED, 0, 0);
-		});
-	}
-
-	@Test
-	void testDoAllocByDimensions1x2() {
-		doTest(() -> {
-			int job = makeJob(100);
-			alloc.allocate(conn);
-
-			assertState(job, JobState.QUEUED, 0, 0);
-
-			makeAllocByDimensionsRequest(job, 1, 2, 0);
-
-			assertState(job, JobState.QUEUED, 1, 0);
-
-			assertTrue(alloc.allocate(conn));
-
-			// Allocates a whole triad
-			assertState(job, JobState.POWER, 0, 3);
-
-			assertFalse(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 3);
-
-			alloc.destroyJob(conn, job, "test");
-
-			assertState(job, JobState.DESTROYED, 0, 0);
-		});
-	}
-
-	@Test
-	void testDoAllocByBoardId() {
-		doTest(() -> {
-			int job = makeJob(100);
-			alloc.allocate(conn);
-
-			assertState(job, JobState.QUEUED, 0, 0);
-
-			makeAllocByBoardIdRequest(job, BOARD);
-
-			assertState(job, JobState.QUEUED, 1, 0);
-
-			assertTrue(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 1);
-
-			assertFalse(alloc.allocate(conn));
-
-			assertState(job, JobState.POWER, 0, 1);
-
-			alloc.destroyJob(conn, job, "test");
-
-			assertState(job, JobState.DESTROYED, 0, 0);
-		});
+				() -> format("expected %s but got %s", expected, got));
 	}
 
 	/**
@@ -400,73 +245,222 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
+	private void processBMPRequests() throws Exception {
+		bmpCtrl.processRequests();
+		snooze();
+		bmpCtrl.processRequests();
+	}
+
+	private int countJobInTable(int job, String table) {
+		// Table names CANNOT be parameters; they're not values
+		return conn.query(format(
+				"SELECT COUNT(*) AS c FROM %s WHERE job_id = :job", table))
+				.call1(job).get().getInt("c");
+	}
+
+	// The actual tests
+
 	@Test
-	void testExpireInitial() {
+	public void allocateBySize1board() {
 		doTest(() -> {
-			int job = makeJob(1);
-			snooze();
+			int job = makeQueuedJob(100);
+			alloc.allocate(conn);
 
-			assumeState(job, JobState.QUEUED, 0, 0);
+			assertState(job, QUEUED, 0, 0);
 
-			alloc.expireJobs(conn);
+			makeAllocBySizeRequest(job, 1);
 
-			assertState(job, JobState.DESTROYED, 0, 0);
+			assertState(job, QUEUED, 1, 0);
+
+			assertTrue(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 1);
+
+			assertFalse(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 1);
+
+			alloc.destroyJob(conn, job, "test");
+
+			assertState(job, DESTROYED, 0, 0);
 		});
 	}
 
 	@Test
-	void testExpireQueued1() {
+	public void allocateBySize3boards() {
 		doTest(() -> {
-			int job = makeJob(1);
+			int job = makeQueuedJob(100);
+			alloc.allocate(conn);
+
+			assertState(job, QUEUED, 0, 0);
+
+			makeAllocBySizeRequest(job, 3);
+
+			assertState(job, QUEUED, 1, 0);
+
+			assertTrue(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 3);
+
+			assertFalse(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 3);
+
+			alloc.destroyJob(conn, job, "test");
+
+			assertState(job, DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	public void allocateByDimensions1x1() {
+		doTest(() -> {
+			int job = makeQueuedJob(100);
+			alloc.allocate(conn);
+
+			assertState(job, QUEUED, 0, 0);
+
+			makeAllocByDimensionsRequest(job, 1, 1, 0);
+
+			assertState(job, QUEUED, 1, 0);
+
+			assertTrue(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 1);
+
+			assertFalse(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 1);
+
+			alloc.destroyJob(conn, job, "test");
+
+			assertState(job, DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	public void allocateByDimensions1x2() {
+		doTest(() -> {
+			int job = makeQueuedJob(100);
+			alloc.allocate(conn);
+
+			assertState(job, QUEUED, 0, 0);
+
+			makeAllocByDimensionsRequest(job, 1, 2, 0);
+
+			assertState(job, QUEUED, 1, 0);
+
+			assertTrue(alloc.allocate(conn));
+
+			// Allocates a whole triad
+			assertState(job, POWER, 0, 3);
+
+			assertFalse(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 3);
+
+			alloc.destroyJob(conn, job, "test");
+
+			assertState(job, DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	public void allocateByBoardId() {
+		doTest(() -> {
+			int job = makeQueuedJob(100);
+			alloc.allocate(conn);
+
+			assertState(job, QUEUED, 0, 0);
+
+			makeAllocByBoardIdRequest(job, BOARD);
+
+			assertState(job, QUEUED, 1, 0);
+
+			assertTrue(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 1);
+
+			assertFalse(alloc.allocate(conn));
+
+			assertState(job, POWER, 0, 1);
+
+			alloc.destroyJob(conn, job, "test");
+
+			assertState(job, DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	public void expireInitial() {
+		doTest(() -> {
+			int job = makeQueuedJob(1);
+			snooze();
+
+			assumeState(job, QUEUED, 0, 0);
+
+			alloc.expireJobs(conn);
+
+			assertState(job, DESTROYED, 0, 0);
+		});
+	}
+
+	@Test
+	public void expireQueued1() {
+		doTest(() -> {
+			int job = makeQueuedJob(1);
 			alloc.allocate(conn);
 			snooze();
 
-			assumeState(job, JobState.QUEUED, 0, 0);
+			assumeState(job, QUEUED, 0, 0);
 
 			alloc.expireJobs(conn);
 
-			assertState(job, JobState.DESTROYED, 0, 0);
+			assertState(job, DESTROYED, 0, 0);
 		});
 	}
 
 	@Test
-	void testExpireQueued2() {
+	public void expireQueued2() {
 		doTest(() -> {
-			int job = makeJob(1);
+			int job = makeQueuedJob(1);
 			alloc.allocate(conn);
 			makeAllocBySizeRequest(job, 1);
 			snooze();
 
-			assumeState(job, JobState.QUEUED, 1, 0);
+			assumeState(job, QUEUED, 1, 0);
 
 			alloc.expireJobs(conn);
 
-			assertState(job, JobState.DESTROYED, 0, 0);
+			assertState(job, DESTROYED, 0, 0);
 		});
 	}
 
 	@Test
-	void testExpirePower() {
+	public void expirePower() {
 		doTest(() -> {
-			int job = makeJob(1);
+			int job = makeQueuedJob(1);
 			makeAllocBySizeRequest(job, 1);
 			alloc.allocate(conn);
 			snooze();
 
-			assumeState(job, JobState.POWER, 0, 1);
+			assumeState(job, POWER, 0, 1);
 
 			alloc.expireJobs(conn);
 
-			assertState(job, JobState.DESTROYED, 0, 0);
+			assertState(job, DESTROYED, 0, 0);
 		});
 	}
 
+	private static final String HACK_POWER_TIMESTAMP =
+			"UPDATE boards SET power_on_timestamp = power_on_timestamp - 1000";
+
 	@Test
-	void testExpireReady() throws Exception {
+	public void expireReady() throws Exception {
 		// This is messier; can't have a transaction open and roll it back
 		try (Connection c = db.getConnection()) {
 			this.conn = c;
-			int job = makeJob(1);
+			int job = makeQueuedJob(1);
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> {
@@ -475,23 +469,19 @@ class AllocatorTest extends SQLQueries {
 				snooze();
 				processBMPRequests();
 
-				assumeState(job, JobState.READY, 0, 0);
+				assumeState(job, READY, 0, 0);
 
 				c.transaction(() -> {
 					alloc.expireJobs(c);
 				});
 
-				assertState(job, JobState.DESTROYED, 0, 1);
+				assertState(job, DESTROYED, 0, 1);
 
 				// HACK! Allow immediate switch off (OK because not real BMP)
-				c.transaction(() -> {
-					c.update("UPDATE boards SET "
-							+ "power_on_timestamp = power_on_timestamp - 1000")
-							.call();
-				});
+				c.transaction(() -> c.update(HACK_POWER_TIMESTAMP).call());
 				processBMPRequests();
 
-				assertState(job, JobState.DESTROYED, 0, 0);
+				assertState(job, DESTROYED, 0, 0);
 			} finally {
 				c.transaction(() -> {
 					alloc.destroyJob(c, job, "test");
@@ -502,27 +492,22 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
-	private void processBMPRequests() throws Exception {
-		bmpCtrl.processRequests();
-		snooze();
-		bmpCtrl.processRequests();
-	}
+	@Parameter("state")
+	@Parameter("job")
+	private static final String SET_JOB_STATE =
+			"UPDATE jobs SET job_state = :state WHERE job_id = :job";
 
-	private int countJobInTable(int job, String table) {
-		return conn.query(
-				"SELECT COUNT(*) AS c FROM " + table + " WHERE job_id = :job")
-				.call1(job).get().getInt("c");
-	}
+	@Parameter("timestamp")
+	@Parameter("job")
+	private static final String SET_JOB_DEATH_TIME =
+			"UPDATE jobs SET death_timestamp = :timestamp WHERE job_id = :job";
 
 	@Test
-	void tombstone() throws Exception {
+	public void tombstone() throws Exception {
 		doTest(() -> {
-			int job = makeJob(1);
-			conn.update("UPDATE jobs SET job_state = 4 WHERE job_id = :job")
-					.call(job);
-			conn.update(
-					"UPDATE jobs SET death_timestamp = 0 WHERE job_id = :job")
-					.call(job);
+			int job = makeQueuedJob(1);
+			conn.update(SET_JOB_STATE).call(DESTROYED, job);
+			conn.update(SET_JOB_DEATH_TIME).call(0, job);
 			int preMain = countJobInTable(job, "jobs");
 			assertTrue(preMain == 1,
 					() -> "must have created a job we can tombstone");

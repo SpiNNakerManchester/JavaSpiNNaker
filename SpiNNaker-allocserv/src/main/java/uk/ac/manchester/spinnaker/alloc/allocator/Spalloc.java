@@ -235,8 +235,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 							md.setDead(getDead.call(md.getId()).map(
 									row -> new BoardCoords(row, !permit.admin))
 									.toList());
-							md.setQuota(getQuota.call1(md.getId(), permit.name)
-									.map(int64("quota")).orElse(null));
+							getQuota.call1(permit.name)
+									.map(int64("quota_total"))
+									.ifPresent(md::setQuota);
 							return md;
 						});
 			}
@@ -377,39 +378,92 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	}
 
 	@Override
-	public Optional<Job> createJob(String owner, CreateDescriptor descriptor,
-			String machineName, List<String> tags, Duration keepaliveInterval,
-			Integer maxDeadBoards, byte[] req) {
+	public Optional<Job> createJob(String owner, String groupName,
+			CreateDescriptor descriptor, String machineName, List<String> tags,
+			Duration keepaliveInterval, Integer maxDeadBoards, byte[] req) {
 		return execute(conn -> {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new RuntimeException("no such user: " + owner));
-			Optional<MachineImpl> mach = selectMachine(conn, machineName, tags);
-			if (!mach.isPresent()) {
-				// Cannot find machine!
-				return Optional.empty();
-			}
-			MachineImpl m = mach.get();
-			if (!quotaManager.mayCreateJob(m.id, owner)) {
+			int group = selectGroup(conn, owner, groupName);
+			if (!quotaManager.mayCreateJob(group)) {
 				// No quota left
 				return Optional.empty();
 			}
-			int id = insertJob(conn, m, user, keepaliveInterval, req);
-			if (id < 0) {
+
+			Optional<MachineImpl> m = selectMachine(conn, machineName, tags);
+			if (!m.isPresent()) {
+				// Cannot find machine!
+				return Optional.empty();
+			}
+			MachineImpl machine = m.get();
+
+			Optional<Integer> id = insertJob(conn, machine, user, group,
+					keepaliveInterval, req);
+			if (!id.isPresent()) {
 				// Insert failed
 				return Optional.empty();
 			}
+			int jobId = id.get();
+
 			epochs.nextJobsEpoch();
 
 			// Ask the allocator engine to do the allocation
-			int numBoards =
-					insertRequest(conn, m, id, descriptor, maxDeadBoards);
-			return getJob(id, conn).map(ji -> {
-				JobLifecycle.log.info(
-						"created job {} on {} for {} asking for {} board(s)",
-						ji.id, m.name, owner, numBoards);
-				return (Job) ji;
-			});
+			int numBoards = insertRequest(conn, machine, jobId, descriptor,
+					maxDeadBoards);
+
+			// DB now changed; can report success
+			JobLifecycle.log.info(
+					"created job {} on {} for {} asking for {} board(s)",
+					jobId, machine.name, owner, numBoards);
+			return getJob(jobId, conn).map(ji -> (Job) ji);
 		});
+	}
+
+	/**
+	 * Work out what the ID of the group that a job will be accounted against
+	 * is.
+	 *
+	 * @param conn
+	 *            DB connection
+	 * @param user
+	 *            Who is the user?
+	 * @param groupName
+	 *            What group did they specify? (May be {@code null} to say "pick
+	 *            the unique valid possibility for the owner".)
+	 * @return The group ID.
+	 * @throws GroupsException
+	 *             If we can't get a definite group to account against.
+	 */
+	private int selectGroup(Connection conn, String user, String groupName) {
+		try (Query getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER);
+				Query listGroupsForUser = conn.query(GET_GROUPS_OF_USER)) {
+			if (nonNull(groupName)) {
+				return getGroup.call1(user, groupName).map(integer("group_id"))
+						.orElseThrow(() -> new NoSuchGroupException(
+								"group {} does not exist or {} "
+										+ "is not a member of it",
+								groupName, user));
+			}
+
+			// No name given; need to guess.
+			int groupId = -1;
+			for (int g : listGroupsForUser.call(user)
+					.map(integer("group_id"))) {
+				if (groupId >= 0) {
+					throw new MultipleGroupsException(
+							"user {} has multiple groups available; "
+									+ "one must be selected explicitly "
+									+ "in the request",
+							user);
+				}
+				groupId = g;
+			}
+			if (groupId < 0) {
+				throw new NoSuchGroupException(
+						"user {} is not a member of any groups", user);
+			}
+			return groupId;
+		}
 	}
 
 	private static Optional<Integer> getUser(Connection conn, String userName) {
@@ -488,10 +542,10 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	private static int insertJob(Connection conn, MachineImpl m, int owner,
-			Duration keepaliveInterval, byte[] req) {
+	private static Optional<Integer> insertJob(Connection conn, MachineImpl m,
+			int owner, int group, Duration keepaliveInterval, byte[] req) {
 		try (Update makeJob = conn.update(INSERT_JOB)) {
-			return makeJob.key(m.id, owner, keepaliveInterval, req).orElse(-1);
+			return makeJob.key(m.id, owner, group, keepaliveInterval, req);
 		}
 	}
 
@@ -1606,5 +1660,33 @@ class ReportRollbackExn extends RuntimeException {
 	ReportRollbackExn(HasChipLocation chip) {
 		this("chip at (%d,%d) not in job's allocation", chip.getX(),
 				chip.getY());
+	}
+}
+
+abstract class GroupsException extends RuntimeException {
+	private static final long serialVersionUID = 6607077117924279611L;
+
+	GroupsException(String message) {
+		super(message);
+	}
+
+	GroupsException(String message, Throwable cause) {
+		super(message, cause);
+	}
+}
+
+class NoSuchGroupException extends GroupsException {
+	private static final long serialVersionUID = 5193818294198205503L;
+
+	NoSuchGroupException(String msg, Object... args) {
+		super(format(msg, args));
+	}
+}
+
+class MultipleGroupsException extends GroupsException {
+	private static final long serialVersionUID = 6284332340565334236L;
+
+	MultipleGroupsException(String msg, Object... args) {
+		super(format(msg, args));
 	}
 }

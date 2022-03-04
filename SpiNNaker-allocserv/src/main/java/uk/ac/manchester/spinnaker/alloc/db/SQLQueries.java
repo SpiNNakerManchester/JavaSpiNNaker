@@ -225,14 +225,16 @@ public abstract class SQLQueries {
 
 	/** Create a job. */
 	@Parameter("machine_id")
-	@Parameter("owner")
+	@Parameter("user_id")
+	@Parameter("group_id")
 	@Parameter("keepalive_interval")
 	@Parameter("original_request")
 	@GeneratesID
 	protected static final String INSERT_JOB = "INSERT INTO jobs("
-			+ "machine_id, owner, keepalive_interval, original_request, "
-			+ "keepalive_timestamp, create_timestamp, job_state) "
-			+ "VALUES(:machine_id, :owner, :keepalive_interval, "
+			+ "machine_id, owner, group_id, keepalive_interval, "
+			+ "original_request, keepalive_timestamp, create_timestamp, "
+			+ "job_state) "
+			+ "VALUES(:machine_id, :user_id, :group_id, :keepalive_interval, "
 			+ ":original_request, CAST(strftime('%s','now') AS INTEGER), "
 			+ "CAST(strftime('%s','now') AS INTEGER), " + /* QUEUED */ "1)";
 
@@ -928,48 +930,53 @@ public abstract class SQLQueries {
 	/**
 	 * Get the quota for a user.
 	 *
-	 * @see QuotaManager
+	 * @see Spalloc
 	 */
-	@Parameter("machine_id")
 	@Parameter("user_name")
-	@ResultColumn("quota")
+	@ResultColumn("quota_total")
 	@ResultColumn("user_id")
 	@SingleRowResult
-	protected static final String GET_USER_QUOTA =
-			"SELECT quota, user_info.user_id AS user_id FROM quotas "
-					+ "JOIN user_info USING (user_id) "
-					+ "WHERE quotas.machine_id = :machine_id "
-					+ "AND user_info.user_name = :user_name LIMIT 1";
+	protected static final String GET_USER_QUOTA = "SELECT * FROM ("
+			+ "SELECT SUM(quota) AS quota_total, quotas.user_id FROM quotas "
+			+ "JOIN user_info USING (user_id) "
+			+ "WHERE user_info.user_name = :user_name"
+			+ ") WHERE user_id IS NOT NULL";
 
 	/**
-	 * Get the current non-consolidated usage for a user.
+	 * Get the quota for a group.
 	 *
 	 * @see QuotaManager
 	 */
-	@Parameter("machine_id")
-	@Parameter("user_id")
+	@Parameter("group_id")
+	@ResultColumn("quota")
+	@SingleRowResult
+	protected static final String GET_GROUP_QUOTA =
+			"SELECT quota FROM groups WHERE group_id = :group_id LIMIT 1";
+
+	/**
+	 * Get the current non-consolidated usage for a group.
+	 *
+	 * @see QuotaManager
+	 */
+	@Parameter("group_id")
 	@ResultColumn("current_usage")
 	@SingleRowResult
 	protected static final String GET_CURRENT_USAGE =
 			"SELECT SUM(usage) AS current_usage FROM jobs_usage "
-					+ "WHERE machine_id = :machine_id AND owner = :user_id";
+					+ "WHERE group_id = :group_id";
 
 	/**
 	 * Get usage of a job and the quota against which that applies.
 	 *
 	 * @see QuotaManager
 	 */
-	@Parameter("machine_id")
 	@Parameter("job_id")
 	@ResultColumn("usage")
 	@ResultColumn("quota")
 	@SingleRowResult
 	protected static final String GET_JOB_USAGE_AND_QUOTA =
-			"SELECT [usage], quota FROM jobs_usage JOIN quotas "
-					+ "ON quotas.machine_id = jobs_usage.machine_id "
-					+ "AND quotas.user_id = jobs_usage.owner "
-					+ "WHERE jobs_usage.machine_id = :machine_id "
-					+ "AND :job_id = :job_id AND [usage] IS NOT NULL "
+			"SELECT [usage], quota FROM jobs_usage "
+					+ "WHERE :job_id = :job_id AND [usage] IS NOT NULL "
 					+ "AND quota IS NOT NULL LIMIT 1";
 
 	/**
@@ -979,22 +986,22 @@ public abstract class SQLQueries {
 	 * @see QuotaManager
 	 */
 	@ResultColumn("job_id")
-	@ResultColumn("quota_id")
+	@ResultColumn("group_id")
 	@ResultColumn("usage")
 	protected static final String GET_CONSOLIDATION_TARGETS =
-			"SELECT job_id, quota_id, [usage] FROM jobs_usage "
-					+ "WHERE complete AND quota_id IS NOT NULL";
+			"SELECT job_id, group_id, [usage] FROM jobs_usage "
+					+ "WHERE complete AND quota IS NOT NULL";
 
 	/**
-	 * Reduce a user's quota on a machine by a specified amount.
+	 * Reduce a group's quota on a machine by a specified amount.
 	 *
 	 * @see QuotaManager
 	 */
 	@Parameter("usage")
-	@Parameter("quota_id")
+	@Parameter("group_id")
 	protected static final String DECREMENT_QUOTA =
-			"UPDATE quotas SET quota = quota - :usage "
-					+ "WHERE quota_id = :quota_id AND quota IS NOT NULL";
+			"UPDATE groups SET quota = quota - :usage "
+					+ "WHERE group_id = :group_id AND quota IS NOT NULL";
 
 	/**
 	 * Mark a job as having had its resource usage consolidated.
@@ -1012,15 +1019,13 @@ public abstract class SQLQueries {
 	 * @see QuotaManager
 	 */
 	@Parameter("delta")
-	@Parameter("machine_name")
-	@Parameter("user_id")
+	@Parameter("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
 	protected static final String ADJUST_QUOTA =
-			"UPDATE quotas SET quota = max(0, quota + :delta) "
-					+ "FROM (SELECT machine_id FROM machines "
-					+ "WHERE machine_name = :machine_name) AS machines "
-					+ "WHERE user_id = :user_id "
-					+ "AND quotas.machine_id = machines.machine_id "
-					+ "AND quota IS NOT NULL";
+			"UPDATE groups SET quota = max(0, quota + :delta) "
+					+ "WHERE group_id = :group_id AND quota IS NOT NULL "
+					+ "RETURNING group_name, quota";
 
 	/**
 	 * Get details about a user. This is pretty much everything except their
@@ -1047,6 +1052,30 @@ public abstract class SQLQueries {
 					+ "WHERE user_id = :user_id LIMIT 1";
 
 	/**
+	 * Get details about a user. This is pretty much everything except their
+	 * password.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_name")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	@ResultColumn("has_password")
+	@ResultColumn("trust_level")
+	@ResultColumn("locked")
+	@ResultColumn("disabled")
+	@ResultColumn("last_successful_login_timestamp")
+	@ResultColumn("last_fail_timestamp")
+	@SingleRowResult
+	protected static final String GET_USER_DETAILS_BY_NAME =
+			"SELECT user_id, user_name, "
+					+ "encrypted_password IS NOT NULL AS has_password, "
+					+ "trust_level, locked, disabled, "
+					+ "last_successful_login_timestamp, "
+					+ "last_fail_timestamp FROM user_info "
+					+ "WHERE user_name = :user_name LIMIT 1";
+
+	/**
 	 * Get a local user's basic details.
 	 *
 	 * @see UserControl
@@ -1062,17 +1091,235 @@ public abstract class SQLQueries {
 					+ "AND encrypted_password IS NOT NULL LIMIT 1";
 
 	/**
-	 * Get a user's quotas.
+	 * Get the ID of a particular group that a particular user must be a member
+	 * of.
+	 *
+	 * @see Spalloc
+	 */
+	@Parameter("user_name")
+	@Parameter("group_name")
+	@ResultColumn("group_id")
+	@SingleRowResult
+	protected static final String GET_GROUP_BY_NAME_AND_MEMBER =
+			"SELECT groups.group_id FROM groups "
+					+ "JOIN group_memberships USING (group_id) "
+					+ "JOIN user_info USING (user_id) "
+					+ "WHERE user_name = :user_name "
+					+ "AND group_name = :group_name LIMIT 1";
+
+	/**
+	 * List all the groups that a user is a member of.
+	 *
+	 * @see Spalloc
+	 */
+	@Parameter("user_name")
+	@ResultColumn("group_id")
+	protected static final String GET_GROUPS_OF_USER =
+			"SELECT group_id FROM group_memberships "
+					+ "JOIN user_info USING (user_id) "
+					+ "WHERE user_name = :user_name";
+
+	/**
+	 * List the members of a group.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_id")
+	@ResultColumn("membership_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	protected static final String GET_USERS_OF_GROUP =
+			"SELECT membership_id, groups.group_id, groups.group_name, "
+					+ "user_info.user_id, user_info.user_name "
+					+ "FROM group_memberships JOIN user_info USING (user_id) "
+					+ "JOIN groups USING (group_id) "
+					+ "WHERE group_id = :group_id";
+
+	/**
+	 * Get the details from a specific membership.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("membership_id")
+	@ResultColumn("membership_id")
+	@ResultColumn("user_id")
+	@ResultColumn("group_id")
+	@ResultColumn("user_name")
+	@ResultColumn("group_name")
+	@SingleRowResult
+	protected static final String GET_MEMBERSHIP =
+			"SELECT membership_id, user_info.user_id, groups.group_id, "
+					+ "user_name, group_name FROM group_memberships "
+					+ "JOIN user_info USING (user_id) "
+					+ "JOIN groups USING (group_id) "
+					+ "WHERE membership_id = :membership_id";
+
+	/**
+	 * Get the memberships of a user.
 	 *
 	 * @see UserControl
 	 */
 	@Parameter("user_id")
-	@ResultColumn("machine_name")
+	@ResultColumn("membership_id")
+	@ResultColumn("user_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("user_name")
+	protected static final String GET_MEMBERSHIPS_OF_USER =
+			"SELECT membership_id, user_info.user_id, groups.group_id, "
+					+ "user_name, group_name FROM group_memberships "
+					+ "JOIN user_info USING (user_id) "
+					+ "JOIN groups USING (group_id) "
+					+ "WHERE group_memberships.user_id = :user_id";
+
+	/**
+	 * Create a group record.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_name")
+	@Parameter("quota")
+	@Parameter("group_type")
+	@GeneratesID
+	protected static final String CREATE_GROUP =
+			"INSERT INTO groups(group_name, quota, group_type) "
+					+ "VALUES(:group_name, :quota, :group_type)";
+
+	/**
+	 * Create a group record.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_name")
+	@Parameter("quota")
+	@Parameter("group_type")
+	protected static final String CREATE_GROUP_IF_NOT_EXISTS =
+			"INSERT OR IGNORE INTO groups(group_name, quota, group_type) "
+					+ "VALUES(:group_name, :quota, :group_type)";
+
+	/**
+	 * Delete a single group record and returns the name of the deleted group.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_id")
+	@ResultColumn("group_name")
+	@SingleRowResult
+	protected static final String DELETE_GROUP =
+			"DELETE FROM groups WHERE group_id = :group_id "
+					// + "LIMIT 1 " // Not supported in Xerial driver build
+					+ "RETURNING group_name";
+
+	/**
+	 * Update a single group record's name and quota.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_name")
+	@Parameter("quota")
+	@Parameter("group_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
 	@ResultColumn("quota")
-	protected static final String GET_QUOTA_DETAILS =
-			"SELECT machines.machine_name, quotas.quota "
-					+ "FROM quotas JOIN machines USING (machine_id) "
-					+ "WHERE quotas.user_id = :user_id";
+	@ResultColumn("group_type")
+	@SingleRowResult
+	protected static final String UPDATE_GROUP = "UPDATE groups SET "
+			+ "group_name = COALESCE(:group_name, group_name), "
+			+ "quota = :quota WHERE group_id = :group_id "
+			// + "LIMIT 1 " // Not supported in Xerial driver build
+			+ "RETURNING group_id, group_name, quota, group_type";
+
+	/**
+	 * Adds a user to a group.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@Parameter("group_id")
+	@GeneratesID
+	protected static final String ADD_USER_TO_GROUP =
+			"INSERT INTO group_memberships(user_id, group_id) "
+					+ "VALUES (:user_id, :group_id)";
+
+	/**
+	 * Removes a user from a group.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("user_id")
+	@Parameter("group_id")
+	protected static final String REMOVE_USER_FROM_GROUP =
+			"DELETE FROM group_memberships "
+					+ "WHERE user_id = :user_id AND group_id = :group_id";
+
+	/**
+	 * Step 1 of group synchronisation: make a temporary table. Should be
+	 * performed in a transaction with the other group synch steps.
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	protected static final String GROUP_SYNC_MAKE_TEMP_TABLE =
+			"CREATE TEMP TABLE IF NOT EXISTS usergroupids(group_id INTEGER)";
+
+	/**
+	 * Step 2 of group synchronisation: add a desired group to the temp table.
+	 * Should be performed in a transaction with the other group synch steps.
+	 * <em>Requires that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first and
+	 * that {@link #GROUP_SYNC_DROP_TEMP_TABLE} has not yet run.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	@Parameter("group_name")
+	@Parameter("group_type")
+	protected static final String GROUP_SYNC_INSERT_TEMP_ROW =
+			"INSERT INTO temp.usergroupids SELECT group_id FROM groups "
+					+ "WHERE group_name = :group_name "
+					+ "AND group_type = :group_type";
+
+	/**
+	 * Step 3 of group synchronisation: add real missing groups. Requires the
+	 * temporary table to have been set up already. Should be performed in a
+	 * transaction with the other group synch steps. <em>Requires that
+	 * {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first and that
+	 * {@link #GROUP_SYNC_DROP_TEMP_TABLE} has not yet run.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	@Parameter("user_id")
+	protected static final String GROUP_SYNC_ADD_GROUPS =
+			"INSERT OR IGNORE INTO group_memberships(user_id, group_id) "
+					+ "SELECT :user_id AS user_id, "
+					+ "group_id FROM temp.usergroupids";
+
+	/**
+	 * Step 4 of group synchronisation: remove real groups no longer wanted.
+	 * Requires the temporary table to have been set up already. Should be
+	 * performed in a transaction with the other group synch steps. <em>Requires
+	 * that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first and that
+	 * {@link #GROUP_SYNC_DROP_TEMP_TABLE} has not yet run.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	@Parameter("user_id")
+	protected static final String GROUP_SYNC_REMOVE_GROUPS =
+			"DELETE FROM group_memberships "
+					+ "WHERE user_id = :user_id AND group_id NOT IN ("
+					+ "SELECT group_id FROM temp.usergroupids)";
+
+	/**
+	 * Step 5 of group synchronisation: drop the temporary table. Except we
+	 * don't because that doesn't work in a transaction; squelching the contents
+	 * works though (the table itself is dropped automatically when the
+	 * connection is dropped so we don't need to clean it up here). Should be
+	 * performed in a transaction with the other group synch steps. <em>Requires
+	 * that {@link #GROUP_SYNC_MAKE_TEMP_TABLE} was run first.</em>
+	 *
+	 * @see LocalAuthProviderImpl
+	 */
+	protected static final String GROUP_SYNC_DROP_TEMP_TABLE =
+			"DELETE FROM temp.usergroupids";
 
 	/**
 	 * Test if a user account is locked or disabled.
@@ -1142,17 +1389,6 @@ public abstract class SQLQueries {
 					+ "AND locked RETURNING user_name";
 
 	/**
-	 * Set a quota for a user on each defined machine.
-	 *
-	 * @see LocalAuthProviderImpl
-	 */
-	@Parameter("user_id")
-	@Parameter("quota")
-	protected static final String ADD_QUOTA_FOR_ALL_MACHINES =
-			"INSERT OR IGNORE INTO quotas(user_id, machine_id, quota) "
-					+ "SELECT :user_id, machine_id, :quota FROM machines";
-
-	/**
 	 * Delete a user.
 	 *
 	 * @see UserControl
@@ -1172,19 +1408,6 @@ public abstract class SQLQueries {
 	@SingleRowResult
 	protected static final String GET_USER_ID = "SELECT user_id FROM user_info "
 			+ "WHERE user_name = :user_name LIMIT 1";
-
-	/**
-	 * Set a quota on a machine.
-	 *
-	 * @see UserControl
-	 */
-	@Parameter("quota")
-	@Parameter("user_id")
-	@Parameter("machine_name")
-	protected static final String SET_USER_QUOTA =
-			"UPDATE quotas SET quota = :quota WHERE user_id = :user_id "
-					+ "AND machine_id = (SELECT machine_id FROM machines "
-					+ "WHERE machine_name = :machine_name)";
 
 	/**
 	 * Set the amount a user is trusted.
@@ -1270,30 +1493,46 @@ public abstract class SQLQueries {
 					+ ":encoded_password, :trust_level, :disabled)";
 
 	/**
-	 * Create a quota (in board-seconds) for a user on a machine.
+	 * Get a list of all groups.
 	 *
 	 * @see UserControl
 	 */
-	@Parameter("user_id")
-	@Parameter("quota")
-	@Parameter("machine_name")
-	@GeneratesID
-	protected static final String CREATE_QUOTA =
-			"INSERT INTO quotas(user_id, quota, machine_id) "
-					+ "SELECT :user_id, :quota, machine_id FROM machines "
-					+ "WHERE machine_name = :machine_name";
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("group_type")
+	protected static final String LIST_ALL_GROUPS =
+			"SELECT group_id, group_name, quota, group_type FROM groups";
 
 	/**
-	 * Create quotas (in board-seconds) for a user for all known machines.
+	 * Get a group by it's ID.
 	 *
 	 * @see UserControl
 	 */
-	@Parameter("user_id")
-	@GeneratesID
-	protected static final String CREATE_QUOTAS_FROM_DEFAULTS =
-			"INSERT INTO quotas(user_id, quota, machine_id) "
-					+ "SELECT :user_id, default_quota, machine_id "
-					+ "FROM machines";
+	@Parameter("group_id")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("group_type")
+	@SingleRowResult
+	protected static final String GET_GROUP_BY_ID =
+			"SELECT group_id, group_name, quota, group_type FROM groups "
+					+ "WHERE group_id = :group_id LIMIT 1";
+
+	/**
+	 * Get a group by it's name.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("group_name")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("group_type")
+	@SingleRowResult
+	protected static final String GET_GROUP_BY_NAME =
+			"SELECT group_id, group_name, quota, group_type FROM groups "
+					+ "WHERE group_name = :group_name LIMIT 1";
 
 	/**
 	 * Create a board issue report.

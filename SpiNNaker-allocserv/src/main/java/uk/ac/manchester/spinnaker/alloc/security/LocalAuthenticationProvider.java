@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,13 +44,10 @@ public interface LocalAuthenticationProvider extends AuthenticationProvider {
 	 *            The <em>unencoded</em> password to use.
 	 * @param trustLevel
 	 *            How much is the user trusted.
-	 * @param quota
-	 *            The user's quota, in board-seconds.
 	 * @return True if the user was created, false if the user already existed.
 	 */
 	@PreAuthorize(IS_ADMIN)
-	boolean createUser(String username, String password, TrustLevel trustLevel,
-			long quota);
+	boolean createUser(String username, String password, TrustLevel trustLevel);
 
 	/**
 	 * Unlock any locked users whose lock period has expired.

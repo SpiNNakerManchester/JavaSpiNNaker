@@ -20,6 +20,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 
 import java.net.URI;
 
+import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -46,7 +47,7 @@ public abstract class ControllerUtils {
 	 * @return URL that will invoke the method
 	 * @see MvcUriComponentsBuilder
 	 */
-	public static URI uri(Object selfCall, Object...objects) {
+	public static URI uri(Object selfCall, Object... objects) {
 		UriComponentsBuilder b = fromMethodCall(selfCall);
 		// Force some dumb stuff to be right
 		b.query(null).scheme("https");
@@ -65,5 +66,55 @@ public abstract class ControllerUtils {
 	 */
 	public static ModelAndView error(String message) {
 		return new ModelAndView(MVC_ERROR, "error", message);
+	}
+
+	/**
+	 * Creates a {@link ModelAndView} on demand.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static class ViewFactory {
+		private final String view;
+
+		/**
+		 * @param viewName
+		 *            The name of the view that this class will make.
+		 */
+		public ViewFactory(String viewName) {
+			view = viewName;
+		}
+
+		/**
+		 * Make an instance.
+		 *
+		 * @return The model-and-view, ready for decorating with the model.
+		 */
+		public ModelAndView view() {
+			return new ModelAndView(view);
+		}
+
+		/**
+		 * Make an instance.
+		 *
+		 * @param model
+		 *            The model we want to start with.
+		 * @return The model-and-view, ready for decorating with the model.
+		 */
+		public ModelAndView view(ModelMap model) {
+			return new ModelAndView(view, model);
+		}
+
+		/**
+		 * Make an instance.
+		 *
+		 * @param key
+		 *            Name of item to initially insert in the model.
+		 * @param value
+		 *            Value of item to initially insert in the model.
+		 * @return The model-and-view, ready for decorating with the model.
+		 */
+		public ModelAndView view(String key, Object value) {
+			return new ModelAndView(view, key, value);
+		}
 	}
 }

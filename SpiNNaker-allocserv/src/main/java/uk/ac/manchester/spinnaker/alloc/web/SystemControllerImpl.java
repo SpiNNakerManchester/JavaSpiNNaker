@@ -46,9 +46,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
@@ -64,28 +61,45 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
+import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 
 /**
  * The main web interface controller.
  *
  * @author Donal Fellows
  */
-@Controller
-@RequestMapping(SystemController.ROOT_PATH)
+@Controller("mvc.mainUI")
 public class SystemControllerImpl implements SystemController {
 	private static final Logger log = getLogger(SystemControllerImpl.class);
 
-	private static final String MAIN_VIEW = "index";
+	private static final ViewFactory MAIN_VIEW = new ViewFactory("index");
 
-	private static final String PASSWORD_CHANGE_VIEW = "password";
+	private static final ViewFactory PASSWORD_CHANGE_VIEW =
+			new ViewFactory("password");
 
-	private static final String MACHINE_LIST_VIEW = "listmachines";
+	private static final ViewFactory MACHINE_LIST_VIEW =
+			new ViewFactory("listmachines");
 
-	private static final String MACHINE_VIEW = "machinedetails";
+	private static final ViewFactory MACHINE_VIEW =
+			new ViewFactory("machinedetails");
 
-	private static final String JOB_LIST_VIEW = "listjobs";
+	private static final ViewFactory JOB_LIST_VIEW =
+			new ViewFactory("listjobs");
 
-	private static final String JOB_VIEW = "jobdetails";
+	private static final ViewFactory JOB_VIEW = new ViewFactory("jobdetails");
+
+	// Must match what views expect
+	private static final String VERSION_OBJ = "version";
+
+	private static final String BUILD_OBJ = "build";
+
+	private static final String JOBS_OBJ = "jobList";
+
+	private static final String ONE_JOB_OBJ = "job";
+
+	private static final String MACHINES_OBJ = "machineList";
+
+	private static final String ONE_MACHINE_OBJ = "machine";
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -102,14 +116,14 @@ public class SystemControllerImpl implements SystemController {
 	@Autowired
 	private ServiceVersion version;
 
-	private ModelAndView view(String name) {
+	private ModelAndView view(ViewFactory name) {
 		Authentication auth = getContext().getAuthentication();
-		return new ModelAndView(name, USER_MAY_CHANGE_PASSWORD,
+		return name.view(USER_MAY_CHANGE_PASSWORD,
 				auth instanceof UsernamePasswordAuthenticationToken);
 	}
 
-	private ModelAndView view(String name, String key, Object value) {
-		ModelAndView mav = view(name);
+	private ModelAndView view(ViewFactory name, String key, Object value) {
+		ModelAndView mav = name.view();
 		mav.addObject(key, value);
 		return mav;
 	}
@@ -117,8 +131,8 @@ public class SystemControllerImpl implements SystemController {
 	@Override
 	@GetMapping("/")
 	public ModelAndView index() {
-		return view(MAIN_VIEW).addObject("version", version.getFullVersion())
-				.addObject("build", version.getBuildTimestamp());
+		return view(MAIN_VIEW).addObject(VERSION_OBJ, version.getFullVersion())
+				.addObject(BUILD_OBJ, version.getBuildTimestamp());
 	}
 
 	@Override
@@ -187,10 +201,9 @@ public class SystemControllerImpl implements SystemController {
 	}
 
 	@Override
-	@PostMapping("/change_password")
 	@Action("changing password")
 	public ModelAndView postPasswordChangeForm(
-			@Valid @ModelAttribute("user") PasswordChangeRecord user,
+			PasswordChangeRecord user,
 			Principal principal) {
 		log.info("changing password for {}", principal.getName());
 		return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
@@ -198,7 +211,6 @@ public class SystemControllerImpl implements SystemController {
 	}
 
 	@Override
-	@GetMapping("/perform_logout")
 	@Action("logging out")
 	public String performLogout(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -223,7 +235,7 @@ public class SystemControllerImpl implements SystemController {
 		List<MachineListEntryRecord> table = spallocCore.listMachines(false);
 		table.forEach(rec -> rec
 				.setDetailsUrl(uri(self().getMachineInfo(rec.getName()))));
-		return view(MACHINE_LIST_VIEW, "machineList", table);
+		return view(MACHINE_LIST_VIEW, MACHINES_OBJ, table);
 	}
 
 	@Override
@@ -241,7 +253,7 @@ public class SystemControllerImpl implements SystemController {
 		// Owners and admins may drill down further into jobs
 		mach.getJobs().stream().filter(j -> j.getOwner().isPresent())
 				.forEach(j -> j.setUrl(uri(self().getJobInfo(j.getId()))));
-		return view(MACHINE_VIEW, "machine", mach);
+		return view(MACHINE_VIEW, ONE_MACHINE_OBJ, mach);
 	}
 
 	@Override
@@ -255,7 +267,7 @@ public class SystemControllerImpl implements SystemController {
 			entry.setMachineUrl(
 					uri(self().getMachineInfo(entry.getMachineName())));
 		});
-		return view(JOB_LIST_VIEW, "jobList", table);
+		return view(JOB_LIST_VIEW, JOBS_OBJ, table);
 	}
 
 	@Override
@@ -269,6 +281,6 @@ public class SystemControllerImpl implements SystemController {
 			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));
 		}
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
-		return view(JOB_VIEW, "job", mach);
+		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
 	}
 }

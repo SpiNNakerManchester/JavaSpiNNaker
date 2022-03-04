@@ -1530,6 +1530,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			int idx = 0;
 			for (Object arg : arguments) {
 				// The classes we augment the DB driver with
+				if (arg instanceof Optional) {
+					// Unpack one layer of Optional only; absent = NULL
+					arg = ((Optional<?>) arg).orElse(null);
+				}
 				if (arg instanceof Instant) {
 					arg = ((Instant) arg).getEpochSecond();
 				} else if (arg instanceof Duration) {

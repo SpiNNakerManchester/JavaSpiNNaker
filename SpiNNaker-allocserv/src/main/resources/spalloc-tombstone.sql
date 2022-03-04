@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS tombstone.jobs(
 	machine_name TEXT,
 	owner INTEGER,
 	owner_name TEXT,
+	"group" INTEGER,
+	group_name TEXT,
 	create_timestamp INTEGER, -- timestamp
 	width INTEGER,
 	height INTEGER,

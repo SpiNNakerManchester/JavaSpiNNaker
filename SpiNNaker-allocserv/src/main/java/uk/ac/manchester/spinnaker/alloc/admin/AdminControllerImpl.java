@@ -16,16 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
@@ -35,13 +38,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,18 +50,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -74,10 +68,12 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
+import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 
 /**
@@ -85,8 +81,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SystemController;
  *
  * @author Donal Fellows
  */
-@Controller("mvc.adminController")
-@RequestMapping(AdminController.BASE_PATH)
+@Controller("mvc.adminUI")
 @PreAuthorize(IS_ADMIN)
 public class AdminControllerImpl extends DatabaseAwareBean
 		implements AdminController {
@@ -96,22 +91,60 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private static final int BOARD_HOUR = 3600;
 
 	// These are paths below src/main/webapp/WEB-INF/views
-	private static final String MAIN_VIEW = "admin/index";
+	/** View: {@code admin/index.jsp}. */
+	private static final ViewFactory MAIN_VIEW = new ViewFactory("admin/index");
 
-	private static final String USER_LIST_VIEW = "admin/listusers";
+	/** View: {@code admin/listusers.jsp}. */
+	private static final ViewFactory USER_LIST_VIEW =
+			new ViewFactory("admin/listusers");
 
-	private static final String USER_DETAILS_VIEW = "admin/userdetails";
+	/** View: {@code admin/userdetails.jsp}. */
+	private static final ViewFactory USER_DETAILS_VIEW =
+			new ViewFactory("admin/userdetails");
 
-	private static final String CREATE_USER_VIEW = "admin/createuser";
+	/** View: {@code admin/createuser.jsp}. */
+	private static final ViewFactory CREATE_USER_VIEW =
+			new ViewFactory("admin/createuser");
 
-	private static final String BOARD_VIEW = "admin/board";
+	/** View: {@code admin/listgroups.jsp}. */
+	private static final ViewFactory GROUP_LIST_VIEW =
+			new ViewFactory("admin/listgroups");
 
-	private static final String MACHINE_VIEW = "admin/machine";
+	/** View: {@code admin/groupdetails.jsp}. */
+	private static final ViewFactory GROUP_DETAILS_VIEW =
+			new ViewFactory("admin/groupdetails");
 
+	/** View: {@code admin/creategroup.jsp}. */
+	private static final ViewFactory CREATE_GROUP_VIEW =
+			new ViewFactory("admin/creategroup");
+
+	/** View: {@code admin/board.jsp}. */
+	private static final ViewFactory BOARD_VIEW =
+			new ViewFactory("admin/board");
+
+	/** View: {@code admin/machine.jsp}. */
+	private static final ViewFactory MACHINE_VIEW =
+			new ViewFactory("admin/machine");
+
+	/** User list in {@link #USER_LIST_VIEW}. */
+	private static final String USER_LIST_OBJ = "userlist";
+
+	/** User details in {@link #USER_DETAILS_VIEW}. */
 	private static final String USER_OBJ = "user";
 
+	/** Group list in {@link #GROUP_LIST_VIEW}. */
+	private static final String GROUP_LIST_OBJ = "grouplist";
+
+	/**
+	 * Group details in {@link #GROUP_DETAILS_VIEW}. Group creation info in
+	 * {@link #CREATE_GROUP_VIEW}.
+	 */
+	private static final String GROUP_OBJ = "group";
+
+	/** State in {@link #BOARD_VIEW}. */
 	private static final String BOARD_OBJ = "board";
 
+	/** State in {@link #MACHINE_VIEW}. */
 	private static final String MACHINE_LIST_OBJ = "machineNames";
 
 	private static final String DEFINED_MACHINES_OBJ = "definedMachines";
@@ -122,8 +155,24 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	private static final String MACHINE_REPORTS_OBJ = "machineReports";
 
+	private static final String BASE_URI = "baseuri";
+
+	private static final String TRUST_LEVELS = "trustLevels";
+
+	private static final String USERS_URI = "usersUri";
+
+	private static final String CREATE_USER_URI = "createUserUri";
+
+	private static final String GROUPS_URI = "groupsUri";
+
+	private static final String CREATE_GROUP_URI = "createGroupUri";
+
+	private static final String BOARDS_URI = "boardsUri";
+
+	private static final String MACHINE_URI = "machineUri";
+
 	@Autowired
-	private UserControl userController;
+	private UserControl userManager;
 
 	@Autowired
 	private MachineStateControl machineController;
@@ -172,32 +221,24 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private static ModelAndView addStandardContext(ModelAndView mav,
 			RedirectAttributes attrs) {
-		if (attrs != null) {
-			attrs.addFlashAttribute("baseuri",
-					fromCurrentRequestUri().toUriString());
-			attrs.addFlashAttribute("trustLevels", TrustLevel.values());
-			attrs.addFlashAttribute("usersUri", uri(admin().listUsers()));
-			attrs.addFlashAttribute("createUserUri",
-					uri(admin().getUserCreationForm()));
-			attrs.addFlashAttribute("boardsUri", uri(admin().boards()));
-			attrs.addFlashAttribute("machineUri",
-					uri(admin().machineManagement()));
-			Authentication auth =
-					SecurityContextHolder.getContext().getAuthentication();
-			attrs.addFlashAttribute(USER_MAY_CHANGE_PASSWORD,
-					auth instanceof UsernamePasswordAuthenticationToken);
-		} else {
-			mav.addObject("baseuri", fromCurrentRequestUri().toUriString());
-			mav.addObject("trustLevels", TrustLevel.values());
-			mav.addObject("usersUri", uri(admin().listUsers()));
-			mav.addObject("createUserUri", uri(admin().getUserCreationForm()));
-			mav.addObject("boardsUri", uri(admin().boards()));
-			mav.addObject("machineUri", uri(admin().machineManagement()));
-			Authentication auth =
-					SecurityContextHolder.getContext().getAuthentication();
-			mav.addObject(USER_MAY_CHANGE_PASSWORD,
-					auth instanceof UsernamePasswordAuthenticationToken);
-		}
+		Authentication auth = getContext().getAuthentication();
+		boolean mayChangePassword =
+				auth instanceof UsernamePasswordAuthenticationToken;
+
+		// Real implementation of these is always a ModelMap
+		ModelMap model = (ModelMap) (nonNull(attrs) ? attrs.getFlashAttributes()
+				: mav.getModel());
+
+		model.addAttribute(BASE_URI, fromCurrentRequestUri().toUriString());
+		model.addAttribute(TRUST_LEVELS, TrustLevel.values());
+		model.addAttribute(USERS_URI, uri(admin().listUsers()));
+		model.addAttribute(CREATE_USER_URI, uri(admin().getUserCreationForm()));
+		model.addAttribute(CREATE_GROUP_URI,
+				uri(admin().getGroupCreationForm()));
+		model.addAttribute(GROUPS_URI, uri(admin().listGroups()));
+		model.addAttribute(BOARDS_URI, uri(admin().boards()));
+		model.addAttribute(MACHINE_URI, uri(admin().machineManagement()));
+		model.addAttribute(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
 		return mav;
 	}
 
@@ -214,19 +255,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private static ModelAndView addStandardContext(ModelAndView mav) {
 		return addStandardContext(mav, null);
-	}
-
-	/**
-	 * All models should contain a common set of attributes that describe where
-	 * the view is rendering and where other parts of the admin interface are.
-	 *
-	 * @param viewName
-	 *            The name of the view; the model will be a basic model with
-	 *            just the standard attributes.
-	 * @return The model-and-view.
-	 */
-	private static ModelAndView addStandardContext(String viewName) {
-		return addStandardContext(new ModelAndView(viewName), null);
 	}
 
 	/**
@@ -294,8 +322,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	/**
-	 * Convert thrown admin issues to views so the rest of the
-	 * code doesn't have to.
+	 * Convert thrown admin issues to views so the rest of the code doesn't have
+	 * to.
 	 *
 	 * @param e
 	 *            An admin exception.
@@ -318,34 +346,30 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting the main admin UI")
 	public ModelAndView mainUI() {
-		return addStandardContext(MAIN_VIEW);
+		return addStandardContext(MAIN_VIEW.view());
 	}
 
 	@Override
 	@Action("listing the users")
-	@GetMapping(USERS_PATH)
 	public ModelAndView listUsers() {
-		return addStandardContext(new ModelAndView(USER_LIST_VIEW, "userlist",
-				unmodifiableMap(userController.listUsers(
+		return addStandardContext(USER_LIST_VIEW.view(USER_LIST_OBJ,
+				unmodifiableMap(userManager.listUsers(
 						user -> uri(admin().showUserForm(user.getUserId()))))));
 	}
 
 	@Override
 	@Action("getting the user-creation UI")
-	@GetMapping(CREATE_USER_PATH)
 	public ModelAndView getUserCreationForm() {
 		return addStandardContext(
-				new ModelAndView(CREATE_USER_VIEW, USER_OBJ, new UserRecord()));
+				CREATE_USER_VIEW.view(USER_OBJ, new UserRecord()));
 	}
 
 	@Override
 	@Action("creating a user")
-	@PostMapping(CREATE_USER_PATH)
-	public ModelAndView createUser(
-			@Valid @ModelAttribute(USER_OBJ) UserRecord user, ModelMap model,
+	public ModelAndView createUser(UserRecord user, ModelMap model,
 			RedirectAttributes attrs) {
 		user.initCreationDefaults();
-		UserRecord realUser = userController.createUser(user)
+		UserRecord realUser = userManager.createUser(user)
 				.orElseThrow(() -> new AdminException(
 						"user creation failed (duplicate username?)"));
 		int id = realUser.getUserId();
@@ -355,41 +379,40 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("getting info about a user")
-	@GetMapping(USER_PATH)
-	public ModelAndView showUserForm(@PathVariable("id") int id) {
-		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW);
-		UserRecord user = userController.getUser(id)
+	public ModelAndView showUserForm(int id) {
+		ModelAndView mav = USER_DETAILS_VIEW.view();
+		UserRecord user = userManager
+				.getUser(id, m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(() -> new AdminException("no such user"));
 		mav.addObject(USER_OBJ, user.sanitise());
+		assert mav.getModel().get(USER_OBJ) instanceof UserRecord;
 		mav.addObject("deleteUri", uri(admin().deleteUser(id, null, null)));
-		mav.addObject("addQuotaUri", uri(admin().adjustQuota(id, "", 0, null)));
 		return addStandardContext(mav);
 	}
 
 	@Override
 	@Action("updating a user's details")
-	@PostMapping(USER_PATH)
-	public ModelAndView submitUserForm(@PathVariable("id") int id,
-			@Valid @ModelAttribute(USER_OBJ) UserRecord user, ModelMap model,
+	public ModelAndView submitUserForm(int id, UserRecord user, ModelMap model,
 			Principal principal) {
 		String adminUser = principal.getName();
 		user.setUserId(null);
 		log.info("updating user ID={}", id);
-		UserRecord updatedUser = userController.updateUser(id, user, adminUser)
+		UserRecord updatedUser = userManager
+				.updateUser(id, user, adminUser,
+						m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(() -> new AdminException("no such user"));
-		ModelAndView mav = new ModelAndView(USER_DETAILS_VIEW, model);
+		ModelAndView mav = USER_DETAILS_VIEW.view(model);
 		mav.addObject(USER_OBJ, updatedUser.sanitise());
 		return addStandardContext(mav);
 	}
 
 	@Override
 	@Action("deleting a user")
-	@PostMapping(USER_DELETE_PATH)
-	public ModelAndView deleteUser(@PathVariable("id") int id,
-			Principal principal, RedirectAttributes attrs) {
+	public ModelAndView deleteUser(int id, Principal principal,
+			RedirectAttributes attrs) {
 		String adminUser = principal.getName();
 		String deletedUsername =
-				userController.deleteUser(id, adminUser).orElseThrow(
+				userManager.deleteUser(id, adminUser).orElseThrow(
 						() -> new AdminException("could not delete that user"));
 		log.info("deleted user ID={} username={}", id, deletedUsername);
 		// Not sure that these are the correct place
@@ -400,22 +423,124 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	@Override
-	@Action("adjusting a user's quota")
-	@PostMapping(USER_QUOTA_PATH)
-	public ModelAndView adjustQuota(@PathVariable("id") int id,
-			@NotEmpty @RequestParam("machine") String machine,
-			@RequestParam("delta") int delta, RedirectAttributes attrs) {
-		quotaManager.addQuota(id, machine, delta * BOARD_HOUR);
-		log.info("adjusted quota for user ID={} machine={} delta={}", id,
-				machine, delta);
-		return redirectTo(uri(admin().showUserForm(id)), attrs);
+	@Action("listing the groups")
+	public ModelAndView listGroups() {
+		return addStandardContext(GROUP_LIST_VIEW.view(GROUP_LIST_OBJ,
+				unmodifiableMap(userManager.listGroups(group -> uri(
+						admin().showGroupInfo(group.getGroupId()))))));
+	}
+
+	@Override
+	@Action("getting info about a group")
+	public ModelAndView showGroupInfo(int id) {
+		ModelAndView mav = GROUP_DETAILS_VIEW.view();
+		Map<String, URI> userLocations = new HashMap<>();
+		mav.addObject(GROUP_OBJ, userManager.getGroup(id, m -> {
+			userLocations.put(m.getUserName(),
+					uri(admin().showUserForm(m.getUserId())));
+			return uri(admin().removeUserFromGroup(id, m.getUserId(), null));
+		}).orElseThrow(() -> new AdminException("no such group")));
+		assert mav.getModel().get(GROUP_OBJ) instanceof GroupRecord;
+		mav.addObject(USER_LIST_OBJ, userLocations);
+		mav.addObject("deleteUri", uri(admin().deleteGroup(id, null)));
+		mav.addObject("addUserUri",
+				uri(admin().addUserToGroup(id, null, null)));
+		mav.addObject("addQuotaUri",
+				uri(admin().adjustGroupQuota(id, 0, null)));
+		return addStandardContext(mav);
+	}
+
+	@Override
+	@Action("getting the group-creation UI")
+	public ModelAndView getGroupCreationForm() {
+		return addStandardContext(
+				CREATE_GROUP_VIEW.view(GROUP_OBJ, new CreateGroupModel()));
+	}
+
+	@Override
+	@Action("creating a group")
+	public ModelAndView createGroup(CreateGroupModel groupRequest,
+			RedirectAttributes attrs) {
+		GroupRecord realGroup =
+				userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
+						.orElseThrow(() -> new AdminException(
+								"group creation failed (duplicate name?)"));
+		int id = realGroup.getGroupId();
+		log.info("created group ID={} name={}", id, realGroup.getGroupName());
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+	}
+
+	@Override
+	@Action("adding a user to a group")
+	public ModelAndView addUserToGroup(int id, String user,
+			RedirectAttributes attrs) {
+		GroupRecord g = userManager.getGroup(id, null)
+				.orElseThrow(() -> new AdminException("no such group"));
+		UserRecord u = userManager.getUser(user, null)
+				.orElseThrow(() -> new AdminException("no such user"));
+		String notice;
+		if (userManager.addUserToGroup(u, g).isPresent()) {
+			log.info("added user {} to group {}", u.getUserName(),
+					g.getGroupName());
+			notice = format("added user %s to group %s", u.getUserName(),
+					g.getGroupName());
+		} else {
+			notice = format("user %s is already a member of group %s",
+					u.getUserName(), g.getGroupName());
+		}
+		attrs.addFlashAttribute("notice", notice);
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+	}
+
+	@Override
+	@Action("removing a user from a group")
+	public ModelAndView removeUserFromGroup(int id, int userid,
+			RedirectAttributes attrs) {
+		GroupRecord g = userManager.getGroup(id, null)
+				.orElseThrow(() -> new AdminException("no such group"));
+		UserRecord u = userManager.getUser(userid, null)
+				.orElseThrow(() -> new AdminException("no such user"));
+		String notice;
+		if (userManager.removeUserFromGroup(u, g)) {
+			log.info("removed user {} from group {}", u.getUserName(),
+					g.getGroupName());
+			notice = format("removed user %s from group %s", u.getUserName(),
+					g.getGroupName());
+		} else {
+			notice = format("user %s is already not a member of group %s",
+					u.getUserName(), g.getGroupName());
+		}
+		attrs.addFlashAttribute("notice", notice);
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+	}
+
+	@Override
+	@Action("adjusting a group's quota")
+	public ModelAndView adjustGroupQuota(int id, int delta,
+			RedirectAttributes attrs) {
+		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -> {
+			log.info("adjusted quota for group {} to {}", aq.getName(),
+					aq.getQuota());
+			// attrs.addFlashAttribute("notice", "quota updated");
+		});
+		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+	}
+
+	@Override
+	@Action("deleting a group")
+	public ModelAndView deleteGroup(int id, RedirectAttributes attrs) {
+		String deletedGroupName = userManager.deleteGroup(id)
+				.orElseThrow(() -> new AdminException("no such group"));
+		log.info("deleted group ID={} groupname={}", id, deletedGroupName);
+		ModelAndView mav = redirectTo(uri(admin().listGroups()), attrs);
+		attrs.addFlashAttribute("notice", "deleted " + deletedGroupName);
+		return mav;
 	}
 
 	@Override
 	@Action("getting the UI for finding boards")
-	@GetMapping(BOARDS_PATH)
 	public ModelAndView boards() {
-		ModelAndView mav = new ModelAndView(BOARD_VIEW);
+		ModelAndView mav = BOARD_VIEW.view();
 		mav.addObject(BOARD_OBJ, new BoardRecord());
 		mav.addObject(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
@@ -442,11 +567,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	// TODO should we refactor into multiple methods?
 	@Override
 	@Action("processing changes to a board's configuration")
-	@PostMapping(BOARDS_PATH)
-	public ModelAndView board(
-			@Valid @ModelAttribute(BOARD_OBJ) BoardRecord board,
-			ModelMap model) {
-		ModelAndView mav = new ModelAndView(BOARD_VIEW, model);
+	public ModelAndView board(BoardRecord board, ModelMap model) {
+		ModelAndView mav = BOARD_VIEW.view(model);
 		BoardState bs = getBoardState(board)
 				.orElseThrow(() -> new AdminException("no such board"));
 
@@ -492,10 +614,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	@Override
 	@Action("getting a machine's configuration")
-	@GetMapping(MACHINE_PATH)
 	public ModelAndView machineManagement() {
-		ModelAndView mav = new ModelAndView(MACHINE_VIEW, MACHINE_LIST_OBJ,
-				getMachineNames(true));
+		ModelAndView mav =
+				MACHINE_VIEW.view(MACHINE_LIST_OBJ, getMachineNames(true));
 		List<MachineTagging> tagging = machineController.getMachineTagging();
 		tagging.forEach(
 				t -> t.setUrl(uri(system().getMachineInfo(t.getName()))));
@@ -509,10 +630,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("retagging a machine")
-	@PostMapping(path = MACHINE_PATH, params = MACHINE_RETAG_PARAM)
-	public ModelAndView retagMachine(
-			@ModelAttribute("machine") String machineName,
-			@ModelAttribute(MACHINE_RETAG_PARAM) String newTags) {
+	public ModelAndView retagMachine(String machineName, String newTags) {
 		Set<String> tags =
 				stream(newTags.split(",")).map(String::trim).collect(toSet());
 		machineController.updateTags(machineName, tags);
@@ -522,9 +640,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("disabling a machine")
-	@PostMapping(value = MACHINE_PATH, params = "outOfService")
-	public ModelAndView
-			disableMachine(@ModelAttribute("machine") String machineName) {
+	public ModelAndView disableMachine(String machineName) {
 		machineController.setMachineState(machineName, false);
 		log.info("marked {} as out of service", machineName);
 		return machineManagement();
@@ -532,9 +648,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("enabling a machine")
-	@PostMapping(value = MACHINE_PATH, params = "intoService")
-	public ModelAndView
-			enableMachine(@ModelAttribute("machine") String machineName) {
+	public ModelAndView enableMachine(String machineName) {
 		machineController.setMachineState(machineName, true);
 		log.info("marked {} as in service", machineName);
 		return machineManagement();
@@ -542,9 +656,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("defining a machine")
-	@PostMapping(value = MACHINE_PATH, params = MACHINE_FILE_PARAM)
-	public ModelAndView defineMachine(
-			@RequestParam(MACHINE_FILE_PARAM) MultipartFile file) {
+	public ModelAndView defineMachine(MultipartFile file) {
 		List<Machine> machines = extractMachineDefinitions(file);
 		for (Machine m : machines) {
 			machineDefiner.loadMachineDefinition(m);

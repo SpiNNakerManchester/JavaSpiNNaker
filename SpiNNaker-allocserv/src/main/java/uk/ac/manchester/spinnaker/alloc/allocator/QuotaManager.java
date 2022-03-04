@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@ import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
+
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,26 +49,22 @@ public class QuotaManager extends DatabaseAwareBean {
 	private ServiceMasterControl control;
 
 	/**
-	 * Can the user create another job at this point? If not, they're currently
-	 * out of resources.
+	 * Can the user (in a specific group) create another job at this point? If
+	 * not, they're currently out of resources.
 	 *
-	 * @param machineId
-	 *            On what machine do they want to create the job? Quotas are
-	 *            theoretically per-machine.
-	 * @param user
-	 *            Who wants to create the job.
+	 * @param groupId
+	 *            What group will the job be accounted against.
 	 * @return True if they can make a job. False if they can't.
 	 */
-	public boolean mayCreateJob(int machineId, String user) {
+	public boolean mayCreateJob(int groupId) {
 		try (CreateCheckSQL sql = new CreateCheckSQL()) {
-			return sql.transaction(false,
-					() -> sql.mayCreateJob(machineId, user));
+			return sql.transaction(false, () -> sql.mayCreateJob(groupId));
 		}
 	}
 
 	private class CreateCheckSQL extends AbstractSQL {
-		// These could be combined, but they're complicated enough
-		private final Query getQuota = conn.query(GET_USER_QUOTA);
+		// TODO These should be combined (but one is an aggregate so...)
+		private final Query getQuota = conn.query(GET_GROUP_QUOTA);
 
 		private final Query getCurrentUsage = conn.query(GET_CURRENT_USAGE);
 
@@ -77,15 +75,14 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private boolean mayCreateJob(int machineId, String user) {
-			return getQuota.call1(machineId, user).map(result -> {
+		private boolean mayCreateJob(int groupId) {
+			return getQuota.call1(groupId).map(result -> {
 				Integer quota = result.getInteger("quota");
 				if (isNull(quota)) {
 					return true;
 				}
-				int userId = result.getInt("user_id");
 				// Quota is defined; check if current usage exceeds it
-				int usage = getCurrentUsage.call1(machineId, userId)
+				int usage = getCurrentUsage.call1(groupId)
 						.map(integer("current_usage")).orElse(0);
 				// If board-seconds are left, we're good to go
 				return (quota > usage);
@@ -94,20 +91,16 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Has the execution of a job exceeded its owner's resource allocation at
+	 * Has the execution of a job exceeded its group's resource allocation at
 	 * this point?
 	 *
-	 * @param machineId
-	 *            On what machine is the job running? Quotas are theoretically
-	 *            per-machine.
 	 * @param jobId
 	 *            What job is consuming resources?
 	 * @return True if the job can continue to run. False if it can't.
 	 */
-	public boolean mayLetJobContinue(int machineId, int jobId) {
+	public boolean mayLetJobContinue(int jobId) {
 		try (ContinueCheckSQL sql = new ContinueCheckSQL()) {
-			return sql.transaction(false,
-					() -> sql.mayLetJobContinue(machineId, jobId));
+			return sql.transaction(false, () -> sql.mayLetJobContinue(jobId));
 		}
 	}
 
@@ -121,8 +114,8 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private boolean mayLetJobContinue(int machineId, int jobId) {
-			return getUsageAndQuota.call1(machineId, jobId)
+		private boolean mayLetJobContinue(int jobId) {
+			return getUsageAndQuota.call1(jobId)
 					// If we have an entry, check if usage <= quota
 					.map(row -> row.getInt("usage") <= row.getInt("quota"))
 					// Otherwise, we'll just allow it
@@ -131,25 +124,51 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Adjust a user's quota on a particular machine.
+	 * Adjust a group's quota.
 	 *
-	 * @param userId
-	 *            Which user's quota to change
-	 * @param machineName
-	 *            What machine to change for
+	 * @param groupId
+	 *            Which group's quota to change
 	 * @param delta
 	 *            Amount to change by, in board-seconds
-	 * @return The number of quotas modified
+	 * @return Information about what group's quota was adjusted and what it has
+	 *         become.
 	 */
-	public int addQuota(int userId, String machineName, int delta) {
+	public Optional<AdjustedQuota> addQuota(int groupId, int delta) {
 		try (AdjustQuotaSQL sql = new AdjustQuotaSQL()) {
-			return sql.transaction(
-					() -> sql.adjustQuota(userId, machineName, delta));
+			return sql.transaction(() -> sql.adjustQuota(groupId, delta)
+					.map(AdjustedQuota::new));
+		}
+	}
+
+	/**
+	 * Describes the result of the {@link QuotaManager#addQuota(int,int)}
+	 * operation.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static final class AdjustedQuota {
+		private final String name;
+
+		private final Long quota;
+
+		private AdjustedQuota(Row row) {
+			this.name = row.getString("group_name");
+			this.quota = row.getLong("quota");
+		}
+
+		/** @return The name of the group. */
+		public String getName() {
+			return name;
+		}
+
+		/** @return The new quota of the group. */
+		public Long getQuota() {
+			return quota;
 		}
 	}
 
 	private class AdjustQuotaSQL extends AbstractSQL {
-		private final Update adjustQuota = conn.update(ADJUST_QUOTA);
+		private final Query adjustQuota = conn.query(ADJUST_QUOTA);
 
 		@Override
 		public void close() {
@@ -157,8 +176,8 @@ public class QuotaManager extends DatabaseAwareBean {
 			super.close();
 		}
 
-		private Integer adjustQuota(int userId, String machineName, int delta) {
-			return adjustQuota.call(delta, machineName, userId);
+		private Optional<Row> adjustQuota(int groupId, int delta) {
+			return adjustQuota.call1(delta, groupId);
 		}
 	}
 
@@ -186,7 +205,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	// Accessible for testing; do not inline
 	final void doConsolidate(Connection c) {
 		try (ConsolidateSQL sql = new ConsolidateSQL(c)) {
-			sql.transaction(() -> sql.consolidate());
+			sql.transaction(sql::consolidate);
 		}
 	}
 
@@ -214,7 +233,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		private Void consolidate() {
 			for (Row row : getConsoldationTargets.call()) {
 				decrementQuota.call(row.getObject("usage"),
-						row.getInt("quota_id"));
+						row.getInt("group_id"));
 				markConsolidated.call(row.getInt("job_id"));
 			}
 			return null;

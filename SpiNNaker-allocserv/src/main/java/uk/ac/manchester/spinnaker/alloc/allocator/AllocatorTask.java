@@ -418,9 +418,8 @@ public class AllocatorTask extends DatabaseAwareBean
 		try (Query find = conn.query(GET_LIVE_JOB_IDS)) {
 			List<Integer> toKill = new ArrayList<>();
 			for (Row row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
-				int machineId = row.getInt("machine_id");
 				int jobId = row.getInt("job_id");
-				if (!quotaManager.mayLetJobContinue(machineId, jobId)) {
+				if (!quotaManager.mayLetJobContinue(jobId)) {
 					toKill.add(jobId);
 				}
 			}

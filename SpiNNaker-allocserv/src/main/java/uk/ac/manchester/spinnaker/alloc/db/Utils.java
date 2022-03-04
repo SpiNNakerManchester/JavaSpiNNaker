@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.lang.System.arraycopy;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 
 import java.sql.SQLException;
@@ -26,6 +27,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.dao.RecoverableDataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.sqlite.SQLiteException;
 
@@ -63,7 +65,7 @@ public abstract class Utils {
 	 * @return The trimmed SQL.
 	 */
 	public static String trimSQL(String sql, int length) {
-		sql = sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
+		sql = trimSQLComments(sql);
 		// Trim long queries to no more than TRIM_LENGTH...
 		String sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
 		if (sql2 != sql) {
@@ -71,6 +73,10 @@ public abstract class Utils {
 			sql = sql2 + ELLIPSIS;
 		}
 		return sql;
+	}
+
+	private static String trimSQLComments(String sql) {
+		return sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
 	}
 
 	/**
@@ -94,19 +100,22 @@ public abstract class Utils {
 	 *            The exception to convert.
 	 * @param sql
 	 *            Optional SQL that caused the problem. May be {@code null}.
-	 * @return The converted exception
+	 * @return The converted exception; this is <em>not</em> thrown by this
+	 *         method!
 	 */
 	public static DataAccessException mapException(SQLException exception,
 			String sql) {
 		if (!(exception instanceof SQLiteException)) {
-			return new UncategorizedSQLException("general SQL exception", sql,
-					exception);
+			return restack(new UncategorizedSQLException(
+					"general SQL exception", trimSQLComments(sql), exception));
 		}
 		SQLiteException exn = (SQLiteException) exception;
 		String msg = exn.getMessage();
+		boolean replaced = false;
 		if (msg.contains("SQL error or missing database (")) {
 			msg = msg.replaceFirst("SQL error or missing database \\((.*)\\)",
 					"$1");
+			replaced = true;
 		}
 		switch (exn.getResultCode()) {
 		case SQLITE_CONSTRAINT:
@@ -121,25 +130,26 @@ public abstract class Utils {
 		case SQLITE_CONSTRAINT_ROWID:
 		case SQLITE_CONSTRAINT_VTAB:
 		case SQLITE_MISMATCH:
-			return new DataIntegrityViolationException(msg, exn);
+			return restack(new DataIntegrityViolationException(msg, exn));
 
 		case SQLITE_BUSY:
 		case SQLITE_BUSY_RECOVERY:
 		case SQLITE_BUSY_SNAPSHOT:
 		case SQLITE_LOCKED:
 		case SQLITE_LOCKED_SHAREDCACHE:
-			return new PessimisticLockingFailureException(msg, exn);
+			return restack(new PessimisticLockingFailureException(msg, exn));
 
 		case SQLITE_ABORT:
 		case SQLITE_ABORT_ROLLBACK:
 		case SQLITE_FULL:
 		case SQLITE_EMPTY:
-			return new RecoverableDataAccessException(msg, exn);
+			return restack(new RecoverableDataAccessException(msg, exn));
 
 		case SQLITE_SCHEMA:
 		case SQLITE_TOOBIG:
 		case SQLITE_RANGE:
-			return new InvalidDataAccessResourceUsageException(msg, exn);
+			return restack(
+					new InvalidDataAccessResourceUsageException(msg, exn));
 
 		case SQLITE_IOERR:
 		case SQLITE_IOERR_SHORT_READ:
@@ -182,11 +192,27 @@ public abstract class Utils {
 		case SQLITE_CANTOPEN_CONVPATH:
 		case SQLITE_NOTADB:
 		case SQLITE_FORMAT:
-			return new DataAccessResourceFailureException(msg, exn);
+			return restack(new DataAccessResourceFailureException(msg, exn));
 
 		default:
-			return new UncategorizedSQLException("general SQL exception", sql,
-					exception);
+			if (replaced) {
+				return restack(new BadSqlGrammarException(msg,
+						trimSQLComments(sql), exn));
+			}
+			return restack(new UncategorizedSQLException(
+					"general SQL exception", trimSQLComments(sql), exn));
 		}
+	}
+
+	// 2 = restack() and mapException() themselves
+	private static final int CHOP_LEN = 2;
+
+	private static <T extends Throwable> T restack(T exn) {
+		exn.fillInStackTrace();
+		StackTraceElement[] st = exn.getStackTrace();
+		StackTraceElement[] newst = new StackTraceElement[st.length - CHOP_LEN];
+		arraycopy(st, CHOP_LEN, newst, 0, newst.length);
+		exn.setStackTrace(newst);
+		return exn;
 	}
 }

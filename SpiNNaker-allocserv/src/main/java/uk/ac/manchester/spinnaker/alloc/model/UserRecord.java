@@ -21,6 +21,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 
@@ -32,13 +33,15 @@ import javax.validation.constraints.Null;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 
 /**
- * The description and model of a user. POJO class. Some things are stated
- * to be not settable despite having setters; they're settable <em>in
- * instances of this class</em> but the service itself will not respect
- * being asked to change them.
+ * The description and model of a user. POJO class. Some things are stated to be
+ * not settable despite having setters; they're settable <em>in instances of
+ * this class</em> but the service itself will not respect being asked to change
+ * them.
  */
 public final class UserRecord {
 	private Integer userId;
@@ -55,11 +58,40 @@ public final class UserRecord {
 
 	private TrustLevel trustLevel;
 
-	private Map<String, Long> quota;
-
 	private Instant lastSuccessfulLogin;
 
 	private Instant lastFailedLogin;
+
+	private Map<String, URI> groups;
+
+	/** Create an empty instance. */
+	public UserRecord() {
+	}
+
+	/**
+	 * Inflate the result of a {@link SQLQueries#GET_USER_DETAILS} query (or
+	 * anything else that includes the same columns) into an object. Doesn't
+	 * include inflating the groups that the user is a member of.
+	 *
+	 * @param row
+	 *            The row with the result.
+	 */
+	public UserRecord(Row row) {
+		try {
+			setUserId(row.getInt("user_id"));
+			setUserName(row.getString("user_name"));
+			setHasPassword(row.getBoolean("has_password"));
+			setTrustLevel(row.getEnum("trust_level", TrustLevel.class));
+			setEnabled(!row.getBoolean("disabled"));
+			setLocked(row.getBoolean("locked"));
+			setLastSuccessfulLogin(
+					row.getInstant("last_successful_login_timestamp"));
+			setLastFailedLogin(row.getInstant("last_fail_timestamp"));
+		} finally {
+			// I mean it!
+			setPassword(null);
+		}
+	}
 
 	/**
 	 * @return The user identifier. Read-only; cannot be set by the service.
@@ -87,8 +119,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The user's unencrypted password. <em>Never</em> returned by
-	 *         the service, but may be written.
+	 * @return The user's unencrypted password. <em>Never</em> returned by the
+	 *         service, but may be written.
 	 */
 	@JsonInclude(NON_NULL)
 	public String getPassword() {
@@ -100,9 +132,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether the user has a password set. If they don't, they'll
-	 *         have to log in by other mechanisms (e.g., HBP/EBRAINS OpenID
-	 *         Connect).
+	 * @return Whether the user has a password set. If they don't, they'll have
+	 *         to log in by other mechanisms (e.g., HBP/EBRAINS OpenID Connect).
 	 */
 	public Boolean getHasPassword() {
 		return hasPassword;
@@ -126,8 +157,8 @@ public final class UserRecord {
 
 	/**
 	 * @return Whether this account is temporarily locked. Locked accounts
-	 *         should unlock automatically after 24 hours. Can be explicitly
-	 *         set to {@code false} to force an unlock.
+	 *         should unlock automatically after 24 hours. Can be explicitly set
+	 *         to {@code false} to force an unlock.
 	 */
 	public Boolean isLocked() {
 		return isLocked;
@@ -150,20 +181,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The quota map of the account, saying how many board-seconds
-	 *         can be used on each machine.
-	 */
-	public Map<String, Long> getQuota() {
-		return quota;
-	}
-
-	public void setQuota(Map<String, Long> quota) {
-		this.quota = quota;
-	}
-
-	/**
-	 * @return The time that the last successful login was. Read-only;
-	 *         cannot be set via the admin API.
+	 * @return The time that the last successful login was. Read-only; cannot be
+	 *         set via the admin API.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -176,8 +195,8 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return The time that the last failed login was. Read-only; cannot be
-	 *         set via the admin API.
+	 * @return The time that the last failed login was. Read-only; cannot be set
+	 *         via the admin API.
 	 */
 	@JsonInclude(NON_NULL)
 	@Null
@@ -190,8 +209,24 @@ public final class UserRecord {
 	}
 
 	/**
-	 * @return Whether this represents a request to use external
-	 *         authentication (instead of just not setting the password).
+	 * Note that no API that sets a user's information using a
+	 * {@link UserRecord} allows setting the groups that user is a member of at
+	 * the same time.
+	 *
+	 * @return The groups that the user is a member of. May be {@code null} if
+	 *         this information is not being reported.
+	 */
+	public Map<String, URI> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Map<String, URI> groups) {
+		this.groups = groups;
+	}
+
+	/**
+	 * @return Whether this represents a request to use external authentication
+	 *         (instead of just not setting the password).
 	 */
 	@JsonIgnore
 	public boolean isExternallyAuthenticated() {

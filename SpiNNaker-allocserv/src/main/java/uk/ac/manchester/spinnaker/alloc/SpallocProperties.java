@@ -678,6 +678,12 @@ public class SpallocProperties {
 		 */
 		private boolean dummyRandomPass;
 
+		/**
+		 * The name of the system default group. Only made if the
+		 * {@linkplain #addDummyUser dummy user} is made.
+		 */
+		private String systemGroup;
+
 		/** Provide extra information to callers on auth failures. */
 		private boolean debugFailures;
 
@@ -705,6 +711,7 @@ public class SpallocProperties {
 				@DefaultValue("true") boolean localForm,
 				@DefaultValue("false") boolean addDummyUser,
 				@DefaultValue("true") boolean dummyRandomPass,
+				@DefaultValue("wheel") String systemGroup,
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("3") int maxLoginFailures,
 				@DefaultValue("24h") Duration accountLockDuration,
@@ -715,6 +722,7 @@ public class SpallocProperties {
 			this.localForm = localForm;
 			this.addDummyUser = addDummyUser;
 			this.dummyRandomPass = dummyRandomPass;
+			this.systemGroup = systemGroup;
 			this.debugFailures = debugFailures;
 			this.maxLoginFailures = maxLoginFailures;
 			this.accountLockDuration = accountLockDuration;
@@ -790,6 +798,21 @@ public class SpallocProperties {
 
 		public void setDummyRandomPass(boolean dummyRandomPass) {
 			this.dummyRandomPass = dummyRandomPass;
+		}
+
+		/**
+		 * The name of the system default group, that is internal and has no
+		 * quota (initially). Only made if the {@linkplain #addDummyUser dummy
+		 * user} is made.
+		 *
+		 * @return the name of the system group
+		 */
+		public String getSystemGroup() {
+			return systemGroup;
+		}
+
+		public void setSystemGroup(String systemGroup) {
+			this.systemGroup = systemGroup;
 		}
 
 		/** @return Provide extra information to callers on auth failures. */
@@ -1065,14 +1088,30 @@ public class SpallocProperties {
 		private int defaultQuota;
 
 		/**
+		 * Default quota for organisations inflated from OpenID, in
+		 * board-seconds.
+		 */
+		private long orgQuota;
+
+		/**
+		 * Default quota for collabratories inflated from OpenID, in
+		 * board-seconds.
+		 */
+		private long collabQuota;
+
+		/**
 		 * Cron expression that says when we consolidate job quotas into the
 		 * main quota table.
 		 */
 		private String consolidationSchedule;
 
 		public QuotaProperties(@DefaultValue("100") int defaultQuota,
+				@DefaultValue("0") long defaultOrgQuota,
+				@DefaultValue("3600000") long defaultCollabQuota,
 				@DefaultValue("0 0 * * * *") String consolidationSchedule) {
 			this.defaultQuota = defaultQuota;
+			this.orgQuota = defaultOrgQuota;
+			this.collabQuota = defaultCollabQuota;
 			this.consolidationSchedule = consolidationSchedule;
 		}
 
@@ -1088,6 +1127,34 @@ public class SpallocProperties {
 
 		public void setDefaultQuota(int defaultQuota) {
 			this.defaultQuota = defaultQuota;
+		}
+
+		/**
+		 * Default quota for organisations.
+		 *
+		 * @return Default quota for organisations inflated from OpenID, in
+		 *         board-seconds.
+		 */
+		public long getDefaultOrgQuota() {
+			return orgQuota;
+		}
+
+		public void setDefaultOrgQuota(long orgQuota) {
+			this.orgQuota = orgQuota;
+		}
+
+		/**
+		 * Default quota for collabratories.
+		 *
+		 * @return Default quota for collabratories inflated from OpenID, in
+		 *         board-seconds.
+		 */
+		public long getDefaultCollabQuota() {
+			return collabQuota;
+		}
+
+		public void setDefaultCollabQuota(long collabQuota) {
+			this.collabQuota = collabQuota;
 		}
 
 		/**
@@ -1461,6 +1528,13 @@ public class SpallocProperties {
 		private String serviceUser;
 
 		/**
+		 * What group to run jobs submitted through the spalloc v1 compatibility
+		 * service against. This group needs to exist, and the service user
+		 * needs to be a member of it, but does not need to have a quota set.
+		 */
+		private String serviceGroup;
+
+		/**
 		 * How long to pass to the spalloc core to wait for timeouts relating to
 		 * message notifications (i.e., due to machine or job status changes).
 		 */
@@ -1474,6 +1548,7 @@ public class SpallocProperties {
 				@DefaultValue("0.0.0.0") String host,
 				@DefaultValue("22244") int port,
 				@DefaultValue("") String serviceUser,
+				@DefaultValue("") String serviceGroup,
 				@DefaultValue("2000ms") Duration receiveTimeout,
 				@DefaultValue("3s") Duration shutdownTimeout,
 				@DefaultValue("1m") Duration notifyWaitTime,
@@ -1483,6 +1558,7 @@ public class SpallocProperties {
 			this.host = host;
 			this.port = port;
 			this.serviceUser = serviceUser;
+			this.serviceGroup = serviceGroup;
 			this.receiveTimeout = receiveTimeout;
 			this.shutdownTimeout = shutdownTimeout;
 			this.notifyWaitTime = notifyWaitTime;
@@ -1559,6 +1635,29 @@ public class SpallocProperties {
 		private boolean isValidUserIfEnabled() {
 			return !enable
 					|| (nonNull(serviceUser) && !serviceUser.trim().isEmpty());
+		}
+
+		/**
+		 * What group to run jobs submitted through the spalloc v1 compatibility
+		 * service against. This group needs to exist, and the service user
+		 * needs to be a member of it, but does not need to have a quota set.
+		 *
+		 * @return What group to run jobs submitted through the spalloc v1
+		 *         compatibility service against.
+		 */
+		public String getServiceGroup() {
+			return serviceGroup;
+		}
+
+		public void setServiceGroup(String serviceUser) {
+			this.serviceGroup = serviceUser;
+		}
+
+		@AssertTrue(message = "a service group must be given "
+				+ "if the v1 service is enabled")
+		private boolean isValidGroupIfEnabled() {
+			return !enable || (nonNull(serviceGroup)
+					&& !serviceGroup.trim().isEmpty());
 		}
 
 		/**

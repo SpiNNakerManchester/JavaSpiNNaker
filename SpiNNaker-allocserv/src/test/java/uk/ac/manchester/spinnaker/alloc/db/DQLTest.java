@@ -17,19 +17,30 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.String.format;
-import static java.util.Collections.sort;
-import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.BASIC_MACHINE_INFO;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.BOARD_COORDS_REQUIRED_COLUMNS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.GROUP_COLUMNS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MEMBER_COLUMNS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MSC_BOARD_COORDS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_GROUP;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_JOB;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_MACHINE;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_MEMBER;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_NAME;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_USER;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.USER_COLUMNS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertCanMakeBoardLocation;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertSetEquals;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.set;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -41,12 +52,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
 /**
@@ -58,98 +65,12 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
 class DQLTest extends SQLQueries {
-	// Not equal to any machine_id
-	private static final int NO_MACHINE = -1;
-
-	// Not equal to any job_id
-	private static final int NO_JOB = -1;
-
-	// Not equal to any board_id
-	private static final int NO_BOARD = -1;
-
-	// Not equal to any user_id
-	private static final int NO_USER = -1;
-
-	/**
-	 * The columns needed to make a {@link SpallocAPI.Machine} implementation.
-	 */
-	private static final Set<String> BASIC_MACHINE_INFO =
-			set("in_service", "machine_id", "machine_name", "width", "height");
-
-	/** The columns the {@link BoardLocation} constructor expects to find. */
-	private static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS =
-			set("machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_id", "job_root_chip_x", "job_root_chip_y");
-
-	/** Columns expected when building {@link BoardState} from a {@link Row}. */
-	private static final Set<String> MSC_BOARD_COORDS =
-			set("board_id", "x", "y", "z", "cabinet", "frame", "board_num",
-					"address", "machine_name");
-
-	/**
-	 * Columns expected when building {@link BoardCoords} from a {@link Row}.
-	 */
-	private static final Set<String> BOARD_COORDS_REQUIRED_COLUMNS =
-			set("x", "y", "z", "cabinet", "frame", "board_num", "address");
-
-	/** Classes used in Javadoc. Technically not needed, but... */
-	static final Class<?>[] JAVADOC_ONLY_CLASSES = {
-		BoardState.class, BoardLocation.class, BoardCoords.class
-	};
-
 	@Autowired
 	private DatabaseEngine mainDBEngine;
 
 	private DatabaseEngine memdb;
 
 	private Connection c;
-
-	/**
-	 * Easy set builder.
-	 *
-	 * @param strings
-	 *            The values in the set.
-	 * @return An unmodifiable set.
-	 */
-	private static Set<String> set(String... strings) {
-		return unmodifiableSet(new HashSet<>(Arrays.asList(strings)));
-	}
-
-	/**
-	 * Compares two sets by converting them into sorted lists. This produces the
-	 * most comprehensible results.
-	 *
-	 * @param <T>
-	 *            The type of elements in the sets.
-	 * @param expected
-	 *            The set of expected elements.
-	 * @param actual
-	 *            The actual results of the operation.
-	 */
-	private static <T extends Comparable<T>> void
-			assertSetEquals(Set<T> expected, Set<T> actual) {
-		List<T> e = new ArrayList<>(expected);
-		sort(e);
-		List<T> a = new ArrayList<>(actual);
-		sort(a);
-		assertEquals(e, a);
-	}
-
-	/**
-	 * Asserts that the result columns of the query are adequate for making a
-	 * {@link BoardLocation} instance.
-	 *
-	 * @param q
-	 *            The query that feeds the creation.
-	 */
-	private static void assertCanMakeBoardLocation(Query q) {
-		assertTrue(
-				q.getRowColumnNames()
-						.containsAll(BOARD_LOCATION_REQUIRED_COLUMNS),
-				() -> "board location creation using " + q
-						+ " will fail; required columns missing");
-	}
 
 	@BeforeAll
 	void getMemoryDatabase() {
@@ -208,7 +129,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(BASIC_MACHINE_INFO, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", false).isPresent());
+				assertFalse(q.call1(NO_NAME, false).isPresent());
 			});
 		}
 	}
@@ -228,8 +149,10 @@ class DQLTest extends SQLQueries {
 	void getMachineReports() {
 		try (Query q = c.query(GET_MACHINE_REPORTS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_id", "report_id", "report_timestamp",
-					"reported_issue", "reporter_name"), q.getRowColumnNames());
+			assertSetEquals(
+					set("board_id", "report_id", "report_timestamp",
+							"reported_issue", "reporter_name"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -385,8 +308,10 @@ class DQLTest extends SQLQueries {
 	void getBoardReports() {
 		try (Query q = c.query(GET_BOARD_REPORTS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_id", "report_id", "report_timestamp",
-					"reported_issue", "reporter_name"), q.getRowColumnNames());
+			assertSetEquals(
+					set("board_id", "report_id", "report_timestamp",
+							"reported_issue", "reporter_name"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
@@ -765,7 +690,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+				assertFalse(q.call1(NO_NAME, -1, -1, -1).isPresent());
 			});
 		}
 	}
@@ -787,7 +712,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", -1, -1, -1).isPresent());
+				assertFalse(q.call1(NO_NAME, -1, -1, -1).isPresent());
 			});
 		}
 	}
@@ -798,7 +723,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(2, q.getNumArguments());
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1("gorp", "256.256.256.256").isPresent());
+				assertFalse(q.call1(NO_NAME, "256.256.256.256").isPresent());
 			});
 		}
 	}
@@ -815,12 +740,91 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getGroupQuota() {
+		try (Query q = c.query(GET_GROUP_QUOTA)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("quota"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void listAllGroups() {
+		try (Query q = c.query(LIST_ALL_GROUPS)) {
+			assertEquals(0, q.getNumArguments());
+			assertSetEquals(GROUP_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				// Not sure what default state is, but this should not error
+				assertNotNull(q.call().toList());
+			});
+		}
+	}
+
+	@Test
+	void getGroupById() {
+		try (Query q = c.query(GET_GROUP_BY_ID)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(GROUP_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getGroupByName() {
+		try (Query q = c.query(GET_GROUP_BY_NAME)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(GROUP_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_NAME).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getUsersOfGroup() {
+		try (Query q = c.query(GET_USERS_OF_GROUP)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(MEMBER_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_GROUP).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getMembership() {
+		try (Query q = c.query(GET_MEMBERSHIP)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(MEMBER_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MEMBER).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getMembershipsOfUser() {
+		try (Query q = c.query(GET_MEMBERSHIPS_OF_USER)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(MEMBER_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_USER).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getUserQuota() {
 		try (Query q = c.query(GET_USER_QUOTA)) {
-			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("quota", "user_id"), q.getRowColumnNames());
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("quota_total", "user_id"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_MACHINE, "gorp").isPresent());
+				assertFalse(q.call1(NO_NAME).isPresent());
 			});
 		}
 	}
@@ -828,11 +832,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getCurrentUsage() {
 		try (Query q = c.query(GET_CURRENT_USAGE)) {
-			assertEquals(2, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("current_usage"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertNull(q.call1(NO_MACHINE, "gorp").get()
-						.getObject("current_usage"));
+				assertNull(q.call1(NO_GROUP).get().getObject("current_usage"));
 			});
 		}
 	}
@@ -840,10 +843,10 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getJobUsageAndQuota() {
 		try (Query q = c.query(GET_JOB_USAGE_AND_QUOTA)) {
-			assertEquals(2, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("quota", "usage"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_MACHINE, NO_JOB).isPresent());
+				assertFalse(q.call1(NO_JOB).isPresent());
 			});
 		}
 	}
@@ -852,7 +855,7 @@ class DQLTest extends SQLQueries {
 	void getConsolidationTargets() {
 		try (Query q = c.query(GET_CONSOLIDATION_TARGETS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("job_id", "quota_id", "usage"),
+			assertSetEquals(set("job_id", "group_id", "usage"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Empty DB has no consolidation targets
@@ -905,7 +908,7 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(set("user_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				// Testing DB has no users by default
-				assertFalse(q.call1("gorp").isPresent());
+				assertFalse(q.call1(NO_NAME).isPresent());
 			});
 		}
 	}
@@ -914,11 +917,7 @@ class DQLTest extends SQLQueries {
 	void getUserDetails() {
 		try (Query q = c.query(GET_USER_DETAILS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(
-					set("disabled", "has_password", "last_fail_timestamp",
-							"last_successful_login_timestamp", "locked",
-							"trust_level", "user_id", "user_name"),
-					q.getRowColumnNames());
+			assertSetEquals(USER_COLUMNS, q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_USER).isPresent());
 			});
@@ -926,13 +925,34 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
-	void getQuotaDetails() {
-		try (Query q = c.query(GET_QUOTA_DETAILS)) {
+	void getUserDetailsByName() {
+		try (Query q = c.query(GET_USER_DETAILS_BY_NAME)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("machine_name", "quota"),
-					q.getRowColumnNames());
+			assertSetEquals(USER_COLUMNS, q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_USER).isPresent());
+				assertFalse(q.call1(NO_NAME).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getGroupByNameAndMember() {
+		try (Query q = c.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
+			assertEquals(2, q.getNumArguments());
+			assertSetEquals(set("group_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_NAME, NO_NAME).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getGroupsOfUser() {
+		try (Query q = c.query(GET_GROUPS_OF_USER)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("group_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_NAME).isPresent());
 			});
 		}
 	}
