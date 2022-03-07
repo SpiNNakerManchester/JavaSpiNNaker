@@ -49,7 +49,7 @@ SELECT
 	user_id, user_name, encrypted_password,
 	last_successful_login_timestamp, trust_level, failure_count,
 	locked, last_fail_timestamp, disabled,
-	openid_subject, NULL
+	NULL
 FROM user_info;
 
 -- Drop dependencies (will be auto-rebuilt on app boot)
