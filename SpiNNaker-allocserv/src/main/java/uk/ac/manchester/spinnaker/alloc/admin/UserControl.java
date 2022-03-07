@@ -504,7 +504,7 @@ public class UserControl extends DatabaseAwareBean {
 	 *             If the user cannot change their password here for some
 	 *             reason.
 	 */
-	public PasswordChangeRecord getUserForPrincipal(Principal principal)
+	public PasswordChangeRecord getUser(Principal principal)
 			throws AuthenticationException {
 		try (Connection c = getConnection();
 				Query q = c.query(GET_LOCAL_USER_DETAILS)) {
@@ -530,28 +530,47 @@ public class UserControl extends DatabaseAwareBean {
 	 *             If the user cannot change their password here for some
 	 *             reason.
 	 */
-	public PasswordChangeRecord updateUserOfPrincipal(Principal principal,
+	public PasswordChangeRecord updateUser(Principal principal,
 			PasswordChangeRecord user) throws AuthenticationException {
 		try (UpdatePassSQL sql = new UpdatePassSQL()) {
-			return updateUserOfPrincipal(principal, user, sql);
+			return updateUser(principal, user, sql);
 		}
 	}
 
-	// DO NOT HOLD A TRANSACTION WHEN CALLING THIS!
-	private PasswordChangeRecord updateUserOfPrincipal(Principal principal,
-			PasswordChangeRecord user, UpdatePassSQL sql) {
-		/** Just a tuple extracted from a row. Only used in this method. */
-		class GetUserResult {
-			final PasswordChangeRecord baseUser;
+	/**
+	 * Just a tuple extracted from a row. Only used in
+	 * {@link #updateUser(Principal,PasswordChangeRecord,UpdatePassSQL)}; it's
+	 * only not a local class to work around <a href=
+	 * "https://bugs.openjdk.java.net/browse/JDK-8144673">JDK-8144673</a> (fixed
+	 * by Java 11).
+	 */
+	private static class GetUserResult {
+		final PasswordChangeRecord baseUser;
 
-			final String oldEncPass;
+		final String oldEncPass;
 
-			GetUserResult(Row row) {
-				baseUser = passChange(row);
-				oldEncPass = row.getString("encrypted_password");
-			}
+		GetUserResult(Row row) {
+			baseUser = passChange(row);
+			oldEncPass = row.getString("encrypted_password");
 		}
+	}
 
+	/**
+	 * Back end of {@link #updateUser(Principal,PasswordChangeRecord)}.
+	 * <p>
+	 * <strong>Do not hold a transaction when calling this!</strong> This is a
+	 * slow method as it validates and encodes passwords using bcrypt.
+	 *
+	 * @param principal
+	 *            Current user
+	 * @param user
+	 *            What to update
+	 * @param sql
+	 *            How to touch the DB
+	 * @return What was updated
+	 */
+	private PasswordChangeRecord updateUser(Principal principal,
+			PasswordChangeRecord user, UpdatePassSQL sql) {
 		GetUserResult result = sql
 				.transaction(() -> sql.getPasswordedUser
 						.call1(principal.getName()).map(GetUserResult::new))

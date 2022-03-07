@@ -108,7 +108,7 @@ public class SystemControllerImpl implements SystemController {
 	private LogoutHandler logoutHandler;
 
 	@Autowired
-	private UserControl userControl;
+	private UserControl userManager;
 
 	@Autowired
 	private URLPathMaker urlMaker;
@@ -140,7 +140,7 @@ public class SystemControllerImpl implements SystemController {
 	@Action("preparing for password change")
 	public ModelAndView getPasswordChangeForm(Principal principal) {
 		return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
-				userControl.getUserForPrincipal(principal));
+				userManager.getUser(principal));
 	}
 
 	/**
@@ -211,7 +211,7 @@ public class SystemControllerImpl implements SystemController {
 			Principal principal) {
 		log.info("changing password for {}", principal.getName());
 		return view(PASSWORD_CHANGE_VIEW, USER_PASSWORD_CHANGE_ATTR,
-				userControl.updateUserOfPrincipal(principal, user));
+				userManager.updateUser(principal, user));
 	}
 
 	@Override
