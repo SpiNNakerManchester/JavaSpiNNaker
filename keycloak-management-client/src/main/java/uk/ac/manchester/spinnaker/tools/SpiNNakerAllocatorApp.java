@@ -98,7 +98,7 @@ public interface SpiNNakerAllocatorApp {
 	 *      documentation</a>
 	 */
 	static ClientRepresentation makeSpallocDescriptor(String clientId) {
-		ClientRepresentation client = new ClientRepresentation();
+		var client = new ClientRepresentation();
 		client.setClientId(clientId);
 		client.setName(SPALLOC_NAME);
 		client.setDescription(SPALLOC_DESCRIPTION);
@@ -131,9 +131,8 @@ public interface SpiNNakerAllocatorApp {
 	 */
 	static ClientRepresentation
 			makeSpallocDescriptor(ClientRepresentation oldClient) {
-		ClientRepresentation newClient =
-				makeSpallocDescriptor(oldClient.getClientId());
-		ClientRepresentation compressedClient = new ClientRepresentation();
+		var newClient = makeSpallocDescriptor(oldClient.getClientId());
+		var compressedClient = new ClientRepresentation();
 		// Client ID must always be present
 		compressedClient.setClientId(oldClient.getClientId());
 		compressedClient.setId(oldClient.getId());

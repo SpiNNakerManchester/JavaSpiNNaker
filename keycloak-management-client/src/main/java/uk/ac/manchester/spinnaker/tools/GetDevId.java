@@ -91,12 +91,12 @@ public class GetDevId extends CredentialDB {
 	}
 
 	private ClientRegistration getRegistrationClient(String clientId) {
-		ClientRegistration cr = ClientRegistration.create()
-				.url(HBP_OPENID_BASE, "hbp").build();
+		var cr = ClientRegistration.create().url(HBP_OPENID_BASE, "hbp")
+				.build();
 		if (nextAuth != null) {
 			cr.auth(nextAuth);
 		} else if (clientId != null) {
-			String token = getToken(clientId);
+			var token = getToken(clientId);
 			if (token != null) {
 				cr.auth(Auth.token(token));
 			}
@@ -105,10 +105,9 @@ public class GetDevId extends CredentialDB {
 	}
 
 	private ClientRepresentation saveAuth(ClientRepresentation client) {
-		String clientId = requireNonNull(client.getClientId());
+		var clientId = requireNonNull(client.getClientId());
 		if (client.getRegistrationAccessToken() != null) {
-			String registrationAccessToken =
-					client.getRegistrationAccessToken();
+			var registrationAccessToken = client.getRegistrationAccessToken();
 			log.debug("RAT: {}", registrationAccessToken);
 			nextAuth = Auth.token(client);
 			try {
@@ -139,7 +138,7 @@ public class GetDevId extends CredentialDB {
 	public ClientRepresentation makeClient(ClientRepresentation client,
 			EBRAINSDevCredentials credentials)
 			throws IOException, ClientRegistrationException {
-		ClientRegistration reg = getRegistrationClient(null);
+		var reg = getRegistrationClient(null);
 		reg.auth(Auth.token(credentials.getToken()));
 		client = reg.create(client);
 		return saveAuth(client);
@@ -158,7 +157,7 @@ public class GetDevId extends CredentialDB {
 	 */
 	public ClientRepresentation updateClient(ClientRepresentation client)
 			throws ClientRegistrationException {
-		ClientRegistration reg = getRegistrationClient(client.getClientId());
+		var reg = getRegistrationClient(client.getClientId());
 		client = reg.update(client);
 		return saveAuth(client);
 	}
@@ -176,8 +175,8 @@ public class GetDevId extends CredentialDB {
 	 */
 	public ClientRepresentation getClient(String clientId)
 			throws ClientRegistrationException {
-		ClientRegistration reg = getRegistrationClient(clientId);
-		ClientRepresentation client = reg.get(clientId);
+		var reg = getRegistrationClient(clientId);
+		var client = reg.get(clientId);
 		return saveAuth(client);
 	}
 
@@ -190,7 +189,7 @@ public class GetDevId extends CredentialDB {
 	 *         caller with the parts to update.
 	 */
 	static ClientRepresentation makeUpdateSpallocDescriptor(String clientId) {
-		ClientRepresentation client = new ClientRepresentation();
+		var client = new ClientRepresentation();
 		client.setClientId(clientId);
 		return client;
 	}
@@ -205,7 +204,7 @@ public class GetDevId extends CredentialDB {
 	 */
 	private EBRAINSDevCredentials obtainCredentials() throws SQLException {
 		try {
-			EBRAINSDevCredentials c = new DBContainedCredentials();
+			var c = new DBContainedCredentials();
 			log.info("using existing user credentials for {}", c.getUser());
 			return c;
 		} catch (IllegalStateException e) {
@@ -227,15 +226,15 @@ public class GetDevId extends CredentialDB {
 	 */
 	public static void main(String... arguments)
 			throws IOException, SQLException {
-		String id = SPALLOC_ID;
-		File db = getDBFilename(arguments);
-		try (GetDevId gdi = new GetDevId(db)) {
+		var id = SPALLOC_ID;
+		var db = getDBFilename(arguments);
+		try (var gdi = new GetDevId(db)) {
 			ClientRepresentation cr;
 			if (gdi.getToken(id) != null) {
 				cr = gdi.getClient(id);
 				// cr = gdi.updateClient(makeSpallocDescriptor(id));
 			} else {
-				EBRAINSDevCredentials creds = gdi.obtainCredentials();
+				var creds = gdi.obtainCredentials();
 				cr = gdi.makeClient(makeSpallocDescriptor(id), creds);
 				if (!(creds instanceof DBContainedCredentials)) {
 					gdi.saveCredentials(creds);

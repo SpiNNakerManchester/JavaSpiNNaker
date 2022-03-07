@@ -25,13 +25,10 @@ import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.makeBa
 import static uk.ac.manchester.spinnaker.tools.GetDevId.HBP_OPENID_BASE;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringJoiner;
 
 import org.keycloak.representations.AccessTokenResponse;
@@ -69,31 +66,31 @@ interface EBRAINSDevCredentials {
 	 *             descriptions.
 	 */
 	default String getToken() throws IOException {
-		String user = requireNonNull(getUser(), "user must be given");
-		String pass = requireNonNull(getPass(), "password must be given");
-		ObjectMapper mapper = new ObjectMapper();
+		var user = requireNonNull(getUser(), "user must be given");
+		var pass = requireNonNull(getPass(), "password must be given");
+		var mapper = new ObjectMapper();
 
-		URL url = new URL(OIDC_TOKEN_URL);
-		HttpURLConnection http = (HttpURLConnection) url.openConnection();
+		var url = new URL(OIDC_TOKEN_URL);
+		var http = (HttpURLConnection) url.openConnection();
 		http.setRequestMethod("POST");
 		http.setDoOutput(true);
 
 		// UGLY!
 		http.setRequestProperty("Authorization", makeBasicAuth("developer:"));
 
-		Map<String, String> arguments = new HashMap<>();
+		var arguments = new HashMap<String, String>();
 		arguments.put("grant_type", "password");
 		arguments.put("username", user);
 		arguments.put("password", pass);
 
-		byte[] out = encodeForm(arguments);
+		var out = encodeForm(arguments);
 		http.setFixedLengthStreamingMode(out.length);
 		http.setRequestProperty("Content-Type",
 				"application/x-www-form-urlencoded; charset=UTF-8");
-		try (OutputStream os = http.getOutputStream()) {
+		try (var os = http.getOutputStream()) {
 			os.write(out);
 		}
-		try (InputStream is = http.getInputStream()) {
+		try (var is = http.getInputStream()) {
 			return mapper.readValue(is, AccessTokenResponse.class).getToken();
 		}
 	}
@@ -112,8 +109,8 @@ abstract class EBRAINSDevCredentialsUtils {
 	 * @return The encoded form.
 	 */
 	static byte[] encodeForm(Map<String, String> arguments) {
-		StringJoiner sj = new StringJoiner("&");
-		for (Entry<String, String> entry : arguments.entrySet()) {
+		var sj = new StringJoiner("&");
+		for (var entry : arguments.entrySet()) {
 			sj.add(encode(entry.getKey(), UTF_8) + "="
 					+ encode(entry.getValue(), UTF_8));
 		}

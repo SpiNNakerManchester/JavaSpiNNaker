@@ -21,10 +21,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.sqlite.SQLiteConfig;
@@ -51,11 +48,11 @@ public class CredentialDB implements AutoCloseable {
 	 *             If we can't resolve the database filename properly.
 	 */
 	public CredentialDB(File databaseFile) throws SQLException, IOException {
-		SQLiteConfig config = new SQLiteConfig();
+		var config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
 		db = (SQLiteConnection) config.createConnection(
 				"jdbc:sqlite:" + databaseFile.getCanonicalPath());
-		try (Statement s = db.createStatement()) {
+		try (var s = db.createStatement()) {
 			s.execute("CREATE TABLE IF NOT EXISTS tokens("
 					+ "client TEXT UNIQUE NOT NULL, token TEXT NOT NULL)");
 			s.execute("CREATE TABLE IF NOT EXISTS users("
@@ -81,8 +78,8 @@ public class CredentialDB implements AutoCloseable {
 		private final String pass;
 
 		DBContainedCredentials() throws SQLException, IllegalStateException {
-			try (Statement s = db.createStatement();
-					ResultSet rs = s.executeQuery(
+			try (var s = db.createStatement();
+					var rs = s.executeQuery(
 							"SELECT name, pass FROM users LIMIT 1")) {
 				if (rs.next()) {
 					name = rs.getString("name");
@@ -115,7 +112,7 @@ public class CredentialDB implements AutoCloseable {
 	 */
 	final void saveCredentials(EBRAINSDevCredentials creds)
 			throws SQLException {
-		try (PreparedStatement s = db.prepareStatement(
+		try (var s = db.prepareStatement(
 				"INSERT OR REPLACE INTO users(name, pass) VALUES (?, ?)")) {
 			s.setString(1, creds.getUser());
 			s.setString(2, creds.getPass());
@@ -131,10 +128,10 @@ public class CredentialDB implements AutoCloseable {
 	 * @return The token, or {@code null} if no token is available.
 	 */
 	final String getToken(String clientId) {
-		try (PreparedStatement s = db.prepareStatement(
+		try (var s = db.prepareStatement(
 				"SELECT token FROM tokens WHERE client = ? LIMIT 1")) {
 			s.setString(1, requireNonNull(clientId));
-			try (ResultSet rs = s.executeQuery()) {
+			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return rs.getString(1);
 				}
@@ -160,7 +157,7 @@ public class CredentialDB implements AutoCloseable {
 	 *             If database access fails.
 	 */
 	final void saveToken(String clientId, String token) throws SQLException {
-		try (PreparedStatement s = db.prepareStatement(
+		try (var s = db.prepareStatement(
 				"INSERT OR REPLACE INTO tokens(client, token) "
 						+ "VALUES (?, ?)")) {
 			s.setString(1, clientId);
