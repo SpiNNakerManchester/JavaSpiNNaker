@@ -80,7 +80,7 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
-	private abstract class UserCheckSQL extends AbstractSQL {
+	private class UserCheckSQL extends AbstractSQL {
 		private final Query userCheck = conn.query(GET_USER_ID);
 
 		/** See {@link SQLQueries#GET_USER_DETAILS}. */
@@ -89,11 +89,17 @@ public class UserControl extends DatabaseAwareBean {
 		private final Query getMembershipsOfUser =
 				conn.query(GET_MEMBERSHIPS_OF_USER);
 
+		/** See {@link SQLQueries#GET_USER_DETAILS_BY_NAME}. */
+		private final Query getUserDetailsByName =
+				conn.query(GET_USER_DETAILS_BY_NAME);
+
 		@Override
 		public void close() {
 			userCheck.close();
 			getUserDetails.close();
 			getMembershipsOfUser.close();
+			getUserDetails.close();
+			getUserDetailsByName.close();
 			super.close();
 		}
 
@@ -322,21 +328,6 @@ public class UserControl extends DatabaseAwareBean {
 				.flatMap(sql::getUser).map(UserRecord::new);
 	}
 
-	private final class GetUserSQL extends UserCheckSQL {
-		/** See {@link SQLQueries#GET_USER_DETAILS}. */
-		Query getUserDetails = conn.query(GET_USER_DETAILS);
-
-		/** See {@link SQLQueries#GET_USER_DETAILS_BY_NAME}. */
-		Query getUserDetailsByName = conn.query(GET_USER_DETAILS_BY_NAME);
-
-		@Override
-		public void close() {
-			getUserDetails.close();
-			getUserDetailsByName.close();
-			super.close();
-		}
-	}
-
 	/**
 	 * Get a description of a user.
 	 *
@@ -350,10 +341,15 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public Optional<UserRecord> getUser(int id,
 			Function<MemberRecord, URI> urlGen) {
-		try (GetUserSQL sql = new GetUserSQL()) {
-			return sql.transaction(() -> sql.getUserDetails.call1(id)
-					.map(UserRecord::new).map(sql.populateMemberships(urlGen)));
+		try (UserCheckSQL sql = new UserCheckSQL()) {
+			return sql.transaction(() -> getUser(id, urlGen, sql));
 		}
+	}
+
+	private Optional<UserRecord> getUser(int id,
+			Function<MemberRecord, URI> urlGen, UserCheckSQL sql) {
+		return sql.getUserDetails.call1(id).map(UserRecord::new)
+				.map(sql.populateMemberships(urlGen));
 	}
 
 	/**
@@ -369,10 +365,15 @@ public class UserControl extends DatabaseAwareBean {
 	 */
 	public Optional<UserRecord> getUser(String user,
 			Function<MemberRecord, URI> urlGen) {
-		try (GetUserSQL sql = new GetUserSQL()) {
-			return sql.transaction(() -> sql.getUserDetailsByName.call1(user)
-					.map(UserRecord::new).map(sql.populateMemberships(urlGen)));
+		try (UserCheckSQL sql = new UserCheckSQL()) {
+			return sql.transaction(() -> getUser(user, urlGen, sql));
 		}
+	}
+
+	private Optional<UserRecord> getUser(String user,
+			Function<MemberRecord, URI> urlGen, UserCheckSQL sql) {
+		return sql.getUserDetailsByName.call1(user).map(UserRecord::new)
+				.map(sql.populateMemberships(urlGen));
 	}
 
 	/**
@@ -412,46 +413,48 @@ public class UserControl extends DatabaseAwareBean {
 			Function<MemberRecord, URI> urlGen, UpdateAllSQL sql) {
 		int adminId = getCurrentUserId(sql, adminUser);
 
-		if (nonNull(user.getUserName())) {
+		UserRecord oldUser =
+				getUser(id, null, sql).orElseThrow(() -> new RuntimeException(
+						"current user has unexpectedly vanshed"));
+
+		if (nonNull(user.getUserName())
+				&& !oldUser.getUserName().equals(user.getUserName())) {
 			if (sql.setUserName.call(user.getUserName(), id) > 0) {
 				log.info("setting user {} to name '{}'", id,
 						user.getUserName());
 			}
 		}
 
-		if (nonNull(user.getPassword())) {
+		if (!oldUser.isExternallyAuthenticated() && nonNull(user.getPassword())
+				&& !user.getPassword().isEmpty()) {
 			if (sql.setUserPass.call(encPass, id) > 0) {
 				log.info("setting user {} to have password", id);
 			}
-		} else if (user.isExternallyAuthenticated()) {
-			// Forces external authentication
-			if (sql.setUserPass.call(null, id) > 0) {
-				log.info("setting user {} to NULL password", id);
-			}
-		} else {
-			// Weren't told to set the password
-			assert true;
 		}
 
-		if (nonNull(user.isEnabled()) && adminId != id) {
+		if (nonNull(user.isEnabled()) && oldUser.isEnabled() != user.isEnabled()
+				&& adminId != id) {
 			// Admins can't change their own disable state
 			if (sql.setUserDisabled.call(!user.isEnabled(), id) > 0) {
-				log.info("setting user {}( to {}", id,
+				log.info("setting user {} to {}", id,
 						user.isEnabled() ? "enabled" : "disabled");
 			}
 		}
-		if (nonNull(user.isLocked()) && !user.isLocked() && adminId != id) {
+		if (nonNull(user.isLocked()) && oldUser.isLocked() != user.isLocked()
+				&& !user.isLocked() && adminId != id) {
 			// Admins can't change their own locked state
 			if (sql.setUserLocked.call(user.isLocked(), id) > 0) {
-				log.info("setting user {}( to {}", id,
+				log.info("setting user {} to {}", id,
 						user.isLocked() ? "locked" : "unlocked");
 			}
 		}
 
-		if (nonNull(user.getTrustLevel()) && adminId != id) {
+		if (nonNull(user.getTrustLevel())
+				&& oldUser.getTrustLevel() != user.getTrustLevel()
+				&& adminId != id) {
 			// Admins can't change their own trust level
 			if (sql.setUserTrust.call(user.getTrustLevel(), id) > 0) {
-				log.info("setting user {}( to {}", id, user.getTrustLevel());
+				log.info("setting user {} to {}", id, user.getTrustLevel());
 			}
 		}
 
@@ -534,19 +537,21 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
-	private static final class GetUserResult {
-		final PasswordChangeRecord baseUser;
-
-		final String oldEncPass;
-
-		GetUserResult(Row row) {
-			baseUser = passChange(row);
-			oldEncPass = row.getString("encrypted_password");
-		}
-	}
-
+	// DO NOT HOLD A TRANSACTION WHEN CALLING THIS!
 	private PasswordChangeRecord updateUserOfPrincipal(Principal principal,
 			PasswordChangeRecord user, UpdatePassSQL sql) {
+		/** Just a tuple extracted from a row. Only used in this method. */
+		class GetUserResult {
+			final PasswordChangeRecord baseUser;
+
+			final String oldEncPass;
+
+			GetUserResult(Row row) {
+				baseUser = passChange(row);
+				oldEncPass = row.getString("encrypted_password");
+			}
+		}
+
 		GetUserResult result = sql
 				.transaction(() -> sql.getPasswordedUser
 						.call1(principal.getName()).map(GetUserResult::new))
@@ -555,10 +560,13 @@ public class UserControl extends DatabaseAwareBean {
 						() -> new AuthenticationServiceException(
 								"user is managed externally; cannot "
 										+ "change password here"));
+
+		// This is a SLOW operation; must not hold transaction here
 		if (!passServices.matchPassword(user.getOldPassword(),
 				result.oldEncPass)) {
 			throw new BadCredentialsException("bad password");
 		}
+
 		// Validate change; this should never fail but...
 		if (!user.isNewPasswordMatched()) {
 			throw new BadCredentialsException("bad password");
