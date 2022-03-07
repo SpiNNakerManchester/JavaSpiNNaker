@@ -22,6 +22,8 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.security.oauth2.core.oidc.IdTokenClaimNames.SUB;
+import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
@@ -204,9 +206,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		String encPass = passServices.encodePassword(password);
 		try (Connection conn = getConnection();
 				Update createUser = conn.update(CREATE_USER)) {
-			return conn.transaction(
-					() -> createUser(username, encPass, trustLevel, createUser)
-							.isPresent());
+			return conn.transaction(() -> createUser(username, encPass,
+					trustLevel, null, createUser).isPresent());
 		}
 	}
 
@@ -221,15 +222,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            that needs to authenticate by another mechanism.
 	 * @param trustLevel
 	 *            What level of permissions to grant
+	 * @param openIdSubject
+	 *            The real OpenID {@code SUB} claim, if available/known.
 	 * @param createUser
-	 *            SQL statement
-	 * @param addQuota
 	 *            SQL statement
 	 * @return The user ID if the user was successfully created.
 	 */
 	private Optional<Integer> createUser(String username, String encPass,
-			TrustLevel trustLevel, Update createUser) {
-		return createUser.key(username, encPass, trustLevel, false)
+			TrustLevel trustLevel, String openIdSubject, Update createUser) {
+		return createUser
+				.key(username, encPass, trustLevel, false, openIdSubject)
 				.map(userId -> {
 					log.info("added user {} with trust level {}", username,
 							trustLevel);
@@ -379,8 +381,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		OAuth2User user = auth.getPrincipal();
 		return authorizeOpenId(
 				authProps.getOpenid().getUsernamePrefix()
-						+ user.getAttribute("preferred_username"),
-				user, null, auth.getAuthorities());
+						+ user.getAttribute(PREFERRED_USERNAME),
+				user.getAttribute(SUB), user, null, auth.getAuthorities());
 	}
 
 	/**
@@ -393,14 +395,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private Authentication authenticateOpenId(JwtAuthenticationToken auth) {
 		log.debug("authenticating OpenID {}", auth);
+		Jwt token = auth.getToken();
 		return authorizeOpenId(
-				authProps.getOpenid().getUsernamePrefix() + auth.getToken()
-						.getClaimAsString("preferred_username"),
-				null, auth.getToken(), auth.getAuthorities());
+				authProps.getOpenid().getUsernamePrefix()
+						+ token.getClaimAsString(PREFERRED_USERNAME),
+				token.getSubject(), null, token, auth.getAuthorities());
 	}
 
 	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name,
-			OAuth2User user, Jwt bearerToken,
+			String subject, OAuth2User user, Jwt bearerToken,
 			Collection<GrantedAuthority> authorities) {
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
@@ -410,7 +413,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 		try (AuthQueries queries = new AuthQueries()) {
 			if (!queries.transaction(//
-					() -> authOpenIDAgainstDB(name, authorities, queries))) {
+					() -> authOpenIDAgainstDB(name, subject, authorities,
+							queries))) {
 				return null;
 			}
 		} catch (RuntimeException e) {
@@ -635,9 +639,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *
 		 * @param userId
 		 *            Who logged in?
+		 * @param subject
+		 *            What is their OpenID {@code sub} (subject) claim? Will be
+		 *            {@code null} for a local user.
 		 */
-		void noteLoginSuccessForUser(int userId) {
-			loginSuccess.call(userId);
+		void noteLoginSuccessForUser(int userId, String subject) {
+			assert loginSuccess.call(subject, userId) == 1;
 		}
 
 		/**
@@ -932,7 +939,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			checkPassword(username, password, details, queries);
 			// Succeeded; finalize into external form
 			return queries.transaction(() -> {
-				queries.noteLoginSuccessForUser(details.userId);
+				queries.noteLoginSuccessForUser(details.userId, null);
 				// Convert tiered trust level to grant form
 				details.trustLevel.getGrants().forEach(authorities::add);
 				log.info("login success for {} at level {}", username,
@@ -1024,6 +1031,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *
 	 * @param username
 	 *            The username, already obtained and verified.
+	 * @param subject
+	 *            The real OpenID {@code sub} claim, if available/known.
 	 * @param authorities
 	 *            The claimed authorities derived from the HBP OpenID service.
 	 *            Interesting because they include claims about organisation and
@@ -1038,7 +1047,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @throws LockedException
 	 *             If the account is temporarily locked.
 	 */
-	private boolean authOpenIDAgainstDB(String username,
+	private boolean authOpenIDAgainstDB(String username, String subject,
 			Collection<GrantedAuthority> authorities, AuthQueries queries) {
 		List<String> collabs = new ArrayList<>();
 		List<String> orgs = new ArrayList<>();
@@ -1059,8 +1068,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * No such user; need to inflate one now. If we successfully make
 			 * the user, they're also immediately authorised.
 			 */
-			Optional<Integer> createdUser =
-					createUser(username, null, USER, queries.createUser);
+			Optional<Integer> createdUser = createUser(username, null, USER,
+					subject, queries.createUser);
 			try {
 				createdUser.ifPresent(
 						id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
@@ -1095,7 +1104,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 */
 				return false;
 			}
-			queries.noteLoginSuccessForUser(userId);
+			String oldSubject = authInfo.getString("openid_subject");
+			if (nonNull(oldSubject)) {
+				/*
+				 * We know this user from before; double check that they're the
+				 * same person as before. The {@code sub} claim is a true
+				 * identifier.
+				 */
+				if (!requireNonNull(subject).equals(oldSubject)) {
+					log.warn("user {} subject changed from {} to {}", username,
+							oldSubject, subject);
+				}
+			}
+			queries.noteLoginSuccessForUser(userId, subject);
 			log.info("login success for {}", username);
 			return true;
 		} catch (AuthenticationException e) {

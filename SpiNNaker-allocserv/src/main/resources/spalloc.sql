@@ -307,6 +307,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 	last_fail_timestamp INTEGER NOT NULL DEFAULT (0),
 	-- Administrative disablement support
 	disabled INTEGER NOT NULL DEFAULT (0) CHECK (disabled IN (0, 1)),
+	openid_subject TEXT UNIQUE,
 	is_internal INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
 		encrypted_password IS NOT NULL) VIRTUAL
 );

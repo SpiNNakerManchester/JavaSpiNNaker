@@ -103,9 +103,10 @@ abstract class DBTestingUtils {
 	/**
 	 * Columns expected when building a {@link UserRecord} from a {@link Row}.
 	 */
-	static final Set<String> USER_COLUMNS = set("disabled", "has_password",
-			"last_fail_timestamp", "last_successful_login_timestamp", "locked",
-			"trust_level", "user_id", "user_name", "is_internal");
+	static final Set<String> USER_COLUMNS =
+			set("disabled", "has_password", "last_fail_timestamp",
+					"last_successful_login_timestamp", "locked", "trust_level",
+					"user_id", "user_name", "openid_subject", "is_internal");
 
 	/**
 	 * Columns expected when building a {@link GroupRecord} from a {@link Row}.

@@ -443,9 +443,9 @@ class DMLTest extends SQLQueries {
 	void markLoginSuccess() {
 		assumeWritable(c);
 		try (Update u = c.update(MARK_LOGIN_SUCCESS)) {
-			assertEquals(1, u.getNumArguments());
+			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
-				assertEquals(0, u.call(NO_USER));
+				assertEquals(0, u.call(NO_NAME, NO_USER));
 			});
 		}
 	}
@@ -546,10 +546,11 @@ class DMLTest extends SQLQueries {
 	void createUser() {
 		assumeWritable(c);
 		try (Update u = c.update(CREATE_USER)) {
-			assertEquals(4, u.getNumArguments());
+			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was userless; this makes one
-				assertEquals(1, u.call(NO_NAME, "*", TrustLevel.BASIC, true));
+				assertEquals(1,
+						u.call(NO_NAME, "*", TrustLevel.BASIC, true, NO_NAME));
 			});
 		}
 	}

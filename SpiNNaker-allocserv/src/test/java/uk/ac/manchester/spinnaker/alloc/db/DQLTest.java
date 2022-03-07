@@ -881,7 +881,8 @@ class DQLTest extends SQLQueries {
 	void getUserAuthorities() {
 		try (Query q = c.query(GET_USER_AUTHORITIES)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("trust_level", "encrypted_password"),
+			assertSetEquals(
+					set("trust_level", "encrypted_password", "openid_subject"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_USER).isPresent());
@@ -893,7 +894,8 @@ class DQLTest extends SQLQueries {
 	void listAllUsers() {
 		try (Query q = c.query(LIST_ALL_USERS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("user_id", "user_name"), q.getRowColumnNames());
+			assertSetEquals(set("user_id", "user_name", "openid_subject"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Testing DB has no users by default
 				assertFalse(q.call1().isPresent());
@@ -927,6 +929,17 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getUserDetailsByName() {
 		try (Query q = c.query(GET_USER_DETAILS_BY_NAME)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(USER_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_NAME).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getUserDetailsBySubject() {
+		try (Query q = c.query(GET_USER_DETAILS_BY_SUBJECT)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(USER_COLUMNS, q.getRowColumnNames());
 			c.transaction(() -> {

@@ -62,6 +62,8 @@ public final class UserRecord {
 
 	private Instant lastFailedLogin;
 
+	private String openIdSubject;
+
 	private boolean isInternal;
 
 	private Map<String, URI> groups;
@@ -89,6 +91,7 @@ public final class UserRecord {
 			setLastSuccessfulLogin(
 					row.getInstant("last_successful_login_timestamp"));
 			setLastFailedLogin(row.getInstant("last_fail_timestamp"));
+			setOpenIdSubject(row.getString("openid_subject"));
 			isInternal = row.getBoolean("is_internal");
 		} finally {
 			// I mean it!
@@ -225,6 +228,15 @@ public final class UserRecord {
 
 	public void setGroups(Map<String, URI> groups) {
 		this.groups = groups;
+	}
+
+	/** @return The OpenID subject that this user relates to, if known. */
+	public String getOpenIdSubject() {
+		return openIdSubject;
+	}
+
+	public void setOpenIdSubject(String subject) {
+		this.openIdSubject = subject;
 	}
 
 	/** @return Whether this is an internal user. */

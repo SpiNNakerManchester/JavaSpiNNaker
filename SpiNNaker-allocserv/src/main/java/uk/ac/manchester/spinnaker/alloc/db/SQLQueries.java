@@ -1042,6 +1042,7 @@ public abstract class SQLQueries {
 	@ResultColumn("disabled")
 	@ResultColumn("last_successful_login_timestamp")
 	@ResultColumn("last_fail_timestamp")
+	@ResultColumn("openid_subject")
 	@ResultColumn("is_internal")
 	@SingleRowResult
 	protected static final String GET_USER_DETAILS =
@@ -1049,8 +1050,8 @@ public abstract class SQLQueries {
 					+ "encrypted_password IS NOT NULL AS has_password, "
 					+ "trust_level, locked, disabled, "
 					+ "last_successful_login_timestamp, "
-					+ "last_fail_timestamp, is_internal FROM user_info "
-					+ "WHERE user_id = :user_id LIMIT 1";
+					+ "last_fail_timestamp, openid_subject, is_internal "
+					+ "FROM user_info WHERE user_id = :user_id LIMIT 1";
 
 	/**
 	 * Get details about a user. This is pretty much everything except their
@@ -1067,6 +1068,7 @@ public abstract class SQLQueries {
 	@ResultColumn("disabled")
 	@ResultColumn("last_successful_login_timestamp")
 	@ResultColumn("last_fail_timestamp")
+	@ResultColumn("openid_subject")
 	@ResultColumn("is_internal")
 	@SingleRowResult
 	protected static final String GET_USER_DETAILS_BY_NAME =
@@ -1074,8 +1076,35 @@ public abstract class SQLQueries {
 					+ "encrypted_password IS NOT NULL AS has_password, "
 					+ "trust_level, locked, disabled, "
 					+ "last_successful_login_timestamp, "
-					+ "last_fail_timestamp, is_internal FROM user_info "
-					+ "WHERE user_name = :user_name LIMIT 1";
+					+ "last_fail_timestamp, openid_subject, is_internal "
+					+ "FROM user_info WHERE user_name = :user_name LIMIT 1";
+
+	/**
+	 * Get details about a user. This is pretty much everything except their
+	 * password.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("openid_subject")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	@ResultColumn("has_password")
+	@ResultColumn("trust_level")
+	@ResultColumn("locked")
+	@ResultColumn("disabled")
+	@ResultColumn("last_successful_login_timestamp")
+	@ResultColumn("last_fail_timestamp")
+	@ResultColumn("openid_subject")
+	@ResultColumn("is_internal")
+	@SingleRowResult
+	protected static final String GET_USER_DETAILS_BY_SUBJECT =
+			"SELECT user_id, user_name, "
+					+ "encrypted_password IS NOT NULL AS has_password, "
+					+ "trust_level, locked, disabled, "
+					+ "last_successful_login_timestamp, "
+					+ "last_fail_timestamp, openid_subject, is_internal "
+					+ "FROM user_info WHERE openid_subject = :openid_subject "
+					+ "LIMIT 1";
 
 	/**
 	 * Get a local user's basic details.
@@ -1344,21 +1373,24 @@ public abstract class SQLQueries {
 	@Parameter("user_id")
 	@ResultColumn("trust_level")
 	@ResultColumn("encrypted_password")
+	@ResultColumn("openid_subject")
 	@SingleRowResult
 	protected static final String GET_USER_AUTHORITIES =
-			"SELECT trust_level, encrypted_password FROM user_info "
-					+ "WHERE user_id = :user_id LIMIT 1";
+			"SELECT trust_level, encrypted_password, openid_subject "
+					+ "FROM user_info WHERE user_id = :user_id LIMIT 1";
 
 	/**
 	 * Note the login success.
 	 *
 	 * @see LocalAuthProviderImpl
 	 */
+	@Parameter("openid_subject")
 	@Parameter("user_id")
 	protected static final String MARK_LOGIN_SUCCESS =
 			"UPDATE user_info SET last_successful_login_timestamp = "
 					+ "CAST(strftime('%s','now') AS INTEGER), "
-					+ "failure_count = 0 WHERE user_id = :user_id";
+					+ "failure_count = 0, openid_subject = :openid_subject "
+					+ "WHERE user_id = :user_id";
 
 	/**
 	 * Note the login failure.
@@ -1473,13 +1505,14 @@ public abstract class SQLQueries {
 	 */
 	@ResultColumn("user_id")
 	@ResultColumn("user_name")
+	@ResultColumn("openid_subject")
 	protected static final String LIST_ALL_USERS =
-			"SELECT user_id, user_name FROM user_info";
+			"SELECT user_id, user_name, openid_subject FROM user_info";
 
 	/**
 	 * Create a user. Passwords are either encrypted (with bcrypt) or
 	 * {@code null} to indicate that they should be using some other system
-	 * (OIDC?) to authenticate them.
+	 * to authenticate them.
 	 *
 	 * @see UserControl
 	 */
@@ -1487,11 +1520,13 @@ public abstract class SQLQueries {
 	@Parameter("encoded_password")
 	@Parameter("trust_level")
 	@Parameter("disabled")
+	@Parameter("openid_subject")
 	@GeneratesID
 	protected static final String CREATE_USER =
 			"INSERT OR IGNORE INTO user_info(user_name, encrypted_password, "
-					+ "trust_level, disabled) VALUES(:user_name, "
-					+ ":encoded_password, :trust_level, :disabled)";
+					+ "trust_level, disabled, openid_subject) "
+					+ "VALUES(:user_name, :encoded_password, :trust_level, "
+					+ ":disabled, :openid_subject)";
 
 	/**
 	 * Get a list of all groups.

@@ -139,8 +139,9 @@ public class UserControl extends DatabaseAwareBean {
 		}
 
 		Optional<Integer> createUser(String name, String encPass,
-				TrustLevel trustLevel, boolean disabled) {
-			return createUser.key(name, encPass, trustLevel, disabled);
+				TrustLevel trustLevel, boolean disabled, String openIdSubject) {
+			return createUser.key(name, encPass, trustLevel, disabled,
+					openIdSubject);
 		}
 	}
 
@@ -301,6 +302,7 @@ public class UserControl extends DatabaseAwareBean {
 		UserRecord userSketch = new UserRecord();
 		userSketch.setUserId(row.getInt("user_id"));
 		userSketch.setUserName(row.getString("user_name"));
+		userSketch.setOpenIdSubject(row.getString("openid_subject"));
 		return userSketch;
 	}
 
@@ -324,7 +326,7 @@ public class UserControl extends DatabaseAwareBean {
 			CreateSQL sql) {
 		return sql
 				.createUser(user.getUserName(), encPass, user.getTrustLevel(),
-						!user.isEnabled())
+						!user.isEnabled(), user.getOpenIdSubject())
 				.flatMap(sql::getUser).map(UserRecord::new);
 	}
 
