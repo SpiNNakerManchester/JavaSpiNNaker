@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLICATION;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
-import static org.springframework.security.oauth2.jwt.JwtClaimNames.SUB;
 import static uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter.clearToken;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.installInjectableTrustStoreAsDefault;
 import static uk.ac.manchester.spinnaker.alloc.security.Utils.loadTrustStore;
@@ -230,7 +229,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.logoutSuccessUrl(loginUrl);
 	}
 
-	@Bean
+	/**
+	 * @return A converter that handles the initial extraction of collabratories
+	 *         and organisations from the info we have available with a bearer
+	 *         token.
+	 * @see LocalAuthProviderImpl#mapAuthorities(Jwt, Collection)
+	 */
+	@Bean("hbp.collab-and-org.bearer-converter.shim")
 	@Role(ROLE_SUPPORT)
 	Converter<Jwt, ? extends AbstractAuthenticationToken> authConverter() {
 		JwtGrantedAuthoritiesConverter jgac =
@@ -239,12 +244,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			Collection<GrantedAuthority> mappedAuthorities = jgac.convert(jwt);
 			// ASSUME that this is a modifiable collection
 			localAuthProvider.mapAuthorities(jwt, mappedAuthorities);
-			return new JwtAuthenticationToken(jwt, mappedAuthorities,
-					jwt.getClaimAsString(SUB));
+			return new JwtAuthenticationToken(jwt, mappedAuthorities);
 		};
 	}
 
-	@Bean
+	/**
+	 * @return A converter that handles the initial extraction of collabratories
+	 *         and organisations from the info we have available when a user
+	 *         logs in explicitly in the web UI.
+	 * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)
+	 */
+	@Bean("hbp.collab-and-org.user-converter.shim")
 	@Role(ROLE_SUPPORT)
 	GrantedAuthoritiesMapper userAuthoritiesMapper() {
 		SimpleAuthorityMapper sam = new SimpleAuthorityMapper();

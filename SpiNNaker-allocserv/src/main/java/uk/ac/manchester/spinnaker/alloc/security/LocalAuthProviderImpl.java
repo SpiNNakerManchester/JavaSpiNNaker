@@ -23,6 +23,9 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.oauth2.core.oidc.IdTokenClaimNames.SUB;
+import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL;
+import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL_VERIFIED;
+import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.NAME;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
@@ -35,6 +38,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.USER;
+import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -260,9 +264,30 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				return authenticateDirect(
 						(UsernamePasswordAuthenticationToken) auth);
 			} else if (auth instanceof OAuth2AuthenticationToken) {
-				return authenticateOpenId((OAuth2AuthenticationToken) auth);
+				/*
+				 * Technically, at this point we're already authenticated as
+				 * we've checked that the token from Keycloak is valid. We still
+				 * have to take an authorization decision though.
+				 */
+				OAuth2User user =
+						((OAuth2AuthenticationToken) auth).getPrincipal();
+				return authorizeOpenId(
+						authProps.getOpenid().getUsernamePrefix()
+								+ user.getAttribute(PREFERRED_USERNAME),
+						user.getAttribute(SUB), new OriginatingCredential(user),
+						auth.getAuthorities());
 			} else if (auth instanceof JwtAuthenticationToken) {
-				return authenticateOpenId((JwtAuthenticationToken) auth);
+				/*
+				 * Technically, at this point we're already authenticated as
+				 * we've checked that the token from Keycloak is valid. We still
+				 * have to take an authorization decision though.
+				 */
+				Jwt token = ((JwtAuthenticationToken) auth).getToken();
+				return authorizeOpenId(
+						authProps.getOpenid().getUsernamePrefix()
+								+ token.getClaimAsString(PREFERRED_USERNAME),
+						token.getSubject(), new OriginatingCredential(token),
+						auth.getAuthorities());
 			} else {
 				return null;
 			}
@@ -368,43 +393,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				authorities);
 	}
 
-	/**
-	 * Convert the authentication from the OpenID service into one we internally
-	 * understand.
-	 *
-	 * @param auth
-	 *            The OpenID auth token
-	 * @return The internal auth token
-	 */
-	private Authentication authenticateOpenId(OAuth2AuthenticationToken auth) {
-		log.debug("authenticating OpenID {}", auth);
-		OAuth2User user = auth.getPrincipal();
-		return authorizeOpenId(
-				authProps.getOpenid().getUsernamePrefix()
-						+ user.getAttribute(PREFERRED_USERNAME),
-				user.getAttribute(SUB), user, null, auth.getAuthorities());
-	}
-
-	/**
-	 * Convert the JWT from the OpenID service into one we internally
-	 * understand.
-	 *
-	 * @param auth
-	 *            The OpenID auth token
-	 * @return The internal auth token
-	 */
-	private Authentication authenticateOpenId(JwtAuthenticationToken auth) {
-		log.debug("authenticating OpenID {}", auth);
-		Jwt token = auth.getToken();
-		return authorizeOpenId(
-				authProps.getOpenid().getUsernamePrefix()
-						+ token.getClaimAsString(PREFERRED_USERNAME),
-				token.getSubject(), null, token, auth.getAuthorities());
-	}
-
 	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name,
-			String subject, OAuth2User user, Jwt bearerToken,
-			Collection<GrantedAuthority> authorities) {
+			String subject, OriginatingCredential credential,
+			Collection<? extends GrantedAuthority> authorities) {
+		log.debug("authenticating OpenID {}", credential);
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
@@ -412,9 +404,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			return null;
 		}
 		try (AuthQueries queries = new AuthQueries()) {
-			if (!queries.transaction(//
-					() -> authOpenIDAgainstDB(name, subject, authorities,
-							queries))) {
+			if (!queries.transaction(() -> authOpenIDAgainstDB(name, subject,
+					authorities, queries))) {
 				return null;
 			}
 		} catch (RuntimeException e) {
@@ -423,7 +414,33 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			return null;
 		}
 		// Users from OpenID always have the same permissions
-		return new OpenIDDerivedAuthenticationToken(name, user, bearerToken);
+		return new OpenIDDerivedAuthenticationToken(name, credential);
+	}
+
+	/** Holds either a {@link OAuth2User} or a {@link Jwt}. */
+	private static final class OriginatingCredential {
+		private final OAuth2User user;
+
+		private final Jwt token;
+
+		OriginatingCredential(OAuth2User user) {
+			this.user = requireNonNull(user);
+			this.token = null;
+		}
+
+		OriginatingCredential(Jwt token) {
+			this.user = null;
+			this.token = requireNonNull(token);
+		}
+
+		@Override
+		public String toString() {
+			if (nonNull(user)) {
+				return user.toString();
+			} else {
+				return token.toString();
+			}
+		}
 	}
 
 	/**
@@ -467,13 +484,22 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 
 		/**
+		 * @return The OpenID subject identifier.
+		 * @throws IllegalStateException
+		 *             If the object was made without either a user or a token.
+		 */
+		default String getOpenIdSubject() {
+			return getStringClaim(SUB);
+		}
+
+		/**
 		 * @return The preferred OpenID user name. <em>We don't use this
 		 *         directly</em> as it may clash with other user names.
 		 * @throws IllegalStateException
 		 *             If the object was made without either a user or a token.
 		 */
 		default String getOpenIdUserName() {
-			return getStringClaim("preferred_username");
+			return getStringClaim(PREFERRED_USERNAME);
 		}
 
 		/**
@@ -482,7 +508,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *             If the object was made without either a user or a token.
 		 */
 		default String getOpenIdName() {
-			return getStringClaim("name");
+			return getStringClaim(NAME);
 		}
 
 		/**
@@ -491,14 +517,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		default Optional<String> getOpenIdEmail() {
 			Optional<String> email =
 					getOpenIdUser().map(uu -> uu.getAttributes())
-							.filter(uu -> uu.containsKey("email_verified"))
-							.filter(uu -> (boolean) uu.get("email_verified"))
-							.map(uu -> uu.get("email").toString());
+							.filter(uu -> uu.containsKey(EMAIL_VERIFIED)
+									&& (Boolean) uu.get(EMAIL_VERIFIED))
+							.map(uu -> uu.get(EMAIL).toString());
 			if (email.isPresent()) {
 				return email;
 			}
-			return getOpenIdToken().filter(t -> t.getClaim("email_verified"))
-					.map(t -> t.getClaimAsString("email"));
+			return getOpenIdToken().filter(t -> t.getClaim(EMAIL_VERIFIED))
+					.map(t -> t.getClaimAsString(EMAIL));
 		}
 	}
 
@@ -509,17 +535,14 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private final String who;
 
-		private final OAuth2User user;
+		private final OriginatingCredential credential;
 
-		private final Jwt token;
-
-		private OpenIDDerivedAuthenticationToken(String who, OAuth2User user,
-				Jwt token) {
+		private OpenIDDerivedAuthenticationToken(String who,
+				OriginatingCredential credential) {
 			super(asList(new SimpleGrantedAuthority(GRANT_READER),
 					new SimpleGrantedAuthority(GRANT_USER)));
 			this.who = who;
-			this.user = user;
-			this.token = token;
+			this.credential = credential;
 		}
 
 		@Override
@@ -540,7 +563,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		@Override
 		public Optional<OAuth2User> getOpenIdUser() {
-			return Optional.ofNullable(user);
+			return Optional.ofNullable(credential.user);
 		}
 
 		/**
@@ -550,7 +573,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		@Override
 		public Optional<Jwt> getOpenIdToken() {
-			return Optional.ofNullable(token);
+			return Optional.ofNullable(credential.token);
 		}
 	}
 
@@ -639,9 +662,19 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *
 		 * @param userId
 		 *            Who logged in?
+		 */
+		void noteLoginSuccessForUser(int userId) {
+			assert loginSuccess.call(null, userId) == 1;
+		}
+
+		/**
+		 * Tells the database that the user login worked. This is necessary
+		 * because the DB can't perform the password check itself.
+		 *
+		 * @param userId
+		 *            Who logged in?
 		 * @param subject
-		 *            What is their OpenID {@code sub} (subject) claim? Will be
-		 *            {@code null} for a local user.
+		 *            What is their OpenID {@code sub} (subject) claim?
 		 */
 		void noteLoginSuccessForUser(int userId, String subject) {
 			assert loginSuccess.call(subject, userId) == 1;
@@ -789,7 +822,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            The (sub-)claim of collabs.
 	 * @param results
 	 *            Where to add the generated authorities.
-	 * @return Whether we processed a claim.
+	 * @return Whether we processed a claim at all. (The claim could be empty;
+	 *         that's OK.)
 	 */
 	private boolean collabToAuthority(List<String> claim,
 			Collection<GrantedAuthority> results) {
@@ -814,7 +848,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            The claim of organisations.
 	 * @param results
 	 *            Where to add the generated authorities.
-	 * @return Whether we processed a claim.
+	 * @return Whether we processed a claim at all. (The claim could be empty;
+	 *         that's OK.)
 	 */
 	private boolean orgToAuthority(List<String> claim,
 			Collection<GrantedAuthority> results) {
@@ -875,14 +910,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Override
 	public void mapAuthorities(OidcUserAuthority user,
-			Collection<GrantedAuthority> results) {
-		mapAuthorities("userinfo", user.getUserInfo(), results);
+			Collection<GrantedAuthority> ga) {
+		mapAuthorities("userinfo", user.getUserInfo(), ga);
 	}
 
 	@Override
-	public void mapAuthorities(Jwt token,
-			Collection<GrantedAuthority> results) {
-		mapAuthorities("token", token, results);
+	public void mapAuthorities(Jwt token, Collection<GrantedAuthority> ga) {
+		mapAuthorities("token", token, ga);
 	}
 
 	private static final class LocalAuthResult {
@@ -933,25 +967,27 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private boolean authLocalAgainstDB(String username, String password,
 			List<GrantedAuthority> authorities, AuthQueries queries) {
-		Optional<LocalAuthResult> lookup =
-				queries.transaction(() -> lookUpUserDetails(username, queries));
-		return lookup.map(details -> {
-			checkPassword(username, password, details, queries);
-			// Succeeded; finalize into external form
-			return queries.transaction(() -> {
-				queries.noteLoginSuccessForUser(details.userId, null);
-				// Convert tiered trust level to grant form
-				details.trustLevel.getGrants().forEach(authorities::add);
-				log.info("login success for {} at level {}", username,
-						details.trustLevel);
-				return true;
-			});
-		}).orElse(false);
+		return ifElse(
+				queries.transaction(() -> lookUpUserDetails(username, queries)),
+				details -> {
+					checkPassword(username, password, details, queries);
+					// Succeeded; finalize into external form
+					return queries.transaction(() -> {
+						queries.noteLoginSuccessForUser(details.userId);
+						// Convert tiered trust level to grant form
+						details.trustLevel.getGrants()
+								.forEach(authorities::add);
+						log.info("login success for {} at level {}", username,
+								details.trustLevel);
+						return true;
+					});
+				}, () -> false);
 	}
 
 	/**
 	 * Look up a local user. Does all checks <em>except</em> the password check;
-	 * that's slow (because bcrypt) so we do it outside the transaction.
+	 * that's slow (because bcrypt) so we do it outside the transaction. This
+	 * needs to be done in a writable (exclusive) transaction.
 	 *
 	 * @param username
 	 *            The user name we're looking up.
@@ -964,39 +1000,35 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private static Optional<LocalAuthResult> lookUpUserDetails(String username,
 			AuthQueries queries) {
-		Optional<Row> r = queries.getUser(username);
-		if (!r.isPresent()) {
-			// No such user
-			return Optional.empty();
-		}
-		Row userInfo = r.get();
-		int userId = userInfo.getInt("user_id");
-		if (userInfo.getBoolean("disabled")) {
-			log.info("login failure for {}: account is disabled", username);
-			throw new DisabledException("account is disabled");
-		}
-		try {
-			if (userInfo.getBoolean("locked")) {
-				// Note that this extends the lock!
-				throw new LockedException("account is locked");
+		return ifElse(queries.getUser(username), userInfo -> {
+			int userId = userInfo.getInt("user_id");
+			if (userInfo.getBoolean("disabled")) {
+				log.info("login failure for {}: account is disabled", username);
+				throw new DisabledException("account is disabled");
 			}
-			Row authInfo = queries.getUserAuthorities(userId);
-			String encPass = authInfo.getString("encrypted_password");
-			if (isNull(encPass)) {
-				/*
-				 * We know this user, but they can't use this authentication
-				 * method. They'll probably have to use OpenID.
-				 */
-				return Optional.empty();
+			try {
+				if (userInfo.getBoolean("locked")) {
+					// Note that this extends the lock!
+					throw new LockedException("account is locked");
+				}
+				Row authInfo = queries.getUserAuthorities(userId);
+				String encPass = authInfo.getString("encrypted_password");
+				if (isNull(encPass)) {
+					/*
+					 * We know this user, but they can't use this authentication
+					 * method. They'll probably have to use OpenID.
+					 */
+					return Optional.empty();
+				}
+				TrustLevel trust =
+						authInfo.getEnum("trust_level", TrustLevel.class);
+				return Optional.of(new LocalAuthResult(userId, trust, encPass));
+			} catch (AuthenticationException e) {
+				queries.noteLoginFailureForUser(userId, username);
+				log.info("login failure for {}", username, e);
+				throw e;
 			}
-			TrustLevel trust =
-					authInfo.getEnum("trust_level", TrustLevel.class);
-			return Optional.of(new LocalAuthResult(userId, trust, encPass));
-		} catch (AuthenticationException e) {
-			queries.noteLoginFailureForUser(userId, username);
-			log.info("login failure for {}", username, e);
-			throw e;
-		}
+		}, Optional::empty);
 	}
 
 	/**
@@ -1048,95 +1080,108 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *             If the account is temporarily locked.
 	 */
 	private boolean authOpenIDAgainstDB(String username, String subject,
-			Collection<GrantedAuthority> authorities, AuthQueries queries) {
+			Collection<? extends GrantedAuthority> authorities,
+			AuthQueries queries) {
 		List<String> collabs = new ArrayList<>();
 		List<String> orgs = new ArrayList<>();
-		authorities.forEach(ga -> {
-			if (ga instanceof CollabratoryAuthority) {
-				CollabratoryAuthority collab = (CollabratoryAuthority) ga;
-				inflateCollabratoryGroup(collab.getCollabratory(), queries);
-				collabs.add(collab.getCollabratory());
-			} else if (ga instanceof OrganisationAuthority) {
-				OrganisationAuthority org = (OrganisationAuthority) ga;
-				inflateOrganisationGroup(org.getOrganisation(), queries);
-				orgs.add(org.getOrganisation());
+		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
+		return ifElse(queries.getUser(username), userInfo -> {
+			int userId = userInfo.getInt("user_id");
+			synchExternalGroups(username, userId, orgs, collabs, queries);
+			if (userInfo.getBoolean("disabled")) {
+				log.info("user {} has a disabled account", username);
+				throw new DisabledException("account is disabled");
 			}
-		});
-		Optional<Row> r = queries.getUser(username);
-		if (!r.isPresent()) {
-			/*
-			 * No such user; need to inflate one now. If we successfully make
-			 * the user, they're also immediately authorised.
-			 */
-			Optional<Integer> createdUser = createUser(username, null, USER,
-					subject, queries.createUser);
 			try {
-				createdUser.ifPresent(
-						id -> synchOrgsAndCollabs(id, orgs, collabs, queries));
-			} catch (RuntimeException e) {
-				log.warn("problem when synchronizing group memberships for {}",
-						username, e);
+				if (userInfo.getBoolean("locked")) {
+					// Note that this extends the lock!
+					throw new LockedException("account is locked");
+				}
+				Row authInfo = queries.getUserAuthorities(userId);
+				if (nonNull(authInfo.getString("encrypted_password"))) {
+					/*
+					 * We know this user, but they can't use this authentication
+					 * method. They'll probably have to use username+password.
+					 */
+					return false;
+				}
+				checkSubject(username, subject,
+						authInfo.getString("openid_subject"));
+				queries.noteLoginSuccessForUser(userId, subject);
+				log.info("login success for {}", username);
+				return true;
+			} catch (AuthenticationException e) {
+				queries.noteLoginFailureForUser(userId, username);
+				log.info("login failure for {}", username, e);
 				throw e;
 			}
-			if (!createdUser.isPresent()) {
-				log.warn("failed to make user {}", username);
-			}
-			return createdUser.isPresent();
-		}
-		Row userInfo = r.get();
+		}, () -> {
+			/*
+			 * No such user; need to inflate one now. If we successfully make
+			 * the user, they're also immediately authorised as they're
+			 * definitely not disabled or locked.
+			 */
+			return ifElse(createUser(username, null, USER, subject,
+					queries.createUser), id -> {
+						synchExternalGroups(username, id, orgs, collabs,
+								queries);
+						return true;
+					}, () -> {
+						// Can't note a failure; no record to note it in!
+						log.warn("failed to make user {}", username);
+						return false;
+					});
+		});
+	}
 
-		int userId = userInfo.getInt("user_id");
-		synchOrgsAndCollabs(userId, orgs, collabs, queries);
-		if (userInfo.getBoolean("disabled")) {
-			log.info("user {} has a disabled account", username);
-			throw new DisabledException("account is disabled");
+	/**
+	 * Check if the subject matches and issue a warning if there's a potential
+	 * problem.
+	 *
+	 * @param username
+	 *            The username (for logging).
+	 * @param subject
+	 *            The new user subject ID.
+	 * @param oldSubject
+	 *            The old user subject ID.
+	 */
+	private void checkSubject(String username, String subject,
+			String oldSubject) {
+		if (isNull(subject)) {
+			log.warn("null subject for {}", username);
+		} else if (subject.isEmpty()) {
+			log.warn("empty subject for {}", username);
 		}
-		try {
-			if (userInfo.getBoolean("locked")) {
-				// Note that this extends the lock!
-				throw new LockedException("account is locked");
+		if (nonNull(oldSubject)) {
+			/*
+			 * We know this user from before; double check that they're the same
+			 * person as before. The {@code sub} claim is a true identifier.
+			 */
+			if (!requireNonNull(subject).equals(oldSubject)) {
+				log.warn("user {} subject changed from {} to {}", username,
+						oldSubject, subject);
 			}
-			Row authInfo = queries.getUserAuthorities(userId);
-			if (nonNull(authInfo.getString("encrypted_password"))) {
-				/*
-				 * We know this user, but they can't use this authentication
-				 * method. They'll probably have to use username+password.
-				 */
-				return false;
-			}
-			String oldSubject = authInfo.getString("openid_subject");
-			if (nonNull(oldSubject)) {
-				/*
-				 * We know this user from before; double check that they're the
-				 * same person as before. The {@code sub} claim is a true
-				 * identifier.
-				 */
-				if (!requireNonNull(subject).equals(oldSubject)) {
-					log.warn("user {} subject changed from {} to {}", username,
-							oldSubject, subject);
-				}
-			}
-			queries.noteLoginSuccessForUser(userId, subject);
-			log.info("login success for {}", username);
-			return true;
-		} catch (AuthenticationException e) {
-			queries.noteLoginFailureForUser(userId, username);
-			log.info("login failure for {}", username, e);
-			throw e;
 		}
 	}
 
-	private void inflateCollabratoryGroup(String collab, AuthQueries queries) {
-		if (queries.createGroup(collab, COLLABRATORY,
-				quotaProps.getDefaultCollabQuota())) {
-			log.info("created collabratory '{}'", collab);
-		}
-	}
-
-	private void inflateOrganisationGroup(String org, AuthQueries queries) {
-		if (queries.createGroup(org, ORGANISATION,
-				quotaProps.getDefaultOrgQuota())) {
-			log.info("created organisation '{}'", org);
+	private void inflateGroup(GrantedAuthority ga, List<String> collabs,
+			List<String> orgs, AuthQueries queries) {
+		if (ga instanceof CollabratoryAuthority) {
+			CollabratoryAuthority collab = (CollabratoryAuthority) ga;
+			String collab1 = collab.getCollabratory();
+			if (queries.createGroup(collab1, COLLABRATORY,
+					quotaProps.getDefaultCollabQuota())) {
+				log.info("created collabratory '{}'", collab1);
+			}
+			collabs.add(collab.getCollabratory());
+		} else if (ga instanceof OrganisationAuthority) {
+			OrganisationAuthority org = (OrganisationAuthority) ga;
+			String org1 = org.getOrganisation();
+			if (queries.createGroup(org1, ORGANISATION,
+					quotaProps.getDefaultOrgQuota())) {
+				log.info("created organisation '{}'", org1);
+			}
+			orgs.add(org.getOrganisation());
 		}
 	}
 
@@ -1144,8 +1189,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * Synchronise the lists of different types of groups for a user. Messy
 	 * because we want to do minimal inserts and deletes.
 	 *
+	 * @param username
+	 *            Which user (for logging only)
 	 * @param userId
-	 *            Which user?
+	 *            Which user (for DB access only)
 	 * @param orgs
 	 *            The list of organisation names
 	 * @param collabs
@@ -1153,8 +1200,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @param queries
 	 *            How to touch the DB
 	 */
-	private void synchOrgsAndCollabs(int userId, List<String> orgs,
-			List<String> collabs, AuthQueries queries) {
+	private void synchExternalGroups(String username, int userId,
+			List<String> orgs, List<String> collabs, AuthQueries queries) {
 		try (GroupSynch synch = new GroupSynch(queries)) {
 			for (String org : orgs) {
 				synch.define(org, ORGANISATION);
@@ -1163,6 +1210,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				synch.define(collab, COLLABRATORY);
 			}
 			synch.apply(userId);
+		} catch (RuntimeException e) {
+			log.warn("problem when synchronizing group memberships for {}",
+					username, e);
+			throw e;
 		}
 	}
 

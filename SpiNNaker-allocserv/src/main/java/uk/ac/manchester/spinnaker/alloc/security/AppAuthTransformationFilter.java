@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.isUnsupportedAuthTokenClass;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -44,6 +46,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 public class AppAuthTransformationFilter extends OncePerRequestFilter {
+	private static final Logger log =
+			getLogger(AppAuthTransformationFilter.class);
+
 	/**
 	 * The name of session fixation tokens supported by this class.
 	 */
@@ -93,6 +98,10 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 					return t.getAuth();
 				}
 			}
+			if (nonNull(o)) {
+				session.removeAttribute(TOKEN);
+				log.debug("removed stale special auth token from session");
+			}
 		}
 		return null;
 	}
@@ -100,6 +109,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	private static void saveToken(HttpSession session, Authentication auth) {
 		if (nonNull(session)) {
 			session.setAttribute(TOKEN, new Token(session, auth));
+			log.debug("added special auth token to session");
 		}
 	}
 
@@ -114,6 +124,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 		HttpSession session = request.getSession(false);
 		if (nonNull(session)) {
 			session.removeAttribute(TOKEN);
+			log.debug("removed special auth token from session");
 		}
 	}
 }

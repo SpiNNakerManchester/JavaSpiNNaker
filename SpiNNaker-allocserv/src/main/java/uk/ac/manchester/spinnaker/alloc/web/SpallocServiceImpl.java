@@ -68,8 +68,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
-import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.JobAPI;
-import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI.MachineAPI;
 
 @Service("service")
 @Path(SERV)
@@ -217,17 +215,18 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 		// Async because it involves getting a write lock
 		bgAction(response, () -> {
-			Optional<Job> jj = core.createJob(trim(req.owner), trim(req.group),
+			Optional<Job> j = core.createJob(trim(req.owner), trim(req.group),
 					crds, req.machineName, req.tags, req.keepaliveInterval,
 					req.maxDeadBoards, mapper.writeValueAsBytes(req));
-			if (!jj.isPresent()) {
+			if (!j.isPresent()) {
 				// Most likely reason for failure
 				return status(BAD_REQUEST).type(TEXT_PLAIN)
 						.entity("out of quota").build();
 			}
-			Job j = jj.get();
-			URI uri = ui.getRequestUriBuilder().path("{id}").build(j.getId());
-			return created(uri).entity(new CreateJobResponse(j, ui)).build();
+			Job job = j.get();
+			return created(
+					ui.getRequestUriBuilder().path("{id}").build(job.getId()))
+							.entity(new CreateJobResponse(job, ui)).build();
 		});
 	}
 
