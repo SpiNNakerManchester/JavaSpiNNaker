@@ -34,6 +34,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<form:option value="">pick a level</form:option>
 		<form:options items="${ trustLevels }"/>
 	</form:select>
+	<c:if test="${ not empty user.openIdSubject }">
+		<span class="minordetail">
+			(OpenID Subject: <code><c:out value="${ user.openIdSubject }" /></code>)
+		</span>
+	</c:if>
 	<br>
 	<c:choose>
 		<c:when test="${ user.internal }">

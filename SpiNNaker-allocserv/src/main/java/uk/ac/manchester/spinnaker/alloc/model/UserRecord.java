@@ -30,6 +30,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
+import org.springframework.beans.NotReadablePropertyException;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -153,7 +155,7 @@ public final class UserRecord {
 	 * @return Whether this account is enabled. Disabled accounts
 	 *         <em>cannot</em> use the service until explicitly enabled.
 	 */
-	public Boolean isEnabled() {
+	public Boolean getEnabled() {
 		return isEnabled;
 	}
 
@@ -166,7 +168,8 @@ public final class UserRecord {
 	 *         should unlock automatically after 24 hours. Can be explicitly set
 	 *         to {@code false} to force an unlock.
 	 */
-	public Boolean isLocked() {
+	public Boolean getLocked() {
+		NotReadablePropertyException.class.getCanonicalName();
 		return isLocked;
 	}
 
@@ -302,10 +305,10 @@ public final class UserRecord {
 		if (isNull(getTrustLevel())) {
 			setTrustLevel(USER);
 		}
-		if (isNull(isEnabled())) {
+		if (isNull(getEnabled())) {
 			setEnabled(true);
 		}
-		if (isNull(isLocked())) {
+		if (isNull(getLocked())) {
 			setLocked(false);
 		}
 	}

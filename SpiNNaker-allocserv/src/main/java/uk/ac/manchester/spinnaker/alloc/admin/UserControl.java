@@ -326,7 +326,7 @@ public class UserControl extends DatabaseAwareBean {
 			CreateSQL sql) {
 		return sql
 				.createUser(user.getUserName(), encPass, user.getTrustLevel(),
-						!user.isEnabled(), user.getOpenIdSubject())
+						!user.getEnabled(), user.getOpenIdSubject())
 				.flatMap(sql::getUser).map(UserRecord::new);
 	}
 
@@ -434,20 +434,21 @@ public class UserControl extends DatabaseAwareBean {
 			}
 		}
 
-		if (nonNull(user.isEnabled()) && oldUser.isEnabled() != user.isEnabled()
-				&& adminId != id) {
+		if (nonNull(user.getEnabled())
+				&& oldUser.getEnabled() != user.getEnabled() && adminId != id) {
 			// Admins can't change their own disable state
-			if (sql.setUserDisabled.call(!user.isEnabled(), id) > 0) {
+			if (sql.setUserDisabled.call(!user.getEnabled(), id) > 0) {
 				log.info("setting user {} to {}", id,
-						user.isEnabled() ? "enabled" : "disabled");
+						user.getEnabled() ? "enabled" : "disabled");
 			}
 		}
-		if (nonNull(user.isLocked()) && oldUser.isLocked() != user.isLocked()
-				&& !user.isLocked() && adminId != id) {
+		if (nonNull(user.getLocked()) && oldUser.getLocked() != user.getLocked()
+				&& !user.getLocked() && adminId != id) {
 			// Admins can't change their own locked state
-			if (sql.setUserLocked.call(user.isLocked(), id) > 0) {
+			// Locked can't be set via this API, only reset
+			if (sql.setUserLocked.call(user.getLocked(), id) > 0) {
 				log.info("setting user {} to {}", id,
-						user.isLocked() ? "locked" : "unlocked");
+						user.getLocked() ? "locked" : "unlocked");
 			}
 		}
 
