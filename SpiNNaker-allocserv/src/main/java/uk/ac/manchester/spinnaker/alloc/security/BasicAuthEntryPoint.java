@@ -62,7 +62,7 @@ public class BasicAuthEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request,
 			HttpServletResponse response, AuthenticationException authEx)
 			throws IOException {
-		log.info("issuing request for log in to {}", request.getRemoteAddr());
+		log.debug("issuing request for log in to {}", request.getRemoteAddr());
 		/*
 		 * The two API auth methods should be separate headers; the specs say
 		 * they can be one, but that's an area where things get "exciting"
