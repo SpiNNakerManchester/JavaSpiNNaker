@@ -664,7 +664,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            Who logged in?
 		 */
 		void noteLoginSuccessForUser(int userId) {
-			assert loginSuccess.call(null, userId) == 1;
+			if (loginSuccess.call(null, userId) != 1) {
+				log.warn("failed to note success for user {}", userId);
+			}
 		}
 
 		/**
@@ -677,7 +679,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 *            What is their OpenID {@code sub} (subject) claim?
 		 */
 		void noteLoginSuccessForUser(int userId, String subject) {
-			assert loginSuccess.call(subject, userId) == 1;
+			if (loginSuccess.call(subject, userId) != 1) {
+				log.warn("failed to note success for user {}", userId);
+			}
 		}
 
 		/**
