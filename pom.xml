@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spring.security.version>5.6.1</spring.security.version>
 
 		<cxf.version>3.4.5</cxf.version>
-		<jackson.version>2.13.1</jackson.version>
+		<jackson.version>2.13.2</jackson.version>
 		<sqlite.version>3.36.0.3</sqlite.version>
 		<keycloak.version>14.0.0</keycloak.version>
 		<swagger.version>3.50.0</swagger.version>
