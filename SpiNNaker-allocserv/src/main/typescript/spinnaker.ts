@@ -517,7 +517,7 @@ function initCanvasSize(
 	const m2 = mapMargin * 2;
 	const basicCellWidth = contentWidth * 3 + 1;
 	const basicCellHeight = contentHeight * 3 + 1;
-	const minCanv§Width = basicCellWidth * minMapFactor + m2;
+	const minCanvWidth = basicCellWidth * minMapFactor + m2;
 	const minCanvHeight = basicCellHeight * minMapFactor + m2;
 	canvas.width = Math.max(canvas.width, minCanvWidth);
 	canvas.height = Math.max(canvas.height, minCanvHeight);
