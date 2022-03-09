@@ -27,7 +27,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <body>
 
-<h1>Spalloc Group Details</h1>
+<c:choose>
+	<c:when test="${ group.type.internal }">
+		<h1>Spalloc Local Group Details</h1>
+	</c:when>
+	<c:otherwise>
+		<h1>Spalloc OpenID Group Details</h1>
+	</c:otherwise>
+</c:choose>
 
 <c:choose>
 	<c:when test="${ group.type.internal }">

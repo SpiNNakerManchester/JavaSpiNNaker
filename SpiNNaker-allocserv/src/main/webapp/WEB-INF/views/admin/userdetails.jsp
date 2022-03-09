@@ -25,7 +25,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </jsp:include>
 <body>
 
-<h1>Local Spalloc User Details</h1>
+<c:choose>
+	<c:when test="${ user.internal }">
+		<h1>Spalloc Local User Details</h1>
+	</c:when>
+	<c:otherwise>
+		<h1>Spalloc OpenID User Details</h1>
+	</c:otherwise>
+</c:choose>
 
 <form:form method="POST" modelAttribute="user">
 	<form:label path="userName">User Name: </form:label>
