@@ -13,6 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+/** The minimum size of a basic cell of the map. Hexes are made of several of these. */
+const minMapFactor = 12;
+/** The number of pixels to allow for the margin on maps. */
+const mapMargin = 5;
+
 /** Machine logical global coordinate space (x, y, z). */
 type BoardTriad = readonly [number, number, number];
 /** The list of canvas coordinates of a hexagon representing a board. */
@@ -493,6 +498,39 @@ function setupCallbacks(
 }
 
 /**
+ * Set up the size of the map canvas to something sensible.
+ *
+ * @param canvas
+ *		The canvas to manipulate.
+ * @param contentWidth
+ *		The width of the content of the map, in triads.
+ * @param contentHeight
+ *		The height of the content of the map, in triads.
+ * @return
+ *		The coordinates of the root of the map and the scaling factors in
+ *		the two dimensions.
+ */
+function initCanvasSize(
+		canvas: HTMLCanvasElement,
+		contentWidth: number, contentHeight: number):
+		[number, number, number, number] {
+	const m2 = mapMargin * 2;
+	const basicCellWidth = contentWidth * 3 + 1;
+	const basicCellHeight = contentHeight * 3 + 1;
+	const minCanv§Width = basicCellWidth * minMapFactor + m2;
+	const minCanvHeight = basicCellHeight * minMapFactor + m2;
+	canvas.width = Math.max(canvas.width, minCanvWidth);
+	canvas.height = Math.max(canvas.height, minCanvHeight);
+	// TODO do we need to also manipulate the document CSS here?
+	const rect = canvas.getBoundingClientRect();
+	const rootX = mapMargin;
+	const rootY = rect.height - mapMargin;
+	const scaleX : number = (rect.width - m2) / basicCellWidth;
+	const scaleY : number = (rect.height - m2) / basicCellHeight;
+	return [rootX, rootY, scaleX, scaleY];
+}
+
+/**
  * Set up a canvas to illustrate a machine's boards.
  *
  * @param canvasId
@@ -506,12 +544,9 @@ function drawMachine(
 		canvasId: string, tooltipId: string,
 		descriptor: MachineDescriptor) {
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
-	const rect = canv.getBoundingClientRect();
+	const [rootX, rootY, scaleX, scaleY] = initCanvasSize(
+			canv, descriptor.width, descriptor.height);
 	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
-	const rootX = 5;
-	const rootY = rect.height - 5;
-	const scaleX : number = (rect.width - 10) / (descriptor.width * 3 + 1);
-	const scaleY : number = (rect.height - 10) / (descriptor.height * 3 + 1);
 	const scale = (scaleX < scaleY) ? scaleX : scaleY;
 	const ctx = canv.getContext("2d");
 	const tooltipCtx = tooltip.getContext("2d");
@@ -664,12 +699,9 @@ function drawJob(
 		canvasId: string, tooltipId: string,
 		descriptor: JobDescriptor) {
 	const canv = <HTMLCanvasElement> document.getElementById(canvasId);
-	const rect = canv.getBoundingClientRect();
+	const [rootX, rootY, scaleX, scaleY] = initCanvasSize(
+			canv, descriptor.triad_width, descriptor.triad_height);
 	const tooltip = <HTMLCanvasElement> document.getElementById(tooltipId);
-	const rootX = 5;
-	const rootY = rect.height - 5;
-	const scaleX : number = (rect.width - 10) / (descriptor.triad_width * 3 + 1);
-	const scaleY : number = (rect.height - 10) / (descriptor.triad_height * 3 + 1);
 	const scale = (scaleX < scaleY) ? scaleX : scaleY;
 	const ctx = canv.getContext("2d");
 	const tooltipCtx = tooltip.getContext("2d");
