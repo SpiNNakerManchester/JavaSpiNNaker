@@ -69,6 +69,8 @@ public class UserControl extends DatabaseAwareBean {
 	private final class AllUsersSQL extends AbstractSQL {
 		private final Query allUsers = conn.query(LIST_ALL_USERS);
 
+		private final Query allUsersOfType = conn.query(LIST_ALL_USERS_OF_TYPE);
+
 		@Override
 		public void close() {
 			allUsers.close();
@@ -77,6 +79,10 @@ public class UserControl extends DatabaseAwareBean {
 
 		MappableIterable<Row> allUsers() {
 			return allUsers.call();
+		}
+
+		MappableIterable<Row> allUsers(boolean internal) {
+			return allUsersOfType.call(internal);
 		}
 	}
 
@@ -196,6 +202,9 @@ public class UserControl extends DatabaseAwareBean {
 	private final class GroupsSQL extends AbstractSQL {
 		private final Query listGroups = conn.query(LIST_ALL_GROUPS);
 
+		private final Query listGroupsOfType =
+				conn.query(LIST_ALL_GROUPS_OF_TYPE);
+
 		private final Query getUsers = conn.query(GET_USERS_OF_GROUP);
 
 		private final Query getGroupId = conn.query(GET_GROUP_BY_ID);
@@ -222,6 +231,10 @@ public class UserControl extends DatabaseAwareBean {
 
 		MappableIterable<Row> listGroups() {
 			return listGroups.call();
+		}
+
+		MappableIterable<Row> listGroups(GroupType type) {
+			return listGroupsOfType.call(type);
 		}
 
 		Optional<Row> getGroupId(int id) {
@@ -284,6 +297,22 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	/**
+	 * List the users of a type in the database.
+	 *
+	 * @param internal
+	 *            Whether to get the internal users. If not, get the OpenID
+	 *            users.
+	 * @return List of users. Only {@link UserRecord#userId} and
+	 *         {@link UserRecord#userName} fields are inflated.
+	 */
+	public List<UserRecord> listUsers(boolean internal) {
+		try (AllUsersSQL sql = new AllUsersSQL()) {
+			return sql.transaction(false, () -> sql.allUsers(internal)
+					.map(UserControl::sketchUser).toList());
+		}
+	}
+
+	/**
 	 * List the users in the database.
 	 *
 	 * @param uriMapper
@@ -295,6 +324,26 @@ public class UserControl extends DatabaseAwareBean {
 			return sql.transaction(false,
 					() -> sql.allUsers().map(UserControl::sketchUser).toMap(
 							TreeMap::new, UserRecord::getUserName, uriMapper));
+		}
+	}
+
+	/**
+	 * List the users of a type in the database.
+	 *
+	 * @param internal
+	 *            Whether to get the internal users. If not, get the OpenID
+	 *            users.
+	 * @param uriMapper
+	 *            How to construct a URL for the user.
+	 * @return Map of users to URLs.
+	 */
+	public Map<String, URI> listUsers(boolean internal,
+			Function<UserRecord, URI> uriMapper) {
+		try (AllUsersSQL sql = new AllUsersSQL()) {
+			return sql.transaction(false,
+					() -> sql.allUsers(internal).map(UserControl::sketchUser)
+							.toMap(TreeMap::new, UserRecord::getUserName,
+									uriMapper));
 		}
 	}
 
@@ -617,6 +666,21 @@ public class UserControl extends DatabaseAwareBean {
 	}
 
 	/**
+	 * List the groups of a type in the database. Does not include membership
+	 * data.
+	 *
+	 * @param type
+	 *            The type of groups to get.
+	 * @return List of groups.
+	 */
+	public List<GroupRecord> listGroups(GroupType type) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql.listGroups(type).map(GroupRecord::new).toList());
+		}
+	}
+
+	/**
 	 * List the groups in the database.
 	 *
 	 * @param uriMapper
@@ -627,6 +691,25 @@ public class UserControl extends DatabaseAwareBean {
 		try (GroupsSQL sql = new GroupsSQL()) {
 			return sql.transaction(false,
 					() -> sql.listGroups().map(GroupRecord::new).toMap(
+							TreeMap::new, GroupRecord::getGroupName,
+							uriMapper));
+		}
+	}
+
+	/**
+	 * List the groups of a type in the database.
+	 *
+	 * @param type
+	 *            The type of groups to get.
+	 * @param uriMapper
+	 *            How to construct a URL for the group.
+	 * @return Map of group names to URLs.
+	 */
+	public Map<String, URI> listGroups(GroupType type,
+			Function<GroupRecord, URI> uriMapper) {
+		try (GroupsSQL sql = new GroupsSQL()) {
+			return sql.transaction(false,
+					() -> sql.listGroups(type).map(GroupRecord::new).toMap(
 							TreeMap::new, GroupRecord::getGroupName,
 							uriMapper));
 		}

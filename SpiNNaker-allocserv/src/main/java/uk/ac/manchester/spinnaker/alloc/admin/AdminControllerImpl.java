@@ -28,7 +28,9 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
+import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.ORGANISATION;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
@@ -44,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +72,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
@@ -126,14 +130,35 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private static final ViewFactory MACHINE_VIEW =
 			new ViewFactory("admin/machine");
 
-	/** User list in {@link #USER_LIST_VIEW}. */
+	/** User list in {@link #USER_LIST_VIEW}. All users. */
 	private static final String USER_LIST_OBJ = "userlist";
+
+	/** User list in {@link #USER_LIST_VIEW}. Local users only. */
+	private static final String LOCAL_USER_LIST_OBJ = "localusers";
+
+	/** User list in {@link #USER_LIST_VIEW}. OpenID users only. */
+	private static final String OPENID_USER_LIST_OBJ = "openidusers";
 
 	/** User details in {@link #USER_DETAILS_VIEW}. */
 	private static final String USER_OBJ = "user";
 
-	/** Group list in {@link #GROUP_LIST_VIEW}. */
-	private static final String GROUP_LIST_OBJ = "grouplist";
+	/**
+	 * Group list (type: {@link GroupType#INTERNAL}) in
+	 * {@link #GROUP_LIST_VIEW}.
+	 */
+	private static final String LOCAL_GROUP_LIST_OBJ = "localgroups";
+
+	/**
+	 * Group list (type: {@link GroupType#ORGANISATION}) in
+	 * {@link #GROUP_LIST_VIEW}.
+	 */
+	private static final String ORG_GROUP_LIST_OBJ = "orggroups";
+
+	/**
+	 * Group list (type: {@link GroupType#COLLABRATORY}) in
+	 * {@link #GROUP_LIST_VIEW}.
+	 */
+	private static final String COLLAB_GROUP_LIST_OBJ = "collabgroups";
 
 	/**
 	 * Group details in {@link #GROUP_DETAILS_VIEW}. Group creation info in
@@ -357,9 +382,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("listing the users")
 	public ModelAndView listUsers() {
-		return addStandardContext(USER_LIST_VIEW.view(USER_LIST_OBJ,
-				unmodifiableMap(userManager.listUsers(
-						user -> uri(admin().showUserForm(user.getUserId()))))));
+		ModelAndView mav = USER_LIST_VIEW.view();
+		// Share this function
+		Function<UserRecord, URI> urlMaker =
+				user -> uri(admin().showUserForm(user.getUserId()));
+		mav.addObject(LOCAL_USER_LIST_OBJ,
+				unmodifiableMap(userManager.listUsers(true, urlMaker)));
+		mav.addObject(OPENID_USER_LIST_OBJ,
+				unmodifiableMap(userManager.listUsers(false, urlMaker)));
+		return addStandardContext(mav);
 	}
 
 	@Override
@@ -430,9 +461,17 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("listing the groups")
 	public ModelAndView listGroups() {
-		return addStandardContext(GROUP_LIST_VIEW.view(GROUP_LIST_OBJ,
-				unmodifiableMap(userManager.listGroups(group -> uri(
-						admin().showGroupInfo(group.getGroupId()))))));
+		ModelAndView mav = GROUP_LIST_VIEW.view();
+		// Share this function
+		Function<GroupRecord, URI> urlMaker =
+				group -> uri(admin().showGroupInfo(group.getGroupId()));
+		mav.addObject(LOCAL_GROUP_LIST_OBJ,
+				unmodifiableMap(userManager.listGroups(INTERNAL, urlMaker)));
+		mav.addObject(ORG_GROUP_LIST_OBJ, unmodifiableMap(
+				userManager.listGroups(ORGANISATION, urlMaker)));
+		mav.addObject(COLLAB_GROUP_LIST_OBJ, unmodifiableMap(
+				userManager.listGroups(COLLABRATORY, urlMaker)));
+		return addStandardContext(mav);
 	}
 
 	@Override

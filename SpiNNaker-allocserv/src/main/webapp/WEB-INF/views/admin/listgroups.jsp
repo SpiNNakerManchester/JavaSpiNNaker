@@ -35,17 +35,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</tr>
 	</thead>
 	<tbody>
-	<c:forEach items="${ grouplist }" var="item">
-		<tr>
-			<td>
-				<c:out value="${ item.key }" escapeXml="true" />
-			</td>
-			<td>
-				<button onclick="location.href='${ item.value }'"
-						type="button">Manage</button>
-			</td>
-		</tr>
-	</c:forEach>
+		<tr><th colspan="2" class="minordetail">Internal Groups</th></tr>
+		<c:forEach items="${ localgroups }" var="item">
+			<tr>
+				<td>
+					<c:out value="${ item.key }" escapeXml="true" />
+				</td>
+				<td>
+					<button onclick="location.href='${ item.value }'"
+							type="button">Manage</button>
+				</td>
+			</tr>
+		</c:forEach>
+		<tr><th colspan="2" class="minordetail">HBP Organisations</th></tr>
+		<c:forEach items="${ orggroups }" var="item">
+			<tr>
+				<td>
+					<c:out value="${ item.key }" escapeXml="true" />
+				</td>
+				<td>
+					<button onclick="location.href='${ item.value }'"
+							type="button">Manage</button>
+				</td>
+			</tr>
+		</c:forEach>
+		<tr><th colspan="2" class="minordetail">HBP Collabratories</th></tr>
+		<c:forEach items="${ collabgroups }" var="item">
+			<tr>
+				<td>
+					<c:out value="${ item.key }" escapeXml="true" />
+				</td>
+				<td>
+					<button onclick="location.href='${ item.value }'"
+							type="button">Manage</button>
+				</td>
+			</tr>
+		</c:forEach>
 	</tbody>
 </table>
 

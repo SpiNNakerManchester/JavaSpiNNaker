@@ -1510,9 +1510,22 @@ public abstract class SQLQueries {
 			"SELECT user_id, user_name, openid_subject FROM user_info";
 
 	/**
+	 * Get a list of all users.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("internal")
+	@ResultColumn("user_id")
+	@ResultColumn("user_name")
+	@ResultColumn("openid_subject")
+	protected static final String LIST_ALL_USERS_OF_TYPE =
+			"SELECT user_id, user_name, openid_subject FROM user_info "
+					+ "WHERE is_internal = :internal";
+
+	/**
 	 * Create a user. Passwords are either encrypted (with bcrypt) or
-	 * {@code null} to indicate that they should be using some other system
-	 * to authenticate them.
+	 * {@code null} to indicate that they should be using some other system to
+	 * authenticate them.
 	 *
 	 * @see UserControl
 	 */
@@ -1539,6 +1552,20 @@ public abstract class SQLQueries {
 	@ResultColumn("group_type")
 	protected static final String LIST_ALL_GROUPS =
 			"SELECT group_id, group_name, quota, group_type FROM groups";
+
+	/**
+	 * Get a list of all groups of a given type.
+	 *
+	 * @see UserControl
+	 */
+	@Parameter("type")
+	@ResultColumn("group_id")
+	@ResultColumn("group_name")
+	@ResultColumn("quota")
+	@ResultColumn("group_type")
+	protected static final String LIST_ALL_GROUPS_OF_TYPE =
+			"SELECT group_id, group_name, quota, group_type FROM groups "
+					+ "WHERE group_type = :type";
 
 	/**
 	 * Get a group by it's ID.

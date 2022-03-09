@@ -55,6 +55,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 
 /**
  * Tests of queries. Ensures that the SQL and the schema remain synchronized.
@@ -763,6 +764,18 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void listAllGroupsOfType() {
+		try (Query q = c.query(LIST_ALL_GROUPS_OF_TYPE)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(GROUP_COLUMNS, q.getRowColumnNames());
+			c.transaction(() -> {
+				// Not sure what default state is, but this should not error
+				assertNotNull(q.call(GroupType.INTERNAL).toList());
+			});
+		}
+	}
+
+	@Test
 	void getGroupById() {
 		try (Query q = c.query(GET_GROUP_BY_ID)) {
 			assertEquals(1, q.getNumArguments());
@@ -899,6 +912,19 @@ class DQLTest extends SQLQueries {
 			c.transaction(() -> {
 				// Testing DB has no users by default
 				assertFalse(q.call1().isPresent());
+			});
+		}
+	}
+
+	@Test
+	void listAllUsersOfType() {
+		try (Query q = c.query(LIST_ALL_USERS_OF_TYPE)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("user_id", "user_name", "openid_subject"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				// Testing DB has no users by default
+				assertFalse(q.call1(false).isPresent());
 			});
 		}
 	}
