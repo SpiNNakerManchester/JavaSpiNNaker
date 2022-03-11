@@ -535,6 +535,19 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void findRectangleAt() {
+		try (Query q = c.query(findRectangleAt)) {
+			assertEquals(5, q.getNumArguments());
+			assertSetEquals(set("id", "x", "y", "z", "available"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(
+						q.call1(NO_BOARD, -1, -1, NO_MACHINE, 0).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void findLocation() {
 		try (Query q = c.query(findLocation)) {
 			assertEquals(2, q.getNumArguments());

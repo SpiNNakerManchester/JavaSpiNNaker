@@ -121,6 +121,10 @@ public class AllocatorTask extends DatabaseAwareBean
 		public String toString() {
 			return String.format("%dx%dx%d", width, height, depth);
 		}
+
+		public int getArea() {
+			return width * height * depth;
+		}
 	}
 
 	/**
@@ -234,6 +238,14 @@ public class AllocatorTask extends DatabaseAwareBean
 		private final Query getRectangles;
 
 		/**
+		 * Find a rectangle of triads of boards that may be allocated rooted at
+		 * a particular board.
+		 *
+		 * @see SQLQueries#FIND_FREE_BOARD_AT
+		 */
+		private final Query getRectangleAt;
+
+		/**
 		 * Count the number of <em>connected</em> boards (i.e., have at least
 		 * one path over enabled links to the root board of the allocation)
 		 * within a rectangle of triads. The triads are taken as being full
@@ -267,6 +279,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			delete = conn.update(DELETE_TASK);
 			findFreeBoard = conn.query(FIND_FREE_BOARD);
 			getRectangles = conn.query(findRectangle);
+			getRectangleAt = conn.query(findRectangleAt);
 			countConnectedBoards = conn.query(countConnected);
 			findSpecificBoard = conn.query(findLocation);
 			getConnectedBoardIDs = conn.query(getConnectedBoards);
@@ -282,6 +295,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			delete.close();
 			findFreeBoard.close();
 			getRectangles.close();
+			getRectangleAt.close();
 			countConnectedBoards.close();
 			findSpecificBoard.close();
 			getConnectedBoardIDs.close();
@@ -607,6 +621,13 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		Integer width = task.getInteger("width");
 		Integer height = task.getInteger("height");
+		Integer root = task.getInteger("board_id");
+
+		if (nonNull(width) && nonNull(height) && nonNull(root)) {
+			return allocateTriadsAt(sql, jobId, machineId, root, width, height,
+					maxDeadBoards);
+		}
+
 		if (nonNull(width) && nonNull(height) && width > 0 && height > 0) {
 			if (height == 1 && width == 1) {
 				return allocateOneBoard(sql, jobId, machineId);
@@ -622,7 +643,6 @@ public class AllocatorTask extends DatabaseAwareBean
 					maxDeadBoards);
 		}
 
-		Integer root = task.getInteger("board_id");
 		if (nonNull(root)) {
 			// Ignores maxDeadBoards; is a single-board allocate
 			return allocateBoard(sql, jobId, machineId, root);
@@ -679,16 +699,56 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *            The machine on which the allocation is happening
 	 * @param root
 	 *            Root logical coordinates
+	 * @param width
+	 *            The width of the planned allocation, in triads
+	 * @param height
+	 *            The width of the planned allocation, in triads
+	 * @return How many boards in the allocation are reachable.
+	 */
+	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
+			int width, int height) {
+		return sql.countConnectedBoards
+				.call1(machineId, root.x, root.y, width, height)
+				.map(integer("connected_size")).orElse(-1);
+	}
+
+	/**
+	 * Find the number of boards that are reachable from the proposed root
+	 * board.
+	 *
+	 * @param sql
+	 *            How to talk to the DB
+	 * @param machineId
+	 *            The machine on which the allocation is happening
+	 * @param root
+	 *            Root logical coordinates
+	 * @param rect
+	 *            The requested allocation dimensions
+	 * @return How many boards in the allocation are reachable.
+	 */
+	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
+			Rectangle rect) {
+		return connectedSize(sql, machineId, root, rect.width, rect.height);
+	}
+
+	/**
+	 * Find the number of boards that are reachable from the proposed root
+	 * board.
+	 *
+	 * @param sql
+	 *            How to talk to the DB
+	 * @param machineId
+	 *            The machine on which the allocation is happening
+	 * @param root
+	 *            Root logical coordinates
 	 * @param estimate
 	 *            The planned allocation dimensions
 	 * @return How many boards in the allocation are reachable.
 	 */
 	private int connectedSize(AllocSQL sql, int machineId, TriadCoords root,
 			DimensionEstimate estimate) {
-		return sql.countConnectedBoards
-				.call1(machineId, root.x, root.y, estimate.width,
-						estimate.height)
-				.map(integer("connected_size")).orElse(-1);
+		return connectedSize(sql, machineId, root, estimate.width,
+				estimate.height);
 	}
 
 	private boolean allocateBoard(AllocSQL sql, int jobId, int machineId,
@@ -696,6 +756,18 @@ public class AllocatorTask extends DatabaseAwareBean
 		return sql.findSpecificBoard
 				.call1(machineId, boardId).map(row -> setAllocation(sql, jobId,
 						ONE_BOARD, machineId, new TriadCoords(row)))
+				.orElse(false);
+	}
+
+	private boolean allocateTriadsAt(AllocSQL sql, int jobId, int machineId,
+			int rootId, int width, int height, int maxDeadBoards) {
+		Rectangle rect = new Rectangle(width, height, TRIAD_DEPTH);
+		return sql.getRectangleAt
+				.call1(rootId, width, height, machineId, maxDeadBoards)
+				.map(TriadCoords::new)
+				.filter(root -> connectedSize(sql, machineId, root,
+						rect) >= rect.getArea() - maxDeadBoards)
+				.map(root -> setAllocation(sql, jobId, rect, machineId, root))
 				.orElse(false);
 	}
 

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
+
 /**
  * Descriptive detail for a machine. Used for HTML generation.
  */
@@ -116,6 +118,10 @@ public class MachineDescription {
 		this.live = live;
 	}
 
+	public void setLive(MappableIterable<BoardCoords> live) {
+		this.live = live.toList();
+	}
+
 	/**
 	 * @return the out-of-service boards
 	 */
@@ -125,6 +131,10 @@ public class MachineDescription {
 
 	public void setDead(List<BoardCoords> dead) {
 		this.dead = dead;
+	}
+
+	public void setDead(MappableIterable<BoardCoords> dead) {
+		this.dead = dead.toList();
 	}
 
 	/**
@@ -138,6 +148,10 @@ public class MachineDescription {
 		this.jobs = jobs;
 	}
 
+	public void setJobs(MappableIterable<JobInfo> jobs) {
+		this.jobs = jobs.toList();
+	}
+
 	/**
 	 * @return the machine's tags
 	 */
@@ -147,6 +161,10 @@ public class MachineDescription {
 
 	public void setTags(List<String> tags) {
 		this.tags = tags;
+	}
+
+	public void setTags(MappableIterable<String> tags) {
+		this.tags = tags.toList();
 	}
 
 	/**
@@ -202,6 +220,10 @@ public class MachineDescription {
 
 		public void setBoards(List<BoardCoords> boards) {
 			this.boards = boards;
+		}
+
+		public void setBoards(MappableIterable<BoardCoords> boards) {
+			this.boards = boards.toList();
 		}
 
 		/**

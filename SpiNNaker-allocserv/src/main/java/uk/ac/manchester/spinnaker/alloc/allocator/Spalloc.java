@@ -34,6 +34,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -96,7 +97,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 @Service
 public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	private static final String NO_BOARD_MSG =
-			"request does not identify an existing board";
+			"request does not identify an existing board "
+					+ "or uses a prohibited coordinate";
 
 	private static final Logger log = getLogger(Spalloc.class);
 
@@ -143,10 +145,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		private Query getTags = conn.query(GET_TAGS);
 
-		ListMachinesSQL(Connection conn) {
-			super(conn);
-		}
-
 		@Override
 		public void close() {
 			listMachines.close();
@@ -154,31 +152,28 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			getTags.close();
 			super.close();
 		}
+
+		private MachineListEntryRecord makeMachineListEntryRecord(Row row) {
+			int id = row.getInt("machine_id");
+			MachineListEntryRecord rec = new MachineListEntryRecord();
+			rec.setName(row.getString("machine_name"));
+			Row m = countMachineThings.call1(id).get();
+			rec.setNumBoards(m.getInt("board_count"));
+			rec.setNumInUse(m.getInt("in_use"));
+			rec.setNumJobs(m.getInt("num_jobs"));
+			rec.setTags(getTags.call(id).map(string("tag")).toList());
+			return rec;
+		}
 	}
 
 	@Override
 	public List<MachineListEntryRecord>
 			listMachines(boolean allowOutOfService) {
-		return execute(false, conn -> {
-			try (ListMachinesSQL sql = new ListMachinesSQL(conn)) {
-				return sql.listMachines.call(allowOutOfService)
-						.map(row -> makeMachineListEntryRecord(sql, row))
-						.toList();
-			}
-		});
-	}
-
-	private static MachineListEntryRecord
-			makeMachineListEntryRecord(ListMachinesSQL sql, Row row) {
-		int id = row.getInt("machine_id");
-		MachineListEntryRecord rec = new MachineListEntryRecord();
-		rec.setName(row.getString("machine_name"));
-		Row m = sql.countMachineThings.call1(id).get();
-		rec.setNumBoards(m.getInt("board_count"));
-		rec.setNumInUse(m.getInt("in_use"));
-		rec.setNumJobs(m.getInt("num_jobs"));
-		rec.setTags(sql.getTags.call(id).map(string("tag")).toList());
-		return rec;
+		try (ListMachinesSQL sql = new ListMachinesSQL()) {
+			return sql.transaction(false,
+					() -> sql.listMachines.call(allowOutOfService)
+							.map(sql::makeMachineListEntryRecord).toList());
+		}
 	}
 
 	@Override
@@ -206,68 +201,81 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
+	private class DescribeMachineSQL extends AbstractSQL {
+		final Query namedMachine = conn.query(GET_NAMED_MACHINE);
+
+		final Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
+
+		final Query getTags = conn.query(GET_TAGS);
+
+		final Query getJobs = conn.query(GET_MACHINE_JOBS);
+
+		final Query getCoords = conn.query(GET_JOB_BOARD_COORDS);
+
+		final Query getLive = conn.query(GET_LIVE_BOARDS);
+
+		final Query getDead = conn.query(GET_DEAD_BOARDS);
+
+		final Query getQuota = conn.query(GET_USER_QUOTA);
+
+		@Override
+		public void close() {
+			namedMachine.close();
+			countMachineThings.close();
+			getTags.close();
+			getJobs.close();
+			getCoords.close();
+			getLive.close();
+			getDead.close();
+			getQuota.close();
+			super.close();
+		}
+	}
+
 	@Override
 	public Optional<MachineDescription> getMachineInfo(String machine,
 			boolean allowOutOfService, Permit permit) {
-		return execute(false, conn -> {
-			try (Query namedMachine = conn.query(GET_NAMED_MACHINE);
-					Query countMachineThings = conn.query(COUNT_MACHINE_THINGS);
-					Query getTags = conn.query(GET_TAGS);
-					Query getJobs = conn.query(GET_MACHINE_JOBS);
-					Query getCoords = conn.query(GET_JOB_BOARD_COORDS);
-					Query getLive = conn.query(GET_LIVE_BOARDS);
-					Query getDead = conn.query(GET_DEAD_BOARDS);
-					Query getQuota = conn.query(GET_USER_QUOTA)) {
-				return getBasicMachineInfo(machine, allowOutOfService,
-						namedMachine).map(md -> {
-							md.setNumInUse(countMachineThings.call1(md.getId())
-									.get().getInt("in_use"));
-							md.setTags(getTags.call(md.getId())
-									.map(string("tag")).toList());
-							md.setJobs(
-									getJobs.call(md.getId())
-											.map(row -> getMachineJobInfo(
-													permit, getCoords, row))
-											.toList());
-							md.setLive(getLive.call(md.getId()).map(
-									row -> new BoardCoords(row, !permit.admin))
-									.toList());
-							md.setDead(getDead.call(md.getId()).map(
-									row -> new BoardCoords(row, !permit.admin))
-									.toList());
-							getQuota.call1(permit.name)
-									.map(int64("quota_total"))
-									.ifPresent(md::setQuota);
-							return md;
-						});
-			}
-		});
+		try (DescribeMachineSQL sql = new DescribeMachineSQL()) {
+			return sql.transaction(false, () -> apply(
+					sql.namedMachine.call1(machine, allowOutOfService)
+							.map(Spalloc::getBasicMachineInfo),
+					md -> sql.countMachineThings.call1(md.getId())
+							.map(integer("in_use")).ifPresent(md::setNumInUse),
+					md -> md.setTags(
+							sql.getTags.call(md.getId()).map(string("tag"))),
+					md -> md.setJobs(sql.getJobs.call(md.getId())
+							.map(row -> getMachineJobInfo(permit, sql.getCoords,
+									row))),
+					md -> md.setLive(sql.getLive.call(md.getId())
+							.map(row -> new BoardCoords(row, !permit.admin))),
+					md -> md.setDead(sql.getDead.call(md.getId())
+							.map(row -> new BoardCoords(row, !permit.admin))),
+					md -> sql.getQuota.call1(permit.name)
+							.map(int64("quota_total"))
+							.ifPresent(md::setQuota)));
+		}
 	}
 
-	private static Optional<MachineDescription> getBasicMachineInfo(
-			String machine, boolean allowOutOfService, Query namedMachine) {
-		return namedMachine.call1(machine, allowOutOfService).map(row -> {
-			MachineDescription md = new MachineDescription();
-			md.setId(row.getInt("machine_id"));
-			md.setName(row.getString("machine_name"));
-			md.setWidth(row.getInt("width"));
-			md.setHeight(row.getInt("height"));
-			return md;
-		});
+	private static MachineDescription getBasicMachineInfo(Row row) {
+		MachineDescription md = new MachineDescription();
+		md.setId(row.getInt("machine_id"));
+		md.setName(row.getString("machine_name"));
+		md.setWidth(row.getInt("width"));
+		md.setHeight(row.getInt("height"));
+		return md;
 	}
 
 	private static JobInfo getMachineJobInfo(Permit permit, Query getCoords,
 			Row row) {
 		int jobId = row.getInt("job_id");
-		String owner = permit.unveilFor(row.getString("owner_name"))
-				? row.getString("owner_name")
-				: null;
+		boolean mayUnveil = permit.unveilFor(row.getString("owner_name"));
+		String owner = mayUnveil ? row.getString("owner_name") : null;
 
 		JobInfo ji = new JobInfo();
 		ji.setId(jobId);
 		ji.setOwner(owner);
-		ji.setBoards(getCoords.call(jobId)
-				.map(r -> new BoardCoords(r, isNull(owner))).toList());
+		ji.setBoards(
+				getCoords.call(jobId).map(r -> new BoardCoords(r, !mayUnveil)));
 		return ji;
 	}
 
@@ -413,8 +421,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 			// DB now changed; can report success
 			JobLifecycle.log.info(
-					"created job {} on {} for {} asking for {} board(s)",
-					jobId, machine.name, owner, numBoards);
+					"created job {} on {} for {} asking for {} board(s)", jobId,
+					machine.name, owner, numBoards);
 			return getJob(jobId, conn).map(ji -> (Job) ji);
 		});
 	}
@@ -472,6 +480,52 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
+	/**
+	 * Resolve a machine name and {@link HasBoardCoords} to a board identifier.
+	 *
+	 * @param conn
+	 *            How to get to the DB.
+	 * @param machineName
+	 *            The name of the machine.
+	 * @param b
+	 *            The request that is the coordinate holder.
+	 * @param requireTriadRoot
+	 *            Whether we require the Z coordinate to be zero.
+	 * @return The board ID.
+	 * @throws IllegalArgumentException
+	 *             If the board doesn't exist or it is a board that is not a
+	 *             root of a triad when a triad root is required.
+	 */
+	private Integer locateBoard(Connection conn, String machineName,
+			HasBoardCoords b, boolean requireTriadRoot) {
+		try (Query findTriad = conn.query(FIND_BOARD_BY_NAME_AND_XYZ);
+				Query findPhysical = conn.query(FIND_BOARD_BY_NAME_AND_CFB);
+				Query findIP = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
+			if (nonNull(b.triad)) {
+				return findTriad
+						.call1(machineName, b.triad.x, b.triad.y, b.triad.z)
+						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
+						.map(integer("board_id"))
+						.orElseThrow(() -> new IllegalArgumentException(
+								NO_BOARD_MSG));
+			} else if (nonNull(b.physical)) {
+				return findPhysical
+						.call1(machineName, b.physical.cabinet,
+								b.physical.frame, b.physical.board)
+						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
+						.map(integer("board_id"))
+						.orElseThrow(() -> new IllegalArgumentException(
+								NO_BOARD_MSG));
+			} else {
+				return findIP.call1(machineName, b.ip)
+						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
+						.map(integer("board_id"))
+						.orElseThrow(() -> new IllegalArgumentException(
+								NO_BOARD_MSG));
+			}
+		}
+	}
+
 	private int insertRequest(Connection conn, MachineImpl machine, int id,
 			CreateDescriptor descriptor, Integer numDeadBoards) {
 		PriorityScale scale = props.getPriorityScale();
@@ -483,8 +537,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						"request cannot fit on machine");
 			}
 			try (Update ps = conn.update(INSERT_REQ_N_BOARDS)) {
-				int priority = (int) (nb.numBoards * scale.getSize());
-				ps.call(id, nb.numBoards, numDeadBoards, priority);
+				ps.call(id, nb.numBoards, numDeadBoards,
+						(int) (nb.numBoards * scale.getSize()));
 			}
 			return nb.numBoards;
 		} else if (descriptor instanceof CreateDimensions) {
@@ -495,48 +549,32 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						"request cannot fit on machine");
 			}
 			try (Update ps = conn.update(INSERT_REQ_SIZE)) {
-				int priority =
-						(int) (d.width * d.height * scale.getDimensions());
-				ps.call(id, d.width, d.height, numDeadBoards, priority);
+				ps.call(id, d.width, d.height, numDeadBoards,
+						(int) (d.width * d.height * scale.getDimensions()));
 			}
 			return max(1, d.height * d.width - numDeadBoards);
+		} else if (descriptor instanceof CreateDimensionsAt) {
+			CreateDimensionsAt da = (CreateDimensionsAt) descriptor;
+			if (machine.getArea() < da.width * da.height * TRIAD_DEPTH) {
+				throw new IllegalArgumentException(
+						"request cannot fit on machine");
+			}
+			Integer boardId = locateBoard(conn, machine.name, da, true);
+			try (Update ps = conn.update(INSERT_REQ_SIZE_BOARD)) {
+				ps.call(id, boardId, da.width, da.height, numDeadBoards,
+						(int) scale.getSpecificBoard());
+			}
+			return max(1, da.width * da.height * TRIAD_DEPTH - numDeadBoards);
 		} else {
 			/*
 			 * Request by specific location; resolve to board ID now, as that
 			 * doesn't depend on whether the board is currently in use.
 			 */
 			CreateBoard b = (CreateBoard) descriptor;
-			Integer boardId;
-			if (nonNull(b.triad)) {
-				try (Query find = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
-					boardId = find
-							.call1(machine.name, b.triad.x, b.triad.y,
-									b.triad.z)
-							.map(integer("board_id"))
-							.orElseThrow(() -> new IllegalArgumentException(
-									NO_BOARD_MSG));
-				}
-			} else if (nonNull(b.physical)) {
-				try (Query find = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
-					boardId = find
-							.call1(machine.name, b.physical.cabinet,
-									b.physical.frame, b.physical.board)
-							.map(integer("board_id"))
-							.orElseThrow(() -> new IllegalArgumentException(
-									NO_BOARD_MSG));
-				}
-			} else {
-				try (Query find =
-						conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
-					boardId = find.call1(machine.name, b.ip)
-							.map(integer("board_id"))
-							.orElseThrow(() -> new IllegalArgumentException(
-									NO_BOARD_MSG));
-				}
-			}
+			Integer boardId = locateBoard(conn, machine.name, b, false);
 			try (Update ps = conn.update(INSERT_REQ_BOARD)) {
-				int priority = (int) scale.getSpecificBoard();
-				ps.call(id, boardId, priority);
+				// This doesn't pass along the max dead boards; only after one!
+				ps.call(id, boardId, (int) scale.getSpecificBoard());
 			}
 			return 1;
 		}

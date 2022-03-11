@@ -32,12 +32,12 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.physical;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.SERV;
+import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -61,6 +61,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensionsAt;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
@@ -214,20 +215,16 @@ public class SpallocServiceImpl extends BackgroundSupport
 				validateAndApplyDefaultsToJobRequest(req, security);
 
 		// Async because it involves getting a write lock
-		bgAction(response, () -> {
-			Optional<Job> j = core.createJob(trim(req.owner), trim(req.group),
-					crds, req.machineName, req.tags, req.keepaliveInterval,
-					req.maxDeadBoards, mapper.writeValueAsBytes(req));
-			if (!j.isPresent()) {
-				// Most likely reason for failure
-				return status(BAD_REQUEST).type(TEXT_PLAIN)
-						.entity("out of quota").build();
-			}
-			Job job = j.get();
-			return created(
-					ui.getRequestUriBuilder().path("{id}").build(job.getId()))
-							.entity(new CreateJobResponse(job, ui)).build();
-		});
+		bgAction(response, () -> ifElse(
+				core.createJob(trim(req.owner), trim(req.group), crds,
+						req.machineName, req.tags, req.keepaliveInterval,
+						req.maxDeadBoards, mapper.writeValueAsBytes(req)),
+				job -> created(ui.getRequestUriBuilder().path("{id}")
+						.build(job.getId()))
+								.entity(new CreateJobResponse(job, ui)).build(),
+				() -> status(BAD_REQUEST).type(TEXT_PLAIN)
+						// Most likely reason for failure
+						.entity("out of quota").build()));
 	}
 
 	private CreateDescriptor validateAndApplyDefaultsToJobRequest(
@@ -278,6 +275,21 @@ public class SpallocServiceImpl extends BackgroundSupport
 		if (nonNull(req.numBoards)) {
 			return new CreateNumBoards(req.numBoards);
 		} else if (nonNull(req.dimensions)) {
+			if (nonNull(req.board)) {
+				// Both dimensions AND board; rooted rectangle
+				if (nonNull(req.board.x)) {
+					return new CreateDimensionsAt(req.dimensions.width,
+							req.dimensions.height, req.board.x, req.board.y,
+							req.board.z);
+				} else if (nonNull(req.board.cabinet)) {
+					return CreateDimensionsAt.physical(req.dimensions.width,
+							req.dimensions.height, req.board.cabinet,
+							req.board.frame, req.board.board);
+				} else {
+					return new CreateDimensionsAt(req.dimensions.width,
+							req.dimensions.height, req.board.address);
+				}
+			}
 			return new CreateDimensions(req.dimensions.width,
 					req.dimensions.height);
 		} else if (nonNull(req.board)) {

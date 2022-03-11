@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * Describes a tagging of a machine.
@@ -81,6 +82,10 @@ public class MachineTagging {
 
 	public void setTags(Set<String> tags) {
 		this.tags = tags;
+	}
+
+	public void setTags(MappableIterable<String> tags) {
+		this.tags = tags.toSet();
 	}
 
 	/**

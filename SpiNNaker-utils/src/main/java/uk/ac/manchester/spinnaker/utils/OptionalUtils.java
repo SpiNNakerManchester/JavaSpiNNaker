@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,6 +28,30 @@ import java.util.function.Supplier;
  */
 public abstract class OptionalUtils {
 	private OptionalUtils() {
+	}
+
+	/**
+	 * How to apply a sequence of modification transforms to a value in an
+	 * optional if there is a value there at all.
+	 *
+	 * @param <T>
+	 *            The type of value in the optional.
+	 * @param source
+	 *            Where to get the value from.
+	 * @param action
+	 *            The transformations to apply to the value in the optional if
+	 *            it exists; these are expected to <em>modify</em> that object.
+	 * @return The original optional.
+	 */
+	@SafeVarargs
+	public static <T> Optional<T> apply(Optional<T> source,
+			Consumer<T>... actions) {
+		source.ifPresent(t -> {
+			for (Consumer<T> action : actions) {
+				action.accept(t);
+			}
+		});
+		return source;
 	}
 
 	/**

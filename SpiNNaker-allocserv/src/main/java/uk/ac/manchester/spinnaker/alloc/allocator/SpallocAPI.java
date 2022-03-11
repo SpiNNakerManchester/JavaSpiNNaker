@@ -22,11 +22,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.security.access.prepost.PostFilter;
 
+import uk.ac.manchester.spinnaker.alloc.compat.V1CompatService;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.DownLink;
@@ -210,6 +212,7 @@ public interface SpallocAPI {
 	 *
 	 * @see CreateNumBoards
 	 * @see CreateDimensions
+	 * @see CreateDimensionsAt
 	 * @see CreateBoard
 	 */
 	abstract class CreateDescriptor {
@@ -231,7 +234,10 @@ public interface SpallocAPI {
 	}
 
 	/**
-	 * A request for a rectangle of boards.
+	 * A request for a rectangle of boards. This is expressed in boards for
+	 * reasons relating to the legacy API.
+	 *
+	 * @see V1CompatService
 	 */
 	final class CreateDimensions extends CreateDescriptor {
 		/** Width requested, in boards. */
@@ -246,44 +252,8 @@ public interface SpallocAPI {
 		}
 	}
 
-	/**
-	 * A request for a specific board.
-	 */
-	final class CreateBoard extends CreateDescriptor {
-		static final class Triad {
-			private Triad(int x, int y, int z) {
-				this.x = x;
-				this.y = y;
-				this.z = z;
-			}
-
-			/** X coordinate. */
-			public final int x;
-
-			/** Y coordinate. */
-			public final int y;
-
-			/** Z coordinate. */
-			public final int z;
-		}
-
-		static final class Phys {
-			private Phys(int cabinet, int frame, int board) {
-				this.cabinet = cabinet;
-				this.frame = frame;
-				this.board = board;
-			}
-
-			/** Cabinet number. */
-			public final int cabinet;
-
-			/** Frame number. */
-			public final int frame;
-
-			/** Board number. */
-			public final int board;
-		}
-
+	/** Some requests have the locations of boards. */
+	abstract class HasBoardCoords extends CreateDescriptor {
 		/** The logical coordinates, or {@code null}. */
 		public final Triad triad;
 
@@ -293,10 +263,227 @@ public interface SpallocAPI {
 		/** The network coordinates, or {@code null}. */
 		public final String ip;
 
-		private CreateBoard(Triad triad, Phys physical, String ip) {
+		private HasBoardCoords(Triad triad, Phys physical, String ip) {
 			this.triad = triad;
 			this.physical = physical;
 			this.ip = ip;
+		}
+
+		private static int get(Integer value) {
+			return Objects.nonNull(value) ? value : 0;
+		}
+	}
+
+	/**
+	 * A request for a rectangle of triads rooted at a particular triad. No
+	 * option for using physical coordinates is supported with this method.
+	 */
+	final class CreateDimensionsAt extends HasBoardCoords {
+		/** Width requested, in triads. */
+		public final int width;
+
+		/** Height requested, in triads. */
+		public final int height;
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board will
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @return Descriptor
+		 */
+		public CreateDimensionsAt(int width, int height, int x, int y) {
+			super(new Triad(x, y, 0), null, null);
+			this.width = width;
+			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board will
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @return Descriptor
+		 */
+		public CreateDimensionsAt(int width, int height, Integer x, Integer y) {
+			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y), 0),
+					null, null);
+			this.width = width;
+			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @param z
+		 *            The Z coordinate of the root board of the request.
+		 */
+		public CreateDimensionsAt(int width, int height, int x, int y, int z) {
+			super(new Triad(x, y, z), null, null);
+			this.width = width;
+			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @param z
+		 *            The Z coordinate of the root board of the request.
+		 */
+		public CreateDimensionsAt(int width, int height, Integer x, Integer y,
+				Integer z) {
+			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y),
+					HasBoardCoords.get(z)), null, null);
+			this.width = width;
+			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param ip
+		 *            The network address of the root board of the request.
+		 */
+		public CreateDimensionsAt(int width, int height, String ip) {
+			super(null, null, ip);
+			this.width = width;
+			this.height = height;
+		}
+
+		private CreateDimensionsAt(int width, int height, Phys physical) {
+			super(null, physical, null);
+			this.width = width;
+			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param cabinet
+		 *            The cabinet number of the root board of the request.
+		 * @param frame
+		 *            The frame number of the root board.
+		 * @param board
+		 *            The board number of the root board.
+		 * @return Descriptor
+		 */
+		public static CreateDimensionsAt physical(int width, int height,
+				int cabinet, int frame, int board) {
+			// Done like this to avoid syntactic ambiguity
+			return new CreateDimensionsAt(width, height,
+					new Phys(cabinet, frame, board));
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param cabinet
+		 *            The cabinet number of the root board of the request.
+		 * @param frame
+		 *            The frame number of the root board.
+		 * @param board
+		 *            The board number of the root board.
+		 * @return Descriptor
+		 */
+		public static CreateDimensionsAt physical(int width, int height,
+				Integer cabinet, Integer frame, Integer board) {
+			// Done like this to avoid syntactic ambiguity
+			return new CreateDimensionsAt(width, height,
+					new Phys(HasBoardCoords.get(cabinet),
+							HasBoardCoords.get(frame),
+							HasBoardCoords.get(board)));
+		}
+	}
+
+	/** A triad coordinate. */
+	final class Triad {
+		private Triad(int x, int y, int z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+
+		/** X coordinate. */
+		public final int x;
+
+		/** Y coordinate. */
+		public final int y;
+
+		/** Z coordinate. */
+		public final int z;
+	}
+
+	/** A physical coordinate. */
+	final class Phys {
+		private Phys(int cabinet, int frame, int board) {
+			this.cabinet = cabinet;
+			this.frame = frame;
+			this.board = board;
+		}
+
+		/** Cabinet number. */
+		public final int cabinet;
+
+		/** Frame number. */
+		public final int frame;
+
+		/** Board number. */
+		public final int board;
+	}
+
+	/**
+	 * A request for a specific board.
+	 */
+	final class CreateBoard extends HasBoardCoords {
+		private CreateBoard(Triad triad, Phys physical, String ip) {
+			super(triad, physical, ip);
 		}
 
 		/**

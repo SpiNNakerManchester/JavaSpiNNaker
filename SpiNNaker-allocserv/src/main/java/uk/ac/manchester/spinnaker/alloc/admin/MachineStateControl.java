@@ -239,8 +239,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				getMachines.call(true).map(MachineTagging::new)
 						.forEach(infos::add);
 				for (MachineTagging t : infos) {
-					t.setTags(
-							getTags.call(t.getId()).map(string("tag")).toSet());
+					t.setTags(getTags.call(t.getId()).map(string("tag")));
 				}
 				return infos;
 			}

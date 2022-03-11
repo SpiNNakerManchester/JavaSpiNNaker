@@ -128,6 +128,19 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
+	void insertReqSizeBoard() {
+		assumeWritable(c);
+		try (Update u = c.update(INSERT_REQ_SIZE_BOARD)) {
+			assertEquals(6, u.getNumArguments());
+			c.transaction(() -> {
+				// No such job
+				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 1, 1, 0, 0));
+				assertThrowsCheck(() -> u.keys(NO_JOB, NO_BOARD, -1, -1, 0, 0));
+			});
+		}
+	}
+
+	@Test
 	void insertReqBoard() {
 		assumeWritable(c);
 		try (Update u = c.update(INSERT_REQ_BOARD)) {

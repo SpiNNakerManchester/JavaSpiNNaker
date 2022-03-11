@@ -272,6 +272,21 @@ public abstract class SQLQueries {
 			"INSERT INTO job_request(job_id, board_id, priority) "
 					+ "VALUES (:job_id, :board_id, :priority)";
 
+	/** Create a request to allocate triads starting at a particular board. */
+	// FIXME test
+	@Parameter("job_id")
+	@Parameter("board_id")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("max_dead_boards")
+	@Parameter("priority")
+	@GeneratesID
+	protected static final String INSERT_REQ_SIZE_BOARD = "INSERT INTO "
+			+ "job_request(job_id, board_id, width, height, max_dead_boards, "
+			+ "priority) "
+			+ "VALUES(:job_id, :board_id, :width, :height, :max_dead_boards,"
+			+ ":priority)";
+
 	/** Increases the importance of a job. */
 	protected static final String BUMP_IMPORTANCE =
 			"UPDATE job_request SET importance = importance + priority";
@@ -1649,6 +1664,27 @@ public abstract class SQLQueries {
 	@ResultColumn("available")
 	@Value("classpath:queries/find_rectangle.sql")
 	protected Resource findRectangle;
+
+	/**
+	 * Find a rectangle of triads of boards rooted at a specific board that may
+	 * be allocated. The {@code max_dead_boards} gives the amount of allowance
+	 * for non-allocatable resources to be made within the rectangle.
+	 *
+	 * @see AllocatorTask
+	 */
+	@Parameter("board_id")
+	@Parameter("width")
+	@Parameter("height")
+	@Parameter("machine_id")
+	@Parameter("max_dead_boards")
+	@ResultColumn("id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("available")
+	@SingleRowResult
+	@Value("classpath:queries/find_rectangle_at.sql")
+	protected Resource findRectangleAt;
 
 	/**
 	 * Find an allocatable board with a specific board ID. (This will have been
