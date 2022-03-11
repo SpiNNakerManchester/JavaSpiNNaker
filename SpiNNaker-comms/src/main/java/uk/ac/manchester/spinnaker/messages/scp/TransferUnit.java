@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 /** What to move data in units of. */
-enum TransferUnit {
+public enum TransferUnit {
 	/** A byte. */
 	BYTE(0),
 	/** Two bytes. */

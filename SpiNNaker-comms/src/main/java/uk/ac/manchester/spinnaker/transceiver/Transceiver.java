@@ -112,8 +112,10 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
+import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.ResetFPGA;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
@@ -1696,6 +1698,20 @@ public class Transceiver extends UDPTransceiver
 	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new GetBMPVersion(board)).versionInfo;
+	}
+
+	@Override
+	@ParallelSafe
+	public boolean getResetStatus(BMPCoords bmp, int board)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new GetFPGAResetStatus(board)).isReset();
+	}
+
+	@Override
+	@ParallelSafe
+	public void resetFPGA(BMPCoords bmp, int board, FPGAResetType resetType)
+			throws IOException, ProcessException {
+		bmpCall(bmp, new ResetFPGA(board, resetType));
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {

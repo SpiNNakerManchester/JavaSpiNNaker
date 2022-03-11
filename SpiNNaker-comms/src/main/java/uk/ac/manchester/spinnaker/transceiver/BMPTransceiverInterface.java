@@ -1062,4 +1062,50 @@ public interface BMPTransceiverInterface {
 	@ParallelSafe
 	VersionInfo readBMPVersion(BMPCoords bmp, int board)
 			throws IOException, ProcessException;
+
+	/**
+	 * Get the FPGA reset status.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board are the FPGAs on?
+	 * @return What the state of the reset line is.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	boolean getResetStatus(BMPCoords bmp, int board)
+			throws IOException, ProcessException;
+
+	/** The type of reset to perform. */
+	enum FPGAResetType {
+		// NB: The order of these values is important
+		/** Reset by taking the reset line low. */
+		LOW,
+		/** Reset by taking the reset line high. */
+		HIGH,
+		/** Reset by sending a pulse on the reset line. */
+		PULSE
+	}
+
+	/**
+	 * Reset the FPGAs on a board.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board are the FPGAs on?
+	 * @param resetType
+	 *            What kind of reset to perform.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	void resetFPGA(BMPCoords bmp, int board, FPGAResetType resetType)
+			throws IOException, ProcessException;
 }

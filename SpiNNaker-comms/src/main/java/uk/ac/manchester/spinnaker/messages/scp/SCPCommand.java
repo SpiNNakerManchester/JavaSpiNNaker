@@ -94,8 +94,7 @@ public enum SCPCommand implements CommandCode {
 	CMD_BMP_EE(54),
 	/** */
 	CMD_RESET(55),
-	/** */
-	@Deprecated
+	/** FPGA control. BMP-only operation. */
 	CMD_XILINX(56),
 	/** Turns on or off the machine via BMP. */
 	CMD_BMP_POWER(57),

@@ -26,8 +26,9 @@ import java.lang.annotation.Target;
 
 /**
  * Documents a transceiver operation that may be used from multiple threads in
- * parallel provided those threads are accessing different boards, and care is
- * taken to use this method in a way that only accesses a single board via it.
+ * parallel provided those threads are accessing different boards (or different
+ * BMPs, for BMP-based operations), and care is taken to use this method in a
+ * way that only accesses a single board via it.
  *
  * @see Transceiver
  * @see TransceiverInterface
