@@ -320,4 +320,16 @@ class DummyTransceiver implements BMPTransceiverInterface {
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public boolean getResetStatus(BMPCoords bmp, int board)
+			throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void resetFPGA(BMPCoords bmp, int board, FPGAResetType resetType)
+			throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
 }

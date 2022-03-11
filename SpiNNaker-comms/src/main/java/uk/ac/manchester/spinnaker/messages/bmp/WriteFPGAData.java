@@ -16,21 +16,28 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.messages.bmp.XilinxCommand.Reset;
+import static uk.ac.manchester.spinnaker.messages.bmp.XilinxCommand.LoadData;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
+/**
+ * Upload a chunk of FPGA initialisation data. Must have been set up by
+ * {@link InitFPGA}. Upload process will be terminated by {@link ResetFPGA}.
+ */
+public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
+	public WriteFPGAData(int board, byte[] data) {
+		super(board, CMD_XILINX, LoadData.code, data.length, 0,
+				ByteBuffer.wrap(data));
+	}
 
-/** Perform a reset of the FPGAs. */
-public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
-	public ResetFPGA(int board, FPGAResetType resetType) {
-		super(board, CMD_XILINX, Reset.code, resetType.ordinal());
+	public WriteFPGAData(int board, ByteBuffer data) {
+		super(board, CMD_XILINX, LoadData.code, data.remaining(), 0, data);
 	}
 
 	@Override
 	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Reset XILINX", CMD_XILINX, buffer);
+		return new BMPResponse("Load data into XILINX buffer", CMD_XILINX,
+				buffer);
 	}
 }

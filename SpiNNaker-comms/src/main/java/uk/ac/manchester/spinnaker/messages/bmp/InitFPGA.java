@@ -16,21 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.messages.bmp.XilinxCommand.Reset;
+import static uk.ac.manchester.spinnaker.messages.bmp.XilinxCommand.Init;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
-
-/** Perform a reset of the FPGAs. */
-public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
-	public ResetFPGA(int board, FPGAResetType resetType) {
-		super(board, CMD_XILINX, Reset.code, resetType.ordinal());
+/** Start an initialisation of the FPGAs. Terminated by {@link ResetFPGA}. */
+public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
+	public InitFPGA(int board, int mask) {
+		super(board, CMD_XILINX, Init.code, mask);
 	}
 
 	@Override
 	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Reset XILINX", CMD_XILINX, buffer);
+		return new BMPResponse("Init XILINX", CMD_XILINX, buffer);
 	}
 }
