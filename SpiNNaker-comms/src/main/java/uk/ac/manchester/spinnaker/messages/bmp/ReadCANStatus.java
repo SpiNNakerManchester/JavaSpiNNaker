@@ -20,13 +20,18 @@ import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.CAN_STATUS;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * SCP Request for the CAN bus status data from the BMP.
  */
 public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
+	private static final int MAX_BOARDS_PER_FRAME = 24;
+
 	public ReadCANStatus() {
 		// The CAN status is shared between all BMPs; it's how they communicate
 		super(0, CMD_BMP_INFO, (int) CAN_STATUS.value);
@@ -44,6 +49,21 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 		 * index is disabled.
 		 */
 		public final byte[] statusData;
+
+		/**
+		 * What boards are available to be managed by the BMP?
+		 *
+		 * @return Ordered sequence of board numbers.
+		 */
+		public MappableIterable<Integer> availableBoards() {
+			List<Integer> boards = new ArrayList<>();
+			for (int i = 0; i < MAX_BOARDS_PER_FRAME; i++) {
+				if (statusData[i] != 0) {
+					boards.add(i);
+				}
+			}
+			return boards::iterator;
+		}
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
