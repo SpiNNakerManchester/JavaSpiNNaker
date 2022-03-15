@@ -240,6 +240,7 @@ public class GetDevId extends CredentialDB {
 					gdi.saveCredentials(creds);
 				}
 			}
+			log.info("ID = {}", cr.getId());
 			log.info("client-id = {}", cr.getClientId());
 			log.info("secret = {}", cr.getSecret());
 			log.debug("response:\n{}", mapper.writeValueAsString(cr));
