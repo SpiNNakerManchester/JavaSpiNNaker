@@ -470,28 +470,39 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 	}
 
-	static class Copied {
+	/**
+	 * Describes what the first stage of the tombstoner has copied.
+	 */
+	static final class Copied {
 		private final List<Integer> jobIds;
 
 		private final List<Integer> allocIds;
 
-		Copied(List<Integer> jobIds, List<Integer> allocIds) {
+		private Copied(List<Integer> jobIds, List<Integer> allocIds) {
 			this.jobIds = jobIds;
 			this.allocIds = allocIds;
 		}
 
-		Stream<Integer> allocs() {
+		private Stream<Integer> allocs() {
 			return allocIds.stream().filter(Objects::nonNull);
 		}
 
-		Stream<Integer> jobs() {
+		private Stream<Integer> jobs() {
 			return jobIds.stream().filter(Objects::nonNull);
 		}
 
+		/**
+		 * @return The number of job records copied over to the historical
+		 *         database.
+		 */
 		int numJobs() {
 			return jobIds.size();
 		}
 
+		/**
+		 * @return The number of board allocation records copied over to the
+		 *         historical database.
+		 */
 		int numAllocs() {
 			return allocIds.size();
 		}
@@ -505,7 +516,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *
 	 * @param conn
 	 *            The DB connection
-	 * @return The tombstoned IDs (not very important!)
+	 * @return Description of the tombstoned IDs
 	 */
 	Copied tombstone(Connection conn) {
 		try (Query copyJobs = conn.query(copyJobsToHistoricalData);
