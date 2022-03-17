@@ -252,6 +252,22 @@ BEGIN
 			WHERE jobs.job_id = OLD.allocated_job AND jobs.job_state = 4);
 END;
 
+-- Record all allocations
+CREATE TABLE IF NOT EXISTS old_board_allocations (
+	alloc_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	job_id INTEGER NOT NULL REFERENCES jobs(job_id) ON DELETE CASCADE,
+	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	alloc_timestamp INTEGER NOT NULL
+);
+CREATE TRIGGER IF NOT EXISTS alloc_tracking
+AFTER UPDATE OF allocated_job ON boards WHEN NEW.allocated_job IS NOT NULL
+BEGIN
+	INSERT OR IGNORE INTO old_board_allocations(
+		job_id, board_id, alloc_timestamp)
+	VALUES (NEW.allocated_job, NEW.board_id,
+		CAST(strftime('%s','now') AS INTEGER));
+END;
+
 CREATE TABLE IF NOT EXISTS job_request (
 	req_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	job_id INTEGER NOT NULL REFERENCES jobs(job_id) ON DELETE CASCADE,

@@ -1638,6 +1638,18 @@ public abstract class SQLQueries {
 			"DELETE FROM jobs WHERE job_id = :job_id";
 
 	/**
+	 * Actually delete an allocation record. Only called by the data
+	 * tombstone-r. This and triggers are the only things that delete allocation
+	 * records from the active database.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	// FIXME test
+	@Parameter("alloc_id")
+	protected static final String DELETE_ALLOC_RECORD =
+			"DELETE FROM old_board_allocations WHERE alloc_id = :alloc_id";
+
+	/**
 	 * Mark all pending changes as eligible for processing. Called once on
 	 * application startup when all internal queues are guaranteed to be empty.
 	 */
@@ -1983,6 +1995,18 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("grace_period")
 	@ResultColumn("job_id")
-	@Value("classpath:queries/copy-to-historical-data.sql")
-	protected Resource copyToHistoricalData;
+	@Value("classpath:queries/copy-jobs-to-historical-data.sql")
+	protected Resource copyJobsToHistoricalData;
+
+	/**
+	 * Copy board allocation data to the historical data DB, and return the IDs
+	 * of the allocation records that were copied (which will now be safe to
+	 * delete). Only jobs that are already completed will ever get copied.
+	 *
+	 * @see AllocatorTask#tombstone()
+	 */
+	@Parameter("grace_period")
+	@ResultColumn("alloc_id")
+	@Value("classpath:queries/copy-allocs-to-historical-data.sql")
+	protected Resource copyAllocsToHistoricalData;
 }

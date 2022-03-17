@@ -32,12 +32,14 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -454,36 +456,71 @@ public class AllocatorTask extends DatabaseAwareBean
 		}
 
 		try (Connection conn = getConnection()) {
-			tombstone(conn);
+			Copied c = tombstone(conn);
+			log.info("tombstoning completed: "
+					+ "moved {} job records and {} allocation records",
+					c.numJobs(), c.numAllocs());
 		} catch (DataAccessException e) {
 			if (isBusy(e)) {
 				log.info("database is busy; "
-						+ "will try job tombstone processing later");
+						+ "will try job tombstone processing at future date");
 				return;
 			}
 			throw e;
 		}
 	}
 
+	static class Copied {
+		private final List<Integer> jobIds;
+
+		private final List<Integer> allocIds;
+
+		Copied(List<Integer> jobIds, List<Integer> allocIds) {
+			this.jobIds = jobIds;
+			this.allocIds = allocIds;
+		}
+
+		Stream<Integer> allocs() {
+			return allocIds.stream().filter(Objects::nonNull);
+		}
+
+		Stream<Integer> jobs() {
+			return jobIds.stream().filter(Objects::nonNull);
+		}
+
+		int numJobs() {
+			return jobIds.size();
+		}
+
+		int numAllocs() {
+			return allocIds.size();
+		}
+	}
+
 	/**
 	 * Implementation of {@link #tombstone()}. This is done as two transactions
-	 * to help manage the amount of locking; nothing else ought to be updating
-	 * any of these jobs at the time this task usually runs, but we'll still try
-	 * to keep things minimally locked.
+	 * to help manage the amount of locking (especially multi-DB locking);
+	 * nothing else ought to be updating any of these jobs at the time this task
+	 * usually runs, but we'll still try to keep things minimally locked.
 	 *
 	 * @param conn
 	 *            The DB connection
-	 * @return The tombstoned job IDs
+	 * @return The tombstoned IDs (not very important!)
 	 */
-	List<Integer> tombstone(Connection conn) {
-		try (Query copy = conn.query(copyToHistoricalData);
-				Update delete = conn.update(DELETE_JOB_RECORD)) {
-			List<Integer> jobIds = conn
-					.transaction(() -> copy.call(historyProps.getGracePeriod())
-							.map(integer("job_id")).toList());
-			conn.transaction(() -> jobIds.stream().filter(Objects::nonNull)
-					.forEach(delete::call));
-			return jobIds;
+	Copied tombstone(Connection conn) {
+		try (Query copyJobs = conn.query(copyJobsToHistoricalData);
+				Query copyAllocs = conn.query(copyAllocsToHistoricalData);
+				Update deleteJobs = conn.update(DELETE_JOB_RECORD);
+				Update deleteAllocs = conn.update(DELETE_ALLOC_RECORD)) {
+			Duration grace = historyProps.getGracePeriod();
+			Copied copied = conn.transaction(() -> new Copied(
+					copyJobs.call(grace).map(integer("job_id")).toList(),
+					copyAllocs.call(grace).map(integer("alloc_id")).toList()));
+			conn.transaction(() -> {
+				copied.allocs().forEach(deleteAllocs::call);
+				copied.jobs().forEach(deleteJobs::call);
+			});
+			return copied;
 		}
 	}
 
