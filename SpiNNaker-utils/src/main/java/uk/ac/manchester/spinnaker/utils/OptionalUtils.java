@@ -38,7 +38,7 @@ public abstract class OptionalUtils {
 	 *            The type of value in the optional.
 	 * @param source
 	 *            Where to get the value from.
-	 * @param action
+	 * @param actions
 	 *            The transformations to apply to the value in the optional if
 	 *            it exists; these are expected to <em>modify</em> that object.
 	 * @return The original optional.

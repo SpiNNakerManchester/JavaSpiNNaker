@@ -40,3 +40,10 @@ CREATE TABLE IF NOT EXISTS tombstone.jobs(
 );
 CREATE UNIQUE INDEX IF NOT EXISTS tombstone.jobs_ids_unique ON jobs(
 	job_id ASC);
+
+CREATE TABLE IF NOT EXISTS tombstone.board_allocations(
+	alloc_id INTEGER NOT NULL,
+	job_id INTEGER NOT NULL,
+	board_id INTEGER NOT NULL,
+	allocation_timestamp INTEGER
+);

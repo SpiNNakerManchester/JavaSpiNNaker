@@ -63,6 +63,12 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
 class DMLTest extends SQLQueries {
+	// Many many seconds
+	private static final int A_LONG_TIME = 1000000;
+
+	// No such alloc record
+	private static final int NO_ALLOC = -1;
+
 	@Autowired
 	private DatabaseEngine mainDBEngine;
 
@@ -692,13 +698,36 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void copyToHistoricalData() {
+	void deleteAllocRecord() {
 		assumeWritable(c);
-		try (Query q = c.query(copyToHistoricalData)) {
+		try (Update u = c.update(DELETE_ALLOC_RECORD)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_ALLOC));
+			});
+		}
+	}
+
+	@Test
+	void copyAllocsToHistoricalData() {
+		assumeWritable(c);
+		try (Query q = c.query(copyAllocsToHistoricalData)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("alloc_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(A_LONG_TIME).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void copyJobsToHistoricalData() {
+		assumeWritable(c);
+		try (Query q = c.query(copyJobsToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(1000000).isPresent());
+				assertFalse(q.call1(A_LONG_TIME).isPresent());
 			});
 		}
 	}

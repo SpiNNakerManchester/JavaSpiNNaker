@@ -512,8 +512,10 @@ class AllocatorTest extends SQLQueries {
 			assertTrue(preMain == 1,
 					() -> "must have created a job we can tombstone");
 			int preTomb = countJobInTable(job, "tombstone.jobs");
-			List<Integer> movedJobs = alloc.tombstone(conn);
-			assertEquals(1, movedJobs.size());
+			AllocatorTask.Copied moved = alloc.tombstone(conn);
+			assertEquals(1, moved.numJobs());
+			// No resources were ever allocated, so no moves to do
+			assertEquals(0, moved.numAllocs());
 			assertEquals(preMain - 1, countJobInTable(job, "jobs"));
 			assertEquals(preTomb + 1, countJobInTable(job, "tombstone.jobs"));
 		});
