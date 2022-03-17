@@ -297,7 +297,6 @@ public interface SpallocAPI {
 		 *            The X coordinate of the root board of the request.
 		 * @param y
 		 *            The Y coordinate of the root board of the request.
-		 * @return Descriptor
 		 */
 		public CreateDimensionsAt(int width, int height, int x, int y) {
 			super(new Triad(x, y, 0), null, null);
@@ -317,7 +316,6 @@ public interface SpallocAPI {
 		 *            The X coordinate of the root board of the request.
 		 * @param y
 		 *            The Y coordinate of the root board of the request.
-		 * @return Descriptor
 		 */
 		public CreateDimensionsAt(int width, int height, Integer x, Integer y) {
 			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y), 0),
