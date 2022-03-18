@@ -45,6 +45,7 @@ import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
@@ -263,17 +264,17 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<Integer> boards)
+			Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		log.info("power({},{},{})", powerCommand, bmp, boards);
-		for (Integer b : boards) {
-			status.put(b, powerCommand == POWER_ON);
+		for (BMPBoard b : boards) {
+			status.put(b.board, powerCommand == POWER_ON);
 		}
 	}
 
 	@Override
 	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
-			int board) throws IOException, ProcessException {
+			BMPBoard board) throws IOException, ProcessException {
 		log.info("readFPGARegister({},{},{},{})", fpgaNumber, register, bmp,
 				board);
 		return fpgaNumber;
@@ -281,13 +282,14 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, int board) throws IOException, ProcessException {
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
 		log.info("writeFPGARegister({},{},{},{},{})", fpgaNumber, register,
 				value, bmp, board);
 	}
 
 	@Override
-	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
+	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return version;
 	}
@@ -309,27 +311,27 @@ class DummyTransceiver implements BMPTransceiverInterface {
 	@Deprecated
 	@Override
 	public void setLED(Collection<Integer> leds, LEDAction action,
-			BMPCoords bmp, Collection<Integer> board)
+			BMPCoords bmp, Collection<BMPBoard> board)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	@Override
-	public ADCInfo readADCData(BMPCoords bmp, int board)
+	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public boolean getResetStatus(BMPCoords bmp, int board)
+	public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void resetFPGA(BMPCoords bmp, int board, FPGAResetType resetType)
-			throws IOException, ProcessException {
+	public void resetFPGA(BMPCoords bmp, BMPBoard board,
+			FPGAResetType resetType) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 }

@@ -38,7 +38,7 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 * @param board
 	 *            which board to request the ADC register from
 	 */
-	public ReadFPGARegister(int fpgaNum, int register, int board) {
+	public ReadFPGARegister(int fpgaNum, int register, BMPBoard board) {
 		super(board, CMD_LINK_READ, register & ~MASK, WORD_SIZE, fpgaNum);
 	}
 

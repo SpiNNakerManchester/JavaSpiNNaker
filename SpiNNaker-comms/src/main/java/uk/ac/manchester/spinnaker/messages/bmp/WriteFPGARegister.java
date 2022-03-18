@@ -26,7 +26,8 @@ import java.nio.ByteBuffer;
 /**
  * A request for writing data to a FPGA register.
  *
- * @see <a href="https://github.com/SpiNNakerManchester/spio/blob/master/designs/spinnaker_fpgas/README.md#spi-interface">
+ * @see <a href=
+ *      "https://github.com/SpiNNakerManchester/spio/blob/master/designs/spinnaker_fpgas/README.md#spi-interface">
  *      spinnaker_fpga design README listing of FPGA registers</a>
  * @see <a href="https://github.com/SpiNNakerManchester/spio/">The SpI/O project
  *      on GitHub</a>
@@ -45,7 +46,8 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	 * @param board
 	 *            which board to write the ADC register on
 	 */
-	public WriteFPGARegister(int fpgaNum, int register, int value, int board) {
+	public WriteFPGARegister(int fpgaNum, int register, int value,
+			BMPBoard board) {
 		super(board, CMD_LINK_WRITE, register & ~MASK, WORD_SIZE, fpgaNum,
 				data(value));
 	}

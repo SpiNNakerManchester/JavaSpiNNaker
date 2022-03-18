@@ -39,6 +39,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
@@ -85,7 +86,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 */
 	private BMPTransceiverInterface txrx;
 
-	private Map<Integer, Integer> idToBoard;
+	private Map<Integer, BMPBoard> idToBoard;
 
 	/**
 	 * @param machine
@@ -104,12 +105,12 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	@Override
-	public void setIdToBoardMap(Map<Integer, Integer> idToBoard) {
+	public void setIdToBoardMap(Map<Integer, BMPBoard> idToBoard) {
 		this.idToBoard = idToBoard;
 	}
 
-	private List<Integer> remap(List<Integer> boardIds) {
-		List<Integer> boardNums = new ArrayList<>(boardIds.size());
+	private List<BMPBoard> remap(List<Integer> boardIds) {
+		List<BMPBoard> boardNums = new ArrayList<>(boardIds.size());
 		for (Integer id : boardIds) {
 			boardNums.add(requireNonNull(idToBoard.get(id)));
 		}
@@ -125,7 +126,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 *            Which FPGA (0, 1, or 2) is being tested?
 	 * @return True if the FPGA is in a correct state, false otherwise.
 	 */
-	private boolean isGoodFPGA(Integer board, FpgaIdentifiers fpga) {
+	private boolean isGoodFPGA(BMPBoard board, FpgaIdentifiers fpga) {
 		int flag;
 		try {
 			flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
@@ -156,7 +157,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @throws IOException
 	 *             If network I/O fails.
 	 */
-	private boolean canBoardManageFPGAs(Integer board)
+	private boolean canBoardManageFPGAs(BMPBoard board)
 			throws ProcessException, IOException {
 		VersionInfo vi = txrx.readBMPVersion(ROOT_BMP, board);
 		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
@@ -170,7 +171,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 */
 	@Override
 	public void setLinkOff(Link link) throws ProcessException, IOException {
-		int board = requireNonNull(idToBoard.get(link.getBoard()));
+		BMPBoard board = requireNonNull(idToBoard.get(link.getBoard()));
 		Direction d = link.getLink();
 		// skip FPGA link configuration if old BMP version
 		if (!canBoardManageFPGAs(board)) {
@@ -188,7 +189,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @return Whether the board's FPGAs all came up correctly.
 	 * @see #isGoodFPGA(Integer, FpgaIdentifiers)
 	 */
-	private boolean hasGoodFPGAs(Integer board) {
+	private boolean hasGoodFPGAs(BMPBoard board) {
 		for (FpgaIdentifiers fpga : FpgaIdentifiers.values()) {
 			if (!isGoodFPGA(board, fpga)) {
 				return false;
@@ -200,7 +201,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOnAndCheck(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
-		List<Integer> boardsToPower = remap(boards);
+		List<BMPBoard> boardsToPower = remap(boards);
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			if (attempt > 1) {
 				log.warn("rebooting {} boards in allocation to "
@@ -214,8 +215,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 			 * that have booted correctly need no further action.
 			 */
 
-			List<Integer> retryBoards = new ArrayList<>();
-			for (Integer board : boardsToPower) {
+			List<BMPBoard> retryBoards = new ArrayList<>();
+			for (BMPBoard board : boardsToPower) {
 				// Skip board if old BMP version
 				if (!canBoardManageFPGAs(board)) {
 					continue;

@@ -37,7 +37,7 @@ public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            The data to transfer; up to {@link #FLASH_CHUNK_SIZE} bytes.
 	 *            This does <em>not</em> update the buffer position.
 	 */
-	public WriteSerialFlash(int board, int baseAddress, ByteBuffer data) {
+	public WriteSerialFlash(BMPBoard board, int baseAddress, ByteBuffer data) {
 		super(board, CMD_BMP_SF, baseAddress, FLASH_CHUNK_SIZE, WRITE.value,
 				condition(data));
 	}

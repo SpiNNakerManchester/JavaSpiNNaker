@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import java.io.IOException;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
@@ -78,7 +79,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOn(int frame, Collection<Integer> boards)
+	default void powerOn(int frame, Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, new BMPCoords(0, frame), boards);
 	}
@@ -105,7 +106,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOn(int cabinet, int frame, Collection<Integer> boards)
+	default void powerOn(int cabinet, int frame, Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, new BMPCoords(cabinet, frame), boards);
 	}
@@ -126,7 +127,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOn(int board)
+	default void powerOn(BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, new BMPCoords(0, 0), singleton(board));
 	}
@@ -150,7 +151,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOn(int board, int frame)
+	default void powerOn(BMPBoard board, int frame)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, new BMPCoords(0, frame), singleton(board));
 	}
@@ -177,7 +178,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOn(int cabinet, int frame, int board)
+	default void powerOn(int cabinet, int frame, BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_ON, new BMPCoords(cabinet, frame), singleton(board));
 	}
@@ -218,7 +219,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOff(int frame, Collection<Integer> boards)
+	default void powerOff(int frame, Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, new BMPCoords(0, frame), boards);
 	}
@@ -245,7 +246,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
-	default void powerOff(int cabinet, int frame, Collection<Integer> boards)
+	default void powerOff(int cabinet, int frame, Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, new BMPCoords(cabinet, frame), boards);
 	}
@@ -266,7 +267,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOff(int board)
+	default void powerOff(BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, new BMPCoords(0, 0), singleton(board));
 	}
@@ -290,7 +291,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOff(int frame, int board)
+	default void powerOff(int frame, BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, new BMPCoords(0, frame), singleton(board));
 	}
@@ -317,7 +318,7 @@ public interface BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelSafeWithCare
-	default void powerOff(int cabinet, int frame, int board)
+	default void powerOff(int cabinet, int frame, BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
 		power(POWER_OFF, new BMPCoords(cabinet, frame), singleton(board));
 	}
@@ -347,7 +348,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelUnsafe
 	default void power(PowerCommand powerCommand, int cabinet, int frame,
-			Collection<Integer> boards)
+			Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		power(powerCommand, new BMPCoords(cabinet, frame), boards);
 	}
@@ -374,7 +375,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelUnsafe
 	void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<Integer> boards)
+			Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException;
 
 	/**
@@ -398,7 +399,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action, int cabinet,
-			int frame, Collection<Integer> boards)
+			int frame, Collection<BMPBoard> boards)
 			throws IOException, ProcessException {
 		setLED(leds, action, new BMPCoords(cabinet, frame), boards);
 	}
@@ -422,7 +423,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	void setLED(Collection<Integer> leds, LEDAction action, BMPCoords bmp,
-			Collection<Integer> board) throws IOException, ProcessException;
+			Collection<BMPBoard> board) throws IOException, ProcessException;
 
 	/**
 	 * Set the LED state of a board in the machine.
@@ -444,7 +445,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action, int cabinet,
-			int frame, int board) throws IOException, ProcessException {
+			int frame, BMPBoard board) throws IOException, ProcessException {
 		setLED(leds, action, new BMPCoords(cabinet, frame), singleton(board));
 	}
 
@@ -469,7 +470,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void setLED(int led, LEDAction action, int cabinet, int frame,
-			Collection<Integer> boards) throws IOException, ProcessException {
+			Collection<BMPBoard> boards) throws IOException, ProcessException {
 		setLED(singleton(led), action, new BMPCoords(cabinet, frame), boards);
 	}
 
@@ -493,7 +494,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void setLED(int led, LEDAction action, int cabinet, int frame,
-			int board) throws IOException, ProcessException {
+			BMPBoard board) throws IOException, ProcessException {
 		setLED(singleton(led), action, new BMPCoords(cabinet, frame),
 				singleton(board));
 	}
@@ -520,7 +521,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGARegister(int fpgaNumber, FPGAMainRegisters register,
-			int cabinet, int frame, int board)
+			int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGARegister(fpgaNumber, register,
 				new BMPCoords(cabinet, frame), board);
@@ -546,7 +547,8 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGARegister(int fpgaNumber, FPGAMainRegisters register,
-			BMPCoords bmp, int board) throws IOException, ProcessException {
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
 		return readFPGARegister(fpgaNumber, register.getAddress(), bmp, board);
 	}
 
@@ -574,7 +576,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGARegister(int fpgaNumber, int registerBank,
-			FPGALinkRegisters register, int cabinet, int frame, int board)
+			FPGALinkRegisters register, int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGARegister(fpgaNumber, registerBank, register,
 				new BMPCoords(cabinet, frame), board);
@@ -602,7 +604,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGARegister(int fpgaNumber, int registerBank,
-			FPGALinkRegisters register, BMPCoords bmp, int board)
+			FPGALinkRegisters register, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGARegister(fpgaNumber, register.address(registerBank), bmp,
 				board);
@@ -632,8 +634,8 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
-			FPGARecevingLinkCounters counter, int cabinet, int frame, int board)
-			throws IOException, ProcessException {
+			FPGARecevingLinkCounters counter, int cabinet, int frame,
+			BMPBoard board) throws IOException, ProcessException {
 		return readFPGALinkCounter(fpgaNumber, linkNumber, counter,
 				new BMPCoords(cabinet, frame), board);
 	}
@@ -660,7 +662,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
-			FPGARecevingLinkCounters counter, BMPCoords bmp, int board)
+			FPGARecevingLinkCounters counter, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGARegister(fpgaNumber, counter.address(linkNumber), bmp,
 				board);
@@ -690,8 +692,8 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
-			FPGASendingLinkCounters counter, int cabinet, int frame, int board)
-			throws IOException, ProcessException {
+			FPGASendingLinkCounters counter, int cabinet, int frame,
+			BMPBoard board) throws IOException, ProcessException {
 		return readFPGALinkCounter(fpgaNumber, linkNumber, counter,
 				new BMPCoords(cabinet, frame), board);
 	}
@@ -718,7 +720,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
-			FPGASendingLinkCounters counter, BMPCoords bmp, int board)
+			FPGASendingLinkCounters counter, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return readFPGARegister(fpgaNumber, counter.address(linkNumber), bmp,
 				board);
@@ -747,7 +749,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default int readFPGARegister(int fpgaNumber, int register, int cabinet,
-			int frame, int board) throws IOException, ProcessException {
+			int frame, BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpgaNumber, register,
 				new BMPCoords(cabinet, frame), board);
 	}
@@ -772,8 +774,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp, int board)
-			throws IOException, ProcessException;
+	int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
+			BMPBoard board) throws IOException, ProcessException;
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
@@ -798,7 +800,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(int fpgaNumber, FPGAMainRegisters register,
-			int value, int cabinet, int frame, int board)
+			int value, int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
 		writeFPGARegister(fpgaNumber, register, value,
 				new BMPCoords(cabinet, frame), board);
@@ -825,7 +827,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(int fpgaNumber, FPGAMainRegisters register,
-			int value, BMPCoords bmp, int board)
+			int value, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		writeFPGARegister(fpgaNumber, register.getAddress(), value, bmp, board);
 	}
@@ -856,7 +858,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeFPGARegister(int fpgaNumber, int registerBank,
 			FPGALinkRegisters register, int value, int cabinet, int frame,
-			int board) throws IOException, ProcessException {
+			BMPBoard board) throws IOException, ProcessException {
 		writeFPGARegister(fpgaNumber, registerBank, register, value,
 				new BMPCoords(cabinet, frame), board);
 	}
@@ -884,8 +886,8 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(int fpgaNumber, int registerBank,
-			FPGALinkRegisters register, int value, BMPCoords bmp, int board)
-			throws IOException, ProcessException {
+			FPGALinkRegisters register, int value, BMPCoords bmp,
+			BMPBoard board) throws IOException, ProcessException {
 		writeFPGARegister(fpgaNumber, register.address(registerBank), value,
 				bmp, board);
 	}
@@ -914,7 +916,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	default void writeFPGARegister(int fpgaNumber, int register, int value,
-			int cabinet, int frame, int board)
+			int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
 		writeFPGARegister(fpgaNumber, register, value,
 				new BMPCoords(cabinet, frame), board);
@@ -942,7 +944,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelSafe
 	void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, int board) throws IOException, ProcessException;
+			BMPCoords bmp, BMPBoard board) throws IOException, ProcessException;
 
 	/**
 	 * Read the ADC data.
@@ -960,7 +962,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default ADCInfo readADCData(int cabinet, int frame, int board)
+	default ADCInfo readADCData(int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
 		return readADCData(new BMPCoords(cabinet, frame), board);
 	}
@@ -979,7 +981,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	ADCInfo readADCData(BMPCoords bmp, int board)
+	ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
 	/**
@@ -1000,7 +1002,7 @@ public interface BMPTransceiverInterface {
 	 */
 	@ParallelUnsafe
 	default VersionInfo readBMPVersion(int cabinet, int frame,
-			Iterable<Integer> boards) throws IOException, ProcessException {
+			Iterable<BMPBoard> boards) throws IOException, ProcessException {
 		return readBMPVersion(new BMPCoords(cabinet, frame),
 				boards.iterator().next());
 	}
@@ -1021,7 +1023,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default VersionInfo readBMPVersion(int cabinet, int frame, int board)
+	default VersionInfo readBMPVersion(int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
 		return readBMPVersion(new BMPCoords(cabinet, frame), board);
 	}
@@ -1041,7 +1043,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default VersionInfo readBMPVersion(BMPCoords bmp, Iterable<Integer> boards)
+	default VersionInfo readBMPVersion(BMPCoords bmp, Iterable<BMPBoard> boards)
 			throws IOException, ProcessException {
 		return readBMPVersion(bmp, boards.iterator().next());
 	}
@@ -1060,7 +1062,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	VersionInfo readBMPVersion(BMPCoords bmp, int board)
+	VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
 	/**
@@ -1077,7 +1079,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	boolean getResetStatus(BMPCoords bmp, int board)
+	boolean getResetStatus(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
 	/** The type of reset to perform. */
@@ -1106,6 +1108,6 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void resetFPGA(BMPCoords bmp, int board, FPGAResetType resetType)
+	void resetFPGA(BMPCoords bmp, BMPBoard board, FPGAResetType resetType)
 			throws IOException, ProcessException;
 }

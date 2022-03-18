@@ -39,7 +39,7 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	 * @throws IllegalArgumentException
 	 *             If the baseAddress or size make no sense
 	 */
-	public EraseFlash(int board, int baseAddress, int size) {
+	public EraseFlash(BMPBoard board, int baseAddress, int size) {
 		super(board, CMD_FLASH_ERASE, baseAddress, baseAddress + size);
 		// Check that we've been actually asked to do something sane!
 		if (size <= 0) {

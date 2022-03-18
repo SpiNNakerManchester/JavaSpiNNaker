@@ -35,7 +35,7 @@ public class ReadSerialFlashCRC
 	 * @param size
 	 *            The number of bytes to check
 	 */
-	public ReadSerialFlashCRC(int board, int address, int size) {
+	public ReadSerialFlashCRC(BMPBoard board, int address, int size) {
 		super(board, CMD_BMP_SF, address, size, CRC.value);
 	}
 

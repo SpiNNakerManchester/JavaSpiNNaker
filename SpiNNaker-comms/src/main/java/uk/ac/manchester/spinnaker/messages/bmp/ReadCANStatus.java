@@ -32,9 +32,11 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	private static final int MAX_BOARDS_PER_FRAME = 24;
 
+	private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
+
 	public ReadCANStatus() {
 		// The CAN status is shared between all BMPs; it's how they communicate
-		super(0, CMD_BMP_INFO, (int) CAN_STATUS.value);
+		super(FRAME_ROOT, CMD_BMP_INFO, (int) CAN_STATUS.value);
 	}
 
 	@Override

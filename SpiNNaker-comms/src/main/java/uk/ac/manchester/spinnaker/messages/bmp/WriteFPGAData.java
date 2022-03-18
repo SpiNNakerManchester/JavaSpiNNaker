@@ -26,12 +26,12 @@ import java.nio.ByteBuffer;
  * {@link InitFPGA}. Upload process will be terminated by {@link ResetFPGA}.
  */
 public class WriteFPGAData extends BMPRequest<BMPRequest.BMPResponse> {
-	public WriteFPGAData(int board, byte[] data) {
+	public WriteFPGAData(BMPBoard board, byte[] data) {
 		super(board, CMD_XILINX, LoadData.code, data.length, 0,
 				ByteBuffer.wrap(data));
 	}
 
-	public WriteFPGAData(int board, ByteBuffer data) {
+	public WriteFPGAData(BMPBoard board, ByteBuffer data) {
 		super(board, CMD_XILINX, LoadData.code, data.remaining(), 0, data);
 	}
 

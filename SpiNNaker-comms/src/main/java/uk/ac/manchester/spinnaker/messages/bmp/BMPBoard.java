@@ -16,19 +16,35 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.messages.bmp.XilinxCommand.Init;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX;
+/**
+ * Wrapper for a board number so that it can't get mixed up with other integers.
+ *
+ * @author Donal Fellows
+ */
+public class BMPBoard {
+	/** The board number. */
+	public final int board;
 
-import java.nio.ByteBuffer;
-
-/** Start an initialisation of the FPGAs. Terminated by {@link ResetFPGA}. */
-public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
-	public InitFPGA(BMPBoard board, int mask) {
-		super(board, CMD_XILINX, Init.code, mask);
+	public BMPBoard(int board) {
+		this.board = board;
 	}
 
 	@Override
-	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
-		return new BMPResponse("Init XILINX", CMD_XILINX, buffer);
+	public String toString() {
+		return "board=" + board;
+	}
+
+	@Override
+	public int hashCode() {
+		return board;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof BMPBoard) {
+			BMPBoard b = (BMPBoard) o;
+			return board == b.board;
+		}
+		return false;
 	}
 }

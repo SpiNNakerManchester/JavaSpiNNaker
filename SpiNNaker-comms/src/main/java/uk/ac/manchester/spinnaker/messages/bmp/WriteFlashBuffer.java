@@ -34,7 +34,7 @@ public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
 	 * @param baseAddress
 	 *            The positive base address where the chunk is located
 	 */
-	public WriteFlashBuffer(int board, int baseAddress) {
+	public WriteFlashBuffer(BMPBoard board, int baseAddress) {
 		super(board, CMD_FLASH_WRITE, baseAddress, FLASH_CHUNK_SIZE);
 	}
 

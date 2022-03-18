@@ -33,7 +33,7 @@ public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            buffer must be the point where the data starts, and the data
 	 *            must extend up to the <i>limit</i>.
 	 */
-	public BMPWriteMemory(int board, int baseAddress, ByteBuffer data) {
+	public BMPWriteMemory(BMPBoard board, int baseAddress, ByteBuffer data) {
 		super(board, CMD_WRITE, baseAddress, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
