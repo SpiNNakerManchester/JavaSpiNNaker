@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -332,6 +333,24 @@ class DummyTransceiver implements BMPTransceiverInterface {
 	@Override
 	public void resetFPGA(BMPCoords bmp, BMPBoard board,
 			FPGAResetType resetType) throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
+			int baseAddress, int length) throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data) throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			File file) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 }

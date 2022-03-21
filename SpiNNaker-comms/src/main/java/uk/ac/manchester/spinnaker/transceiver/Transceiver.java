@@ -57,7 +57,9 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -1700,6 +1702,33 @@ public class Transceiver extends UDPTransceiver
 	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new GetBMPVersion(board)).versionInfo;
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
+			int baseAddress, int length) throws ProcessException, IOException {
+		return new BMPReadMemoryProcess(bmpConnection(bmp), this)
+				.readMemory(board, baseAddress, length);
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data) throws IOException, ProcessException {
+		new BMPWriteMemoryProcess(bmpConnection(bmp), this).writeMemory(board,
+				baseAddress, data);
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			File file) throws IOException, ProcessException {
+		BMPWriteMemoryProcess wmp =
+				new BMPWriteMemoryProcess(bmpConnection(bmp), this);
+		try (BufferedInputStream f =
+				new BufferedInputStream(new FileInputStream(file))) {
+			// The file had better fit...
+			wmp.writeMemory(board, baseAddress, f, (int) file.length());
+		}
 	}
 
 	@Override

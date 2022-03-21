@@ -16,11 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.singleton;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
@@ -38,7 +42,8 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  * The interface supported by the {@link Transceiver} for talking to a BMP.
  * Emulates a lot of default handling and variant-type handling by Python.
  * <p>
- * Note that operations on a BMP are <strong>always</strong> thread-unsafe.
+ * Note that operations on a particular BMP (i.e., with the same
+ * {@link BMPCoords}) are <strong>always</strong> thread-unsafe.
  *
  * @author Donal Fellows
  */
@@ -1061,7 +1066,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	@ParallelSafe
+	@ParallelSafeWithCare
 	VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
@@ -1107,7 +1112,121 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	@ParallelSafe
+	@ParallelSafeWithCare
 	void resetFPGA(BMPCoords bmp, BMPBoard board, FPGAResetType resetType)
 			throws IOException, ProcessException;
+
+	/**
+	 * Read BMP memory.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we reading?
+	 * @param baseAddress
+	 *            The address in the BMP's memory where the region of memory to
+	 *            be read starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data read, positioned at the start of
+	 *         the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int length) throws IOException, ProcessException;
+
+	/**
+	 * Read BMP memory.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we reading?
+	 * @param address
+	 *            The address in the BMP's memory where the region of memory to
+	 *            be read starts
+	 * @return The little-endian word at the given address.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default int readBMPMemoryWord(BMPCoords bmp, BMPBoard board, int address)
+			throws IOException, ProcessException {
+		ByteBuffer b = readBMPMemory(bmp, board, address, WORD_SIZE);
+		return b.getInt(0);
+	}
+
+	/**
+	 * Write BMP memory.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing?
+	 * @param baseAddress
+	 *            The address in the BMP's memory where the region of memory to
+	 *            be written starts
+	 * @param data
+	 *            The data to be written, extending from the <i>position</i> to
+	 *            the <i>limit</i>. The contents of this buffer will be
+	 *            unchanged.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data) throws IOException, ProcessException;
+
+	/**
+	 * Write BMP memory.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing?
+	 * @param baseAddress
+	 *            The address in the BMP's memory where the region of memory to
+	 *            be written starts
+	 * @param dataWord
+	 *            The data to be written as a 4-byte little-endian value.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int dataWord) throws IOException, ProcessException {
+		ByteBuffer data = ByteBuffer.allocate(WORD_SIZE);
+		data.order(LITTLE_ENDIAN);
+		data.putInt(dataWord);
+		data.flip();
+		writeBMPMemory(bmp, board, baseAddress, data);
+	}
+
+	/**
+	 * Write BMP memory from a file.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing?
+	 * @param baseAddress
+	 *            The address in the BMP's memory where the region of memory to
+	 *            be written starts
+	 * @param file
+	 *            The file containing the data to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking or file I/O.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			File file) throws IOException, ProcessException;
 }
