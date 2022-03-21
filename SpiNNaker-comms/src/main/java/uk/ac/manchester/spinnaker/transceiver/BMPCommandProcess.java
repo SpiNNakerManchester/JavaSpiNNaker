@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,12 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 class BMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
 
+	/*
+	 * The weird casts in this class are OK; they're narrowing return types in
+	 * accordance with the guarantees we can make (but the compiler can't
+	 * prove).
+	 */
+
 	/** How long to wait for a BMP to respond. */
 	private static final int DEFAULT_TIMEOUT =
 			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
@@ -111,6 +117,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * Do a synchronous call of a BMP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
+	 * @param <T>
+	 *            The real type of the response
 	 * @param request
 	 *            The request to send
 	 * @return The successful response to the request
@@ -119,7 +127,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	R execute(BMPRequest<R> request) throws IOException, ProcessException {
+	@SuppressWarnings("unchecked")
+	<T extends R> T execute(BMPRequest<T> request)
+			throws IOException, ProcessException {
 		ValueHolder<R> holder = new ValueHolder<>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
@@ -127,19 +137,21 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 */
 		RequestPipeline requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest(request, holder::setValue);
+		requestPipeline.sendRequest((BMPRequest<R>) request, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
 			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return holder.getValue();
+		return (T) holder.getValue();
 	}
 
 	/**
 	 * Do a synchronous call of a BMP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
+	 * @param <T>
+	 *            The real type of the response
 	 * @param request
 	 *            The request to send
 	 * @param retries
@@ -150,7 +162,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	R execute(BMPRequest<R> request, int retries)
+	@SuppressWarnings("unchecked")
+	<T extends R> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException {
 		ValueHolder<R> holder = new ValueHolder<>();
 		/*
@@ -159,13 +172,14 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 */
 		RequestPipeline requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest(request, retries, holder::setValue);
+		requestPipeline.sendRequest((BMPRequest<R>) request, retries,
+				holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
 			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return holder.getValue();
+		return (T) holder.getValue();
 	}
 
 	/**
@@ -173,48 +187,54 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * the given messages and completely processing the interaction before doing
 	 * the next one.
 	 *
+	 * @param <T>
+	 *            The real type of the responses
 	 * @param requests
 	 *            The sequence of requests to send; note that these are handled
 	 *            sequentially, as the BMP typically cannot handle parallel
-	 *            access.
+	 *            access. This will be iterated over exactly once.
 	 * @return The list of successful responses.
 	 * @throws IOException
 	 *             If the communications fail
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	List<R> execute(Iterable<? extends BMPRequest<R>> requests)
+	@SuppressWarnings("unchecked")
+	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
 			throws IOException, ProcessException {
 		List<R> results = new ArrayList<>();
-		/*
-		 * If no pipeline built yet, build one on the connection selected for
-		 * it.
-		 */
-
 		RequestPipeline requestPipeline = null;
-		for (BMPRequest<R> request : requests) {
+		for (BMPRequest<T> request : requests) {
 			if (requestPipeline == null) {
+				/*
+				 * If no pipeline built yet, build one on the connection
+				 * selected for it.
+				 */
+
 				requestPipeline = new RequestPipeline(
 						connectionSelector.getNextConnection(request));
 			}
-			requestPipeline.sendRequest(request, results::add);
+			requestPipeline.sendRequest((BMPRequest<R>) request, results::add);
 			requestPipeline.finish();
 		}
 		if (exception != null) {
 			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return results;
+		return (List<T>) results;
 	}
-
 
 	/**
 	 * Do a synchronous call of a sequence of BMP operations, sending each of
 	 * the given messages and completely processing the interaction before doing
 	 * the next one.
 	 *
+	 * @param <T>
+	 *            The real type of the response
 	 * @param requests
-	 *            The sequence of requests to send
+	 *            The sequence of requests to send; note that these are handled
+	 *            sequentially, as the BMP typically cannot handle parallel
+	 *            access. This will be iterated over exactly once.
 	 * @param retries
 	 *            The number of times to retry
 	 * @return The list of successful responses.
@@ -223,28 +243,30 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	List<R> execute(Iterable<? extends BMPRequest<R>> requests, int retries)
-			throws IOException, ProcessException {
+	@SuppressWarnings("unchecked")
+	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
+			int retries) throws IOException, ProcessException {
 		List<R> results = new ArrayList<>();
-		/*
-		 * If no pipeline built yet, build one on the connection selected for
-		 * it.
-		 */
-
 		RequestPipeline requestPipeline = null;
-		for (BMPRequest<R> request : requests) {
+		for (BMPRequest<T> request : requests) {
 			if (requestPipeline == null) {
+				/*
+				 * If no pipeline built yet, build one on the connection
+				 * selected for it.
+				 */
+
 				requestPipeline = new RequestPipeline(
 						connectionSelector.getNextConnection(request));
 			}
-			requestPipeline.sendRequest(request, retries, results::add);
+			requestPipeline.sendRequest((BMPRequest<R>) request, retries,
+					results::add);
 			requestPipeline.finish();
 		}
 		if (exception != null) {
 			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return results;
+		return (List<T>) results;
 	}
 
 	/**

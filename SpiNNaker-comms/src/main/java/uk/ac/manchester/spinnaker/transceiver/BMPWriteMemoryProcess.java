@@ -16,24 +16,26 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
-import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static java.util.Optional.empty;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
+import java.util.Optional;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
+import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPWriteMemory;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
- * Write to memory on SpiNNaker.
+ * Write to memory on a BMP.
  */
 class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	/**
@@ -50,23 +52,6 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	}
 
 	/**
-	 * A source of messages to write to an address.
-	 */
-	@FunctionalInterface
-	interface MessageProvider {
-		/**
-		 * Provide a message.
-		 *
-		 * @param baseAddress
-		 *            The base address to write to.
-		 * @param data
-		 *            The block of data to write with this message.
-		 * @return The message to send.
-		 */
-		BMPWriteMemory getMessage(int baseAddress, ByteBuffer data);
-	}
-
-	/**
 	 * Writes memory onto a BMP from a buffer.
 	 *
 	 * @param board
@@ -76,7 +61,9 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 * @param data
 	 *            The buffer of data to be copied. The copied region extends
 	 *            from the <i>position</i> (inclusive) to the <i>limit</i>
-	 *            (exclusive).
+	 *            (exclusive). This method is not obligated to preserve either
+	 *            the position or the limit, though the current implementation
+	 *            does so. The contents of the buffer will not be modified.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
@@ -84,29 +71,16 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 */
 	void writeMemory(BMPBoard board, int baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		execute((WMIterable) () -> new Iterator<BMPWriteMemory>() {
-			int offset = data.position();
-			int bytesToWrite = data.remaining();
-			int writePosition = baseAddress;
+		execute(new BMPWriteIterator(board, baseAddress, data.remaining()) {
+			private int offset = data.position();
 
 			@Override
-			public boolean hasNext() {
-				return bytesToWrite > 0;
-			}
-
-			@Override
-			public BMPWriteMemory next() {
-				int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-				ByteBuffer tmp = data.asReadOnlyBuffer();
-				tmp.position(offset);
-				tmp.limit(offset + bytesToSend);
-				try {
-					return new BMPWriteMemory(board, writePosition, tmp);
-				} finally {
-					offset += bytesToSend;
-					writePosition += bytesToSend;
-					bytesToWrite -= bytesToSend;
-				}
+			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
+				ByteBuffer buffer = data.asReadOnlyBuffer();
+				buffer.position(offset);
+				buffer.limit(offset + chunkSize);
+				offset += chunkSize;
+				return Optional.of(buffer);
 			}
 		});
 	}
@@ -129,41 +103,103 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 */
 	void writeMemory(BMPBoard board, int baseAddress, InputStream data,
 			int bytesToWrite) throws IOException, ProcessException {
-		ByteBuffer workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
-		execute((WMIterable) () -> new Iterator<BMPWriteMemory>() {
-			int bytesRemaining = bytesToWrite;
-			int writePosition = baseAddress;
-			ByteBuffer tmp;
-			int bytesToSend;
+		ValueHolder<IOException> exn = new ValueHolder<IOException>();
+		execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
+			private ByteBuffer workingBuffer =
+					allocate(Constants.UDP_MESSAGE_MAX_SIZE);
 
 			@Override
-			public boolean hasNext() {
-				if (bytesRemaining < 1) {
-					return false;
-				}
+			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
 				try {
-					tmp = workingBuffer.slice();
-					bytesToSend = data.read(tmp.array(), 0,
-							min(bytesRemaining, UDP_MESSAGE_MAX_SIZE));
-					tmp.limit(max(0, bytesToSend));
-					return bytesToSend > 0;
+					ByteBuffer buffer = workingBuffer.slice();
+					// After this, chunkSize is REAL chunk size or -1
+					chunkSize = data.read(buffer.array(), 0, chunkSize);
+					if (chunkSize < 1) {
+						// Read failed to generate anything we want to send
+						return empty();
+					}
+					buffer.limit(chunkSize);
+					return Optional.of(buffer);
 				} catch (IOException e) {
-					return false;
-				}
-			}
-
-			@Override
-			public BMPWriteMemory next() {
-				try {
-					return new BMPWriteMemory(board, writePosition, tmp);
-				} finally {
-					writePosition += bytesToSend;
-					bytesRemaining -= bytesToSend;
+					exn.setValue(e); // Smuggle the exception out!
+					return empty();
 				}
 			}
 		});
+		if (exn.getValue() != null) {
+			throw exn.getValue();
+		}
+	}
+}
+
+/**
+ * Helper for writing a stream of chunks. Allows us to construct the chunks one
+ * at a time on demand. The complexity is because chunk construction is
+ * permitted to fail!
+ * <p>
+ * This is also an iterable, albeit a one-shot iterable.
+ *
+ * @author Donal Fellows
+ */
+abstract class BMPWriteIterator
+		implements Iterator<BMPWriteMemory>, Iterable<BMPWriteMemory> {
+	private final BMPBoard board;
+
+	private int sizeRemaining;
+
+	private int address;
+
+	private ByteBuffer sendBuffer;
+
+	/**
+	 * @param board
+	 *            Where the write messages are going.
+	 * @param address
+	 *            Where the writes start at.
+	 * @param size
+	 *            What size of memory will be written.
+	 */
+	BMPWriteIterator(BMPBoard board, int address, int size) {
+		this.board = board;
+		this.address = address;
+		this.sizeRemaining = size;
 	}
 
-	private interface WMIterable extends Iterable<BMPWriteMemory> {
+	/**
+	 * Get the next chunk.
+	 *
+	 * @param plannedSize
+	 *            What size the chunk should be. Up to
+	 *            {@link Constants#UDP_MESSAGE_MAX_SIZE}.
+	 * @return The wrapped chunk, or {@link Optional#empty()} if no chunk
+	 *         available.
+	 */
+	abstract Optional<ByteBuffer> prepareSendBuffer(int plannedSize);
+
+	@Override
+	public final boolean hasNext() {
+		if (sizeRemaining < 1) {
+			return false;
+		}
+		Optional<ByteBuffer> bb = prepareSendBuffer(
+				min(sizeRemaining, Constants.UDP_MESSAGE_MAX_SIZE));
+		sendBuffer = bb.orElse(null);
+		return bb.isPresent();
+	}
+
+	@Override
+	public final BMPWriteMemory next() {
+		int chunkSize = sendBuffer.remaining();
+		try {
+			return new BMPWriteMemory(board, address, sendBuffer);
+		} finally {
+			address += chunkSize;
+			sizeRemaining -= chunkSize;
+		}
+	}
+
+	@Override
+	public Iterator<BMPWriteMemory> iterator() {
+		return this;
 	}
 }
