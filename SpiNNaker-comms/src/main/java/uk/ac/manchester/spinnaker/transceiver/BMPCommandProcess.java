@@ -169,6 +169,85 @@ class BMPCommandProcess<R extends BMPResponse> {
 	}
 
 	/**
+	 * Do a synchronous call of a sequence of BMP operations, sending each of
+	 * the given messages and completely processing the interaction before doing
+	 * the next one.
+	 *
+	 * @param requests
+	 *            The sequence of requests to send; note that these are handled
+	 *            sequentially, as the BMP typically cannot handle parallel
+	 *            access.
+	 * @return The list of successful responses.
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 */
+	List<R> execute(Iterable<? extends BMPRequest<R>> requests)
+			throws IOException, ProcessException {
+		List<R> results = new ArrayList<>();
+		/*
+		 * If no pipeline built yet, build one on the connection selected for
+		 * it.
+		 */
+
+		RequestPipeline requestPipeline = null;
+		for (BMPRequest<R> request : requests) {
+			if (requestPipeline == null) {
+				requestPipeline = new RequestPipeline(
+						connectionSelector.getNextConnection(request));
+			}
+			requestPipeline.sendRequest(request, results::add);
+			requestPipeline.finish();
+		}
+		if (exception != null) {
+			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
+					exception);
+		}
+		return results;
+	}
+
+
+	/**
+	 * Do a synchronous call of a sequence of BMP operations, sending each of
+	 * the given messages and completely processing the interaction before doing
+	 * the next one.
+	 *
+	 * @param requests
+	 *            The sequence of requests to send
+	 * @param retries
+	 *            The number of times to retry
+	 * @return The list of successful responses.
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 */
+	List<R> execute(Iterable<? extends BMPRequest<R>> requests, int retries)
+			throws IOException, ProcessException {
+		List<R> results = new ArrayList<>();
+		/*
+		 * If no pipeline built yet, build one on the connection selected for
+		 * it.
+		 */
+
+		RequestPipeline requestPipeline = null;
+		for (BMPRequest<R> request : requests) {
+			if (requestPipeline == null) {
+				requestPipeline = new RequestPipeline(
+						connectionSelector.getNextConnection(request));
+			}
+			requestPipeline.sendRequest(request, retries, results::add);
+			requestPipeline.finish();
+		}
+		if (exception != null) {
+			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
+					exception);
+		}
+		return results;
+	}
+
+	/**
 	 * Allows a set of BMP requests to be grouped together in a communication
 	 * across a number of channels for a given connection.
 	 * <p>
