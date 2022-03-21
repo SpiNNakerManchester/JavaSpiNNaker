@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20211205</version>
+				<version>20220320</version>
 			</dependency>
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
