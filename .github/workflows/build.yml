@@ -37,7 +37,7 @@ jobs:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
     - name: Cache Maven packages
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.m2
         key: build-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
@@ -90,7 +90,7 @@ jobs:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
     - name: Cache Maven packages
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.m2
         key: validate-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
