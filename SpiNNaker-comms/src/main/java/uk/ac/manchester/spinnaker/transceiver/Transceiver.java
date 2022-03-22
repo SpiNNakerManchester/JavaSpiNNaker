@@ -114,13 +114,16 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
+import uk.ac.manchester.spinnaker.messages.bmp.EraseFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
 import uk.ac.manchester.spinnaker.messages.bmp.ResetFPGA;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
+import uk.ac.manchester.spinnaker.messages.bmp.UpdateFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
@@ -1708,8 +1711,8 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafeWithCare
 	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
 			int baseAddress, int length) throws ProcessException, IOException {
-		return new BMPReadMemoryProcess(bmpConnection(bmp), this)
-				.readMemory(board, baseAddress, length);
+		return new BMPReadMemoryProcess(bmpConnection(bmp), this).read(board,
+				baseAddress, length);
 	}
 
 	@Override
@@ -1729,6 +1732,36 @@ public class Transceiver extends UDPTransceiver
 			// The file had better fit...
 			wmp.writeMemory(board, baseAddress, f, (int) file.length());
 		}
+	}
+
+	@Override
+	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
+			int baseAddress, int length) throws IOException, ProcessException {
+		return new BMPReadSerialFlashProcess(bmpConnection(bmp), this)
+				.read(board, baseAddress, length);
+	}
+
+	@Deprecated
+	@Override
+	public int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size) throws IOException, ProcessException {
+		return bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
+	}
+
+	@Deprecated
+	@Override
+	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+			throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFlashBuffer(board, address));
+	}
+
+	@Deprecated
+	@Override
+	public void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size) throws IOException, ProcessException {
+		// NB: no retries of this! Not idempotent!
+		bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
+				new UpdateFlash(board, baseAddress, size));
 	}
 
 	@Override

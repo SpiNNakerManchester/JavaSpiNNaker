@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,13 +27,13 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPReadMemory;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPReadSerialFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
-/** A process for reading memory on a BMP. */
-class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
+/** A process for reading serial flash on a BMP. */
+class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	/**
 	 * @param connectionSelector
 	 *            How to select how to communicate.
@@ -42,7 +42,8 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 *            operation. May be {@code null} if no suck tracking is
 	 *            required.
 	 */
-	BMPReadMemoryProcess(ConnectionSelector<BMPConnection> connectionSelector,
+	BMPReadSerialFlashProcess(
+			ConnectionSelector<BMPConnection> connectionSelector,
 			RetryTracker retryTracker) {
 		super(connectionSelector, retryTracker);
 	}
@@ -70,8 +71,8 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 			Accumulator<T> accum) throws ProcessException, IOException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			accum.add(offset, execute(
-					new BMPReadMemory(board, address + offset, chunk)).data);
+			accum.add(offset, execute(new BMPReadSerialFlash(board,
+					address + offset, chunk)).data);
 		}
 		return accum.finish();
 	}

@@ -353,4 +353,31 @@ class DummyTransceiver implements BMPTransceiverInterface {
 			File file) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
+
+	@Deprecated
+	@Override
+	public int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size) throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+			throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Deprecated
+	@Override
+	public void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size) throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
+			int baseAddress, int length) throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
 }

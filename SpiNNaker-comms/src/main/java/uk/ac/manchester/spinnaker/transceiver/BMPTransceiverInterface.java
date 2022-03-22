@@ -16,9 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.lang.Math.min;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.singleton;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
@@ -1229,4 +1231,141 @@ public interface BMPTransceiverInterface {
 	 */
 	void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
 			File file) throws IOException, ProcessException;
+
+	/**
+	 * Read BMP serial flash memory.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we reading?
+	 * @param baseAddress
+	 *            The address in the BMP's serial flash where the region of
+	 *            memory to be read starts
+	 * @param length
+	 *            The length of the data to be read in bytes
+	 * @return A little-endian buffer of data read, positioned at the start of
+	 *         the data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int length) throws IOException, ProcessException;
+
+	/**
+	 * Prepare a transfer area for writing to the flash memory of a BMP.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing to?
+	 * @param baseAddress
+	 *            Where in flash will we write?
+	 * @param size
+	 *            How much data will we write.
+	 * @return The location of the working buffer on the BMP
+	 * @deprecated This operation should not be used directly.
+	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@Deprecated
+	int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress, int size)
+			throws IOException, ProcessException;
+
+	/**
+	 * Move an uploaded chunk of data into the working buffer for writing to the
+	 * flash memory of a BMP.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing to?
+	 * @param address
+	 *            Where in the working buffer will we copy to?
+	 * @deprecated This operation should not be used directly.
+	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @see #eraseBMPFlash(BMPCoords,BMPBoard,int,int)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@Deprecated
+	void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+			throws IOException, ProcessException;
+
+	/**
+	 * Finalise the writing of the flash memory of a BMP.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing to?
+	 * @param baseAddress
+	 *            Where in flash will we write?
+	 * @param size
+	 *            How much data will we write.
+	 * @deprecated This operation should not be used directly.
+	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@Deprecated
+	void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress, int size)
+			throws IOException, ProcessException;
+
+	/**
+	 * Write a buffer to flash memory on the BMP. This is a composite operation.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing to?
+	 * @param baseAddress
+	 *            Where in flash will we write?
+	 * @param data
+	 *            What data will we write?
+	 * @param update
+	 *            Whether to trigger an immediate update of flash.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void writeFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data, boolean update)
+			throws ProcessException, IOException {
+		int size = data.remaining();
+		int bufferBase = eraseBMPFlash(bmp, board, baseAddress, size);
+		int offset = 0;
+
+		while (true) {
+			ByteBuffer buf = data.asReadOnlyBuffer();
+			buf.position(offset)
+					.limit(min(offset + FLASH_CHUNK_SIZE, buf.capacity()));
+			int length = buf.remaining();
+			if (length == 0) {
+				break;
+			}
+
+			writeBMPMemory(bmp, board, bufferBase, buf);
+			chunkBMPFlash(bmp, board, baseAddress);
+			if (length < FLASH_CHUNK_SIZE) {
+				break;
+			}
+			baseAddress += FLASH_CHUNK_SIZE;
+			offset += FLASH_CHUNK_SIZE;
+		}
+		if (update) {
+			copyBMPFlash(bmp, board, baseAddress, size);
+		}
+	}
 }
