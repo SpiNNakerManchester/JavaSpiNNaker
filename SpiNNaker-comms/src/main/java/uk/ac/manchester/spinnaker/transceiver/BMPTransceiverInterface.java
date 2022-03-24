@@ -26,11 +26,13 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
@@ -1089,6 +1091,23 @@ public interface BMPTransceiverInterface {
 	boolean getResetStatus(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
+	/**
+	 * Get the address of the serial flash buffer.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which BMP's buffer do we want the address of?
+	 * @return The adress of the serial flash buffer.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	int getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException;
+
 	/** The type of reset to perform. */
 	enum FPGAResetType {
 		// NB: The order of these values is important
@@ -1256,6 +1275,90 @@ public interface BMPTransceiverInterface {
 			int length) throws IOException, ProcessException;
 
 	/**
+	 * Read the CRC32 checksum of BMP serial flash memory.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we reading?
+	 * @param baseAddress
+	 *            The address in the BMP's serial flash where the region of
+	 *            memory to be checksummed starts
+	 * @param length
+	 *            The length of the data to be checksummed in bytes
+	 * @return The CRC32 checksum
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	int readSerialFlashCRC(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int length) throws IOException, ProcessException;
+
+	/**
+	 * Write BMP serial flash memory from a file.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing?
+	 * @param baseAddress
+	 *            The address in the BMP's serial flash where the region of
+	 *            memory to be written starts
+	 * @param file
+	 *            The file containing the data to be written
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			File file) throws ProcessException, IOException;
+
+	/**
+	 * Write BMP serial flash memory from a stream.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing?
+	 * @param baseAddress
+	 *            The address in the BMP's serial flash where the region of
+	 *            memory to be written starts
+	 * @param size
+	 *            How many bytes to write from the stream
+	 * @param stream
+	 *            The file containing the data to be written
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size, InputStream stream) throws ProcessException, IOException;
+
+	/**
+	 * Write BMP serial flash memory.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing?
+	 * @param baseAddress
+	 *            The address in the BMP's serial flash where the region of
+	 *            memory to be written starts
+	 * @param data
+	 *            The raw data to be written
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data) throws ProcessException, IOException;
+
+	/**
 	 * Prepare a transfer area for writing to the flash memory of a BMP.
 	 *
 	 * @param bmp
@@ -1320,6 +1423,26 @@ public interface BMPTransceiverInterface {
 	 */
 	@Deprecated
 	void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress, int size)
+			throws IOException, ProcessException;
+
+	/**
+	 * Write a {@linkplain WriteFlashBuffer#FLASH_CHUNK_SIZE fixed size} chunk
+	 * to flash memory of a BMP with erase. The data must have already been
+	 * written to the flash buffer.
+	 *
+	 * @param bmp
+	 *            Which BMP are we talking to?
+	 * @param board
+	 *            Which board's BMP are we writing to?
+	 * @param baseAddress
+	 *            Where in flash will we write?
+	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	void writeBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress)
 			throws IOException, ProcessException;
 
 	/**

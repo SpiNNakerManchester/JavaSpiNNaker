@@ -33,9 +33,12 @@ public class WriteFlashBuffer extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            the board with the BMP to write the flash of
 	 * @param baseAddress
 	 *            The positive base address where the chunk is located
+	 * @param erase
+	 *            Whether to erase first
 	 */
-	public WriteFlashBuffer(BMPBoard board, int baseAddress) {
-		super(board, CMD_FLASH_WRITE, baseAddress, FLASH_CHUNK_SIZE);
+	public WriteFlashBuffer(BMPBoard board, int baseAddress, boolean erase) {
+		super(board, CMD_FLASH_WRITE, baseAddress, FLASH_CHUNK_SIZE,
+				erase ? 1 : 0);
 	}
 
 	@Override

@@ -54,6 +54,7 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
+import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRIES;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
@@ -119,6 +120,8 @@ import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlashCRC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector;
 import uk.ac.manchester.spinnaker.messages.bmp.ResetFPGA;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
 import uk.ac.manchester.spinnaker.messages.bmp.UpdateFlash;
@@ -1734,11 +1737,61 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
+	private static final int FLASH_BUFFER_INDEX = 5;
+
+	@Override
+	public int getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new ReadSerialVector(board)).vector
+				.get(FLASH_BUFFER_INDEX);
+	}
+
 	@Override
 	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
 			int baseAddress, int length) throws IOException, ProcessException {
 		return new BMPReadSerialFlashProcess(bmpConnection(bmp), this)
 				.read(board, baseAddress, length);
+	}
+
+	// CRC calculations of megabytes can take a bit
+	private static final int CRC_TIMEOUT = 2000;
+
+	@Override
+	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
+			int address, int length) throws IOException, ProcessException {
+		return bmpCall(bmp, CRC_TIMEOUT, BMP_RETRIES /* =default */,
+				new ReadSerialFlashCRC(board, address, length)).crc;
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data) throws ProcessException, IOException {
+		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
+				baseAddress, data);
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size, InputStream stream) throws ProcessException, IOException {
+		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
+				baseAddress, stream, size);
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			File file) throws ProcessException, IOException {
+		try (BufferedInputStream f =
+				new BufferedInputStream(new FileInputStream(file))) {
+			// The file had better fit...
+			new BMPWriteSerialFlashProcess(bmpConnection(bmp), this)
+					.write(board, baseAddress, f, (int) file.length());
+		}
+	}
+
+	@Override
+	public void writeBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+			throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFlashBuffer(board, address, true));
 	}
 
 	@Deprecated
@@ -1752,7 +1805,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
 			throws IOException, ProcessException {
-		bmpCall(bmp, new WriteFlashBuffer(board, address));
+		bmpCall(bmp, new WriteFlashBuffer(board, address, false));
 	}
 
 	@Deprecated

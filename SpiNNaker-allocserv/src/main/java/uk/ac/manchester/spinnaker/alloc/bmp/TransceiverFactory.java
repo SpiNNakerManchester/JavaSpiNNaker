@@ -27,7 +27,6 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -48,9 +47,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
-import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
-import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
@@ -222,7 +219,7 @@ public class TransceiverFactory
 	}
 }
 
-class DummyTransceiver implements BMPTransceiverInterface {
+class DummyTransceiver extends UnimplementedTransceiver {
 	private static final Logger log = getLogger(DummyTransceiver.class);
 
 	private static final int VERSION_INFO_SIZE = 32;
@@ -265,8 +262,7 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<BMPBoard> boards)
-			throws InterruptedException, IOException, ProcessException {
+			Collection<BMPBoard> boards) {
 		log.info("power({},{},{})", powerCommand, bmp, boards);
 		for (BMPBoard b : boards) {
 			status.put(b.board, powerCommand == POWER_ON);
@@ -275,7 +271,7 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException {
+			BMPBoard board) {
 		log.info("readFPGARegister({},{},{},{})", fpgaNumber, register, bmp,
 				board);
 		return fpgaNumber;
@@ -283,101 +279,13 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
+			BMPCoords bmp, BMPBoard board) {
 		log.info("writeFPGARegister({},{},{},{},{})", fpgaNumber, register,
 				value, bmp, board);
 	}
 
 	@Override
-	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
+	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board) {
 		return version;
-	}
-
-	@Deprecated
-	@Override
-	public void powerOnMachine()
-			throws InterruptedException, IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public void powerOffMachine()
-			throws InterruptedException, IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public void setLED(Collection<Integer> leds, LEDAction action,
-			BMPCoords bmp, Collection<BMPBoard> board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void resetFPGA(BMPCoords bmp, BMPBoard board,
-			FPGAResetType resetType) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
-			int baseAddress, int length) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			File file) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int size) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int size) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
-			int baseAddress, int length) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
 	}
 }

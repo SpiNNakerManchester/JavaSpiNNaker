@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 /** The SCP BMP Information Types. */
 public enum BMPInfo {
-	/** Serial information. */
+	/** Serial flash information. */
 	SERIAL(0),
 	/** CAN status information. */
 	CAN_STATUS(2),
