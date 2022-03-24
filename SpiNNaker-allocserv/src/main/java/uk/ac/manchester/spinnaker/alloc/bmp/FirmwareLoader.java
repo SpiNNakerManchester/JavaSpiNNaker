@@ -16,33 +16,49 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.lang.Integer.parseUnsignedInt;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.zip.CRC32;
 
-import org.springframework.core.io.Resource;
+import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
+
+import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
-class BitfileLoader {
+/**
+ * Handles loading of firmware into a BMP or an FPGA.
+ *
+ * @author Donal Fellows
+ */
+@Component
+@Prototype
+public class FirmwareLoader {
 	private static final int FDS_LENGTH = 4096;
 
 	private static final int CRC_OFFSET = FDS_LENGTH - WORD_SIZE;
@@ -71,10 +87,43 @@ class BitfileLoader {
 
 	private final BMPTransceiverInterface txrx;
 
-	BitfileLoader(BMPTransceiverInterface txrx, BMPCoords bmp, BMPBoard board) {
+	@Value("classpath:bitfiles/manifest.properties")
+	private Resource manifestLocation;
+
+	/**
+	 * @param txrx
+	 *            How to talk to BMPs.
+	 * @param bmp
+	 *            Which BMP to talk to. (This might just be for message-routing
+	 *            purposes.)
+	 * @param board
+	 *            Which board's BMP are we really working with.
+	 */
+	public FirmwareLoader(BMPTransceiverInterface txrx, BMPCoords bmp,
+			BMPBoard board) {
 		this.txrx = txrx;
 		this.bmp = bmp;
 		this.board = board;
+	}
+
+	private List<String> bitfileNames;
+
+	private Map<String, Resource> bitFiles = new HashMap<>();
+
+	private Map<String, Integer> modTimes = new HashMap<>();
+
+	@PostConstruct
+	void loadManifest() throws IOException {
+		Properties props = new Properties();
+		try (InputStream is = manifestLocation.getInputStream()) {
+			props.load(is);
+		}
+		bitfileNames = stream(props.getProperty("bitfiles").split(","))
+				.map(String::trim).collect(toList());
+		for (String f : bitfileNames) {
+			modTimes.put(f, parseUnsignedInt(props.getProperty(f)));
+			bitFiles.put(f, manifestLocation.createRelative(f));
+		}
 	}
 
 	public static class UpdateFailedException extends RuntimeException {
@@ -258,12 +307,6 @@ class BitfileLoader {
 		return (int) (crc.getValue() & CRC_MASK);
 	}
 
-	private static int crc(File f) throws IOException {
-		try (InputStream s = new BufferedInputStream(new FileInputStream(f))) {
-			return crc(s);
-		}
-	}
-
 	private static int crc(Resource r) throws IOException {
 		try (InputStream s = new BufferedInputStream(r.getInputStream())) {
 			return crc(s);
@@ -308,7 +351,8 @@ class BitfileLoader {
 		// TODO do we keep this?
 	}
 
-	private void xreg(RegSet... settings) throws ProcessException, IOException {
+	private void setupRegisters(RegSet... settings)
+			throws ProcessException, IOException {
 		List<Integer> data = new ArrayList<>();
 		for (RegSet r : settings) {
 			data.add(r.address | r.fpga.value);
@@ -322,37 +366,10 @@ class BitfileLoader {
 		updateFlashData(flashData);
 	}
 
-	private void xboot(File file, int slot, FPGA chip)
+	private void setupBitfile(String handle, int slot, FPGA chip)
 			throws IOException, ProcessException {
-		String name = file.getName();
-		int size = (int) file.length();
-		int mtime = (int) (file.lastModified() / MSEC_PER_SEC);
-		int crc = crc(file);
-
-		if (size > BITFILE_MAX_SIZE) {
-			throw new TooLargeException(size);
-		}
-
-		int base = BITFILE_BASE + slot * BITFILE_MAX_SIZE;
-		// TODO progress bar? Not in server mode
-		txrx.writeSerialFlash(bmp, board, base, file);
-		int otherCRC = txrx.readSerialFlashCRC(bmp, board, base, size);
-		if (otherCRC != crc) {
-			throw new CRCFailedException(otherCRC);
-		}
-
-		int timestamp = (int) (currentTimeMillis() / MSEC_PER_SEC);
-
-		FlashDataSector sector = FlashDataSector.bitfile(name, mtime, crc, chip,
-				timestamp, base, size);
-
-		ByteBuffer flashData = readFlashData();
-		putBuffer(flashData, sector.buf, BITFILE_DATA_SECTOR_LOCATION);
-		updateFlashData(flashData);
-	}
-
-	private void xboot(Resource resource, int mtime, int slot, FPGA chip)
-			throws IOException, ProcessException {
+		Resource resource = bitFiles.get(handle);
+		int mtime = modTimes.get(handle);
 		String name = resource.getFilename();
 		int size = (int) resource.contentLength();
 		int crc = crc(resource);
@@ -386,50 +403,37 @@ class BitfileLoader {
 		Thread.sleep((long) (secs * MSEC_PER_SEC));
 	}
 
+	/**
+	 * Load the FPGA definitions.
+	 *
+	 * @throws InterruptedException
+	 *             If interrrupted while sleeping
+	 * @throws ProcessException
+	 *             If a BMP rejects a message
+	 * @throws IOException
+	 *             If the network fails or the packaged bitfiles are unreadable
+	 */
 	@SuppressWarnings("checkstyle:magicnumber")
-	void bitLoad(File defaultBit, File firstBit, File secondBit, File thirdBit)
+	public void bitLoad()
 			throws InterruptedException, ProcessException, IOException {
-		xreg(new RegSet(FPGA.all, 0x40010, 0),
+		// Bleah
+		int idx = 0;
+		String nameDef = bitfileNames.get(idx++);
+		String fpga0 = bitfileNames.get(idx++);
+		String fpga1 = bitfileNames.get(idx++);
+		String fpga2 = bitfileNames.get(idx++);
+		setupRegisters(new RegSet(FPGA.all, 0x40010, 0),
 				new RegSet(FPGA.all, 0x40014, 0xffffffff),
 				new RegSet(FPGA.all, 0x40018, 0));
 		sleep(SMALL_SLEEP);
-		xboot(defaultBit, 0, FPGA.all);
+		setupBitfile(nameDef, 0, FPGA.all);
 		sleep(SMALL_SLEEP);
-		xboot(firstBit, 1, FPGA.first);
-		xboot(secondBit, 2, FPGA.second);
-		xboot(thirdBit, 3, FPGA.third);
+		setupBitfile(fpga0, 1, FPGA.first);
+		setupBitfile(fpga1, 2, FPGA.second);
+		setupBitfile(fpga2, 3, FPGA.third);
 		xboot();
 		xreg();
 		sver();
 		sleep(BIG_SLEEP);
-	}
-
-	@SuppressWarnings({
-		"checkstyle:magicnumber", "checkstyle:parameternumber"
-	})
-	void bitLoad(Resource defaultBit, int defaultMtime, Resource firstBit,
-			int firstMtime, Resource secondBit, int secondMtime,
-			Resource thirdBit, int thirdMtime)
-			throws InterruptedException, ProcessException, IOException {
-		xreg(new RegSet(FPGA.all, 0x40010, 0),
-				new RegSet(FPGA.all, 0x40014, 0xffffffff),
-				new RegSet(FPGA.all, 0x40018, 0));
-		sleep(SMALL_SLEEP);
-		xboot(defaultBit, defaultMtime, 0, FPGA.all);
-		sleep(SMALL_SLEEP);
-		xboot(firstBit, firstMtime, 1, FPGA.first);
-		xboot(secondBit, secondMtime, 2, FPGA.second);
-		xboot(thirdBit, thirdMtime, 3, FPGA.third);
-		xboot();
-		xreg();
-		sver();
-		sleep(BIG_SLEEP);
-	}
-
-	void bitLoad() throws ProcessException, InterruptedException, IOException {
-		bitLoad(new File("default.bit"),
-				new File("spin5_fpga_1-0-0_131216_id0.bit"),
-				new File("spin5_fpga_1-0-0_131216_id1.bit"),
-				new File("spin5_fpga_1-0-0_131216_id2.bit"));
 	}
 }

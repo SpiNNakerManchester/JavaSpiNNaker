@@ -478,6 +478,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/*.txt</exclude>
 							<exclude>**/*.csv</exclude>
 							<exclude>**/*.fig</exclude>
+							<exclude>**/*.bit</exclude>
 							<exclude>**/nbproject/**</exclude>
 							<exclude>**/target/**</exclude>
 							<!-- Fooling markdown parsers and RAT is hard -->
