@@ -21,6 +21,7 @@ import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -207,7 +209,7 @@ public class FirmwareLoader {
 
 		private static final int BITFILE_NAME_MAX_LENGTH = 96;
 
-		private static final int BITFILE_MAGIC_FLAG = 0x8000;
+		private static final int BITFILE_ENABLED_FLAG = 0x8000;
 
 		private static final int PAD = 0xffffffff;
 
@@ -267,7 +269,7 @@ public class FirmwareLoader {
 			buf.put(BITFILE_BYTE);
 
 			buf.put((byte) namesize);
-			buf.putShort((short) (BITFILE_MAGIC_FLAG + chip.bits));
+			buf.putShort((short) (BITFILE_ENABLED_FLAG + chip.bits));
 			buf.putInt(timestamp);
 			buf.putInt(crc);
 			buf.putInt(baseAddress);
@@ -331,6 +333,12 @@ public class FirmwareLoader {
 				FLASH_DATA_LENGTH);
 	}
 
+	private ByteBuffer readFlashDataHead()
+			throws ProcessException, IOException {
+		return txrx.readBMPMemory(bmp, board, FLASH_DATA_ADDRESS,
+				FLASH_DATA_LENGTH / 2);
+	}
+
 	private static int crc(ByteBuffer buffer, int from, int len) {
 		CRC32 crc = new CRC32();
 		crc.update(slice(buffer, from, len));
@@ -375,7 +383,7 @@ public class FirmwareLoader {
 
 	/** The read part of {@code cmd_xreg} from {@code bmpc}. */
 	private void listFPGARegisterSets() throws ProcessException, IOException {
-		ByteBuffer data = readFlashData();
+		ByteBuffer data = readFlashDataHead();
 		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
 			int chunkBase = DATA_SECTOR_CHUNK_SIZE * i;
 			data.position(chunkBase);
@@ -402,8 +410,52 @@ public class FirmwareLoader {
 		// TODO do we keep this?
 	}
 
-	private void xboot() {
-		// TODO do we keep this?
+	private static final String[] CHIP_LABELS = {
+		"   ", "  0", "  1", " 10", "  2", " 20", " 21", "210"
+	};
+
+	private static final String[] SLOT_LABELS = {
+		"   ", "   ", "S0 ", "S1 ", "S2 ", "S3 ", "   ", "   ",
+		"   ", "   ", "   ", "   ", "   ", "   ", "   ", "   "
+	};
+
+	private static final int CHIP_MASK = 0b111;
+
+	/** The read part of {@code cmd_xboot} from {@code bmpc}. */
+	private void listFPGABootBitfiles() throws ProcessException, IOException {
+		ByteBuffer data = readFlashDataHead();
+		byte[] filenameBytes = new byte[DATA_SECTOR_CHUNK_SIZE];
+		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
+			int chunkBase = DATA_SECTOR_CHUNK_SIZE * i;
+			data.position(chunkBase);
+			int type = data.get();
+			if (type != FlashDataSector.BITFILE_BYTE) {
+				continue;
+			}
+			int size = data.get();
+			int flags = data.getShort();
+			int time = data.getInt();
+			int crc = data.getInt();
+			int base = data.getInt();
+			int length = data.getInt();
+			int mtime = data.getInt();
+			data.get(filenameBytes, chunkBase
+					+ FlashDataSector.DATA_SECTOR_HEADER_WORDS * WORD_SIZE,
+					size);
+			String state = (flags & FlashDataSector.BITFILE_ENABLED_FLAG) > 0
+					? "ENABLED "
+					: "DISABLED";
+			log.info("FPGA BOOT:      {}", format(
+					"%s  %s  Chips %s, Base 0x%06x, Length %8d, CRC 0x%08x",
+					SLOT_LABELS[i], state, CHIP_LABELS[flags & CHIP_MASK], base,
+					length, crc));
+			log.info("FPGA BOOT:           File      {}",
+					new String(filenameBytes, 0, size, UTF_8));
+			log.info("FPGA BOOT:           Written   {}",
+					Instant.ofEpochSecond(time));
+			log.info("FPGA BOOT:           ModTime   {}",
+					Instant.ofEpochSecond(mtime));
+		}
 	}
 
 	/**
@@ -502,7 +554,7 @@ public class FirmwareLoader {
 		setupBitfile(bitfileNames.get(idx), idx, FPGA_N_NE);
 
 		// TODO these would read the configuration...
-		xboot();
+		listFPGABootBitfiles();
 		listFPGARegisterSets();
 		sver();
 
