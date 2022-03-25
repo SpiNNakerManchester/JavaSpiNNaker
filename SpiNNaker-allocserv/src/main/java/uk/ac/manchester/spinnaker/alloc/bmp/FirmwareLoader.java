@@ -23,6 +23,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_ALL;
 import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_E_S;
@@ -49,6 +50,7 @@ import java.util.zip.CRC32;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -70,9 +72,11 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 @Component
 @Prototype
 public class FirmwareLoader {
-	private static final int FDS_LENGTH = 4096;
+	private static final Logger log = getLogger(FirmwareLoader.class);
 
-	private static final int CRC_OFFSET = FDS_LENGTH - WORD_SIZE;
+	private static final int FLASH_DATA_LENGTH = 4096;
+
+	private static final int CRC_OFFSET = FLASH_DATA_LENGTH - WORD_SIZE;
 
 	private static final int CRC_BUFFER_LENGTH = 8192;
 
@@ -84,9 +88,20 @@ public class FirmwareLoader {
 
 	private static final int BITFILE_MAX_SIZE = 0x180000;
 
-	private static final int REGISTER_DATA_SECTOR_LOCATION = 6 * 128;
+	private static final int DATA_SECTOR_CHUNK_SIZE = 128;
 
-	private static final int BITFILE_DATA_SECTOR_LOCATION = 128;
+	/**
+	 * Location of FPGA register control instructions within the flash data
+	 * sector.
+	 */
+	private static final int REGISTER_DATA_SECTOR_LOCATION =
+			6 * DATA_SECTOR_CHUNK_SIZE;
+
+	/**
+	 * Location of bitfile control instructions within the flash data sector.
+	 */
+	private static final int BITFILE_DATA_SECTOR_LOCATION =
+			DATA_SECTOR_CHUNK_SIZE;
 
 	private static final double SMALL_SLEEP = 0.25;
 
@@ -181,6 +196,8 @@ public class FirmwareLoader {
 
 	private static class FlashDataSector {
 		private static final int DATA_SECTOR_LENGTH = 128;
+
+		private static final int DATA_SECTOR_HEADER_WORDS = 8;
 
 		private static final byte BITFILE_BYTE = 3;
 
@@ -310,7 +327,8 @@ public class FirmwareLoader {
 	}
 
 	private ByteBuffer readFlashData() throws ProcessException, IOException {
-		return txrx.readBMPMemory(bmp, board, FLASH_DATA_ADDRESS, FDS_LENGTH);
+		return txrx.readBMPMemory(bmp, board, FLASH_DATA_ADDRESS,
+				FLASH_DATA_LENGTH);
 	}
 
 	private static int crc(ByteBuffer buffer, int from, int len) {
@@ -351,8 +369,33 @@ public class FirmwareLoader {
 		}
 	}
 
-	private void xreg() {
-		// TODO do we keep this?
+	private static final int NUM_DATA_SECTORS = 16;
+
+	private static final int FPGA_ID_MASK = 0b00000011;
+
+	/** The read part of {@code cmd_xreg} from {@code bmpc}. */
+	private void listFPGARegisterSets() throws ProcessException, IOException {
+		ByteBuffer data = readFlashData();
+		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
+			int chunkBase = DATA_SECTOR_CHUNK_SIZE * i;
+			data.position(chunkBase);
+			int type = data.get();
+			if (type != FlashDataSector.REGISTER_BYTE) {
+				continue;
+			}
+			int size = data.get();
+			// Position after the header
+			data.position(chunkBase
+					+ FlashDataSector.DATA_SECTOR_HEADER_WORDS * WORD_SIZE);
+			for (int j = 0; j < size; j++) {
+				int addr = data.getInt();
+				int value = data.getInt();
+				log.info("FPGA REGISTERS: {}",
+						format("%3s %08x %08x",
+								FPGA.values()[addr & FPGA_ID_MASK],
+								addr & ~FPGA_ID_MASK, value));
+			}
+		}
 	}
 
 	private void sver() {
@@ -363,6 +406,12 @@ public class FirmwareLoader {
 		// TODO do we keep this?
 	}
 
+	/**
+	 * The write part of {@code cmd_xreg} from {@code bmpc}.
+	 *
+	 * @param settings
+	 *            The registers to set.
+	 */
 	private void setupRegisters(RegisterSet... settings)
 			throws ProcessException, IOException {
 		List<Integer> data = new ArrayList<>();
@@ -454,7 +503,7 @@ public class FirmwareLoader {
 
 		// TODO these would read the configuration...
 		xboot();
-		xreg();
+		listFPGARegisterSets();
 		sver();
 
 		// TODO is this a necessary delay?
