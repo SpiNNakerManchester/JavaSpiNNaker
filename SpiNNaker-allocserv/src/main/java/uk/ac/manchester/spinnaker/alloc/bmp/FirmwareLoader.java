@@ -24,9 +24,13 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.LEDO;
+import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
+import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -48,6 +52,8 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
+import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -122,7 +128,16 @@ public class FirmwareLoader {
 				.map(String::trim).collect(toList());
 		for (String f : bitfileNames) {
 			modTimes.put(f, parseUnsignedInt(props.getProperty(f)));
-			bitFiles.put(f, manifestLocation.createRelative(f));
+			Resource r = manifestLocation.createRelative(f);
+			try (InputStream dummy = r.getInputStream()) {
+				// We do this to check that the bit file is readable at all
+				bitFiles.put(f, r);
+			} catch (IOException e) {
+				FileNotFoundException fnf = new FileNotFoundException(
+						"failed to open bitfile resource: " + r);
+				fnf.initCause(e);
+				throw fnf;
+			}
 		}
 	}
 
@@ -268,16 +283,29 @@ public class FirmwareLoader {
 		}
 	}
 
-	private static class RegSet {
-		final FPGA fpga;
+	/**
+	 * Instructions to set a register on one or more FPGAs. This is done not
+	 * just immediately, but also during BMP boot.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static class RegisterSet {
+		private final FPGA fpga;
 
-		final int address;
+		private final int address;
 
-		final int value;
+		private final int value;
 
-		RegSet(FPGA fpga, int address, int value) {
+		public RegisterSet(FPGA fpga, FPGAMainRegisters register, int value) {
 			this.fpga = fpga;
-			this.address = address;
+			this.address = register.getAddress();
+			this.value = value;
+		}
+
+		public RegisterSet(FPGA fpga, FPGALinkRegisters register, int bank,
+				int value) {
+			this.fpga = fpga;
+			this.address = register.address(bank);
 			this.value = value;
 		}
 	}
@@ -351,10 +379,10 @@ public class FirmwareLoader {
 		// TODO do we keep this?
 	}
 
-	private void setupRegisters(RegSet... settings)
+	private void setupRegisters(RegisterSet... settings)
 			throws ProcessException, IOException {
 		List<Integer> data = new ArrayList<>();
-		for (RegSet r : settings) {
+		for (RegisterSet r : settings) {
 			data.add(r.address | r.fpga.value);
 			data.add(r.value);
 		}
@@ -403,6 +431,10 @@ public class FirmwareLoader {
 		Thread.sleep((long) (secs * MSEC_PER_SEC));
 	}
 
+	private static final int CLEAR = 0;
+
+	private static final int SET = 0xffffffff;
+
 	/**
 	 * Load the FPGA definitions.
 	 *
@@ -418,22 +450,30 @@ public class FirmwareLoader {
 			throws InterruptedException, ProcessException, IOException {
 		// Bleah
 		int idx = 0;
-		String nameDef = bitfileNames.get(idx++);
-		String fpga0 = bitfileNames.get(idx++);
-		String fpga1 = bitfileNames.get(idx++);
-		String fpga2 = bitfileNames.get(idx++);
-		setupRegisters(new RegSet(FPGA.all, 0x40010, 0),
-				new RegSet(FPGA.all, 0x40014, 0xffffffff),
-				new RegSet(FPGA.all, 0x40018, 0));
+
+		setupRegisters(new RegisterSet(FPGA.all, SCRM, CLEAR),
+				new RegisterSet(FPGA.all, SLEN, SET),
+				new RegisterSet(FPGA.all, LEDO, CLEAR));
 		sleep(SMALL_SLEEP);
+
+		String nameDef = bitfileNames.get(idx);
 		setupBitfile(nameDef, 0, FPGA.all);
+		idx++;
+
 		sleep(SMALL_SLEEP);
-		setupBitfile(fpga0, 1, FPGA.first);
-		setupBitfile(fpga1, 2, FPGA.second);
-		setupBitfile(fpga2, 3, FPGA.third);
+
+		setupBitfile(bitfileNames.get(idx), idx, FPGA.first);
+		idx++;
+		setupBitfile(bitfileNames.get(idx), idx, FPGA.second);
+		idx++;
+		setupBitfile(bitfileNames.get(idx), idx, FPGA.third);
+
+		// TODO these would read the configuration...
 		xboot();
 		xreg();
 		sver();
+
+		// TODO is this a necessary delay?
 		sleep(BIG_SLEEP);
 	}
 }
