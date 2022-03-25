@@ -16,9 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
-import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_E_S;
-import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_N_NE;
-import static uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers.FPGA_SW_W;
+import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_E_S;
+import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_N_NE;
+import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_SW_W;
+
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 
 /**
  * Represents link directions of a board.
@@ -56,7 +58,7 @@ public enum Direction {
 	 * class. This <em>mostly</em> doesn't matter; the only real confusion is
 	 * right here in the definitions of these directions.
 	 */
-	public final FpgaIdentifiers fpga;
+	public final FPGA fpga;
 
 	/**
 	 * The register bank that manages the link in this direction.
@@ -72,8 +74,7 @@ public enum Direction {
 	/** The number of the opposite of the link. */
 	private int oppo;
 
-	Direction(FpgaIdentifiers fpga, int bankSelect, String columnName,
-			int opposite) {
+	Direction(FPGA fpga, int bankSelect, String columnName, int opposite) {
 		this.fpga = fpga;
 		this.bank = bankSelect;
 		this.columnName = columnName;

@@ -37,10 +37,10 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
-import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -126,17 +126,17 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 *            Which FPGA (0, 1, or 2) is being tested?
 	 * @return True if the FPGA is in a correct state, false otherwise.
 	 */
-	private boolean isGoodFPGA(BMPBoard board, FpgaIdentifiers fpga) {
+	private boolean isGoodFPGA(BMPBoard board, FPGA fpga) {
 		int flag;
 		try {
-			flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
+			flag = txrx.readFPGARegister(fpga, FLAG, ROOT_BMP, board);
 		} catch (ProcessException | IOException ignored) {
 			// An exception means the FPGA is a problem
 			return false;
 		}
 		// FPGA ID is bottom two bits of FLAG register
 		int fpgaId = flag & FPGA_FLAG_ID_MASK;
-		boolean ok = fpgaId == fpga.ordinal();
+		boolean ok = fpgaId == fpga.value;
 		if (!ok) {
 			log.warn("{} on board {} of {} has incorrect FPGA ID flag {}", fpga,
 					board, machine.getName(), fpgaId);
@@ -177,8 +177,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 		if (!canBoardManageFPGAs(board)) {
 			return;
 		}
-		txrx.writeFPGARegister(d.fpga.ordinal(), d.bank, STOP, 1, ROOT_BMP,
-				board);
+		txrx.writeFPGARegister(d.fpga, d.bank, STOP, 1, ROOT_BMP, board);
 	}
 
 	/**
@@ -187,11 +186,11 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param board
 	 *            The board ID
 	 * @return Whether the board's FPGAs all came up correctly.
-	 * @see #isGoodFPGA(Integer, FpgaIdentifiers)
+	 * @see #isGoodFPGA(Integer, FPGA)
 	 */
 	private boolean hasGoodFPGAs(BMPBoard board) {
-		for (FpgaIdentifiers fpga : FpgaIdentifiers.values()) {
-			if (!isGoodFPGA(board, fpga)) {
+		for (FPGA fpga : FPGA.values()) {
+			if (fpga.isSingleFPGA() && !isGoodFPGA(board, fpga)) {
 				return false;
 			}
 		}

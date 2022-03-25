@@ -48,6 +48,7 @@ import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
@@ -270,18 +271,17 @@ class DummyTransceiver extends UnimplementedTransceiver {
 	}
 
 	@Override
-	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
+	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
 			BMPBoard board) {
-		log.info("readFPGARegister({},{},{},{})", fpgaNumber, register, bmp,
-				board);
-		return fpgaNumber;
+		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
+		return fpga.value;
 	}
 
 	@Override
-	public void writeFPGARegister(int fpgaNumber, int register, int value,
+	public void writeFPGARegister(FPGA fpga, int register, int value,
 			BMPCoords bmp, BMPBoard board) {
-		log.info("writeFPGARegister({},{},{},{},{})", fpgaNumber, register,
-				value, bmp, board);
+		log.info("writeFPGARegister({},{},{},{},{})", fpga, register, value,
+				bmp, board);
 	}
 
 	@Override

@@ -136,6 +136,7 @@ import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
@@ -1682,18 +1683,18 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
+	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
 			BMPBoard board) throws IOException, ProcessException {
 		return bmpCall(bmp,
-				new ReadFPGARegister(fpgaNumber, register, board)).fpgaRegister;
+				new ReadFPGARegister(fpga, register, board)).fpgaRegister;
 	}
 
 	@Override
 	@ParallelUnsafe
-	public void writeFPGARegister(int fpgaNumber, int register, int value,
+	public void writeFPGARegister(FPGA fpga, int register, int value,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		bmpCall(bmp, new WriteFPGARegister(fpgaNumber, register, value, board));
+		bmpCall(bmp, new WriteFPGARegister(fpga, register, value, board));
 	}
 
 	@Override

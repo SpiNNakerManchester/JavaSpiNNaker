@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters;
@@ -512,8 +513,8 @@ public interface BMPTransceiverInterface {
 	 * Read a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register to read.
 	 * @param cabinet
@@ -529,19 +530,19 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGARegister(int fpgaNumber, FPGAMainRegisters register,
+	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, register,
-				new BMPCoords(cabinet, frame), board);
+		return readFPGARegister(fpga, register, new BMPCoords(cabinet, frame),
+				board);
 	}
 
 	/**
 	 * Read a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register to read.
 	 * @param bmp
@@ -555,18 +556,18 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGARegister(int fpgaNumber, FPGAMainRegisters register,
+	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, register.getAddress(), bmp, board);
+		return readFPGARegister(fpga, register.getAddress(), bmp, board);
 	}
 
 	/**
 	 * Read a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param registerBank
 	 *            Which bank of link registers to read from.
 	 * @param register
@@ -584,10 +585,10 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGARegister(int fpgaNumber, int registerBank,
+	default int readFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, registerBank, register,
+		return readFPGARegister(fpga, registerBank, register,
 				new BMPCoords(cabinet, frame), board);
 	}
 
@@ -595,8 +596,8 @@ public interface BMPTransceiverInterface {
 	 * Read a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param registerBank
 	 *            Which bank of link registers to read from.
 	 * @param register
@@ -612,10 +613,10 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGARegister(int fpgaNumber, int registerBank,
+	default int readFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, register.address(registerBank), bmp,
+		return readFPGARegister(fpga, register.address(registerBank), bmp,
 				board);
 	}
 
@@ -623,8 +624,8 @@ public interface BMPTransceiverInterface {
 	 * Read a link counter on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param linkNumber
 	 *            Which bank of link counters to read from.
 	 * @param counter
@@ -642,10 +643,10 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
+	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGARecevingLinkCounters counter, int cabinet, int frame,
 			BMPBoard board) throws IOException, ProcessException {
-		return readFPGALinkCounter(fpgaNumber, linkNumber, counter,
+		return readFPGALinkCounter(fpga, linkNumber, counter,
 				new BMPCoords(cabinet, frame), board);
 	}
 
@@ -653,8 +654,8 @@ public interface BMPTransceiverInterface {
 	 * Read a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param linkNumber
 	 *            Which bank of link counters to read from.
 	 * @param counter
@@ -670,19 +671,18 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
+	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGARecevingLinkCounters counter, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, counter.address(linkNumber), bmp,
-				board);
+		return readFPGARegister(fpga, counter.address(linkNumber), bmp, board);
 	}
 
 	/**
 	 * Read a link counter on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param linkNumber
 	 *            Which bank of link counters to read from.
 	 * @param counter
@@ -700,10 +700,10 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
+	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGASendingLinkCounters counter, int cabinet, int frame,
 			BMPBoard board) throws IOException, ProcessException {
-		return readFPGALinkCounter(fpgaNumber, linkNumber, counter,
+		return readFPGALinkCounter(fpga, linkNumber, counter,
 				new BMPCoords(cabinet, frame), board);
 	}
 
@@ -711,8 +711,8 @@ public interface BMPTransceiverInterface {
 	 * Read a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param linkNumber
 	 *            Which bank of link counters to read from.
 	 * @param counter
@@ -728,10 +728,37 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGALinkCounter(int fpgaNumber, int linkNumber,
+	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGASendingLinkCounters counter, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, counter.address(linkNumber), bmp,
+		return readFPGARegister(fpga, counter.address(linkNumber), bmp, board);
+	}
+
+	/**
+	 * Read a register on a FPGA of a board. The meaning of the register's
+	 * contents will depend on the FPGA's configuration.
+	 *
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
+	 * @param register
+	 *            Register address to read to (will be rounded down to the
+	 *            nearest 32-bit word boundary).
+	 * @param cabinet
+	 *            the cabinet this is targeting
+	 * @param frame
+	 *            the frame this is targeting
+	 * @param board
+	 *            which board to request the FPGA register from
+	 * @return the register data
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafe
+	default int readFPGARegister(FPGA fpga, int register, int cabinet,
+			int frame, BMPBoard board) throws IOException, ProcessException {
+		return readFPGARegister(fpga, register, new BMPCoords(cabinet, frame),
 				board);
 	}
 
@@ -739,36 +766,8 @@ public interface BMPTransceiverInterface {
 	 * Read a register on a FPGA of a board. The meaning of the register's
 	 * contents will depend on the FPGA's configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
-	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to request the FPGA register from
-	 * @return the register data
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default int readFPGARegister(int fpgaNumber, int register, int cabinet,
-			int frame, BMPBoard board) throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, register,
-				new BMPCoords(cabinet, frame), board);
-	}
-
-	/**
-	 * Read a register on a FPGA of a board. The meaning of the register's
-	 * contents will depend on the FPGA's configuration.
-	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register address to read to (will be rounded down to the
 	 *            nearest 32-bit word boundary).
@@ -783,15 +782,15 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException;
+	int readFPGARegister(FPGA fpga, int register, BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register to write.
 	 * @param value
@@ -808,19 +807,19 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(int fpgaNumber, FPGAMainRegisters register,
+	default void writeFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			int value, int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
-		writeFPGARegister(fpgaNumber, register, value,
-				new BMPCoords(cabinet, frame), board);
+		writeFPGARegister(fpga, register, value, new BMPCoords(cabinet, frame),
+				board);
 	}
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register to write.
 	 * @param value
@@ -835,18 +834,18 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(int fpgaNumber, FPGAMainRegisters register,
+	default void writeFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			int value, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		writeFPGARegister(fpgaNumber, register.getAddress(), value, bmp, board);
+		writeFPGARegister(fpga, register.getAddress(), value, bmp, board);
 	}
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param registerBank
 	 *            Which bank of link registers to read from.
 	 * @param register
@@ -865,10 +864,10 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(int fpgaNumber, int registerBank,
+	default void writeFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, int value, int cabinet, int frame,
 			BMPBoard board) throws IOException, ProcessException {
-		writeFPGARegister(fpgaNumber, registerBank, register, value,
+		writeFPGARegister(fpga, registerBank, register, value,
 				new BMPCoords(cabinet, frame), board);
 	}
 
@@ -876,8 +875,8 @@ public interface BMPTransceiverInterface {
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
 	 * configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param registerBank
 	 *            Which bank of link registers to read from.
 	 * @param register
@@ -894,19 +893,19 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(int fpgaNumber, int registerBank,
+	default void writeFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, int value, BMPCoords bmp,
 			BMPBoard board) throws IOException, ProcessException {
-		writeFPGARegister(fpgaNumber, register.address(registerBank), value,
-				bmp, board);
+		writeFPGARegister(fpga, register.address(registerBank), value, bmp,
+				board);
 	}
 
 	/**
 	 * Write a register on a FPGA of a board. The meaning of setting the
 	 * register's contents will depend on the FPGA's configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register address to read to (will be rounded down to the
 	 *            nearest 32-bit word boundary).
@@ -924,19 +923,19 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(int fpgaNumber, int register, int value,
+	default void writeFPGARegister(FPGA fpga, int register, int value,
 			int cabinet, int frame, BMPBoard board)
 			throws IOException, ProcessException {
-		writeFPGARegister(fpgaNumber, register, value,
-				new BMPCoords(cabinet, frame), board);
+		writeFPGARegister(fpga, register, value, new BMPCoords(cabinet, frame),
+				board);
 	}
 
 	/**
 	 * Write a register on a FPGA of a board. The meaning of setting the
 	 * register's contents will depend on the FPGA's configuration.
 	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2) to communicate with.
 	 * @param register
 	 *            Register address to read to (will be rounded down to the
 	 *            nearest 32-bit word boundary).
@@ -952,8 +951,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, BMPBoard board) throws IOException, ProcessException;
+	void writeFPGARegister(FPGA fpga, int register, int value, BMPCoords bmp,
+			BMPBoard board) throws IOException, ProcessException;
 
 	/**
 	 * Read the ADC data.

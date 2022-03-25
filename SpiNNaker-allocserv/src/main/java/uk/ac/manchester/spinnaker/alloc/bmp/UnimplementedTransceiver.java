@@ -25,6 +25,7 @@ import java.util.Collection;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
@@ -69,13 +70,13 @@ class UnimplementedTransceiver implements BMPTransceiverInterface {
 	}
 
 	@Override
-	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
+	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
 			BMPBoard board) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeFPGARegister(int fpgaNumber, int register, int value,
+	public void writeFPGARegister(FPGA fpga, int register, int value,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();

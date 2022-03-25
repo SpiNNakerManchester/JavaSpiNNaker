@@ -24,6 +24,10 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_ALL;
+import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_E_S;
+import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_N_NE;
+import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_SW_W;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.LEDO;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
@@ -52,6 +56,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
@@ -262,27 +267,6 @@ public class FirmwareLoader {
 		}
 	}
 
-	private enum FPGA {
-		first("0", 0, 1), second("1", 1, 2), third("2", 2, 4), all("0-2", 3, 7);
-
-		final String name;
-
-		final int value;
-
-		final int bits;
-
-		FPGA(String name, int value, int bits) {
-			this.name = name;
-			this.value = value;
-			this.bits = bits;
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
-
 	/**
 	 * Instructions to set a register on one or more FPGAs. This is done not
 	 * just immediately, but also during BMP boot.
@@ -451,22 +435,22 @@ public class FirmwareLoader {
 		// Bleah
 		int idx = 0;
 
-		setupRegisters(new RegisterSet(FPGA.all, SCRM, CLEAR),
-				new RegisterSet(FPGA.all, SLEN, SET),
-				new RegisterSet(FPGA.all, LEDO, CLEAR));
+		setupRegisters(new RegisterSet(FPGA_ALL, SCRM, CLEAR),
+				new RegisterSet(FPGA_ALL, SLEN, SET),
+				new RegisterSet(FPGA_ALL, LEDO, CLEAR));
 		sleep(SMALL_SLEEP);
 
 		String nameDef = bitfileNames.get(idx);
-		setupBitfile(nameDef, 0, FPGA.all);
+		setupBitfile(nameDef, 0, FPGA_ALL);
 		idx++;
 
 		sleep(SMALL_SLEEP);
 
-		setupBitfile(bitfileNames.get(idx), idx, FPGA.first);
+		setupBitfile(bitfileNames.get(idx), idx, FPGA_E_S);
 		idx++;
-		setupBitfile(bitfileNames.get(idx), idx, FPGA.second);
+		setupBitfile(bitfileNames.get(idx), idx, FPGA_SW_W);
 		idx++;
-		setupBitfile(bitfileNames.get(idx), idx, FPGA.third);
+		setupBitfile(bitfileNames.get(idx), idx, FPGA_N_NE);
 
 		// TODO these would read the configuration...
 		xboot();
