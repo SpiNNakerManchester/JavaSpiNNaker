@@ -648,6 +648,8 @@ enum DataSectorTypes {
 
 @Component
 class FirmwareDefinition {
+	private static final Logger log = getLogger(FirmwareDefinition.class);
+
 	@Value("classpath:bitfiles/manifest.properties")
 	private Resource manifestLocation;
 
@@ -677,6 +679,7 @@ class FirmwareDefinition {
 			try (InputStream dummy = r.getInputStream()) {
 				// We do this to check that the bit file is readable at all
 				bitFiles.put(f, r);
+				log.info("loaded firmware definition: {}", f);
 			} catch (IOException e) {
 				FileNotFoundException fnf = new FileNotFoundException(
 						"failed to open bitfile resource: " + r);
