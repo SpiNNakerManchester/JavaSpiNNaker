@@ -25,6 +25,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.BITFILE;
+import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.REGISTER;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_ALL;
 import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_E_S;
@@ -40,7 +42,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
+import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -92,6 +94,12 @@ public class FirmwareLoader {
 
 	private static final int DATA_SECTOR_CHUNK_SIZE = 128;
 
+	private static final int NUM_DATA_SECTORS = 16;
+
+	private static final int FPGA_ID_MASK = 0b00000011;
+
+	private static final int CHIP_MASK = 0b111;
+
 	/**
 	 * Location of FPGA register control instructions within the flash data
 	 * sector.
@@ -104,6 +112,33 @@ public class FirmwareLoader {
 	 */
 	private static final int BITFILE_DATA_SECTOR_LOCATION =
 			DATA_SECTOR_CHUNK_SIZE;
+
+	private static final int DATA_SECTOR_LENGTH = 128;
+
+	private static final int DATA_SECTOR_HEADER_WORDS = 8;
+
+	private static final int DATA_SECTOR_HEADER_BYTES =
+			DATA_SECTOR_HEADER_WORDS * WORD_SIZE;
+
+	private static final int BITFILE_NAME_MAX_LENGTH = 96;
+
+	private static final int BITFILE_ENABLED_FLAG = 0x8000;
+
+	private static final int PAD = 0xffffffff;
+
+	/** Used to clear all bits in a register. */
+	private static final int CLEAR = 0;
+
+	/** Used to set all bits in a register. */
+	private static final int SET = 0xffffffff;
+
+	private static final String[] CHIP_LABELS = {
+		"", "0", "1", "10", "2", "20", "21", "210"
+	};
+
+	private static final String[] SLOT_LABELS = {
+		"", "", "S0", "S1", "S2", "S3", "", "", "", "", "", "", "", "", "", ""
+	};
 
 	private static final double SMALL_SLEEP = 0.25;
 
@@ -163,8 +198,17 @@ public class FirmwareLoader {
 		}
 	}
 
-	public static class UpdateFailedException extends RuntimeException {
-		private static final long serialVersionUID = -2711856077373862547L;
+	public abstract static class FirmwareLoaderException
+			extends RuntimeException {
+		private static final long serialVersionUID = -7057612243855126410L;
+
+		FirmwareLoaderException(String msg) {
+			super(msg);
+		}
+	}
+
+	public static class UpdateFailedException extends FirmwareLoaderException {
+		private static final long serialVersionUID = 7925582707336953554L;
 
 		/** The data read back from the BMP. */
 		public final ByteBuffer data;
@@ -172,12 +216,12 @@ public class FirmwareLoader {
 		UpdateFailedException(ByteBuffer data) {
 			super("failed to update flash data correctly!");
 			this.data = data.asReadOnlyBuffer();
-			this.data.order(ByteOrder.LITTLE_ENDIAN);
+			this.data.order(LITTLE_ENDIAN);
 		}
 	}
 
-	public static class CRCFailedException extends RuntimeException {
-		private static final long serialVersionUID = 6083516080055422661L;
+	public static class CRCFailedException extends FirmwareLoaderException {
+		private static final long serialVersionUID = -4111893327837084643L;
 
 		/** The CRC calculated by the BMP. */
 		public final int crc;
@@ -188,8 +232,8 @@ public class FirmwareLoader {
 		}
 	}
 
-	public static class TooLargeException extends RuntimeException {
-		private static final long serialVersionUID = 2300521304133953589L;
+	public static class TooLargeException extends FirmwareLoaderException {
+		private static final long serialVersionUID = -9025065456329109710L;
 
 		TooLargeException(long size) {
 			super(format("Bit file is too large for BMP buffer: 0x%08x", size));
@@ -197,27 +241,11 @@ public class FirmwareLoader {
 	}
 
 	private static class FlashDataSector {
-		private static final int DATA_SECTOR_LENGTH = 128;
-
-		private static final int DATA_SECTOR_HEADER_WORDS = 8;
-
-		private static final byte BITFILE_BYTE = 3;
-
-		private static final byte REGISTER_BYTE = 4;
-
-		private static final int PADDING_WORDS = 7;
-
-		private static final int BITFILE_NAME_MAX_LENGTH = 96;
-
-		private static final int BITFILE_ENABLED_FLAG = 0x8000;
-
-		private static final int PAD = 0xffffffff;
-
 		final ByteBuffer buf;
 
 		FlashDataSector() {
 			buf = ByteBuffer.allocate(DATA_SECTOR_LENGTH);
-			buf.order(ByteOrder.LITTLE_ENDIAN);
+			buf.order(LITTLE_ENDIAN);
 		}
 
 		static FlashDataSector registers(int numItems, List<Integer> data) {
@@ -231,27 +259,32 @@ public class FirmwareLoader {
 		static FlashDataSector bitfile(String name, int mtime, int crc,
 				FPGA chip, int timestamp, int baseAddress, int length) {
 			FlashDataSector fds = new FlashDataSector();
-			fds.bitfileHeader(name, mtime, crc, chip, timestamp, baseAddress,
-					length);
+			fds.bitfileHeader(mtime, crc, chip, timestamp, baseAddress, length);
+			fds.bitfileName(name);
 			fds.buf.flip();
 			return fds;
 		}
 
+		private static final int SUB_WORD_MASK = 3;
+
+		private static boolean notAligned(int offset) {
+			return (offset & SUB_WORD_MASK) != 0;
+		}
+
 		private void pad(int targetLength, int value) {
+			while (buf.position() < targetLength
+					&& notAligned(buf.position())) {
+				buf.put((byte) value);
+			}
 			while (buf.position() < targetLength) {
 				buf.putInt(value);
 			}
 		}
 
 		private void registersHeader(int numItems) {
-			buf.put(REGISTER_BYTE);
-
+			buf.put(REGISTER.value);
 			buf.put((byte) numItems);
-
-			buf.putShort((short) 0);
-			for (int i = 0; i < PADDING_WORDS; i++) {
-				buf.putInt(0);
-			}
+			pad(DATA_SECTOR_HEADER_BYTES, 0);
 		}
 
 		private void registersPayload(List<Integer> data) {
@@ -261,14 +294,11 @@ public class FirmwareLoader {
 			pad(buf.capacity(), PAD);
 		}
 
-		private void bitfileHeader(String name, int mtime, int crc, FPGA chip,
+		private void bitfileHeader(int mtime, int crc, FPGA chip,
 				int timestamp, int baseAddress, int length) {
-			byte[] namedata = name.getBytes(StandardCharsets.UTF_8);
-			int namesize = min(namedata.length, BITFILE_NAME_MAX_LENGTH);
+			buf.put(BITFILE.value);
 
-			buf.put(BITFILE_BYTE);
-
-			buf.put((byte) namesize);
+			buf.put((byte) 0);
 			buf.putShort((short) (BITFILE_ENABLED_FLAG + chip.bits));
 			buf.putInt(timestamp);
 			buf.putInt(crc);
@@ -278,7 +308,12 @@ public class FirmwareLoader {
 
 			buf.putInt(PAD);
 			buf.putInt(PAD);
+		}
 
+		private void bitfileName(String name) {
+			byte[] namedata = name.getBytes(StandardCharsets.UTF_8);
+			int namesize = min(namedata.length, BITFILE_NAME_MAX_LENGTH);
+			buf.put(1, (byte) namesize);
 			buf.put(namedata, 0, namesize);
 			while (buf.position() < buf.capacity()) {
 				buf.put((byte) 0);
@@ -315,17 +350,29 @@ public class FirmwareLoader {
 
 	private static void putBuffer(ByteBuffer target, ByteBuffer source,
 			int offset) {
-		ByteBuffer slice = target.slice();
+		// Dupe so we can freely manipulate the position
+		ByteBuffer slice = target.duplicate();
 		slice.position(offset);
-		slice.put(source.array(), 0, source.remaining());
+		slice.put(source.array(), source.arrayOffset(), source.remaining());
 	}
 
+	/**
+	 * Make a slice of a byte buffer without modifying the original buffer.
+	 *
+	 * @param src
+	 *            The originating buffer.
+	 * @param from
+	 *            The offset into the originating buffer where the slice starts.
+	 * @param len
+	 *            The length of the slice.
+	 * @return The little-endian slice. This will be read-only if and only if
+	 *         the original buffer is read-only.
+	 */
 	private static ByteBuffer slice(ByteBuffer src, int from, int len) {
-		ByteBuffer s = src.slice();
-		s.order(LITTLE_ENDIAN);
+		ByteBuffer s = src.duplicate();
 		s.position(from);
 		s.limit(from + len);
-		return s;
+		return s.slice().order(LITTLE_ENDIAN);
 	}
 
 	private ByteBuffer readFlashData() throws ProcessException, IOException {
@@ -377,85 +424,98 @@ public class FirmwareLoader {
 		}
 	}
 
-	private static final int NUM_DATA_SECTORS = 16;
+	private void logBMPVersion() throws ProcessException, IOException {
+		VersionInfo info = txrx.readBMPVersion(bmp, board);
+		// TODO validate which field is which; some of these seem... unlikely
+		log.info("BMP INFO:       {}",
+				format("%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]",
+						info.name, info.versionNumber, info.hardware,
+						info.core.getP(), Instant.ofEpochSecond(info.buildDate),
+						info.physicalCPUID, info.core.getY(),
+						info.core.getX()));
+	}
 
-	private static final int FPGA_ID_MASK = 0b00000011;
-
-	/** The read part of {@code cmd_xreg} from {@code bmpc}. */
-	private void listFPGARegisterSets() throws ProcessException, IOException {
+	/**
+	 * The read part of {@code cmd_xreg} and {@code cmd_xboot} from
+	 * {@code bmpc}. This merges the two because there's little point in keeping
+	 * them separate for our use case and that avoids doing some network
+	 * traffic.
+	 */
+	private void listFPGABootChunks() throws ProcessException, IOException {
 		ByteBuffer data = readFlashDataHead();
 		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
-			int chunkBase = DATA_SECTOR_CHUNK_SIZE * i;
-			data.position(chunkBase);
-			int type = data.get();
-			if (type != FlashDataSector.REGISTER_BYTE) {
-				continue;
-			}
-			int size = data.get();
-			// Position after the header
-			data.position(chunkBase
-					+ FlashDataSector.DATA_SECTOR_HEADER_WORDS * WORD_SIZE);
-			for (int j = 0; j < size; j++) {
-				int addr = data.getInt();
-				int value = data.getInt();
-				log.info("FPGA REGISTERS: {}",
-						format("%3s %08x %08x",
-								FPGA.values()[addr & FPGA_ID_MASK],
-								addr & ~FPGA_ID_MASK, value));
+			ByteBuffer chunk = slice(data, DATA_SECTOR_CHUNK_SIZE * i,
+					DATA_SECTOR_CHUNK_SIZE);
+			byte type = chunk.get();
+			switch (DataSectorTypes.get(type)) {
+			case REGISTER:
+				logRegisterSets(chunk, i);
+				break;
+			case BITFILE:
+				logFPGABootBitfile(chunk, i);
+				break;
+			default:
+				// Ignore the chunk
+				break;
 			}
 		}
 	}
 
-	private void sver() {
-		// TODO do we keep this?
+	/**
+	 * Describe the register set control commands in the current chunk of boot
+	 * header.
+	 *
+	 * @param chunk
+	 *            The chunk, positioned immediately after the type byte.
+	 * @param i
+	 *            The index of the chunk
+	 */
+	private void logRegisterSets(ByteBuffer chunk, int i) {
+		int size = chunk.get();
+		// Position after the header
+		chunk.position(DATA_SECTOR_HEADER_BYTES);
+		for (int j = 0; j < size; j++) {
+			int addr = chunk.getInt();
+			int value = chunk.getInt();
+			log.info("FPGA REGISTERS: {}",
+					format("%3s %08x %08x", FPGA.values()[addr & FPGA_ID_MASK],
+							addr & ~FPGA_ID_MASK, value));
+		}
 	}
 
-	private static final String[] CHIP_LABELS = {
-		"   ", "  0", "  1", " 10", "  2", " 20", " 21", "210"
-	};
+	/**
+	 * Describe the installed bitfile used to boot an FPGA, using the
+	 * information in the current chunk of boot header.
+	 *
+	 * @param data
+	 *            The chunk, positioned immediately after the type byte.
+	 * @param i
+	 *            The index of the chunk
+	 */
+	private void logFPGABootBitfile(ByteBuffer data, int i) {
+		int size = data.get();
+		int flags = data.getShort();
+		int time = data.getInt();
+		int crc = data.getInt();
+		int base = data.getInt();
+		int length = data.getInt();
+		int mtime = data.getInt();
+		byte[] filenameBytes = new byte[size];
+		data.get(filenameBytes, DATA_SECTOR_HEADER_BYTES, size);
 
-	private static final String[] SLOT_LABELS = {
-		"   ", "   ", "S0 ", "S1 ", "S2 ", "S3 ", "   ", "   ",
-		"   ", "   ", "   ", "   ", "   ", "   ", "   ", "   "
-	};
-
-	private static final int CHIP_MASK = 0b111;
-
-	/** The read part of {@code cmd_xboot} from {@code bmpc}. */
-	private void listFPGABootBitfiles() throws ProcessException, IOException {
-		ByteBuffer data = readFlashDataHead();
-		byte[] filenameBytes = new byte[DATA_SECTOR_CHUNK_SIZE];
-		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
-			int chunkBase = DATA_SECTOR_CHUNK_SIZE * i;
-			data.position(chunkBase);
-			int type = data.get();
-			if (type != FlashDataSector.BITFILE_BYTE) {
-				continue;
-			}
-			int size = data.get();
-			int flags = data.getShort();
-			int time = data.getInt();
-			int crc = data.getInt();
-			int base = data.getInt();
-			int length = data.getInt();
-			int mtime = data.getInt();
-			data.get(filenameBytes, chunkBase
-					+ FlashDataSector.DATA_SECTOR_HEADER_WORDS * WORD_SIZE,
-					size);
-			String state = (flags & FlashDataSector.BITFILE_ENABLED_FLAG) > 0
-					? "ENABLED "
-					: "DISABLED";
-			log.info("FPGA BOOT:      {}", format(
-					"%s  %s  Chips %s, Base 0x%06x, Length %8d, CRC 0x%08x",
-					SLOT_LABELS[i], state, CHIP_LABELS[flags & CHIP_MASK], base,
-					length, crc));
-			log.info("FPGA BOOT:           File      {}",
-					new String(filenameBytes, 0, size, UTF_8));
-			log.info("FPGA BOOT:           Written   {}",
-					Instant.ofEpochSecond(time));
-			log.info("FPGA BOOT:           ModTime   {}",
-					Instant.ofEpochSecond(mtime));
-		}
+		String state = (flags & BITFILE_ENABLED_FLAG) > 0
+				? "ENABLED "
+				: "DISABLED";
+		log.info("FPGA BOOT:      {}", format(
+				"%3s  %s  Chips %-3s, Base 0x%06x, Length %8d, CRC 0x%08x",
+				SLOT_LABELS[i], state, CHIP_LABELS[flags & CHIP_MASK], base,
+				length, crc));
+		log.info("FPGA BOOT:           File      {}",
+				new String(filenameBytes, 0, size, UTF_8).trim());
+		log.info("FPGA BOOT:           Written   {}",
+				Instant.ofEpochSecond(time));
+		log.info("FPGA BOOT:           ModTime   {}",
+				Instant.ofEpochSecond(mtime));
 	}
 
 	/**
@@ -463,8 +523,15 @@ public class FirmwareLoader {
 	 *
 	 * @param settings
 	 *            The registers to set.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws UpdateFailedException
+	 *             If the flash data sector read back does not match what we
+	 *             wanted to write.
 	 */
-	private void setupRegisters(RegisterSet... settings)
+	public void setupRegisters(RegisterSet... settings)
 			throws ProcessException, IOException {
 		List<Integer> data = new ArrayList<>();
 		for (RegisterSet r : settings) {
@@ -479,7 +546,29 @@ public class FirmwareLoader {
 		updateFlashData(flashData);
 	}
 
-	private void setupBitfile(String handle, int slot, FPGA chip)
+	/**
+	 * Set a bitfile to be loaded.
+	 *
+	 * @param handle
+	 *            The bitfile handle, matching one of the resources known to
+	 *            this bean.
+	 * @param slot
+	 *            Which slot to install the bitfile in.
+	 * @param chip
+	 *            Which chip or chips are to load the bitfile.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws TooLargeException
+	 *             If the bitfile is too large for the BMP's buffer.
+	 * @throws CRCFailedException
+	 *             If the written bitfile fails its CRC check.
+	 * @throws UpdateFailedException
+	 *             If the flash data sector read back does not match what we
+	 *             wanted to write.
+	 */
+	public void setupBitfile(String handle, int slot, FPGA chip)
 			throws IOException, ProcessException {
 		Resource resource = bitFiles.get(handle);
 		int mtime = modTimes.get(handle);
@@ -492,7 +581,6 @@ public class FirmwareLoader {
 		}
 
 		int base = BITFILE_BASE + slot * BITFILE_MAX_SIZE;
-		// TODO progress bar? Not in server mode
 		try (InputStream s =
 				new BufferedInputStream(resource.getInputStream())) {
 			txrx.writeSerialFlash(bmp, board, base, size, s);
@@ -516,10 +604,6 @@ public class FirmwareLoader {
 		Thread.sleep((long) (secs * MSEC_PER_SEC));
 	}
 
-	private static final int CLEAR = 0;
-
-	private static final int SET = 0xffffffff;
-
 	/**
 	 * Load the FPGA definitions.
 	 *
@@ -529,8 +613,9 @@ public class FirmwareLoader {
 	 *             If a BMP rejects a message
 	 * @throws IOException
 	 *             If the network fails or the packaged bitfiles are unreadable
+	 * @throws FirmwareLoaderException
+	 *             If something goes wrong.
 	 */
-	@SuppressWarnings("checkstyle:magicnumber")
 	public void bitLoad()
 			throws InterruptedException, ProcessException, IOException {
 		// Bleah
@@ -553,12 +638,38 @@ public class FirmwareLoader {
 		idx++;
 		setupBitfile(bitfileNames.get(idx), idx, FPGA_N_NE);
 
-		// TODO these would read the configuration...
-		listFPGABootBitfiles();
-		listFPGARegisterSets();
-		sver();
+		// TODO these read the configuration... but are they necessary?
+		listFPGABootChunks();
+		logBMPVersion();
 
 		// TODO is this a necessary delay?
 		sleep(BIG_SLEEP);
+	}
+}
+
+enum DataSectorTypes {
+	/** Chunk describes a bitfile to load. */
+	BITFILE(3),
+	/** Chunk describes some registers to set. */
+	REGISTER(4),
+	/** Chunk is not recognised. */
+	@Deprecated
+	UNKNOWN(-1);
+
+	/** The value of the chunk's type code. */
+	final byte value;
+
+	DataSectorTypes(int value) {
+		this.value = (byte) value;
+	}
+
+	static DataSectorTypes get(byte val) {
+		if (val == BITFILE.value) {
+			return BITFILE;
+		} else if (val == REGISTER.value) {
+			return REGISTER;
+		} else {
+			return UNKNOWN;
+		}
 	}
 }
