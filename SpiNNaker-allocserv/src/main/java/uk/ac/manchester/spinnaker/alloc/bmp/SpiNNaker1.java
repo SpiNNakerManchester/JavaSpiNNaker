@@ -31,11 +31,13 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderException;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
@@ -77,6 +79,13 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Autowired
 	private TransceiverFactoryAPI<?> txrxFactory;
 
+	/**
+	 * Factory for {@link FirmwareLoader}. Do not call directly; use
+	 * {@link #loadFirmware(BMPBoard)} instead.
+	 */
+	@Autowired
+	private ObjectProvider<FirmwareLoader> firmwareLoaderFactory;
+
 	private final BMPCoords bmp;
 
 	private final Machine machine;
@@ -87,6 +96,25 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private BMPTransceiverInterface txrx;
 
 	private Map<Integer, BMPBoard> idToBoard;
+
+	/**
+	 * Load the FPGA firmware onto a board.
+	 *
+	 * @param board
+	 *            Which board are we planning to load the firmware on?
+	 * @throws InterruptedException
+	 *             If interrupted while sleeping
+	 * @throws ProcessException
+	 *             If a BMP rejects a message
+	 * @throws IOException
+	 *             If the network fails or the packaged bitfiles are unreadable
+	 * @throws FirmwareLoaderException
+	 *             If something goes wrong.
+	 */
+	void loadFirmware(BMPBoard board)
+			throws ProcessException, InterruptedException, IOException {
+		firmwareLoaderFactory.getObject(txrx, bmp, board).bitLoad();
+	}
 
 	/**
 	 * @param machine

@@ -54,6 +54,7 @@ import java.util.zip.CRC32;
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -150,8 +151,8 @@ public class FirmwareLoader {
 
 	private final BMPTransceiverInterface txrx;
 
-	@Value("classpath:bitfiles/manifest.properties")
-	private Resource manifestLocation;
+	@Autowired
+	private FirmwareDefinition firmware;
 
 	/**
 	 * @param txrx
@@ -167,35 +168,6 @@ public class FirmwareLoader {
 		this.txrx = txrx;
 		this.bmp = bmp;
 		this.board = board;
-	}
-
-	private List<String> bitfileNames;
-
-	private Map<String, Resource> bitFiles = new HashMap<>();
-
-	private Map<String, Integer> modTimes = new HashMap<>();
-
-	@PostConstruct
-	void loadManifest() throws IOException {
-		Properties props = new Properties();
-		try (InputStream is = manifestLocation.getInputStream()) {
-			props.load(is);
-		}
-		bitfileNames = stream(props.getProperty("bitfiles").split(","))
-				.map(String::trim).collect(toList());
-		for (String f : bitfileNames) {
-			modTimes.put(f, parseUnsignedInt(props.getProperty(f)));
-			Resource r = manifestLocation.createRelative(f);
-			try (InputStream dummy = r.getInputStream()) {
-				// We do this to check that the bit file is readable at all
-				bitFiles.put(f, r);
-			} catch (IOException e) {
-				FileNotFoundException fnf = new FileNotFoundException(
-						"failed to open bitfile resource: " + r);
-				fnf.initCause(e);
-				throw fnf;
-			}
-		}
 	}
 
 	public abstract static class FirmwareLoaderException
@@ -240,6 +212,12 @@ public class FirmwareLoader {
 		}
 	}
 
+	private static final int SUB_WORD_MASK = 3;
+
+	private static boolean notAligned(int offset) {
+		return (offset & SUB_WORD_MASK) != 0;
+	}
+
 	private static class FlashDataSector {
 		final ByteBuffer buf;
 
@@ -263,12 +241,6 @@ public class FirmwareLoader {
 			fds.bitfileName(name);
 			fds.buf.flip();
 			return fds;
-		}
-
-		private static final int SUB_WORD_MASK = 3;
-
-		private static boolean notAligned(int offset) {
-			return (offset & SUB_WORD_MASK) != 0;
 		}
 
 		private void pad(int targetLength, int value) {
@@ -570,8 +542,8 @@ public class FirmwareLoader {
 	 */
 	public void setupBitfile(String handle, int slot, FPGA chip)
 			throws IOException, ProcessException {
-		Resource resource = bitFiles.get(handle);
-		int mtime = modTimes.get(handle);
+		Resource resource = firmware.resource(handle);
+		int mtime = firmware.mtime(handle);
 		String name = resource.getFilename();
 		int size = (int) resource.contentLength();
 		int crc = crc(resource);
@@ -608,7 +580,7 @@ public class FirmwareLoader {
 	 * Load the FPGA definitions.
 	 *
 	 * @throws InterruptedException
-	 *             If interrrupted while sleeping
+	 *             If interrupted while sleeping
 	 * @throws ProcessException
 	 *             If a BMP rejects a message
 	 * @throws IOException
@@ -626,17 +598,17 @@ public class FirmwareLoader {
 				new RegisterSet(FPGA_ALL, LEDO, CLEAR));
 		sleep(SMALL_SLEEP);
 
-		String nameDef = bitfileNames.get(idx);
+		String nameDef = firmware.bitfileNames.get(idx);
 		setupBitfile(nameDef, 0, FPGA_ALL);
 		idx++;
 
 		sleep(SMALL_SLEEP);
 
-		setupBitfile(bitfileNames.get(idx), idx, FPGA_E_S);
+		setupBitfile(firmware.bitfileNames.get(idx), idx, FPGA_E_S);
 		idx++;
-		setupBitfile(bitfileNames.get(idx), idx, FPGA_SW_W);
+		setupBitfile(firmware.bitfileNames.get(idx), idx, FPGA_SW_W);
 		idx++;
-		setupBitfile(bitfileNames.get(idx), idx, FPGA_N_NE);
+		setupBitfile(firmware.bitfileNames.get(idx), idx, FPGA_N_NE);
 
 		// TODO these read the configuration... but are they necessary?
 		listFPGABootChunks();
@@ -671,5 +643,54 @@ enum DataSectorTypes {
 		} else {
 			return UNKNOWN;
 		}
+	}
+}
+
+@Component
+class FirmwareDefinition {
+	@Value("classpath:bitfiles/manifest.properties")
+	private Resource manifestLocation;
+
+	/** The <em>ordered</em> list of firmware filenames from the manifest. */
+	List<String> bitfileNames;
+
+	/** Where to load each of the bitfiles from. */
+	private Map<String, Resource> bitFiles = new HashMap<>();
+
+	/**
+	 * What the intended modification time of each of the bitfiles is. From the
+	 * manifest, because actual file modification times are broken.
+	 */
+	private Map<String, Integer> modTimes = new HashMap<>();
+
+	@PostConstruct
+	private void loadManifest() throws IOException {
+		Properties props = new Properties();
+		try (InputStream is = manifestLocation.getInputStream()) {
+			props.load(is);
+		}
+		bitfileNames = stream(props.getProperty("bitfiles").split(","))
+				.map(String::trim).collect(toList());
+		for (String f : bitfileNames) {
+			modTimes.put(f, parseUnsignedInt(props.getProperty(f)));
+			Resource r = manifestLocation.createRelative(f);
+			try (InputStream dummy = r.getInputStream()) {
+				// We do this to check that the bit file is readable at all
+				bitFiles.put(f, r);
+			} catch (IOException e) {
+				FileNotFoundException fnf = new FileNotFoundException(
+						"failed to open bitfile resource: " + r);
+				fnf.initCause(e);
+				throw fnf;
+			}
+		}
+	}
+
+	Resource resource(String handle) {
+		return bitFiles.get(handle);
+	}
+
+	int mtime(String handle) {
+		return modTimes.get(handle);
 	}
 }
