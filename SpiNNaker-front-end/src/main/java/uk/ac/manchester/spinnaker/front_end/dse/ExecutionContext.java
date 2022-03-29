@@ -18,9 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -43,12 +41,6 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  * cross-references.
  */
 class ExecutionContext implements AutoCloseable {
-	/** The size of the region table. **/
-	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
-
-	/** The size of everything before the first region starts. */
-	static final int TOTAL_HEADER_SIZE =
-			APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE;
 
 	private final Transceiver txrx;
 
@@ -127,7 +119,7 @@ class ExecutionContext implements AutoCloseable {
 
 	private void writeHeader(HasCoreLocation core, Executor executor,
 			int startAddress) throws IOException, ProcessException {
-		ByteBuffer b = allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
+		ByteBuffer b = allocate(APP_PTR_TABLE_BYTE_SIZE)
 				.order(LITTLE_ENDIAN);
 
 		executor.addHeader(b);

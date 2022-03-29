@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -511,7 +512,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 			}
-			int written = ExecutionContext.TOTAL_HEADER_SIZE;
+			int written = APP_PTR_TABLE_BYTE_SIZE;
 			int writeCount = 1;
 
 			for (MemoryRegion reg : executor.regions()) {

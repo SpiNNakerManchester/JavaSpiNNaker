@@ -80,7 +80,7 @@ public final class Constants {
 	 * The size of the Data Specification table, in bytes.
 	 */
 	public static final int APP_PTR_TABLE_BYTE_SIZE =
-			APP_PTR_TABLE_HEADER_SIZE + MAX_MEM_REGIONS * INT_SIZE;
+			APP_PTR_TABLE_HEADER_SIZE + MAX_MEM_REGIONS * INT_SIZE * 3;
 
 	// Constants used by DSG command encoding: payload length field
 

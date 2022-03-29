@@ -208,7 +208,29 @@ public class Executor implements Closeable {
 		for (MemoryRegion reg : memRegions) {
 			if (reg != null) {
 				buffer.putInt(reg.getRegionBase());
+				if (reg instanceof MemoryRegionReal) {
+					// Work out the checksum
+					MemoryRegionReal regReal = (MemoryRegionReal) reg;
+					int n_words = (int) Math.ceil(regReal.getMaxWritePointer()
+							/ 4);
+					IntBuffer buf = regReal.getRegionData().duplicate()
+							.order(LITTLE_ENDIAN).rewind().asIntBuffer();
+					long sum = 0;
+					for (int i = 0; i < n_words; i++) {
+						sum = (sum + (buf.get() & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
+					}
+					// Write the checksum and number of words
+					buffer.putInt((int) (sum & 0xFFFFFFFFL));
+					buffer.putInt(n_words);
+				} else {
+					// Don't checksum references
+					buffer.putInt(0);
+					buffer.putInt(0);
+				}
 			} else {
+				// There is no data for non-regions
+				buffer.putInt(0);
+				buffer.putInt(0);
 				buffer.putInt(0);
 			}
 		}
