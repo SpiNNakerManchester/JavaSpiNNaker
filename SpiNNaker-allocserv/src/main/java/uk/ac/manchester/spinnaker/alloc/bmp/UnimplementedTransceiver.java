@@ -41,6 +41,8 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Donal Fellows
  */
 class UnimplementedTransceiver implements BMPTransceiverInterface {
+	private BMPCoords boundBMP = new BMPCoords(0, 0);
+
 	UnimplementedTransceiver() {
 	}
 
@@ -189,5 +191,15 @@ class UnimplementedTransceiver implements BMPTransceiverInterface {
 	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void bind(BMPCoords bmp) {
+		boundBMP = bmp;
+	}
+
+	@Override
+	public BMPCoords getBoundBMP() {
+		return boundBMP;
 	}
 }

@@ -361,6 +361,8 @@ public class Transceiver extends UDPTransceiver
 
 	private long retryCount = 0L;
 
+	private BMPCoords boundBMP = new BMPCoords(0, 0);
+
 	/**
 	 * Create a Transceiver by creating a UDPConnection to the given hostname on
 	 * port 17893 (the default SCAMP port), and a BootConnection on port 54321
@@ -2575,5 +2577,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	protected void addConnection(Connection connection) {
 		this.allConnections.add(connection);
+	}
+
+	@Override
+	public void bind(BMPCoords bmp) {
+		boundBMP = bmp;
+	}
+
+	@Override
+	public BMPCoords getBoundBMP() {
+		return boundBMP;
 	}
 }

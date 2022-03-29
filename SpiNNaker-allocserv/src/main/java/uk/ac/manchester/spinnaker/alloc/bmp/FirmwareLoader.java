@@ -61,7 +61,6 @@ import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
@@ -145,8 +144,6 @@ public class FirmwareLoader {
 
 	private static final double BIG_SLEEP = 12.0;
 
-	private final BMPCoords bmp;
-
 	private final BMPBoard board;
 
 	private final BMPTransceiverInterface txrx;
@@ -156,17 +153,13 @@ public class FirmwareLoader {
 
 	/**
 	 * @param txrx
-	 *            How to talk to BMPs.
-	 * @param bmp
-	 *            Which BMP to talk to. (This might just be for message-routing
-	 *            purposes.)
+	 *            How to talk to BMPs. The specific BMP to talk to must have
+	 *            been bound.
 	 * @param board
 	 *            Which board's BMP are we really working with.
 	 */
-	public FirmwareLoader(BMPTransceiverInterface txrx, BMPCoords bmp,
-			BMPBoard board) {
+	public FirmwareLoader(BMPTransceiverInterface txrx, BMPBoard board) {
 		this.txrx = txrx;
-		this.bmp = bmp;
 		this.board = board;
 	}
 
@@ -266,8 +259,8 @@ public class FirmwareLoader {
 			pad(buf.capacity(), PAD);
 		}
 
-		private void bitfileHeader(int mtime, int crc, FPGA chip,
-				int timestamp, int baseAddress, int length) {
+		private void bitfileHeader(int mtime, int crc, FPGA chip, int timestamp,
+				int baseAddress, int length) {
 			buf.put(BITFILE.value);
 
 			buf.put((byte) 0);
@@ -348,13 +341,12 @@ public class FirmwareLoader {
 	}
 
 	private ByteBuffer readFlashData() throws ProcessException, IOException {
-		return txrx.readBMPMemory(bmp, board, FLASH_DATA_ADDRESS,
-				FLASH_DATA_LENGTH);
+		return txrx.readBMPMemory(board, FLASH_DATA_ADDRESS, FLASH_DATA_LENGTH);
 	}
 
 	private ByteBuffer readFlashDataHead()
 			throws ProcessException, IOException {
-		return txrx.readBMPMemory(bmp, board, FLASH_DATA_ADDRESS,
+		return txrx.readBMPMemory(board, FLASH_DATA_ADDRESS,
 				FLASH_DATA_LENGTH / 2);
 	}
 
@@ -387,9 +379,9 @@ public class FirmwareLoader {
 			throws ProcessException, IOException {
 		data.putInt(CRC_OFFSET, (int) ~crc(data, 0, CRC_OFFSET));
 		data.position(0);
-		int fb = txrx.getSerialFlashBuffer(bmp, board);
-		txrx.writeBMPMemory(bmp, board, fb, data);
-		txrx.writeBMPFlash(bmp, board, FLASH_DATA_ADDRESS);
+		int fb = txrx.getSerialFlashBuffer(board);
+		txrx.writeBMPMemory(board, fb, data);
+		txrx.writeBMPFlash(board, FLASH_DATA_ADDRESS);
 		ByteBuffer newData = readFlashData();
 		if (!data.equals(newData)) {
 			throw new UpdateFailedException(newData);
@@ -397,7 +389,7 @@ public class FirmwareLoader {
 	}
 
 	private void logBMPVersion() throws ProcessException, IOException {
-		VersionInfo info = txrx.readBMPVersion(bmp, board);
+		VersionInfo info = txrx.readBMPVersion(board);
 		// TODO validate which field is which; some of these seem... unlikely
 		log.info("BMP INFO:       {}",
 				format("%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]",
@@ -475,9 +467,8 @@ public class FirmwareLoader {
 		byte[] filenameBytes = new byte[size];
 		data.get(filenameBytes, DATA_SECTOR_HEADER_BYTES, size);
 
-		String state = (flags & BITFILE_ENABLED_FLAG) > 0
-				? "ENABLED "
-				: "DISABLED";
+		String state =
+				(flags & BITFILE_ENABLED_FLAG) > 0 ? "ENABLED " : "DISABLED";
 		log.info("FPGA BOOT:      {}", format(
 				"%3s  %s  Chips %-3s, Base 0x%06x, Length %8d, CRC 0x%08x",
 				SLOT_LABELS[i], state, CHIP_LABELS[flags & CHIP_MASK], base,
@@ -555,9 +546,9 @@ public class FirmwareLoader {
 		int base = BITFILE_BASE + slot * BITFILE_MAX_SIZE;
 		try (InputStream s =
 				new BufferedInputStream(resource.getInputStream())) {
-			txrx.writeSerialFlash(bmp, board, base, size, s);
+			txrx.writeSerialFlash(board, base, size, s);
 		}
-		int otherCRC = txrx.readSerialFlashCRC(bmp, board, base, size);
+		int otherCRC = txrx.readSerialFlashCRC(board, base, size);
 		if (otherCRC != crc) {
 			throw new CRCFailedException(otherCRC);
 		}

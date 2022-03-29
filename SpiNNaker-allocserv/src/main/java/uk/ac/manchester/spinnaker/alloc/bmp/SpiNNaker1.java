@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,6 +85,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Autowired
 	private ObjectProvider<FirmwareLoader> firmwareLoaderFactory;
 
+	/** The BMP coordinates to bind into the transceiver. */
 	private final BMPCoords bmp;
 
 	private final Machine machine;
@@ -111,11 +111,11 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @throws FirmwareLoaderException
 	 *             If something goes wrong.
 	 */
-	void loadFirmware(List<BMPBoard> boards)
+	private void loadFirmware(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
 		int count = 0;
-		for (BMPBoard board: boards) {
-			firmwareLoaderFactory.getObject(txrx, bmp, board)
+		for (BMPBoard board : boards) {
+			firmwareLoaderFactory.getObject(txrx, board)
 					.bitLoad(++count == boards.size());
 		}
 	}
@@ -133,7 +133,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 
 	@PostConstruct
 	void initTransceiver() throws IOException, SpinnmanException {
-		this.txrx = txrxFactory.getTransciever(machine, bmp);
+		txrx = txrxFactory.getTransciever(machine, bmp);
+		txrx.bind(ROOT_BMP);
 	}
 
 	@Override
@@ -142,11 +143,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	}
 
 	private List<BMPBoard> remap(List<Integer> boardIds) {
-		List<BMPBoard> boardNums = new ArrayList<>(boardIds.size());
-		for (Integer id : boardIds) {
-			boardNums.add(requireNonNull(idToBoard.get(id)));
-		}
-		return boardNums;
+		return boardIds.stream().map(idToBoard::get).collect(toList());
 	}
 
 	/**
@@ -161,7 +158,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private boolean isGoodFPGA(BMPBoard board, FPGA fpga) {
 		int flag;
 		try {
-			flag = txrx.readFPGARegister(fpga, FLAG, ROOT_BMP, board);
+			flag = txrx.readFPGARegister(fpga, FLAG, board);
 		} catch (ProcessException | IOException ignored) {
 			// An exception means the FPGA is a problem
 			return false;
@@ -191,7 +188,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 */
 	private boolean canBoardManageFPGAs(BMPBoard board)
 			throws ProcessException, IOException {
-		VersionInfo vi = txrx.readBMPVersion(ROOT_BMP, board);
+		VersionInfo vi = txrx.readBMPVersion(board);
 		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
 	}
 
@@ -209,7 +206,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 		if (!canBoardManageFPGAs(board)) {
 			return;
 		}
-		txrx.writeFPGARegister(d.fpga, d.bank, STOP, 1, ROOT_BMP, board);
+		txrx.writeFPGARegister(d.fpga, d.bank, STOP, 1, board);
 	}
 
 	/**
@@ -238,7 +235,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 				log.warn("rebooting {} boards in allocation to "
 						+ "get stability", boardsToPower.size());
 			}
-			txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
+			txrx.powerOn(boardsToPower);
 
 			/*
 			 * Check whether all the FPGAs on each board have come up correctly.
@@ -262,6 +259,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 				return;
 			}
 			if (props.isFpgaReload() && attempt < props.getFpgaAttempts()) {
+				log.warn("reloading FPGA firmware on {} boards",
+						retryBoards.size());
 				loadFirmware(retryBoards);
 			}
 			boardsToPower = retryBoards;
@@ -274,6 +273,6 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOff(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
-		txrx.power(POWER_OFF, ROOT_BMP, remap(boards));
+		txrx.powerOff(remap(boards));
 	}
 }
