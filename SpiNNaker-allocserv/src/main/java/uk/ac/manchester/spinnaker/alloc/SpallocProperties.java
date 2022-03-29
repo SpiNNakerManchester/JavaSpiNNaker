@@ -1188,6 +1188,12 @@ public class SpallocProperties {
 		private int fpgaAttempts;
 
 		/**
+		 * Whether to reload the FPGA bitfiles when they don't come up
+		 * correctly.
+		 */
+		private boolean fpgaReload;
+
+		/**
 		 * Number of attempts that will be made to bring up a transceiver,
 		 * provided the failures are due to timeouts and not outright network
 		 * errors. Note that a failure to bring up a transceiver is lethal to
@@ -1202,12 +1208,14 @@ public class SpallocProperties {
 				@DefaultValue("15s") Duration probeInterval,
 				@DefaultValue("2") int powerAttempts,
 				@DefaultValue("3") int fpgaAttempts,
+				@DefaultValue("false") boolean fpgaReload,
 				@DefaultValue("5") int buildAttempts,
 				@DefaultValue("false") boolean dummy) {
 			this.period = period;
 			this.probeInterval = probeInterval;
 			this.powerAttempts = powerAttempts;
 			this.fpgaAttempts = fpgaAttempts;
+			this.fpgaReload = fpgaReload;
 			this.buildAttempts = buildAttempts;
 			this.dummy = dummy;
 		}
@@ -1257,6 +1265,18 @@ public class SpallocProperties {
 
 		public void setFpgaAttempts(int fpgaAttempts) {
 			this.fpgaAttempts = fpgaAttempts;
+		}
+
+		/**
+		 * @return Whether to reload the FPGA bitfiles when they don't come up
+		 *         correctly.
+		 */
+		public boolean isFpgaReload() {
+			return fpgaReload;
+		}
+
+		public void setFpgaReload(boolean fpgaReload) {
+			this.fpgaReload = fpgaReload;
 		}
 
 		/**

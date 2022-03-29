@@ -100,8 +100,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 	/**
 	 * Load the FPGA firmware onto a board.
 	 *
-	 * @param board
-	 *            Which board are we planning to load the firmware on?
+	 * @param boards
+	 *            Which boards are we planning to load the firmware on?
 	 * @throws InterruptedException
 	 *             If interrupted while sleeping
 	 * @throws ProcessException
@@ -111,9 +111,13 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @throws FirmwareLoaderException
 	 *             If something goes wrong.
 	 */
-	void loadFirmware(BMPBoard board)
+	void loadFirmware(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
-		firmwareLoaderFactory.getObject(txrx, bmp, board).bitLoad();
+		int count = 0;
+		for (BMPBoard board: boards) {
+			firmwareLoaderFactory.getObject(txrx, bmp, board)
+					.bitLoad(++count == boards.size());
+		}
 	}
 
 	/**
@@ -256,6 +260,9 @@ class SpiNNaker1 implements SpiNNakerControl {
 			if (retryBoards.isEmpty()) {
 				// Success!
 				return;
+			}
+			if (props.isFpgaReload() && attempt < props.getFpgaAttempts()) {
+				loadFirmware(retryBoards);
 			}
 			boardsToPower = retryBoards;
 		}

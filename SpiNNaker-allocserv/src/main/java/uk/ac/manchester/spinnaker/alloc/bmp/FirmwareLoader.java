@@ -579,6 +579,8 @@ public class FirmwareLoader {
 	/**
 	 * Load the FPGA definitions.
 	 *
+	 * @param postDelay
+	 *            Whether to do the long delay after the FPGA boot/check
 	 * @throws InterruptedException
 	 *             If interrupted while sleeping
 	 * @throws ProcessException
@@ -588,7 +590,7 @@ public class FirmwareLoader {
 	 * @throws FirmwareLoaderException
 	 *             If something goes wrong.
 	 */
-	public void bitLoad()
+	public void bitLoad(boolean postDelay)
 			throws InterruptedException, ProcessException, IOException {
 		// Bleah
 		int idx = 0;
@@ -614,8 +616,9 @@ public class FirmwareLoader {
 		listFPGABootChunks();
 		logBMPVersion();
 
-		// TODO is this a necessary delay?
-		sleep(BIG_SLEEP);
+		if (postDelay) {
+			sleep(BIG_SLEEP);
+		}
 	}
 }
 
