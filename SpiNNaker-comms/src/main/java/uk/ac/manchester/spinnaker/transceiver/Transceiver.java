@@ -119,6 +119,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.EraseFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
 import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadCANStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlashCRC;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector;
@@ -1830,6 +1831,13 @@ public class Transceiver extends UDPTransceiver
 	public void resetFPGA(BMPCoords bmp, BMPBoard board,
 			FPGAResetType resetType) throws IOException, ProcessException {
 		bmpCall(bmp, new ResetFPGA(board, resetType));
+	}
+
+	@Override
+	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new ReadCANStatus()).availableBoards()
+				.map(BMPBoard::new);
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {

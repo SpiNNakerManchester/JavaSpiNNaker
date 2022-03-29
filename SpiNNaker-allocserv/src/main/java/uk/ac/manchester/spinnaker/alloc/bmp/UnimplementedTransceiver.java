@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * A transceiver where every operation fails with
@@ -180,6 +181,12 @@ class UnimplementedTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public void writeBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress)
+			throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}

@@ -39,9 +39,12 @@ import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters;
 import uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters;
+import uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptor;
+import uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * The interface supported by the {@link Transceiver} for talking to a BMP.
@@ -53,6 +56,22 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
  * @author Donal Fellows
  */
 public interface BMPTransceiverInterface {
+	/**
+	 * List which boards are actually available to be manipulated by a
+	 * particular BMP.
+	 *
+	 * @param bmp
+	 *            Which BMP are we asking?
+	 * @return Ordered list of board identifiers.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
+			throws IOException, ProcessException;
+
 	/**
 	 * Power on the whole machine.
 	 * <p>
@@ -1072,6 +1091,29 @@ public interface BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
+
+	/**
+	 * Read the BMP firmware descriptor.
+	 *
+	 * @param bmp
+	 *            the coordinates of the BMP this is targeting
+	 * @param board
+	 *            which board to request the descriptor from
+	 * @param type
+	 *            Which firmware descriptor to read
+	 * @return the firmware descriptor
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	default FirmwareDescriptor readBMPFirmwareDescriptor(BMPCoords bmp,
+			BMPBoard board, FirmwareDescriptors type)
+			throws IOException, ProcessException {
+		return new FirmwareDescriptor(type,
+				readBMPMemory(bmp, board, type.address, type.blockSize));
+	}
 
 	/**
 	 * Get the FPGA reset status.
