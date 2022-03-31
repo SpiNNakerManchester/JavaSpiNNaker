@@ -130,18 +130,41 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws DataSpecificationException, ProcessException,
+	        IOException {
+		// Check for missing
+		List<String> errors = new ArrayList<>();
 		for (CoreToFill toFill : regionsToFill) {
 			for (MemoryRegionReference ref : toFill.refs) {
 				int reference = ref.getReference();
 				if (!regionsToRef.containsKey(reference)) {
-					throw new DataSpecificationException("Reference "
-							+ reference + " from " + toFill + " not found");
+					String potential_refs = "";
+					for (int r : regionsToRef.keySet()) {
+						RegionToRef reg = regionsToRef.get(r);
+						if (reg.core.onSameChipAs(toFill.core)) {
+							potential_refs += ref + "(from core " + reg.core + "); ";
+						}
+					}
+					errors.add("Reference " + reference + " from " + toFill
+							+ " not found from " + potential_refs);
 				}
 				RegionToRef reg = regionsToRef.get(reference);
 				if (!reg.core.onSameChipAs(toFill.core)) {
-					throw new DanglingReferenceException(ref, reg, toFill);
+					errors.add("Region " + ref + " on " + reg + " cannot be"
+							+ " referenced from " + toFill);
 				}
+			}
+		}
+
+		if (!errors.isEmpty()) {
+			throw new DataSpecificationException(errors.toString());
+		}
+
+		// Finish filling things in and write header
+		for (CoreToFill toFill : regionsToFill) {
+			for (MemoryRegionReference ref : toFill.refs) {
+				int reference = ref.getReference();
+				RegionToRef reg = regionsToRef.get(reference);
 				ref.setRegionBase(reg.pointer);
 			}
 			writeHeader(toFill.core, toFill.executor, toFill.start);
