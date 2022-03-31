@@ -20,6 +20,7 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
+import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -324,7 +325,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		private int malloc(CoreToLoad ctl, int bytesUsed)
 				throws IOException, ProcessException {
 			return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
-					new AppID(ctl.appID));
+					new AppID(ctl.appID),
+					ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
 		}
 
 		/**
