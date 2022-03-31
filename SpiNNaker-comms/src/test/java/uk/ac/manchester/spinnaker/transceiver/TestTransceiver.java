@@ -141,6 +141,11 @@ class TestTransceiver {
 			assertTrue(txrx.isConnected());
 			assertNotNull(txrx.getScampVersion());
 			assertNotNull(txrx.getCPUInformation());
+		} catch (ProcessException e) {
+			if (e.getMessage().contains("Operation CMD_READ timed out")) {
+				assumeFalse(true, e.getMessage());
+			}
+			throw e;
 		}
 	}
 
@@ -244,6 +249,11 @@ class TestTransceiver {
 				} else {
 					assertNull(first.difference(txrx.getMachineDetails()));
 				}
+			} catch (ProcessException e) {
+				if (e.getMessage().contains("Operation CMD_VER timed out")) {
+					assumeFalse(true, e.getMessage());
+				}
+				throw e;
 			}
 		}
 	}
