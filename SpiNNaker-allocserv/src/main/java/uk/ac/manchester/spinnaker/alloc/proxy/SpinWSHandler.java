@@ -17,9 +17,13 @@
 package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -40,11 +44,16 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
  */
 @Component
 public class SpinWSHandler extends BinaryWebSocketHandler {
+	private static final Logger log = getLogger(SpinWSHandler.class);
+
 	@Autowired
 	private SpallocAPI spallocCore;
 
 	/** Maps a session to how we handle it locally. */
-	private Map<WebSocketSession, ProxyCore> map;
+	private Map<WebSocketSession, ProxyCore> map = new HashMap<>();
+
+	private WeakHashMap<WebSocketSession, Integer> onDeath =
+			new WeakHashMap<>();
 
 	private ThreadGroup threadGroup;
 
@@ -70,12 +79,10 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 					ProxyCore p = new ProxyCore(session,
 							machine.getConnections(), threadGroup);
 					map.put(session, p);
-					/*
-					 * TODO remember the proxy in the spalloc core.
-					 *
-					 * This is so that things get destroyed when the job changes
-					 * state
-					 */
+					onDeath.put(session, jobId);
+					job.rememberProxy(p);
+					log.info("user {} has web socket {} connected for job {}",
+							session.getPrincipal(), session, jobId);
 				}));
 	}
 
@@ -86,6 +93,13 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 		if (p != null) {
 			p.close();
 		}
+		Integer id = onDeath.get(session);
+		if (id != null) {
+			spallocCore.getJob(new Permit(session), id)
+					.ifPresent(job -> job.forgetProxy(p));
+		}
+		log.info("user {} has disconnected web socket {}",
+				session.getPrincipal(), session);
 	}
 
 	@Override
@@ -100,7 +114,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session,
 			Throwable exception) throws Exception {
-		// TODO log some sort of warning?
+		log.warn("transport error for {}", session, exception);
 		// Don't need to close; afterConnectionClosed() will be called next
 	}
 }

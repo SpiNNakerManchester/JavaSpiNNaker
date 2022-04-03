@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -25,6 +26,7 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.slf4j.Logger;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -36,6 +38,8 @@ import uk.ac.manchester.spinnaker.connections.UDPConnection;
  * @author Donal Fellows
  */
 public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
+	private static final Logger log = getLogger(ProxyUDPConnection.class);
+
 	private static final int TIMEOUT = 1000;
 
 	// Plenty of room; SpiNNaker messages are quite a bit smaller than this
@@ -43,13 +47,21 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 
 	private final WebSocketSession session;
 
+	/**
+	 * The ID. Visible so we can remove the connection from the set of
+	 * connections elsewhere.
+	 */
 	private final int id;
 
+	private final Runnable emergencyRemove;
+
 	ProxyUDPConnection(WebSocketSession session, InetAddress remoteHost,
-			int remotePort, int id) throws IOException {
+			int remotePort, int id, Runnable emergencyRemove)
+			throws IOException {
 		super(null, null, remoteHost, remotePort);
 		this.session = session;
 		this.id = id;
+		this.emergencyRemove = emergencyRemove;
 	}
 
 	/**
@@ -96,11 +108,12 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 			}
 		} catch (IOException e) {
 			try {
-				// TODO remove from connections?
 				close();
+				emergencyRemove.run();
 			} catch (IOException e1) {
-				// TODO log this!
+				e.addSuppressed(e1);
 			}
+			log.warn("problem in SpiNNaker-to-client", e);
 		}
 	}
 }

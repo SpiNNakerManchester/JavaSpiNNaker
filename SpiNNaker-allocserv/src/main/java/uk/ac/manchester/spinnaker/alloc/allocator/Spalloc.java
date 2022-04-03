@@ -78,6 +78,7 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
@@ -122,6 +123,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	private transient Map<String, List<DownLink>> downLinksCache =
 			new HashMap<>();
+
+	private transient Map<Integer, List<ProxyCore>> proxies = new HashMap<>();
 
 	@Override
 	public Map<String, Machine> getMachines(boolean allowOutOfService) {
@@ -729,6 +732,17 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
+	final void killProxies(int jobId) {
+		synchronized (proxies) {
+			List<ProxyCore> list = proxies.remove(jobId);
+			if (list != null) {
+				for (ProxyCore proxy : list) {
+					proxy.close();
+				}
+			}
+		}
+	}
+
 	private static DownLink makeDownLinkFromRow(Row row) {
 		BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
 				row.getInt("board_1_y"), row.getInt("board_1_z"),
@@ -1207,6 +1221,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new PartialJobException();
 			}
 			powerController.destroyJob(id, reason);
+			killProxies(id);
 		}
 
 		@Override
@@ -1456,6 +1471,24 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public Optional<Integer> getDepth() {
 			return Optional.ofNullable(depth);
+		}
+
+		@Override
+		public void rememberProxy(ProxyCore proxy) {
+			synchronized (proxies) {
+				proxies.computeIfAbsent(id, ignored -> new ArrayList<>())
+						.add(proxy);
+			}
+		}
+
+		@Override
+		public void forgetProxy(ProxyCore proxy) {
+			synchronized (proxies) {
+				List<ProxyCore> list = proxies.get(id);
+				if (list != null) {
+					list.remove(proxy);
+				}
+			}
 		}
 
 		private final class SubMachineImpl implements SubMachine {

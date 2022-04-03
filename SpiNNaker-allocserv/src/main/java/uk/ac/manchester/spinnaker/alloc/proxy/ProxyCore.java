@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.socket.CloseStatus.BAD_DATA;
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -116,6 +118,8 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * @author Donal Fellows
  */
 public class ProxyCore implements AutoCloseable {
+	private static final Logger log = getLogger(ProxyCore.class);
+
 	private static final int MAX_PORT = 65535;
 
 	private final WebSocketSession session;
@@ -137,7 +141,8 @@ public class ProxyCore implements AutoCloseable {
 				hosts.put(ci.getChip(),
 						InetAddress.getByName(ci.getHostname()));
 			} catch (UnknownHostException e) {
-				// TODO log this
+				log.warn("unexpectedly unknown board address: {}",
+						ci.getHostname(), e);
 			}
 		}
 	}
@@ -207,15 +212,20 @@ public class ProxyCore implements AutoCloseable {
 		}
 
 		int id = ++count;
-		ProxyUDPConnection conn =
-				new ProxyUDPConnection(session, who, port, id);
-		conns.put(id, conn);
+		ProxyUDPConnection conn = new ProxyUDPConnection(session, who, port, id,
+				() -> removeDeadConnection(id));
+		synchronized (conns) {
+			conns.put(id, conn);
+		}
 
 		// Start sending messages received from the board
 		Thread t = new Thread(threadGroup, conn::receiveLoop,
 				"WS handler for " + who);
 		t.setDaemon(true);
 		t.start();
+
+		log.info("opened proxy connection {}:{} to {}:{}", session, id, who,
+				port);
 
 		ByteBuffer msg = allocate(2 * WORD_SIZE).order(LITTLE_ENDIAN);
 		msg.putInt(ProxyOp.OPEN.ordinal());
@@ -238,12 +248,16 @@ public class ProxyCore implements AutoCloseable {
 	protected ByteBuffer closeConnection(ByteBuffer message)
 			throws IOException {
 		Integer id = message.getInt();
-		ProxyUDPConnection conn = conns.remove(id);
+		ProxyUDPConnection conn;
+		synchronized (conns) {
+			conn = conns.remove(id);
+		}
 		ByteBuffer msg = allocate(2 * WORD_SIZE).order(LITTLE_ENDIAN);
 		msg.putInt(ProxyOp.CLOSE.ordinal());
 		if (conn != null && !conn.isClosed()) {
 			conn.close();
 			msg.putInt(id);
+			log.info("closed proxy connection {}:{}", session, id);
 		}
 		return msg;
 		// Thread will shut down now that the proxy is closed
@@ -265,23 +279,35 @@ public class ProxyCore implements AutoCloseable {
 	 */
 	protected ByteBuffer sendMessage(ByteBuffer message) throws IOException {
 		Integer id = message.getInt();
-		ProxyUDPConnection conn = conns.get(id);
+		ProxyUDPConnection conn;
+		synchronized (conns) {
+			conn = conns.get(id);
+		}
 		if (conn != null && !conn.isClosed()) {
 			conn.send(message.slice());
 		}
 		return null;
 	}
 
+	private void removeDeadConnection(int id) {
+		synchronized (conns) {
+			conns.remove(id);
+		}
+	}
+
 	@Override
 	public void close() {
 		// Take a copy immediately
-		for (ProxyUDPConnection conn : new ArrayList<>(conns.values())) {
+		ArrayList<ProxyUDPConnection> copy;
+		synchronized (conns) {
+			copy = new ArrayList<>(conns.values());
+		}
+		for (ProxyUDPConnection conn : copy) {
 			if (conn != null && !conn.isClosed()) {
 				try {
 					conn.close();
 				} catch (IOException e) {
 					// Don't stop what we're doing; everything must go!
-					// TODO Auto-generated catch block
 				}
 			}
 		}

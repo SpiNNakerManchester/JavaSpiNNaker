@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -666,6 +667,25 @@ public interface SpallocAPI {
 		 * @return The text part of the response
 		 */
 		String reportIssue(IssueReportRequest reqBody, Permit permit);
+
+		/**
+		 * Note that a proxy has been set up for the job. This allows the proxy
+		 * to be closed when the job state changes. (The proxy may already be
+		 * closed at that point.)
+		 *
+		 * @param proxy
+		 *            The proxy.
+		 */
+		void rememberProxy(ProxyCore proxy);
+
+		/**
+		 * Note that a proxy has been dropped from the job and doesn't need to
+		 * be remembered any more.
+		 *
+		 * @param proxy
+		 *            The proxy.
+		 */
+		void forgetProxy(ProxyCore proxy);
 	}
 
 	/**
