@@ -273,7 +273,6 @@ public abstract class SQLQueries {
 					+ "VALUES (:job_id, :board_id, :priority)";
 
 	/** Create a request to allocate triads starting at a particular board. */
-	// FIXME test
 	@Parameter("job_id")
 	@Parameter("board_id")
 	@Parameter("width")
@@ -1644,7 +1643,6 @@ public abstract class SQLQueries {
 	 *
 	 * @see AllocatorTask#tombstone()
 	 */
-	// FIXME test
 	@Parameter("alloc_id")
 	protected static final String DELETE_ALLOC_RECORD =
 			"DELETE FROM old_board_allocations WHERE alloc_id = :alloc_id";
