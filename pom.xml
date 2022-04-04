@@ -346,6 +346,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*</packages>
 							</group>
 						</groups>
+						<notimestamp>true</notimestamp>
 					</configuration>
 				</plugin>
 				<plugin>
