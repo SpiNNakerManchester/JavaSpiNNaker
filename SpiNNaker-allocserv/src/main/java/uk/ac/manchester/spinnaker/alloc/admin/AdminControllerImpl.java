@@ -616,23 +616,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		BoardState bs = getBoardState(board)
 				.orElseThrow(() -> new AdminException("no such board"));
 
-		// Inflate the coordinates
-		board.setId(bs.id);
-		board.setX(bs.x);
-		board.setY(bs.y);
-		board.setZ(bs.z);
-		board.setCabinet(bs.cabinet);
-		board.setFrame(bs.frame);
-		board.setBoard(bs.board);
-		board.setIpAddress(bs.address);
-		board.setMachineName(bs.machineName);
-
-		// Inflate the other properties
-		board.setPowered(bs.getPower());
-		board.setLastPowerOff(bs.getPowerOffTime().orElse(null));
-		board.setLastPowerOn(bs.getPowerOnTime().orElse(null));
-		board.setJobId(bs.getAllocatedJob().orElse(null));
-		board.setReports(bs.getReports());
+		inflateBoardRecord(board, bs);
 
 		// Get or set
 		if (!board.isEnabledDefined()) {
@@ -645,9 +629,41 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			bs.setState(board.isEnabled());
 			spalloc.purgeDownCache();
 		}
-		model.put(BOARD_OBJ, bs);
+		model.put(BOARD_OBJ, bs); // TODO is this right?
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
+	}
+
+	/**
+	 * Copy settings from the record out of the DB.
+	 *
+	 * @param recordToInflate
+	 *            Where the values are copied to. A partial state.
+	 * @param stateFromDB
+	 *            Where the values are copied from. A complete state from the
+	 *            DB.
+	 */
+	private void inflateBoardRecord(BoardRecord recordToInflate,
+			BoardState stateFromDB) {
+		// Inflate the coordinates
+		recordToInflate.setId(stateFromDB.id);
+		recordToInflate.setX(stateFromDB.x);
+		recordToInflate.setY(stateFromDB.y);
+		recordToInflate.setZ(stateFromDB.z);
+		recordToInflate.setCabinet(stateFromDB.cabinet);
+		recordToInflate.setFrame(stateFromDB.frame);
+		recordToInflate.setBoard(stateFromDB.board);
+		recordToInflate.setIpAddress(stateFromDB.address);
+		recordToInflate.setMachineName(stateFromDB.machineName);
+
+		// Inflate the other properties
+		recordToInflate.setPowered(stateFromDB.getPower());
+		recordToInflate
+				.setLastPowerOff(stateFromDB.getPowerOffTime().orElse(null));
+		recordToInflate
+				.setLastPowerOn(stateFromDB.getPowerOnTime().orElse(null));
+		recordToInflate.setJobId(stateFromDB.getAllocatedJob().orElse(null));
+		recordToInflate.setReports(stateFromDB.getReports());
 	}
 
 	/**
