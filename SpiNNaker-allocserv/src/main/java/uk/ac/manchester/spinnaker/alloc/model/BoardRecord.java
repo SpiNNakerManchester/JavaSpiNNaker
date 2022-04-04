@@ -61,7 +61,7 @@ public class BoardRecord {
 
 	private List<BoardIssueReport> reports = new ArrayList<>();
 
-	/** @return The board ID. */
+	/** @return The board ID, if known. */
 	public Integer getId() {
 		return id;
 	}
@@ -70,17 +70,12 @@ public class BoardRecord {
 		this.id = id;
 	}
 
-	/**
-	 * @return whether we have an ID
-	 */
-
+	/** @return Whether we have an ID. */
 	public boolean isIdPresent() {
 		return nonNull(id);
 	}
 
-	/**
-	 * @return the machine name
-	 */
+	/** @return The machine name. */
 	@NotNull
 	public String getMachineName() {
 		return machineName;
@@ -90,9 +85,7 @@ public class BoardRecord {
 		this.machineName = machineName;
 	}
 
-	/**
-	 * @return the board X coordinate
-	 */
+	/** @return The board X coordinate, if known. */
 	public Integer getX() {
 		return x;
 	}
@@ -101,9 +94,7 @@ public class BoardRecord {
 		this.x = x;
 	}
 
-	/**
-	 * @return the board Y coordinate
-	 */
+	/** @return The board Y coordinate, if known. */
 	public Integer getY() {
 		return y;
 	}
@@ -112,9 +103,7 @@ public class BoardRecord {
 		this.y = y;
 	}
 
-	/**
-	 * @return the board Z coordinate
-	 */
+	/** @return The board Z coordinate, if known. */
 	public Integer getZ() {
 		return z;
 	}
@@ -123,16 +112,12 @@ public class BoardRecord {
 		this.z = z;
 	}
 
-	/**
-	 * @return whether we have a full set of triad coordinates
-	 */
+	/** @return Whether we have a full set of triad coordinates. */
 	public boolean isTriadCoordPresent() {
 		return nonNull(x) && nonNull(y) && nonNull(z);
 	}
 
-	/**
-	 * @return the cabinet number
-	 */
+	/** @return The cabinet number, if known. */
 	public Integer getCabinet() {
 		return cabinet;
 	}
@@ -141,9 +126,7 @@ public class BoardRecord {
 		this.cabinet = cabinet;
 	}
 
-	/**
-	 * @return the frame number
-	 */
+	/** @return The frame number, if known. */
 	public Integer getFrame() {
 		return frame;
 	}
@@ -152,9 +135,7 @@ public class BoardRecord {
 		this.frame = frame;
 	}
 
-	/**
-	 * @return the board number
-	 */
+	/** @return The board number, if known. */
 	public Integer getBoard() {
 		return board;
 	}
@@ -163,16 +144,12 @@ public class BoardRecord {
 		this.board = board;
 	}
 
-	/**
-	 * @return whether we have a full set of physical coordinates
-	 */
+	/** @return Whether we have a full set of physical coordinates. */
 	public boolean isPhysicalCoordPresent() {
 		return nonNull(cabinet) && nonNull(frame) && nonNull(board);
 	}
 
-	/**
-	 * @return the board's IP address
-	 */
+	/** @return The board's IP address, if known. */
 	public String getIpAddress() {
 		return ipAddress;
 	}
@@ -181,17 +158,15 @@ public class BoardRecord {
 		this.ipAddress = ipAddress;
 	}
 
-	/**
-	 * @return whether we have an IP address
-	 */
+	/** @return Whether we have an IP address. */
 	public boolean isAddressPresent() {
 		return nonNull(ipAddress);
 	}
 
 	/**
-	 * @return whether we have either the ID of a board (from a previous lookup)
+	 * @return Whether we have either the ID of a board (from a previous lookup)
 	 *         or the name of a machine and at least one set of coordinates for
-	 *         a board on that machine
+	 *         a board on that machine.
 	 */
 	@AssertTrue
 	boolean isValidBoardLocator() {
@@ -199,16 +174,12 @@ public class BoardRecord {
 				|| isPhysicalCoordPresent() || isAddressPresent()));
 	}
 
-	/**
-	 * @return whether the board is enabled
-	 */
+	/** @return Whether the board is enabled. */
 	public boolean isEnabled() {
 		return enabled;
 	}
 
-	/**
-	 * @return whether the board enabled state is defined
-	 */
+	/** @return Whether the board enabled state is defined. */
 	public boolean isEnabledDefined() {
 		return nonNull(enabled);
 	}
