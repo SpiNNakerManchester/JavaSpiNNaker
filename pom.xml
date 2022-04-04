@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<junit.version>5.8.2</junit.version>
 		<checkstyle.version>9.3</checkstyle.version>
 		<javadoc.version>3.3.2</javadoc.version>
-		<testing.version>3.0.0-M5</testing.version>
+		<testing.version>3.0.0-M6</testing.version>
 
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j.version>2.17.2</log4j.version>
