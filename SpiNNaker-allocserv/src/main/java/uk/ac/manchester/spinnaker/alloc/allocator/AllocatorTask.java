@@ -96,7 +96,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	private HistoricalDataProperties historyProps;
 
 	@Autowired
-	private Spalloc spallocCore;
+	private ProxyRememberer rememberer;
 
 	/**
 	 * Helper class representing a rectangle of triads.
@@ -575,7 +575,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			sql.killAlloc.call(id);
 			return sql.markAsDestroyed.call(reason, id) > 0;
 		} finally {
-			spallocCore.killProxies(id);
+			rememberer.killProxies(id);
 		}
 	}
 
@@ -870,7 +870,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		log.debug("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
 		// Any proxies that existed are now defunct; user must make anew
-		spallocCore.killProxies(jobId);
+		rememberer.killProxies(jobId);
 		return setPower(sql, jobId, ON, READY);
 	}
 
@@ -882,7 +882,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		});
 		if (updated) {
-			spallocCore.killProxies(jobId);
+			rememberer.killProxies(jobId);
 			epochs.nextMachineEpoch();
 			epochs.nextJobsEpoch();
 		}

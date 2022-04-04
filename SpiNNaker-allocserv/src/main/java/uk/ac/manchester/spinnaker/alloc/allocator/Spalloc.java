@@ -118,13 +118,14 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Autowired
 	private AllocatorProperties props;
 
+	@Autowired
+	private ProxyRememberer rememberer;
+
 	private transient Map<String, List<BoardCoords>> downBoardsCache =
 			new HashMap<>();
 
 	private transient Map<String, List<DownLink>> downLinksCache =
 			new HashMap<>();
-
-	private transient Map<Integer, List<ProxyCore>> proxies = new HashMap<>();
 
 	@Override
 	public Map<String, Machine> getMachines(boolean allowOutOfService) {
@@ -732,17 +733,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		}
 	}
 
-	final void killProxies(int jobId) {
-		synchronized (proxies) {
-			List<ProxyCore> list = proxies.remove(jobId);
-			if (list != null) {
-				for (ProxyCore proxy : list) {
-					proxy.close();
-				}
-			}
-		}
-	}
-
 	private static DownLink makeDownLinkFromRow(Row row) {
 		BoardCoords board1 = new BoardCoords(row.getInt("board_1_x"),
 				row.getInt("board_1_y"), row.getInt("board_1_z"),
@@ -1221,7 +1211,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new PartialJobException();
 			}
 			powerController.destroyJob(id, reason);
-			killProxies(id);
+			rememberer.killProxies(id);
 		}
 
 		@Override
@@ -1475,20 +1465,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		@Override
 		public void rememberProxy(ProxyCore proxy) {
-			synchronized (proxies) {
-				proxies.computeIfAbsent(id, ignored -> new ArrayList<>())
-						.add(proxy);
-			}
+			rememberer.rememberProxyForJob(id, proxy);
 		}
 
 		@Override
 		public void forgetProxy(ProxyCore proxy) {
-			synchronized (proxies) {
-				List<ProxyCore> list = proxies.get(id);
-				if (list != null) {
-					list.remove(proxy);
-				}
-			}
+			rememberer.removeProxyForJob(id, proxy);
 		}
 
 		private final class SubMachineImpl implements SubMachine {
