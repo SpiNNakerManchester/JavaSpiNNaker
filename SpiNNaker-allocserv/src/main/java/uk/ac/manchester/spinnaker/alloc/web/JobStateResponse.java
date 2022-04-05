@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;
 
 /**
  * The state of a job.
@@ -75,6 +76,10 @@ public class JobStateResponse {
 	@JsonInclude(NON_NULL)
 	public final URI chipRef;
 
+	/** How to connect to the proxy. Proxy is its own special protocol. */
+	@JsonInclude(NON_NULL)
+	public final URI proxyRef;
+
 	/**
 	 * The original request that created the job. Or at least the non-ignored
 	 * parts of it.
@@ -87,6 +92,7 @@ public class JobStateResponse {
 		machineRef = null;
 		powerRef = null;
 		chipRef = null;
+		proxyRef = null;
 		originalRequest = null;
 	}
 
@@ -120,6 +126,22 @@ public class JobStateResponse {
 		// This one has a sub-path
 		powerRef =
 				b.path("{subresource}").build(JOB_MACHINE, JOB_MACHINE_POWER);
+
+		switch (state) {
+		case POWER:
+		case READY:
+			proxyRef = makeProxyURI(job, ui);
+			break;
+		default:
+			// Not telling the user the proxy URL if queued or destroyed
+			proxyRef = null;
+		}
+	}
+
+	private static URI makeProxyURI(Job job, UriInfo ui) {
+		// TODO is this correct?
+		return ui.getBaseUriBuilder().scheme("wss").path(SpinWSHandler.PATH)
+				.build(job.getId());
 	}
 
 	/** @return The formal state of the job */
