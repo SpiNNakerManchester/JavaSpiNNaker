@@ -16,7 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.proxy;
 
+import static java.lang.Integer.parseInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
@@ -26,14 +28,18 @@ import java.util.WeakHashMap;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
+import org.springframework.web.util.UriTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
+import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 
 /**
  * Initial handler for web sockets. Maps a particular websocket to a
@@ -46,6 +52,8 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 public class SpinWSHandler extends BinaryWebSocketHandler {
 	private static final Logger log = getLogger(SpinWSHandler.class);
 
+	private static final String NO_JOB = "0";
+
 	@Autowired
 	private SpallocAPI spallocCore;
 
@@ -57,33 +65,41 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 
 	private ThreadGroup threadGroup;
 
+	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
+
 	public SpinWSHandler() {
 		threadGroup = new ThreadGroup("WebSocket proxy handlers");
 	}
 
-	private static final AntPathMatcher MATCHER = new AntPathMatcher();
-
-	/**
-	 * The path that we match in this handler.
-	 */
-	public static final String PATH = "/system/proxy/{id:\\d+}";
+	/** The path that we match in this handler. */
+	private final UriTemplate template =
+			new UriTemplate("/system/proxy/{id:\\d+}");
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
-		// Connection established, but need to check auth and session binding
-		int jobId = Integer.parseInt(MATCHER
-				.extractUriTemplateVariables(PATH, session.getUri().getPath())
-				.get("id"));
-		spallocCore.getJob(new Permit(session), jobId)
-				.ifPresent(job -> job.getMachine().ifPresent(machine -> {
-					ProxyCore p = new ProxyCore(session,
-							machine.getConnections(), threadGroup);
-					map.put(session, p);
-					onDeath.put(session, jobId);
-					job.rememberProxy(p);
-					log.info("user {} has web socket {} connected for job {}",
-							session.getPrincipal(), session, jobId);
-				}));
+		/*
+		 * Connection established, but must check that user can see this job.
+		 * Fortunately that's easy, as we must retrieve the job to get the set
+		 * of boards that we can proxy to.
+		 */
+		Job job = lookUpJob(session);
+		SubMachine machine = job.getMachine().orElseThrow(
+				() -> new RequestFailedException(SERVICE_UNAVAILABLE,
+						"job not in state where proxying permitted"));
+		ProxyCore proxy = new ProxyCore(session, machine.getConnections(),
+				threadGroup, idIssuer::issueId);
+		map.put(session, proxy);
+		onDeath.put(session, job.getId());
+		job.rememberProxy(proxy);
+		log.info("user {} has web socket {} connected for job {}",
+				session.getPrincipal(), session, job.getId());
+	}
+
+	private Job lookUpJob(WebSocketSession session) {
+		int jobId = parseInt(template.match(session.getUri().getPath())
+				.getOrDefault("id", NO_JOB));
+		return spallocCore.getJob(new Permit(session), jobId)
+				.orElseThrow(() -> new NotFound("no such job"));
 	}
 
 	@Override
@@ -116,5 +132,24 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 			Throwable exception) throws Exception {
 		log.warn("transport error for {}", session, exception);
 		// Don't need to close; afterConnectionClosed() will be called next
+	}
+
+	/**
+	 * Handles giving each proxy connection its own ID. We give them unique IDs
+	 * so that if someone opens multiple websockets to the same job, they can't
+	 * get the same ID for the connections underneath; that would be just too
+	 * confusing!
+	 */
+	private static class ConnectionIDIssuer {
+		private int id;
+
+		/**
+		 * Issue an ID.
+		 *
+		 * @return A new ID.
+		 */
+		private synchronized int issueId() {
+			return ++id;
+		}
 	}
 }

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.IntSupplier;
 
 import org.slf4j.Logger;
 import org.springframework.web.socket.BinaryMessage;
@@ -128,12 +129,12 @@ public class ProxyCore implements AutoCloseable {
 
 	private final Map<Integer, ProxyUDPConnection> conns = new HashMap<>();
 
-	private int count;
+	private IntSupplier idIssuer;
 
 	private final ThreadGroup threadGroup;
 
 	ProxyCore(WebSocketSession s, List<ConnectionInfo> connections,
-			ThreadGroup threadGroup) {
+			ThreadGroup threadGroup, IntSupplier idIssuer) {
 		session = s;
 		this.threadGroup = threadGroup;
 		for (ConnectionInfo ci : connections) {
@@ -211,7 +212,7 @@ public class ProxyCore implements AutoCloseable {
 			throw new IllegalArgumentException("unrecognised ethernet chip");
 		}
 
-		int id = ++count;
+		int id = idIssuer.getAsInt();
 		ProxyUDPConnection conn = new ProxyUDPConnection(session, who, port, id,
 				() -> removeDeadConnection(id));
 		synchronized (conns) {
