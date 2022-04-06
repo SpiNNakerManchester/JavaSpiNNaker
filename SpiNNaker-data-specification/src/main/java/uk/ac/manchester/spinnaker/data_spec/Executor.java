@@ -213,8 +213,9 @@ public class Executor implements Closeable {
 					MemoryRegionReal regReal = (MemoryRegionReal) reg;
 					int n_words = (int) Math.ceil(regReal.getMaxWritePointer()
 							/ 4);
-					IntBuffer buf = regReal.getRegionData().duplicate()
-							.order(LITTLE_ENDIAN).rewind().asIntBuffer();
+					ByteBuffer bytebuf = (ByteBuffer) regReal.getRegionData()
+							.duplicate().order(LITTLE_ENDIAN).rewind();
+					IntBuffer buf = bytebuf.asIntBuffer();
 					long sum = 0;
 					for (int i = 0; i < n_words; i++) {
 						sum = (sum + (buf.get() & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
