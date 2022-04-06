@@ -49,6 +49,8 @@ import org.slf4j.Logger;
 public class Executor implements Closeable {
 	private static final Logger log = getLogger(Executor.class);
 
+	private static final long UNSIGNED_INT = 0xFFFFFFFFL;
+
 	private InputStream inputStream;
 
 	private final ByteBuffer input;
@@ -211,18 +213,18 @@ public class Executor implements Closeable {
 				if (reg instanceof MemoryRegionReal) {
 					// Work out the checksum
 					MemoryRegionReal regReal = (MemoryRegionReal) reg;
-					int n_words = (int) Math.ceil(regReal.getMaxWritePointer()
+					int nWords = (int) Math.ceil(regReal.getMaxWritePointer()
 							/ 4);
 					ByteBuffer bytebuf = (ByteBuffer) regReal.getRegionData()
 							.duplicate().order(LITTLE_ENDIAN).rewind();
 					IntBuffer buf = bytebuf.asIntBuffer();
 					long sum = 0;
-					for (int i = 0; i < n_words; i++) {
-						sum = (sum + (buf.get() & 0xFFFFFFFFL)) & 0xFFFFFFFFL;
+					for (int i = 0; i < nWords; i++) {
+						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
 					}
 					// Write the checksum and number of words
-					buffer.putInt((int) (sum & 0xFFFFFFFFL));
-					buffer.putInt(n_words);
+					buffer.putInt((int) (sum & UNSIGNED_INT));
+					buffer.putInt(nWords);
 				} else {
 					// Don't checksum references
 					buffer.putInt(0);
