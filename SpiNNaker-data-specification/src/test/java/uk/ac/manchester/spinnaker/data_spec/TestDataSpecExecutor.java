@@ -126,12 +126,12 @@ public class TestDataSpecExecutor {
 		executor.setBaseAddress(0);
 		executor.addPointerTable(buffer);
 		IntBuffer table = ((ByteBuffer) buffer.flip()).asIntBuffer();
-		assertEquals(MAX_MEM_REGIONS, table.limit());
+		assertEquals(MAX_MEM_REGIONS * 3, table.limit());
 		assertEquals(header_and_table_size, table.get(0));
-		assertEquals(header_and_table_size + 100, table.get(1));
-		assertEquals(header_and_table_size + 300, table.get(2));
-		assertEquals(header_and_table_size + 304, table.get(3));
-		range(4, MAX_MEM_REGIONS).forEach(r -> assertEquals(0, table.get(r)));
+		assertEquals(header_and_table_size + 100, table.get(3));
+		assertEquals(header_and_table_size + 300, table.get(6));
+		assertEquals(header_and_table_size + 304, table.get(9));
+		range(4, MAX_MEM_REGIONS).forEach(r -> assertEquals(0, table.get(r * 3)));
 
 		// Test the header
 		buffer.clear();
