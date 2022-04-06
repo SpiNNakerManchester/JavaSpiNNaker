@@ -61,7 +61,7 @@ public class TestDataSpecExecutor {
 		executor.close();
 
 		// Test the size
-		int header_and_table_size = (MAX_MEM_REGIONS + 2) * 4;
+		int header_and_table_size = ((MAX_MEM_REGIONS * 3) + 2) * 4;
 		assertEquals(header_and_table_size + 100 + 200 + 4 + 12,
 				executor.getConstructedDataSize());
 
