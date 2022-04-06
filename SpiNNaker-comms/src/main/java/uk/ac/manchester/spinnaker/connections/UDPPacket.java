@@ -20,7 +20,7 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 /**
- * A packet with an address
+ * A packet with an address.
  */
 public class UDPPacket {
 

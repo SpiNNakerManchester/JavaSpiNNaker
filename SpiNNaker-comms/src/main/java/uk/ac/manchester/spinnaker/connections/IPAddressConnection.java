@@ -67,9 +67,9 @@ public class IPAddressConnection extends UDPConnection<InetAddress>
 			SocketAddress addr = packet.getAddress();
 			if (addr instanceof InetSocketAddress) {
 				InetSocketAddress inetAddr = (InetSocketAddress) addr;
-			    if (inetAddr.getPort() == BOOTROM_SPINN_PORT) {
-				    return inetAddr.getAddress();
-			    }
+				if (inetAddr.getPort() == BOOTROM_SPINN_PORT) {
+					return inetAddr.getAddress();
+				}
 			}
 		} catch (IOException e) {
 			// Do nothing
