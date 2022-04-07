@@ -148,10 +148,14 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 		/**
 		 * Issue an ID.
 		 *
-		 * @return A new ID.
+		 * @return A new ID. Never zero.
 		 */
 		private synchronized int issueId() {
-			return ++id;
+			int thisId;
+			do {
+				thisId = ++id;
+			} while (thisId == 0);
+			return thisId;
 		}
 	}
 }

@@ -57,16 +57,18 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#OPEN 0}
- * <td>Chip X
- * <td>Chip Y
- * <td>UDP Port on Chip
+ * <td>Correlation&nbsp;ID
+ * <td>Chip&nbsp;X
+ * <td>Chip&nbsp;Y
+ * <td>UDP&nbsp;Port on Chip
  * </tr>
  * </table>
  * </td>
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#OPEN 0}
- * <td>Connection ID
+ * <td>Correlation&nbsp;ID
+ * <td>Connection&nbsp;ID
  * </tr>
  * </table>
  * </td>
@@ -74,35 +76,39 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * the allocation. Returns an ID that can be used to refer to that connection.
  * Note that opening a socket declares that you are prepared to receive messages
  * from SpiNNaker on it, but does not mean that SpiNNaker will send any messages
- * that way.</td>
+ * that way. The correlation ID is caller-nominated, and just passed back
+ * uninterpreted in the response message.</td>
  * </tr>
  * <tr>
  * <td>{@linkplain #closeConnection(ByteBuffer) Close Connection}</td>
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#CLOSE 1}
- * <td>Connection ID
+ * <td>Correlation&nbsp;ID
+ * <td>Connection&nbsp;ID
  * </tr>
  * </table>
  * </td>
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#CLOSE 1}
- * <td>Connection ID (if closed)
+ * <td>Correlation&nbsp;ID
+ * <td>Connection&nbsp;ID (if closed) or {@code 0} (not closed)
  * </tr>
  * </table>
  * </td>
  * <td>Close an established UDP socket, given its ID. Returns the ID on success,
- * and an empty message on failure (e.g., because the socket is already
- * closed).</td>
+ * and zero on failure (e.g., because the socket is already closed). The
+ * correlation ID is caller-nominated, and just passed back uninterpreted in the
+ * response message.</td>
  * </tr>
  * <tr>
  * <td>{@linkplain #sendMessage(ByteBuffer) Send Message}</td>
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#MESSAGE 2}
- * <td>Connection ID
- * <td>Raw message bytes...
+ * <td>Connection&nbsp;ID
+ * <td>Raw&nbsp;message&nbsp;bytes...
  * </tr>
  * </table>
  * </td>
@@ -123,6 +129,8 @@ public class ProxyCore implements AutoCloseable {
 
 	private static final int MAX_PORT = 65535;
 
+	private static final int RESPONSE_WORDS = 3;
+
 	private final WebSocketSession session;
 
 	private final Map<ChipLocation, InetAddress> hosts = new HashMap<>();
@@ -133,6 +141,16 @@ public class ProxyCore implements AutoCloseable {
 
 	private final ThreadGroup threadGroup;
 
+	/**
+	 * @param s
+	 *            The websocket session.
+	 * @param connections
+	 *            What boards may this session talk to.
+	 * @param threadGroup
+	 *            Where to group the worker threads.
+	 * @param idIssuer
+	 *            Provides connection IDs. These will never be zero.
+	 */
 	ProxyCore(WebSocketSession s, List<ConnectionInfo> connections,
 			ThreadGroup threadGroup, IntSupplier idIssuer) {
 		session = s;
@@ -183,6 +201,14 @@ public class ProxyCore implements AutoCloseable {
 		}
 	}
 
+	private static ByteBuffer response(ProxyOp op, int correlationId) {
+		ByteBuffer msg =
+				allocate(RESPONSE_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+		msg.putInt(op.ordinal());
+		msg.putInt(correlationId);
+		return msg;
+	}
+
 	/**
 	 * Open a connection. Note that no control over the local (to the service)
 	 * port number or address is provided, nor is a mechanism given to easily
@@ -201,6 +227,7 @@ public class ProxyCore implements AutoCloseable {
 	 *             If bad arguments are supplied.
 	 */
 	protected ByteBuffer openConnection(ByteBuffer message) throws IOException {
+		int corId = message.getInt();
 		int x = message.getInt();
 		int y = message.getInt();
 		int port = message.getInt();
@@ -228,8 +255,7 @@ public class ProxyCore implements AutoCloseable {
 		log.info("opened proxy connection {}:{} to {}:{}", session, id, who,
 				port);
 
-		ByteBuffer msg = allocate(2 * WORD_SIZE).order(LITTLE_ENDIAN);
-		msg.putInt(ProxyOp.OPEN.ordinal());
+		ByteBuffer msg = response(ProxyOp.OPEN, corId);
 		msg.putInt(id);
 		return msg;
 	}
@@ -248,17 +274,19 @@ public class ProxyCore implements AutoCloseable {
 	 */
 	protected ByteBuffer closeConnection(ByteBuffer message)
 			throws IOException {
-		Integer id = message.getInt();
+		int corId = message.getInt();
+		int id = message.getInt();
 		ProxyUDPConnection conn;
 		synchronized (conns) {
 			conn = conns.remove(id);
 		}
-		ByteBuffer msg = allocate(2 * WORD_SIZE).order(LITTLE_ENDIAN);
-		msg.putInt(ProxyOp.CLOSE.ordinal());
+		ByteBuffer msg = response(ProxyOp.CLOSE, corId);
 		if (conn != null && !conn.isClosed()) {
 			conn.close();
 			msg.putInt(id);
 			log.info("closed proxy connection {}:{}", session, id);
+		} else {
+			msg.putInt(0);
 		}
 		return msg;
 		// Thread will shut down now that the proxy is closed
