@@ -146,6 +146,17 @@ class SpiNNaker1 implements SpiNNakerControl {
 		return boardIds.stream().map(idToBoard::get).collect(toList());
 	}
 
+	/** Notes that a board probably needs its FPGA definitions reloading. */
+	private static class FPGAReloadRequired extends Exception {
+		private static final long serialVersionUID = 1L;
+
+		final BMPBoard board;
+
+		FPGAReloadRequired(BMPBoard board) {
+			this.board = board;
+		}
+	}
+
 	/**
 	 * Check whether an FPGA has come up in a good state.
 	 *
@@ -154,8 +165,12 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param fpga
 	 *            Which FPGA (0, 1, or 2) is being tested?
 	 * @return True if the FPGA is in a correct state, false otherwise.
+	 * @throws FPGAReloadRequired
+	 *             If the FPGA is in such a bad state that the FPGA definitions
+	 *             for the board need to be reloaded.
 	 */
-	private boolean isGoodFPGA(BMPBoard board, FPGA fpga) {
+	private boolean isGoodFPGA(BMPBoard board, FPGA fpga)
+			throws FPGAReloadRequired {
 		int flag;
 		try {
 			flag = txrx.readFPGARegister(fpga, FLAG, board);
@@ -169,6 +184,9 @@ class SpiNNaker1 implements SpiNNakerControl {
 		if (!ok) {
 			log.warn("{} on board {} of {} has incorrect FPGA ID flag {}", fpga,
 					board, machine.getName(), fpgaId);
+			if (fpgaId == FPGA.FPGA_ALL.value) {
+				throw new FPGAReloadRequired(board);
+			}
 		}
 		return ok;
 	}
@@ -215,9 +233,12 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param board
 	 *            The board ID
 	 * @return Whether the board's FPGAs all came up correctly.
+	 * @throws FPGAReloadRequired
+	 *             If an FPGA is in such a bad state that the FPGA definitions
+	 *             for the board need to be reloaded.
 	 * @see #isGoodFPGA(Integer, FPGA)
 	 */
-	private boolean hasGoodFPGAs(BMPBoard board) {
+	private boolean hasGoodFPGAs(BMPBoard board) throws FPGAReloadRequired {
 		for (FPGA fpga : FPGA.values()) {
 			if (fpga.isSingleFPGA() && !isGoodFPGA(board, fpga)) {
 				return false;
@@ -244,25 +265,36 @@ class SpiNNaker1 implements SpiNNakerControl {
 			 */
 
 			List<BMPBoard> retryBoards = new ArrayList<>();
+			List<BMPBoard> reloadBoards = new ArrayList<>();
 			for (BMPBoard board : boardsToPower) {
 				// Skip board if old BMP version
 				if (!canBoardManageFPGAs(board)) {
 					continue;
 				}
-
-				if (!hasGoodFPGAs(board)) {
-					retryBoards.add(board);
+				try {
+					if (!hasGoodFPGAs(board)) {
+						retryBoards.add(board);
+					}
+				} catch (FPGAReloadRequired e) {
+					reloadBoards.add(e.board);
 				}
 			}
-			if (retryBoards.isEmpty()) {
+			if (retryBoards.isEmpty() && reloadBoards.isEmpty()) {
 				// Success!
 				return;
 			}
-			if (props.isFpgaReload() && attempt < props.getFpgaAttempts()) {
+			// We don't try reloading the first time
+			if (props.isFpgaReload() && attempt > 1
+					&& attempt < props.getFpgaAttempts()
+					&& !reloadBoards.isEmpty()) {
 				log.warn("reloading FPGA firmware on {} boards",
 						retryBoards.size());
-				loadFirmware(retryBoards);
+				loadFirmware(reloadBoards);
+				// Need a full retry after that!
+				boardsToPower = remap(boards);
+				continue;
 			}
+			retryBoards.addAll(reloadBoards); // Might not be empty
 			boardsToPower = retryBoards;
 		}
 		throw new IOException("Could not get correct FPGA ID for "
