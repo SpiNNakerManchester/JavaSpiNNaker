@@ -65,7 +65,7 @@ jobs:
       continue-on-error: true
     - name: Upload Build (JDK 8 only)
       if: matrix.java == 8
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: spinnaker-exe.jar
         path: SpiNNaker-front-end/target/spinnaker-exe.jar
