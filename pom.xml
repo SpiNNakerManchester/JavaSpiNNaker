@@ -391,7 +391,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>uk.co.automatictester</groupId>
 					<artifactId>truststore-maven-plugin</artifactId>
-					<version>2.6.0</version>
+					<version>3.0.0</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.eirslett</groupId>
