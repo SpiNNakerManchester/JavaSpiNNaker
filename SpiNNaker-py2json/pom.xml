@@ -85,6 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/*.csv</exclude>
 							<exclude>**/*.json</exclude>
 							<exclude>src/main/python/enum.py</exclude>
+							<exclude>**/dependency-reduced-pom.xml</exclude>
 						</excludes>
 					</configuration>
 				</plugin>
