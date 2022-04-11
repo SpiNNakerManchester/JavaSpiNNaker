@@ -884,6 +884,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<doclint>none</doclint>
 							</configuration>
 						</plugin>
+						<!-- Newer has incompatible bytecode -->
+						<plugin>
+							<groupId>com.github.blutorange</groupId>
+							<artifactId>closure-compiler-maven-plugin</artifactId>
+							<version>2.21.0</version>
+						</plugin>
 					</plugins>
 				</pluginManagement>
 			</build>
