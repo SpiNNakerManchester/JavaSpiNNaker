@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<spring.version>5.3.18</spring.version>
 		<spring.boot.version>2.6.2</spring.boot.version>
-		<spring.security.version>5.6.1</spring.security.version>
+		<spring.security.version>5.6.2</spring.security.version>
 
 		<cxf.version>3.5.1</cxf.version>
 		<jackson.version>2.13.2</jackson.version>
