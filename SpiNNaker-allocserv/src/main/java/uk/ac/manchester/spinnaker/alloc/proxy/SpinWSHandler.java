@@ -72,7 +72,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 	}
 
 	/** The path that we match in this handler. */
-	public static final String PATH = "proxy/{id:\\\\d+}";
+	public static final String PATH = "proxy/{id:\\d+}";
 
 	/** The {@link #PATH} as a template. */
 	private final UriTemplate template = new UriTemplate("/system/" + PATH);
