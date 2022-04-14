@@ -85,6 +85,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 * Core SpiNNaker message receive and dispatch-to-websocket loop.
 	 */
 	protected void receiveLoop() {
+		log.info("launched listener {}", this);
 		ByteBuffer workingBuffer =
 				allocate(WORKING_BUFFER_SIZE).order(LITTLE_ENDIAN);
 		// Fixed header from this particular connection
@@ -101,6 +102,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 					// Timeout; go round the loop again.
 					continue;
 				}
+				log.info("{} received message {}", this, msg.get());
 				ByteBuffer outgoing = workingBuffer.duplicate();
 				outgoing.put(msg.get());
 				outgoing.flip();

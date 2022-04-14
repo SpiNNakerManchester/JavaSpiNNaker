@@ -309,13 +309,13 @@ public class ProxyCore implements AutoCloseable {
 	 */
 	protected ByteBuffer sendMessage(ByteBuffer message) throws IOException {
 		Integer id = message.getInt();
-		log.info("got message for channel {}", id);
+		log.debug("got message for channel {}", id);
 		ProxyUDPConnection conn;
 		synchronized (conns) {
 			conn = conns.get(id);
 		}
 		if (conn != null && !conn.isClosed()) {
-			log.info("sending message to {} of length {}", conn,
+			log.debug("sending message to {} of length {}", conn,
 					message.remaining());
 			conn.send(message.slice());
 		}
