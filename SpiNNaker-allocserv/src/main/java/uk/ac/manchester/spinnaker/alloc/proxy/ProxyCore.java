@@ -137,7 +137,7 @@ public class ProxyCore implements AutoCloseable {
 
 	private final Map<Integer, ProxyUDPConnection> conns = new HashMap<>();
 
-	private IntSupplier idIssuer;
+	private final IntSupplier idIssuer;
 
 	private final ThreadGroup threadGroup;
 
@@ -155,6 +155,7 @@ public class ProxyCore implements AutoCloseable {
 			ThreadGroup threadGroup, IntSupplier idIssuer) {
 		session = s;
 		this.threadGroup = threadGroup;
+		this.idIssuer = idIssuer;
 		for (ConnectionInfo ci : connections) {
 			try {
 				hosts.put(ci.getChip(),
