@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -114,6 +115,10 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		}
 	}
 
+	private Optional<Job> getJob(Permit permit, int jobId) {
+		return permit.authorize(() -> spallocCore.getJob(permit, jobId));
+	}
+
 	/**
 	 * Connection established, but must check that user can see this job.
 	 * Fortunately that's easy, as we must retrieve the job to get the set of
@@ -128,7 +133,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 *             If the job ID can't be mapped to a job
 	 */
 	protected void initProxyCore(WebSocketSession session, int jobId) {
-		Job job = spallocCore.getJob(new Permit(session), jobId)
+		Job job = getJob(new Permit(session), jobId)
 				.orElseThrow(() -> new NotFound("no such job"));
 		SubMachine machine = job.getMachine().orElseThrow(
 				() -> new RequestFailedException(SERVICE_UNAVAILABLE,
@@ -151,7 +156,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		}
 		Integer id = onDeath.get(session);
 		if (id != null) {
-			spallocCore.getJob(new Permit(session), id)
+			getJob(new Permit(session), id)
 					.ifPresent(job -> job.forgetProxy(p));
 		}
 		log.info("user {} has disconnected web socket {}",
