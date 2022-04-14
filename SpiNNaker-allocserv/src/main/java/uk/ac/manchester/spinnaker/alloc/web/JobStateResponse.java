@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
@@ -32,7 +31,6 @@ import java.util.Optional;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -48,8 +46,6 @@ import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;
  * @author Donal Fellows
  */
 public class JobStateResponse {
-	private static final Logger log = getLogger(JobStateResponse.class);
-
 	private JobState state;
 
 	private String owner;
@@ -147,8 +143,6 @@ public class JobStateResponse {
 		// Messy; needs to refer to the other half of the application
 		URI u = ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
 				.path(SpinWSHandler.PATH).build(job.getId());
-		log.info("built {} from {} and {}", u, ui.getAbsolutePath(),
-				job.getId());
 		return u;
 	}
 
