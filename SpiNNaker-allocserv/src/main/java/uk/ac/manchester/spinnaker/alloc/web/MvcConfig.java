@@ -60,6 +60,6 @@ public class MvcConfig implements WebMvcConfigurer, WebSocketConfigurer {
 
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(wsHandler, "/srv/proxy/*");
+		registry.addHandler(wsHandler, "/proxy/*");
 	}
 }
