@@ -82,8 +82,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	public static final String PATH = "proxy/{id:\\d+}";
 
 	/** The {@link #PATH} as a template. */
-	// TODO is this right?
-	private final UriTemplate template = new UriTemplate("/system/" + PATH);
+	private final UriTemplate template = new UriTemplate(PATH);
 
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,7 +113,8 @@ public class JobStateResponse {
 		}
 	}
 
-	JobStateResponse(Job job, UriInfo ui, JsonMapper mapper) {
+	JobStateResponse(Job job, UriInfo ui, JsonMapper mapper,
+			String servletPath) {
 		state = job.getState();
 		startTime = job.getStartTime();
 		reason = job.getReason().orElse(null);
@@ -134,7 +135,7 @@ public class JobStateResponse {
 		switch (state) {
 		case POWER:
 		case READY:
-			proxyRef = makeProxyURI(job, ui);
+			proxyRef = makeProxyURI(job, ui, servletPath);
 			break;
 		default:
 			// Not telling the user the proxy URL if queued or destroyed
@@ -142,10 +143,10 @@ public class JobStateResponse {
 		}
 	}
 
-	private static URI makeProxyURI(Job job, UriInfo ui) {
-		// TODO is this path correct? I suspect not...
-		URI u = ui.getBaseUriBuilder().scheme("wss").path(SpinWSHandler.PATH)
-				.build(job.getId());
+	private static URI makeProxyURI(Job job, UriInfo ui, String servletPath) {
+		// Messy; needs to refer to the other half of the application
+		URI u = ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
+				.path(SpinWSHandler.PATH).build(job.getId());
 		log.info("built {} from {} and {}", u, ui.getAbsolutePath(),
 				job.getId());
 		return u;
