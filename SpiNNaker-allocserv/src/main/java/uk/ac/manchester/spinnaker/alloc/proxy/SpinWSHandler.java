@@ -27,11 +27,15 @@ import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
+import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.util.UriTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -49,10 +53,13 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
  * @author Donal Fellows
  */
 @Component
-public class SpinWSHandler extends BinaryWebSocketHandler {
+public class SpinWSHandler extends BinaryWebSocketHandler
+		implements HandshakeInterceptor {
 	private static final Logger log = getLogger(SpinWSHandler.class);
 
 	private static final String NO_JOB = "0";
+
+	private static final String JOB_ID = "job-id";
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -75,33 +82,65 @@ public class SpinWSHandler extends BinaryWebSocketHandler {
 	public static final String PATH = "proxy/{id:\\d+}";
 
 	/** The {@link #PATH} as a template. */
+	// TODO is this right?
 	private final UriTemplate template = new UriTemplate("/system/" + PATH);
 
 	@Override
+	public boolean beforeHandshake(ServerHttpRequest request,
+			ServerHttpResponse response, WebSocketHandler wsHandler,
+			Map<String, Object> attributes) throws Exception {
+		int jobId = parseInt(template.match(request.getURI().getPath())
+				.getOrDefault("id", NO_JOB));
+		log.info("parsed {} with {} to get {}", request.getURI().getPath(),
+				template, jobId);
+		if (jobId > 0) {
+			attributes.put(JOB_ID, jobId);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void afterHandshake(ServerHttpRequest request,
+			ServerHttpResponse response, WebSocketHandler wsHandler,
+			Exception exception) {
+	}
+
+	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
-		/*
-		 * Connection established, but must check that user can see this job.
-		 * Fortunately that's easy, as we must retrieve the job to get the set
-		 * of boards that we can proxy to.
-		 */
-		Job job = lookUpJob(session);
+		Map<String, Object> attrs = session.getAttributes();
+		if (attrs.containsKey(JOB_ID)) {
+			initProxyCore(session, (Integer) attrs.get(JOB_ID));
+			return;
+		}
+	}
+
+	/**
+	 * Connection established, but must check that user can see this job.
+	 * Fortunately that's easy, as we must retrieve the job to get the set of
+	 * boards that we can proxy to.
+	 *
+	 * @param session
+	 *            The Websocket session
+	 * @param jobId
+	 *            The job ID (not yet validated) extracted from the websocket
+	 *            path
+	 * @throws NotFound
+	 *             If the job ID can't be mapped to a job
+	 */
+	protected void initProxyCore(WebSocketSession session, int jobId) {
+		Job job = spallocCore.getJob(new Permit(session), jobId)
+				.orElseThrow(() -> new NotFound("no such job"));
 		SubMachine machine = job.getMachine().orElseThrow(
 				() -> new RequestFailedException(SERVICE_UNAVAILABLE,
 						"job not in state where proxying permitted"));
 		ProxyCore proxy = new ProxyCore(session, machine.getConnections(),
 				threadGroup, idIssuer::issueId);
 		map.put(session, proxy);
-		onDeath.put(session, job.getId());
+		onDeath.put(session, jobId);
 		job.rememberProxy(proxy);
 		log.info("user {} has web socket {} connected for job {}",
-				session.getPrincipal(), session, job.getId());
-	}
-
-	private Job lookUpJob(WebSocketSession session) {
-		int jobId = parseInt(template.match(session.getUri().getPath())
-				.getOrDefault("id", NO_JOB));
-		return spallocCore.getJob(new Permit(session), jobId)
-				.orElseThrow(() -> new NotFound("no such job"));
+				session.getPrincipal(), session, jobId);
 	}
 
 	@Override
