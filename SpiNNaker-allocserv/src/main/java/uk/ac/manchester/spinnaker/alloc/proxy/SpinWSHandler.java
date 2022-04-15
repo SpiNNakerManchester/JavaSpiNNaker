@@ -21,6 +21,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.EOFException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -175,7 +176,10 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@Override
 	public void handleTransportError(WebSocketSession session,
 			Throwable exception) throws Exception {
-		log.warn("transport error for {}", session, exception);
+		if (!(exception instanceof EOFException)) {
+			// We don't log EOFException
+			log.warn("transport error for {}", session, exception);
+		}
 		// Don't need to close; afterConnectionClosed() will be called next
 	}
 

@@ -228,24 +228,42 @@ public class ProxyCore implements AutoCloseable {
 	 *             If bad arguments are supplied.
 	 */
 	protected ByteBuffer openConnection(ByteBuffer message) throws IOException {
+		// This method handles message parsing/assembly and validation
 		int corId = message.getInt();
+
 		int x = message.getInt();
 		int y = message.getInt();
+		InetAddress who = getTargetHost(x, y);
+
 		int port = message.getInt();
 		if (port < 1 || port > MAX_PORT) {
 			throw new IllegalArgumentException("bad port number");
 		}
-		InetAddress who = hosts.get(new ChipLocation(x, y));
-		if (who == null) {
-			throw new IllegalArgumentException("unrecognised ethernet chip");
-		}
 
+		int id = openConnection(who, port);
+
+		ByteBuffer msg = response(ProxyOp.OPEN, corId);
+		msg.putInt(id);
+		return msg;
+	}
+
+	/**
+	 * Open a connection.
+	 *
+	 * @param who
+	 *            What board IP address are we connecting to?
+	 * @param port
+	 *            What port are we connecting to?
+	 * @return The connection ID.
+	 * @throws IOException
+	 *             If the proxy connection can't be opened.
+	 */
+	private int openConnection(InetAddress who, int port) throws IOException {
+		// This method actually makes a connection and listener thread
 		int id = idIssuer.getAsInt();
 		ProxyUDPConnection conn = new ProxyUDPConnection(session, who, port, id,
-				() -> removeDeadConnection(id));
-		synchronized (conns) {
-			conns.put(id, conn);
-		}
+				() -> removeConnection(id));
+		setConnection(id, conn);
 
 		// Start sending messages received from the board
 		Thread t = new Thread(threadGroup, conn::receiveLoop,
@@ -255,10 +273,15 @@ public class ProxyCore implements AutoCloseable {
 
 		log.info("opened proxy connection {}:{} to {}:{}", session, id, who,
 				port);
+		return id;
+	}
 
-		ByteBuffer msg = response(ProxyOp.OPEN, corId);
-		msg.putInt(id);
-		return msg;
+	private InetAddress getTargetHost(int x, int y) {
+		InetAddress who = hosts.get(new ChipLocation(x, y));
+		if (who == null) {
+			throw new IllegalArgumentException("unrecognised ethernet chip");
+		}
+		return who;
 	}
 
 	/**
@@ -277,20 +300,20 @@ public class ProxyCore implements AutoCloseable {
 			throws IOException {
 		int corId = message.getInt();
 		int id = message.getInt();
-		ProxyUDPConnection conn;
-		synchronized (conns) {
-			conn = conns.remove(id);
-		}
 		ByteBuffer msg = response(ProxyOp.CLOSE, corId);
-		if (conn != null && !conn.isClosed()) {
-			conn.close();
-			msg.putInt(id);
-			log.info("closed proxy connection {}:{}", session, id);
-		} else {
-			msg.putInt(0);
-		}
+		msg.putInt(closeConnection(id));
 		return msg;
+	}
+
+	private int closeConnection(int id) throws IOException {
+		ProxyUDPConnection conn = removeConnection(id);
+		if (!isValid(conn)) {
+			return 0;
+		}
+		conn.close();
 		// Thread will shut down now that the proxy is closed
+		log.info("closed proxy connection {}:{}", session, id);
+		return id;
 	}
 
 	/**
@@ -310,31 +333,48 @@ public class ProxyCore implements AutoCloseable {
 	protected ByteBuffer sendMessage(ByteBuffer message) throws IOException {
 		Integer id = message.getInt();
 		log.debug("got message for channel {}", id);
-		ProxyUDPConnection conn;
-		synchronized (conns) {
-			conn = conns.get(id);
-		}
-		if (conn != null && !conn.isClosed()) {
+		ProxyUDPConnection conn = getConnection(id);
+		if (isValid(conn)) {
+			ByteBuffer payload = message.slice();
 			log.debug("sending message to {} of length {}", conn,
-					message.remaining());
-			conn.send(message.slice());
+					payload.remaining());
+			conn.send(payload);
 		}
 		return null;
 	}
 
-	private void removeDeadConnection(int id) {
+	private static boolean isValid(ProxyUDPConnection conn) {
+		return conn != null && !conn.isClosed();
+	}
+
+	private void setConnection(int id, ProxyUDPConnection conn) {
 		synchronized (conns) {
-			conns.remove(id);
+			conns.put(id, conn);
+		}
+	}
+
+	private ProxyUDPConnection getConnection(int id) {
+		synchronized (conns) {
+			return conns.get(id);
+		}
+	}
+
+	private ProxyUDPConnection removeConnection(int id) {
+		synchronized (conns) {
+			return conns.remove(id);
+		}
+	}
+
+	private ArrayList<ProxyUDPConnection> listConnections() {
+		synchronized (conns) {
+			return new ArrayList<>(conns.values());
 		}
 	}
 
 	@Override
 	public void close() {
 		// Take a copy immediately
-		ArrayList<ProxyUDPConnection> copy;
-		synchronized (conns) {
-			copy = new ArrayList<>(conns.values());
-		}
+		ArrayList<ProxyUDPConnection> copy = listConnections();
 		for (ProxyUDPConnection conn : copy) {
 			if (conn != null && !conn.isClosed()) {
 				try {

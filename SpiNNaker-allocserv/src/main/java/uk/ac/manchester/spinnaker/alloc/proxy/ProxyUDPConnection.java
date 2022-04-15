@@ -43,7 +43,8 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	private static final int TIMEOUT = 1000;
 
 	// Plenty of room; SpiNNaker messages are quite a bit smaller than this
-	private static final int WORKING_BUFFER_SIZE = 1024;
+	// Even boot messages are smaller; this is bigger than an Ethernet packet
+	private static final int WORKING_BUFFER_SIZE = 2048;
 
 	private final WebSocketSession session;
 
@@ -55,6 +56,10 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 
 	private final Runnable emergencyRemove;
 
+	private final ByteBuffer workingBuffer;
+
+	private final String name;
+
 	ProxyUDPConnection(WebSocketSession session, InetAddress remoteHost,
 			int remotePort, int id, Runnable emergencyRemove)
 			throws IOException {
@@ -62,6 +67,12 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		this.session = session;
 		this.id = id;
 		this.emergencyRemove = emergencyRemove;
+		workingBuffer = allocate(WORKING_BUFFER_SIZE).order(LITTLE_ENDIAN);
+		// Fixed header for this particular connection
+		workingBuffer.putInt(ProxyOp.MESSAGE.ordinal());
+		workingBuffer.putInt(id);
+		// Get the name now so it remains useful after close()
+		name = toString();
 	}
 
 	/**
@@ -85,29 +96,21 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 * Core SpiNNaker message receive and dispatch-to-websocket loop.
 	 */
 	protected void receiveLoop() {
-		log.info("launched listener {} for channel {}", this, id);
-		ByteBuffer workingBuffer =
-				allocate(WORKING_BUFFER_SIZE).order(LITTLE_ENDIAN);
-		// Fixed header from this particular connection
-		workingBuffer.putInt(ProxyOp.MESSAGE.ordinal());
-		workingBuffer.putInt(id);
-
+		log.info("launched listener {} for channel {}", name, id);
 		try {
+			mainLoop:
 			while (!isClosed()) {
-				Optional<ByteBuffer> msg = receiveMessage(TIMEOUT);
-				log.info("{}/{} received basic message {}", this, id, msg);
-				if (!session.isOpen()) {
-					break;
+				while (!isReadyToReceive(TIMEOUT)) {
+					if (!session.isOpen() || isClosed()) {
+						break mainLoop;
+					}
 				}
+				Optional<ByteBuffer> msg = receiveMessage(TIMEOUT);
 				if (!msg.isPresent()) {
 					// Timeout; go round the loop again.
 					continue;
 				}
-				log.info("{}/{} received message {}", this, id, msg.get());
-				ByteBuffer outgoing = workingBuffer.duplicate();
-				outgoing.put(msg.get());
-				outgoing.flip();
-				session.sendMessage(new BinaryMessage(outgoing));
+				handleReceivedMessage(msg.get());
 			}
 		} catch (IOException e) {
 			try {
@@ -116,9 +119,26 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 			} catch (IOException e1) {
 				e.addSuppressed(e1);
 			}
-			log.warn("problem in SpiNNaker-to-client", e);
+			log.warn("problem in SpiNNaker-to-client part of {}/{}", name, id,
+					e);
 		} finally {
-			log.info("shutting down listener {} for channel {}", this, id);
+			log.info("shutting down listener {} for channel {}", name, id);
 		}
+	}
+
+	/**
+	 * Process a received message, forwarding it to the client.
+	 *
+	 * @param msg
+	 *            The received message, positioned at the point of the payload.
+	 * @throws IOException
+	 *             If the message can't be sent.
+	 */
+	private void handleReceivedMessage(ByteBuffer msg) throws IOException {
+		log.debug("{}/{} received message {}", name, id, msg);
+		ByteBuffer outgoing = workingBuffer.duplicate();
+		outgoing.put(msg);
+		outgoing.flip();
+		session.sendMessage(new BinaryMessage(outgoing));
 	}
 }
