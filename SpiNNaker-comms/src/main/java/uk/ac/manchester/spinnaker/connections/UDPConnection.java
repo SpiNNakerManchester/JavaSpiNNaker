@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.ThreadLocal.withInitial;
 import static java.net.InetAddress.getByAddress;
 import static java.net.StandardProtocolFamily.INET;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
@@ -73,7 +74,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private static final int PACKET_MAX_SIZE = 300;
 
 	private static final ThreadLocal<Selector> SELECTOR_FACTORY =
-			ThreadLocal.withInitial(() -> {
+			withInitial(() -> {
 				try {
 					return Selector.open();
 				} catch (IOException e) {
@@ -127,34 +128,47 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
 		channel =
 				initialiseSocket(localHost, localPort, remoteHost, remotePort);
-		selectionKeyFactory = ThreadLocal.withInitial(() -> {
-			try {
-				return channel.register(SELECTOR_FACTORY.get(), OP_READ);
-			} catch (IOException e) {
-				log.error("failed to create selection key for thread", e);
-				return null;
-			}
-		});
+		selectionKeyFactory = withInitial(this::makeSelectionKey);
 		if (channel != null && log.isDebugEnabled()) {
-			InetSocketAddress us = null;
-			try {
-				us = getLocalAddress();
-			} catch (Exception ignore) {
-			}
-			if (us == null) {
-				us = new InetSocketAddress((InetAddress) null, 0);
-			}
-			InetSocketAddress them = null;
-			try {
-				them = getRemoteAddress();
-			} catch (Exception ignore) {
-			}
-			if (them == null) {
-				them = new InetSocketAddress((InetAddress) null, 0);
-			}
-			log.debug("{} socket created ({} <--> {})", getClass().getName(),
-					us, them);
+			logInitialCreation();
 		}
+	}
+
+	/**
+	 * How to actually make a selection key for the current thread. Selection
+	 * keys are thread-specific.
+	 *
+	 * @return The selection key for the current thread. <em>This method does
+	 *         not cache these keys.</em>
+	 */
+	SelectionKey makeSelectionKey() {
+		try {
+			return channel.register(SELECTOR_FACTORY.get(), OP_READ);
+		} catch (IOException e) {
+			log.error("failed to create selection key for thread", e);
+			return null;
+		}
+	}
+
+	private void logInitialCreation() {
+		InetSocketAddress us = null;
+		try {
+			us = getLocalAddress();
+		} catch (Exception ignore) {
+		}
+		if (us == null) {
+			us = new InetSocketAddress((InetAddress) null, 0);
+		}
+		InetSocketAddress them = null;
+		try {
+			them = getRemoteAddress();
+		} catch (Exception ignore) {
+		}
+		if (them == null) {
+			them = new InetSocketAddress((InetAddress) null, 0);
+		}
+		log.debug("{} socket created ({} <--> {})", getClass().getName(), us,
+				them);
 	}
 
 	/**
@@ -206,10 +220,32 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return new InetSocketAddress(localAddr, localPort);
 	}
 
+	/**
+	 * Get the local socket address. (Sockets have two ends, one local, one
+	 * remote.)
+	 * <p>
+	 * This operation is <em>delegatable</em>; see
+	 * {@link DelegatingSCPConnection}.
+	 *
+	 * @return The socket's local address
+	 * @throws IOException
+	 *             If the socket is closed.
+	 */
 	InetSocketAddress getLocalAddress() throws IOException {
 		return (InetSocketAddress) channel.getLocalAddress();
 	}
 
+	/**
+	 * Get the remote socket address. (Sockets have two ends, one local, one
+	 * remote.)
+	 * <p>
+	 * This operation is <em>delegatable</em>; see
+	 * {@link DelegatingSCPConnection}.
+	 *
+	 * @return The socket's remote address
+	 * @throws IOException
+	 *             If the socket is closed.
+	 */
 	InetSocketAddress getRemoteAddress() throws IOException {
 		return (InetSocketAddress) channel.getRemoteAddress();
 	}
@@ -275,17 +311,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public final ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		if (isClosed()) {
-			throw new EOFException();
-		}
-		if (timeout == null) {
-			/*
-			 * "Infinity" is nearly 25 days, which is a very long time to wait
-			 * for any message from SpiNNaker.
-			 */
-			timeout = Integer.MAX_VALUE;
-		}
-		return doReceive(timeout);
+		return receive(convertTimeout(timeout));
 	}
 
 	/**
@@ -296,10 +322,34 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @return The data received, in a little-endian buffer
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	ByteBuffer doReceive(Integer timeout)
+	public final ByteBuffer receive(int timeout)
+			throws SocketTimeoutException, IOException {
+		if (isClosed()) {
+			throw new EOFException();
+		}
+		return doReceive(timeout);
+	}
+
+	/**
+	 * Receive data from the connection.
+	 * <p>
+	 * This operation is <em>delegatable</em>; see
+	 * {@link DelegatingSCPConnection}.
+	 *
+	 * @param timeout
+	 *            The timeout in milliseconds
+	 * @return The data received, in a little-endian buffer
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
+	 * @throws IOException
+	 *             If an error occurs receiving the data
+	 */
+	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			log.debug("not ready to recieve");
@@ -332,15 +382,27 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public final UDPPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
+		return receiveWithAddress(convertTimeout(timeout));
+	}
+
+	/**
+	 * Receive data from the connection along with the address where the data
+	 * was received from.
+	 *
+	 * @param timeout
+	 *            The timeout in milliseconds
+	 * @return The datagram packet received
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
+	 * @throws IOException
+	 *             If an error occurs receiving the data
+	 */
+	public final UDPPacket receiveWithAddress(int timeout)
+			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
-		}
-		if (timeout == null) {
-			/*
-			 * "Infinity" is nearly 25 days, which is a very long time to wait
-			 * for any message from SpiNNaker.
-			 */
-			timeout = Integer.MAX_VALUE;
 		}
 		return doReceiveWithAddress(timeout);
 	}
@@ -348,6 +410,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	/**
 	 * Receive data from the connection along with the address where the data
 	 * was received from.
+	 * <p>
+	 * This operation is <em>delegatable</em>; see
+	 * {@link DelegatingSCPConnection}.
 	 *
 	 * @param timeout
 	 *            The timeout in milliseconds
@@ -392,6 +457,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/**
 	 * Send data down this connection.
+	 * <p>
+	 * This operation is <em>delegatable</em>; see
+	 * {@link DelegatingSCPConnection}.
 	 *
 	 * @param data
 	 *            The data to be sent; the position in this buffer will
@@ -520,6 +588,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	/**
 	 * Send data down this connection.
+	 * <p>
+	 * This operation is <em>delegatable</em>; see
+	 * {@link DelegatingSCPConnection}.
 	 *
 	 * @param data
 	 *            The data to be sent
@@ -602,13 +673,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
-	public final boolean isReadyToReceive(Integer timeout) throws IOException {
+	public final boolean isReadyToReceive(int timeout) throws IOException {
 		if (isClosed()) {
 			log.debug("connection closed, so not ready to receive");
 			return false;
 		}
-		int t = (timeout == null ? 0 : timeout);
-		boolean r = readyToReceive(t);
+		boolean r = readyToReceive(timeout);
 		receivable = r;
 		return r;
 	}
@@ -617,6 +687,9 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * Determines if there is a message available to be received without
 	 * blocking. <em>This method</em> may block until the timeout given, and a
 	 * zero timeout means do not wait.
+	 * <p>
+	 * This operation is <em>delegatable</em>; see
+	 * {@link DelegatingSCPConnection}.
 	 *
 	 * @param timeout
 	 *            How long to wait, in milliseconds.

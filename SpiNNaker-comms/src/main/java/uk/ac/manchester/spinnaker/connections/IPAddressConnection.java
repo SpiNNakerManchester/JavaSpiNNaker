@@ -52,7 +52,7 @@ public class IPAddressConnection extends UDPConnection<InetAddress>
 	 */
 	@Override
 	public final InetAddress receiveMessage() {
-		return receiveMessage(null);
+		return receiveMessage(Integer.MAX_VALUE);
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class IPAddressConnection extends UDPConnection<InetAddress>
 	 * @return The IP address, or {@code null} if none was forthcoming.
 	 */
 	@Override
-	public InetAddress receiveMessage(Integer timeout) {
+	public InetAddress receiveMessage(int timeout) {
 		try {
 			UDPPacket packet = receiveWithAddress(timeout);
 			SocketAddress addr = packet.getAddress();

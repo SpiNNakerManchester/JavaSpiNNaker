@@ -188,7 +188,7 @@ public class EIEIOConnection
 	private static final int FLAG = 0x4000;
 
 	@Override
-	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(Integer timeout)
+	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(int timeout)
 			throws IOException {
 		ByteBuffer b = receive(timeout);
 		short header = b.getShort();
