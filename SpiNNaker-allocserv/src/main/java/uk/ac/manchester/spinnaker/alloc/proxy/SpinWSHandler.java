@@ -20,17 +20,19 @@ import static java.lang.Integer.parseInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.proxy.Utils.getFieldFromTemplate;
 
 import java.io.EOFException;
-import java.util.HashMap;
+import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -42,7 +44,6 @@ import org.springframework.web.util.UriTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
@@ -59,18 +60,12 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		implements HandshakeInterceptor {
 	private static final Logger log = getLogger(SpinWSHandler.class);
 
-	private static final String NO_JOB = "0";
+	private static final String JOB = SpinWSHandler.class + ":job";
 
-	private static final String JOB_ID = "job-id";
+	private static final String PROXY = SpinWSHandler.class + ":proxy";
 
 	@Autowired
 	private SpallocAPI spallocCore;
-
-	/** Maps a session to how we handle it locally. */
-	private Map<WebSocketSession, ProxyCore> map = new HashMap<>();
-
-	private WeakHashMap<WebSocketSession, Integer> onDeath =
-			new WeakHashMap<>();
 
 	private ThreadGroup threadGroup;
 
@@ -83,22 +78,24 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	/** The path that we match in this handler. */
 	public static final String PATH = "proxy/{id:\\d+}";
 
+	/** The name of the field in the {@link #PATH}. */
+	private static final String ID = "id";
+
 	/** The {@link #PATH} as a template. */
 	private final UriTemplate template = new UriTemplate(PATH);
+
+	// -----------------------------------------------------------
+	// Satisfy the APIs that we use to plug into Spring
 
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request,
 			ServerHttpResponse response, WebSocketHandler wsHandler,
-			Map<String, Object> attributes) throws Exception {
-		int jobId = parseInt(template.match(request.getURI().getPath())
-				.getOrDefault("id", NO_JOB));
-		log.info("parsed {} with {} to get {}", request.getURI().getPath(),
-				template, jobId);
-		if (jobId > 0) {
-			attributes.put(JOB_ID, jobId);
-			return true;
-		}
-		return false;
+			Map<String, Object> attributes) {
+		return lookUpJobFromPath(request).map(job -> {
+			// If we have a job, remember it and succeed
+			attributes.put(JOB, job);
+			return job;
+		}).isPresent();
 	}
 
 	@Override
@@ -109,68 +106,19 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
-		Map<String, Object> attrs = session.getAttributes();
-		if (attrs.containsKey(JOB_ID)) {
-			initProxyCore(session, (Integer) attrs.get(JOB_ID));
-			return;
-		}
-	}
-
-	private Optional<Job> getJob(Permit permit, int jobId) {
-		return permit.authorize(() -> spallocCore.getJob(permit, jobId));
-	}
-
-	/**
-	 * Connection established, but must check that user can see this job.
-	 * Fortunately that's easy, as we must retrieve the job to get the set of
-	 * boards that we can proxy to.
-	 *
-	 * @param session
-	 *            The Websocket session
-	 * @param jobId
-	 *            The job ID (not yet validated) extracted from the websocket
-	 *            path
-	 * @throws NotFound
-	 *             If the job ID can't be mapped to a job
-	 */
-	protected void initProxyCore(WebSocketSession session, int jobId) {
-		Job job = getJob(new Permit(session), jobId)
-				.orElseThrow(() -> new NotFound("no such job"));
-		SubMachine machine = job.getMachine().orElseThrow(
-				() -> new RequestFailedException(SERVICE_UNAVAILABLE,
-						"job not in state where proxying permitted"));
-		ProxyCore proxy = new ProxyCore(session, machine.getConnections(),
-				threadGroup, idIssuer::issueId);
-		map.put(session, proxy);
-		onDeath.put(session, jobId);
-		job.rememberProxy(proxy);
-		log.info("user {} has web socket {} connected for job {}",
-				session.getPrincipal(), session, jobId);
+		initProxyCore(session, attr(session, JOB));
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session,
 			CloseStatus status) {
-		ProxyCore p = map.remove(session);
-		if (p != null) {
-			p.close();
-		}
-		Integer id = onDeath.get(session);
-		if (id != null) {
-			getJob(new Permit(session), id)
-					.ifPresent(job -> job.forgetProxy(p));
-		}
-		log.info("user {} has disconnected web socket {}",
-				session.getPrincipal(), session);
+		closed(session, attr(session, PROXY), attr(session, JOB));
 	}
 
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session,
 			BinaryMessage message) throws Exception {
-		ProxyCore p = map.get(session);
-		if (p != null) {
-			p.handleClientMessage(message.getPayload().order(LITTLE_ENDIAN));
-		}
+		delegateToProxy(message, attr(session, PROXY));
 	}
 
 	@Override
@@ -181,6 +129,100 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 			log.warn("transport error for {}", session, exception);
 		}
 		// Don't need to close; afterConnectionClosed() will be called next
+	}
+
+	// -----------------------------------------------------------
+	// General implementation methods
+
+	private Optional<Job> lookUpJobFromPath(ServerHttpRequest request) {
+		return getFieldFromTemplate(template, request.getURI(), ID)
+				// Convert to integer
+				.flatMap(Utils::parseInteger)
+				// IDs are only ever valid if positive
+				.filter(Utils::positive)
+				// Do the lookup of the job
+				.flatMap(this::getJob);
+	}
+
+	/**
+	 * How to look up the job. Note that the underlying object is security
+	 * aware, so we need the authorisation step.
+	 *
+	 * @param jobId
+	 *            The job identifier
+	 * @return The job, if one is known and the current user is allowed to read
+	 *         details of it (owner or admin).
+	 */
+	private Optional<Job> getJob(int jobId) {
+		Permit permit = new Permit(SecurityContextHolder.getContext());
+		// How to look up a job; the permit is needed!
+		return permit.authorize(() -> spallocCore.getJob(permit, jobId));
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T attr(WebSocketSession session, String key) {
+		// Fetch something from the attributes and auto-cast it
+		return (T) session.getAttributes().get(key);
+	}
+
+	/**
+	 * Connection established and job looked up. Make a proxy.
+	 *
+	 * @param session
+	 *            The Websocket session
+	 * @param job
+	 *            The job extracted from the websocket path
+	 * @throws NotFound
+	 *             If the job ID can't be mapped to a job
+	 * @throws RequestFailedException
+	 *             If the job doesn't have an allocated machine
+	 */
+	protected final void initProxyCore(WebSocketSession session, Job job) {
+		ProxyCore proxy = job.getMachine()
+				.map(machine -> new ProxyCore(session, machine.getConnections(),
+						threadGroup, idIssuer::issueId))
+				.orElseThrow(
+						() -> new RequestFailedException(SERVICE_UNAVAILABLE,
+								"job not in state where proxying permitted"));
+		session.getAttributes().put(PROXY, proxy);
+		job.rememberProxy(proxy);
+		log.info("user {} has web socket {} connected for job {}",
+				session.getPrincipal(), session, job.getId());
+	}
+
+	/**
+	 * Connection closed.
+	 *
+	 * @param session
+	 *            The Websocket session
+	 * @param proxy
+	 *            The proxy handler for our custom protocol
+	 * @param job
+	 *            What job we are working for
+	 */
+	protected final void closed(WebSocketSession session, ProxyCore proxy,
+			Job job) {
+		if (proxy != null) {
+			proxy.close();
+			job.forgetProxy(proxy);
+		}
+		log.info("user {} has disconnected web socket {}",
+				session.getPrincipal(), session);
+	}
+
+	/**
+	 * Message was sent to us.
+	 *
+	 * @param message
+	 *            The body of the message.
+	 * @param proxy
+	 *            The socket proxy will be handling the message
+	 * @throws IOException
+	 *             If the proxy fails to handle the message in a bad way
+	 */
+	protected final void delegateToProxy(BinaryMessage message, ProxyCore proxy)
+			throws IOException {
+		proxy.handleClientMessage(message.getPayload().order(LITTLE_ENDIAN));
 	}
 
 	/**
@@ -204,5 +246,52 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 			} while (thisId == 0);
 			return thisId;
 		}
+	}
+}
+
+abstract class Utils {
+	private Utils() {
+	}
+
+	/**
+	 * Match the template against the path of the URI and extract a field.
+	 *
+	 * @param template
+	 *            The template
+	 * @param uri
+	 *            The URI
+	 * @param key
+	 *            The name of the field to extract
+	 * @return The content of the field, if present. Otherwise
+	 *         {@link Optional#empty()}.
+	 */
+	static Optional<String> getFieldFromTemplate(UriTemplate template,
+			URI uri, String key) {
+		Map<String, String> templateResults = template.match(uri.getPath());
+		if (templateResults == null) {
+			return Optional.empty();
+		}
+		String val = templateResults.get(key);
+		return Optional.ofNullable(val);
+	}
+
+	/**
+	 * Parse a string as a decimal integer.
+	 *
+	 * @param val
+	 *            The string to parse.
+	 * @return The integer, or {@link Optional#empty()} if the parse fails.
+	 */
+	static Optional<Integer> parseInteger(String val) {
+		try {
+			return Optional.of(parseInt(val));
+		} catch (NumberFormatException ignored) {
+			// Do nothing here
+		}
+		return Optional.empty();
+	}
+
+	static boolean positive(int n) {
+		return n > 0;
 	}
 }

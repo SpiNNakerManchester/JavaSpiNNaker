@@ -75,7 +75,7 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	DatagramPacket doReceiveWithAddress(int timeout)
+	DatagramPacket doReceiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
 		return delegate.doReceiveWithAddress(timeout);
 	}
