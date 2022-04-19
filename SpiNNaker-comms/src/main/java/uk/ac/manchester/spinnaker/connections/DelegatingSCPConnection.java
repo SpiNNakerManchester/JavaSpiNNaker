@@ -74,7 +74,7 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	UDPPacket doReceiveWithAddress(Integer timeout)
+	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		return delegate.doReceiveWithAddress(timeout);
 	}
