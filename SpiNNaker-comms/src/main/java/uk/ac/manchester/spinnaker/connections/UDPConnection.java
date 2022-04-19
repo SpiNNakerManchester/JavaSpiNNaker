@@ -422,7 +422,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	UDPPacket doReceiveWithAddress(Integer timeout)
+	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
