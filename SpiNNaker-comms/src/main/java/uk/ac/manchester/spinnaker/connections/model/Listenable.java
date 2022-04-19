@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.connections.model;
 
-import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
-
 import java.io.IOException;
 
 /**
@@ -36,24 +34,10 @@ public interface Listenable<MessageType> extends MessageReceiver<MessageType> {
 	 * @throws IOException
 	 *             If anything goes wrong, e.g., if the socket is closed under
 	 *             our feet.
+	 * @see #isReadyToReceive(Integer)
 	 */
 	default boolean isReadyToReceive() throws IOException {
-		return isReadyToReceive(null);
-	}
-
-	/**
-	 * Do a blocking poll of whether there is a message ready to be received
-	 * without blocking. <i>This method</i> may block until the timeout given.
-	 *
-	 * @param timeout
-	 *            How many seconds to wait for a message to be receivable.
-	 * @return true when there is a packet waiting to be received
-	 * @throws IOException
-	 *             If anything goes wrong, e.g., if the socket is closed under
-	 *             our feet.
-	 */
-	default boolean isReadyToReceive(double timeout) throws IOException {
-		return isReadyToReceive((int) (timeout * MSEC_PER_SEC));
+		return isReadyToReceive(0);
 	}
 
 	/**
@@ -61,12 +45,12 @@ public interface Listenable<MessageType> extends MessageReceiver<MessageType> {
 	 * blocking. <i>This method</i> may block until the timeout given.
 	 *
 	 * @param timeout
-	 *            How long to wait, in milliseconds; if zero or {@code null}, a
+	 *            How long to wait, in <em>milliseconds</em>; if zero, a
 	 *            non-blocking poll is performed.
 	 * @return true when there is a message waiting to be received
 	 * @throws IOException
 	 *             If anything goes wrong, e.g., if the socket is closed under
 	 *             our feet.
 	 */
-	boolean isReadyToReceive(Integer timeout) throws IOException;
+	boolean isReadyToReceive(int timeout) throws IOException;
 }
