@@ -27,6 +27,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.END_SPEC_EXECUTOR;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
 import java.io.Closeable;
@@ -214,7 +215,7 @@ public class Executor implements Closeable {
 					// Work out the checksum
 					MemoryRegionReal regReal = (MemoryRegionReal) reg;
 					int nWords = (int) Math.ceil(regReal.getMaxWritePointer()
-							/ 4);
+							/ INT_SIZE);
 					ByteBuffer bytebuf = (ByteBuffer) regReal.getRegionData()
 							.duplicate().order(LITTLE_ENDIAN).rewind();
 					IntBuffer buf = bytebuf.asIntBuffer();
