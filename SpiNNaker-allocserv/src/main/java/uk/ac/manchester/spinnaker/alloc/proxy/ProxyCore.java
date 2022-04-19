@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.function.IntSupplier;
 
 import org.slf4j.Logger;
@@ -139,23 +140,29 @@ public class ProxyCore implements AutoCloseable {
 
 	private final IntSupplier idIssuer;
 
-	private final ThreadGroup threadGroup;
+	private final Executor executor;
+
+	private final boolean writeCounts;
 
 	/**
 	 * @param s
 	 *            The websocket session.
 	 * @param connections
 	 *            What boards may this session talk to.
-	 * @param threadGroup
-	 *            Where to group the worker threads.
+	 * @param executor
+	 *            What runs the worker tasks.
 	 * @param idIssuer
 	 *            Provides connection IDs. These will never be zero.
+	 * @param writeCounts
+	 *            Whether to write the number of messages sent and received on
+	 *            the proxied connections to the log.
 	 */
 	ProxyCore(WebSocketSession s, List<ConnectionInfo> connections,
-			ThreadGroup threadGroup, IntSupplier idIssuer) {
+			Executor executor, IntSupplier idIssuer, boolean writeCounts) {
 		session = s;
-		this.threadGroup = threadGroup;
+		this.executor = executor;
 		this.idIssuer = idIssuer;
+		this.writeCounts = writeCounts;
 		for (ConnectionInfo ci : connections) {
 			try {
 				hosts.put(ci.getChip(),
@@ -266,10 +273,7 @@ public class ProxyCore implements AutoCloseable {
 		setConnection(id, conn);
 
 		// Start sending messages received from the board
-		Thread t = new Thread(threadGroup, conn::receiveLoop,
-				"WS handler for " + who);
-		t.setDaemon(true);
-		t.start();
+		executor.execute(conn::receiverTask);
 
 		log.info("opened proxy connection {}:{} to {}:{}", session, id, who,
 				port);
@@ -313,6 +317,9 @@ public class ProxyCore implements AutoCloseable {
 		conn.close();
 		// Thread will shut down now that the proxy is closed
 		log.info("closed proxy connection {}:{}", session, id);
+		if (writeCounts) {
+			conn.writeCountsToLog();
+		}
 		return id;
 	}
 
@@ -338,7 +345,7 @@ public class ProxyCore implements AutoCloseable {
 			ByteBuffer payload = message.slice();
 			log.debug("sending message to {} of length {}", conn,
 					payload.remaining());
-			conn.send(payload);
+			conn.sendMessage(payload);
 		}
 		return null;
 	}

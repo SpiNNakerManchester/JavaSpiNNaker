@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.lang.Integer.parseInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.proxy.Utils.getFieldFromTemplate;
@@ -27,9 +28,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+
+import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,12 +72,21 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@Autowired
 	private SpallocAPI spallocCore;
 
-	private ThreadGroup threadGroup;
+	private ExecutorService executor;
 
 	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
 
+	// TODO move to proper configuration bean
+	@Value("${spalloc.proxy.writeCounts:true}")
+	private boolean writeCounts;
+
 	public SpinWSHandler() {
-		threadGroup = new ThreadGroup("WebSocket proxy handlers");
+		ThreadGroup group = new ThreadGroup("ws/udp workers");
+		executor = newCachedThreadPool(r -> {
+			Thread t = new Thread(group, r, "ws/udp worker");
+			t.setDaemon(true);
+			return t;
+		});
 	}
 
 	/** The path that we match in this handler. */
@@ -86,6 +100,15 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	// -----------------------------------------------------------
 	// Satisfy the APIs that we use to plug into Spring
+
+	@PreDestroy
+	private void stopPool() {
+		/*
+		 * The threads inside don't need to be explicitly stopped as they're all
+		 * daemon threads.
+		 */
+		executor.shutdown();
+	}
 
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request,
@@ -180,7 +203,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	protected final void initProxyCore(WebSocketSession session, Job job) {
 		ProxyCore proxy = job.getMachine()
 				.map(machine -> new ProxyCore(session, machine.getConnections(),
-						threadGroup, idIssuer::issueId))
+						executor, idIssuer::issueId, writeCounts))
 				.orElseThrow(
 						() -> new RequestFailedException(SERVICE_UNAVAILABLE,
 								"job not in state where proxying permitted"));
