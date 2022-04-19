@@ -88,13 +88,12 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	}
 
 	@Override
-	public SCPResultMessage receiveSCPResponse(Integer timeout)
-			throws IOException {
+	public SCPResultMessage receiveSCPResponse(int timeout) throws IOException {
 		return new SCPResultMessage(receive(timeout));
 	}
 
 	@Override
-	public SDPMessage receiveMessage(Integer timeout) throws IOException {
+	public SDPMessage receiveMessage(int timeout) throws IOException {
 		return new SDPMessage(receive(timeout), true);
 	}
 

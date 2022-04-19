@@ -81,7 +81,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	}
 
 	@Override
-	public SDPMessage receiveMessage(Integer timeout)
+	public SDPMessage receiveMessage(int timeout)
 			throws IOException, InterruptedIOException {
 		ByteBuffer buffer = receive(timeout);
 		buffer.getShort(); // SKIP TWO PADDING BYTES
