@@ -37,7 +37,7 @@ public interface Listenable<MessageType> extends MessageReceiver<MessageType> {
 	 * @see #isReadyToReceive(Integer)
 	 */
 	default boolean isReadyToReceive() throws IOException {
-		return isReadyToReceive(null);
+		return isReadyToReceive(0);
 	}
 
 	/**
@@ -45,12 +45,12 @@ public interface Listenable<MessageType> extends MessageReceiver<MessageType> {
 	 * blocking. <i>This method</i> may block until the timeout given.
 	 *
 	 * @param timeout
-	 *            How long to wait, in <em>milliseconds</em>; if zero or
-	 *            {@code null}, a non-blocking poll is performed.
+	 *            How long to wait, in <em>milliseconds</em>; if zero, a
+	 *            non-blocking poll is performed.
 	 * @return true when there is a message waiting to be received
 	 * @throws IOException
 	 *             If anything goes wrong, e.g., if the socket is closed under
 	 *             our feet.
 	 */
-	boolean isReadyToReceive(Integer timeout) throws IOException;
+	boolean isReadyToReceive(int timeout) throws IOException;
 }

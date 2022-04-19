@@ -311,15 +311,26 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public final ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
+		return receive(convertTimeout(timeout));
+	}
+
+	/**
+	 * Receive data from the connection.
+	 *
+	 * @param timeout
+	 *            The timeout in milliseconds
+	 * @return The data received, in a little-endian buffer
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
+	 * @throws IOException
+	 *             If an error occurs receiving the data
+	 */
+	public final ByteBuffer receive(int timeout)
+			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
-		}
-		if (timeout == null) {
-			/*
-			 * "Infinity" is nearly 25 days, which is a very long time to wait
-			 * for any message from SpiNNaker.
-			 */
-			timeout = Integer.MAX_VALUE;
 		}
 		return doReceive(timeout);
 	}
@@ -338,7 +349,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	ByteBuffer doReceive(Integer timeout)
+	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			log.debug("not ready to recieve");
@@ -371,15 +382,27 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	public final DatagramPacket receiveWithAddress(Integer timeout)
 			throws SocketTimeoutException, IOException {
+		return receiveWithAddress(convertTimeout(timeout));
+	}
+
+	/**
+	 * Receive data from the connection along with the address where the data
+	 * was received from.
+	 *
+	 * @param timeout
+	 *            The timeout in milliseconds
+	 * @return The datagram packet received
+	 * @throws SocketTimeoutException
+	 *             If a timeout occurs before any data is received
+	 * @throws EOFException
+	 *             If the connection is closed
+	 * @throws IOException
+	 *             If an error occurs receiving the data
+	 */
+	public final DatagramPacket receiveWithAddress(int timeout)
+			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
-		}
-		if (timeout == null) {
-			/*
-			 * "Infinity" is nearly 25 days, which is a very long time to wait
-			 * for any message from SpiNNaker.
-			 */
-			timeout = Integer.MAX_VALUE;
 		}
 		return doReceiveWithAddress(timeout);
 	}
@@ -399,7 +422,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	DatagramPacket doReceiveWithAddress(Integer timeout)
+	DatagramPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
@@ -649,13 +672,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	}
 
 	@Override
-	public final boolean isReadyToReceive(Integer timeout) throws IOException {
+	public final boolean isReadyToReceive(int timeout) throws IOException {
 		if (isClosed()) {
 			log.debug("connection closed, so not ready to receive");
 			return false;
 		}
-		int t = (timeout == null ? 0 : timeout);
-		boolean r = readyToReceive(t);
+		boolean r = readyToReceive(timeout);
 		receivable = r;
 		return r;
 	}

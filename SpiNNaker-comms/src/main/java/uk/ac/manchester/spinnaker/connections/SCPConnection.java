@@ -128,7 +128,7 @@ public class SCPConnection extends SDPConnection
 	}
 
 	@Override
-	public SCPResultMessage receiveSCPResponse(Integer timeout)
+	public SCPResultMessage receiveSCPResponse(int timeout)
 			throws IOException {
 		return new SCPResultMessage(receive(timeout));
 	}
