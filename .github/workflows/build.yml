@@ -32,7 +32,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3.1.1
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
@@ -65,7 +65,7 @@ jobs:
       continue-on-error: true
     - name: Upload Build (JDK 8 only)
       if: matrix.java == 8
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: spinnaker-exe.jar
         path: SpiNNaker-front-end/target/spinnaker-exe.jar
@@ -85,7 +85,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3.1.1
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}

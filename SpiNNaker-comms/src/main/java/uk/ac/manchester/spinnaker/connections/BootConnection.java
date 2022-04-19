@@ -87,7 +87,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 	}
 
 	@Override
-	public BootMessage receiveMessage(Integer timeout) throws IOException {
+	public BootMessage receiveMessage(int timeout) throws IOException {
 		return new BootMessage(receive(timeout));
 	}
 

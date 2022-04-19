@@ -46,4 +46,23 @@ public interface SocketHolder extends AutoCloseable {
 	 * @return the remote (board) port of the socket.
 	 */
 	int getRemotePort();
+
+	/**
+	 * Convert a timeout into a primitive type.
+	 *
+	 * @param timeout
+	 *            The timeout in milliseconds, or {@code null} to wait
+	 *            "forever".
+	 * @return The primitive timeout.
+	 */
+	default int convertTimeout(Integer timeout) {
+		if (timeout == null) {
+			/*
+			 * "Infinity" is nearly 25 days, which is a very long time to wait
+			 * for any message from SpiNNaker.
+			 */
+			return Integer.MAX_VALUE;
+		}
+		return timeout.intValue();
+	}
 }
