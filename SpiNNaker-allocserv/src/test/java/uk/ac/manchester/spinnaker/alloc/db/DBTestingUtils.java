@@ -221,4 +221,10 @@ abstract class DBTestingUtils {
 	static void assumeWritable(Connection conn) {
 		assumeFalse(conn.isReadOnly(), "connection is read-only");
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(SpallocAPI q) {
+		}
+	}
 }

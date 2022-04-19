@@ -105,4 +105,10 @@ public class BoardIssueReport {
 	public void setTimestamp(Instant timestamp) {
 		this.timestamp = timestamp;
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(SQLQueries q) {
+		}
+	}
 }

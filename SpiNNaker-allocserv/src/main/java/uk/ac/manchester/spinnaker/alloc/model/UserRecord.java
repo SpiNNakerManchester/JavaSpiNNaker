@@ -312,4 +312,10 @@ public final class UserRecord {
 			setLocked(false);
 		}
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(SQLQueries q) {
+		}
+	}
 }

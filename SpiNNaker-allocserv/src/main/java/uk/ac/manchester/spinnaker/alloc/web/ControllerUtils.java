@@ -131,4 +131,10 @@ public abstract class ControllerUtils {
 			return new ModelAndView(view, key, value);
 		}
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(MvcUriComponentsBuilder q) {
+		}
+	}
 }

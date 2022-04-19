@@ -71,4 +71,10 @@ class AnyTypeMethodSecurityExpressionHandler
 		target.ifPresent(a::add);
 		return ((Stream<T>) super.filter(a.stream(), expr, ctx)).findFirst();
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(PostFilter q) {
+		}
+	}
 }

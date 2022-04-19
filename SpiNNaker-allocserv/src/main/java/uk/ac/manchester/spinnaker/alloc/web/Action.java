@@ -34,3 +34,8 @@ public @interface Action {
 	/** @return The action we do in the annotated method. */
 	String value();
 }
+
+abstract class ActionUseOtherClassReferences {
+	private ActionUseOtherClassReferences(AdminControllerImpl q) {
+	}
+}

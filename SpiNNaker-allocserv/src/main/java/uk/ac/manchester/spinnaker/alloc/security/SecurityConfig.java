@@ -285,4 +285,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		sclh.setInvalidateHttpSession(true);
 		return sclh;
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(PreAuthorize q) {
+		}
+	}
 }

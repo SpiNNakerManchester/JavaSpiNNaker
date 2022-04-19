@@ -84,4 +84,10 @@ class AccessDeniedExceptionMapper
 		// But the user gets a bland response
 		return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(PreAuthorize q) {
+		}
+	}
 }

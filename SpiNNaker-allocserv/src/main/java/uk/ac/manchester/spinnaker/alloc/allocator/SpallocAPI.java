@@ -966,3 +966,8 @@ public interface SpallocAPI {
 		void setPower(PowerState powerState);
 	}
 }
+
+abstract class SpallocAPIUseInJavadoc {
+	SpallocAPIUseInJavadoc(V1CompatService q1, HasCoreLocation q2) {
+	}
+}

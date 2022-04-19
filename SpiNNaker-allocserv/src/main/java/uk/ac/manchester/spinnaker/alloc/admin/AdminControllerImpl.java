@@ -736,4 +736,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 					"problem with processing file: " + e.getMessage());
 		}
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(GroupType t) {
+		}
+	}
 }

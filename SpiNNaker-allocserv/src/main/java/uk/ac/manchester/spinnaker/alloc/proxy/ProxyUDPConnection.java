@@ -82,7 +82,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 *         socket timed out (not an error!)
 	 */
 	@Override
-	public Optional<ByteBuffer> receiveMessage(Integer timeout)
+	public Optional<ByteBuffer> receiveMessage(int timeout)
 			throws IOException {
 		try {
 			// Raw buffer, including header bytes

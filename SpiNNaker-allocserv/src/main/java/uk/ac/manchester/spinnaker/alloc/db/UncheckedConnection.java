@@ -601,4 +601,10 @@ class UncheckedConnection implements Connection {
 			throw mapException(e, null);
 		}
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(DataAccessException q) {
+		}
+	}
 }

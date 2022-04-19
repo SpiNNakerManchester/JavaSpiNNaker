@@ -127,4 +127,10 @@ public abstract class BackgroundSupport {
 					new RequestFailedException("unexpected server problem", e));
 		}
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(Response q) {
+		}
+	}
 }

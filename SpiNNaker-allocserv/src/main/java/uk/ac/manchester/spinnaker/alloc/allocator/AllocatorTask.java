@@ -964,4 +964,10 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		return numPending > 0;
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(SQLQueries q) {
+		}
+	}
 }

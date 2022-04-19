@@ -294,4 +294,10 @@ abstract class Utils {
 	static boolean positive(int n) {
 		return n > 0;
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(NotFound q) {
+		}
+	}
 }
