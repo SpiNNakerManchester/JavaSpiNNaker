@@ -442,7 +442,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		@Override
 		public void close() throws IOException, ProcessException,
-		        DataSpecificationException {
+				DataSpecificationException {
 			execContext.close();
 			logContext.close();
 			connection.close();
@@ -696,7 +696,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					try {
 						UDPPacket packet = connection.receiveWithAddress();
 						ByteBuffer buf = packet.getByteBuffer();
-						IntBuffer received = buf.order(LITTLE_ENDIAN).asIntBuffer();
+						IntBuffer received = buf.order(
+								LITTLE_ENDIAN).asIntBuffer();
 						timeoutCount = 0; // Reset the timeout counter
 						int command = received.get();
 						try {
@@ -727,34 +728,35 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 										received.get(1));
 								break;
 							default:
-								throw new BadDataInMessageException(received.get(0),
-										received);
+								throw new BadDataInMessageException(
+										received.get(0), received);
 							}
 
 							/*
-							 * The currently received packet has missing sequence
-							 * numbers. Accumulate and dispatch transactionId when
-							 * we've got them all.
+							 * The currently received packet has missing
+							 * sequence numbers. Accumulate and dispatch
+							 * transactionId when we've got them all.
 							 */
 							if (missing == null) {
-								missing =
-										missingSequenceNumbers.issueNew(numPackets);
+								missing = missingSequenceNumbers.issueNew(
+										numPackets);
 							}
-							SeenFlags flags =
-									addMissedSeqNums(received, missing, numPackets);
+							SeenFlags flags = addMissedSeqNums(
+									received, missing, numPackets);
 
 							/*
-							 * Check that you've seen something that implies ready
-							 * to retransmit.
+							 * Check that you've seen something that implies
+							 * ready to retransmit.
 							 */
 							if (flags.seenAll || flags.seenEnd) {
-								retransmitMissingPackets(protocol, data, missing,
-										transactionId, baseAddress, numPackets);
+								retransmitMissingPackets(protocol, data,
+										missing, transactionId, baseAddress,
+										numPackets);
 								missing.clear();
 							}
 						} catch (IllegalArgumentException e) {
-							log.error("Unexpected command code " + command +
-									" received from " + packet.getAddress());
+							log.error("Unexpected command code " + command
+									+ " received from " + packet.getAddress());
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {
