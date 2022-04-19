@@ -41,11 +41,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j.version>2.17.2</log4j.version>
 
-		<spring.version>5.3.18</spring.version>
+		<spring.version>5.3.19</spring.version>
 		<spring.boot.version>2.6.6</spring.boot.version>
 		<spring.security.version>5.6.2</spring.security.version>
 
-		<cxf.version>3.5.1</cxf.version>
+		<cxf.version>3.5.2</cxf.version>
 		<jackson.version>2.13.2.20220328</jackson.version>
 		<sqlite.version>3.36.0.3</sqlite.version>
 		<keycloak.version>16.1.1</keycloak.version>
@@ -416,7 +416,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.sling</groupId>
 					<artifactId>jspc-maven-plugin</artifactId>
-					<version>2.3.2</version>
+					<version>2.3.4</version>
 					<dependencies>
 						<!-- WHY ARE THESE NOT JUST PROVIDED BY DEFAULT?! -->
 						<dependency>
