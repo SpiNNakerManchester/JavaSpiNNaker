@@ -77,7 +77,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
 
 	// TODO move to proper configuration bean
-	@Value("${spalloc.proxy.writeCounts:true}")
+	@Value("${spalloc.proxy.writeCounts:false}")
 	private boolean writeCounts;
 
 	public SpinWSHandler() {
@@ -209,7 +209,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 								"job not in state where proxying permitted"));
 		session.getAttributes().put(PROXY, proxy);
 		job.rememberProxy(proxy);
-		log.info("user {} has web socket {} connected for job {}",
+		log.debug("user {} has web socket {} connected for job {}",
 				session.getPrincipal(), session, job.getId());
 	}
 
@@ -229,7 +229,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 			proxy.close();
 			job.forgetProxy(proxy);
 		}
-		log.info("user {} has disconnected web socket {}",
+		log.debug("user {} has disconnected web socket {}",
 				session.getPrincipal(), session);
 	}
 

@@ -316,7 +316,7 @@ public class ProxyCore implements AutoCloseable {
 		}
 		conn.close();
 		// Thread will shut down now that the proxy is closed
-		log.info("closed proxy connection {}:{}", session, id);
+		log.debug("closed proxy connection {}:{}", session, id);
 		if (writeCounts) {
 			conn.writeCountsToLog();
 		}
