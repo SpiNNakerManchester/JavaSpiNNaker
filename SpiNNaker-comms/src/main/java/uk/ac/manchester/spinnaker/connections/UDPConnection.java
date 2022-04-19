@@ -399,7 +399,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	public final DatagramPacket receiveWithAddress(int timeout)
+	public final UDPPacket receiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
