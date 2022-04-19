@@ -56,5 +56,22 @@ public interface MessageReceiver<MessageType> extends SocketHolder {
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
-	MessageType receiveMessage(Integer timeout) throws IOException;
+	default MessageType receiveMessage(Integer timeout) throws IOException {
+		return receiveMessage(convertTimeout(timeout));
+	}
+
+	/**
+	 * Receives a SpiNNaker message from this connection. Blocks until a message
+	 * has been received, or a timeout occurs.
+	 *
+	 * @param timeout
+	 *            The time in seconds to wait for the message to arrive, or
+	 *            until the connection is closed.
+	 * @return the received message
+	 * @throws IOException
+	 *             If there is an error receiving the message
+	 * @throws IllegalArgumentException
+	 *             If one of the fields of the SpiNNaker message is invalid
+	 */
+	MessageType receiveMessage(int timeout) throws IOException;
 }
