@@ -39,6 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<ebrains.wellknown.url>https://iam.ebrains.eu/auth/realms/hbp/.well-known/openid-configuration</ebrains.wellknown.url>
 		<truststore.file>${project.build.directory}/generated-resources/truststore.p12</truststore.file>
 		<truststore.pass>hunter2</truststore.pass>
+		<npm.command>build</npm.command>
 	</properties>
 
 	<build>
@@ -116,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</goals>
 						<phase>generate-resources</phase>
 						<configuration>
-							<arguments>run build</arguments>
+							<arguments>run ${npm.command}</arguments>
 							<environmentVariables>
 								<TYPESCRIPT_SRC_DIR>${project.basedir}/src/main/typescript</TYPESCRIPT_SRC_DIR>
 								<TYPESCRIPT_TARGET>${typescript-language.version}</TYPESCRIPT_TARGET>
@@ -497,6 +498,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>windows-specific-bits</id>
+			<activation>
+				<os><family>windows</family></os>
+			</activation>
+			<properties>
+				<npm.command>build-win</npm.command>
+			</properties>
 		</profile>
 	</profiles>
 </project>
