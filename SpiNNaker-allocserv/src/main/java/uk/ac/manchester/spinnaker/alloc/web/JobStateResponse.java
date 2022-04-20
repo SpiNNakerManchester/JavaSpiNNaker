@@ -131,8 +131,10 @@ public class JobStateResponse {
 		switch (state) {
 		case POWER:
 		case READY:
-			proxyRef = makeProxyURI(job, ui, servletPath);
-			break;
+			if (servletPath != null) {
+				proxyRef = makeProxyURI(job, ui, servletPath);
+				break;
+			}
 		default:
 			// Not telling the user the proxy URL if queued or destroyed
 			proxyRef = null;

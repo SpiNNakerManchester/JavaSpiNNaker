@@ -29,6 +29,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;
 
 /**
@@ -58,10 +59,16 @@ public class MvcConfig implements WebMvcConfigurer, WebSocketConfigurer {
 	@Autowired
 	private SpinWSHandler wsHandler;
 
+	@Autowired
+	private SpallocProperties props;
+
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		// It's its own interceptor!
-		registry.addHandler(wsHandler, "/proxy/*").addInterceptors(wsHandler)
-				.setAllowedOriginPatterns("*");
+		if (props.getProxy().isEnable()) {
+			// It's its own interceptor!
+			registry.addHandler(wsHandler, "/proxy/*")
+					.addInterceptors(wsHandler)
+					.setAllowedOriginPatterns("*");
+		}
 	}
 }

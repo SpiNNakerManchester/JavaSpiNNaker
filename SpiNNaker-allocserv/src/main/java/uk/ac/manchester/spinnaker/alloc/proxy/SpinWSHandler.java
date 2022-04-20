@@ -34,7 +34,6 @@ import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,6 +46,7 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.util.UriTemplate;
 
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
@@ -72,13 +72,12 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@Autowired
 	private SpallocAPI spallocCore;
 
+	@Autowired
+	private SpallocProperties properties;
+
 	private ExecutorService executor;
 
 	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
-
-	// TODO move to proper configuration bean
-	@Value("${spalloc.proxy.writeCounts:false}")
-	private boolean writeCounts;
 
 	public SpinWSHandler() {
 		ThreadGroup group = new ThreadGroup("ws/udp workers");
@@ -203,7 +202,8 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	protected final void initProxyCore(WebSocketSession session, Job job) {
 		ProxyCore proxy = job.getMachine()
 				.map(machine -> new ProxyCore(session, machine.getConnections(),
-						executor, idIssuer::issueId, writeCounts))
+						executor, idIssuer::issueId,
+						properties.getProxy().isLogWriteCounts()))
 				.orElseThrow(
 						() -> new RequestFailedException(SERVICE_UNAVAILABLE,
 								"job not in state where proxying permitted"));

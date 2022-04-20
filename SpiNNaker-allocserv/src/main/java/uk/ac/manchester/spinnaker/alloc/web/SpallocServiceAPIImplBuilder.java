@@ -163,6 +163,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	@Prototype
 	@Role(ROLE_APPLICATION)
 	public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
+		String sp = props.getProxy().isEnable() ? servletPath : null;
 		return new JobAPI() {
 			@Override
 			public String keepAlive(String reqBody) {
@@ -180,12 +181,11 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 						// Refresh the handle
 						Job nj = core.getJob(permit, j.getId())
 								.orElseThrow(() -> new ItsGone("no such job"));
-						return new JobStateResponse(nj, ui, mapper,
-								servletPath);
+						return new JobStateResponse(nj, ui, mapper, sp);
 					});
 				} else {
 					fgAction(response, () -> new JobStateResponse(j, ui, mapper,
-							servletPath));
+							sp));
 				}
 			}
 

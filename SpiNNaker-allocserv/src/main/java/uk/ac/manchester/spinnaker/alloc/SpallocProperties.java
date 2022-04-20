@@ -82,6 +82,8 @@ public class SpallocProperties {
 
 	private CompatibilityProperties compat;
 
+	private ProxyProperties proxy;
+
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
@@ -92,6 +94,7 @@ public class SpallocProperties {
 			@DefaultValue CompatibilityProperties compat,
 			@DefaultValue HistoricalDataProperties historicalData,
 			@DefaultValue KeepaliveProperties keepalive,
+			@DefaultValue ProxyProperties proxy,
 			@DefaultValue QuotaProperties quota,
 			@DefaultValue DBProperties sqlite,
 			@DefaultValue TxrxProperties transceiver) {
@@ -104,6 +107,7 @@ public class SpallocProperties {
 		this.compat = compat;
 		this.historicalData = historicalData;
 		this.keepalive = keepalive;
+		this.proxy = proxy;
 		this.quota = quota;
 		this.sqlite = sqlite;
 		this.transceiver = transceiver;
@@ -227,6 +231,17 @@ public class SpallocProperties {
 
 	public void setAuth(AuthProperties auth) {
 		this.auth = auth;
+	}
+
+	/**
+	 * @return Properties relating to the SDP proxying.
+	 */
+	public ProxyProperties getProxy() {
+		return proxy;
+	}
+
+	public void setProxy(ProxyProperties proxy) {
+		this.proxy = proxy;
 	}
 
 	/**
@@ -1713,6 +1728,45 @@ public class SpallocProperties {
 
 		public void setDefaultKeepalive(Duration value) {
 			this.defaultKeepalive = value;
+		}
+	}
+
+	/** Settings for the proxies. */
+	public static class ProxyProperties {
+		/** Whether to enable the UDP proxy subsystem. */
+		private boolean enable;
+
+		/**
+		 * Whether to log the number of packets read and written on each
+		 * channel.
+		 */
+		private boolean logWriteCounts;
+
+		public ProxyProperties(@DefaultValue("true") boolean enable,
+				@DefaultValue("false") boolean logWriteCounts) {
+			this.enable = enable;
+			this.logWriteCounts = logWriteCounts;
+		}
+
+		/** @return Whether to enable the UDP proxy subsystem. */
+		public boolean isEnable() {
+			return enable;
+		}
+
+		public void setEnable(boolean enable) {
+			this.enable = enable;
+		}
+
+		/**
+		 * @return Whether to log the number of packets read and written on each
+		 *         channel.
+		 */
+		public boolean isLogWriteCounts() {
+			return logWriteCounts;
+		}
+
+		public void setLogWriteCounts(boolean logWriteCounts) {
+			this.logWriteCounts = logWriteCounts;
 		}
 	}
 }
