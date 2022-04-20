@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				I could scream.
 			--%>
 			<label for="password">Password: </label>
-			<input id="password" type="password" disabled="true" />
+			<input id="password" type="password" disabled="disabled" />
 			<form:input path="password" type="hidden" />
 			<label for="hasPassword">Has Password: </label>
 			<input id="hasPassword" type="checkbox" value="false" disabled="disabled" />

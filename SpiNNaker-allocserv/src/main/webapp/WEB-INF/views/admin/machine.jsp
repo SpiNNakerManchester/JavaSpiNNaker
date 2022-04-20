@@ -140,7 +140,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<td><c:out value="${ report.boardId }" /></td>
 							<td><c:out value="${ report.reporter }" /></td>
 							<td>
-								<span id="report-timestamp-${ report.id }"></span><c:out value="${ report.timestamp }" /></span>
+								<span id="report-timestamp-${ report.id }"><c:out value="${ report.timestamp }" /></span>
 								<script defer="defer">
 									prettyTimestamp("report-timestamp-${ report.id }");
 								</script>
