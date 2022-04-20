@@ -941,6 +941,14 @@ public class BMPController extends DatabaseAwareBean {
 			currentThread().interrupt();
 			throw e;
 		} catch (Exception e) {
+			/*
+			 * FIXME handle what happens when the hardware is unreachable
+			 *
+			 * When that happens, we must tell the alloc engine to pick
+			 * somewhere else, and we should mark the board as out of service
+			 * too; it's never going to work so taking it out right away is the
+			 * only sane plan.
+			 */
 			if (!isLastTry) {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...
