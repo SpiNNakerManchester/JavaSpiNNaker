@@ -957,4 +957,10 @@ public class BMPController extends DatabaseAwareBean {
 			return true;
 		}
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(ThreadFactory q) {
+		}
+	}
 }

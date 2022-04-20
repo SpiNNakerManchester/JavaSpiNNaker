@@ -2008,3 +2008,13 @@ public abstract class SQLQueries {
 	@Value("classpath:queries/copy-allocs-to-historical-data.sql")
 	protected Resource copyAllocsToHistoricalData;
 }
+
+interface SQLQueriesUseImportsForCheckstyle {
+	/** For Checkstyle. */
+	Class<?>[] CLASSES = {
+		DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
+		UserControl.class, AllocatorTask.class, QuotaManager.class,
+		Spalloc.class, BMPController.class, BoardIssueReport.class,
+		LocalAuthProviderImpl.class
+	};
+}

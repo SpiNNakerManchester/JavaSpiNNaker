@@ -78,6 +78,7 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
@@ -116,6 +117,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Autowired
 	private AllocatorProperties props;
+
+	@Autowired
+	private ProxyRememberer rememberer;
 
 	private transient Map<String, List<BoardCoords>> downBoardsCache =
 			new HashMap<>();
@@ -1207,6 +1211,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				throw new PartialJobException();
 			}
 			powerController.destroyJob(id, reason);
+			rememberer.killProxies(id);
 		}
 
 		@Override
@@ -1456,6 +1461,16 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		@Override
 		public Optional<Integer> getDepth() {
 			return Optional.ofNullable(depth);
+		}
+
+		@Override
+		public void rememberProxy(ProxyCore proxy) {
+			rememberer.rememberProxyForJob(id, proxy);
+		}
+
+		@Override
+		public void forgetProxy(ProxyCore proxy) {
+			rememberer.removeProxyForJob(id, proxy);
 		}
 
 		private final class SubMachineImpl implements SubMachine {

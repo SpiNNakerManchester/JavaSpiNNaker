@@ -140,3 +140,8 @@ public interface SystemController {
 	String performLogout(HttpServletRequest request,
 			HttpServletResponse response);
 }
+
+abstract class SystemControllerUseLogoutHandler {
+	private SystemControllerUseLogoutHandler(LogoutHandler q) {
+	}
+}

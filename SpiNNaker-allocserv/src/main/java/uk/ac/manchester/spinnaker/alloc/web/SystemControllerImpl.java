@@ -287,4 +287,10 @@ public class SystemControllerImpl implements SystemController {
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
 		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(Valid q) {
+		}
+	}
 }
