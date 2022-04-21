@@ -24,6 +24,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -33,7 +34,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  *
  * @author Donal Fellows
  */
-public class StubJob implements SpallocAPI.Job {
+public abstract class StubJob implements SpallocAPI.Job {
 	@Override
 	public void waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();
@@ -126,6 +127,16 @@ public class StubJob implements SpallocAPI.Job {
 
 	@Override
 	public String reportIssue(IssueReportRequest reqBody, Permit permit) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void rememberProxy(ProxyCore proxy) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void forgetProxy(ProxyCore proxy) {
 		throw new UnsupportedOperationException();
 	}
 }

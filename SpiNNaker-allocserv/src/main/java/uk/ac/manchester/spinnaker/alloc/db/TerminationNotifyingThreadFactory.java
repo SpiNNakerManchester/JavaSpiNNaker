@@ -61,4 +61,10 @@ public class TerminationNotifyingThreadFactory implements ThreadFactory {
 			}
 		});
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(Executors q) {
+		}
+	}
 }

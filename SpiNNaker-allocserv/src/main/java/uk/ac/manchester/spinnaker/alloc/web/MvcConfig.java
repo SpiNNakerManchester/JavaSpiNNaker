@@ -18,12 +18,19 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler;
 
 /**
  * Sets up the login page and static resource mappings. Note that paths in here
@@ -31,9 +38,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * program path matchers).
  */
 @EnableWebMvc
+@EnableWebSocket
 @Configuration
 @Role(ROLE_SUPPORT)
-public class MvcConfig implements WebMvcConfigurer {
+public class MvcConfig implements WebMvcConfigurer, WebSocketConfigurer {
 	// TODO check if we should use the url path maker bean
 
 	@Override
@@ -46,5 +54,21 @@ public class MvcConfig implements WebMvcConfigurer {
 		registry.addResourceHandler("/system/resources/**")
 				.addResourceLocations(
 						"classpath:/META-INF/public-web-resources/");
+	}
+
+	@Autowired
+	private SpinWSHandler wsHandler;
+
+	@Autowired
+	private SpallocProperties props;
+
+	@Override
+	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+		if (props.getProxy().isEnable()) {
+			// It's its own interceptor!
+			registry.addHandler(wsHandler, "/proxy/*")
+					.addInterceptors(wsHandler)
+					.setAllowedOriginPatterns("*");
+		}
 	}
 }

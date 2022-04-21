@@ -31,6 +31,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
@@ -75,6 +76,9 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 
 	@Autowired
 	private SpallocProperties props;
+
+	@Value("${spring.mvc.servlet.path}")
+	private String servletPath;
 
 	/**
 	 * Make a machine access interface.
@@ -159,6 +163,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	@Prototype
 	@Role(ROLE_APPLICATION)
 	public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
+		String sp = props.getProxy().isEnable() ? servletPath : null;
 		return new JobAPI() {
 			@Override
 			public String keepAlive(String reqBody) {
@@ -176,11 +181,11 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 						// Refresh the handle
 						Job nj = core.getJob(permit, j.getId())
 								.orElseThrow(() -> new ItsGone("no such job"));
-						return new JobStateResponse(nj, ui, mapper);
+						return new JobStateResponse(nj, ui, mapper, sp);
 					});
 				} else {
-					fgAction(response,
-							() -> new JobStateResponse(j, ui, mapper));
+					fgAction(response, () -> new JobStateResponse(j, ui, mapper,
+							sp));
 				}
 			}
 

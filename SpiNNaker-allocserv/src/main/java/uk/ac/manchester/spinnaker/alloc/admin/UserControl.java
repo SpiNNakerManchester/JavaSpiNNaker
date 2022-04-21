@@ -916,4 +916,10 @@ public class UserControl extends DatabaseAwareBean {
 		});
 		return mr;
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(SQLQueries q) {
+		}
+	}
 }

@@ -69,8 +69,7 @@ public interface SpiNNakerControl {
 	 * @throws IOException
 	 *             If network I/O fails.
 	 */
-	void setLinkOff(Link link)
-			throws ProcessException, IOException;
+	void setLinkOff(Link link) throws ProcessException, IOException;
 
 	/**
 	 * Turn off boards managed by a BMP. Turning off a board also turns off its
@@ -97,4 +96,27 @@ public interface SpiNNakerControl {
 	 *            board.
 	 */
 	void setIdToBoardMap(Map<Integer, BMPBoard> idToBoard);
+
+	/**
+	 * A guide for how to make a BMP controller.
+	 *
+	 * @author Donal Fellows
+	 */
+	@FunctionalInterface
+	interface Factory {
+		/**
+		 * Create a SpiNNaker board controller. Note that this is only provided
+		 * for reference. It is up to the caller to ensure that the controller
+		 * is the only controller that talks to a particular BMP; <em>it is
+		 * <strong>essential</strong> that only one controller and one thread
+		 * accesses a BMP in order to prevent the BMP from crashing!</em>
+		 *
+		 * @param machine
+		 *            The machine that this will be managing.
+		 * @param coords
+		 *            The coordinates of the BMP that this will manage.
+		 * @return The board controller.
+		 */
+		SpiNNakerControl create(Machine machine, BMPCoords coords);
+	}
 }

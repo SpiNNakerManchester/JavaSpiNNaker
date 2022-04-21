@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
  *
  * @author Donal Fellows
  */
-public class StubMachine implements SpallocAPI.Machine {
+public abstract class StubMachine implements SpallocAPI.Machine {
 	@Override
 	public void waitForChange(Duration timeout) {
 		throw new UnsupportedOperationException();

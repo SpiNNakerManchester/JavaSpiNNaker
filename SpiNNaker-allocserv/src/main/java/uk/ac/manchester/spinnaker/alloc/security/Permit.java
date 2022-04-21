@@ -33,6 +33,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.socket.WebSocketSession;
 
 /**
  * Encodes what a user is permitted to do. Abstracts over several types of
@@ -97,6 +98,17 @@ public final class Permit {
 		USER.getGrants().forEach(authorities::add);
 		admin = false;
 		name = serviceUser;
+	}
+
+	/**
+	 * The permit used for web socket handling.
+	 *
+	 * @param session
+	 */
+	public Permit(WebSocketSession session) {
+		USER.getGrants().forEach(authorities::add);
+		admin = false;
+		name = session.getPrincipal().getName();
 	}
 
 	/**

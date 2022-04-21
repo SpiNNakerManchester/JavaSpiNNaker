@@ -14,28 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.web;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl;
-
 /**
- * Describes what action a method is to take. Used to enhance logging in
- * {@link SystemControllerImpl} and {@link AdminControllerImpl}.
+ * SpiNNaker message proxying support code.
  */
-@Target(METHOD)
-@Retention(RUNTIME)
-public @interface Action {
-	/** @return The action we do in the annotated method. */
-	String value();
-}
-
-abstract class ActionUseOtherClassReferences {
-	private ActionUseOtherClassReferences(AdminControllerImpl q) {
-	}
-}
+package uk.ac.manchester.spinnaker.alloc.proxy;

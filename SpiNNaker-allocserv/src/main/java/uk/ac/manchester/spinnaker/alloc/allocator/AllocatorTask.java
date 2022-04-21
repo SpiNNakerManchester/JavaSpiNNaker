@@ -95,6 +95,9 @@ public class AllocatorTask extends DatabaseAwareBean
 	@Autowired
 	private HistoricalDataProperties historyProps;
 
+	@Autowired
+	private ProxyRememberer rememberer;
+
 	/**
 	 * Helper class representing a rectangle of triads.
 	 *
@@ -571,6 +574,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			setPower(sql, id, OFF, DESTROYED);
 			sql.killAlloc.call(id);
 			return sql.markAsDestroyed.call(reason, id) > 0;
+		} finally {
+			rememberer.killProxies(id);
 		}
 	}
 
@@ -864,6 +869,8 @@ public class AllocatorTask extends DatabaseAwareBean
 				boardsToAllocate.get(0), boardsToAllocate.size(), jobId);
 		log.debug("allocated {} boards to {}; issuing power up commands",
 				boardsToAllocate.size(), jobId);
+		// Any proxies that existed are now defunct; user must make anew
+		rememberer.killProxies(jobId);
 		return setPower(sql, jobId, ON, READY);
 	}
 
@@ -875,6 +882,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		});
 		if (updated) {
+			rememberer.killProxies(jobId);
 			epochs.nextMachineEpoch();
 			epochs.nextJobsEpoch();
 		}
@@ -955,5 +963,11 @@ public class AllocatorTask extends DatabaseAwareBean
 				numPending, jobId);
 
 		return numPending > 0;
+	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(SQLQueries q) {
+		}
 	}
 }

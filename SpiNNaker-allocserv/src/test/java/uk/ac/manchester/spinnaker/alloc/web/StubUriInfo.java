@@ -24,7 +24,7 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-class StubUriInfo implements UriInfo {
+abstract class StubUriInfo implements UriInfo {
 	@Override
 	public String getPath() {
 		throw new UnsupportedOperationException();
