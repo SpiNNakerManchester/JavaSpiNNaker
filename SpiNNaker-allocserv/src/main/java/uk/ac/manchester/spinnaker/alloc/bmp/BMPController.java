@@ -503,7 +503,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * it's never going to work so taking it out right away is the only
 		 * sane plan.
 		 * We also need to nuke the planned changes. Retrying is bad.
-		 * 
+		 *
 		 * @param sql
 		 *            How to access the DB.
 		 * @param failureHeader
