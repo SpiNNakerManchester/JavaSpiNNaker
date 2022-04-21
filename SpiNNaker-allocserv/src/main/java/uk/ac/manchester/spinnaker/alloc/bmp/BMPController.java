@@ -77,6 +77,8 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.UnroutableMessageException;
+import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -493,6 +495,26 @@ public class BMPController extends DatabaseAwareBean {
 			sb.append(",off=").append(powerOffBoards);
 			sb.append(",links=").append(linkRequests);
 			return sb.append(")").toString();
+		}
+
+		/**
+		 * When a BMP is unroutable, we must tell the alloc engine to pick
+		 * somewhere else, and we should mark the board as out of service too;
+		 * it's never going to work so taking it out right away is the only
+		 * sane plan.
+		 * We also need to nuke the planned changes. Retrying is bad.
+		 * 
+		 * @param sql
+		 *            How to access the DB.
+		 * @param failureHeader
+		 *            The routing information from the failure message.
+		 * @return Whether the state of boards or jobs has changed.
+		 */
+		private boolean badBoard(AfterSQL sql, SDPHeader failureHeader) {
+			/*
+			 * FIXME handle hardware unreachable
+			 */
+			return false;
 		}
 	}
 
@@ -941,14 +963,14 @@ public class BMPController extends DatabaseAwareBean {
 			currentThread().interrupt();
 			throw e;
 		} catch (Exception e) {
-			/*
-			 * FIXME handle what happens when the hardware is unreachable
-			 *
-			 * When that happens, we must tell the alloc engine to pick
-			 * somewhere else, and we should mark the board as out of service
-			 * too; it's never going to work so taking it out right away is the
-			 * only sane plan.
-			 */
+			if (e.getCause() instanceof UnroutableMessageException) {
+				UnroutableMessageException ume = (UnroutableMessageException)
+						e.getCause();
+				log.error("BMP {} on {} is unroutable", ume.header.getSource(),
+						request.machine);
+				cleanupTasks.add(sql -> request.badBoard(sql, ume.header));
+				return true;
+			}
 			if (!isLastTry) {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...

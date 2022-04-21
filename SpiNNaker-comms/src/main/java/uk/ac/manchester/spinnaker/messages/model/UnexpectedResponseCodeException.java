@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.String.format;
 
-import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 
 /**
@@ -28,18 +27,27 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 public class UnexpectedResponseCodeException extends Exception {
 	private static final long serialVersionUID = 7864690081287752744L;
 
+	/** The response received in error. */
+	public final SCPResult response;
+
 	/**
+	 * Special constructor for one-way operations.
+	 *
 	 * @param operation
 	 *            The operation being performed
 	 * @param command
 	 *            The command being executed
 	 * @param response
 	 *            The response received in error
+	 * @param ignored 
+	 *            Ignored
 	 */
-	public UnexpectedResponseCodeException(String operation, String command,
-			String response) {
-		super(format("Unexpected response %s while performing operation %s "
-				+ "using command %s", response, operation, command));
+	public UnexpectedResponseCodeException(String operation, Enum<?> command,
+			SCPResult response, Object ignored) {
+		super(format("Unexpected response %s while performing one-way "
+				+ "operation %s using command %s", response, operation, 
+				command));
+		this.response = response;
 	}
 
 	/**
@@ -50,8 +58,11 @@ public class UnexpectedResponseCodeException extends Exception {
 	 * @param response
 	 *            The response received in error
 	 */
-	public UnexpectedResponseCodeException(String operation, SCPCommand command,
+	public UnexpectedResponseCodeException(String operation, Enum<?> command,
 			SCPResult response) {
-		this(operation, command.name(), response.name());
+		super(format("Unexpected response %s while performing operation %s "
+				+ "using command %s", response.name(), operation,
+				command.name()));
+		this.response = response;
 	}
 }
