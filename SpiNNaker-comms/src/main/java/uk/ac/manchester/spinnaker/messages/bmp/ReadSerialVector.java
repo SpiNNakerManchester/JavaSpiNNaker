@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,24 +16,24 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.ADC;
+import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.SERIAL;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
-import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
- * SCP Request for the data from the BMP including voltages and temperature.
+ * SCP Request for the serial data vector from the BMP.
  */
-public class ReadADC extends BMPRequest<ReadADC.Response> {
+public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	/**
 	 * @param board
-	 *            which board to request the ADC register from
+	 *            which board to request the serial data from
 	 */
-	public ReadADC(BMPBoard board) {
-		super(board, CMD_BMP_INFO, (int) ADC.value);
+	public ReadSerialVector(BMPBoard board) {
+		super(board, CMD_BMP_INFO, (int) SERIAL.value);
 	}
 
 	@Override
@@ -41,15 +41,15 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for ADC information. */
+	/** An SCP response to a request for serial data. */
 	public final class Response extends BMPRequest.BMPResponse {
-		/** The ADC information. */
-		public final ADCInfo adcInfo;
+		/** The serial data. */
+		public final IntBuffer vector;
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read ADC", CMD_BMP_INFO, buffer);
-			adcInfo = new ADCInfo(buffer);
+			vector = buffer.asIntBuffer().asReadOnlyBuffer();
 		}
 	}
 }

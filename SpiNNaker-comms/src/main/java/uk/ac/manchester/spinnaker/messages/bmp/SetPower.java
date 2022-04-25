@@ -34,6 +34,8 @@ import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	private static final int DELAY_SHIFT = 16;
 
+	private static final BMPBoard FRAME_ROOT = new BMPBoard(0);
+
 	/**
 	 * @param powerCommand
 	 *            The power command being sent
@@ -43,9 +45,9 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            Number of seconds delay between power state changes of the
 	 *            different boards.
 	 */
-	public SetPower(PowerCommand powerCommand, Collection<Integer> boards,
+	public SetPower(PowerCommand powerCommand, Collection<BMPBoard> boards,
 			double delay) {
-		super(0, CMD_BMP_POWER, argument1(delay, powerCommand),
+		super(FRAME_ROOT, CMD_BMP_POWER, argument1(delay, powerCommand),
 				argument2(boards));
 	}
 
@@ -54,8 +56,8 @@ public class SetPower extends BMPRequest<BMPRequest.BMPResponse> {
 				| powerCommand.value;
 	}
 
-	private static int argument2(Collection<Integer> boards) {
-		return boards.stream().mapToInt(board -> 1 << board).sum();
+	private static int argument2(Collection<BMPBoard> boards) {
+		return boards.stream().mapToInt(board -> 1 << board.board).sum();
 	}
 
 	@Override

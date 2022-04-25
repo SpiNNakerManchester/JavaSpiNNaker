@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-/** The SCP BMP Information Types. */
-public enum BMPInfo {
-	/** Serial flash information. */
-	SERIAL(0),
-	/** CAN status information. */
-	CAN_STATUS(2),
-	/** ADC information. */
-	ADC(3),
-	/** IP Address. */
-	IP_ADDR(4);
+import static uk.ac.manchester.spinnaker.messages.bmp.XilinxCommand.Reset;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX;
 
-	/** The raw BMP value. */
-	public final byte value;
+import java.nio.ByteBuffer;
 
-	BMPInfo(int value) {
-		this.value = (byte) value;
+import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
+
+/** Perform a reset of the FPGAs. */
+public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
+	public ResetFPGA(BMPBoard board, FPGAResetType resetType) {
+		super(board, CMD_XILINX, Reset.code, resetType.ordinal());
+	}
+
+	@Override
+	public BMPResponse getSCPResponse(ByteBuffer buffer) throws Exception {
+		return new BMPResponse("Reset XILINX", CMD_XILINX, buffer);
 	}
 }

@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
@@ -30,16 +31,22 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	private static final int MASK = 0b00000011;
 
 	/**
-	 * @param fpgaNum
-	 *            FPGA number (0, 1 or 2 on SpiNN-5 board) to communicate with.
+	 * @param fpga
+	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
 	 * @param register
 	 *            Register address to read to (will be rounded down to the
 	 *            nearest 32-bit word boundary).
 	 * @param board
 	 *            which board to request the ADC register from
+	 * @throws IllegalArgumentException
+	 *             If {@link FPGA#FPGA_ALL} is used.
 	 */
-	public ReadFPGARegister(int fpgaNum, int register, int board) {
-		super(board, CMD_LINK_READ, register & ~MASK, WORD_SIZE, fpgaNum);
+	public ReadFPGARegister(FPGA fpga, int register, BMPBoard board) {
+		super(board, CMD_LINK_READ, register & ~MASK, WORD_SIZE, fpga.value);
+		if (!fpga.isSingleFPGA()) {
+			throw new IllegalArgumentException(
+					"cannot read multiple FPGAs at once with this message");
+		}
 	}
 
 	@Override

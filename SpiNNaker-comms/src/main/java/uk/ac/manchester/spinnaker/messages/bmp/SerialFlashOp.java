@@ -16,21 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-/** The SCP BMP Information Types. */
-public enum BMPInfo {
-	/** Serial flash information. */
-	SERIAL(0),
-	/** CAN status information. */
-	CAN_STATUS(2),
-	/** ADC information. */
-	ADC(3),
-	/** IP Address. */
-	IP_ADDR(4);
+/** The serial flash operations. */
+enum SerialFlashOp {
+	/** Read from the Serial Flash. */
+	READ(0),
+	/** write to the Serial Flash. */
+	WRITE(1),
+	/** Get the CRC of Serial Flash. */
+	CRC(2);
 
 	/** The raw BMP value. */
 	public final byte value;
 
-	BMPInfo(int value) {
+	SerialFlashOp(int value) {
 		this.value = (byte) value;
 	}
 }

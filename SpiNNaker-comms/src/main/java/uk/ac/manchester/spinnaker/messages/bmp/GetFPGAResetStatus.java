@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,40 +16,43 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.ADC;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_READ;
+import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.WORD;
 
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
-/**
- * SCP Request for the data from the BMP including voltages and temperature.
- */
-public class ReadADC extends BMPRequest<ReadADC.Response> {
-	/**
-	 * @param board
-	 *            which board to request the ADC register from
-	 */
-	public ReadADC(BMPBoard board) {
-		super(board, CMD_BMP_INFO, (int) ADC.value);
+/** Get the reset status of a board's FPGAs. */
+public class GetFPGAResetStatus
+		extends BMPRequest<GetFPGAResetStatus.Response> {
+	public GetFPGAResetStatus(BMPBoard board) {
+		super(board, CMD_READ, IO_PORT_CONTROL_WORD, WORD_SIZE, WORD.value);
 	}
+
+	private static final int IO_PORT_CONTROL_WORD = 0x2009c034;
 
 	@Override
 	public Response getSCPResponse(ByteBuffer buffer) throws Exception {
 		return new Response(buffer);
 	}
 
-	/** An SCP response to a request for ADC information. */
+	private static final int XIL_RST_BIT = 14;
+
 	public final class Response extends BMPRequest.BMPResponse {
-		/** The ADC information. */
-		public final ADCInfo adcInfo;
+		private int ioPortControlWord;
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_BMP_INFO, buffer);
-			adcInfo = new ADCInfo(buffer);
+			super("Read XIL_RST", CMD_READ, buffer);
+			buffer.order(LITTLE_ENDIAN);
+			ioPortControlWord = buffer.getInt();
+		}
+
+		public boolean isReset() {
+			return ((ioPortControlWord >> XIL_RST_BIT) & 1) != 0;
 		}
 	}
 }

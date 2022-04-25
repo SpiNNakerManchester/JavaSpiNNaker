@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.model;
+package uk.ac.manchester.spinnaker.messages.bmp;
 
-/**
- * SpiNNaker FPGA identifiers, taken from the
- * <a href="http://spinnakermanchester.github.io/docs/spin5-links.pdf">SpiNN-5
- * FPGA SATA Links</a> datasheet.
- * <p>
- * Use {@link Enum#ordinal() ordinal()} to get the ID.
- */
-public enum FpgaIdentifiers {
-	/** Handles east and south. */
-	FPGA_E_S,
-	/** Handles south-west and west. */
-	FPGA_SW_W,
-	/** Handles north and north-east. */
-	FPGA_N_NE
+/** Commands to send to the Xilinx FPGA handler. */
+public enum XilinxCommand {
+	/** Load block of data. */
+	LoadData(0),
+	/** Start initialisation. */
+	Init(1),
+	/**
+	 * Reset.
+	 *
+	 * @see FPGAResetType
+	 */
+	Reset(2);
+
+	/** The command code to use in the message. */
+	public final int code;
+
+	XilinxCommand(int code) {
+		this.code = code;
+	}
 }

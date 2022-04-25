@@ -30,7 +30,7 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 * @param core
 	 *            the core to write via
 	 * @param baseAddress
-	 *            The positive base address to start the read from
+	 *            The positive base address to start the write at
 	 * @param data
 	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
 	 *            buffer must be the point where the data starts.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters.STOP;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.FLAG;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,15 +30,18 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderException;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
-import uk.ac.manchester.spinnaker.alloc.model.FpgaIdentifiers;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -76,6 +78,14 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Autowired
 	private TransceiverFactoryAPI<?> txrxFactory;
 
+	/**
+	 * Factory for {@link FirmwareLoader}. Do not call directly; use
+	 * {@link #loadFirmware(BMPBoard)} instead.
+	 */
+	@Autowired
+	private ObjectProvider<FirmwareLoader> firmwareLoaderFactory;
+
+	/** The BMP coordinates to bind into the transceiver. */
 	private final BMPCoords bmp;
 
 	private final Machine machine;
@@ -85,7 +95,30 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 */
 	private BMPTransceiverInterface txrx;
 
-	private Map<Integer, Integer> idToBoard;
+	private Map<Integer, BMPBoard> idToBoard;
+
+	/**
+	 * Load the FPGA firmware onto a board.
+	 *
+	 * @param boards
+	 *            Which boards are we planning to load the firmware on?
+	 * @throws InterruptedException
+	 *             If interrupted while sleeping
+	 * @throws ProcessException
+	 *             If a BMP rejects a message
+	 * @throws IOException
+	 *             If the network fails or the packaged bitfiles are unreadable
+	 * @throws FirmwareLoaderException
+	 *             If something goes wrong.
+	 */
+	private void loadFirmware(List<BMPBoard> boards)
+			throws ProcessException, InterruptedException, IOException {
+		int count = 0;
+		for (BMPBoard board : boards) {
+			firmwareLoaderFactory.getObject(txrx, board)
+					.bitLoad(++count == boards.size());
+		}
+	}
 
 	/**
 	 * The factory. Forces the constructor to conform to the API.
@@ -107,20 +140,28 @@ class SpiNNaker1 implements SpiNNakerControl {
 
 	@PostConstruct
 	void initTransceiver() throws IOException, SpinnmanException {
-		this.txrx = txrxFactory.getTransciever(machine, bmp);
+		txrx = txrxFactory.getTransciever(machine, bmp);
+		txrx.bind(ROOT_BMP);
 	}
 
 	@Override
-	public void setIdToBoardMap(Map<Integer, Integer> idToBoard) {
+	public void setIdToBoardMap(Map<Integer, BMPBoard> idToBoard) {
 		this.idToBoard = idToBoard;
 	}
 
-	private List<Integer> remap(List<Integer> boardIds) {
-		List<Integer> boardNums = new ArrayList<>(boardIds.size());
-		for (Integer id : boardIds) {
-			boardNums.add(requireNonNull(idToBoard.get(id)));
+	private List<BMPBoard> remap(List<Integer> boardIds) {
+		return boardIds.stream().map(idToBoard::get).collect(toList());
+	}
+
+	/** Notes that a board probably needs its FPGA definitions reloading. */
+	private static class FPGAReloadRequired extends Exception {
+		private static final long serialVersionUID = 1L;
+
+		final BMPBoard board;
+
+		FPGAReloadRequired(BMPBoard board) {
+			this.board = board;
 		}
-		return boardNums;
 	}
 
 	/**
@@ -131,21 +172,28 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param fpga
 	 *            Which FPGA (0, 1, or 2) is being tested?
 	 * @return True if the FPGA is in a correct state, false otherwise.
+	 * @throws FPGAReloadRequired
+	 *             If the FPGA is in such a bad state that the FPGA definitions
+	 *             for the board need to be reloaded.
 	 */
-	private boolean isGoodFPGA(Integer board, FpgaIdentifiers fpga) {
+	private boolean isGoodFPGA(BMPBoard board, FPGA fpga)
+			throws FPGAReloadRequired {
 		int flag;
 		try {
-			flag = txrx.readFPGARegister(fpga.ordinal(), FLAG, ROOT_BMP, board);
+			flag = txrx.readFPGARegister(fpga, FLAG, board);
 		} catch (ProcessException | IOException ignored) {
 			// An exception means the FPGA is a problem
 			return false;
 		}
 		// FPGA ID is bottom two bits of FLAG register
 		int fpgaId = flag & FPGA_FLAG_ID_MASK;
-		boolean ok = fpgaId == fpga.ordinal();
+		boolean ok = fpgaId == fpga.value;
 		if (!ok) {
 			log.warn("{} on board {} of {} has incorrect FPGA ID flag {}", fpga,
 					board, machine.getName(), fpgaId);
+			if (fpgaId == FPGA.FPGA_ALL.value) {
+				throw new FPGAReloadRequired(board);
+			}
 		}
 		return ok;
 	}
@@ -163,9 +211,9 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @throws IOException
 	 *             If network I/O fails.
 	 */
-	private boolean canBoardManageFPGAs(Integer board)
+	private boolean canBoardManageFPGAs(BMPBoard board)
 			throws ProcessException, IOException {
-		VersionInfo vi = txrx.readBMPVersion(ROOT_BMP, board);
+		VersionInfo vi = txrx.readBMPVersion(board);
 		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
 	}
 
@@ -177,14 +225,13 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 */
 	@Override
 	public void setLinkOff(Link link) throws ProcessException, IOException {
-		int board = requireNonNull(idToBoard.get(link.getBoard()));
+		BMPBoard board = requireNonNull(idToBoard.get(link.getBoard()));
 		Direction d = link.getLink();
 		// skip FPGA link configuration if old BMP version
 		if (!canBoardManageFPGAs(board)) {
 			return;
 		}
-		txrx.writeFPGARegister(d.fpga.ordinal(), d.bank, STOP, 1, ROOT_BMP,
-				board);
+		txrx.writeFPGARegister(d.fpga, d.bank, STOP, 1, board);
 	}
 
 	/**
@@ -193,11 +240,14 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @param board
 	 *            The board ID
 	 * @return Whether the board's FPGAs all came up correctly.
-	 * @see #isGoodFPGA(Integer, FpgaIdentifiers)
+	 * @throws FPGAReloadRequired
+	 *             If an FPGA is in such a bad state that the FPGA definitions
+	 *             for the board need to be reloaded.
+	 * @see #isGoodFPGA(Integer, FPGA)
 	 */
-	private boolean hasGoodFPGAs(Integer board) {
-		for (FpgaIdentifiers fpga : FpgaIdentifiers.values()) {
-			if (!isGoodFPGA(board, fpga)) {
+	private boolean hasGoodFPGAs(BMPBoard board) throws FPGAReloadRequired {
+		for (FPGA fpga : FPGA.values()) {
+			if (fpga.isSingleFPGA() && !isGoodFPGA(board, fpga)) {
 				return false;
 			}
 		}
@@ -207,13 +257,13 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOnAndCheck(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
-		List<Integer> boardsToPower = remap(boards);
+		List<BMPBoard> boardsToPower = remap(boards);
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			if (attempt > 1) {
 				log.warn("rebooting {} boards in allocation to "
 						+ "get stability", boardsToPower.size());
 			}
-			txrx.power(POWER_ON, ROOT_BMP, boardsToPower);
+			txrx.powerOn(boardsToPower);
 
 			/*
 			 * Check whether all the FPGAs on each board have come up correctly.
@@ -221,21 +271,37 @@ class SpiNNaker1 implements SpiNNakerControl {
 			 * that have booted correctly need no further action.
 			 */
 
-			List<Integer> retryBoards = new ArrayList<>();
-			for (Integer board : boardsToPower) {
+			List<BMPBoard> retryBoards = new ArrayList<>();
+			List<BMPBoard> reloadBoards = new ArrayList<>();
+			for (BMPBoard board : boardsToPower) {
 				// Skip board if old BMP version
 				if (!canBoardManageFPGAs(board)) {
 					continue;
 				}
-
-				if (!hasGoodFPGAs(board)) {
-					retryBoards.add(board);
+				try {
+					if (!hasGoodFPGAs(board)) {
+						retryBoards.add(board);
+					}
+				} catch (FPGAReloadRequired e) {
+					reloadBoards.add(e.board);
 				}
 			}
-			if (retryBoards.isEmpty()) {
+			if (retryBoards.isEmpty() && reloadBoards.isEmpty()) {
 				// Success!
 				return;
 			}
+			// We don't try reloading the first time
+			if (props.isFpgaReload() && attempt > 1
+					&& attempt < props.getFpgaAttempts()
+					&& !reloadBoards.isEmpty()) {
+				log.warn("reloading FPGA firmware on {} boards",
+						retryBoards.size());
+				loadFirmware(reloadBoards);
+				// Need a full retry after that!
+				boardsToPower = remap(boards);
+				continue;
+			}
+			retryBoards.addAll(reloadBoards); // Might not be empty
 			boardsToPower = retryBoards;
 		}
 		throw new IOException("Could not get correct FPGA ID for "
@@ -246,6 +312,6 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOff(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
-		txrx.power(POWER_OFF, ROOT_BMP, remap(boards));
+		txrx.powerOff(remap(boards));
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,35 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-/** The SCP BMP Information Types. */
-public enum BMPInfo {
-	/** Serial flash information. */
-	SERIAL(0),
-	/** CAN status information. */
-	CAN_STATUS(2),
-	/** ADC information. */
-	ADC(3),
-	/** IP Address. */
-	IP_ADDR(4);
+/**
+ * Wrapper for a board number so that it can't get mixed up with other integers.
+ *
+ * @author Donal Fellows
+ */
+public class BMPBoard {
+	/** The board number. */
+	public final int board;
 
-	/** The raw BMP value. */
-	public final byte value;
+	public BMPBoard(int board) {
+		this.board = board;
+	}
 
-	BMPInfo(int value) {
-		this.value = (byte) value;
+	@Override
+	public String toString() {
+		return "board=" + board;
+	}
+
+	@Override
+	public int hashCode() {
+		return board;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof BMPBoard) {
+			BMPBoard b = (BMPBoard) o;
+			return board == b.board;
+		}
+		return false;
 	}
 }
