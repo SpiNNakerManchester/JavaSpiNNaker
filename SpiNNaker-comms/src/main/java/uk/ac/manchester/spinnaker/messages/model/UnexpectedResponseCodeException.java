@@ -39,13 +39,13 @@ public class UnexpectedResponseCodeException extends Exception {
 	 *            The command being executed
 	 * @param response
 	 *            The response received in error
-	 * @param ignored 
+	 * @param ignored
 	 *            Ignored
 	 */
 	public UnexpectedResponseCodeException(String operation, Enum<?> command,
 			SCPResult response, Object ignored) {
 		super(format("Unexpected response %s while performing one-way "
-				+ "operation %s using command %s", response, operation, 
+				+ "operation %s using command %s", response, operation,
 				command));
 		this.response = response;
 	}
