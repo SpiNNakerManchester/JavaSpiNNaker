@@ -45,10 +45,10 @@ import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
-import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
-import uk.ac.manchester.spinnaker.messages.model.LEDAction;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
@@ -220,7 +220,7 @@ public class TransceiverFactory
 	}
 }
 
-class DummyTransceiver implements BMPTransceiverInterface {
+class DummyTransceiver extends UnimplementedTransceiver {
 	private static final Logger log = getLogger(DummyTransceiver.class);
 
 	private static final int VERSION_INFO_SIZE = 32;
@@ -263,61 +263,29 @@ class DummyTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<Integer> boards)
-			throws InterruptedException, IOException, ProcessException {
+			Collection<BMPBoard> boards) {
 		log.info("power({},{},{})", powerCommand, bmp, boards);
-		for (Integer b : boards) {
-			status.put(b, powerCommand == POWER_ON);
+		for (BMPBoard b : boards) {
+			status.put(b.board, powerCommand == POWER_ON);
 		}
 	}
 
 	@Override
-	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
-			int board) throws IOException, ProcessException {
-		log.info("readFPGARegister({},{},{},{})", fpgaNumber, register, bmp,
-				board);
-		return fpgaNumber;
+	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
+			BMPBoard board) {
+		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
+		return fpga.value;
 	}
 
 	@Override
-	public void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, int board) throws IOException, ProcessException {
-		log.info("writeFPGARegister({},{},{},{},{})", fpgaNumber, register,
-				value, bmp, board);
+	public void writeFPGARegister(FPGA fpga, int register, int value,
+			BMPCoords bmp, BMPBoard board) {
+		log.info("writeFPGARegister({},{},{},{},{})", fpga, register, value,
+				bmp, board);
 	}
 
 	@Override
-	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
-			throws IOException, ProcessException {
+	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board) {
 		return version;
-	}
-
-	@Deprecated
-	@Override
-	public void powerOnMachine()
-			throws InterruptedException, IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public void powerOffMachine()
-			throws InterruptedException, IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public void setLED(Collection<Integer> leds, LEDAction action,
-			BMPCoords bmp, Collection<Integer> board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Deprecated
-	@Override
-	public ADCInfo readADCData(BMPCoords bmp, int board)
-			throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
 	}
 }

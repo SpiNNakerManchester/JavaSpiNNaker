@@ -54,10 +54,13 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
+import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRIES;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -108,14 +111,23 @@ import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
+import uk.ac.manchester.spinnaker.messages.bmp.EraseFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
+import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadCANStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlashCRC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector;
+import uk.ac.manchester.spinnaker.messages.bmp.ResetFPGA;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
+import uk.ac.manchester.spinnaker.messages.bmp.UpdateFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessage;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
@@ -125,6 +137,7 @@ import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
@@ -347,6 +360,8 @@ public class Transceiver extends UDPTransceiver
 	private boolean machineOff = false;
 
 	private long retryCount = 0L;
+
+	private BMPCoords boundBMP = new BMPCoords(0, 0);
 
 	/**
 	 * Create a Transceiver by creating a UDPConnection to the given hostname on
@@ -1646,7 +1661,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<Integer> boards)
+			Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		int timeout = (int) (MSEC_PER_SEC
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
@@ -1664,38 +1679,167 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void setLED(Collection<Integer> leds, LEDAction action,
-			BMPCoords bmp, Collection<Integer> board)
+			BMPCoords bmp, Collection<BMPBoard> board)
 			throws IOException, ProcessException {
 		bmpCall(bmp, new BMPSetLED(leds, action, board));
 	}
 
 	@Override
 	@ParallelUnsafe
-	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
-			int board) throws IOException, ProcessException {
+	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
+			BMPBoard board) throws IOException, ProcessException {
 		return bmpCall(bmp,
-				new ReadFPGARegister(fpgaNumber, register, board)).fpgaRegister;
+				new ReadFPGARegister(fpga, register, board)).fpgaRegister;
 	}
 
 	@Override
 	@ParallelUnsafe
-	public void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, int board) throws IOException, ProcessException {
-		bmpCall(bmp, new WriteFPGARegister(fpgaNumber, register, value, board));
+	public void writeFPGARegister(FPGA fpga, int register, int value,
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFPGARegister(fpga, register, value, board));
 	}
 
 	@Override
 	@ParallelUnsafe
-	public ADCInfo readADCData(BMPCoords bmp, int board)
+	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new ReadADC(board)).adcInfo;
 	}
 
 	@Override
 	@ParallelUnsafe
-	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
+	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new GetBMPVersion(board)).versionInfo;
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
+			int baseAddress, int length) throws ProcessException, IOException {
+		return new BMPReadMemoryProcess(bmpConnection(bmp), this).read(board,
+				baseAddress, length);
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data) throws IOException, ProcessException {
+		new BMPWriteMemoryProcess(bmpConnection(bmp), this).writeMemory(board,
+				baseAddress, data);
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
+			File file) throws IOException, ProcessException {
+		BMPWriteMemoryProcess wmp =
+				new BMPWriteMemoryProcess(bmpConnection(bmp), this);
+		try (BufferedInputStream f =
+				new BufferedInputStream(new FileInputStream(file))) {
+			// The file had better fit...
+			wmp.writeMemory(board, baseAddress, f, (int) file.length());
+		}
+	}
+
+	private static final int FLASH_BUFFER_INDEX = 5;
+
+	@Override
+	public int getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new ReadSerialVector(board)).vector
+				.get(FLASH_BUFFER_INDEX);
+	}
+
+	@Override
+	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
+			int baseAddress, int length) throws IOException, ProcessException {
+		return new BMPReadSerialFlashProcess(bmpConnection(bmp), this)
+				.read(board, baseAddress, length);
+	}
+
+	// CRC calculations of megabytes can take a bit
+	private static final int CRC_TIMEOUT = 2000;
+
+	@Override
+	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
+			int address, int length) throws IOException, ProcessException {
+		return bmpCall(bmp, CRC_TIMEOUT, BMP_RETRIES /* =default */,
+				new ReadSerialFlashCRC(board, address, length)).crc;
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			ByteBuffer data) throws ProcessException, IOException {
+		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
+				baseAddress, data);
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size, InputStream stream) throws ProcessException, IOException {
+		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
+				baseAddress, stream, size);
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			File file) throws ProcessException, IOException {
+		try (BufferedInputStream f =
+				new BufferedInputStream(new FileInputStream(file))) {
+			// The file had better fit...
+			new BMPWriteSerialFlashProcess(bmpConnection(bmp), this)
+					.write(board, baseAddress, f, (int) file.length());
+		}
+	}
+
+	@Override
+	public void writeBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+			throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFlashBuffer(board, address, true));
+	}
+
+	@Deprecated
+	@Override
+	public int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size) throws IOException, ProcessException {
+		return bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
+	}
+
+	@Deprecated
+	@Override
+	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+			throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFlashBuffer(board, address, false));
+	}
+
+	@Deprecated
+	@Override
+	public void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
+			int size) throws IOException, ProcessException {
+		// NB: no retries of this! Not idempotent!
+		bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
+				new UpdateFlash(board, baseAddress, size));
+	}
+
+	@Override
+	@ParallelSafe
+	public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new GetFPGAResetStatus(board)).isReset();
+	}
+
+	@Override
+	@ParallelSafe
+	public void resetFPGA(BMPCoords bmp, BMPBoard board,
+			FPGAResetType resetType) throws IOException, ProcessException {
+		bmpCall(bmp, new ResetFPGA(board, resetType));
+	}
+
+	@Override
+	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new ReadCANStatus()).availableBoards()
+				.map(BMPBoard::new);
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {
@@ -2433,5 +2577,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	protected void addConnection(Connection connection) {
 		this.allConnections.add(connection);
+	}
+
+	@Override
+	public void bind(BMPCoords bmp) {
+		boundBMP = bmp;
+	}
+
+	@Override
+	public BMPCoords getBoundBMP() {
+		return boundBMP;
 	}
 }

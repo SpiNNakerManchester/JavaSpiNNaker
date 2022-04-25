@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.connections.model.SCPSenderReceiver;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
@@ -46,7 +48,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	/**
 	 * The IDs of the specific set of boards managed by the BMPs we can talk to.
 	 */
-	public final Collection<Integer> boards;
+	public final Collection<BMPBoard> boards;
 
 	/**
 	 * @param connectionData
@@ -59,7 +61,8 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 				(connectionData.portNumber == null ? SCP_SCAMP_PORT
 						: connectionData.portNumber));
 		coords = new BMPCoords(connectionData.cabinet, connectionData.frame);
-		boards = connectionData.boards;
+		boards = connectionData.boards.stream().map(BMPBoard::new)
+				.collect(toList());
 	}
 
 	@Override

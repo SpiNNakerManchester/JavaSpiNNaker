@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -94,7 +95,7 @@ public interface SpiNNakerControl {
 	 *            How to get a physical board number from a database ID of the
 	 *            board.
 	 */
-	void setIdToBoardMap(Map<Integer, Integer> idToBoard);
+	void setIdToBoardMap(Map<Integer, BMPBoard> idToBoard);
 
 	/**
 	 * A guide for how to make a BMP controller.

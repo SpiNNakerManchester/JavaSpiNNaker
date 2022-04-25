@@ -76,6 +76,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -289,7 +290,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final List<Integer> changeIds;
 
-		private final Map<BMPCoords, Map<Integer, Integer>> idToBoard;
+		private final Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard;
 
 		private List<String> powerOnAddresses;
 
@@ -331,7 +332,7 @@ public class BMPController extends DatabaseAwareBean {
 				Map<BMPCoords, List<Integer>> powerOff,
 				Map<BMPCoords, List<Link>> links, Integer jobId, JobState from,
 				JobState to, List<Integer> changeIds,
-				Map<BMPCoords, Map<Integer, Integer>> idToBoard) {
+				Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard) {
 			this.machine = requireNonNull(machine);
 			powerOnBoards = isNull(powerOn) ? emptyMap() : powerOn;
 			powerOffBoards = isNull(powerOff) ? emptyMap() : powerOff;
@@ -367,7 +368,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void changeBoardPowerState(
 				Map<BMPCoords, SpiNNakerControl> controllers)
 				throws ProcessException, InterruptedException, IOException {
-			for (Entry<BMPCoords, Map<Integer, Integer>> bmp : idToBoard
+			for (Entry<BMPCoords, Map<Integer, BMPBoard>> bmp : idToBoard
 					.entrySet()) {
 				// Init the real controller
 				SpiNNakerControl controller = controllers.get(bmp.getKey());
@@ -555,7 +556,7 @@ public class BMPController extends DatabaseAwareBean {
 				new DefaultMap<>(ArrayList::new);
 		Map<BMPCoords, List<Link>> linksOff = new DefaultMap<>(ArrayList::new);
 		JobState from = UNKNOWN, to = UNKNOWN;
-		Map<BMPCoords, Map<Integer, Integer>> idToBoard =
+		Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard =
 				new DefaultMap<>(HashMap::new);
 
 		for (Row row : sql.getPowerChangesToDo.call(jobId)) {
@@ -563,7 +564,8 @@ public class BMPController extends DatabaseAwareBean {
 			BMPCoords bmp =
 					new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
 			Integer board = row.getInteger("board_id");
-			idToBoard.get(bmp).put(board, row.getInteger("board_num"));
+			idToBoard.get(bmp).put(board,
+					new BMPBoard(row.getInteger("board_num")));
 			boolean switchOn = row.getBoolean("power");
 			/*
 			 * Set these multiple times; we don't care as they should be the

@@ -86,23 +86,21 @@ public enum SCPCommand implements CommandCode {
 	CMD_FLASH_ERASE(50),
 	/** */
 	CMD_FLASH_WRITE(51),
-	/** Serial flash access? */
-	@Deprecated
+	/** Serial flash access. */
 	CMD_BMP_SF(53),
 	/** EEPROM access? */
 	@Deprecated
 	CMD_BMP_EE(54),
 	/** */
 	CMD_RESET(55),
-	/** */
-	@Deprecated
+	/** FPGA control. BMP-only operation. */
 	CMD_XILINX(56),
 	/** Turns on or off the machine via BMP. */
 	CMD_BMP_POWER(57),
-	/** Direct I2C access? */
+	/** Access I2C bus. */
 	@Deprecated
 	CMD_BMP_I2C(61),
-	/** Pulse width modulated ??? */
+	/** Configure pulse-width modulation hardware. */
 	@Deprecated
 	CMD_BMP_PWM(62),
 	/** */

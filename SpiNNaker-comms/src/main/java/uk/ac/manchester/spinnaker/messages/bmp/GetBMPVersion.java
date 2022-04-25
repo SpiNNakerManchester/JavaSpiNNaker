@@ -31,7 +31,7 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	 * @param board
 	 *            The board to get the version from
 	 */
-	public GetBMPVersion(int board) {
+	public GetBMPVersion(BMPBoard board) {
 		super(board, CMD_VER);
 	}
 

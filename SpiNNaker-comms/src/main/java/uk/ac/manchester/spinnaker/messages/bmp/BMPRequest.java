@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static java.util.Collections.min;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_EXPECTED;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.DEFAULT_PORT;
 
@@ -43,8 +42,13 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 				DEFAULT_PORT);
 	}
 
-	private static SDPHeader bmpHeader(Collection<Integer> boards) {
-		return bmpHeader(min(boards));
+	private static SDPHeader bmpHeader(BMPBoard board) {
+		return bmpHeader(board.board);
+	}
+
+	private static SDPHeader bmpHeader(Collection<BMPBoard> boards) {
+		return bmpHeader(
+				boards.stream().mapToInt(b -> b.board).min().orElse(0));
 	}
 
 	/**
@@ -55,7 +59,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param command
 	 *            The command to send
 	 */
-	BMPRequest(int board, SCPCommand command) {
+	BMPRequest(BMPBoard board, SCPCommand command) {
 		super(bmpHeader(board), command, 0, 0, 0, NO_DATA);
 	}
 
@@ -69,7 +73,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param argument1
 	 *            The first argument
 	 */
-	BMPRequest(int board, SCPCommand command, int argument1) {
+	BMPRequest(BMPBoard board, SCPCommand command, int argument1) {
 		super(bmpHeader(board), command, argument1, 0, 0, NO_DATA);
 	}
 
@@ -85,7 +89,8 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param argument2
 	 *            The second argument
 	 */
-	BMPRequest(int board, SCPCommand command, int argument1, int argument2) {
+	BMPRequest(BMPBoard board, SCPCommand command, int argument1,
+			int argument2) {
 		super(bmpHeader(board), command, argument1, argument2, 0, NO_DATA);
 	}
 
@@ -103,7 +108,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param argument3
 	 *            The third argument
 	 */
-	BMPRequest(int board, SCPCommand command, int argument1, int argument2,
+	BMPRequest(BMPBoard board, SCPCommand command, int argument1, int argument2,
 			int argument3) {
 		super(bmpHeader(board), command, argument1, argument2, argument3,
 				NO_DATA);
@@ -125,7 +130,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param data
 	 *            The payload
 	 */
-	BMPRequest(int board, SCPCommand command, int argument1, int argument2,
+	BMPRequest(BMPBoard board, SCPCommand command, int argument1, int argument2,
 			int argument3, ByteBuffer data) {
 		super(bmpHeader(board), command, argument1, argument2, argument3, data);
 	}
@@ -140,7 +145,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param argument1
 	 *            The first argument
 	 */
-	BMPRequest(Collection<Integer> boards, SCPCommand command, int argument1) {
+	BMPRequest(Collection<BMPBoard> boards, SCPCommand command, int argument1) {
 		super(bmpHeader(boards), command, argument1, 0, 0, NO_DATA);
 	}
 
@@ -156,7 +161,7 @@ public abstract class BMPRequest<T extends BMPRequest.BMPResponse>
 	 * @param argument2
 	 *            The second argument
 	 */
-	BMPRequest(Collection<Integer> boards, SCPCommand command, int argument1,
+	BMPRequest(Collection<BMPBoard> boards, SCPCommand command, int argument1,
 			int argument2) {
 		super(bmpHeader(boards), command, argument1, argument2, 0, NO_DATA);
 	}
