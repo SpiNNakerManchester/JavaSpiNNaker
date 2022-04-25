@@ -76,6 +76,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
+import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.UnroutableMessageException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
@@ -112,10 +113,15 @@ public class BMPController extends DatabaseAwareBean {
 
 	/**
 	 * Factory for {@linkplain SpiNNakerControl controllers}. Only use via
-	 * {@link #getControllers(Request) getControllers(...)}.
+	 * {@link #controllerFactory}.
 	 */
 	@Autowired
-	private ObjectProvider<SpiNNakerControl> controllerFactory;
+	private ObjectProvider<SpiNNakerControl> controllerFactoryBean;
+
+	/**
+	 * Type-safe factory for {@linkplain SpiNNakerControl controllers}.
+	 */
+	private SpiNNakerControl.Factory controllerFactory;
 
 	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
@@ -175,6 +181,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	@PostConstruct
 	private void init() {
+		controllerFactory = controllerFactoryBean::getObject;
 		clearStuckPending();
 		// Ought to do this, but not sure about scaling
 		// establishBMPConnections();
@@ -497,6 +504,8 @@ public class BMPController extends DatabaseAwareBean {
 			return sb.append(")").toString();
 		}
 
+		int systemReportOwner = 0; // FIXME
+
 		/**
 		 * When a BMP is unroutable, we must tell the alloc engine to pick
 		 * somewhere else, and we should mark the board as out of service too;
@@ -511,10 +520,42 @@ public class BMPController extends DatabaseAwareBean {
 		 * @return Whether the state of boards or jobs has changed.
 		 */
 		private boolean badBoard(AfterSQL sql, SDPHeader failureHeader) {
-			/*
-			 * FIXME handle hardware unreachable
-			 */
+			int problemBoardId = getBoardId(failureHeader.getSource());
+			if (problemBoardId >= 0) {
+				/*
+				 * FIXME handle hardware unreachable
+				 */
+
+				int reportId = sql.insertBoardReport(problemBoardId, jobId,
+						"board was not reachable when trying to power it",
+						systemReportOwner);
+			}
 			return false;
+		}
+
+		/**
+		 * Given a board address, get the ID that it corresponds to. Reverses
+		 * {@link #idToBoard}.
+		 *
+		 * @param boardAddress
+		 *            The board address.
+		 * @return The ID, or {@code -1} on failure.
+		 */
+		private int getBoardId(HasCoreLocation boardAddress) {
+			for (Entry<BMPCoords, Map<Integer, Integer>> ib
+					: idToBoard.entrySet()) {
+				BMPCoords bmp = ib.getKey();
+				if (boardAddress.getX() != bmp.getCabinet()
+						|| boardAddress.getY() != bmp.getFrame()) {
+					continue;
+				}
+				for (Entry<Integer, Integer> ib2 : ib.getValue().entrySet()) {
+					if (ib2.getValue() == boardAddress.getP()) {
+						return ib2.getKey();
+					}
+				}
+			}
+			return -1;
 		}
 	}
 
@@ -642,6 +683,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update deleteChange;
 
+		private final Update insertBoardReport;
+
 		AfterSQL(Connection conn) {
 			super(conn);
 			setBoardState = conn.update(SET_BOARD_POWER);
@@ -649,10 +692,12 @@ public class BMPController extends DatabaseAwareBean {
 			setInProgress = conn.update(SET_IN_PROGRESS);
 			deallocateBoards = conn.update(DEALLOCATE_BOARDS_JOB);
 			deleteChange = conn.update(FINISHED_PENDING);
+			insertBoardReport = conn.update(INSERT_BOARD_REPORT);
 		}
 
 		@Override
 		public void close() {
+			insertBoardReport.close();
 			deleteChange.close();
 			deallocateBoards.close();
 			setInProgress.close();
@@ -681,6 +726,11 @@ public class BMPController extends DatabaseAwareBean {
 
 		int deleteChange(Integer changeId) {
 			return deleteChange.call(changeId);
+		}
+
+		int insertBoardReport(
+				int boardId, int jobId, String issue, int userId) {
+			return insertBoardReport.key(boardId, jobId, issue, userId).get();
 		}
 	}
 
@@ -926,7 +976,7 @@ public class BMPController extends DatabaseAwareBean {
 			Map<BMPCoords, SpiNNakerControl> map =
 					new HashMap<>(request.idToBoard.size());
 			for (BMPCoords bmp : request.idToBoard.keySet()) {
-				map.put(bmp, controllerFactory.getObject(request.machine, bmp));
+				map.put(bmp, controllerFactory.create(request.machine, bmp));
 			}
 			return map;
 		} catch (BeanInitializationException | BeanCreationException e) {

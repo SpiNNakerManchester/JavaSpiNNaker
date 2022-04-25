@@ -88,6 +88,13 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private Map<Integer, Integer> idToBoard;
 
 	/**
+	 * The factory. Forces the constructor to conform to the API.
+	 * <p>
+	 * Do not use this directly (unless you're Spring Boot itself).
+	 */
+	static final Factory FACTORY = SpiNNaker1::new;
+
+	/**
 	 * @param machine
 	 *            The machine hosting the boards and FPGAs.
 	 * @param bmp
