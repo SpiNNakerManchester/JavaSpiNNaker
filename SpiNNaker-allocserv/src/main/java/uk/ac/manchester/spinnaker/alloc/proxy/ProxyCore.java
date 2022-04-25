@@ -30,8 +30,10 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.function.IntSupplier;
 
@@ -41,6 +43,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * The main proxy class for a particular web socket session. It's bound to a
@@ -121,6 +124,38 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  * (<em>including</em> the half-word of ethernet frame padding) follow the
  * header.</td>
  * </tr>
+ * <tr>
+ * <td>{@linkplain #openEIEIOConnection(ByteBuffer) Open EIEIO Connection}</td>
+ * <td><table border>
+ * <tr>
+ * <td>{@link ProxyOp#OPEN_EIEIO 3}
+ * <td>Correlation&nbsp;ID
+ * <td>UDP&nbsp;Port on Chip
+ * </tr>
+ * </table>
+ * </td>
+ * <td><table border>
+ * <tr>
+ * <td>{@link ProxyOp#OPEN_EIEIO 3}
+ * <td>Correlation&nbsp;ID
+ * <td>Connection&nbsp;ID
+ * <td>IP&nbsp;Address
+ * <td>UDP&nbsp;Port on Server
+ * </tr>
+ * </table>
+ * </td>
+ * <td>Establish a UDP socket that will receive from
+ * the allocation. Returns an ID that can be used to refer to that connection.
+ * Note that opening a socket declares that you are prepared to receive messages
+ * from SpiNNaker on it, but does not mean that SpiNNaker will send any messages
+ * that way. The correlation ID is caller-nominated, and just passed back
+ * uninterpreted in the response message.
+ * Also included in the response message is the IPv4 address (big-endian binary
+ * encoding; one word) and server UDP port for the connection, allowing the
+ * client to instruct SpiNNaker to send messages to the connection. No
+ * guarantee is made about whether any message from anything other than a board
+ * in the job will be passed on.</td>
+ * </tr>
  * </table>
  *
  * @author Donal Fellows
@@ -195,6 +230,8 @@ public class ProxyCore implements AutoCloseable {
 			case MESSAGE:
 				reply = sendMessage(message);
 				break;
+			case OPEN_EIEIO:
+				reply = openEIEIOConnection(message);
 			default:
 				reply = null;
 			}
@@ -289,6 +326,57 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	/**
+	 * Open a connection for EIEIO. Note that no control over the local (to the
+	 * service) port number or address is provided, but the IP address and port
+	 * opened are in the return message.
+	 *
+	 * @param message
+	 *            The message received. The initial 4-byte type code will have
+	 *            been already read out of the buffer.
+	 * @return The response message to send, in the bytes leading up to the
+	 *         position. The caller will {@linkplain ByteBuffer#flip() flip} the
+	 *         message. If {@code null}, no response will be sent.
+	 * @throws IOException
+	 *             If the proxy connection can't be opened.
+	 */
+	protected ByteBuffer openEIEIOConnection(ByteBuffer message)
+			throws IOException {
+		// This method handles message parsing/assembly and validation
+		int corId = message.getInt();
+
+		ValueHolder<InetAddress> localAddress = new ValueHolder<>();
+		ValueHolder<Integer> localPort = new ValueHolder<>();
+		int id = openEIEIOConnection(localAddress, localPort);
+
+		ByteBuffer msg = response(ProxyOp.OPEN_EIEIO, corId);
+		msg.putInt(id);
+		msg.put(localAddress.getValue().getAddress());
+		msg.putInt(localPort.getValue());
+		return msg;
+	}
+
+	private int openEIEIOConnection(ValueHolder<InetAddress> localAddress,
+			ValueHolder<Integer> localPort) throws IOException {
+		int id = idIssuer.getAsInt();
+		ProxyUDPConnection conn = new ProxyUDPConnection(session, null, 0, id,
+				() -> removeConnection(id));
+		setConnection(id, conn);
+		InetAddress who = conn.getLocalIPAddress();
+		int port = conn.getLocalPort();
+		Set<InetAddress> recvFrom = new HashSet<>(hosts.values());
+
+		// Start sending messages received from the board
+		executor.execute(() -> conn.eieioReceiverTask(recvFrom));
+
+		log.info("opened proxy EIEIO connection {}:{} from {}:{}", session, id,
+				who, port);
+		// Arrange for values to be sent out
+		localAddress.setValue(who);
+		localPort.setValue(port);
+		return 0;
+	}
+
+	/**
 	 * Close a connection. It's not an error to close a connection twice
 	 *
 	 * @param message
@@ -341,7 +429,7 @@ public class ProxyCore implements AutoCloseable {
 		Integer id = message.getInt();
 		log.debug("got message for channel {}", id);
 		ProxyUDPConnection conn = getConnection(id);
-		if (isValid(conn)) {
+		if (isValid(conn) && conn.getRemoteIPAddress() != null) {
 			ByteBuffer payload = message.slice();
 			log.debug("sending message to {} of length {}", conn,
 					payload.remaining());

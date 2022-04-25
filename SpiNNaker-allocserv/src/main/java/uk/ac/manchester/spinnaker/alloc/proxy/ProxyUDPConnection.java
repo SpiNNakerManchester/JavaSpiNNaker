@@ -18,14 +18,17 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.lang.Thread.currentThread;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.web.socket.BinaryMessage;
@@ -171,5 +174,55 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		outgoing.put(msg);
 		outgoing.flip();
 		session.sendMessage(new BinaryMessage(outgoing));
+	}
+
+	/**
+	 * Core SpiNNaker message receive and dispatch-to-websocket loop.
+	 * @param recvFrom
+	 *            What hosts we are allowed to receive messages from.
+	 *            Messages from elsewhere will be discarded.
+	 */
+	protected void eieioReceiverTask(Set<InetAddress> recvFrom) {
+		Thread me = currentThread();
+		String oldThreadName = me.getName();
+		me.setName("ws/udp " + name);
+		log.debug("launched listener {}", name);
+		try {
+			mainLoop(recvFrom);
+		} catch (IOException e) {
+			try {
+				close();
+				emergencyRemove.run();
+			} catch (IOException e1) {
+				e.addSuppressed(e1);
+			}
+			log.warn("problem in SpiNNaker-to-client part of {}", name, e);
+		} finally {
+			log.debug("shutting down listener {}", name);
+			me.setName(oldThreadName);
+		}
+	}
+
+	private void mainLoop(Set<InetAddress> recvFrom) throws IOException {
+		while (!isClosed()) {
+			while (!isReadyToReceive(TIMEOUT)) {
+				if (!session.isOpen() || isClosed()) {
+					return;
+				}
+			}
+			DatagramPacket packet;
+			try {
+				packet = receiveWithAddress(TIMEOUT);
+			} catch (SocketTimeoutException e) {
+				// Timeout; go round the loop again.
+				continue;
+			}
+			if (!recvFrom.contains(packet.getAddress())) {
+				continue;
+			}
+			ByteBuffer msg = wrap(packet.getData(), 0,
+					packet.getLength()).order(LITTLE_ENDIAN);
+			handleReceivedMessage(msg);
+		}
 	}
 }
