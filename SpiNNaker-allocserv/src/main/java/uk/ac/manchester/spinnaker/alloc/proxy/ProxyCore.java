@@ -130,7 +130,6 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <tr>
  * <td>{@link ProxyOp#OPEN_EIEIO 3}
  * <td>Correlation&nbsp;ID
- * <td>UDP&nbsp;Port on Chip
  * </tr>
  * </table>
  * </td>
