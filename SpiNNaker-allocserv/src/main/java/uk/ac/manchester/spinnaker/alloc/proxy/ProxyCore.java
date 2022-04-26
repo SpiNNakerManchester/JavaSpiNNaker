@@ -173,6 +173,8 @@ public class ProxyCore implements AutoCloseable {
 
 	private final Map<Integer, ProxyUDPConnection> conns = new HashMap<>();
 
+	private final Set<InetAddress> recvFrom;
+
 	private final IntSupplier idIssuer;
 
 	private final Executor executor;
@@ -207,6 +209,7 @@ public class ProxyCore implements AutoCloseable {
 						ci.getHostname(), e);
 			}
 		}
+		recvFrom = new HashSet<>(hosts.values());
 	}
 
 	/**
@@ -310,7 +313,7 @@ public class ProxyCore implements AutoCloseable {
 		setConnection(id, conn);
 
 		// Start sending messages received from the board
-		executor.execute(conn::receiverTask);
+		executor.execute(conn::connectedReceiverTask);
 
 		log.info("opened proxy connection {}:{} to {}:{}", session, id, who,
 				port);
@@ -363,7 +366,6 @@ public class ProxyCore implements AutoCloseable {
 		setConnection(id, conn);
 		InetAddress who = conn.getLocalIPAddress();
 		int port = conn.getLocalPort();
-		Set<InetAddress> recvFrom = new HashSet<>(hosts.values());
 
 		// Start sending messages received from the board
 		executor.execute(() -> conn.eieioReceiverTask(recvFrom));

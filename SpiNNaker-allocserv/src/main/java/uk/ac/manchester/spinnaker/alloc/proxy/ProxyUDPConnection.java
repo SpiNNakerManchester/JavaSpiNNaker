@@ -75,8 +75,12 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		workingBuffer.putInt(ProxyOp.MESSAGE.ordinal());
 		workingBuffer.putInt(id);
 		// Make the name now so it remains useful after close()
-		name = session.getUri() + "#" + id + " " + remoteHost + "/"
-				+ remotePort;
+		if (remoteHost == null) {
+			name = session.getUri() + "#" + id + " ANY/ANY";
+		} else {
+			name = session.getUri() + "#" + id + " " + remoteHost + "/"
+					+ remotePort;
+		}
 	}
 
 	/**
@@ -123,7 +127,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	/**
 	 * Core SpiNNaker message receive and dispatch-to-websocket loop.
 	 */
-	protected void receiverTask() {
+	protected void connectedReceiverTask() {
 		Thread me = currentThread();
 		String oldThreadName = me.getName();
 		me.setName("ws/udp " + name);
@@ -177,7 +181,11 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	}
 
 	/**
-	 * Core SpiNNaker message receive and dispatch-to-websocket loop.
+	 * Core SpiNNaker message receive and dispatch-to-websocket loop for the
+	 * type of connections required for EIEIO, especially for the live packet
+	 * gatherer, which does a complex muxing and programs sockets/tags in a
+	 * different way.
+	 *
 	 * @param recvFrom
 	 *            What hosts we are allowed to receive messages from.
 	 *            Messages from elsewhere will be discarded.
@@ -185,8 +193,8 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	protected void eieioReceiverTask(Set<InetAddress> recvFrom) {
 		Thread me = currentThread();
 		String oldThreadName = me.getName();
-		me.setName("ws/udp " + name);
-		log.debug("launched listener {}", name);
+		me.setName("ws/udp(eieio) " + name);
+		log.debug("launched eieio listener {}", name);
 		try {
 			mainLoop(recvFrom);
 		} catch (IOException e) {
@@ -198,11 +206,20 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 			}
 			log.warn("problem in SpiNNaker-to-client part of {}", name, e);
 		} finally {
-			log.debug("shutting down listener {}", name);
+			log.debug("shutting down eieio listener {}", name);
 			me.setName(oldThreadName);
 		}
 	}
 
+	/**
+	 * Loop at core of {@link #eieioReceiverTask(Set)}.
+	 *
+	 * @param msg
+	 *            What hosts we are allowed to receive messages from. Messages
+	 *            from elsewhere will be discarded.
+	 * @throws IOException
+	 *             If there is some sort of network problem.
+	 */
 	private void mainLoop(Set<InetAddress> recvFrom) throws IOException {
 		while (!isClosed()) {
 			while (!isReadyToReceive(TIMEOUT)) {
@@ -217,7 +234,9 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 				// Timeout; go round the loop again.
 				continue;
 			}
+			// SECURITY: drop any packet not from an allocated board
 			if (!recvFrom.contains(packet.getAddress())) {
+				log.debug("dropped packet from {}", packet.getAddress());
 				continue;
 			}
 			ByteBuffer msg = wrap(packet.getData(), 0,
