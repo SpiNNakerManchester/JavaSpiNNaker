@@ -35,12 +35,13 @@ public enum ProxyOp {
 	/** A message going to or from a board. Connection must be open already. */
 	MESSAGE,
 	/**
-	 * Ask for a bidirectional connection to a board to be opened. Also the
-	 * response to such a request. The difference is that this reports the
+	 * Ask for a unidirectional connection from all boards to be opened. Also
+	 * the response to such a request. The difference is that this reports the
 	 * real listening IP address and port in the response message. (This is
-	 * closed with a {@link #CLOSE} message.)
+	 * closed with a {@link #CLOSE} message.) Sending is not possible on this
+	 * channel (because no target address is bound).
 	 * <p>
 	 * EIEIO is a very ugly protocol.
 	 */
-	OPEN_EIEIO
+	OPEN_EIEIO_LISTENER
 }

@@ -128,14 +128,14 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <td>{@linkplain #openEIEIOConnection(ByteBuffer) Open EIEIO Connection}</td>
  * <td><table border>
  * <tr>
- * <td>{@link ProxyOp#OPEN_EIEIO 3}
+ * <td>{@link ProxyOp#OPEN_EIEIO_LISTENER 3}
  * <td>Correlation&nbsp;ID
  * </tr>
  * </table>
  * </td>
  * <td><table border>
  * <tr>
- * <td>{@link ProxyOp#OPEN_EIEIO 3}
+ * <td>{@link ProxyOp#OPEN_EIEIO_LISTENER 3}
  * <td>Correlation&nbsp;ID
  * <td>Connection&nbsp;ID
  * <td>IP&nbsp;Address
@@ -153,7 +153,8 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * encoding; one word) and server UDP port for the connection, allowing the
  * client to instruct SpiNNaker to send messages to the connection. No
  * guarantee is made about whether any message from anything other than a board
- * in the job will be passed on.</td>
+ * in the job will be passed on. Sending will not be possible on the
+ * channel.</td>
  * </tr>
  * </table>
  *
@@ -180,6 +181,8 @@ public class ProxyCore implements AutoCloseable {
 
 	private final boolean writeCounts;
 
+	private final InetAddress localHost;
+
 	/**
 	 * @param s
 	 *            The websocket session.
@@ -192,13 +195,19 @@ public class ProxyCore implements AutoCloseable {
 	 * @param writeCounts
 	 *            Whether to write the number of messages sent and received on
 	 *            the proxied connections to the log.
+	 * @param localHost
+	 *            The local address for sockets talking to the machines. If
+	 *            {@code null}, opening a general receiver socket will not
+	 *            work.
 	 */
 	ProxyCore(WebSocketSession s, List<ConnectionInfo> connections,
-			Executor executor, IntSupplier idIssuer, boolean writeCounts) {
+			Executor executor, IntSupplier idIssuer, boolean writeCounts,
+			InetAddress localHost) {
 		session = s;
 		this.executor = executor;
 		this.idIssuer = idIssuer;
 		this.writeCounts = writeCounts;
+		this.localHost = localHost;
 		for (ConnectionInfo ci : connections) {
 			try {
 				hosts.put(ci.getChip(),
@@ -232,7 +241,7 @@ public class ProxyCore implements AutoCloseable {
 			case MESSAGE:
 				reply = sendMessage(message);
 				break;
-			case OPEN_EIEIO:
+			case OPEN_EIEIO_LISTENER:
 				reply = openEIEIOConnection(message);
 			default:
 				reply = null;
@@ -308,7 +317,7 @@ public class ProxyCore implements AutoCloseable {
 		// This method actually makes a connection and listener thread
 		int id = idIssuer.getAsInt();
 		ProxyUDPConnection conn = new ProxyUDPConnection(session, who, port, id,
-				() -> removeConnection(id));
+				() -> removeConnection(id), null);
 		setConnection(id, conn);
 
 		// Start sending messages received from the board
@@ -350,7 +359,7 @@ public class ProxyCore implements AutoCloseable {
 		ValueHolder<Integer> localPort = new ValueHolder<>();
 		int id = openEIEIOConnection(localAddress, localPort);
 
-		ByteBuffer msg = response(ProxyOp.OPEN_EIEIO, corId);
+		ByteBuffer msg = response(ProxyOp.OPEN_EIEIO_LISTENER, corId);
 		msg.putInt(id);
 		msg.put(localAddress.getValue().getAddress());
 		msg.putInt(localPort.getValue());
@@ -359,9 +368,13 @@ public class ProxyCore implements AutoCloseable {
 
 	private int openEIEIOConnection(ValueHolder<InetAddress> localAddress,
 			ValueHolder<Integer> localPort) throws IOException {
+		if (localHost == null) {
+			throw new IOException(
+					"cannot receive if localHost is not definite");
+		}
 		int id = idIssuer.getAsInt();
 		ProxyUDPConnection conn = new ProxyUDPConnection(session, null, 0, id,
-				() -> removeConnection(id));
+				() -> removeConnection(id), localHost);
 		setConnection(id, conn);
 		InetAddress who = conn.getLocalIPAddress();
 		int port = conn.getLocalPort();

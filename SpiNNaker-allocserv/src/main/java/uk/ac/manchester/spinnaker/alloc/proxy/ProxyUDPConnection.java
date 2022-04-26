@@ -65,9 +65,10 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	private long receiveCount;
 
 	ProxyUDPConnection(WebSocketSession session, InetAddress remoteHost,
-			int remotePort, int id, Runnable emergencyRemove)
+			int remotePort, int id, Runnable emergencyRemove,
+			InetAddress localHost)
 			throws IOException {
-		super(null, null, remoteHost, remotePort);
+		super(localHost, null, remoteHost, remotePort);
 		this.session = session;
 		this.emergencyRemove = emergencyRemove;
 		workingBuffer = allocate(WORKING_BUFFER_SIZE).order(LITTLE_ENDIAN);
