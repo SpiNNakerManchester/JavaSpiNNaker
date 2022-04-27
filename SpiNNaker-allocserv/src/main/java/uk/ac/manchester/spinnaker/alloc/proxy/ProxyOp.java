@@ -32,16 +32,24 @@ public enum ProxyOp {
 	 * response to such a request.
 	 */
 	CLOSE,
-	/** A message going to or from a board. Connection must be open already. */
+	/**
+	 * A message going to or from a board. Connection must be open already.
+	 * When going to a board, the connection must have been opened with
+	 * {@link #OPEN}, and thus be already bound.
+	 */
 	MESSAGE,
 	/**
-	 * Ask for a unidirectional connection from all boards to be opened. Also
+	 * Ask for a bidirectional connection from all boards to be opened. Also
 	 * the response to such a request. The difference is that this reports the
 	 * real listening IP address and port in the response message. (This is
-	 * closed with a {@link #CLOSE} message.) Sending is not possible on this
-	 * channel (because no target address is bound).
-	 * <p>
-	 * EIEIO is a very ugly protocol.
+	 * closed with a {@link #CLOSE} message.) Sending is only possible on this
+	 * channel with {@link #MESSAGE_TO} (because no target address is bound by
+	 * default).
 	 */
-	OPEN_EIEIO_LISTENER
+	OPEN_UNBOUND,
+	/**
+	 * A message going to a board on a channel which does not have a SpiNNaker
+	 * board target address bound already ({@link #OPEN_UNBOUND}).
+	 */
+	MESSAGE_TO
 }

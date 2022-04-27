@@ -115,6 +115,24 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		sendCount++;
 	}
 
+	/**
+	 * Send a message on this connection.
+	 *
+	 * @param msg
+	 *            The message to send.
+	 * @param addr
+	 *            Where to send to.
+	 * @param port
+	 *            What port to send to.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
+	public void sendMessage(ByteBuffer msg, InetAddress addr, int port)
+			throws IOException {
+		sendTo(msg, addr, port);
+		sendCount++;
+	}
+
 	protected void writeCountsToLog() {
 		log.info("{} message counts: sent {} received {}", name, sendCount,
 				receiveCount);

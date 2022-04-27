@@ -54,10 +54,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <th>Name</th>
  * <th>Request Layout (words)</th>
  * <th>Response Layout (words)</th>
- * <th>Meaning</th>
  * </tr>
  * <tr>
- * <td>{@linkplain #openConnection(ByteBuffer) Open Connection}</td>
+ * <td rowspan=2>
+ * {@linkplain #openConnection(ByteBuffer) Open Connection}</td>
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#OPEN 0}
@@ -76,7 +76,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </tr>
  * </table>
  * </td>
- * <td>Establish a UDP socket that will talk to the given Ethernet chip within
+ * </tr>
+ * <tr>
+ * <td colspan=2>
+ * Establish a UDP socket that will talk to the given Ethernet chip within
  * the allocation. Returns an ID that can be used to refer to that connection.
  * Note that opening a socket declares that you are prepared to receive messages
  * from SpiNNaker on it, but does not mean that SpiNNaker will send any messages
@@ -84,7 +87,8 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * uninterpreted in the response message.</td>
  * </tr>
  * <tr>
- * <td>{@linkplain #closeConnection(ByteBuffer) Close Connection}</td>
+ * <td rowspan=2>
+ * {@linkplain #closeConnection(ByteBuffer) Close Connection}</td>
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#CLOSE 1}
@@ -101,13 +105,17 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </tr>
  * </table>
  * </td>
- * <td>Close an established UDP socket, given its ID. Returns the ID on success,
+ * </tr>
+ * <tr>
+ * <td colspan=2>
+ * Close an established UDP socket, given its ID. Returns the ID on success,
  * and zero on failure (e.g., because the socket is already closed). The
  * correlation ID is caller-nominated, and just passed back uninterpreted in the
  * response message.</td>
  * </tr>
  * <tr>
- * <td>{@linkplain #sendMessage(ByteBuffer) Send Message}</td>
+ * <td rowspan=2>
+ * {@linkplain #sendMessage(ByteBuffer) Send Message}</td>
  * <td><table border>
  * <tr>
  * <td>{@link ProxyOp#MESSAGE 2}
@@ -117,25 +125,31 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </table>
  * </td>
  * <td>N/A</td>
- * <td>Send a message to SpiNNaker on a particular established UDP
+ * </tr>
+ * <tr>
+ * <td colspan=2>
+ * Send a message to SpiNNaker on a particular established UDP
  * configuration. This is technically one-way, but messages come back in the
  * same format (i.e., a 4 byte prefix to say that it is a message, and another 4
  * bytes to say what socket this is talking about). The raw message bytes
  * (<em>including</em> the half-word of ethernet frame padding) follow the
- * header.</td>
+ * header. Messages sent on connections opened with <em>Open Unbound
+ * Connection</em> will be ignored.</td>
  * </tr>
  * <tr>
- * <td>{@linkplain #openEIEIOConnection(ByteBuffer) Open EIEIO Connection}</td>
+ * <td rowspan=2>
+ * {@linkplain #openUnboundConnection(ByteBuffer) Open Unbound Connection}
+ * </td>
  * <td><table border>
  * <tr>
- * <td>{@link ProxyOp#OPEN_EIEIO_LISTENER 3}
+ * <td>{@link ProxyOp#OPEN_UNBOUND 3}
  * <td>Correlation&nbsp;ID
  * </tr>
  * </table>
  * </td>
  * <td><table border>
  * <tr>
- * <td>{@link ProxyOp#OPEN_EIEIO_LISTENER 3}
+ * <td>{@link ProxyOp#OPEN_UNBOUND 3}
  * <td>Correlation&nbsp;ID
  * <td>Connection&nbsp;ID
  * <td>IP&nbsp;Address
@@ -143,7 +157,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </tr>
  * </table>
  * </td>
- * <td>Establish a UDP socket that will receive from
+ * </tr>
+ * <tr>
+ * <td colspan=2>
+ * Establish a UDP socket that will receive from
  * the allocation. Returns an ID that can be used to refer to that connection.
  * Note that opening a socket declares that you are prepared to receive messages
  * from SpiNNaker on it, but does not mean that SpiNNaker will send any messages
@@ -153,8 +170,33 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * encoding; one word) and server UDP port for the connection, allowing the
  * client to instruct SpiNNaker to send messages to the connection. No
  * guarantee is made about whether any message from anything other than a board
- * in the job will be passed on. Sending will not be possible on the
- * channel.</td>
+ * in the job will be passed on. Sending on the channel will only be possible
+ * with the <em>Send Message To</em> operation.</td>
+ * </tr>
+ * <tr>
+ * <td rowspan=2>
+ * {@linkplain #sendMessageTo(ByteBuffer) Send Message To}</td>
+ * <td><table border>
+ * <tr>
+ * <td>{@link ProxyOp#MESSAGE_TO 4}
+ * <td>Connection&nbsp;ID
+ * <td>Chip&nbsp;X
+ * <td>Chip&nbsp;Y
+ * <td>UDP&nbsp;Port on Chip
+ * <td>Raw&nbsp;message&nbsp;bytes...
+ * </tr>
+ * </table>
+ * </td>
+ * <td>N/A</td>
+ * </tr>
+ * <tr>
+ * <td colspan=2>
+ * Send a message to a SpiNNaker board (identified by coordinates of its
+ * ethernet chip) to a given UDP port. This is one-way. The raw message bytes
+ * (<em>including</em> the half-word of ethernet frame padding) follow the
+ * header. The connection must have been opened with <em>Open Unbound
+ * Connection</em>. Any responses come back as standard messages; if doing
+ * calls with this, it is advised to only have one in flight at a time.</td>
  * </tr>
  * </table>
  *
@@ -241,8 +283,8 @@ public class ProxyCore implements AutoCloseable {
 			case MESSAGE:
 				reply = sendMessage(message);
 				break;
-			case OPEN_EIEIO_LISTENER:
-				reply = openEIEIOConnection(message);
+			case OPEN_UNBOUND:
+				reply = openUnboundConnection(message);
 			default:
 				reply = null;
 			}
@@ -291,9 +333,7 @@ public class ProxyCore implements AutoCloseable {
 		InetAddress who = getTargetHost(x, y);
 
 		int port = message.getInt();
-		if (port < 1 || port > MAX_PORT) {
-			throw new IllegalArgumentException("bad port number");
-		}
+		validatePort(port);
 
 		int id = openConnection(who, port);
 
@@ -350,7 +390,7 @@ public class ProxyCore implements AutoCloseable {
 	 * @throws IOException
 	 *             If the proxy connection can't be opened.
 	 */
-	protected ByteBuffer openEIEIOConnection(ByteBuffer message)
+	protected ByteBuffer openUnboundConnection(ByteBuffer message)
 			throws IOException {
 		// This method handles message parsing/assembly and validation
 		int corId = message.getInt();
@@ -359,7 +399,7 @@ public class ProxyCore implements AutoCloseable {
 		ValueHolder<Integer> localPort = new ValueHolder<>();
 		int id = openEIEIOConnection(localAddress, localPort);
 
-		ByteBuffer msg = response(ProxyOp.OPEN_EIEIO_LISTENER, corId);
+		ByteBuffer msg = response(ProxyOp.OPEN_UNBOUND, corId);
 		msg.putInt(id);
 		msg.put(localAddress.getValue().getAddress());
 		msg.putInt(localPort.getValue());
@@ -437,7 +477,7 @@ public class ProxyCore implements AutoCloseable {
 	 *         message. If {@code null}, no response will be sent (expected case
 	 *         for this operation!)
 	 * @throws IOException
-	 *             If the proxy connection can't be opened.
+	 *             If the proxy connection can't be used.
 	 */
 	protected ByteBuffer sendMessage(ByteBuffer message) throws IOException {
 		Integer id = message.getInt();
@@ -452,8 +492,55 @@ public class ProxyCore implements AutoCloseable {
 		return null;
 	}
 
+	/**
+	 * Send a message to a particular destination on a connection. It's not an
+	 * error to send on a non-existant or closed connection. It is an error to
+	 * use this operation on a channel that has a bound remote host address.
+	 *
+	 * @param message
+	 *            The message received. The initial 4-byte type code will have
+	 *            been already read out of the buffer.
+	 * @return The response message to send, in the bytes leading up to the
+	 *         position. The caller will {@linkplain ByteBuffer#flip() flip} the
+	 *         message. If {@code null}, no response will be sent (expected case
+	 *         for this operation!)
+	 * @throws IOException
+	 *             If the proxy connection can't be used.
+	 * @throws IllegalArgumentException
+	 *             If the target doesn't exist in the job, the port number is
+	 *             out of range, or the channel has a bound address.
+	 */
+	protected ByteBuffer sendMessageTo(ByteBuffer message) throws IOException {
+		Integer id = message.getInt();
+		int x = message.getInt();
+		int y = message.getInt();
+		InetAddress who = getTargetHost(x, y);
+
+		int port = message.getInt();
+		validatePort(port);
+
+		log.debug("got message for channel {} for {}:{}", id, who, port);
+		ProxyUDPConnection conn = getConnection(id);
+		if (isValid(conn)) {
+			if (conn.getRemoteIPAddress() != null) {
+				throw new IllegalArgumentException("connection is bound");
+			}
+			ByteBuffer payload = message.slice();
+			log.debug("sending message to {} of length {}", conn,
+					payload.remaining());
+			conn.sendMessage(payload, who, port);
+		}
+		return null;
+	}
+
 	private static boolean isValid(ProxyUDPConnection conn) {
 		return conn != null && !conn.isClosed();
+	}
+
+	private static void validatePort(int port) {
+		if (port < 1 || port > MAX_PORT) {
+			throw new IllegalArgumentException("bad port number");
+		}
 	}
 
 	private void setConnection(int id, ProxyUDPConnection conn) {
