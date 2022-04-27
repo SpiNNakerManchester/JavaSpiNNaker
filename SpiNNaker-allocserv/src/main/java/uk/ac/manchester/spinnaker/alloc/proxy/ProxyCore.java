@@ -494,7 +494,7 @@ public class ProxyCore implements AutoCloseable {
 
 	/**
 	 * Send a message to a particular destination on a connection. It's not an
-	 * error to send on a non-existant or closed connection. It is an error to
+	 * error to send on a non-existent or closed connection. It is an error to
 	 * use this operation on a channel that has a bound remote host address.
 	 *
 	 * @param message
