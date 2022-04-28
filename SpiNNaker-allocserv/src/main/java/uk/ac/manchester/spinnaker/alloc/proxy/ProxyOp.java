@@ -23,33 +23,34 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
  */
 public enum ProxyOp {
 	/**
-	 * Ask for a bidirectional connection to a board to be opened. Also the
+	 * Ask for a bidirectional channel to a board to be opened. Also the
 	 * response to such a request.
 	 */
 	OPEN,
 	/**
-	 * Ask for a bidirectional connection to a board to be closed. Also the
-	 * response to such a request.
+	 * Ask for a channel (created with {@link #OPEN} or
+	 * {@link #OPEN_UNCONNECTED}) to be closed. Also the response to such a
+	 * request.
 	 */
 	CLOSE,
 	/**
-	 * A message going to or from a board. Connection must be open already.
-	 * When going to a board, the connection must have been opened with
+	 * A message going to or from a board. Channel must be open already.
+	 * When going to a board, the channel must have been opened with
 	 * {@link #OPEN}, and thus be already bound.
 	 */
 	MESSAGE,
 	/**
-	 * Ask for a bidirectional connection from all boards to be opened. Also
+	 * Ask for a bidirectional channel from all boards to be opened. Also
 	 * the response to such a request. The difference is that this reports the
 	 * real listening IP address and port in the response message. (This is
 	 * closed with a {@link #CLOSE} message.) Sending is only possible on this
-	 * channel with {@link #MESSAGE_TO} (because no target address is bound by
+	 * channel with {@link #MESSAGE_TO} (because no target address is set by
 	 * default).
 	 */
-	OPEN_UNBOUND,
+	OPEN_UNCONNECTED,
 	/**
 	 * A message going to a board on a channel which does not have a SpiNNaker
-	 * board target address bound already ({@link #OPEN_UNBOUND}).
+	 * board target address set up already ({@link #OPEN_UNBOUND}).
 	 */
 	MESSAGE_TO
 }
