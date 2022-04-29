@@ -35,20 +35,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<junit.version>5.8.2</junit.version>
 		<checkstyle.version>9.3</checkstyle.version>
-		<javadoc.version>3.3.2</javadoc.version>
+		<javadoc.version>3.4.0</javadoc.version>
 		<testing.version>3.0.0-M6</testing.version>
 
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j.version>2.17.2</log4j.version>
 
 		<spring.version>5.3.19</spring.version>
-		<spring.boot.version>2.6.6</spring.boot.version>
-		<spring.security.version>5.6.2</spring.security.version>
+		<spring.boot.version>2.6.7</spring.boot.version>
+		<spring.security.version>5.6.3</spring.security.version>
 
 		<cxf.version>3.5.2</cxf.version>
 		<jackson.version>2.13.2.20220328</jackson.version>
 		<sqlite.version>3.36.0.3</sqlite.version>
-		<keycloak.version>16.1.1</keycloak.version>
+		<keycloak.version>18.0.0</keycloak.version>
 		<swagger.version>4.10.3</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.2</jython.version>
@@ -366,7 +366,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.11.0</version>
+					<version>3.12.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eluder.coveralls</groupId>
