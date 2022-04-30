@@ -40,9 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</tr>
 		<tr>
 			<td colspan="2">
-				<input name="submit" type="submit" value="submit">
-					Log In
-				</input>
+				<input name="submit" type="submit" value="Log In" />
 			</td>
 		</tr>
 	</table>
