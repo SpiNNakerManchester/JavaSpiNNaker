@@ -719,7 +719,6 @@ public class SpallocProperties {
 		 */
 		private OpenIDProperties openid;
 
-		@SuppressWarnings("checkstyle:ParameterNumber")
 		public AuthProperties(//
 				@DefaultValue("true") boolean basic,
 				@DefaultValue("SpallocService") String realm,
@@ -936,7 +935,6 @@ public class SpallocProperties {
 		/** How to unlock the truststore. */
 		private String truststorePassword;
 
-		@SuppressWarnings("checkstyle:ParameterNumber")
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("") String domain, //
 				Set<String> scopes, //
