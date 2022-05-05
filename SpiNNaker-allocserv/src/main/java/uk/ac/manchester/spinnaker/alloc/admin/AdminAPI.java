@@ -66,6 +66,7 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
  */
 @Hidden
 @PreAuthorize(IS_ADMIN)
+@SuppressWarnings("checkstyle:parameternumber")
 public interface AdminAPI {
 	/** Common paths in the interface. */
 	interface Paths {
@@ -173,7 +174,6 @@ public interface AdminAPI {
 	@GET
 	@Produces(TEXT_PLAIN)
 	@Path(BOARD)
-	@SuppressWarnings("checkstyle:parameternumber")
 	default boolean getBoardState(
 			@NotBlank(message = "machine name is required")
 			@QueryParam("machine") String machineName,
@@ -267,7 +267,6 @@ public interface AdminAPI {
 	@Consumes(TEXT_PLAIN)
 	@Produces(TEXT_PLAIN)
 	@Path(BOARD)
-	@SuppressWarnings("checkstyle:parameternumber")
 	default boolean setBoardState(
 			@NotBlank(message = "machine name is required")
 			@QueryParam("machine") String machineName,
