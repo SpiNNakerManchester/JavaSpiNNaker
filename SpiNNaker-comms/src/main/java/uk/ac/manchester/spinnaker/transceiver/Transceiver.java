@@ -2374,7 +2374,7 @@ public class Transceiver extends UDPTransceiver
 			}
 		}
 
-		log.info("total retries used: " + retryCount);
+		log.info("total retries used: {}", retryCount);
 	}
 
 	/**

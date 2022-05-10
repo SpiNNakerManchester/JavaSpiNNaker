@@ -194,8 +194,8 @@ public class DataReceiver extends BoardLocalSupport {
 			throw new IllegalArgumentException("non-32-bit argument");
 		}
 		if (log.isDebugEnabled()) {
-			log.debug("< Reading " + length + " bytes from " + location + " at "
-					+ address);
+			log.debug("< Reading {} bytes from {} at {}", length, location,
+					address);
 		}
 		ByteBuffer data = requestData(location, (int) address, (int) length);
 		receivedData.flushingDataFromRegion(location, data);
