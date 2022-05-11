@@ -32,8 +32,8 @@ import java.util.WeakHashMap;
 import org.slf4j.Logger;
 
 /**
- * Clever stuff to turn a method annotated with {@link Operation} into a
- * {@link Callable}.
+ * Clever stuff to turn a method annotated with {@link Operation @Operation}
+ * into a {@link Callable}.
  *
  * @author Donal Fellows
  */
@@ -150,7 +150,7 @@ abstract class OperationMapper {
 		requireNonNull(funcs, "unexpectedly early deallocation");
 		funcs.unpack(encodedOpcode);
 		if (log.isDebugEnabled()) {
-			log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
+			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
 		}
 		try {
 			try {
@@ -180,7 +180,7 @@ abstract class OperationMapper {
 		requireNonNull(funcs, "unexpectedly early deallocation");
 		funcs.unpack(encodedOpcode);
 		if (log.isDebugEnabled()) {
-			log.debug(format("EXEC: %s (%08x)", command, encodedOpcode));
+			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
 		}
 		try {
 			try {

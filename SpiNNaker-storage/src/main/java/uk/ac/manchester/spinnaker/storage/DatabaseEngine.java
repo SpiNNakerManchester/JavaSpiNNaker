@@ -62,7 +62,7 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 	 */
 	public DatabaseEngine(File dbFile) {
 		this.dbConnectionUrl = "jdbc:sqlite:" + dbFile.getAbsolutePath();
-		log.info("will manage database at " + dbFile.getAbsolutePath());
+		log.info("will manage database at {}", dbFile.getAbsolutePath());
 	}
 
 	@Override
