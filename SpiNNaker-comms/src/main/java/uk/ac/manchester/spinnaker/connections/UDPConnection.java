@@ -79,8 +79,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	private final DatagramChannel channel;
 
-	private boolean receivable;
-
 	private final Selector selector;
 
 	/**
@@ -116,10 +114,14 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
 		channel = initialiseSocket(localHost, localPort, remoteHost,
 				remotePort);
-		selector = Selector.open();
-		channel.register(selector, SelectionKey.OP_READ);
-		if (log.isDebugEnabled()) {
-			logInitialCreation();
+		if (channel != null) {
+    		selector = Selector.open();
+	    	channel.register(selector, SelectionKey.OP_READ);
+		    if (log.isDebugEnabled()) {
+			    logInitialCreation();
+    		}
+		} else {
+			selector = null;
 		}
 	}
 
@@ -324,13 +326,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
-		if (!receivable && !isReadyToReceive(timeout)) {
+		if (!isReadyToReceive(timeout)) {
 			log.debug("not ready to recieve");
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
 		SocketAddress addr = channel.receive(buffer);
-		receivable = false;
 		if (addr == null) {
 			throw new SocketTimeoutException("no packet available");
 		}
@@ -397,12 +398,11 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
-		if (!receivable && !isReadyToReceive(timeout)) {
+		if (!isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
 		SocketAddress addr = channel.receive(buffer);
-		receivable = false;
 		if (addr == null) {
 			throw new SocketTimeoutException();
 		}
@@ -639,9 +639,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			log.debug("connection closed, so not ready to receive");
 			return false;
 		}
-		boolean r = readyToReceive(timeout);
-		receivable = r;
-		return r;
+		return readyToReceive(timeout);
 	}
 
 	/**
@@ -662,11 +660,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (timeout >= 10000 || timeout <= 0) {
 			throw new IOException("Timeout " + timeout + " out of range!");
 		}
-		if (timeout == 0) {
-			return selector.selectNow() > 0;
+		if (timeout <= 0) {
+    	    selector.selectNow();
 		} else {
-			return selector.select(timeout) > 0;
+		    selector.select(timeout);
 		}
+		return selector.selectedKeys().size() > 0;
 	}
 
 	/**
