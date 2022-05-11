@@ -16,14 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.lang.ThreadLocal.withInitial;
 import static java.net.InetAddress.getByAddress;
 import static java.net.StandardProtocolFamily.INET;
 import static java.net.StandardSocketOptions.SO_RCVBUF;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.nio.channels.SelectionKey.OP_READ;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -73,16 +71,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	private static final int PACKET_MAX_SIZE = 300;
 
-	private static final ThreadLocal<Selector> SELECTOR_FACTORY =
-			withInitial(() -> {
-				try {
-					return Selector.open();
-				} catch (IOException e) {
-					log.error("failed to create selector for thread", e);
-					return null;
-				}
-			});
-
 	private boolean canSend;
 
 	private Inet4Address remoteIPAddress;
@@ -93,7 +81,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	private boolean receivable;
 
-	private final ThreadLocal<SelectionKey> selectionKeyFactory;
+	private final Selector selector;
 
 	/**
 	 * Main constructor, any argument of which could {@code null}.
@@ -126,27 +114,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	public UDPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
 		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
-		channel =
-				initialiseSocket(localHost, localPort, remoteHost, remotePort);
-		selectionKeyFactory = withInitial(this::makeSelectionKey);
-		if (channel != null && log.isDebugEnabled()) {
+		channel = initialiseSocket(localHost, localPort, remoteHost,
+				remotePort);
+		selector = Selector.open();
+		channel.register(selector, SelectionKey.OP_READ);
+		if (log.isDebugEnabled()) {
 			logInitialCreation();
-		}
-	}
-
-	/**
-	 * How to actually make a selection key for the current thread. Selection
-	 * keys are thread-specific.
-	 *
-	 * @return The selection key for the current thread. <em>This method does
-	 *         not cache these keys.</em>
-	 */
-	SelectionKey makeSelectionKey() {
-		try {
-			return channel.register(SELECTOR_FACTORY.get(), OP_READ);
-		} catch (IOException e) {
-			log.error("failed to create selection key for thread", e);
-			return null;
 		}
 	}
 
@@ -660,18 +633,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return !channel.isOpen();
 	}
 
-	private SelectionKey remake(SelectionKey stale) {
-		log.debug("remaking selection key");
-		selectionKeyFactory.remove();
-		stale.cancel();
-		SelectionKey key = selectionKeyFactory.get();
-		if (!key.isValid()) {
-			throw new IllegalStateException(
-					"newly manufactured selection key is invalid");
-		}
-		return key;
-	}
-
 	@Override
 	public final boolean isReadyToReceive(int timeout) throws IOException {
 		if (isClosed()) {
@@ -697,31 +658,15 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 * @throws IOException
 	 *             If anything goes wrong.
 	 */
-	boolean readyToReceive(int timeout) throws IOException {
-		SelectionKey key = selectionKeyFactory.get();
-		if (!key.isValid()) {
-			// Key is stale; try to remake it
-			key = remake(key);
+	synchronized boolean readyToReceive(int timeout) throws IOException {
+		if (timeout >= 10000 || timeout <= 0) {
+			throw new IOException("Timeout " + timeout + " out of range!");
 		}
-		if (log.isDebugEnabled()) {
-			log.debug("timout on UDP({} <--> {}) will happen at {} ({})",
-					getLocalAddress(), getRemoteAddress(), timeout,
-					key.interestOps());
-		}
-		int result;
 		if (timeout == 0) {
-			result = key.selector().selectNow();
+			return selector.selectNow() > 0;
 		} else {
-			result = key.selector().select(timeout);
+			return selector.select(timeout) > 0;
 		}
-
-		if (log.isDebugEnabled()) {
-			log.debug("wait result: select={}, valid={}, readable={}", result,
-					key.isValid(), key.isValid() && key.isReadable());
-		}
-		boolean r = key.isValid() && key.isReadable();
-		receivable = r;
-		return r;
 	}
 
 	/**
