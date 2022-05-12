@@ -79,7 +79,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	protected static final Logger log = getLogger(DataGatherer.class);
 
 	/** The maximum number of times to retry. */
-	private static final int TIMEOUT_RETRY_LIMIT = 100;
+	private static final int TIMEOUT_RETRY_LIMIT = 10;
 
 	/**
 	 * The time delay between sending each message. In
@@ -698,6 +698,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
+				timeoutcount = 0;
 				return processData(p, transactionId);
 			}
 			log.debug("failed to receive on socket {}:{}.", conn.getLocalPort(),
@@ -777,6 +778,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			}
 
 			// retransmit missing packets
+			received = false;
 			log.debug("doing reinjection");
 			return retransmitMissingSequences(transactionId);
 		}
