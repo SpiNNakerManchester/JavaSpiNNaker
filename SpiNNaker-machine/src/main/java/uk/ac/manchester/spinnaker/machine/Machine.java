@@ -211,15 +211,15 @@ public class Machine implements Iterable<Chip> {
 		for (Chip chip : this) {
 			ChipLocation location = chip.asChipLocation();
 			if (ignoreChips.contains(location)) {
-				log.info("Rebuilt machine without Chip " + location);
+				log.info("Rebuilt machine without Chip {}", location);
 			} else if (ignoreLinks.containsKey(location)) {
 				Collection<Direction> downDirections =
 						ignoreLinks.get(location);
 				ArrayList<Link> links = new ArrayList<>();
 				for (Link link : chip.router) {
 					if (downDirections.contains(link.sourceLinkDirection)) {
-						log.info("Rebuilt machine without Link " + location
-								+ " " + link.sourceLinkDirection);
+						log.info("Rebuilt machine without Link {} {}",
+								location, link.sourceLinkDirection);
 					} else {
 						links.add(link);
 					}
