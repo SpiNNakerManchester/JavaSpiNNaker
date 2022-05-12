@@ -43,15 +43,16 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.function.IntFunction;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.connections.model.Listenable;
+import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -62,7 +63,8 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  * @param <T>
  *            The Java type of message received on this connection.
  */
-public abstract class UDPConnection<T> implements Connection, Listenable<T> {
+public abstract class UDPConnection<T>
+        implements Connection, MessageReceiver<T> {
 	private static final Logger log = getLogger(UDPConnection.class);
 
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
@@ -70,6 +72,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	private static final int PING_COUNT = 5;
 
 	private static final int PACKET_MAX_SIZE = 300;
+
+	private static final int MAX_QUEUE_SIZE = 10;
 
 	private boolean canSend;
 
@@ -79,7 +83,10 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	private final DatagramChannel channel;
 
-	private final Selector selector;
+	private final BlockingDeque<UDPPacket> readQueue =
+			new LinkedBlockingDeque<>(MAX_QUEUE_SIZE);
+
+	private final ReadThread readThread;
 
 	/**
 	 * Main constructor, any argument of which could {@code null}.
@@ -115,13 +122,13 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		channel = initialiseSocket(localHost, localPort, remoteHost,
 				remotePort);
 		if (channel != null) {
-    		selector = Selector.open();
-	    	channel.register(selector, SelectionKey.OP_READ);
 		    if (log.isDebugEnabled()) {
 			    logInitialCreation();
     		}
+		    readThread = new ReadThread();
+		    readThread.start();
 		} else {
-			selector = null;
+			readThread = null;
 		}
 	}
 
@@ -166,7 +173,6 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		// SpiNNaker only speaks IPv4
 		DatagramChannel chan = DatagramChannel.open(INET);
 		chan.bind(createLocalAddress(localHost, localPort));
-		chan.configureBlocking(false);
 		chan.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
 		if (canSend) {
 			remoteIPAddress = (Inet4Address) remoteHost;
@@ -326,37 +332,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
-		if (!isReadyToReceive(timeout)) {
-			log.debug("not ready to recieve");
+		try {
+		    UDPPacket packet = readQueue.pollFirst(timeout,
+		    		TimeUnit.MILLISECONDS);
+		    if (packet == null) {
+		    	throw new SocketTimeoutException();
+		    }
+		    return packet.getByteBuffer();
+		} catch (InterruptedException e) {
 			throw new SocketTimeoutException();
 		}
-		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
-		SocketAddress addr = channel.receive(buffer);
-		if (addr == null) {
-			throw new SocketTimeoutException("no packet available");
-		}
-		buffer.flip();
-		logRecv(buffer, addr);
-		return buffer.order(LITTLE_ENDIAN);
-	}
-
-	/**
-	 * Receive data from the connection along with the address where the data
-	 * was received from.
-	 *
-	 * @param timeout
-	 *            The timeout in milliseconds, or {@code null} to wait forever
-	 * @return The datagram packet received
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
-	 * @throws EOFException
-	 *             If the connection is closed
-	 * @throws IOException
-	 *             If an error occurs receiving the data
-	 */
-	public final UDPPacket receiveWithAddress(Integer timeout)
-			throws SocketTimeoutException, IOException {
-		return receiveWithAddress(convertTimeout(timeout));
 	}
 
 	/**
@@ -398,17 +383,16 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 	 */
 	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
-		if (!isReadyToReceive(timeout)) {
+		try {
+		    UDPPacket packet = readQueue.pollFirst(timeout,
+		    		TimeUnit.MILLISECONDS);
+		    if (packet == null) {
+		    	throw new SocketTimeoutException();
+		    }
+		    return packet;
+		} catch (InterruptedException e) {
 			throw new SocketTimeoutException();
 		}
-		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
-		SocketAddress addr = channel.receive(buffer);
-		if (addr == null) {
-			throw new SocketTimeoutException();
-		}
-		buffer.flip();
-		logRecv(buffer, addr);
-		return new UDPPacket(buffer.order(LITTLE_ENDIAN), addr);
 	}
 
 	/**
@@ -620,52 +604,12 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	@Override
 	public void close() throws IOException {
-		try {
-			channel.disconnect();
-		} catch (Exception e) {
-			// Ignore any possible exception here
-		}
 		channel.close();
 	}
 
 	@Override
 	public boolean isClosed() {
 		return !channel.isOpen();
-	}
-
-	@Override
-	public final boolean isReadyToReceive(int timeout) throws IOException {
-		if (isClosed()) {
-			log.debug("connection closed, so not ready to receive");
-			return false;
-		}
-		return readyToReceive(timeout);
-	}
-
-	/**
-	 * Determines if there is a message available to be received without
-	 * blocking. <em>This method</em> may block until the timeout given, and a
-	 * zero timeout means do not wait.
-	 * <p>
-	 * This operation is <em>delegatable</em>; see
-	 * {@link DelegatingSCPConnection}.
-	 *
-	 * @param timeout
-	 *            How long to wait, in milliseconds.
-	 * @return true when there is a message waiting to be received
-	 * @throws IOException
-	 *             If anything goes wrong.
-	 */
-	synchronized boolean readyToReceive(int timeout) throws IOException {
-		if (timeout >= 10000 || timeout <= 0) {
-			throw new IOException("Timeout " + timeout + " out of range!");
-		}
-		if (timeout <= 0) {
-    	    selector.selectNow();
-		} else {
-		    selector.select(timeout);
-		}
-		return selector.selectedKeys().size() > 0;
 	}
 
 	/**
@@ -706,5 +650,24 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		return String.format("%s(%s <-%s-> %s)",
 				getClass().getSimpleName().replaceAll("^.*\\.", ""), la,
 				isClosed() ? "|" : "", ra);
+	}
+
+	private class ReadThread extends Thread {
+		public void run() {
+			while (channel.isOpen()) {
+				try {
+					ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
+					SocketAddress addr = channel.receive(buffer);
+					buffer.flip();
+					logRecv(buffer, addr);
+					readQueue.putLast(
+							new UDPPacket(buffer.order(LITTLE_ENDIAN), addr));
+				} catch (InterruptedException | IOException e) {
+					if (channel.isOpen()) {
+					    log.warn("Error while reading data", e);
+					}
+				}
+			}
+		}
 	}
 }

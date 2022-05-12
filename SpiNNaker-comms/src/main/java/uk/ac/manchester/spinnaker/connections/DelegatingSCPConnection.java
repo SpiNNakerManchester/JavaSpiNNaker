@@ -91,11 +91,6 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	boolean readyToReceive(int timeout) throws IOException {
-		return delegate.readyToReceive(timeout);
-	}
-
-	@Override
 	public boolean isConnected() {
 		return delegate.isConnected();
 	}

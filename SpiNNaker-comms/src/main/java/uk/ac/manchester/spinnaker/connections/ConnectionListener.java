@@ -21,6 +21,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -28,8 +29,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.connections.model.Listenable;
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
+import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 
 /**
  * Thread that listens to a connection and calls callbacks with new messages
@@ -57,11 +58,11 @@ public class ConnectionListener<MessageType> extends Thread
 
 	private Set<MessageHandler<MessageType>> callbacks;
 
-	private Listenable<MessageType> connection;
+	private MessageReceiver<MessageType> connection;
 
 	private volatile boolean done;
 
-	private Integer timeout;
+	private int timeout;
 
 	/**
 	 * Create a connection listener with the default number of listening threads
@@ -70,7 +71,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 * @param connection
 	 *            The connection to listen to.
 	 */
-	public ConnectionListener(Listenable<MessageType> connection) {
+	public ConnectionListener(MessageReceiver<MessageType> connection) {
 		this(connection, POOL_SIZE, TIMEOUT);
 	}
 
@@ -83,10 +84,10 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            The maximum number of threads to use to do the listening.
 	 * @param timeout
 	 *            How long to wait in the OS for a message to arrive; if
-	 *            {@code null}, wait indefinitely.
+	 *            0, wait indefinitely.
 	 */
-	public ConnectionListener(Listenable<MessageType> connection,
-			int numProcesses, Integer timeout) {
+	public ConnectionListener(MessageReceiver<MessageType> connection,
+			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
 		this.connection = connection;
@@ -116,11 +117,13 @@ public class ConnectionListener<MessageType> extends Thread
 	}
 
 	private void runStep() throws IOException {
-		if (connection.isReadyToReceive(timeout)) {
-			MessageType message = connection.receiveMessage();
-			for (MessageHandler<MessageType> callback : callbacks) {
-				callbackPool.submit(() -> callback.handle(message));
-			}
+		try {
+		    MessageType message = connection.receiveMessage(timeout);
+		    for (MessageHandler<MessageType> callback : callbacks) {
+			    callbackPool.submit(() -> callback.handle(message));
+		    }
+		} catch (SocketTimeoutException e) {
+			// Do Nothing; this is expected and can be skipped
 		}
 	}
 
