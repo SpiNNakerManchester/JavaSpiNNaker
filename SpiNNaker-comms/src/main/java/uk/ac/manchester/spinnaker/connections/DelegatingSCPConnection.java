@@ -63,7 +63,8 @@ public class DelegatingSCPConnection extends SCPConnection {
 
 	@Override
 	DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort,
+			TrafficClass trafficClass) throws IOException {
 		// We never initialise a socket of our own.
 		return null;
 	}

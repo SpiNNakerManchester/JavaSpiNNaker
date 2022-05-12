@@ -68,6 +68,28 @@ public abstract class UDPConnection<T>
 
 	private static final int PACKET_MAX_SIZE = 300;
 
+	/**
+	 * The type of traffic being sent on a socket.
+	 *
+	 * @see DatagramSocket#setTrafficClass(int)
+	 */
+	public enum TrafficClass {
+		/** Minimise cost. */
+		IPTOS_LOWCOST(0x02),
+		/** Maximise reliability. */
+		IPTOS_RELIABILITY(0x04),
+		/** Maximise throughput. */
+		IPTOS_THROUGHPUT(0x08),
+		/** Minimise delay. */
+		IPTOS_LOWDELAY(0x10);
+
+		private final int value;
+
+		TrafficClass(int value) {
+			this.value = value;
+		}
+	}
+
 	private boolean canSend;
 
 	private Inet4Address remoteIPAddress;
@@ -95,19 +117,25 @@ public abstract class UDPConnection<T>
 	 * @param remoteHost
 	 *            The remote host name or IP address to send packets to. If
 	 *            {@code null}, the socket will be available for listening only,
-	 *            and will throw and exception if used for sending.
+	 *            and will throw an exception if used for sending.
 	 * @param remotePort
-	 *            The remote port to send packets to. If remoteHost is
-	 *            {@code null}, this is ignored. If remoteHost is specified,
-	 *            this must also be specified as non-zero for the connection to
-	 *            allow sending.
+	 *            The remote port to send packets to. If {@code remoteHost} is
+	 *            {@code null}, this is ignored. If {@code remoteHost} is
+	 *            specified, this must also be specified as non-zero for the
+	 *            connection to allow sending.
+	 * @param trafficClass
+	 *            What sort of traffic is this socket going to send. If
+	 *            {@code null}, no traffic class will be used. Receive-only
+	 *            sockets should leave this as {@code null}.
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
 	public UDPConnection(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort,
+			TrafficClass trafficClass) throws IOException {
 		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
-		socket = initialiseSocket(localHost, localPort, remoteHost, remotePort);
+		socket = initialiseSocket(localHost, localPort, remoteHost, remotePort,
+				trafficClass);
 		if (log.isDebugEnabled()) {
 			logInitialCreation();
 		}
@@ -145,15 +173,22 @@ public abstract class UDPConnection<T>
 	 *            Remote side address.
 	 * @param remotePort
 	 *            Remote side port.
+	 * @param trafficClass
+	 *            Traffic class, at least for sending. If {@code null}, no
+	 *            traffic class will be set.
 	 * @return The configured, connected socket.
 	 * @throws IOException
 	 *             If anything fails.
 	 */
 	DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort,
+			TrafficClass trafficClass) throws IOException {
 		// SpiNNaker only speaks IPv4
 		DatagramSocket sock = new DatagramSocket(
 				createLocalAddress(localHost, localPort));
+		if (trafficClass != null) {
+			sock.setTrafficClass(trafficClass.value);
+		}
 		sock.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
 		if (canSend) {
 			remoteIPAddress = (Inet4Address) remoteHost;
