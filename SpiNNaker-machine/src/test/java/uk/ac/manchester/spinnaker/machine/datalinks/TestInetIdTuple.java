@@ -33,10 +33,10 @@ public class TestInetIdTuple {
     @Test
     public void testEquals() throws UnknownHostException {
         byte[] bytes1 = {127,0,0,0};
-        InetAddress addr1 = InetAddress.getByAddress(bytes1);
-        InetAddress addr2 = InetAddress.getByAddress(bytes1);
-        InetIdTuple t1 = new InetIdTuple(addr1, 23);
-        InetIdTuple t2 = new InetIdTuple(addr2, 23);
+        var addr1 = InetAddress.getByAddress(bytes1);
+        var addr2 = InetAddress.getByAddress(bytes1);
+        var t1 = new InetIdTuple(addr1, 23);
+        var t2 = new InetIdTuple(addr2, 23);
 
         assertEquals(t1, t1);
         assertEquals(t1, t2);
@@ -45,8 +45,8 @@ public class TestInetIdTuple {
 
     @Test
     public void testEqualsWithNull() throws UnknownHostException {
-        InetIdTuple t1 = new InetIdTuple(null, 23);
-        InetIdTuple t2 = new InetIdTuple(null, 23);
+        var t1 = new InetIdTuple(null, 23);
+        var t2 = new InetIdTuple(null, 23);
 
         assertEquals(t1, t2);
         assertEquals(t1.hashCode(), t2.hashCode());
@@ -55,14 +55,14 @@ public class TestInetIdTuple {
     @Test
     public void testDifferent() throws UnknownHostException {
         byte[] bytes1 = {127,0,0,0};
-        InetAddress addr1 = InetAddress.getByAddress(bytes1);
+        var addr1 = InetAddress.getByAddress(bytes1);
         byte[] bytes2 = {127,0,0,1};
-        InetAddress addr2 = InetAddress.getByAddress(bytes2);
+        var addr2 = InetAddress.getByAddress(bytes2);
 
-        InetIdTuple t1 = new InetIdTuple(addr1, 23);
-        InetIdTuple t2 = new InetIdTuple(addr2, 23);
-        InetIdTuple t3 = new InetIdTuple(null, 23);
-        InetIdTuple t4 = new InetIdTuple(addr1, 24);
+        var t1 = new InetIdTuple(addr1, 23);
+        var t2 = new InetIdTuple(addr2, 23);
+        var t3 = new InetIdTuple(null, 23);
+        var t4 = new InetIdTuple(addr1, 24);
 
         assertNotEquals(t1, t2);
         assertNotEquals(t1.hashCode(), t2.hashCode());

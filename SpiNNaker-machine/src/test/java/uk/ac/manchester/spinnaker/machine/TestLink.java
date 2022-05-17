@@ -35,8 +35,8 @@ public class TestLink {
      */
     @Test
     public void testEquals() {
-        Link link1 = new Link(chip00, Direction.EAST, chip01);
-        Link link2 = new Link(chip00, Direction.EAST, chip01);
+        var link1 = new Link(chip00, Direction.EAST, chip01);
+        var link2 = new Link(chip00, Direction.EAST, chip01);
         assertEquals(link1, link2);
         assertEquals(link1.hashCode(), link2.hashCode());
         assertEquals(link1.toString(), link2.toString());
@@ -56,8 +56,8 @@ public class TestLink {
      */
     @Test
     public void testDifferent() {
-        Link link1 =  new Link(chip00, Direction.EAST, chip01);
-        Link link2 =  new Link(chip11, Direction.EAST, chip01);
+        var link1 =  new Link(chip00, Direction.EAST, chip01);
+        var link2 =  new Link(chip11, Direction.EAST, chip01);
         checkDifferent(link1, link2);
 
         link2 =  new Link(chip00, Direction.NORTH, chip01);
@@ -68,8 +68,8 @@ public class TestLink {
     }
 
     public void testById() {
-        Link link1 =  new Link(chip00, Direction.NORTH, chip01);
-        Link link2 =  new Link(chip00, 2, chip01);
+        var link1 =  new Link(chip00, Direction.NORTH, chip01);
+        var link2 =  new Link(chip00, 2, chip01);
         assertEquals(link1, link2);
     }
 

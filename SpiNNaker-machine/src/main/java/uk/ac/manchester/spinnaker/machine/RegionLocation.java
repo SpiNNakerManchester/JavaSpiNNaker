@@ -104,7 +104,7 @@ public class RegionLocation
 		if (!(obj instanceof RegionLocation)) {
 			return false;
 		}
-		RegionLocation that = (RegionLocation) obj;
+		var that = (RegionLocation) obj;
 		return (this.x == that.x) && (this.y == that.y) && (this.p == that.p)
 				&& (this.region == that.region);
 	}

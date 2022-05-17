@@ -31,8 +31,8 @@ public class TestMachineDimensions {
 
     @Test
     public void testEquals() {
-       MachineDimensions m1 = new MachineDimensions(2, 3);
-       MachineDimensions m2 = new MachineDimensions(2, 3);
+       var m1 = new MachineDimensions(2, 3);
+       var m2 = new MachineDimensions(2, 3);
        assertEquals(m1, m2);
        assertEquals(m1.hashCode(), m2.hashCode());
        assertEquals(m1.toString(), m2.toString());
@@ -40,7 +40,7 @@ public class TestMachineDimensions {
 
     @Test
     public void testNullEquals() {
-       MachineDimensions m1 = new MachineDimensions(2, 3);
+       var m1 = new MachineDimensions(2, 3);
        MachineDimensions m2 = null;
        assertNotEquals(m1, m2);
        assertFalse(m1.equals(m2));

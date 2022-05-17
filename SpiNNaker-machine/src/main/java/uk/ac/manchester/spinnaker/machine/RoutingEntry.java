@@ -72,7 +72,7 @@ public class RoutingEntry {
 			}
 			this.processorIDs.add(procId);
 		}
-		for (Direction linkIds : linkIDs) {
+		for (var linkIds : linkIDs) {
 			this.linkIDs.add(linkIds);
 		}
 	}
@@ -84,10 +84,10 @@ public class RoutingEntry {
 	 */
 	public int encode() {
 		int route = 0;
-		for (Integer processorID : processorIDs) {
+		for (var processorID : processorIDs) {
 			route |= 1 << (MAX_LINKS_PER_ROUTER + processorID);
 		}
-		for (Direction linkID : linkIDs) {
+		for (var linkID : linkIDs) {
 			route |= 1 << linkID.id;
 		}
 		return route;

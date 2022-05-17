@@ -37,69 +37,69 @@ public class TestRoutingEntry {
 
     @Test
     public void testBasic() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, 6, 8);
-        RoutingEntry instance = new RoutingEntry(ids, directions);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var ids = Arrays.asList(4, 6, 8);
+        var instance = new RoutingEntry(ids, directions);
 
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertThat(decode.getLinkIDs(), contains(directions.toArray()));
         assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
     }
 
     @Test
     public void testSingleId() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4);
-        RoutingEntry instance = new RoutingEntry(ids, directions);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var ids = Arrays.asList(4);
+        var instance = new RoutingEntry(ids, directions);
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertThat(decode.getLinkIDs(), contains(directions.toArray()));
         assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
     }
 
     @Test
     public void testEmptyId() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
         List<Integer> ids = Collections.emptyList();
-        RoutingEntry instance = new RoutingEntry(ids, directions);
+        var instance = new RoutingEntry(ids, directions);
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertThat(decode.getLinkIDs(), contains(directions.toArray()));
         assertEquals(0, decode.getProcessorIDs().size());
     }
 
     @Test
     public void testNegative() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, -66, 8);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var ids = Arrays.asList(4, -66, 8);
         assertThrows(Exception.class, () -> {
             @SuppressWarnings("unused")
-            RoutingEntry instance = new RoutingEntry(ids, directions);
+            var instance = new RoutingEntry(ids, directions);
         });
     }
 
     @Test
     public void testTooHighId() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, 60, 8);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var ids = Arrays.asList(4, 60, 8);
         assertThrows(Exception.class, () -> {
             @SuppressWarnings("unused")
-            RoutingEntry instance = new RoutingEntry(ids, directions);
+            var instance = new RoutingEntry(ids, directions);
         });
     }
 
     @Test
     public void testOneDirection() {
-        List<Direction> directions = Arrays.asList(Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, 6, 8);
-        RoutingEntry instance = new RoutingEntry(ids, directions);
+        var directions = Arrays.asList(Direction.SOUTH);
+        var ids = Arrays.asList(4, 6, 8);
+        var instance = new RoutingEntry(ids, directions);
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertThat(decode.getLinkIDs(), contains(Direction.SOUTH));
         assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
     }
@@ -107,11 +107,11 @@ public class TestRoutingEntry {
     @Test
     public void testEmptyDirection() {
         Set<Direction> directions = Collections.emptySet();
-        List<Integer> ids = Arrays.asList(4, 6, 8);
-        RoutingEntry instance = new RoutingEntry(ids, directions);
+        var ids = Arrays.asList(4, 6, 8);
+        var instance = new RoutingEntry(ids, directions);
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertEquals(0, decode.getLinkIDs().size());
         assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
     }
@@ -120,40 +120,40 @@ public class TestRoutingEntry {
     public void testDoubleEmpty() {
         List<Direction> directions = Collections.emptyList();
         Set<Integer> ids = Collections.emptySet();
-        RoutingEntry instance = new RoutingEntry(ids, directions);
+        var instance = new RoutingEntry(ids, directions);
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertEquals(0, decode.getProcessorIDs().size());
         assertEquals(0, decode.getLinkIDs().size());
     }
 
     @Test
     public void testDouble() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, 6, 8);
-        List<Direction> directions2 = Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.SOUTH);
-        List<Integer> ids2 = Arrays.asList(4, 6, 8, 4);
-        RoutingEntry instance = new RoutingEntry(ids2, directions2);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var ids = Arrays.asList(4, 6, 8);
+        var directions2 = Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.SOUTH);
+        var ids2 = Arrays.asList(4, 6, 8, 4);
+        var instance = new RoutingEntry(ids2, directions2);
 
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertThat(decode.getLinkIDs(), contains(directions.toArray()));
         assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
     }
 
     @Test
     public void testUnordered() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, 6, 8);
-        List<Direction> directions2 = Arrays.asList(Direction.SOUTH, Direction.NORTH);
-        List<Integer> ids2 = Arrays.asList(6, 4, 8);
-        RoutingEntry instance = new RoutingEntry(ids2, directions2);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var ids = Arrays.asList(4, 6, 8);
+        var directions2 = Arrays.asList(Direction.SOUTH, Direction.NORTH);
+        var ids2 = Arrays.asList(6, 4, 8);
+        var instance = new RoutingEntry(ids2, directions2);
 
         int code = instance.encode();
 
-        RoutingEntry decode = new RoutingEntry(code);
+        var decode = new RoutingEntry(code);
         assertThat(decode.getLinkIDs(), contains(directions.toArray()));
         assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
     }

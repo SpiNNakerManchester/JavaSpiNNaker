@@ -95,8 +95,7 @@ public class ProgressIterable<E> implements Iterable<E>, Closeable {
 	 */
 	@Override
 	public Iterator<E> iterator() {
-		ProgressIterator<E> iterator =
-				new ProgressIterator<>(things, description, output);
+		var iterator = new ProgressIterator<>(things, description, output);
 		progressIterables.add(iterator);
 		return iterator;
 	}
@@ -115,7 +114,7 @@ public class ProgressIterable<E> implements Iterable<E>, Closeable {
 	 */
 	@Override
 	public void close() {
-		Iterator<ProgressIterator<E>> iter = progressIterables.iterator();
+		var iter = progressIterables.iterator();
 		while (iter.hasNext()) {
 			iter.next().close();
 			iter.remove();

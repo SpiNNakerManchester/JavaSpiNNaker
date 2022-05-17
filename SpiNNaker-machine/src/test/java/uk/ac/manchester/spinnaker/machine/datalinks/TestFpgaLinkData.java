@@ -57,9 +57,9 @@ public class TestFpgaLinkData {
 
     @Test
     public void testEquals() throws UnknownHostException {
-        FPGALinkData link1 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
+        var link1 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
                 location00, Direction.NORTHEAST, createInetAddress());
-        FPGALinkData link2= new FPGALinkData(34, FpgaId.byId(2),
+        var link2= new FPGALinkData(34, FpgaId.byId(2),
                 location00, Direction.NORTHEAST, createInetAddress());
         assertTrue(link1.sameAs(link2));
         checkSame(link1, link2);
@@ -69,19 +69,19 @@ public class TestFpgaLinkData {
 
     @Test
     public void testDifferent() throws UnknownHostException {
-        FPGALinkData link1 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
+        var link1 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
                 location00, Direction.NORTHEAST, createInetAddress());
-        FPGALinkData link2= new FPGALinkData(33, FpgaId.TOP_RIGHT,
+        var link2 = new FPGALinkData(33, FpgaId.TOP_RIGHT,
                 location00, Direction.NORTHEAST, createInetAddress());
-        FPGALinkData link3 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
+        var link3 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
                 location01, Direction.NORTHEAST, createInetAddress());
-        FPGALinkData link4 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
+        var link4 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
                 location00, Direction.NORTH, createInetAddress());
         byte[] bytes = {127,0,0,1};
-        InetAddress address2 =  InetAddress.getByAddress(bytes);
-        FPGALinkData link5 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
+        var address2 = InetAddress.getByAddress(bytes);
+        var link5 = new FPGALinkData(34, FpgaId.TOP_RIGHT,
                 location00, Direction.NORTHEAST, address2);
-        FPGALinkData link6 = new FPGALinkData(34, FpgaId.LEFT, location00,
+        var link6 = new FPGALinkData(34, FpgaId.LEFT, location00,
                 Direction.NORTHEAST, createInetAddress());
 
         checkDifferent(link1, link2);

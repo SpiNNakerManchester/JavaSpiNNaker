@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.Arrays;
-import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import org.junit.jupiter.api.Test;
@@ -36,18 +35,18 @@ public class TestMultiCastRoutingEntry {
 
     @Test
     public void testBasic() {
-        List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        List<Integer> ids = Arrays.asList(4, 6, 8);
+        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
+        var ids = Arrays.asList(4, 6, 8);
         int key = 100;
         int mask = 200;
-        MulticastRoutingEntry instance = new MulticastRoutingEntry(
+        var instance = new MulticastRoutingEntry(
                 key, mask, ids, directions, true);
 
         assertEquals(key, instance.getKey());
         assertEquals(mask, instance.getMask());
         assertTrue(instance.isDefaultable());
 
-        MulticastRoutingEntry decode = new MulticastRoutingEntry(
+        var decode = new MulticastRoutingEntry(
                 key, mask, instance.encode(), true);
 
         assertThat(decode.getLinkIDs(), contains(directions.toArray()));

@@ -123,7 +123,7 @@ public class ChipDetails {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("[");
+		var builder = new StringBuilder("[");
 		builder.append("ethernet: ").append(ethernet).append(", ");
 		builder.append(" cores: ").append(cores).append(", ");
 		if (ipAddress != null) {
@@ -151,7 +151,7 @@ public class ChipDetails {
 	public ChipLocation getLinkDestination(Direction direction,
 			HasChipLocation source, Machine machine) {
 		if (links != null) {
-			for (LinkBean bean : links) {
+			for (var bean : links) {
 				if (bean.sourceDirection == direction) {
 					return bean.destination;
 				}

@@ -267,7 +267,7 @@ public final class IPTag extends Tag {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("IPTag(");
+		var sb = new StringBuilder("IPTag(");
 		sb.append(getTag()).append(" {").append(getBoardAddress());
 		sb.append("} -");
 		if (stripSDP) {

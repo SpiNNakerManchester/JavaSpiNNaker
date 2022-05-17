@@ -128,7 +128,7 @@ public final class Processor implements Comparable<Processor> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Processor other = (Processor) obj;
+		var other = (Processor) obj;
 		if (this.processorId != other.processorId) {
 			return false;
 		}

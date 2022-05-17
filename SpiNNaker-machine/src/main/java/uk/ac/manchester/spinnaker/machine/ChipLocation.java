@@ -76,7 +76,7 @@ public final class ChipLocation
 		if (!(obj instanceof ChipLocation)) {
 			return false;
 		}
-		ChipLocation that = (ChipLocation) obj;
+		var that = (ChipLocation) obj;
 		return (this.x == that.x) && (this.y == that.y);
 	}
 

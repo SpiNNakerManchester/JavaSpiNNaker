@@ -35,6 +35,16 @@ public abstract class Ping {
 	private Ping() {
 	}
 
+	private static ProcessBuilder pingCmd(String address, int count, int wait) {
+		if (System.getProperty("os.name").toLowerCase().contains("win")) {
+			return new ProcessBuilder("ping", "-n", Integer.toString(count),
+					"-w", Integer.toString(wait), address);
+		} else {
+			return new ProcessBuilder("ping", "-c", Integer.toString(count),
+					"-W", Integer.toString(wait), address);
+		}
+	}
+
 	/**
 	 * Core ping operation.
 	 *
@@ -43,15 +53,10 @@ public abstract class Ping {
 	 * @return Return code, or -1 on total failure
 	 */
 	private static int ping1(String address) {
-		ProcessBuilder cmd;
-		if (System.getProperty("os.name").toLowerCase().contains("win")) {
-			cmd = new ProcessBuilder("ping", "-n", "1", "-w", "1", address);
-		} else {
-			cmd = new ProcessBuilder("ping", "-c", "1", "-W", "1", address);
-		}
+		var cmd = pingCmd(address, 1, 1);
 		cmd.redirectErrorStream(true);
 		try {
-			Process process = cmd.start();
+			var process = cmd.start();
 			new InputStreamDrain(process.getInputStream());
 			return process.waitFor();
 		} catch (Exception e) {
@@ -105,7 +110,7 @@ public abstract class Ping {
 
 		InputStreamDrain(InputStream is) {
 			this.is = is;
-			Thread t = new Thread(this);
+			var t = new Thread(this);
 			t.setDaemon(true);
 			t.start();
 		}

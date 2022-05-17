@@ -76,7 +76,7 @@ public final class Slice {
 
 	@Override
 	public String toString() {
-		StringBuilder str = new StringBuilder("Slice(");
+		var str = new StringBuilder("Slice(");
 		if (start != null) {
 			str.append(start);
 		}

@@ -62,7 +62,7 @@ public class InetIdTuple {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final InetIdTuple other = (InetIdTuple) obj;
+		var other = (InetIdTuple) obj;
 		if (this.id != other.id) {
 			return false;
 		}

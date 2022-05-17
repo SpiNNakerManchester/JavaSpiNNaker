@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
-import java.net.URL;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,8 +30,8 @@ public class TestRawConfigParser {
 
     @Test
     public void testSimple() {
-        URL url = TestRawConfigParser.class.getResource("/testconfig/test.cfg");
-        RawConfigParser parser = new RawConfigParser(url);
+        var url = TestRawConfigParser.class.getResource("/testconfig/test.cfg");
+        var parser = new RawConfigParser(url);
         assertEquals((Integer)5, parser.getInt("Machine", "version"));
         assertTrue(parser.getBoolean("Other", "alan_is_scotish"));
     }

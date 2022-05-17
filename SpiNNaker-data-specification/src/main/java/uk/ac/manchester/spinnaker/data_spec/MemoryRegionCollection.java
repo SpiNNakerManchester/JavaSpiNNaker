@@ -166,7 +166,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 
 	@Override
 	public Object[] toArray() {
-		Object[] objs = new Object[regions.length];
+		var objs = new Object[regions.length];
 		arraycopy(regions, 0, objs, 0, objs.length);
 		return objs;
 	}

@@ -38,7 +38,7 @@ public class TestBar {
 
     @Test
     public void testBasic() {
-		ProgressBar pb = new ProgressBar(5, null,
+		var pb = new ProgressBar(5, null,
 				new PrintStream(new ByteArrayOutputStream()));
         for (int i = 0; i < 3 ; i++){
             pb.update();
@@ -54,8 +54,8 @@ public class TestBar {
 
     @Test
     public void testToMany() {
-        String description = "tooMany";
-		ProgressBar pb = new ProgressBar(5, description,
+        var description = "tooMany";
+		var pb = new ProgressBar(5, description,
 				new PrintStream(new ByteArrayOutputStream()));
         for (int i = 0; i < 5 ; i++){
             pb.update();
@@ -68,14 +68,14 @@ public class TestBar {
 
     @Test
     public void testSimple() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        String description = "Easiest";
-		ProgressBar pb = new ProgressBar(5, description, new PrintStream(baos));
+        var baos = new ByteArrayOutputStream();
+        var description = "Easiest";
+		var pb = new ProgressBar(5, description, new PrintStream(baos));
         for (int i = 0; i < 5 ; i++){
             pb.update();
         }
         pb.close();
-        String lines[] = baos.toString().split("\\r?\\n");
+        var lines = baos.toString().split("\\r?\\n");
         assertEquals(4, lines.length);
         assertEquals(description, lines[0]);
         assertEquals(PERCENTS, lines[1]);
@@ -84,15 +84,14 @@ public class TestBar {
 
     @Test
     public void testNoDivSmall() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        String description = "Thirteen";
-		try (ProgressBar pb =
-				new ProgressBar(13, description, new PrintStream(baos))) {
+        var baos = new ByteArrayOutputStream();
+        var description = "Thirteen";
+		try (var pb = new ProgressBar(13, description, new PrintStream(baos))) {
             for (int i = 0; i < 13 ; i++){
                 pb.update();
             }
         }
-        String lines[] = baos.toString().split("\\r?\\n");
+        var lines = baos.toString().split("\\r?\\n");
         // Include duration as try calls close.
         assertEquals(4, lines.length);
         assertEquals(description, lines[0]);
@@ -102,14 +101,13 @@ public class TestBar {
 
     @Test
     public void testNoDivBig() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        String description = "Big";
-		ProgressBar pb =
-				new ProgressBar(133, description, new PrintStream(baos));
+        var baos = new ByteArrayOutputStream();
+        var description = "Big";
+		var pb = new ProgressBar(133, description, new PrintStream(baos));
         for (int i = 0; i < 133 ; i++){
             pb.update();
         }
-        String lines[] = baos.toString().split("\\r?\\n");
+        var lines = baos.toString().split("\\r?\\n");
         // No close so no duration
         assertEquals(3, lines.length);
         assertEquals(description, lines[0]);
@@ -120,15 +118,14 @@ public class TestBar {
 
     @Test
     public void testStopEarly() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        String description = "Early";
-		ProgressBar pb =
-				new ProgressBar(10, description, new PrintStream(baos));
+        var baos = new ByteArrayOutputStream();
+        var description = "Early";
+		var pb = new ProgressBar(10, description, new PrintStream(baos));
         for (int i = 0; i < 3 ; i++){
             pb.update();
         }
         pb.close();
-        String lines[] = baos.toString().split("\\r?\\n");
+        var lines = baos.toString().split("\\r?\\n");
         assertEquals(4, lines.length);
         assertEquals(description, lines[0]);
         assertEquals(PERCENTS, lines[1]);

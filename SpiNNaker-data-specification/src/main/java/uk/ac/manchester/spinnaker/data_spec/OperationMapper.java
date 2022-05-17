@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -69,7 +68,7 @@ abstract class OperationMapper {
 	 */
 	static Callable getOperationImpl(FunctionAPI funcs, Commands opcode) {
 		// Note that MAP is using the object identity; this is by design
-		Map<Commands, Callable> map = MAP.get(requireNonNull(funcs,
+		var map = MAP.get(requireNonNull(funcs,
 				"can only look up method implementations of real objects"));
 		if (map == null) {
 			map = new HashMap<>();
@@ -89,10 +88,10 @@ abstract class OperationMapper {
 	private static void manufactureCallables(Map<Commands, Callable> map,
 			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
 		// Note that getOperations() below ensures the safety of this
-		for (Entry<Commands, Method> e : ops.entrySet()) {
-			Commands c = e.getKey();
-			Method m = e.getValue();
-			Class<?> rt = m.getReturnType();
+		for (var e : ops.entrySet()) {
+			var c = e.getKey();
+			var m = e.getValue();
+			var rt = m.getReturnType();
 			if (rt.equals(Void.TYPE)) {
 				map.put(c, cmd -> doVoidCall(objref.get(), m, c, cmd));
 			} else {
@@ -103,7 +102,7 @@ abstract class OperationMapper {
 
 	private static Map<Commands, Method> getOperations(
 			Class<? extends FunctionAPI> cls) {
-		Map<Commands, Method> ops = OPS_MAP.get(cls);
+		var ops = OPS_MAP.get(cls);
 		if (ops != null) {
 			return ops;
 		}
@@ -113,7 +112,7 @@ abstract class OperationMapper {
 			if (!m.isAnnotationPresent(Operation.class)) {
 				continue;
 			}
-			Commands c = m.getAnnotation(Operation.class).value();
+			var c = m.getAnnotation(Operation.class).value();
 
 			/*
 			 * If there are any arguments, or the method has a return type that

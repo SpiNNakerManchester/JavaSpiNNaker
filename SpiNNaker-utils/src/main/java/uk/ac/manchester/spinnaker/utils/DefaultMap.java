@@ -149,7 +149,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public V get(Object key) {
-		V value = super.get(key);
+		var value = super.get(key);
 		if (value == null) {
 			value = defaultFactory((K) key);
 			put((K) key, value);

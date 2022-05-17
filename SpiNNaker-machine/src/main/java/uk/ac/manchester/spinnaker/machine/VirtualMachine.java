@@ -16,14 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -80,27 +80,25 @@ public class VirtualMachine extends Machine {
 
 		addVersionIgnores(ignoreLinks);
 
-		SpiNNakerTriadGeometry geometry =
-				SpiNNakerTriadGeometry.getSpinn5Geometry();
+		var geometry = getSpinn5Geometry();
 
 		// Get all the root and therefore ethernet locations
-		Set<ChipLocation> roots =
-				geometry.getPotentialRootChips(machineDimensions);
+		var roots = geometry.getPotentialRootChips(machineDimensions);
 
 		// Get all the valid locations
-		Map<ChipLocation, ChipLocation> allChips = new HashMap<>();
-		for (ChipLocation root : roots) {
-			for (ChipLocation local : geometry.singleBoard()) {
-				ChipLocation normalized = normalizedLocation(
+		var allChips = new HashMap<ChipLocation, ChipLocation>();
+		for (var root : roots) {
+			for (var local : geometry.singleBoard()) {
+				var normalized = normalizedLocation(
 						root.getX() + local.getX(), root.getY() + local.getY());
 				if (!ignoreChips.contains(normalized)) {
 					allChips.put(normalized, root);
 				}
 			}
 		}
-		for (ChipLocation location : allChips.keySet()) {
-			Router router = getRouter(location, allChips, ignoreLinks);
-			InetAddress ipAddress = getIpaddress(location, roots);
+		for (var location : allChips.keySet()) {
+			var router = getRouter(location, allChips, ignoreLinks);
+			var ipAddress = getIpaddress(location, roots);
 			addChip(getChip(location, router, ipAddress, allChips.get(location),
 					ignoreCores));
 		}
@@ -147,9 +145,9 @@ public class VirtualMachine extends Machine {
 
 	private Iterable<Link> getLinks(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips) {
-		List<Link> links = new ArrayList<>();
-		for (Direction direction : Direction.values()) {
-			ChipLocation destination = normalizedMove(location, direction);
+		var links = new ArrayList<Link>();
+		for (var direction : Direction.values()) {
+			var destination = normalizedMove(location, direction);
 			if (allChips.containsKey(destination)) {
 				links.add(new Link(location, direction, destination));
 			}
@@ -160,10 +158,10 @@ public class VirtualMachine extends Machine {
 	private Iterable<Link> getLinks(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips,
 			Set<Direction> ignoreLinks) {
-		List<Link> links = new ArrayList<>();
-		for (Direction direction : Direction.values()) {
+		var links = new ArrayList<Link>();
+		for (var direction : Direction.values()) {
 			if (!ignoreLinks.contains(direction)) {
-				ChipLocation destination = normalizedMove(location, direction);
+				var destination = normalizedMove(location, direction);
 				if (allChips.containsKey(destination)) {
 					links.add(new Link(location, direction, destination));
 				}
@@ -175,10 +173,9 @@ public class VirtualMachine extends Machine {
 	private Chip getChip(ChipLocation location, Router router,
 			InetAddress ipAddress, ChipLocation ethernet,
 			Map<ChipLocation, Set<Integer>> ignoreCores) {
-
 		if (ignoreCores.containsKey(location)) {
-			Set<Integer> ignoreProcessors = ignoreCores.get(location);
-			Collection<Processor> processors = new ArrayList<>();
+			var ignoreProcessors = ignoreCores.get(location);
+			var processors = new ArrayList<Processor>();
 			if (!ignoreProcessors.contains(0)) {
 				processors.add(Processor.factory(0, true));
 			}
@@ -209,7 +206,7 @@ public class VirtualMachine extends Machine {
 	private Inet4Address getIpaddress(ChipLocation location,
 			Set<ChipLocation> roots) {
 		if (roots.contains(location)) {
-			byte[] bytes = new byte[BYTES_PER_IP_ADDRESS];
+			var bytes = new byte[BYTES_PER_IP_ADDRESS];
 			bytes[FIRST_BYTE] = LOCAL_HOST_ONE;
 			bytes[SECOND_BYTE] = 0;
 			bytes[THIRD_BYTE] = (byte) location.getX();

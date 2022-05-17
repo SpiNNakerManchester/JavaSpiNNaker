@@ -30,8 +30,6 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
-import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
-import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
 
 /**
  * A Description of a Spinnaker Chip including its Router.
@@ -118,7 +116,7 @@ public class Chip implements HasChipLocation {
 		this.location = location;
 		this.monitorProcessors = new TreeMap<>();
 		this.userProcessors = new TreeMap<>();
-		processors.forEach((processor) -> {
+		processors.forEach(processor -> {
 			if (this.monitorProcessors.containsKey(processor.processorId)) {
 				throw new IllegalArgumentException();
 			}
@@ -269,8 +267,8 @@ public class Chip implements HasChipLocation {
 	}
 
 	Chip(ChipBean bean, Machine machine) {
-		ChipDetails details = bean.getDetails();
-		ChipResources resources = bean.getResources();
+		var details = bean.getDetails();
+		var resources = bean.getResources();
 
 		this.location = bean.getLocation();
 		this.monitorProcessors = provideMonitors(resources.getMonitors());
@@ -289,7 +287,7 @@ public class Chip implements HasChipLocation {
 	}
 
 	private static TreeMap<Integer, Processor> defaultUserProcessors() {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		for (int i = 1; i < PROCESSORS_PER_CHIP; i++) {
 			processors.put(i, Processor.factory(i, false));
 		}
@@ -297,13 +295,13 @@ public class Chip implements HasChipLocation {
 	}
 
 	private static TreeMap<Integer, Processor> defaultMonitorProcessors() {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		processors.put(0, Processor.factory(0, true));
 		return processors;
 	}
 
 	private static TreeMap<Integer, Processor> provideMonitors(int monitors) {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		for (int i = 0; i < monitors; i++) {
 			processors.put(i, Processor.factory(i, true));
 		}
@@ -312,7 +310,7 @@ public class Chip implements HasChipLocation {
 
 	private TreeMap<Integer, Processor> provideUserProcesses(int monitors,
 			int cores) {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		for (int i = monitors; i < cores; i++) {
 			processors.put(i, Processor.factory(i, false));
 		}
@@ -377,7 +375,7 @@ public class Chip implements HasChipLocation {
 	 * @return A list of all the processors including both monitor and user.
 	 */
 	public List<Processor> allProcessors() {
-		ArrayList<Processor> all = new ArrayList<>(monitorProcessors.values());
+		var all = new ArrayList<>(monitorProcessors.values());
 		all.addAll(userProcessors.values());
 		Collections.sort(all);
 		return all;

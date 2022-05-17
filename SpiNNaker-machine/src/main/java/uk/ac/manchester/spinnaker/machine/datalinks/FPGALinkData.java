@@ -72,7 +72,7 @@ public final class FPGALinkData extends AbstractDataLink {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final FPGALinkData other = (FPGALinkData) obj;
+		var other = (FPGALinkData) obj;
 		if (sameAs(other)) {
 			if (this.fpgaLinkId != other.fpgaLinkId) {
 				return false;

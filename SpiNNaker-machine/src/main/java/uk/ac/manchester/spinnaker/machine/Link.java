@@ -118,7 +118,7 @@ public final class Link {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Link other = (Link) obj;
+		var other = (Link) obj;
 		log.trace("Equals called {} {}", this, other);
 		if (this.sourceLinkDirection != other.sourceLinkDirection) {
 			return false;

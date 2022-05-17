@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
@@ -79,8 +78,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 			throw new IllegalStateException("The subsets is immutable. "
 					+ "Possibly because a hashcode has been generated.");
 		}
-		ChipLocation chip = core.asChipLocation();
-		TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
+		var chip = core.asChipLocation();
+		var subset = getOrCreate(chip);
 		subset.put(core.getP(), core);
 	}
 
@@ -101,7 +100,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 *             hashcode has been generated,
 	 */
 	public void addCore(int x, int y, int p) {
-		ChipLocation chip = new ChipLocation(x, y);
+		var chip = new ChipLocation(x, y);
 		addCore(chip, p);
 	}
 
@@ -124,8 +123,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 			throw new IllegalStateException("The subsets is immutable. "
 					+ "Possibly because a hashcode has been generated.");
 		}
-		CoreLocation core = new CoreLocation(chip, p);
-		TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
+		var core = new CoreLocation(chip, p);
+		var subset = getOrCreate(chip);
 		subset.put(p, core);
 	}
 
@@ -149,8 +148,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 					+ "Possibly because a hashcode has been generated.");
 		}
 		for (Integer p : processors) {
-			CoreLocation core = new CoreLocation(chip, p);
-			TreeMap<Integer, CoreLocation> subset = getOrCreate(chip);
+			var core = new CoreLocation(chip, p);
+			var subset = getOrCreate(chip);
 			subset.put(p, core);
 		}
 	}
@@ -172,7 +171,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 *             hashcode has been generated,
 	 */
 	public void addCores(int x, int y, Iterable<Integer> processors) {
-		ChipLocation chip = new ChipLocation(x, y);
+		var chip = new ChipLocation(x, y);
 		addCores(chip, processors);
 	}
 
@@ -186,7 +185,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 *            the locations to add.
 	 */
 	public void addCores(Iterable<CoreLocation> locations) {
-		for (CoreLocation location : locations) {
+		for (var location : locations) {
 			addCore(location);
 		}
 	}
@@ -212,7 +211,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 */
 	public int size() {
 		int count = 0;
-		for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
+		for (var subset : locations.values()) {
 			count += subset.size();
 		}
 		return count;
@@ -224,7 +223,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return {@code true} when the core subsets are empty.
 	 */
 	public boolean isEmpty() {
-		for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
+		for (var subset : locations.values()) {
 			if (!subset.isEmpty()) {
 				return false;
 			}
@@ -258,8 +257,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return True if and only if there is a core with these coordinates
 	 */
 	public boolean isCore(CoreLocation core) {
-		TreeMap<Integer, CoreLocation> subset =
-				locations.get(core.asChipLocation());
+		var subset = locations.get(core.asChipLocation());
 		if (subset == null) {
 			return false;
 		}
@@ -282,8 +280,8 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	public final int hashCode() {
 		immutable = true;
 		int hash = 7;
-		for (TreeMap<Integer, CoreLocation> subset : locations.values()) {
-			for (CoreLocation location : subset.values()) {
+		for (var subset : locations.values()) {
+			for (var location : subset.values()) {
 				hash = 89 * hash + location.hashCode();
 			}
 		}
@@ -314,7 +312,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final CoreSubsets other = (CoreSubsets) obj;
+		var other = (CoreSubsets) obj;
 		return Objects.equals(this.locations, other.locations);
 	}
 
@@ -332,14 +330,12 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 *         Therefore the result may be empty.
 	 */
 	public CoreSubsets intersection(CoreSubsets other) {
-		CoreSubsets results = new CoreSubsets();
-		for (Entry<ChipLocation, TreeMap<Integer, CoreLocation>> entry
-				: locations.entrySet()) {
+		var results = new CoreSubsets();
+		for (var entry : locations.entrySet()) {
 			if (other.locations.containsKey(entry.getKey())) {
-				TreeMap<Integer, CoreLocation> otherSubset =
-						other.locations.get(entry.getKey());
+				var otherSubset = other.locations.get(entry.getKey());
 				if (otherSubset != null) {
-					for (CoreLocation location : entry.getValue().values()) {
+					for (var location : entry.getValue().values()) {
 						if (otherSubset.containsValue(location)) {
 							results.addCore(location);
 						}

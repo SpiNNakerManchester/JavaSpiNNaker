@@ -61,9 +61,9 @@ public abstract class Reports {
 	 */
 	public static void generateMachineReport(File reportDirectory,
 			Machine machine, Collection<?> connections) throws IOException {
-		File file = new File(reportDirectory, FILENAME);
-		String timestamp = Calendar.getInstance().toString();
-		try (PrintWriter f =
+		var file = new File(reportDirectory, FILENAME);
+		var timestamp = Calendar.getInstance().toString();
+		try (var f =
 				new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
 			writeHeader(f, timestamp, machine, connections);
 			for (int x = 0; x <= machine.maxChipX(); x++) {

@@ -33,7 +33,7 @@ public class TestCounter {
      */
     @Test
     public void testIncrement() {
-        Counter counter = new Counter();
+        var counter = new Counter();
         assertEquals(0, counter.get());
         counter.increment();
         counter.increment();
@@ -42,7 +42,7 @@ public class TestCounter {
 
     @Test
     public void testAdd() {
-        Counter counter = new Counter();
+        var counter = new Counter();
         assertEquals(0, counter.get());
         counter.add(4);
         counter.add(-2);

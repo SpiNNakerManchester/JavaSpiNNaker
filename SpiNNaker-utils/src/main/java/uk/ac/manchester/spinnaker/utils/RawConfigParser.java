@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -144,8 +143,7 @@ public class RawConfigParser {
 	 *             if the reading fails.
 	 */
 	public void read(URL resource) throws IOException {
-		try (ReaderLineIterable lines =
-				new ReaderLineIterable(resource.openStream())) {
+		try (var lines = new ReaderLineIterable(resource.openStream())) {
 			read(lines);
 		}
 	}
@@ -159,8 +157,7 @@ public class RawConfigParser {
 	 *             if the reading fails.
 	 */
 	public void read(File file) throws IOException {
-		try (ReaderLineIterable lines =
-				new ReaderLineIterable(new FileInputStream(file))) {
+		try (var lines = new ReaderLineIterable(new FileInputStream(file))) {
 			read(lines);
 		}
 	}
@@ -168,13 +165,13 @@ public class RawConfigParser {
 	private void read(ReaderLineIterable lines) {
 		int ln = 0;
 		String sect = null;
-		for (String line : lines) {
+		for (var line : lines) {
 			ln++;
 			line = clean(line);
 			if (line.isEmpty()) {
 				continue;
 			}
-			Matcher m = sectRE.matcher(line);
+			var m = sectRE.matcher(line);
 			if (m.matches()) {
 				sect = normaliseSectionName(m.group("name"));
 				if (!map.containsKey(sect)) {
@@ -187,8 +184,8 @@ public class RawConfigParser {
 			}
 			m = optRE.matcher(line);
 			if (m.matches()) {
-				String key = normaliseOptionName(m.group("key"));
-				String value = m.group("value");
+				var key = normaliseOptionName(m.group("key"));
+				var value = m.group("value");
 				map.get(sect).put(key, value);
 				continue;
 			}
@@ -205,7 +202,7 @@ public class RawConfigParser {
 	 * @return The cleaned line.
 	 */
 	private String clean(String line) {
-		Matcher m = commentRE.matcher(line);
+		var m = commentRE.matcher(line);
 		if (m.matches()) {
 			line = m.group("keep");
 		}
@@ -233,7 +230,7 @@ public class RawConfigParser {
 	 * @return The option value, or {@code null} if it is absent.
 	 */
 	public Integer getInt(String section, String option) {
-		String value = get(section, option);
+		var value = get(section, option);
 		if (isNone(value)) {
 			return null;
 		}
@@ -250,7 +247,7 @@ public class RawConfigParser {
 	 * @return The option value, or {@code null} if it is absent.
 	 */
 	public Boolean getBoolean(String section, String option) {
-		String value = get(section, option);
+		var value = get(section, option);
 		if (isNone(value)) {
 			return null;
 		}
@@ -267,9 +264,9 @@ public class RawConfigParser {
 	 * @return The option value, or {@code null} if it is absent.
 	 */
 	public String get(String section, String option) {
-		Map<String, String> sect = map.get(normaliseSectionName(section));
+		var sect = map.get(normaliseSectionName(section));
 		if (sect != null) {
-			String value = sect.get(normaliseOptionName(option));
+			var value = sect.get(normaliseOptionName(option));
 			if (value != null) {
 				return value;
 			}
