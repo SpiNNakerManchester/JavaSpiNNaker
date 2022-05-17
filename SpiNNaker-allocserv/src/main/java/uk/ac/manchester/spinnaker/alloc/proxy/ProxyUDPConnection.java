@@ -18,14 +18,17 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.lang.Thread.currentThread;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.web.socket.BinaryMessage;
@@ -62,9 +65,10 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	private long receiveCount;
 
 	ProxyUDPConnection(WebSocketSession session, InetAddress remoteHost,
-			int remotePort, int id, Runnable emergencyRemove)
+			int remotePort, int id, Runnable emergencyRemove,
+			InetAddress localHost)
 			throws IOException {
-		super(null, null, remoteHost, remotePort);
+		super(localHost, null, remoteHost, remotePort);
 		this.session = session;
 		this.emergencyRemove = emergencyRemove;
 		workingBuffer = allocate(WORKING_BUFFER_SIZE).order(LITTLE_ENDIAN);
@@ -72,8 +76,12 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		workingBuffer.putInt(ProxyOp.MESSAGE.ordinal());
 		workingBuffer.putInt(id);
 		// Make the name now so it remains useful after close()
-		name = session.getUri() + "#" + id + " " + remoteHost + "/"
-				+ remotePort;
+		if (remoteHost == null) {
+			name = session.getUri() + "#" + id + " ANY/ANY";
+		} else {
+			name = session.getUri() + "#" + id + " " + remoteHost + "/"
+					+ remotePort;
+		}
 	}
 
 	/**
@@ -107,6 +115,24 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		sendCount++;
 	}
 
+	/**
+	 * Send a message on this connection.
+	 *
+	 * @param msg
+	 *            The message to send.
+	 * @param addr
+	 *            Where to send to.
+	 * @param port
+	 *            What port to send to.
+	 * @throws IOException
+	 *             If sending fails.
+	 */
+	public void sendMessage(ByteBuffer msg, InetAddress addr, int port)
+			throws IOException {
+		sendTo(msg, addr, port);
+		sendCount++;
+	}
+
 	protected void writeCountsToLog() {
 		log.info("{} message counts: sent {} received {}", name, sendCount,
 				receiveCount);
@@ -120,7 +146,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	/**
 	 * Core SpiNNaker message receive and dispatch-to-websocket loop.
 	 */
-	protected void receiverTask() {
+	protected void connectedReceiverTask() {
 		Thread me = currentThread();
 		String oldThreadName = me.getName();
 		me.setName("ws/udp " + name);
@@ -171,5 +197,70 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		outgoing.put(msg);
 		outgoing.flip();
 		session.sendMessage(new BinaryMessage(outgoing));
+	}
+
+	/**
+	 * Core SpiNNaker message receive and dispatch-to-websocket loop for the
+	 * type of connections required for EIEIO, especially for the live packet
+	 * gatherer, which does a complex muxing and programs sockets/tags in a
+	 * different way.
+	 *
+	 * @param recvFrom
+	 *            What hosts we are allowed to receive messages from.
+	 *            Messages from elsewhere will be discarded.
+	 */
+	protected void eieioReceiverTask(Set<InetAddress> recvFrom) {
+		Thread me = currentThread();
+		String oldThreadName = me.getName();
+		me.setName("ws/udp(eieio) " + name);
+		log.debug("launched eieio listener {}", name);
+		try {
+			mainLoop(recvFrom);
+		} catch (IOException e) {
+			try {
+				close();
+				emergencyRemove.run();
+			} catch (IOException e1) {
+				e.addSuppressed(e1);
+			}
+			log.warn("problem in SpiNNaker-to-client part of {}", name, e);
+		} finally {
+			log.debug("shutting down eieio listener {}", name);
+			me.setName(oldThreadName);
+		}
+	}
+
+	/**
+	 * Loop at core of {@link #eieioReceiverTask(Set)}.
+	 *
+	 * @param msg
+	 *            What hosts we are allowed to receive messages from. Messages
+	 *            from elsewhere will be discarded.
+	 * @throws IOException
+	 *             If there is some sort of network problem.
+	 */
+	private void mainLoop(Set<InetAddress> recvFrom) throws IOException {
+		while (!isClosed()) {
+			while (!isReadyToReceive(TIMEOUT)) {
+				if (!session.isOpen() || isClosed()) {
+					return;
+				}
+			}
+			DatagramPacket packet;
+			try {
+				packet = receiveWithAddress(TIMEOUT);
+			} catch (SocketTimeoutException e) {
+				// Timeout; go round the loop again.
+				continue;
+			}
+			// SECURITY: drop any packet not from an allocated board
+			if (!recvFrom.contains(packet.getAddress())) {
+				log.debug("dropped packet from {}", packet.getAddress());
+				continue;
+			}
+			ByteBuffer msg = wrap(packet.getData(), 0,
+					packet.getLength()).order(LITTLE_ENDIAN);
+			handleReceivedMessage(msg);
+		}
 	}
 }

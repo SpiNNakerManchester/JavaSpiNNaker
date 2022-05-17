@@ -22,7 +22,6 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE_USE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -46,6 +45,13 @@ import javax.validation.Payload;
 })
 @Constraint(validatedBy = IPAddressValidator.class)
 public @interface IPAddress {
+	/**
+	 * Whether the empty string is allowed. It defaults to being disallowed.
+	 *
+	 * @return Whether to accept the empty string.
+	 */
+	boolean emptyOK() default false;
+
 	/**
 	 * Message on constraint violated.
 	 *
@@ -71,15 +77,24 @@ public @interface IPAddress {
 class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
 	private Pattern pattern;
 
+	private boolean emptyOK;
+
 	@Override
 	public void initialize(IPAddress annotation) {
 		if (isNull(pattern)) {
 			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
 		}
+		emptyOK = annotation.emptyOK();
 	}
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		return nonNull(value) && pattern.matcher(value).matches();
+		if (isNull(value)) {
+			return false;
+		}
+		if (emptyOK && value.isEmpty()) {
+			return true;
+		}
+		return pattern.matcher(value).matches();
 	}
 }

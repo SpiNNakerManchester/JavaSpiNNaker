@@ -40,6 +40,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
 
+import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
+
 /**
  * Spalloc service management properties. These are all intended to be set via
  * the configuration file.
@@ -236,6 +238,8 @@ public class SpallocProperties {
 	/**
 	 * @return Properties relating to the SDP proxying.
 	 */
+	@NotNull
+	@Valid
 	public ProxyProperties getProxy() {
 		return proxy;
 	}
@@ -1760,10 +1764,19 @@ public class SpallocProperties {
 		 */
 		private boolean logWriteCounts;
 
+		/**
+		 * The address for local proxied sockets to listen on if they're not
+		 * being bound to a specific board. If empty, that type of socket will
+		 * be disabled.
+		 */
+		private String localHost;
+
 		public ProxyProperties(@DefaultValue("true") boolean enable,
-				@DefaultValue("false") boolean logWriteCounts) {
+				@DefaultValue("false") boolean logWriteCounts,
+				@DefaultValue("") String localHost) {
 			this.enable = enable;
 			this.logWriteCounts = logWriteCounts;
+			this.localHost = localHost;
 		}
 
 		/** @return Whether to enable the UDP proxy subsystem. */
@@ -1785,6 +1798,21 @@ public class SpallocProperties {
 
 		public void setLogWriteCounts(boolean logWriteCounts) {
 			this.logWriteCounts = logWriteCounts;
+		}
+
+		/**
+		 * @return The address for local proxied sockets to listen on if
+		 *         they're not being bound to a specific board. If empty, that
+		 *         type of socket will be disabled.
+		 */
+		@NotNull
+		@IPAddress(emptyOK = true)
+		public String getLocalHost() {
+			return localHost;
+		}
+
+		public void setLocalHost(String localHost) {
+			this.localHost = localHost;
 		}
 	}
 }

@@ -25,11 +25,14 @@ import static uk.ac.manchester.spinnaker.alloc.proxy.Utils.getFieldFromTemplate;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
@@ -47,6 +50,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.util.UriTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.ProxyProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
@@ -75,6 +79,8 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@Autowired
 	private SpallocProperties properties;
 
+	private InetAddress localHost;
+
 	private ExecutorService executor;
 
 	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
@@ -99,6 +105,14 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	// -----------------------------------------------------------
 	// Satisfy the APIs that we use to plug into Spring
+
+	@PostConstruct
+	private void initLocalHost() throws UnknownHostException {
+		ProxyProperties props = properties.getProxy();
+		if (!props.getLocalHost().isEmpty()) {
+			this.localHost = InetAddress.getByName(props.getLocalHost());
+		}
+	}
 
 	@PreDestroy
 	private void stopPool() {
@@ -203,7 +217,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		ProxyCore proxy = job.getMachine()
 				.map(machine -> new ProxyCore(session, machine.getConnections(),
 						executor, idIssuer::issueId,
-						properties.getProxy().isLogWriteCounts()))
+						properties.getProxy().isLogWriteCounts(), localHost))
 				.orElseThrow(
 						() -> new RequestFailedException(SERVICE_UNAVAILABLE,
 								"job not in state where proxying permitted"));
