@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BAS
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -119,11 +118,11 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	public void loadAllCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
-		DSEStorage storage = connection.getStorageInterface();
-		List<Ethernet> ethernets = storage.listEthernetsToLoad();
+		var storage = connection.getStorageInterface();
+		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
-				ExecutionContext context = new ExecutionContext(txrx)) {
+		try (var bar = new Progress(opsToRun, LOADING_MSG);
+				var context = new ExecutionContext(txrx)) {
 			executor.submitTasks(ethernets.stream().map(
 					board -> () -> loadBoard(board, storage, bar, context)))
 					.awaitAndCombineExceptions();
@@ -157,11 +156,11 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	public void loadApplicationCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
-		DSEStorage storage = connection.getStorageInterface();
-		List<Ethernet> ethernets = storage.listEthernetsToLoad();
+		var storage = connection.getStorageInterface();
+		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
-				ExecutionContext context = new ExecutionContext(txrx)) {
+		try (var bar = new Progress(opsToRun, LOADING_MSG);
+				var context = new ExecutionContext(txrx)) {
 			executor.submitTasks(
 					ethernets.stream()
 							.map(board -> () -> loadBoard(board, storage, bar,
@@ -197,11 +196,11 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	public void loadSystemCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
-		DSEStorage storage = connection.getStorageInterface();
-		List<Ethernet> ethernets = storage.listEthernetsToLoad();
+		var storage = connection.getStorageInterface();
+		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
-				ExecutionContext context = new ExecutionContext(txrx)) {
+		try (var bar = new Progress(opsToRun, LOADING_MSG);
+				var context = new ExecutionContext(txrx)) {
 			executor.submitTasks(
 					ethernets.stream()
 							.map(board -> () -> loadBoard(board, storage, bar,
@@ -218,9 +217,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
 			ExecutionContext context) throws IOException, ProcessException,
 			DataSpecificationException, StorageException {
-		try (BoardLocal c = new BoardLocal(board.location)) {
-			BoardWorker worker = new BoardWorker(board, storage, bar, context);
-			for (CoreToLoad ctl : storage.listCoresToLoad(board)) {
+		try (var c = new BoardLocal(board.location)) {
+			var worker = new BoardWorker(board, storage, bar, context);
+			for (var ctl : storage.listCoresToLoad(board)) {
 				worker.loadCore(ctl);
 			}
 		}
@@ -229,9 +228,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
 			boolean system, ExecutionContext context) throws IOException,
 			ProcessException, DataSpecificationException, StorageException {
-		try (BoardLocal c = new BoardLocal(board.location)) {
-			BoardWorker worker = new BoardWorker(board, storage, bar, context);
-			for (CoreToLoad ctl : storage.listCoresToLoad(board, system)) {
+		try (var c = new BoardLocal(board.location)) {
+			var worker = new BoardWorker(board, storage, bar, context);
+			for (var ctl : storage.listCoresToLoad(board, system)) {
 				worker.loadCore(ctl);
 			}
 		}
@@ -293,8 +292,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 						e);
 			}
 			int start = malloc(ctl, ctl.sizeToWrite);
-			try (Executor executor =
-					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
+			try (var executor = new Executor(ds,
+					machine.getChipAt(ctl.core).sdram)) {
 				context.execute(executor, ctl.core, start);
 				int size = executor.getConstructedDataSize();
 				log.info("loading data onto {} ({} bytes at 0x{})",
@@ -302,8 +301,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 						toHexString(toUnsignedLong(start)));
 				int written = ExecutionContext.TOTAL_HEADER_SIZE;
 
-				for (MemoryRegion reg : executor.regions()) {
-					MemoryRegionReal r = getRealRegionOrNull(reg);
+				for (var reg : executor.regions()) {
+					var r = getRealRegionOrNull(reg);
 					if (r != null) {
 						written += writeRegion(ctl.core, r, r.getRegionBase());
 					}
@@ -347,7 +346,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		 */
 		private int writeRegion(HasCoreLocation core, MemoryRegionReal region,
 				int baseAddress) throws IOException, ProcessException {
-			ByteBuffer data = region.getRegionData().duplicate();
+			var data = region.getRegionData().duplicate();
 
 			data.flip();
 			int written = data.remaining();
@@ -360,7 +359,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		if (!(reg instanceof MemoryRegionReal)) {
 			return null;
 		}
-		MemoryRegionReal r = (MemoryRegionReal) reg;
+		var r = (MemoryRegionReal) reg;
 		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
 			return null;
 		}

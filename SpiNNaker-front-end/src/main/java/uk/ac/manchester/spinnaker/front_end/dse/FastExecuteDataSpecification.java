@@ -51,7 +51,6 @@ import org.slf4j.Logger;
 import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
-import difflib.Delta;
 import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
@@ -179,14 +178,14 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 	private void buildMaps(List<Gather> gatherers)
 			throws IOException, ProcessException {
-		for (Gather g : gatherers) {
+		for (var g : gatherers) {
 			g.updateTransactionIdFromMachine(txrx);
-			ChipLocation gathererChip = g.asChipLocation();
+			var gathererChip = g.asChipLocation();
 			gathererForChip.put(gathererChip, g);
-			CoreSubsets boardMonitorCores = monitorsForBoard
+			var boardMonitorCores = monitorsForBoard
 					.computeIfAbsent(gathererChip, x -> new CoreSubsets());
-			for (Monitor m : g.getMonitors()) {
-				ChipLocation monitorChip = m.asChipLocation();
+			for (var m : g.getMonitors()) {
+				var monitorChip = m.asChipLocation();
 				gathererForChip.put(monitorChip, g);
 				monitorForChip.put(monitorChip, m);
 				boardMonitorCores.addCore(m.asCoreLocation());
@@ -216,11 +215,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	public void loadCores(ConnectionProvider<DSEStorage> connection)
 			throws StorageException, IOException, ProcessException,
 			DataSpecificationException {
-		DSEStorage storage = connection.getStorageInterface();
-		List<Ethernet> ethernets = storage.listEthernetsToLoad();
+		var storage = connection.getStorageInterface();
+		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
-				ExecutionContext context = new ExecutionContext(txrx)) {
+		try (var bar = new Progress(opsToRun, LOADING_MSG);
+				var context = new ExecutionContext(txrx)) {
 			executor.submitTasks(ethernets.stream().map(
 					board -> () -> loadBoard(board, storage, bar, context)))
 					.awaitAndCombineExceptions();
@@ -235,27 +234,25 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
 			ExecutionContext execContext) throws IOException, ProcessException,
 			DataSpecificationException, StorageException {
-		List<CoreToLoad> cores = storage.listCoresToLoad(board, false);
+		var cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
 			log.info("no cores need loading on board; skipping");
 			return;
 		}
 		log.info("loading data onto {} cores on board", cores.size());
-		try (BoardWorker worker =
-				new BoardWorker(board, storage, bar, execContext)) {
-			HashMap<CoreToLoad, Integer> addresses =
-					new HashMap<CoreToLoad, Integer>();
-			for (CoreToLoad ctl : cores) {
+		try (var worker = new BoardWorker(board, storage, bar, execContext)) {
+			var addresses = new HashMap<CoreToLoad, Integer>();
+			for (var ctl : cores) {
 				int start = malloc(ctl, ctl.sizeToWrite);
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
 				txrx.writeMemory(ctl.core.getScampCore(), user0, start);
 				addresses.put(ctl, start);
 			}
 
-			try (SystemRouterTableContext routers = worker.systemRouterTables();
-					NoDropPacketContext context = worker.dontDropPackets(
+			try (var routers = worker.systemRouterTables();
+					var context = worker.dontDropPackets(
 							gathererForChip.get(board.location))) {
-				for (CoreToLoad ctl : cores) {
+				for (var ctl : cores) {
 					worker.loadCore(ctl, gathererForChip.get(board.location),
 							addresses.get(ctl));
 				}
@@ -289,7 +286,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		if (!(reg instanceof MemoryRegionReal)) {
 			return null;
 		}
-		MemoryRegionReal r = (MemoryRegionReal) reg;
+		var r = (MemoryRegionReal) reg;
 		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
 			return null;
 		}
@@ -335,7 +332,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			int size, int baseAddress, Object missingNumbers)
 			throws IOException {
 		if (!reportPath.exists()) {
-			try (PrintWriter w = open(reportPath, false)) {
+			try (var w = open(reportPath, false)) {
 				w.println("x" + "\ty" + "\tSDRAM address" + "\tsize/bytes"
 						+ "\ttime taken/s" + "\ttransfer rate/(Mb/s)"
 						+ "\tmissing sequence numbers");
@@ -350,7 +347,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		} else {
 			mbs = String.format("%f", megabits / timeTaken);
 		}
-		try (PrintWriter w = open(reportPath, true)) {
+		try (var w = open(reportPath, true)) {
 			w.printf("%d\t%d\t%#08x\t%d\t%f\t%s\t%s\n", chip.getX(),
 					chip.getY(), toUnsignedLong(baseAddress),
 					toUnsignedLong(size), timeTaken, mbs, missingNumbers);
@@ -362,11 +359,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		for (int i = 0; i < original.remaining(); i++) {
 			if (original.get(i) != downloaded.get(i)) {
 				log.error("downloaded buffer contents different");
-				for (Delta<Byte> delta : diff(list(original), list(downloaded))
+				for (var delta : diff(list(original), list(downloaded))
 						.getDeltas()) {
 					if (delta instanceof ChangeDelta) {
-						Chunk<Byte> delete = delta.getOriginal();
-						Chunk<Byte> insert = delta.getRevised();
+						var delete = delta.getOriginal();
+						var insert = delta.getRevised();
 						log.warn(
 								"swapped {} bytes (SCP) for {} (gather) "
 										+ "at {}->{}",
@@ -376,12 +373,12 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						log.info("change {} -> {}", describeChunk(delete),
 								describeChunk(insert));
 					} else if (delta instanceof DeleteDelta) {
-						Chunk<Byte> delete = delta.getOriginal();
+						var delete = delta.getOriginal();
 						log.warn("gather deleted {} bytes at {}",
 								delete.getLines().size(), delete.getPosition());
 						log.info("delete {}", describeChunk(delete));
 					} else if (delta instanceof InsertDelta) {
-						Chunk<Byte> insert = delta.getRevised();
+						var insert = delta.getRevised();
 						log.warn("gather inserted {} bytes at {}",
 								insert.getLines().size(), insert.getPosition());
 						log.info("insert {}", describeChunk(insert));
@@ -393,8 +390,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	}
 
 	private static List<Byte> list(ByteBuffer buffer) {
-		List<Byte> l = new ArrayList<>();
-		ByteBuffer b = buffer.asReadOnlyBuffer();
+		var l = new ArrayList<Byte>();
+		var b = buffer.asReadOnlyBuffer();
 		while (b.hasRemaining()) {
 			l.add(b.get());
 		}
@@ -475,8 +472,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
 			}
-			try (Executor executor =
-					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
+			try (var executor = new Executor(ds,
+					machine.getChipAt(ctl.core).sdram)) {
 				int writes = loadCoreFromExecutor(ctl, gather, start, executor,
 						execContext);
 				log.info("loaded {} memory regions (including metadata "
@@ -514,8 +511,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			int written = ExecutionContext.TOTAL_HEADER_SIZE;
 			int writeCount = 1;
 
-			for (MemoryRegion reg : executor.regions()) {
-				MemoryRegionReal r = getRealRegionOrNull(reg);
+			for (var reg : executor.regions()) {
+				var r = getRealRegionOrNull(reg);
 				if (r == null) {
 					continue;
 				}
@@ -523,7 +520,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
 				writeCount++;
 				if (SPINNAKER_COMPARE_UPLOAD != null) {
-					ByteBuffer readBack = txrx.readMemory(ctl.core,
+					var readBack = txrx.readMemory(ctl.core,
 							r.getRegionBase(), r.getRegionData().remaining());
 					compareBuffers(r.getRegionData(), readBack);
 				}
@@ -609,11 +606,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int writeRegion(CoreLocation core, MemoryRegionReal region,
 				int baseAddress, Gather gather)
 				throws IOException, ProcessException {
-			ByteBuffer data = region.getRegionData().duplicate();
+			var data = region.getRegionData().duplicate();
 
 			data.flip();
 			int written = data.remaining();
-			try (MissingRecorder recorder = new MissingRecorder()) {
+			try (var recorder = new MissingRecorder()) {
 				long start = nanoTime();
 				fastWrite(core, baseAddress, data, gather);
 				long end = nanoTime();
@@ -676,7 +673,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				ByteBuffer data, Gather gather) throws IOException {
 			int timeoutCount = 0;
 			int numPackets = computeNumPackets(data);
-			GathererProtocol protocol = new GathererProtocol(core);
+			var protocol = new GathererProtocol(core);
 			int transactionId = gather.getNextTransactionId();
 
 			outerLoop: while (true) {
@@ -692,11 +689,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Wait for confirmation and do required retransmits
 				innerLoop: while (true) {
 					try {
-						IntBuffer received = connection.receive();
+						var received = connection.receive();
 						timeoutCount = 0; // Reset the timeout counter
 
 						// read transaction id
-						FastDataInCommandID commandCode =
+						var commandCode =
 								FastDataInCommandID.forValue(received.get());
 						int thisTransactionId = received.get();
 
@@ -735,7 +732,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 							missing =
 									missingSequenceNumbers.issueNew(numPackets);
 						}
-						SeenFlags flags =
+						var flags =
 								addMissedSeqNums(received, missing, numPackets);
 
 						/*
@@ -780,9 +777,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private SeenFlags addMissedSeqNums(IntBuffer received, BitSet seqNums,
 				int expectedMax) {
-			SeenFlags flags = new SeenFlags();
-			String addedEnd = "";
-			String addedAll = "";
+			var flags = new SeenFlags();
+			var addedEnd = "";
+			var addedAll = "";
 			int actuallyAdded = 0;
 			while (received.hasRemaining()) {
 				int num = received.get();

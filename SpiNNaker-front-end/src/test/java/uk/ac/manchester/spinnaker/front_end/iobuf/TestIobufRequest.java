@@ -20,38 +20,34 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreSubsets;
-import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 
 public class TestIobufRequest {
 
 	@Test
 	public void testCorrect() throws IOException {
-		String input = "{\n"
+		var input = "{\n"
 				+ "  \"/some/path/abc.aplx\": [ [0,0,1], [0,0,2], [0,0,3] ],\n"
 				+ "  \"/some/path/def.aplx\": [ [0,1,1], [0,1,2], [0,1,3] ],\n"
 				+ "  \"/some/path/ghi.aplx\": [ [1,0,1], [1,0,2], [0,0,4] ]\n"
 				+ "}";
 
-		ObjectMapper mapper = MapperFactory.createMapper();
-		IobufRequest req = mapper.readValue(input, IobufRequest.class);
-		Map<File, CoreSubsets> details = req.getRequestDetails();
+		var req = createMapper().readValue(input, IobufRequest.class);
+		var details = req.getRequestDetails();
 
-		File f1 = (new File("/some/path/abc.aplx")).getAbsoluteFile();
-		File f2 = (new File("/some/path/def.aplx")).getAbsoluteFile();
-		File f3 = (new File("/some/path/ghi.aplx")).getAbsoluteFile();
+		var f1 = (new File("/some/path/abc.aplx")).getAbsoluteFile();
+		var f2 = (new File("/some/path/def.aplx")).getAbsoluteFile();
+		var f3 = (new File("/some/path/ghi.aplx")).getAbsoluteFile();
 		assertEquals(new HashSet<>(asList(f1, f2, f3)), details.keySet());
 		assertEquals(new HashSet<>(asList(new ChipLocation(0, 0))),
 				details.get(f1).getChips());
@@ -68,15 +64,14 @@ public class TestIobufRequest {
 	@Test
 	public void testIncorrect() throws IOException {
 		// Overlap between the core subsets; THIS IS BAD and shouldn't happen
-		String input = "{\n"
+		var input = "{\n"
 				+ "  \"/some/path/abc.aplx\": [ [0,0,1], [0,0,2], [0,0,3] ],\n"
 				+ "  \"/some/path/def.aplx\": [ [0,1,1], [0,1,2], [0,0,3] ],\n"
 				+ "  \"/some/path/ghi.aplx\": [ [0,0,1], [1,0,2], [0,0,4] ]\n"
 				+ "}";
 
-		ObjectMapper mapper = MapperFactory.createMapper();
-		Exception e = assertThrows(ValueInstantiationException.class,
-				() -> mapper.readValue(input, IobufRequest.class));
+		var e = assertThrows(ValueInstantiationException.class,
+				() -> createMapper().readValue(input, IobufRequest.class));
 		assertNotNull(e.getCause());
 		assertEquals(IllegalArgumentException.class, e.getCause().getClass());
 		assertEquals("overlapping uses of core", e.getCause().getMessage());

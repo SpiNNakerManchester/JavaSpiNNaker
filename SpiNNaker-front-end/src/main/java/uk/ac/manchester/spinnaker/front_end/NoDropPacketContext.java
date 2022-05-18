@@ -21,17 +21,14 @@ import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUNNING;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -96,7 +93,7 @@ public class NoDropPacketContext implements AutoCloseable {
 		this.monitorCores = monitorCores;
 		// Store the last reinjection status for resetting
 		// NOTE: This assumes the status is the same on all cores
-		CoreLocation firstCore = monitorCores.iterator().next();
+		var firstCore = monitorCores.iterator().next();
 		firstChip = firstCore.asChipLocation();
 		lastStatus = txrx.getReinjectionStatus(firstCore);
 		this.gatherers = gatherers;
@@ -192,22 +189,22 @@ public class NoDropPacketContext implements AutoCloseable {
 
 	private static CoreSubsets convertToCoreSubset(
 			List<? extends HasCoreLocation> coreLocationList) {
-		CoreSubsets cores = new CoreSubsets();
-		for (HasCoreLocation coreLocation : coreLocationList) {
+		var cores = new CoreSubsets();
+		for (var coreLocation : coreLocationList) {
 			cores.addCore(coreLocation.asCoreLocation());
 		}
 		return cores;
 	}
 
 	private static CoreSubsets convertToCoreSubset(Gather gather) {
-		CoreSubsets cores = new CoreSubsets();
+		var cores = new CoreSubsets();
 		cores.addCore(gather.asCoreLocation());
 		return cores;
 	}
 
 	private static CoreSubsets convertToCoreSubset(
 			Stream<? extends HasCoreLocation> coreLocations) {
-		CoreSubsets cores = new CoreSubsets();
+		var cores = new CoreSubsets();
 		coreLocations.forEach(loc -> cores.addCore(loc.asCoreLocation()));
 		return cores;
 	}
@@ -238,8 +235,7 @@ public class NoDropPacketContext implements AutoCloseable {
 		}
 		try {
 			log.error("checking to see of the cores are OK...");
-			Map<CoreLocation, CPUInfo> errorCores =
-					txrx.getCoresNotInState(monitorCores, RUNNING);
+			var errorCores = txrx.getCoresNotInState(monitorCores, RUNNING);
 			if (!errorCores.isEmpty()) {
 				log.error("cores in an unexpected state: {}", errorCores);
 			}

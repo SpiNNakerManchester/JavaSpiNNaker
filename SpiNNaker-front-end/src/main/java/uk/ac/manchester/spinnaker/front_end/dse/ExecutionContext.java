@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +83,7 @@ class ExecutionContext implements AutoCloseable {
 		executor.execute();
 		executor.setBaseAddress(start);
 
-		CoreToFill coreToFill = linkRegionReferences(executor, core, start);
+		var coreToFill = linkRegionReferences(executor, core, start);
 		if (coreToFill.refs.isEmpty()) {
 			writeHeader(core, executor, start);
 		} else {
@@ -95,10 +94,10 @@ class ExecutionContext implements AutoCloseable {
 	private CoreToFill linkRegionReferences(Executor executor,
 			CoreLocation core, int start) throws DataSpecificationException {
 		for (int region : executor.getReferenceableRegions()) {
-			MemoryRegionReal r = (MemoryRegionReal) executor.getRegion(region);
+			var r = (MemoryRegionReal) executor.getRegion(region);
 			int ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
-				RegionToRef reg = regionsToRef.get(ref);
+				var reg = regionsToRef.get(ref);
 				throw new DataSpecificationException(
 						"Reference " + ref + " from " + core + ", " + region
 								+ " already exists from " + reg);
@@ -106,13 +105,12 @@ class ExecutionContext implements AutoCloseable {
 			regionsToRef.put(ref, new RegionToRef(core, r.getRegionBase()));
 		}
 
-		CoreToFill coreToFill = new CoreToFill(executor, start, core);
+		var coreToFill = new CoreToFill(executor, start, core);
 		for (int region : executor.getRegionsToFill()) {
-			MemoryRegionReference r =
-					(MemoryRegionReference) executor.getRegion(region);
+			var r = (MemoryRegionReference) executor.getRegion(region);
 			int ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
-				RegionToRef reg = regionsToRef.get(ref);
+				var reg = regionsToRef.get(ref);
 				if (!reg.core.onSameChipAs(core)) {
 					throw new DanglingReferenceException(ref, reg, core,
 							region);
@@ -127,7 +125,7 @@ class ExecutionContext implements AutoCloseable {
 
 	private void writeHeader(HasCoreLocation core, Executor executor,
 			int startAddress) throws IOException, ProcessException {
-		ByteBuffer b = allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
+		var b = allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
 				.order(LITTLE_ENDIAN);
 
 		executor.addHeader(b);
@@ -139,14 +137,14 @@ class ExecutionContext implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-		for (CoreToFill toFill : regionsToFill) {
-			for (MemoryRegionReference ref : toFill.refs) {
+		for (var toFill : regionsToFill) {
+			for (var ref : toFill.refs) {
 				int reference = ref.getReference();
 				if (!regionsToRef.containsKey(reference)) {
 					throw new DataSpecificationException("Reference "
 							+ reference + " from " + toFill + " not found");
 				}
-				RegionToRef reg = regionsToRef.get(reference);
+				var reg = regionsToRef.get(reference);
 				if (!reg.core.onSameChipAs(toFill.core)) {
 					throw new DanglingReferenceException(ref, reg, toFill);
 				}

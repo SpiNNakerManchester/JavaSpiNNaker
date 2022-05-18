@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -100,15 +101,14 @@ public class RecordingRegionDataGatherer extends DataGatherer
 			throws IOException, ProcessException {
 		// Cheap check first
 		synchronized (recordingRegions) {
-			List<RecordingRegion> regions = recordingRegions.get(placement);
+			var regions = recordingRegions.get(placement);
 			if (regions != null) {
 				return regions;
 			}
 		}
 
 		// Need to go to the machine; don't hold the lock while doing so
-		List<RecordingRegion> regions =
-				getRecordingRegionDescriptors(txrx, placement);
+		var regions = getRecordingRegionDescriptors(txrx, placement);
 		synchronized (recordingRegions) {
 			// Put the value in the map if it wasn't already there
 			return recordingRegions.computeIfAbsent(placement, key -> regions);
@@ -118,10 +118,10 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	@Override
 	protected List<Region> getRegion(Placement placement, int index)
 			throws IOException, ProcessException {
-		RecordingRegion region = getRegions(placement).get(index);
+		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);
-		List<Region> regionPieces = new ArrayList<>(1);
+		var regionPieces = new ArrayList<Region>(1);
 		if (region.size > 0) {
 			regionPieces.add(new Region(placement, index, (int) region.data,
 					(int) region.size));
@@ -131,7 +131,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data) {
-		String addr = toHexString(toUnsignedLong(r.startAddress));
+		var addr = toHexString(toUnsignedLong(r.startAddress));
 		if (data == null) {
 			log.warn("failed to download data for {} R:{} from 0x{}:{}", r.core,
 					r.regionIndex, addr, r.size);
@@ -152,11 +152,11 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	@Override
 	public void close() throws InterruptedException {
 		log.info("waiting for database usage to complete");
-		long start = System.currentTimeMillis();
+		long start = currentTimeMillis();
 		dbWorker.shutdown();
 		// It really shouldn't take a minute to finish
 		dbWorker.awaitTermination(1, MINUTES);
-		long end = System.currentTimeMillis();
+		long end = currentTimeMillis();
 		log.info("total of {} database writes done", numWrites);
 		if (end - start > TERMINATION_REPORT_THRESHOLD) {
 			double diff = (end - start) / (double) MSEC_PER_SEC;

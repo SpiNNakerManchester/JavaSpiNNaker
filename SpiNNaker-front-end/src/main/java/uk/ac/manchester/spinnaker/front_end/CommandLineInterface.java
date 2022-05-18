@@ -29,7 +29,6 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,7 +42,6 @@ import uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.dse.HostExecuteDataSpecification;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest;
 import uk.ac.manchester.spinnaker.front_end.iobuf.IobufRetriever;
-import uk.ac.manchester.spinnaker.front_end.iobuf.NotableMessages;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.storage.BufferManagerDatabaseEngine;
@@ -74,8 +72,8 @@ public final class CommandLineInterface {
 	private static final String BUFFER_DB_FILE = "buffer.sqlite3";
 
 	static {
-		Class<?> cls = CommandLineInterface.class;
-		Properties prop = new Properties();
+		var cls = CommandLineInterface.class;
+		var prop = new Properties();
 		try {
 			prop.load(cls.getClassLoader()
 					.getResourceAsStream("command-line.properties"));
@@ -255,12 +253,10 @@ public final class CommandLineInterface {
 			Boolean filterSystemCores) throws IOException, SpinnmanException,
 			StorageException, ExecutionException, InterruptedException,
 			DataSpecificationException {
-		Machine machine = getMachine(machineJsonFile);
-		DSEDatabaseEngine database =
-				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		var machine = getMachine(machineJsonFile);
+		var database = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
-		try (HostExecuteDataSpecification dseExec =
-				new HostExecuteDataSpecification(machine)) {
+		try (var dseExec = new HostExecuteDataSpecification(machine)) {
 			if (filterSystemCores == null) {
 				dseExec.loadAllCores(database);
 			} else if (filterSystemCores) {
@@ -302,14 +298,13 @@ public final class CommandLineInterface {
 			throws IOException, SpinnmanException, StorageException,
 			ExecutionException, InterruptedException,
 			DataSpecificationException {
-		List<Gather> gathers = getGatherers(gatherersJsonFile);
-		Machine machine = getMachine(machineJsonFile);
-		DSEDatabaseEngine database =
-				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
-		File reportDir = reportFolder == null ? null : new File(reportFolder);
+		var gathers = getGatherers(gatherersJsonFile);
+		var machine = getMachine(machineJsonFile);
+		var database = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		var reportDir = reportFolder == null ? null : new File(reportFolder);
 
-		try (FastExecuteDataSpecification dseExec =
-				new FastExecuteDataSpecification(machine, gathers, reportDir)) {
+		try (var dseExec = new FastExecuteDataSpecification(
+				machine, gathers, reportDir)) {
 			dseExec.loadCores(database);
 		}
 	}
@@ -332,13 +327,12 @@ public final class CommandLineInterface {
 	 */
 	public static void iobufRun(String machineJsonFile, String iobufMapFile,
 			String runFolder) throws IOException, SpinnmanException {
-		Machine machine = getMachine(machineJsonFile);
-		IobufRequest request = getIobufRequest(iobufMapFile);
+		var machine = getMachine(machineJsonFile);
+		var request = getIobufRequest(iobufMapFile);
 
-		IobufRetriever retriever = new IobufRetriever(new Transceiver(machine),
+		var retriever = new IobufRetriever(new Transceiver(machine),
 				machine, PARALLEL_SIZE);
-		NotableMessages result =
-				retriever.retrieveIobufContents(request, runFolder);
+		var result = retriever.retrieveIobufContents(request, runFolder);
 		MAPPER.writeValue(System.out, result);
 	}
 
@@ -362,12 +356,12 @@ public final class CommandLineInterface {
 	public static void downloadRun(String placementsJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
 			SpinnmanException, StorageException {
-		List<Placement> placements = getPlacements(placementsJsonFile);
-		Machine machine = getMachine(machineJsonFile);
-		Transceiver trans = new Transceiver(machine);
-		BufferManagerStorage database = getDatabase(runFolder);
+		var placements = getPlacements(placementsJsonFile);
+		var machine = getMachine(machineJsonFile);
+		var trans = new Transceiver(machine);
+		var database = getDatabase(runFolder);
 
-		DataReceiver receiver = new DataReceiver(trans, machine, database);
+		var receiver = new DataReceiver(trans, machine, database);
 		receiver.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
 	}
 
@@ -394,13 +388,13 @@ public final class CommandLineInterface {
 	public static void gatherRun(String gatherersJsonFile,
 			String machineJsonFile, String runFolder) throws IOException,
 			SpinnmanException, StorageException, InterruptedException {
-		List<Gather> gathers = getGatherers(gatherersJsonFile);
-		Machine machine = getMachine(machineJsonFile);
-		Transceiver trans = new Transceiver(machine);
-		BufferManagerStorage database = getDatabase(runFolder);
+		var gathers = getGatherers(gatherersJsonFile);
+		var machine = getMachine(machineJsonFile);
+		var trans = new Transceiver(machine);
+		var database = getDatabase(runFolder);
 
-		try (RecordingRegionDataGatherer runner =
-				new RecordingRegionDataGatherer(trans, machine, database)) {
+		try (var runner = new RecordingRegionDataGatherer(
+				trans, machine, database)) {
 			int misses = runner.gather(gathers);
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
@@ -409,7 +403,7 @@ public final class CommandLineInterface {
 
 	private static Machine getMachine(String filename)
 			throws JsonParseException, JsonMappingException, IOException {
-		try (FileReader machineReader = new FileReader(filename)) {
+		try (var machineReader = new FileReader(filename)) {
 			return new Machine(
 					MAPPER.readValue(machineReader, MachineBean.class));
 		}
@@ -417,26 +411,22 @@ public final class CommandLineInterface {
 
 	private static IobufRequest getIobufRequest(String filename)
 			throws IOException {
-		try (FileReader gatherReader = new FileReader(filename)) {
+		try (var gatherReader = new FileReader(filename)) {
 			return MAPPER.readValue(gatherReader, IobufRequest.class);
 		}
 	}
 
 	private static List<Gather> getGatherers(String filename)
 			throws IOException {
-		try (FileReader gatherReader = new FileReader(filename)) {
-			return MAPPER.readValue(gatherReader,
-					new TypeReference<List<Gather>>() {
-					});
+		try (var gatherReader = new FileReader(filename)) {
+			return MAPPER.readValue(gatherReader, Gather.LIST);
 		}
 	}
 
 	private static List<Placement> getPlacements(String placementsFile)
 			throws IOException {
-		try (FileReader placementReader = new FileReader(placementsFile)) {
-			return MAPPER.readValue(placementReader,
-					new TypeReference<List<Placement>>() {
-					});
+		try (var placementReader = new FileReader(placementsFile)) {
+			return MAPPER.readValue(placementReader, Placement.LIST);
 		}
 	}
 
@@ -489,9 +479,9 @@ interface CLICommands {
 	 * @return A human-readable list of all command names.
 	 */
 	static String list() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		String sep = "";
-		for (String item : ALL) {
+		for (var item : ALL) {
 			sb.append(sep);
 			sep = ", ";
 			if (item == VERSION) {

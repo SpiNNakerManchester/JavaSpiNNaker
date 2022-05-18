@@ -23,17 +23,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
-import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
@@ -82,9 +79,8 @@ public class DataReceiver extends BoardLocalSupport {
 
 	private Stream<List<Placement>> partitionByBoard(
 			List<Placement> placements) {
-		Map<ChipLocation, List<Placement>> map =
-				new DefaultMap<>(ArrayList::new);
-		for (Placement p : placements) {
+		var map = new DefaultMap<ChipLocation, List<Placement>>(ArrayList::new);
+		for (var p : placements) {
 			map.get(machine.getChipAt(p).nearestEthernet).add(p);
 		}
 		return map.values().stream();
@@ -107,14 +103,14 @@ public class DataReceiver extends BoardLocalSupport {
 	public void getDataForPlacementsParallel(List<Placement> placements,
 			int parallelFactor)
 			throws IOException, StorageException, ProcessException {
-		try (BasicExecutor exec = new BasicExecutor(parallelFactor)) {
+		try (var exec = new BasicExecutor(parallelFactor)) {
 			/*
 			 * Checkstyle gets the indentation rules wrong for the next
 			 * statement.
 			 */
 			// CHECKSTYLE:OFF
 			// get data on a by-the-board basis
-			Tasks tasks = exec.submitTasks(partitionByBoard(placements)
+			var tasks = exec.submitTasks(partitionByBoard(placements)
 					.map(places -> () -> getDataForPlacements(places)));
 			// CHECKSTYLE:ON
 			tasks.awaitAndCombineExceptions();
@@ -147,8 +143,8 @@ public class DataReceiver extends BoardLocalSupport {
 	public void getDataForPlacements(List<Placement> placements)
 			throws IOException, StorageException, ProcessException {
 		// get data
-		try (BoardLocal c = new BoardLocal(placements.get(0))) {
-			for (Placement placement : placements) {
+		try (var c = new BoardLocal(placements.get(0))) {
+			for (var placement : placements) {
 				for (int recordingRegionId : placement.getVertex()
 						.getRecordedRegionIds()) {
 					getDataForPlacement(placement, recordingRegionId);
@@ -160,8 +156,7 @@ public class DataReceiver extends BoardLocalSupport {
 	private void getDataForPlacement(Placement placement, int recordingRegionId)
 			throws IOException, StorageException, ProcessException {
 		// Combine placement.x, placement.y, placement.p, recording_region_id
-		RegionLocation location =
-				new RegionLocation(placement, recordingRegionId);
+		var location = new RegionLocation(placement, recordingRegionId);
 
 		// Read the data if not already received
 		if (receivedData.isDataFromRegionFlushed(location)) {
@@ -169,15 +164,14 @@ public class DataReceiver extends BoardLocalSupport {
 		}
 
 		// Ensure the recording regions are stored
-		CoreLocation coreLocation = location.asCoreLocation();
+		var coreLocation = location.asCoreLocation();
 		if (!receivedData.isRecordingRegionsStored(coreLocation)) {
-			List<RecordingRegion> regions =
-					getRecordingRegionDescriptors(txrx, placement);
+			var regions = getRecordingRegionDescriptors(txrx, placement);
 			receivedData.storeRecordingRegions(coreLocation, regions);
 		}
 
 		// Read the data
-		RecordingRegion region = receivedData.getRecordingRegion(location);
+		var region = receivedData.getRecordingRegion(location);
 		readSomeData(location, region.data, region.size);
 	}
 
@@ -197,7 +191,7 @@ public class DataReceiver extends BoardLocalSupport {
 			log.debug("< Reading {} bytes from {} at {}", length, location,
 					address);
 		}
-		ByteBuffer data = requestData(location, (int) address, (int) length);
+		var data = requestData(location, (int) address, (int) length);
 		receivedData.flushingDataFromRegion(location, data);
 	}
 

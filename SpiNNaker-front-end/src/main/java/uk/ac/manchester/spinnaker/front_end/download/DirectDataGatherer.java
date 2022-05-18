@@ -16,12 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static java.util.Collections.singletonList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +109,7 @@ public class DirectDataGatherer extends DataGatherer {
 			}
 		}
 		// Individual cores are only ever handled from one thread
-		ByteBuffer buffer = map.get(vertex.getBaseAddress());
+		var buffer = map.get(vertex.getBaseAddress());
 		if (buffer == null) {
 			buffer = txrx.readMemory(core, vertex.getBaseAddress(),
 					WORD_SIZE * (MAX_MEM_REGIONS + 2));
@@ -131,11 +131,11 @@ public class DirectDataGatherer extends DataGatherer {
 	@Override
 	protected List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
-		IntBuffer b = getCoreRegionTable(placement.asCoreLocation(),
+		var b = getCoreRegionTable(placement.asCoreLocation(),
 				placement.getVertex());
 		// TODO This is probably wrong!
 		int size = b.get(regionID + 1) - b.get(regionID);
-		return Collections.singletonList(
+		return singletonList(
 				new Region(placement, regionID, b.get(regionID), size));
 	}
 

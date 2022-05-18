@@ -18,7 +18,12 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
+
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 /**
@@ -28,6 +33,13 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
  */
 @JsonFormat(shape = OBJECT)
 public class Placement implements HasCoreLocation {
+	/**
+	 * Type reference for deserializing a list of placements.
+	 */
+	public static final TypeReference<List<Placement>> LIST =
+			new TypeReference<List<Placement>>() {
+	};
+
 	/** The X coordinate of the core this vertex is placed on. */
 	private final int x;
 

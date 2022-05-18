@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -62,7 +61,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 			throws IOException, ProcessException {
 		this.txrx = txrx;
 		this.monitorCores = monitorCores;
-		CoreLocation firstCore = monitorCores.iterator().next();
+		var firstCore = monitorCores.iterator().next();
 		firstChip = firstCore.asChipLocation();
 
 		log.info("switching multicast routing on board at {} to system mode",
@@ -118,8 +117,8 @@ public class SystemRouterTableContext implements AutoCloseable {
 
 	private static CoreSubsets convertToCoreSubset(
 			List<? extends HasCoreLocation> coreLocationList) {
-		CoreSubsets cores = new CoreSubsets();
-		for (HasCoreLocation coreLocation : coreLocationList) {
+		var cores = new CoreSubsets();
+		for (var coreLocation : coreLocationList) {
 			cores.addCore(coreLocation.asCoreLocation());
 		}
 		return cores;
@@ -127,7 +126,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 
 	private static CoreSubsets convertToCoreSubset(
 			Stream<? extends HasCoreLocation> coreLocations) {
-		CoreSubsets cores = new CoreSubsets();
+		var cores = new CoreSubsets();
 		coreLocations.forEach(loc -> cores.addCore(loc.asCoreLocation()));
 		return cores;
 	}

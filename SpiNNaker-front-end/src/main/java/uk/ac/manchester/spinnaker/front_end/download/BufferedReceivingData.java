@@ -115,8 +115,8 @@ class BufferedReceivingData {
 	 *             If the location doesn't have recording regions.
 	 */
 	public RecordingRegion getRecordingRegion(RegionLocation location) {
-		CoreLocation coreLocation = location.asCoreLocation();
-		List<RecordingRegion> value = recordingRegions.get(coreLocation);
+		var coreLocation = location.asCoreLocation();
+		var value = recordingRegions.get(coreLocation);
 		if (value == null) {
 			throw new IllegalArgumentException(
 					"no regions known for " + coreLocation);

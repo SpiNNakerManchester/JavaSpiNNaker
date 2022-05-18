@@ -17,14 +17,15 @@
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
+import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -39,6 +40,13 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 @JsonFormat(shape = OBJECT)
 public class Gather implements HasCoreLocation {
+	/**
+	 * Type reference for deserializing a list of gatherer descriptions.
+	 */
+	public static final TypeReference<List<Gather>> LIST =
+			new TypeReference<List<Gather>>() {
+	};
+
 	/** The x value of the core this placement is on. */
 	private final int x;
 
@@ -141,6 +149,6 @@ public class Gather implements HasCoreLocation {
 	 * @return the monitors
 	 */
 	public List<Monitor> getMonitors() {
-		return Collections.unmodifiableList(monitors);
+		return unmodifiableList(monitors);
 	}
 }

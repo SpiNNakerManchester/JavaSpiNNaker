@@ -42,9 +42,7 @@ import org.slf4j.Logger;
 import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
-import difflib.Delta;
 import difflib.InsertDelta;
-import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.MostDirectConnectionSelector;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
@@ -174,21 +172,19 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	public int gather(List<Gather> gatherers)
 			throws IOException, ProcessException, StorageException {
 		sanityCheck(gatherers);
-		ValueHolder<Integer> workSize = new ValueHolder<>(0);
+		var workSize = new ValueHolder<>(0);
 		Map<ChipLocation, List<WorkItems>> work;
-		try (Progress bar =
-				new Progress(countPlacements(gatherers), META_LABEL)) {
+		try (var bar = new Progress(countPlacements(gatherers), META_LABEL)) {
 			work = discoverActualWork(gatherers, workSize, bar);
 		}
-		Map<ChipLocation, GatherDownloadConnection> conns =
-				createConnections(gatherers, work);
-		try (SystemRouterTableContext s = new SystemRouterTableContext(txrx,
+		var conns = createConnections(gatherers, work);
+		try (var s = new SystemRouterTableContext(txrx,
 				gatherers.stream().flatMap(g -> g.getMonitors().stream()));
-				NoDropPacketContext p = new NoDropPacketContext(txrx,
+				var p = new NoDropPacketContext(txrx,
 						gatherers.stream()
 								.flatMap(g -> g.getMonitors().stream()),
 						gatherers.stream());
-				Progress bar = new Progress(workSize.getValue(), FAST_LABEL)) {
+				var bar = new Progress(workSize.getValue(), FAST_LABEL)) {
 			log.info("launching {} parallel high-speed download tasks",
 					work.size());
 			/*
@@ -202,7 +198,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			// CHECKSTYLE:ON
 		} finally {
 			log.info("shutting down high-speed download connections");
-			for (GatherDownloadConnection c : conns.values()) {
+			for (var c : conns.values()) {
 				c.close();
 			}
 		}
@@ -210,8 +206,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	}
 
 	private int countPlacements(List<Gather> gatherers) {
-		Stream<Gather> gaths = gatherers.parallelStream();
-		Stream<Monitor> mons = gaths.flatMap(g -> g.getMonitors().stream());
+		var gaths = gatherers.parallelStream();
+		var mons = gaths.flatMap(g -> g.getMonitors().stream());
 		return mons.mapToInt(m -> m.getPlacements().size()).sum();
 	}
 
@@ -266,17 +262,17 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			List<Gather> gatherers, ValueHolder<Integer> workSize, Progress bar)
 			throws IOException, ProcessException, StorageException {
 		log.info("discovering regions to download");
-		Map<ChipLocation, List<WorkItems>> work = new HashMap<>();
+		var work = new HashMap<ChipLocation, List<WorkItems>>();
 		int count = 0;
-		for (Gather g : gatherers) {
-			List<WorkItems> workitems = new ArrayList<>();
-			for (Monitor m : g.getMonitors()) {
+		for (var g : gatherers) {
+			var workitems = new ArrayList<WorkItems>();
+			for (var m : g.getMonitors()) {
 				m.updateTransactionIdFromMachine(txrx);
 
-				for (Placement p : m.getPlacements()) {
-					List<List<Region>> regions = new ArrayList<>();
+				for (var p : m.getPlacements()) {
+					var regions = new ArrayList<List<Region>>();
 					for (int id : p.getVertex().getRecordedRegionIds()) {
-						List<Region> r = getRegion(p, id);
+						var r = getRegion(p, id);
 						if (!r.isEmpty()) {
 							regions.add(r);
 						}
@@ -319,16 +315,14 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			List<Gather> gatherers, Map<ChipLocation, ?> work)
 			throws IOException, ProcessException {
 		log.info("building high-speed data connections and configuring IPtags");
-		Map<ChipLocation, GatherDownloadConnection> connections =
-				new HashMap<>();
-		for (Gather g : gatherers) {
-			ChipLocation gathererChip = g.asChipLocation();
+		var connections = new HashMap<ChipLocation, GatherDownloadConnection>();
+		for (var g : gatherers) {
+			var gathererChip = g.asChipLocation();
 			if (!work.containsKey(gathererChip)) {
 				continue;
 			}
 
-			GatherDownloadConnection conn =
-					new GatherDownloadConnection(gathererChip, g.getIptag());
+			var conn = new GatherDownloadConnection(gathererChip, g.getIptag());
 			reconfigureIPtag(g.getIptag(), conn);
 			connections.put(gathererChip, conn);
 		}
@@ -380,18 +374,18 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	private void fastDownload(List<WorkItems> work,
 			GatherDownloadConnection conn, Progress bar) throws IOException,
 			StorageException, TimeoutException, ProcessException {
-		try (BoardLocal c = new BoardLocal(conn.getChip())) {
+		try (var c = new BoardLocal(conn.getChip())) {
 			log.info("processing fast downloads for {}", conn.getChip());
-			Downloader dl = new Downloader(conn);
-			for (WorkItems item : work) {
-				for (List<Region> regionsOnCore : item.regions) {
+			var dl = new Downloader(conn);
+			for (var item : work) {
+				for (var regionsOnCore : item.regions) {
 					/*
 					 * Once there's something too small, all subsequent
 					 * retrieves for that recording region have to be done the
 					 * same way to get the data in the DB in the right order.
 					 */
-					for (Region region : regionsOnCore) {
-						ByteBuffer data = dl.doDownload(item.monitor, region);
+					for (var region : regionsOnCore) {
+						var data = dl.doDownload(item.monitor, region);
 						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
 							compareDownloadWithSCP(region, data);
 						}
@@ -404,14 +398,14 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	}
 
 	private void sanityCheck(List<Gather> gatherers) {
-		ConnectionSelector<?> sel = txrx.getScampConnectionSelector();
+		var sel = txrx.getScampConnectionSelector();
 		MostDirectConnectionSelector<?> s = null;
 		if (sel instanceof MostDirectConnectionSelector) {
 			s = (MostDirectConnectionSelector<?>) sel;
 		}
 
 		// Sanity check the inputs
-		for (Gather g : gatherers) {
+		for (var g : gatherers) {
 			if (machine.getChipAt(g).ipAddress == null) {
 				throw new IllegalStateException(
 						"gatherer on chip without IP address: "
@@ -427,7 +421,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 	private void compareDownloadWithSCP(Region r, ByteBuffer data)
 			throws IOException, ProcessException {
-		ByteBuffer data2 = txrx.readMemory(r.core.asChipLocation(),
+		var data2 = txrx.readMemory(r.core.asChipLocation(),
 				r.startAddress, r.size);
 		if (data.remaining() != data2.remaining()) {
 			log.error("different buffer sizes: {} with gatherer, {} with SCP",
@@ -436,11 +430,10 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		for (int i = 0; i < data.remaining(); i++) {
 			if (data.get(i) != data2.get(i)) {
 				log.error("downloaded buffer contents different");
-				for (Delta<Byte> delta : diff(list(data2), list(data))
-						.getDeltas()) {
+				for (var delta : diff(list(data2), list(data)).getDeltas()) {
 					if (delta instanceof ChangeDelta) {
-						Chunk<Byte> delete = delta.getOriginal();
-						Chunk<Byte> insert = delta.getRevised();
+						var delete = delta.getOriginal();
+						var insert = delta.getRevised();
 						log.warn(
 								"swapped {} bytes (SCP) for {} (gather) "
 										+ "at {}->{}",
@@ -450,12 +443,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 						log.info("change {} -> {}", describeChunk(delete),
 								describeChunk(insert));
 					} else if (delta instanceof DeleteDelta) {
-						Chunk<Byte> delete = delta.getOriginal();
+						var delete = delta.getOriginal();
 						log.warn("gather deleted {} bytes at {}",
 								delete.getLines().size(), delete.getPosition());
 						log.info("delete {}", describeChunk(delete));
 					} else if (delta instanceof InsertDelta) {
-						Chunk<Byte> insert = delta.getRevised();
+						var insert = delta.getRevised();
 						log.warn("gather inserted {} bytes at {}",
 								insert.getLines().size(), insert.getPosition());
 						log.info("insert {}", describeChunk(insert));
@@ -467,8 +460,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	}
 
 	private static List<Byte> list(ByteBuffer buffer) {
-		List<Byte> l = new ArrayList<>();
-		ByteBuffer b = buffer.asReadOnlyBuffer();
+		var l = new ArrayList<Byte>();
+		var b = buffer.asReadOnlyBuffer();
 		while (b.hasRemaining()) {
 			l.add(b.get());
 		}
@@ -695,7 +688,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 */
 		private boolean processOnePacket(int timeout, int transactionId)
 				throws IOException, TimeoutException, ProcessException {
-			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
+			var p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
 				return processData(p, transactionId);
@@ -729,8 +722,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				return false;
 			}
 
-			boolean isEndOfStream =
-					((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
+			var isEndOfStream = ((seqNum & LAST_MESSAGE_FLAG_BIT_MASK) != 0);
 			seqNum &= ~LAST_MESSAGE_FLAG_BIT_MASK;
 
 			if (seqNum > maxSeqNum || seqNum < 0) {
@@ -802,7 +794,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 					numMissing, monitorCore);
 
 			// Build a list of the sequence numbers of all missing packets
-			List<Integer> missingSeqs = expectedSeqs();
+			var missingSeqs = expectedSeqs();
 			missCount += numMissing;
 
 			log.debug("missing sequence numbers: {}", missingSeqs);
@@ -814,8 +806,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			lastRequested = missingSeqs;
 
 			// Transmit missing sequences as a new SDP Packet
-			for (MissingSequenceNumbersMessage msg : createMessages(monitorCore,
-					missingSeqs, transactionId)) {
+			for (var msg : createMessages(monitorCore, missingSeqs,
+					transactionId)) {
 				snooze(DELAY_PER_SEND);
 				conn.sendMissing(msg);
 			}
