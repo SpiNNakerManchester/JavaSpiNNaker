@@ -124,7 +124,7 @@ public abstract class UDPConnection<T>
 		if (channel != null) {
 			if (log.isDebugEnabled()) {
 				logInitialCreation();
-		    }
+			}
 			readThread = new ReadThread();
 			readThread.start();
 		} else {
