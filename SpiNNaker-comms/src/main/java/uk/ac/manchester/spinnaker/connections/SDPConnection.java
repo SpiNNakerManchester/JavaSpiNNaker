@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.connections;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.SDPReceiver;
 import uk.ac.manchester.spinnaker.connections.model.SDPSender;
@@ -83,7 +82,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	@Override
 	public SDPMessage receiveMessage(int timeout)
 			throws IOException, InterruptedIOException {
-		ByteBuffer buffer = receive(timeout);
+		var buffer = receive(timeout);
 		buffer.getShort(); // SKIP TWO PADDING BYTES
 		return new SDPMessage(buffer);
 	}

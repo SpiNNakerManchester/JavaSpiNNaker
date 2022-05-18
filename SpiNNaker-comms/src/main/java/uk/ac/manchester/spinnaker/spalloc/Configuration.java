@@ -46,7 +46,6 @@ import java.util.Map;
 import org.apache.commons.configuration2.INIConfiguration;
 import org.apache.commons.configuration2.SubnodeConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.INIBuilderParameters;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -85,7 +84,7 @@ public class Configuration {
 			 * ``$HOME/.config/spalloc``) and finally the current working
 			 * directory (in a file named ``.spalloc``).
 			 */
-			INIBuilderParameters params = new Parameters().ini()
+			var params = new Parameters().ini()
 					.setLocationStrategy(new CombinedLocationStrategy(
 							asList(new ProvidedURLLocationStrategy(),
 									new HomeDirectoryLocationStrategy(),
@@ -165,7 +164,7 @@ public class Configuration {
 	 * @return a map loaded with default configuration values.
 	 */
 	private static Map<String, Object> initDefaultValues() {
-		Map<String, Object> defaults = new HashMap<>();
+		var defaults = new HashMap<String, Object>();
 		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
 		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
 		defaults.put(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT);
@@ -181,7 +180,7 @@ public class Configuration {
 	private static final String NULL_MARKER = "None";
 
 	private Double readNoneOrFloat(String prop) {
-		String val = section.getString(prop);
+		var val = section.getString(prop);
 		if (NULL_MARKER.equals(val)) {
 			return null;
 		}
@@ -189,7 +188,7 @@ public class Configuration {
 	}
 
 	private Integer readNoneOrInt(String prop) {
-		String val = section.getString(prop);
+		var val = section.getString(prop);
 		if (NULL_MARKER.equals(val)) {
 			return null;
 		}
@@ -197,7 +196,7 @@ public class Configuration {
 	}
 
 	private String readNoneOrString(String prop) {
-		String val = section.getString(prop);
+		var val = section.getString(prop);
 		if (NULL_MARKER.equals(val)) {
 			return null;
 		}

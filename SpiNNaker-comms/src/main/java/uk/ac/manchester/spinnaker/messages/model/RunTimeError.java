@@ -74,7 +74,7 @@ public enum RunTimeError {
 	private static final Map<Integer, RunTimeError> MAP = new HashMap<>();
 
 	static {
-		for (RunTimeError v : values()) {
+		for (var v : values()) {
 			MAP.put(v.value, v);
 		}
 	}

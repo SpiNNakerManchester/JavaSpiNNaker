@@ -48,7 +48,7 @@ public enum P2PTableRoute {
 	private static final Map<Integer, P2PTableRoute> MAP = new HashMap<>();
 
 	static {
-		for (P2PTableRoute r : values()) {
+		for (var r : values()) {
 			MAP.put(r.value, r);
 		}
 	}

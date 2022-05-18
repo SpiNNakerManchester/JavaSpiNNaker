@@ -38,7 +38,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
-import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -88,12 +87,12 @@ class TestClient {
 
 	@Test
 	void testConnectContext() throws Exception {
-		try (MockServer s = new MockServer()) {
+		try (var s = new MockServer()) {
 			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-				try (SpallocClient c =
+				try (var c =
 						new SpallocClient("localhost", s.getPort(), null)) {
-					Joinable t = backgroundAccept(s);
-					try (AutoCloseable context = c.withConnection()) {
+					var t = backgroundAccept(s);
+					try (var context = c.withConnection()) {
 						return; // do nothing
 					} finally {
 						t.join();
@@ -134,16 +133,15 @@ class TestClient {
 					.getReturnValue());
 
 			// Return a large message
-			JSONArray a1 = new JSONArray();
+			var a1 = new JSONArray();
 			for (int i = 0; i < 1000; i++) {
 				a1.put(i);
 			}
-			JSONObject o = new JSONObject();
+			var o = new JSONObject();
 			o.put("return", a1);
 			s.send(o);
-			JSONArray a2 =
-					new JSONArray(((ReturnResponse) c.receiveResponse(null))
-							.getReturnValue());
+			var a2 = new JSONArray(((ReturnResponse) c.receiveResponse(null))
+					.getReturnValue());
 			for (int i = 0; i < 1000; i++) {
 				assertEquals(a1.get(i), a2.get(i));
 			}

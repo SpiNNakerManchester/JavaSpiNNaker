@@ -165,7 +165,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			int baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		try (InputStream data =
+		try (var data =
 				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemoryFlow(baseAddress, data, (int) dataFile.length(), (addr,
 					bytes) -> new WriteLink(core, linkDirection, addr, bytes));
@@ -236,7 +236,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void writeMemory(HasCoreLocation core, int baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		try (InputStream data =
+		try (var data =
 				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemoryFlow(baseAddress, data, (int) dataFile.length(),
 					(addr, bytes) -> new WriteMemory(core, addr, bytes));
@@ -267,7 +267,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		int writePosition = baseAddress;
 		while (bytesToWrite > 0) {
 			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-			ByteBuffer tmp = data.asReadOnlyBuffer();
+			var tmp = data.asReadOnlyBuffer();
 			tmp.position(offset);
 			tmp.limit(offset + bytesToSend);
 			sendRequest(msgProvider.getMessage(writePosition, tmp));
@@ -302,10 +302,10 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			MessageProvider<T> msgProvider)
 			throws IOException, ProcessException {
 		int writePosition = baseAddress;
-		ByteBuffer workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
+		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		while (bytesToWrite > 0) {
 			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-			ByteBuffer tmp = workingBuffer.slice();
+			var tmp = workingBuffer.slice();
 			bytesToSend = data.read(tmp.array(), 0, bytesToSend);
 			if (bytesToSend <= 0) {
 				break;

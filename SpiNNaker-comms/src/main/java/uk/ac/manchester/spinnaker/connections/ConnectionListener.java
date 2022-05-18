@@ -94,7 +94,7 @@ public class ConnectionListener<MessageType> extends Thread
 		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;
-		callbacks = new HashSet<MessageHandler<MessageType>>();
+		callbacks = new HashSet<>();
 	}
 
 	@Override
@@ -117,8 +117,8 @@ public class ConnectionListener<MessageType> extends Thread
 
 	private void runStep() throws IOException {
 		if (connection.isReadyToReceive(timeout)) {
-			MessageType message = connection.receiveMessage();
-			for (MessageHandler<MessageType> callback : callbacks) {
+			var message = connection.receiveMessage();
+			for (var callback : callbacks) {
 				callbackPool.submit(() -> callback.handle(message));
 			}
 		}

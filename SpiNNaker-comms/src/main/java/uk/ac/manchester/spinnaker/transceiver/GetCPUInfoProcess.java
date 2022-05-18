@@ -24,11 +24,9 @@ import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
@@ -63,8 +61,8 @@ class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	Collection<CPUInfo> getCPUInfo(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
-		List<CPUInfo> cpuInfo = new ArrayList<>();
-		for (CoreLocation core : requireNonNull(coreSubsets,
+		var cpuInfo = new ArrayList<CPUInfo>();
+		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(
 					new ReadMemory(core.getScampCore(), getVcpuAddress(core),

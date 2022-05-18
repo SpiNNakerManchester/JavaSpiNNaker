@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ApplicationRun;
@@ -59,7 +58,7 @@ class ApplicationRunProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void run(AppID appID, CoreSubsets coreSubsets, boolean wait)
 			throws ProcessException, IOException {
-		for (ChipLocation chip : coreSubsets.getChips()) {
+		for (var chip : coreSubsets.getChips()) {
 			sendRequest(new ApplicationRun(appID, chip,
 					coreSubsets.pByChip(chip), wait));
 		}

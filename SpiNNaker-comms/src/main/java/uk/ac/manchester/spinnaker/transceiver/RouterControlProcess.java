@@ -96,7 +96,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void clearQueue(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new ClearReinjectionQueue(core));
 		}
 		finish();
@@ -130,7 +130,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void resetCounters(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
-		for (CoreLocation core : coreSubsets) {
+		for (var core : coreSubsets) {
 			sendRequest(new ResetReinjectionCounters(core));
 		}
 		finish();
@@ -183,7 +183,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	void setPacketTypes(CoreSubsets monitorCoreSubsets, boolean multicast,
 			boolean pointToPoint, boolean fixedRoute, boolean nearestNeighbour)
 			throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new SetReinjectionPacketTypes(core, multicast,
 					pointToPoint, fixedRoute, nearestNeighbour));
 		}
@@ -227,7 +227,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void setTimeout(CoreSubsets monitorCoreSubsets, int timeoutMantissa,
 			int timeoutExponent) throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new SetRouterTimeout(core, timeoutMantissa,
 					timeoutExponent));
 		}
@@ -272,7 +272,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	void setEmergencyTimeout(CoreSubsets monitorCoreSubsets,
 			int timeoutMantissa, int timeoutExponent)
 			throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new SetRouterEmergencyTimeout(core, timeoutMantissa,
 					timeoutExponent));
 		}
@@ -308,7 +308,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void saveApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableSaveApplicationRoutes(core));
 		}
 		finish();
@@ -344,7 +344,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void loadSystemRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadSystemRoutes(core));
 		}
 		finish();
@@ -380,7 +380,7 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void loadApplicationRouterTable(CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
-		for (CoreLocation core : monitorCoreSubsets) {
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new RouterTableLoadApplicationRoutes(core));
 		}
 		finish();
@@ -418,8 +418,8 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCoreSubsets)
 			throws IOException, ProcessException {
-		Map<CoreLocation, ReinjectionStatus> status = new HashMap<>();
-		for (CoreLocation core : monitorCoreSubsets) {
+		var status = new HashMap<CoreLocation, ReinjectionStatus>();
+		for (var core : monitorCoreSubsets) {
 			sendRequest(new GetReinjectionStatus(core),
 					response -> status.put(core, response.reinjectionStatus));
 		}
@@ -441,9 +441,9 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException {
-		ValueHolder<Integer> cr = new ValueHolder<>();
-		ValueHolder<Integer> es = new ValueHolder<>();
-		int[] reg = new int[NUM_REGISTERS];
+		var cr = new ValueHolder<Integer>();
+		var es = new ValueHolder<Integer>();
+		var reg = new int[NUM_REGISTERS];
 
 		sendRequest(new ReadMemory(chip, ROUTER_CONTROL_REGISTER, REGISTER),
 				response -> cr.setValue(response.data.getInt()));

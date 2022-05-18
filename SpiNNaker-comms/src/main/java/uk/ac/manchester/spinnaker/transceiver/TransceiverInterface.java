@@ -57,7 +57,6 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -462,7 +461,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
+		var coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
 		return getCPUInformation(coreSubsets).iterator().next();
 	}
@@ -598,7 +597,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
+		var coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
 		return getIobuf(coreSubsets).iterator().next();
 	}
@@ -645,7 +644,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void clearIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
+		var coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
 		clearIobuf(coreSubsets);
 	}
@@ -709,7 +708,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void setWatchDogTimeout(int watchdog)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
+		for (var chip : getMachineDetails().chipCoordinates()) {
 			setWatchDogTimeoutOnChip(chip, watchdog);
 		}
 	}
@@ -728,7 +727,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void enableWatchDogTimer(boolean watchdog)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
+		for (var chip : getMachineDetails().chipCoordinates()) {
 			enableWatchDogTimerOnChip(chip, watchdog);
 		}
 	}
@@ -1284,7 +1283,7 @@ public interface TransceiverInterface {
 			AppID appID) throws IOException, ProcessException,
 			InterruptedException, SpinnmanException {
 		// Execute each of the binaries and get them in to a "wait" state
-		for (String binary : executableTargets.getBinaries()) {
+		for (var binary : executableTargets.getBinaries()) {
 			executeFlood(executableTargets.getCoresForBinary(binary),
 					new File(binary), appID, true);
 		}
@@ -1295,13 +1294,13 @@ public interface TransceiverInterface {
 		// Check that the binaries have reached a wait state
 		int count = getCoreStateCount(appID, READY);
 		if (count < executableTargets.getTotalProcessors()) {
-			Map<CoreLocation, CPUInfo> coresNotReady = getCoresNotInState(
+			var coresNotReady = getCoresNotInState(
 					executableTargets.getAllCoreSubsets(), READY);
 			if (!coresNotReady.isEmpty()) {
-				StringBuilder b = new StringBuilder(String.format(
+				var b = new StringBuilder(String.format(
 						"Only %d of %d cores reached ready state:", count,
 						executableTargets.getTotalProcessors()));
-				for (CPUInfo info : coresNotReady.values()) {
+				for (var info : coresNotReady.values()) {
 					b.append('\n').append(info.getStatusDescription());
 				}
 				throw new SpinnmanException(b.toString());
@@ -1347,7 +1346,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void updateRuntime(Integer runTimesteps, HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
+		var coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
 		updateRuntime(runTimesteps, coreSubsets);
 	}
@@ -1401,7 +1400,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void updateProvenanceAndExit(HasCoreLocation core)
 			throws IOException, ProcessException {
-		CoreSubsets coreSubsets = new CoreSubsets();
+		var coreSubsets = new CoreSubsets();
 		coreSubsets.addCore(core.asCoreLocation());
 		updateProvenanceAndExit(coreSubsets);
 	}
@@ -2379,7 +2378,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemory(core, baseAddress, b);
 	}
@@ -2956,7 +2955,7 @@ public interface TransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeNeighbourMemory(core, link, baseAddress, b);
 	}
@@ -3352,7 +3351,7 @@ public interface TransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(int baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemoryFlood(baseAddress, b);
 	}
@@ -3850,9 +3849,9 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, ProcessException {
-		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
-		CoreSubsets coresInState = new CoreSubsets();
-		for (CPUInfo coreInfo : coreInfos) {
+		var coreInfos = getCPUInformation(allCoreSubsets);
+		var coresInState = new CoreSubsets();
+		for (var coreInfo : coreInfos) {
 			if (states.contains(coreInfo.getState())) {
 				coresInState.addCore(coreInfo.asCoreLocation());
 			}
@@ -3905,9 +3904,9 @@ public interface TransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
 			throws IOException, ProcessException {
-		Iterable<CPUInfo> coreInfos = getCPUInformation(allCoreSubsets);
-		Map<CoreLocation, CPUInfo> coresNotInState = new TreeMap<>();
-		for (CPUInfo coreInfo : coreInfos) {
+		var coreInfos = getCPUInformation(allCoreSubsets);
+		var coresNotInState = new TreeMap<CoreLocation, CPUInfo>();
+		for (var coreInfo : coreInfos) {
 			if (!states.contains(coreInfo.getState())) {
 				coresNotInState.put(coreInfo.asCoreLocation(), coreInfo);
 			}

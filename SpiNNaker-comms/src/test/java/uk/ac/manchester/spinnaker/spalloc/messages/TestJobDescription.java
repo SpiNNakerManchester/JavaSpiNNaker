@@ -21,12 +21,9 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.hamcrest.collection.IsMapContaining;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
@@ -38,7 +35,7 @@ public class TestJobDescription {
 
     @Test
     void testOneArg() throws IOException {
-        String json = "{\"job_id\":12345,"
+        var json = "{\"job_id\":12345,"
                 + "\"owner\":\"someone@manchester.ac.uk\","
                 + "\"start_time\":1.537284307847865E9,"
                 + "\"keepalive\":45.0,"
@@ -55,8 +52,9 @@ public class TestJobDescription {
                 + "\"boards\":[[1,1,2]],"
                 + "\"keepalivehost\":\"130.88.198.171\"}";
 
-        ObjectMapper mapper = SpallocClient.createMapper();
-        JobDescription fromJson = mapper.readValue(json, JobDescription.class);
+        var mapper = SpallocClient.createMapper();
+        var fromJson = mapper.readValue(json, JobDescription.class);
+
         assertEquals(12345, fromJson.getJobID());
         assertEquals("someone@manchester.ac.uk", fromJson.getOwner());
         assertEquals(1.537284307847865E9, fromJson.getStartTime());
@@ -64,7 +62,7 @@ public class TestJobDescription {
         assertEquals(State.values()[3], fromJson.getState());
         assertEquals(true, fromJson.getPower());
         assertThat(fromJson.getArgs(), contains(1));
-        Map<String, Object> map = fromJson.getKwargs();
+        var map = fromJson.getKwargs();
         assertThat(map, IsMapContaining.hasEntry("tags", null));
         assertThat(map, IsMapContaining.hasEntry("max_dead_boards", 0));
         assertThat(map, IsMapContaining.hasEntry("machine", null));
@@ -79,10 +77,10 @@ public class TestJobDescription {
 
     @Test
     void testNulls() throws IOException {
-        String json = "{\"job_id\":null}";
+        var json = "{\"job_id\":null}";
 
-        ObjectMapper mapper = SpallocClient.createMapper();
-        JobDescription fromJson = mapper.readValue(json, JobDescription.class);
+        var mapper = SpallocClient.createMapper();
+        var fromJson = mapper.readValue(json, JobDescription.class);
         assertEquals(0, fromJson.getJobID());
         assertNotNull(fromJson.toString());
         /*

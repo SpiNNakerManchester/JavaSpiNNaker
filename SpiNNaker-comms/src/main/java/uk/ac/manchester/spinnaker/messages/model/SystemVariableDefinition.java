@@ -272,8 +272,7 @@ public enum SystemVariableDefinition {
 	 * @return The list of all variables.
 	 */
 	public static List<SystemVariableDefinition> variables() {
-		SystemVariableDefinition[] vals =
-				SystemVariableDefinition.values().clone();
+		var vals = SystemVariableDefinition.values().clone();
 		Arrays.sort(vals, (a, b) -> Integer.compare(a.offset, b.offset));
 		return Collections.unmodifiableList(Arrays.asList(vals));
 	}

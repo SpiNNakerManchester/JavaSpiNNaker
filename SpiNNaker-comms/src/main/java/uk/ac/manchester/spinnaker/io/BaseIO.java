@@ -130,7 +130,7 @@ abstract class BaseIO implements AbstractIO {
 		if (current + n > end) {
 			throw new EOFException();
 		}
-		byte[] data = doRead(n);
+		var data = doRead(n);
 		current += n;
 		return data;
 	}

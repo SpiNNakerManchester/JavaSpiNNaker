@@ -76,7 +76,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 				throw new IllegalStateException(
 						"writing to fully written buffer");
 			}
-			ByteBuffer b = buffer.duplicate();
+			var b = buffer.duplicate();
 			b.position(position);
 			int after = position + otherBuffer.remaining();
 			b.put(otherBuffer);
@@ -158,7 +158,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			int baseAddress, ByteBuffer receivingBuffer)
 			throws IOException, ProcessException {
 		int size = receivingBuffer.remaining();
-		Accumulator a = new Accumulator(receivingBuffer);
+		var a = new Accumulator(receivingBuffer);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -191,7 +191,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void readMemory(HasChipLocation chip, int baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, ProcessException {
 		int size = receivingBuffer.remaining();
-		Accumulator a = new Accumulator(receivingBuffer);
+		var a = new Accumulator(receivingBuffer);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -223,7 +223,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, int size) throws IOException, ProcessException {
-		Accumulator a = new Accumulator(size);
+		var a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -255,7 +255,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	ByteBuffer readMemory(HasChipLocation chip, int baseAddress, int size)
 			throws IOException, ProcessException {
-		Accumulator a = new Accumulator(size);
+		var a = new Accumulator(size);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -291,7 +291,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, int size, RandomAccessFile dataFile)
 			throws IOException, ProcessException {
-		FileAccumulator a = new FileAccumulator(dataFile);
+		var a = new FileAccumulator(dataFile);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -326,7 +326,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void readMemory(HasChipLocation chip, int baseAddress, int size,
 			RandomAccessFile dataFile) throws IOException, ProcessException {
-		FileAccumulator a = new FileAccumulator(dataFile);
+		var a = new FileAccumulator(dataFile);
 		int chunk;
 		for (int offset = 0; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
@@ -361,7 +361,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			int baseAddress, int size, File dataFile)
 			throws IOException, ProcessException {
-		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
+		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readLink(chip, linkDirection, baseAddress, size, s);
 		}
 	}
@@ -385,7 +385,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void readMemory(HasChipLocation chip, int baseAddress, int size,
 			File dataFile) throws IOException, ProcessException {
-		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
+		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readMemory(chip, baseAddress, size, s);
 		}
 	}
@@ -410,8 +410,8 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void readMemory(BufferManagerStorage.Region region,
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
-		byte[] buffer = new byte[region.size];
-		Accumulator a = new Accumulator(buffer);
+		var buffer = new byte[region.size];
+		var a = new Accumulator(buffer);
 		int chunk;
 		for (int offset = 0; offset < region.size; offset += chunk) {
 			chunk = min(region.size - offset, UDP_MESSAGE_MAX_SIZE);

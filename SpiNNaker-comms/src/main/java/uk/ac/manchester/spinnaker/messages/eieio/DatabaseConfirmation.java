@@ -67,12 +67,12 @@ public class DatabaseConfirmation extends EIEIOCommandMessage {
 	DatabaseConfirmation(ByteBuffer data) {
 		super(data);
 		if (data.remaining() > 0) {
-			if (data.hasArray()) {
+			if (data.hasArray() && !data.isReadOnly()) {
 				databasePath = new String(data.array(), data.position(),
 						data.remaining(), CHARSET);
 			} else {
 				// Must copy; ugh!
-				byte[] ary = new byte[data.remaining()];
+				var ary = new byte[data.remaining()];
 				data.get(ary);
 				databasePath = new String(ary, CHARSET);
 			}

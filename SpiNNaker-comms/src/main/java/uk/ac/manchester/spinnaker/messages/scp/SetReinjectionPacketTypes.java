@@ -47,10 +47,9 @@ public class SetReinjectionPacketTypes extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static ByteBuffer encodeAsBA(boolean flag) {
-		ByteBuffer b = ByteBuffer.allocate(1);
+		var b = ByteBuffer.allocate(1);
 		b.put(encode(flag));
-		b.flip();
-		return b;
+		return b.flip();
 	}
 
 	private static byte encode(boolean flag) {

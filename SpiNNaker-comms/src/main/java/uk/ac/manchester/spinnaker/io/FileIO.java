@@ -22,7 +22,6 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.utils.Slice;
@@ -90,7 +89,7 @@ public class FileIO extends BaseIO {
 
 	@Override
 	byte[] doRead(int numBytes) throws IOException {
-		byte[] data = new byte[numBytes];
+		var data = new byte[numBytes];
 		synchronized (file) {
 			file.seek(current);
 			file.readFully(data, 0, numBytes);
@@ -108,7 +107,7 @@ public class FileIO extends BaseIO {
 
 	@Override
 	void doFill(int value, FillDataType type, int len) throws IOException {
-		ByteBuffer b = allocate(len).order(LITTLE_ENDIAN);
+		var b = allocate(len).order(LITTLE_ENDIAN);
 		while (b.hasRemaining()) {
 			type.writeTo(value, b);
 		}

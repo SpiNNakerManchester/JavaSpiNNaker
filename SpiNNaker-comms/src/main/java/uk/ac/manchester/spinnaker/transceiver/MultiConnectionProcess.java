@@ -104,7 +104,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 	}
 
 	private SCPRequestPipeline getPipeline(T connection) {
-		SCPRequestPipeline pipeline = requestPipelines.get(connection);
+		var pipeline = requestPipelines.get(connection);
 		if (pipeline == null) {
 			pipeline = new SCPRequestPipeline(connection, numChannels, numWaits,
 					numRetries, timeout, retryTracker);
@@ -129,7 +129,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 
 	@Override
 	protected void finish() throws IOException {
-		for (SCPRequestPipeline pipe : requestPipelines.values()) {
+		for (var pipe : requestPipelines.values()) {
 			pipe.finish();
 		}
 	}

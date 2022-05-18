@@ -91,10 +91,13 @@ public class CreateJob {
 	 * @see WhereIs
 	 */
 	public CreateJob(int x, int y, int z) {
-		WhereIs.class.hashCode(); // NEEDED FOR JAVADOC @see ABOVE
 		args.add(x);
 		args.add(y);
 		args.add(z);
+	}
+
+	static {
+		WhereIs.class.hashCode(); // NEEDED FOR JAVADOC @see ABOVE
 	}
 
 	/**
@@ -118,7 +121,6 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJob owner(String owner) {
-
 		kwargs.put(USER_PROPERTY, owner);
 		setOwner = true;
 		return this;

@@ -89,7 +89,7 @@ public class TestIPTag {
         int tagID = 10;
         var targetAddress = createInetAddress((byte)55);
         Integer port = 20;
-        IPTag instance = new IPTag(boardAddress, destination, tagID,
+        var instance = new IPTag(boardAddress, destination, tagID,
             targetAddress, port);
         assertEquals(boardAddress, instance.getBoardAddress());
         assertEquals(destination, instance.getDestination());
@@ -102,10 +102,10 @@ public class TestIPTag {
 
     @Test
     public void testDefaul3() throws UnknownHostException {
-        InetAddress boardAddress = createInetAddress((byte)45);
-        ChipLocation destination = new ChipLocation(3, 3);
+        var boardAddress = createInetAddress((byte)45);
+        var destination = new ChipLocation(3, 3);
         int tagID = 10;
-        InetAddress targetAddress = createInetAddress((byte)55);
+        var targetAddress = createInetAddress((byte)55);
         Integer port = 20;
         boolean stripSDP = true;
         var instance = new IPTag(boardAddress, destination, tagID,
@@ -119,7 +119,7 @@ public class TestIPTag {
         assertEquals(IPTag.DEFAULT_TRAFFIC_IDENTIFIER, instance.getTrafficIdentifier());
     }
 
-        @Test
+    @Test
     public void testDefaults4() throws UnknownHostException {
         var boardAddress = createInetAddress((byte)45);
         var destination = new ChipLocation(3, 3);
@@ -176,7 +176,7 @@ public class TestIPTag {
         assertFalse(tag1.equals(nullTag));
     }
 
-        @Test
+    @Test
     public void testFromJson() throws IOException {
         String json = " {\"x\": 0, \"y\": 0, "
                 + "\"boardAddress\": \"192.168.240.253\", "

@@ -58,7 +58,7 @@ public class SCPResultMessage {
 	 *            without header stripped.
 	 */
 	public SCPResultMessage(ByteBuffer response) {
-		ByteBuffer peek = response.duplicate().order(LITTLE_ENDIAN);
+		var peek = response.duplicate().order(LITTLE_ENDIAN);
 		// Skip the padding bytes and the SDP header
 		peek.position(SKIP_HEADER_BYTES);
 		result = SCPResult.get(peek.getShort());

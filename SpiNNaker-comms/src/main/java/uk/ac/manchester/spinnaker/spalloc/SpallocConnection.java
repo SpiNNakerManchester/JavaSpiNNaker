@@ -129,7 +129,7 @@ public abstract class SpallocConnection implements Closeable {
 
 	private TextSocket getConnection(Integer timeout) throws IOException {
 		TextSocket sock = null;
-		Thread key = currentThread();
+		var key = currentThread();
 		/*
 		 * This loop will keep trying to connect until the socket exists and is
 		 * in a connected state. It's labelled just for clarity.
@@ -214,7 +214,7 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	public void connect(Integer timeout) throws IOException {
 		// Close any existing connection
-		Socket s = local.get();
+		var s = local.get();
 		if (s.isClosed()) {
 			closeThreadConnection(currentThread());
 		} else if (!s.isConnected()) {
@@ -260,7 +260,7 @@ public abstract class SpallocConnection implements Closeable {
 			// Copy so we can safely remove asynchronously
 			keys = new ArrayList<>(socks.keySet());
 		}
-		for (Thread key : keys) {
+		for (var key : keys) {
 			closeThreadConnection(key);
 		}
 		local.remove();
@@ -269,7 +269,7 @@ public abstract class SpallocConnection implements Closeable {
 	private static String readLine(TextSocket sock)
 			throws SpallocProtocolTimeoutException, IOException {
 		try {
-			String line = sock.getReader().readLine();
+			var line = sock.getReader().readLine();
 			if (line == null) {
 				throw new EOFException("Connection closed");
 			}
@@ -301,8 +301,8 @@ public abstract class SpallocConnection implements Closeable {
 		TextSocket sock = getConnection(timeout);
 
 		// Wait for some data to arrive
-		String line = readLine(sock);
-		Response response = parseResponse(line);
+		var line = readLine(sock);
+		var response = parseResponse(line);
 		if (response == null) {
 			throw new SpallocProtocolException("unexpected response: " + line);
 		}
@@ -330,12 +330,12 @@ public abstract class SpallocConnection implements Closeable {
 		if (log.isDebugEnabled()) {
 			log.debug("sending a {}", command.getClass());
 		}
-		TextSocket sock = getConnection(timeout);
+		var sock = getConnection(timeout);
 
 		// Send the line
-		String msg = formatRequest(command);
+		var msg = formatRequest(command);
 		try {
-			PrintWriter pw = sock.getWriter();
+			var pw = sock.getWriter();
 			pw.println(msg);
 			if (pw.checkError()) {
 				/*
@@ -394,14 +394,14 @@ public abstract class SpallocConnection implements Closeable {
 			throws SpallocServerException, SpallocProtocolTimeoutException,
 			SpallocProtocolException {
 		try {
-			Long finishTime = makeTimeout(timeout);
+			var finishTime = makeTimeout(timeout);
 
 			// Construct and send the command message
 			sendCommand(command, timeout);
 
 			// Command sent! Attempt to receive the response...
 			while (!timedOut(finishTime)) {
-				Response r = receiveResponse(timeLeft(finishTime));
+				var r = receiveResponse(timeLeft(finishTime));
 				if (r == null) {
 					continue;
 				}

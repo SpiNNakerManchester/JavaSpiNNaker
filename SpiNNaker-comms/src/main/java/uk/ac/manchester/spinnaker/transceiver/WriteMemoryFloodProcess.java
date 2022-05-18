@@ -80,7 +80,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 		int blockID = 0;
 		while (numBytes > 0) {
 			int chunk = min(numBytes, UDP_MESSAGE_MAX_SIZE);
-			ByteBuffer tmp = data.duplicate();
+			var tmp = data.duplicate();
 			tmp.limit(tmp.position() + chunk);
 			sendRequest(new FloodFillData(nearestNeighbourID, blockID,
 					baseAddress, tmp));
@@ -124,7 +124,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 		while (numBytes > 0) {
 			int chunk = min(numBytes, UDP_MESSAGE_MAX_SIZE);
 			// Allocate a new array each time; assume message hold a ref to it
-			byte[] buffer = new byte[chunk];
+			var buffer = new byte[chunk];
 			chunk = dataStream.read(buffer);
 			if (chunk <= 0) {
 				break;
@@ -157,8 +157,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void writeMemory(byte nearestNeighbourID, int baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		try (InputStream s =
-				new BufferedInputStream(new FileInputStream(dataFile))) {
+		try (var s = new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,
 					(int) dataFile.length());
 		}

@@ -24,7 +24,6 @@ import static java.time.ZonedDateTime.ofInstant;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 import java.nio.ByteBuffer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -65,7 +64,7 @@ public final class VersionInfo {
 	private static final String NUL = "\u0000";
 
 	private static Version parseVersionString(String versionString) {
-		Matcher m = VERSION_RE.matcher(versionString);
+		var m = VERSION_RE.matcher(versionString);
 		if (!m.matches()) {
 			throw new IllegalArgumentException(
 					"incorrect version format: " + versionString);
@@ -90,14 +89,14 @@ public final class VersionInfo {
 		int vn = Short.toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
 
-		String decoded = new String(buffer.array(), buffer.position(),
+		var decoded = new String(buffer.array(), buffer.position(),
 				buffer.remaining(), UTF_8);
-		String original = decoded;
+		var original = decoded;
 		if (vn < MAGIC_VERSION) {
 			versionString = decoded;
 			versionNumber = new Version(vn / H, vn % H, 0);
 		} else {
-			String[] bits = decoded.split(NUL, FULL_BITS);
+			var bits = decoded.split(NUL, FULL_BITS);
 			if (bits.length < NAME_BITS || bits.length > FULL_BITS) {
 				throw new IllegalArgumentException(
 						"incorrect version format: " + original);
@@ -107,7 +106,7 @@ public final class VersionInfo {
 			versionNumber = parseVersionString(versionString);
 		}
 
-		String[] bits = decoded.split("/", NAME_BITS);
+		var bits = decoded.split("/", NAME_BITS);
 		if (bits.length != NAME_BITS) {
 			throw new IllegalArgumentException(
 					"incorrect version format: " + original);

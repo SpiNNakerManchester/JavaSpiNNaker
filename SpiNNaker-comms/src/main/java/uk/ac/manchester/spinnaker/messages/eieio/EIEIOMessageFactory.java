@@ -38,7 +38,7 @@ public abstract class EIEIOMessageFactory {
 	 *         parsed data received from the network
 	 */
 	public static EIEIOCommandMessage readCommandMessage(ByteBuffer data) {
-		EIEIOCommand command = EIEIOCommandMessage.peekCommand(data);
+		var command = EIEIOCommandMessage.peekCommand(data);
 		if (!(command instanceof EIEIOCommandID)) {
 			return new EIEIOCommandMessage(data);
 		}

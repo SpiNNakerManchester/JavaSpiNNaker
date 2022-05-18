@@ -166,7 +166,7 @@ public class SDPHeader implements SerializableMessage {
 				if (!(other instanceof HasCoreLocation)) {
 					return false;
 				}
-				HasCoreLocation c = (HasCoreLocation) other;
+				var c = (HasCoreLocation) other;
 				return x == c.getX() && y == c.getY() && p == c.getP();
 			}
 		};

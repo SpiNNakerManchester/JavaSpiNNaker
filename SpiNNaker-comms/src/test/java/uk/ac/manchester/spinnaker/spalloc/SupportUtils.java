@@ -54,7 +54,7 @@ abstract class SupportUtils {
 	}
 
 	static Joinable backgroundAccept(MockServer s) throws Exception {
-		Thread t = new Daemon(() -> {
+		var t = new Daemon(() -> {
 			try {
 				s.connect();
 			} catch (IOException e) {
@@ -91,9 +91,9 @@ abstract class SupportUtils {
 	}
 
 	static void withConnection(WithConn op) throws Exception {
-		try (MockServer s = new MockServer()) {
-			SpallocClient c = new SpallocClient("localhost", s.getPort(), null);
-			Joinable bgAccept = backgroundAccept(s);
+		try (var s = new MockServer()) {
+			var c = new SpallocClient("localhost", s.getPort(), null);
+			var bgAccept = backgroundAccept(s);
 			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
 				op.act(s, c, bgAccept);
 			});

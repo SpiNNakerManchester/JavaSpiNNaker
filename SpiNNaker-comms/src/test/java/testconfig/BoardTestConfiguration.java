@@ -92,17 +92,17 @@ public class BoardTestConfiguration {
 		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
 			() -> "test board (" + remotehost + ") appears to be down");
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
-		String names = config.get(MCSEC, "bmp_names");
+		var names = config.get(MCSEC, "bmp_names");
 		if (names == null || "None".equals(names)) {
 			bmpNames = null;
 		} else {
-			Inet4Address bmpHost = InetFactory.getByName(names);
+			var bmpHost = InetFactory.getByName(names);
 			bmpNames = asList(
 					new BMPConnectionData(0, 0, bmpHost, asList(0), null));
 		}
 		autoDetectBMP = config.getBoolean(MCSEC, "auto_detect_bmp");
 		localport = PORT;
-		try (DatagramSocket s = new DatagramSocket()) {
+		try (var s = new DatagramSocket()) {
 			s.connect(new InetSocketAddress(remotehost, PORT));
 			localhost = s.getLocalAddress().getHostAddress();
 		}
@@ -118,14 +118,14 @@ public class BoardTestConfiguration {
 	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
 			SpallocStateChangeTimeoutException, InterruptedException {
-		String spalloc = config.get(SPSEC, "hostname");
+		var spalloc = config.get(SPSEC, "hostname");
 		assumeTrue(spalloc != null, "no spalloc server defined");
 		assumeTrue(hostIsReachable(spalloc),
 				() -> "spalloc server (" + spalloc + ") appears to be down");
-		Integer port = config.getInt(SPSEC, "port");
-		Integer timeout = config.getInt(SPSEC, "timeout");
-		String tag = config.get(SPSEC, "tag");
-		SpallocJob job = new SpallocJob(spalloc, port, timeout,
+		var port = config.getInt(SPSEC, "port");
+		var timeout = config.getInt(SPSEC, "timeout");
+		var tag = config.get(SPSEC, "tag");
+		var job = new SpallocJob(spalloc, port, timeout,
 				jobDesc(1, KEEPALIVE_SECS, tag));
 		job.waitUntilReady(null);
 		try {

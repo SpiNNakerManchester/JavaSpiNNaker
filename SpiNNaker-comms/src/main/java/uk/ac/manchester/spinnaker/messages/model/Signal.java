@@ -70,7 +70,7 @@ public enum Signal {
 	}
 
 	static {
-		for (Signal r : values()) {
+		for (var r : values()) {
 			MAP.put(r.value, r);
 		}
 	}

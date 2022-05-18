@@ -741,9 +741,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		 * message, but then fail to send a response since the
 		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)
 		 */
-		SDPMessage triggerMessage =
-				new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
-						new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
+		var triggerMessage = new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
+				new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
 		sendTo(triggerMessage.getMessageData(null), host, SCP_SCAMP_PORT);
 	}
 

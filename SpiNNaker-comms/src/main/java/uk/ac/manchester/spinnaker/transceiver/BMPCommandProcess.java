@@ -121,12 +121,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 *             If the other side responds with a failure code
 	 */
 	R execute(BMPRequest<R> request) throws IOException, ProcessException {
-		ValueHolder<R> holder = new ValueHolder<>();
+		var holder = new ValueHolder<R>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
-		RequestPipeline requestPipeline = new RequestPipeline(
+		var requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
 		requestPipeline.sendRequest(request, holder::setValue);
 		requestPipeline.finish();
@@ -206,7 +206,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 			private void parseReceivedResponse(SCPResultMessage msg)
 					throws Exception {
-				R response = msg.parsePayload(request);
+				var response = msg.parsePayload(request);
 				if (callback != null) {
 					callback.accept(response);
 				}
@@ -247,7 +247,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 					.issueSequenceNumber(requests.keySet());
 
 			// Send the request, keeping track of how many are sent
-			Request req = new Request(request, callback);
+			var req = new Request(request, callback);
 			if (requests.put(sequence, req) != null) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
@@ -277,8 +277,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 		private void retrieve() throws IOException {
 			// Receive the next response
-			SCPResultMessage msg = connection.receiveSCPResponse(timeout);
-			Request req = msg.pickRequest(requests);
+			var msg = connection.receiveSCPResponse(timeout);
+			var req = msg.pickRequest(requests);
 			if (req == null) {
 				// Only process responses which have matching requests
 				log.info("discarding message with unknown sequence number: {}",
@@ -306,9 +306,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 		private void handleReceiveTimeout() {
 			// If there is a timeout, all packets remaining are resent
-			BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
+			var toRemove = new BitSet(SEQUENCE_LENGTH);
 			for (int seq : new ArrayList<>(requests.keySet())) {
-				Request req = requests.get(seq);
+				var req = requests.get(seq);
 				if (req == null) {
 					// Shouldn't happen, but if it does we should nuke it.
 					toRemove.set(seq);

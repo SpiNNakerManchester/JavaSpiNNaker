@@ -82,8 +82,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	 *            the connection to add
 	 */
 	final void registerConnection(UDPConnection<?> connection) {
-		Pair<?> pair = new Pair<>(connection, null);
-		InetAddress addr = normalize(connection.getLocalIPAddress());
+		var pair = new Pair<>(connection, null);
+		var addr = normalize(connection.getLocalIPAddress());
 		log.info("registering connection {} for {}", connection, addr);
 		connectionsByPort.get(connection.getLocalPort()).put(addr, pair);
 		connectionsByClass.get(connection.getClass()).add(pair);
@@ -147,8 +147,8 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-		for (Map<?, Pair<?>> connections : connectionsByPort.values()) {
-			for (Pair<?> p : connections.values()) {
+		for (var connections : connectionsByPort.values()) {
+			for (var p : connections.values()) {
 				if (p.listener != null) {
 					p.listener.close();
 				}
@@ -260,7 +260,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		}
 
 		// normalise local_host to the IP address
-		InetAddress addr = normalize(localHost);
+		var addr = normalize(localHost);
 
 		// If the local port was specified
 		Pair<T> pair;
@@ -293,8 +293,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		if (pair.listener == null) {
 			// Caller has guaranteed the type constraint
 			@SuppressWarnings("resource")
-			ConnectionListener<T> listener =
-					new ConnectionListener<>(pair.connection);
+			var listener = new ConnectionListener<>(pair.connection);
 			log.info("launching listener for {}:{}",
 					pair.connection.getLocalIPAddress(),
 					pair.connection.getLocalPort());
@@ -381,7 +380,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 	private <T> Pair<T> lookup(Class<? extends UDPConnection<T>> clazz,
 			InetAddress addr) {
-		for (Pair<T> a : getConnections(clazz)) {
+		for (var a : getConnections(clazz)) {
 			if (normalize(a.connection.getLocalIPAddress()).equals(addr)) {
 				if (a.listener == null) {
 					a = a.clone();
@@ -395,7 +394,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	@SuppressWarnings("unchecked")
 	private <T> Pair<T> getPair(Map<InetAddress, Pair<?>> receivers,
 			InetAddress addr, Class<? extends UDPConnection<T>> clazz) {
-		Pair<?> p = receivers.get(addr);
+		var p = receivers.get(addr);
 		// If the type of an existing connection is wrong, this is an error
 		if (!clazz.isInstance(p.connection)) {
 			throw new IllegalArgumentException(format(
@@ -408,7 +407,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 	private <T> Pair<T> lookup(Class<? extends UDPConnection<T>> clazz,
 			InetAddress addr, int port) {
-		Map<InetAddress, Pair<?>> receivers = connectionsByPort.get(port);
+		var receivers = connectionsByPort.get(port);
 		// If something is already listening on this port
 		if (!receivers.isEmpty()) {
 			if (addr.isAnyLocalAddress()) {
@@ -433,7 +432,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			}
 
 			if (receivers.containsKey(addr)) {
-				Pair<T> p = getPair(receivers, addr, clazz);
+				var p = getPair(receivers, addr, clazz);
 				if (p.listener == null) {
 					p = p.clone();
 				}

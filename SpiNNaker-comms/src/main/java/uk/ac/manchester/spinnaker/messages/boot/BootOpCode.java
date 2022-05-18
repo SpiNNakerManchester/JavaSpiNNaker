@@ -40,7 +40,7 @@ public enum BootOpCode {
 	}
 
 	static {
-		for (BootOpCode c : values()) {
+		for (var c : values()) {
 			MAP.put(c.value, c);
 		}
 	}
