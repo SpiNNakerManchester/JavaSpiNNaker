@@ -64,7 +64,7 @@ import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
  *            The Java type of message received on this connection.
  */
 public abstract class UDPConnection<T>
-        implements Connection, MessageReceiver<T> {
+		implements Connection, MessageReceiver<T> {
 	private static final Logger log = getLogger(UDPConnection.class);
 
 	private static final int RECEIVE_BUFFER_SIZE = 1048576;
@@ -122,11 +122,11 @@ public abstract class UDPConnection<T>
 		channel = initialiseSocket(localHost, localPort, remoteHost,
 				remotePort);
 		if (channel != null) {
-		    if (log.isDebugEnabled()) {
-			    logInitialCreation();
-    		}
-		    readThread = new ReadThread();
-		    readThread.start();
+			if (log.isDebugEnabled()) {
+				logInitialCreation();
+		    }
+			readThread = new ReadThread();
+			readThread.start();
 		} else {
 			readThread = null;
 		}
@@ -333,12 +333,12 @@ public abstract class UDPConnection<T>
 	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		try {
-		    UDPPacket packet = readQueue.pollFirst(timeout,
-		    		TimeUnit.MILLISECONDS);
-		    if (packet == null) {
-		    	throw new SocketTimeoutException();
-		    }
-		    return packet.getByteBuffer();
+			UDPPacket packet = readQueue.pollFirst(timeout,
+					TimeUnit.MILLISECONDS);
+			if (packet == null) {
+				throw new SocketTimeoutException();
+			}
+			return packet.getByteBuffer();
 		} catch (InterruptedException e) {
 			throw new SocketTimeoutException();
 		}
@@ -384,12 +384,12 @@ public abstract class UDPConnection<T>
 	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		try {
-		    UDPPacket packet = readQueue.pollFirst(timeout,
-		    		TimeUnit.MILLISECONDS);
-		    if (packet == null) {
-		    	throw new SocketTimeoutException();
-		    }
-		    return packet;
+			UDPPacket packet = readQueue.pollFirst(timeout,
+					TimeUnit.MILLISECONDS);
+			if (packet == null) {
+				throw new SocketTimeoutException();
+			}
+			return packet;
 		} catch (InterruptedException e) {
 			throw new SocketTimeoutException();
 		}
@@ -664,7 +664,7 @@ public abstract class UDPConnection<T>
 							new UDPPacket(buffer.order(LITTLE_ENDIAN), addr));
 				} catch (InterruptedException | IOException e) {
 					if (channel.isOpen()) {
-					    log.warn("Error while reading data", e);
+						log.warn("Error while reading data", e);
 					}
 				}
 			}

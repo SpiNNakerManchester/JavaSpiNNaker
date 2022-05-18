@@ -118,10 +118,10 @@ public class ConnectionListener<MessageType> extends Thread
 
 	private void runStep() throws IOException {
 		try {
-		    MessageType message = connection.receiveMessage(timeout);
-		    for (MessageHandler<MessageType> callback : callbacks) {
-			    callbackPool.submit(() -> callback.handle(message));
-		    }
+			MessageType message = connection.receiveMessage(timeout);
+			for (MessageHandler<MessageType> callback : callbacks) {
+				callbackPool.submit(() -> callback.handle(message));
+			}
 		} catch (SocketTimeoutException e) {
 			// Do Nothing; this is expected and can be skipped
 		}
