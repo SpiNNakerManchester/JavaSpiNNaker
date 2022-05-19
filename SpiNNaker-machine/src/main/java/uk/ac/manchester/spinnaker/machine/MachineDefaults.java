@@ -16,7 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.Collections;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -144,17 +146,13 @@ public final class MachineDefaults {
 		HashSet<Direction> directions = new HashSet<>();
 		directions.add(Direction.WEST);
 		directions.add(Direction.SOUTHWEST);
-		result.put(new ChipLocation(0, 0),
-				Collections.unmodifiableSet(directions));
-		result.put(new ChipLocation(0, 1),
-				Collections.unmodifiableSet(directions));
+		result.put(new ChipLocation(0, 0), unmodifiableSet(directions));
+		result.put(new ChipLocation(0, 1), unmodifiableSet(directions));
 		directions = new HashSet<>();
 		directions.add(Direction.EAST);
 		directions.add(Direction.NORTHEAST);
-		result.put(new ChipLocation(1, 0),
-				Collections.unmodifiableSet(directions));
-		result.put(new ChipLocation(1, 1),
-				Collections.unmodifiableSet(directions));
-		return Collections.unmodifiableMap(result);
+		result.put(new ChipLocation(1, 0), unmodifiableSet(directions));
+		result.put(new ChipLocation(1, 1), unmodifiableSet(directions));
+		return unmodifiableMap(result);
 	}
 }

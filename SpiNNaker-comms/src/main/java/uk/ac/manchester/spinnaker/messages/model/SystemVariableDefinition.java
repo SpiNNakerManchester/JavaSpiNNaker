@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
+import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE_ARRAY;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.INT;
@@ -25,8 +28,6 @@ import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.IP_ADDR_WID
 import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.PER_CORE_WIDTH;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** Defines the system variables available. */
@@ -273,8 +274,8 @@ public enum SystemVariableDefinition {
 	 */
 	public static List<SystemVariableDefinition> variables() {
 		var vals = SystemVariableDefinition.values().clone();
-		Arrays.sort(vals, (a, b) -> Integer.compare(a.offset, b.offset));
-		return Collections.unmodifiableList(Arrays.asList(vals));
+		sort(vals, (a, b) -> Integer.compare(a.offset, b.offset));
+		return unmodifiableList(asList(vals));
 	}
 }
 

@@ -79,8 +79,8 @@ public class AbstractDataLink implements HasChipLocation {
 	@Override
 	public int hashCode() {
 		int hash = 41 * (getX() << MachineDefaults.COORD_SHIFT) ^ getY();
-		hash = 41 * hash + Objects.hashCode(this.boardAddress);
-		hash = 41 * hash + this.direction.hashCode();
+		hash = 41 * hash + Objects.hashCode(boardAddress);
+		hash = 41 * hash + direction.hashCode();
 		return hash;
 	}
 
@@ -112,10 +112,10 @@ public class AbstractDataLink implements HasChipLocation {
 	 *         links are on the same chip
 	 */
 	boolean sameAs(AbstractDataLink other) {
-		if (!this.direction.equals(other.direction)) {
+		if (!direction.equals(other.direction)) {
 			return false;
 		}
-		if (!Objects.equals(this.boardAddress, other.boardAddress)) {
+		if (!Objects.equals(boardAddress, other.boardAddress)) {
 			return false;
 		}
 		return location.onSameChipAs(other.location);

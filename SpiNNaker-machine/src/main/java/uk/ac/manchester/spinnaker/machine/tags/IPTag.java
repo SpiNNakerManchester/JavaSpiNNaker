@@ -194,8 +194,8 @@ public final class IPTag extends Tag {
 			throws UnknownHostException {
 		super(InetAddress.getByName(boardAddress), tagID,
 				(port == null ? DEFAULT_PORT : port));
-		this.destination = new ChipLocation(x, y);
-		this.ipAddress = InetAddress.getByName(targetAddress);
+		destination = new ChipLocation(x, y);
+		ipAddress = InetAddress.getByName(targetAddress);
 		if (stripSDP == null) {
 			this.stripSDP = DEFAULT_STRIP_SDP;
 		} else {

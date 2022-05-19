@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
+
 /**
  * The location of a Core as an X, Y, P tuple.
  * <p>
@@ -70,13 +73,12 @@ public final class CoreLocation
 			return false;
 		}
 		var that = (CoreLocation) obj;
-		return (this.x == that.x) && (this.y == that.y) && (this.p == that.p);
+		return (x == that.x) && (y == that.y) && (p == that.p);
 	}
 
 	@Override
 	public int hashCode() {
-		return (((x << MachineDefaults.COORD_SHIFT)
-				^ y) << MachineDefaults.CORE_SHIFT) ^ p;
+		return (((x << COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p;
 	}
 
 	@Override
@@ -105,20 +107,20 @@ public final class CoreLocation
 	}
 
 	@Override
-	public int compareTo(CoreLocation o) {
-		if (this.x < o.x) {
+	public int compareTo(CoreLocation other) {
+		if (x < other.x) {
 			return -1;
-		} else if (this.x > o.x) {
+		} else if (x > other.x) {
 			return 1;
 		}
-		if (this.y < o.y) {
+		if (y < other.y) {
 			return -1;
-		} else if (this.y > o.y) {
+		} else if (y > other.y) {
 			return 1;
 		}
-		if (this.p < o.p) {
+		if (p < other.p) {
 			return -1;
-		} else if (this.p > o.p) {
+		} else if (p > other.p) {
 			return 1;
 		}
 		return 0;

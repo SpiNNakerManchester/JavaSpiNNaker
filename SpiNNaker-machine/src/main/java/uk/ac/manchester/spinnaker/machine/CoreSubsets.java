@@ -16,14 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.ArrayList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.unmodifiableSet;
+
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterator;
 
 /**
@@ -313,7 +316,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 			return false;
 		}
 		var other = (CoreSubsets) obj;
-		return Objects.equals(this.locations, other.locations);
+		return Objects.equals(locations, other.locations);
 	}
 
 	@Override
@@ -355,7 +358,7 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 * @return An ordered set of chips.
 	 */
 	public Set<ChipLocation> getChips() {
-		return Collections.unmodifiableSet(locations.keySet());
+		return unmodifiableSet(locations.keySet());
 	}
 
 	@Override
@@ -375,10 +378,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 */
 	public Collection<CoreLocation> coreByChip(ChipLocation chip) {
 		if (locations.containsKey(chip)) {
-			return Collections
-					.unmodifiableCollection(locations.get(chip).values());
+			return unmodifiableCollection(locations.get(chip).values());
 		} else {
-			return new ArrayList<>();
+			return emptyList();
 		}
 	}
 
@@ -394,9 +396,9 @@ public class CoreSubsets implements Iterable<CoreLocation> {
 	 */
 	public Set<Integer> pByChip(ChipLocation chip) {
 		if (locations.containsKey(chip)) {
-			return Collections.unmodifiableSet(locations.get(chip).keySet());
+			return unmodifiableSet(locations.get(chip).keySet());
 		} else {
-			return new HashSet<>();
+			return emptySet();
 		}
 	}
 }

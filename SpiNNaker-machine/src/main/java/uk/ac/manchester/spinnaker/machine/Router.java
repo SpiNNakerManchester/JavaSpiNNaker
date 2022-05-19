@@ -16,17 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.Objects;
-
+import static java.util.Collections.unmodifiableCollection;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Iterator;
-import java.util.stream.Stream;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
 
 /**
@@ -221,7 +221,7 @@ public final class Router implements Iterable<Link> {
 	 * @return An unmodifiable collection of Link(s).
 	 */
 	public Collection<Link> links() {
-		return Collections.unmodifiableCollection(links.values());
+		return unmodifiableCollection(links.values());
 	}
 
 	/**

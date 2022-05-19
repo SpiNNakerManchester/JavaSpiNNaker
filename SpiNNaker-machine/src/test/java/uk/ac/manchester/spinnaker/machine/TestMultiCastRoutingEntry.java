@@ -16,12 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -35,8 +36,8 @@ public class TestMultiCastRoutingEntry {
 
     @Test
     public void testBasic() {
-        var directions = Arrays.asList(Direction.NORTH, Direction.SOUTH);
-        var ids = Arrays.asList(4, 6, 8);
+        var directions = asList(Direction.NORTH, Direction.SOUTH);
+        var ids = asList(4, 6, 8);
         int key = 100;
         int mask = 200;
         var instance = new MulticastRoutingEntry(

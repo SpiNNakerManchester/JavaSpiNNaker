@@ -47,11 +47,11 @@ public class RegionLocation
 	 *            The Region to use.
 	 */
 	public RegionLocation(HasCoreLocation core, int region) {
-		this.x = core.getX();
-		this.y = core.getY();
-		this.p = core.getP();
+		x = core.getX();
+		y = core.getY();
+		p = core.getP();
 		this.region = region;
-		this.hashcode = ((((x << MachineDefaults.COORD_SHIFT)
+		hashcode = ((((x << MachineDefaults.COORD_SHIFT)
 				^ y) << MachineDefaults.CORE_SHIFT)
 				^ p) << MachineDefaults.REGION_SHIFT ^ region;
 	}
@@ -73,24 +73,24 @@ public class RegionLocation
 
 	@Override
 	public int compareTo(RegionLocation o) {
-		if (this.x < o.x) {
+		if (x < o.x) {
 			return -1;
-		} else if (this.x > o.x) {
+		} else if (x > o.x) {
 			return 1;
 		}
-		if (this.y < o.y) {
+		if (y < o.y) {
 			return -1;
-		} else if (this.y > o.y) {
+		} else if (y > o.y) {
 			return 1;
 		}
-		if (this.p < o.p) {
+		if (p < o.p) {
 			return -1;
-		} else if (this.p > o.p) {
+		} else if (p > o.p) {
 			return 1;
 		}
-		if (this.region < o.region) {
+		if (region < o.region) {
 			return -1;
-		} else if (this.region > o.region) {
+		} else if (region > o.region) {
 			return 1;
 		}
 		return 0;
@@ -105,8 +105,8 @@ public class RegionLocation
 			return false;
 		}
 		var that = (RegionLocation) obj;
-		return (this.x == that.x) && (this.y == that.y) && (this.p == that.p)
-				&& (this.region == that.region);
+		return (x == that.x) && (y == that.y) && (p == that.p)
+				&& (region == that.region);
 	}
 
 	@Override

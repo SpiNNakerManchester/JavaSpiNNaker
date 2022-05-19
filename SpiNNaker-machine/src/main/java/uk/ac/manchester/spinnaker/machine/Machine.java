@@ -17,12 +17,17 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableCollection;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.Collections.unmodifiableSortedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,7 +46,6 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
 
@@ -108,7 +112,7 @@ public class Machine implements Iterable<Chip> {
 		this.boot = boot.asChipLocation();
 		bootEthernetAddress = null;
 
-		this.chips = new TreeMap<>();
+		chips = new TreeMap<>();
 	}
 
 	/**
@@ -198,15 +202,15 @@ public class Machine implements Iterable<Chip> {
 	public Machine rebuild(Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Direction>> ignoreLinks) {
 		if (ignoreChips == null) {
-			ignoreChips = this.findAbnormalChips();
+			ignoreChips = findAbnormalChips();
 		}
 		if (ignoreLinks == null) {
-			ignoreLinks = this.findAbnormalLinks();
+			ignoreLinks = findAbnormalLinks();
 		}
 		if (ignoreLinks.isEmpty() && ignoreChips.isEmpty()) {
 			return this;
 		}
-		var rebuilt = new Machine(this.machineDimensions, this.boot);
+		var rebuilt = new Machine(machineDimensions, boot);
 		for (var chip : this) {
 			var location = chip.asChipLocation();
 			if (ignoreChips.contains(location)) {
@@ -289,7 +293,7 @@ public class Machine implements Iterable<Chip> {
 	 * @return An Unmodifiable Ordered Collection of the chips.
 	 */
 	public final Collection<Chip> chips() {
-		return Collections.unmodifiableCollection(this.chips.values());
+		return unmodifiableCollection(chips.values());
 	}
 
 	/**
@@ -298,7 +302,7 @@ public class Machine implements Iterable<Chip> {
 	 * @return An unmodifiable
 	 */
 	public final Set<ChipLocation> chipLocations() {
-		return Collections.unmodifiableSet(this.chips.keySet());
+		return unmodifiableSet(chips.keySet());
 	}
 
 	@Override
@@ -310,7 +314,7 @@ public class Machine implements Iterable<Chip> {
 	 * @return An iterator over the Chips in this Machine.
 	 */
 	public final Iterator<Chip> iterator() {
-		return this.chips.values().iterator();
+		return chips.values().iterator();
 	}
 
 	/**
@@ -330,7 +334,7 @@ public class Machine implements Iterable<Chip> {
 	 * @return (ordered) set of the locations of each chip in the Machine.
 	 */
 	public final Set<ChipLocation> chipCoordinates() {
-		return Collections.unmodifiableSet(this.chips.keySet());
+		return unmodifiableSet(chips.keySet());
 	}
 
 	/**
@@ -341,7 +345,7 @@ public class Machine implements Iterable<Chip> {
 	 * @return An unmodifiable view over the map from ChipLocations to Chips.
 	 */
 	public final SortedMap<ChipLocation, Chip> chipsMap() {
-		return Collections.unmodifiableSortedMap(chips);
+		return unmodifiableSortedMap(chips);
 	}
 
 	/**
@@ -434,13 +438,6 @@ public class Machine implements Iterable<Chip> {
 		var location = new ChipLocation(x, y);
 		return chips.containsKey(location);
 	}
-	// public Chip getChipAt(int x, int y) {
-	// return this.chipArray[x][y];
-	// }
-
-	// public boolean hasChipAt(int x, int y) {
-	// return this.chipArray[x][y] != null;
-	// }
 
 	/**
 	 * Determine if a link exists at the given coordinates.
@@ -537,7 +534,7 @@ public class Machine implements Iterable<Chip> {
 	 * @return An unmodifiable list of the Chips with an INET address.
 	 */
 	public List<Chip> ethernetConnectedChips() {
-		return Collections.unmodifiableList(this.ethernetConnectedChips);
+		return unmodifiableList(ethernetConnectedChips);
 	}
 
 	/**
@@ -547,7 +544,7 @@ public class Machine implements Iterable<Chip> {
 	 *         on this machine.
 	 */
 	public final Collection<SpinnakerLinkData> spinnakerLinks() {
-		return Collections.unmodifiableCollection(spinnakerLinks.values());
+		return unmodifiableCollection(spinnakerLinks.values());
 	}
 
 	/**
@@ -634,12 +631,12 @@ public class Machine implements Iterable<Chip> {
 	public final ChipLocation normalizedLocation(int x, int y) {
 		if (version.horizontalWrap) {
 			x = (x + machineDimensions.width) % machineDimensions.width;
-		} else if (x < 0 || x >= this.machineDimensions.width) {
+		} else if (x < 0 || x >= machineDimensions.width) {
 			return null;
 		}
 		if (version.verticalWrap) {
 			y = (y + machineDimensions.height) % machineDimensions.height;
-		} else if (y < 0 || y >= this.machineDimensions.height) {
+		} else if (y < 0 || y >= machineDimensions.height) {
 			return null;
 		}
 		if (x < 0 || y < 0) {
@@ -900,25 +897,26 @@ public class Machine implements Iterable<Chip> {
 	 *         identifies links to remove
 	 */
 	public Map<ChipLocation, Set<Direction>> findAbnormalLinks() {
-		var abnormalLinks =
-				new DefaultMap<ChipLocation, Set<Direction>>(HashSet::new);
+		var abnormalLinks = new HashMap<ChipLocation, Set<Direction>>();
 		for (var chip : chips.values()) {
 			for (var link : chip.router) {
-				if (!this.hasChipAt(link.destination)) {
-					abnormalLinks.get(link.source)
+				if (!hasChipAt(link.destination)) {
+					abnormalLinks.computeIfAbsent(
+							link.source, k -> new HashSet<>())
 							.add(link.sourceLinkDirection);
 				} else {
-					var destChip = this.getChipAt(link.destination);
+					var destChip = getChipAt(link.destination);
 					var inverse = destChip.router
 							.getLink(link.sourceLinkDirection.inverse());
 					if (inverse == null) {
-						abnormalLinks.get(link.source)
+						abnormalLinks.computeIfAbsent(
+								link.source, k -> new HashSet<>())
 								.add(link.sourceLinkDirection);
 					}
 				}
 			}
 		}
-		return abnormalLinks;
+		return unmodifiableMap(abnormalLinks);
 	}
 
 	/**
@@ -938,7 +936,7 @@ public class Machine implements Iterable<Chip> {
 				abnormalCores.add(chip.asChipLocation());
 			}
 		}
-		return abnormalCores;
+		return unmodifiableSet(abnormalCores);
 	}
 
 	@Override
@@ -1069,7 +1067,7 @@ public class Machine implements Iterable<Chip> {
 	 * @return The IPv4 Address of the boot chip (typically 0, 0)
 	 */
 	public InetAddress getBootEthernetAddress() {
-		return this.bootEthernetAddress;
+		return bootEthernetAddress;
 	}
 
 	private class ChipOnBoardIterator implements Iterator<Chip> {
@@ -1081,7 +1079,7 @@ public class Machine implements Iterable<Chip> {
 
 		ChipOnBoardIterator(HasChipLocation root) {
 			this.root = root;
-			var geometry = SpiNNakerTriadGeometry.getSpinn5Geometry();
+			var geometry = getSpinn5Geometry();
 			singleBoardIterator = geometry.singleBoardIterator();
 			prepareNextChip();
 		}

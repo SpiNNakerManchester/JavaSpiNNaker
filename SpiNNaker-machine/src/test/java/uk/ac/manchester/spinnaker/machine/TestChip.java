@@ -16,14 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.*;
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 
 /**
@@ -69,7 +70,7 @@ public class TestChip {
 
     @Test
     public void testChipBasic() throws UnknownHostException {
-        var tags = Arrays.asList(1, 2, 3, 4, 5, 6);
+        var tags = asList(1, 2, 3, 4, 5, 6);
         var chip = new Chip(location00, getProcessors(), createRouter(), 100,
                 createInetAddress(), false,  tags, location11);
         assertEquals(0, chip.getX());
@@ -90,7 +91,7 @@ public class TestChip {
 
     @Test
     public void testDefault() throws UnknownHostException {
-        var tags = Arrays.asList(1, 2, 3, 4, 5, 6, 7);
+        var tags = asList(1, 2, 3, 4, 5, 6, 7);
         var chip = new Chip(location00, getProcessors(), createRouter(),
                 100, createInetAddress(), location11);
         assertEquals(tags, chip.getTagIds());
@@ -99,7 +100,7 @@ public class TestChip {
 
     @Test
     public void testChipMonitors() throws UnknownHostException {
-        var tags = Arrays.asList(1, 2, 3, 4, 5, 6);
+        var tags = asList(1, 2, 3, 4, 5, 6);
         var chip = new Chip(location00, getProcessors(), createRouter(), 100,
                 createInetAddress(), false, tags, location11);
         Processor result = chip.getFirstUserProcessor();
@@ -112,7 +113,7 @@ public class TestChip {
      */
     @Test
     public void testToString() throws UnknownHostException {
-        var tags = Arrays.asList(1, 2, 3, 4, 5, 6);
+        var tags = asList(1, 2, 3, 4, 5, 6);
         var chip1 = new Chip(location00, getProcessors(), createRouter(), 100,
                 createInetAddress(), false, tags, location11);
         var chip2 = new Chip(location00, getProcessors(), createRouter(), 100,
@@ -174,7 +175,7 @@ public class TestChip {
 
     @Test
     public void testDefault2() throws UnknownHostException {
-        var tags = Arrays.asList(1, 2, 3, 4, 5, 6, 7);
+        var tags = asList(1, 2, 3, 4, 5, 6, 7);
         var chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
                 createInetAddress(), location11);
         assertEquals(ChipLocation.ZERO_ZERO, chip.asChipLocation());

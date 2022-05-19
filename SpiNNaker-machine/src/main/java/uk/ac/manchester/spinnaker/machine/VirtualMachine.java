@@ -16,13 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -69,10 +70,10 @@ public class VirtualMachine extends Machine {
 		super(machineDimensions, ChipLocation.ZERO_ZERO);
 
 		if (ignoreChips == null) {
-			ignoreChips = Collections.emptySet();
+			ignoreChips = emptySet();
 		}
 		if (ignoreCores == null) {
-			ignoreCores = Collections.emptyMap();
+			ignoreCores = emptyMap();
 		}
 		if (ignoreLinks == null) {
 			ignoreLinks = new HashMap<>();

@@ -17,10 +17,10 @@
 package uk.ac.manchester.spinnaker.machine.bean;
 
 import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,12 +83,10 @@ public class ChipDetails {
 			this.ipAddress = null;
 		}
 		if (deadLinks != null) {
-			this.deadDirections = new HashSet<>();
-			for (Integer deadLink : deadLinks) {
-				this.deadDirections.add(Direction.byId(deadLink));
-			}
+			deadDirections = deadLinks.stream().map(Direction::byId)
+					.collect(toUnmodifiableSet());
 		} else {
-			this.deadDirections = emptySet();
+			deadDirections = emptySet();
 		}
 	}
 

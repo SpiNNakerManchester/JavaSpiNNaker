@@ -17,13 +17,13 @@
 package uk.ac.manchester.spinnaker.storage;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,15 +57,15 @@ class TestSQLiteStorage {
 		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
 		var core = new CoreLocation(0, 0, 0);
 
-		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
+		assertEquals(emptyList(), storage.getCoresWithStorage());
 
 		var rr = new BufferManagerStorage.Region(core, 0, 0, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
 
-		assertEquals(Arrays.asList(core), storage.getCoresWithStorage());
-		assertEquals(Arrays.asList(0), storage.getRegionsWithStorage(core));
+		assertEquals(asList(core), storage.getCoresWithStorage());
+		assertEquals(asList(0), storage.getRegionsWithStorage(core));
 	}
 
 	@Test

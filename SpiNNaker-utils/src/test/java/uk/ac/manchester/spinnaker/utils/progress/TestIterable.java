@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.utils.progress;
 
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
 import uk.ac.manchester.spinnaker.utils.Counter;
 
 /**
@@ -41,7 +43,7 @@ public class TestIterable {
 	public void testBasic() {
 		var description = "Easiest";
 		var pb = new ProgressIterable<>(
-				Arrays.asList(1, 2, 3, 4, 5), description,
+				asList(1, 2, 3, 4, 5), description,
 				new PrintStream(new ByteArrayOutputStream()));
 		int sum = 0;
 		for (int i : pb) {
@@ -55,7 +57,7 @@ public class TestIterable {
 	public void testSimple() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7),
+		var pb = new ProgressIterable<>(asList(1, 2, 3, 4, 5, 6, 7),
 				description, new PrintStream(baos));
 		int sum = 0;
 		for (int i : pb) {
@@ -75,7 +77,7 @@ public class TestIterable {
 		var baos = new ByteArrayOutputStream();
 		var description = "Early";
 		try (var bar = new ProgressIterable<Integer>(
-				Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), description,
+				asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), description,
 				new PrintStream(baos))) {
 			for (int i : bar) {
 				if (i == 3) {
@@ -94,7 +96,7 @@ public class TestIterable {
 	public void testForEachRemaining() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(Arrays.asList(1, 2, 3, 4, 5),
+		var pb = new ProgressIterable<>(asList(1, 2, 3, 4, 5),
 				description, new PrintStream(baos));
 		var sum = new Counter();
 		pb.forEach(sum::add);

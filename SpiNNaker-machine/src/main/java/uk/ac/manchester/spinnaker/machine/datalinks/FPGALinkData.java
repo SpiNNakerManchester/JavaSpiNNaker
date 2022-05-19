@@ -56,8 +56,8 @@ public final class FPGALinkData extends AbstractDataLink {
 	@Override
 	public int hashCode() {
 		int hash = super.hashCode();
-		hash = 53 * hash + this.fpgaLinkId;
-		hash = 53 * hash + this.fpgaId.id;
+		hash = 53 * hash + fpgaLinkId;
+		hash = 53 * hash + fpgaId.id;
 		return hash;
 	}
 
@@ -74,10 +74,10 @@ public final class FPGALinkData extends AbstractDataLink {
 		}
 		var other = (FPGALinkData) obj;
 		if (sameAs(other)) {
-			if (this.fpgaLinkId != other.fpgaLinkId) {
+			if (fpgaLinkId != other.fpgaLinkId) {
 				return false;
 			}
-			return this.fpgaId == other.fpgaId;
+			return fpgaId == other.fpgaId;
 		} else {
 			return false;
 		}

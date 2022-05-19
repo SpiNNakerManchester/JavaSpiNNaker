@@ -16,10 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +53,7 @@ class TestMemoryRegionCollection {
 		assertEquals(1, c.countUsedRegions());
 		assertTrue(c.needsToWriteRegion(0));
 		assertTrue(c.contains(mr));
-		assertTrue(c.containsAll(Collections.singleton(mr)));
+		assertTrue(c.containsAll(singleton(mr)));
 		assertArrayEquals(new MemoryRegionReal[] {
 			mr
 		}, c.toArray(new MemoryRegionReal[0]));
@@ -80,7 +79,7 @@ class TestMemoryRegionCollection {
 		assertArrayEquals(new Object[] {
 			null, null, mr1, null, mr2, null, null
 		}, c.toArray(new Object[7]));
-		assertFalse(c.containsAll(Arrays.asList(mr1, mr2,
+		assertFalse(c.containsAll(asList(mr1, mr2,
 				new MemoryRegionReal(5, 123, true, 123))));
 		assertThrows(IllegalArgumentException.class,
 				() -> c.needsToWriteRegion(6));

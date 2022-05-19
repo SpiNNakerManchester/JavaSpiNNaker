@@ -129,28 +129,28 @@ public final class Processor implements Comparable<Processor> {
 			return false;
 		}
 		var other = (Processor) obj;
-		if (this.processorId != other.processorId) {
+		if (processorId != other.processorId) {
 			return false;
 		}
-		if (this.clockSpeed != other.clockSpeed) {
+		if (clockSpeed != other.clockSpeed) {
 			return false;
 		}
-		if (this.isMonitor != other.isMonitor) {
+		if (isMonitor != other.isMonitor) {
 			return false;
 		}
-		return this.dtcmAvailable == other.dtcmAvailable;
+		return dtcmAvailable == other.dtcmAvailable;
 	}
 
 	@Override
 	public int compareTo(Processor other) {
-		if (this.processorId < other.processorId) {
+		if (processorId < other.processorId) {
 			return -1;
 		}
-		if (this.processorId > other.processorId) {
+		if (processorId > other.processorId) {
 			return 1;
 		}
 		// Check the other parameters for consistency with equals.
-		if (this.isMonitor) {
+		if (isMonitor) {
 			if (!other.isMonitor) {
 				return 1;
 			}
@@ -159,13 +159,13 @@ public final class Processor implements Comparable<Processor> {
 				return -1;
 			}
 		}
-		if (this.dtcmAvailable < other.dtcmAvailable) {
+		if (dtcmAvailable < other.dtcmAvailable) {
 			return -1;
 		}
-		if (this.dtcmAvailable > other.dtcmAvailable) {
+		if (dtcmAvailable > other.dtcmAvailable) {
 			return 1;
 		}
-		return Integer.compare(this.clockSpeed, other.clockSpeed);
+		return Integer.compare(clockSpeed, other.clockSpeed);
 	}
 
 	/**

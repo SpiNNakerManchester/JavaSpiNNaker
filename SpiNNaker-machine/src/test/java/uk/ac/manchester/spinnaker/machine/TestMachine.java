@@ -19,9 +19,7 @@ package uk.ac.manchester.spinnaker.machine;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +30,8 @@ import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn
 
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -56,8 +56,7 @@ public class TestMachine {
     Link link11_20 = new Link(chip11, Direction.EAST, chip20);
     Link link10_30 = new Link(chip10, Direction.WEST, chip01);
 
-    List<Link> LINKS = Arrays.asList(
-            link00_01, link01_11, link11_20, link10_30);
+    List<Link> LINKS = asList(link00_01, link01_11, link11_20, link10_30);
 
     Router ROUTER = new Router(LINKS);
 
@@ -213,7 +212,7 @@ public class TestMachine {
         var link01 = new Link(chip00, Direction.NORTH, chip01);
         var link10 = new Link(chip00, Direction.EAST, chip10);
 
-        var router = new Router(Arrays.asList(link01, link10));
+        var router = new Router(asList(link01, link10));
         var chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, router,
         		SDRAM, null, BOOT_CHIP);
         //Chip created but not added
@@ -268,7 +267,7 @@ public class TestMachine {
         var chip01 = new Chip(new ChipLocation(0, 1), processors, null,
         		SDRAM, null, BOOT_CHIP);
         chips.add(chip01);
-        var chip02 = new Chip(new ChipLocation(0, 2), Collections.emptySet(),
+        var chip02 = new Chip(new ChipLocation(0, 2), emptySet(),
         		null, SDRAM, null, BOOT_CHIP);
         chips.add(chip02);
         var instance = new Machine(

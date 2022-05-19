@@ -72,9 +72,7 @@ public class RoutingEntry {
 			}
 			this.processorIDs.add(procId);
 		}
-		for (var linkIds : linkIDs) {
-			this.linkIDs.add(linkIds);
-		}
+		linkIDs.forEach(this.linkIDs::add);
 	}
 
 	/**

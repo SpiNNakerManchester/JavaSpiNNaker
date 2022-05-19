@@ -19,12 +19,14 @@ package uk.ac.manchester.spinnaker.machine;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.hamcrest.collection.IsEmptyCollection;
@@ -50,7 +52,7 @@ public class TestVirtualMachine {
     @Test
     public void testSmallBoards() {
         var instance = new VirtualMachine(new MachineDimensions(2, 2),
-                new HashSet<>(), new HashMap<>(), new HashMap<>());
+                emptySet(), emptyMap(), emptyMap());
         assertEquals(MachineVersion.THREE, instance.version);
         assertEquals(4, instance.chips().size());
         for (var chip: instance.chips()) {
@@ -135,10 +137,10 @@ public class TestVirtualMachine {
 
     @Test
     public void testSpinnakerLinks() {
-        Map<ChipLocation, Set<Direction>> ignoreLinks = new HashMap<>();
-        ignoreLinks.put(new ChipLocation(0, 0), Collections.singleton(Direction.SOUTHWEST));
-        ignoreLinks.put(new ChipLocation(8, 4), Collections.singleton(Direction.SOUTHWEST));
-        ignoreLinks.put(new ChipLocation(4, 8), Collections.singleton(Direction.SOUTHWEST));
+        var ignoreLinks = new HashMap<ChipLocation, Set<Direction>>();
+        ignoreLinks.put(new ChipLocation(0, 0), singleton(Direction.SOUTHWEST));
+        ignoreLinks.put(new ChipLocation(8, 4), singleton(Direction.SOUTHWEST));
+        ignoreLinks.put(new ChipLocation(4, 8), singleton(Direction.SOUTHWEST));
         var instance = new VirtualMachine(new MachineDimensions(12, 12),
                 null, null, ignoreLinks);
         assertFalse(instance.hasLinkAt(new ChipLocation(0, 0), Direction.SOUTHWEST));
@@ -176,12 +178,12 @@ public class TestVirtualMachine {
         Map<ChipLocation, Set<Direction>> ignoreLinks = new HashMap<>();
         //Make room for fpga links with two none fpga ignores as well
         //South is a fpg NE is not
-        ignoreLinks.put(new ChipLocation(0, 0), new HashSet<>(
-                Arrays.asList(Direction.SOUTH, Direction.NORTHEAST)));
-        ignoreLinks.put(new ChipLocation(0, 3), Collections.singleton(Direction.WEST));
-        ignoreLinks.put(new ChipLocation(7, 2), Collections.singleton(Direction.NORTH));
+        ignoreLinks.put(new ChipLocation(0, 0),
+        		Set.of(Direction.SOUTH, Direction.NORTHEAST));
+        ignoreLinks.put(new ChipLocation(0, 3), singleton(Direction.WEST));
+        ignoreLinks.put(new ChipLocation(7, 2), singleton(Direction.NORTH));
         // Middle of board so never fpga
-        ignoreLinks.put(new ChipLocation(1, 1), Collections.singleton(Direction.NORTH));
+        ignoreLinks.put(new ChipLocation(1, 1), singleton(Direction.NORTH));
 
         var instance = new VirtualMachine(new MachineDimensions(12, 12),
                 null, null, ignoreLinks);
@@ -192,15 +194,12 @@ public class TestVirtualMachine {
         var links = new ArrayList<FPGALinkData>();
         instance.getFpgaLinks().forEach(links::add);
         assertEquals(3, links.size());
-
     }
 
     @Test
     public void test3BoardNoWrap() throws UnknownHostException {
-        Map<ChipLocation, Set<Direction>> ignoreLinks = new HashMap<>();
-
         var instance = new VirtualMachine(new MachineDimensions(16, 16),
-                null, null, ignoreLinks);
+                null, null, emptyMap());
         assertEquals(3 * 48, instance.chips().size());
 
         instance.addFpgaLinks();
@@ -232,8 +231,7 @@ public class TestVirtualMachine {
 
     @Test
     public void testIgnoreCores() {
-        Map<ChipLocation, Set<Integer>> ignoreCores = new HashMap<>();
-        ignoreCores.put(new ChipLocation(7, 7), new HashSet<>(Arrays.asList(3, 5, 7)));
+    	var ignoreCores = singletonMap(new ChipLocation(7, 7), Set.of(3, 5, 7));
         var instance = new VirtualMachine(new MachineDimensions(12, 12),
                 null, ignoreCores, null);
         assertEquals(3 * 48, instance.chips().size());
@@ -244,23 +242,21 @@ public class TestVirtualMachine {
 
     @Test
     public void testIgnoreChips() {
-        Set<ChipLocation> ignoreChips = new HashSet<>();
-        ignoreChips.add(new ChipLocation(4,4));
-        ignoreChips.add(new ChipLocation(9,10));
+		Set<ChipLocation> ignoreChips = Set.of(
+				new ChipLocation(4, 4),
+				new ChipLocation(9, 10));
         var instance = new VirtualMachine(new MachineDimensions(12, 12),
                 ignoreChips, null, null);
-        assertEquals(3 * 48 - 2 , instance.chips().size());
+        assertEquals(3 * 48 - 2, instance.chips().size());
     }
 
     @Test
     public void testIgnoreRootChips() {
-        Set<ChipLocation> ignoreChips = new HashSet<>();
-        ignoreChips.add(new ChipLocation(8, 4));
         // Note future Machine may disallow a null ethernet chip
         var instance = new VirtualMachine(new MachineDimensions(12, 12),
-                ignoreChips, null, null);
+                singleton(new ChipLocation(8, 4)), null, null);
         // Note future VirtualMachines may ignore the whole board!
-        assertEquals(3 * 48 -1 , instance.chips().size());
+        assertEquals(3 * 48 - 1, instance.chips().size());
         var chip = instance.getChipAt(2, 9);
         assertEquals(new ChipLocation(8, 4), chip.nearestEthernet.asChipLocation());
         assertNull(instance.getChipAt(chip.nearestEthernet));
@@ -294,7 +290,7 @@ public class TestVirtualMachine {
     @Test
     public void testBiggestWrapAround() {
         var instance = new VirtualMachine(new MachineDimensions(252, 252),
-                new HashSet<>(), new HashMap<>(), new HashMap<>());
+                emptySet(), emptyMap(), emptyMap());
         assertEquals(252 * 252, instance.chips().size());
         assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.version);
     }
@@ -302,7 +298,7 @@ public class TestVirtualMachine {
     @Test
     public void testBiggestNoneWrapAround() {
         var instance = new VirtualMachine(new MachineDimensions(244, 244),
-                new HashSet<>(), new HashMap<>(), new HashMap<>());
+                emptySet(), emptyMap(), emptyMap());
         assertEquals(57600, instance.chips().size());
         assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.version);
     }

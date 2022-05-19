@@ -16,10 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableCollection;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -272,7 +278,7 @@ public final class SpiNNakerTriadGeometry {
 	 * @return An unmodifiable Collection of the Locations on one board.
 	 */
 	public Collection<ChipLocation> singleBoard() {
-		return Collections.unmodifiableCollection(singleBoardCoordinates);
+		return unmodifiableCollection(singleBoardCoordinates);
 	}
 
 	/**
@@ -305,15 +311,13 @@ public final class SpiNNakerTriadGeometry {
 	 */
 	public static SpiNNakerTriadGeometry getSpinn5Geometry() {
 		if (spinn5TriadGeometry == null) {
-			var roots = Arrays.asList(
+			var roots = asList(
 					new ChipLocation(0, 0),
-					new ChipLocation(MachineDefaults.HALF_SIZE,
-							MachineDefaults.SIZE_Y_OF_ONE_BOARD),
-					new ChipLocation(MachineDefaults.SIZE_X_OF_ONE_BOARD,
-							MachineDefaults.HALF_SIZE));
+					new ChipLocation(HALF_SIZE, SIZE_Y_OF_ONE_BOARD),
+					new ChipLocation(SIZE_X_OF_ONE_BOARD, HALF_SIZE));
 
 			spinn5TriadGeometry = new SpiNNakerTriadGeometry(
-					MachineDefaults.TRIAD_HEIGHT, MachineDefaults.TRIAD_WIDTH,
+					TRIAD_HEIGHT, TRIAD_WIDTH,
 					roots, VIRTUAL_CENTRE_X, VIRTUAL_CENTRE_Y);
 		}
 		return spinn5TriadGeometry;
