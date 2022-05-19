@@ -23,8 +23,6 @@ import java.util.Map;
  * What SpiNNaker-specific EIEIO commands there are.
  */
 public enum EIEIOCommandID implements EIEIOCommand {
-	/** Database handshake with external program. */
-	DATABASE_CONFIRMATION(1),
 	/** Fill in buffer area with padding. */
 	EVENT_PADDING(2),
 	/** End of all buffers, stop execution. */
@@ -41,10 +39,6 @@ public enum EIEIOCommandID implements EIEIOCommand {
 	SPINNAKER_REQUEST_READ_DATA(8),
 	/** Host confirming data being read form SpiNNaker memory. */
 	HOST_DATA_READ(9),
-	/** Notify the external devices that the simulation has stopped. */
-	STOP_PAUSE_NOTIFICATION(10),
-	/** Notify the external devices that the simulation has started. */
-	START_RESUME_NOTIFICATION(11),
 	/** Host confirming request to read data received. */
 	HOST_DATA_READ_ACK(12);
 	private final int value;
