@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -79,7 +80,8 @@ public class DataReceiver extends BoardLocalSupport {
 
 	private Stream<List<Placement>> partitionByBoard(
 			List<Placement> placements) {
-		var map = new DefaultMap<ChipLocation, List<Placement>>(ArrayList::new);
+		Map<ChipLocation, List<Placement>> map =
+				new DefaultMap<>(ArrayList::new);
 		for (var p : placements) {
 			map.get(machine.getChipAt(p).nearestEthernet).add(p);
 		}
