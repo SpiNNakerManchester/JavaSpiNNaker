@@ -89,7 +89,7 @@
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  	}
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  	@Override
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  	<strong class="jxr_keyword">public</strong> <a name="SDPMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPMessage.html#SDPMessage">SDPMessage</a> receiveMessage(Integer timeout)
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  	<strong class="jxr_keyword">public</strong> <a name="SDPMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/sdp/SDPMessage.html#SDPMessage">SDPMessage</a> receiveMessage(<strong class="jxr_keyword">int</strong> timeout)
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  			<strong class="jxr_keyword">throws</strong> IOException, InterruptedIOException {
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  		ByteBuffer buffer = receive(timeout);
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  		buffer.getShort(); <em class="jxr_comment">// SKIP TWO PADDING BYTES</em>

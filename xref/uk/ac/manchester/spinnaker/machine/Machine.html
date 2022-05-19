@@ -219,15 +219,15 @@
 <a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<strong class="jxr_keyword">for</strong> (<a name="Chip" href="../../../../../uk/ac/manchester/spinnaker/machine/Chip.html#Chip">Chip</a> chip : <strong class="jxr_keyword">this</strong>) {
 <a class="jxr_linenumber" name="L212" href="#L212">212</a> 			ChipLocation location = chip.asChipLocation();
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> 			<strong class="jxr_keyword">if</strong> (ignoreChips.contains(location)) {
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 				log.info(<span class="jxr_string">"Rebuilt machine without Chip "</span> + location);
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 				log.info(<span class="jxr_string">"Rebuilt machine without Chip {}"</span>, location);
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 			} <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (ignoreLinks.containsKey(location)) {
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> 				Collection&lt;Direction&gt; downDirections =
 <a class="jxr_linenumber" name="L217" href="#L217">217</a> 						ignoreLinks.get(location);
 <a class="jxr_linenumber" name="L218" href="#L218">218</a> 				ArrayList&lt;Link&gt; links = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 				<strong class="jxr_keyword">for</strong> (<a name="Link" href="../../../../../uk/ac/manchester/spinnaker/machine/Link.html#Link">Link</a> link : chip.router) {
 <a class="jxr_linenumber" name="L220" href="#L220">220</a> 					<strong class="jxr_keyword">if</strong> (downDirections.contains(link.sourceLinkDirection)) {
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 						log.info(<span class="jxr_string">"Rebuilt machine without Link "</span> + location
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> 								+ <span class="jxr_string">" "</span> + link.sourceLinkDirection);
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 						log.info(<span class="jxr_string">"Rebuilt machine without Link {} {}"</span>,
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 								location, link.sourceLinkDirection);
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> 					} <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> 						links.add(link);
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> 					}

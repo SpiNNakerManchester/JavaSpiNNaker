@@ -135,57 +135,45 @@ implements <a href="EIEIOCommand.html" title="interface in uk.ac.manchester.spin
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#DATABASE_CONFIRMATION">DATABASE_CONFIRMATION</a></span></code></th>
-<td class="colLast">
-<div class="block">Database handshake with external program.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#EVENT_PADDING">EVENT_PADDING</a></span></code></th>
 <td class="colLast">
 <div class="block">Fill in buffer area with padding.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#EVENT_STOP">EVENT_STOP</a></span></code></th>
 <td class="colLast">
 <div class="block">End of all buffers, stop execution.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#HOST_DATA_READ">HOST_DATA_READ</a></span></code></th>
 <td class="colLast">
 <div class="block">Host confirming data being read form SpiNNaker memory.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#HOST_DATA_READ_ACK">HOST_DATA_READ_ACK</a></span></code></th>
 <td class="colLast">
 <div class="block">Host confirming request to read data received.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#HOST_SEND_SEQUENCED_DATA">HOST_SEND_SEQUENCED_DATA</a></span></code></th>
 <td class="colLast">
 <div class="block">Buffers being sent from host to SpiNNaker.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#SPINNAKER_REQUEST_BUFFERS">SPINNAKER_REQUEST_BUFFERS</a></span></code></th>
 <td class="colLast">
 <div class="block">Spinnaker requesting new buffers for spike source population.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#SPINNAKER_REQUEST_READ_DATA">SPINNAKER_REQUEST_READ_DATA</a></span></code></th>
 <td class="colLast">
 <div class="block">Buffers available to be read from a buffered out vertex.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#START_RESUME_NOTIFICATION">START_RESUME_NOTIFICATION</a></span></code></th>
-<td class="colLast">
-<div class="block">Notify the external devices that the simulation has started.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -195,12 +183,6 @@ implements <a href="EIEIOCommand.html" title="interface in uk.ac.manchester.spin
 </td>
 </tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#STOP_PAUSE_NOTIFICATION">STOP_PAUSE_NOTIFICATION</a></span></code></th>
-<td class="colLast">
-<div class="block">Notify the external devices that the simulation has stopped.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#STOP_SENDING_REQUESTS">STOP_SENDING_REQUESTS</a></span></code></th>
 <td class="colLast">
 <div class="block">Stop complaining that there is SDRAM free space for buffers.</div>
@@ -287,13 +269,6 @@ the order they are declared.</div>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="DATABASE_CONFIRMATION">DATABASE_CONFIRMATION</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="EIEIOCommandID.html" title="enum in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandID</a></span>&nbsp;<span class="memberName">DATABASE_CONFIRMATION</span></div>
-<div class="block">Database handshake with external program.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="EVENT_PADDING">EVENT_PADDING</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="EIEIOCommandID.html" title="enum in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandID</a></span>&nbsp;<span class="memberName">EVENT_PADDING</span></div>
 <div class="block">Fill in buffer area with padding.</div>
@@ -346,20 +321,6 @@ the order they are declared.</div>
 <h3><a id="HOST_DATA_READ">HOST_DATA_READ</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="EIEIOCommandID.html" title="enum in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandID</a></span>&nbsp;<span class="memberName">HOST_DATA_READ</span></div>
 <div class="block">Host confirming data being read form SpiNNaker memory.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="STOP_PAUSE_NOTIFICATION">STOP_PAUSE_NOTIFICATION</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="EIEIOCommandID.html" title="enum in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandID</a></span>&nbsp;<span class="memberName">STOP_PAUSE_NOTIFICATION</span></div>
-<div class="block">Notify the external devices that the simulation has stopped.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="START_RESUME_NOTIFICATION">START_RESUME_NOTIFICATION</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="EIEIOCommandID.html" title="enum in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandID</a></span>&nbsp;<span class="memberName">START_RESUME_NOTIFICATION</span></div>
-<div class="block">Notify the external devices that the simulation has started.</div>
 </section>
 </li>
 <li class="blockList">

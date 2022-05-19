@@ -17,6 +17,7 @@ uk.ac.manchester.spinnaker.messages.bmp
 uk.ac.manchester.spinnaker.messages.boot
 uk.ac.manchester.spinnaker.messages.eieio
 uk.ac.manchester.spinnaker.messages.model
+uk.ac.manchester.spinnaker.messages.notification
 uk.ac.manchester.spinnaker.messages.scp
 uk.ac.manchester.spinnaker.messages.sdp
 uk.ac.manchester.spinnaker.pacman

@@ -389,7 +389,7 @@
 <a class="jxr_linenumber" name="L381" href="#L381">381</a> 			GatherDownloadConnection conn, <a name="Progress" href="../../../../../../uk/ac/manchester/spinnaker/front_end/Progress.html#Progress">Progress</a> bar) <strong class="jxr_keyword">throws</strong> IOException,
 <a class="jxr_linenumber" name="L382" href="#L382">382</a> 			StorageException, TimeoutException, ProcessException {
 <a class="jxr_linenumber" name="L383" href="#L383">383</a> 		<strong class="jxr_keyword">try</strong> (BoardLocal c = <strong class="jxr_keyword">new</strong> BoardLocal(conn.getChip())) {
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> 			log.info(<span class="jxr_string">"processing fast downloads"</span>, conn.getChip());
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 			log.info(<span class="jxr_string">"processing fast downloads for {}"</span>, conn.getChip());
 <a class="jxr_linenumber" name="L385" href="#L385">385</a> 			Downloader dl = <strong class="jxr_keyword">new</strong> Downloader(conn);
 <a class="jxr_linenumber" name="L386" href="#L386">386</a> 			<strong class="jxr_keyword">for</strong> (WorkItems item : work) {
 <a class="jxr_linenumber" name="L387" href="#L387">387</a> 				<strong class="jxr_keyword">for</strong> (List&lt;Region&gt; regionsOnCore : item.regions) {

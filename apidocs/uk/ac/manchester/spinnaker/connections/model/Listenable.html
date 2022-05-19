@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":18,"i1":18,"i2":6};
+<script type="text/javascript">var data = {"i0":18,"i1":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -99,7 +99,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl>
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="../BMPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BMPConnection</a></code>, <code><a href="../BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BootConnection</a></code>, <code><a href="../DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></code>, <code><a href="../EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></code>, <code><a href="../IPAddressConnection.html" title="class in uk.ac.manchester.spinnaker.connections">IPAddressConnection</a></code>, <code><a href="../SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></code>, <code><a href="../SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a></code>, <code><a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></code></dd>
+<dd><code><a href="../BMPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BMPConnection</a></code>, <code><a href="../BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BootConnection</a></code>, <code><a href="../DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></code>, <code><a href="../EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></code>, <code><a href="../IPAddressConnection.html" title="class in uk.ac.manchester.spinnaker.connections">IPAddressConnection</a></code>, <code><a href="../NotificationConnection.html" title="class in uk.ac.manchester.spinnaker.connections">NotificationConnection</a></code>, <code><a href="../SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></code>, <code><a href="../SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a></code>, <code><a href="../UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></code></dd>
 </dl>
 <hr>
 <pre>public interface <span class="typeNameLabel">Listenable&lt;MessageType&gt;</span>
@@ -135,16 +135,8 @@ extends <a href="MessageReceiver.html" title="interface in uk.ac.manchester.spin
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>default boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isReadyToReceive(double)">isReadyToReceive</a></span>&#8203;(double&nbsp;timeout)</code></th>
-<td class="colLast">
-<div class="block">Do a blocking poll of whether there is a message ready to be received
- without blocking.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isReadyToReceive(java.lang.Integer)">isReadyToReceive</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isReadyToReceive(int)">isReadyToReceive</a></span>&#8203;(int&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Determines if there is a message available to be received without
  blocking.</div>
@@ -163,12 +155,12 @@ extends <a href="MessageReceiver.html" title="interface in uk.ac.manchester.spin
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.MessageReceiver">
 <!--   -->
-</a><code><a href="MessageReceiver.html#receiveMessage()">receiveMessage</a>, <a href="MessageReceiver.html#receiveMessage(java.lang.Integer)">receiveMessage</a></code></div>
+</a><code><a href="MessageReceiver.html#receiveMessage()">receiveMessage</a>, <a href="MessageReceiver.html#receiveMessage(int)">receiveMessage</a>, <a href="MessageReceiver.html#receiveMessage(java.lang.Integer)">receiveMessage</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SocketHolder">
 <!--   -->
-</a><code><a href="SocketHolder.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="SocketHolder.html#getLocalPort()">getLocalPort</a>, <a href="SocketHolder.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="SocketHolder.html#getRemotePort()">getRemotePort</a></code></div>
+</a><code><a href="SocketHolder.html#convertTimeout(java.lang.Integer)">convertTimeout</a>, <a href="SocketHolder.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="SocketHolder.html#getLocalPort()">getLocalPort</a>, <a href="SocketHolder.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="SocketHolder.html#getRemotePort()">getRemotePort</a></code></div>
 </section>
 </li>
 </ul>
@@ -195,37 +187,21 @@ extends <a href="MessageReceiver.html" title="interface in uk.ac.manchester.spin
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong, e.g., if the socket is closed under
              our feet.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="#isReadyToReceive(int)"><code>isReadyToReceive(int)</code></a></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="isReadyToReceive(double)">isReadyToReceive</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isReadyToReceive</span>&#8203;(<span class="arguments">double&nbsp;timeout)</span>
-                          throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Do a blocking poll of whether there is a message ready to be received
- without blocking. <i>This method</i> may block until the timeout given.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>timeout</code> - How many seconds to wait for a message to be receivable.</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>true when there is a packet waiting to be received</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong, e.g., if the socket is closed under
-             our feet.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="isReadyToReceive(java.lang.Integer)">isReadyToReceive</a></h3>
-<div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">isReadyToReceive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<h3><a id="isReadyToReceive(int)">isReadyToReceive</a></h3>
+<div class="memberSignature"><span class="returnType">boolean</span>&nbsp;<span class="memberName">isReadyToReceive</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
                   throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Determines if there is a message available to be received without
  blocking. <i>This method</i> may block until the timeout given.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>timeout</code> - How long to wait, in milliseconds; if zero or <code>null</code>, a
+<dd><code>timeout</code> - How long to wait, in <em>milliseconds</em>; if zero, a
             non-blocking poll is performed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>true when there is a message waiting to be received</dd>

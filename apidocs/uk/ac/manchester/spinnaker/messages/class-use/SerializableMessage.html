@@ -99,12 +99,18 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.notification">uk.ac.manchester.spinnaker.messages.notification</a></th>
+<td class="colLast">
+<div class="block">The messages of the notification protocol.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.sdp">uk.ac.manchester.spinnaker.messages.sdp</a></th>
 <td class="colLast">
 <div class="block">Messages sent and received by SDP (the SpiNNaker Datagram Protocol).</div>
@@ -317,41 +323,33 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/DatabaseConfirmation.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">DatabaseConfirmation</a></span></code></th>
-<td class="colLast">
-<div class="block">Packet which contains the path to the database created by the toolchain which
- is to be used by any software which interfaces with SpiNNaker.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/EIEIOCommandMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">An EIEIO message containing a command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/EIEIOCommandMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage.Header</a></span></code></th>
 <td class="colLast">
 <div class="block">EIEIO header for command packets.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/EIEIODataMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIODataMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">An EIEIO message containing data.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/EIEIODataMessage.Header.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIODataMessage.Header</a></span></code></th>
 <td class="colLast">
 <div class="block">EIEIO header for data packets.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/EventStopRequest.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EventStopRequest</a></span></code></th>
 <td class="colLast">
@@ -359,7 +357,7 @@ loadScripts(document, 'script');</script>
  input packet to terminate its execution.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/HostDataRead.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostDataRead</a></span></code></th>
 <td class="colLast">
@@ -369,7 +367,7 @@ loadScripts(document, 'script');</script>
  use again.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/HostDataReadAck.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostDataReadAck</a></span></code></th>
 <td class="colLast">
@@ -378,7 +376,7 @@ loadScripts(document, 'script');</script>
  to read data.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/HostSendSequencedData.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostSendSequencedData</a></span></code></th>
 <td class="colLast">
@@ -387,28 +385,14 @@ loadScripts(document, 'script');</script>
  future use.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/NotificationProtocolPauseStop.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">NotificationProtocolPauseStop</a></span></code></th>
-<td class="colLast">
-<div class="block">Packet which indicates that the toolchain has paused or stopped.</div>
-</td>
-</tr>
 <tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/NotificationProtocolStartResume.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">NotificationProtocolStartResume</a></span></code></th>
-<td class="colLast">
-<div class="block">Packet which indicates that the toolchain has started or resumed.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/PaddingRequest.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">PaddingRequest</a></span></code></th>
 <td class="colLast">
 <div class="block">Packet used to pad space in the buffering area, if needed.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/SpinnakerRequestBuffers.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">SpinnakerRequestBuffers</a></span></code></th>
 <td class="colLast">
@@ -417,7 +401,7 @@ loadScripts(document, 'script');</script>
  during the simulation.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/SpinnakerRequestReadData.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">SpinnakerRequestReadData</a></span></code></th>
 <td class="colLast">
@@ -426,7 +410,7 @@ loadScripts(document, 'script');</script>
  available to be read.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/StartRequests.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">StartRequests</a></span></code></th>
 <td class="colLast">
@@ -435,13 +419,84 @@ loadScripts(document, 'script');</script>
  "SpinnakerRequestBuffers" packet.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../eieio/StopRequests.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">StopRequests</a></span></code></th>
 <td class="colLast">
 <div class="block">Packet used in the context of buffering input for the host computer to signal
  to the SpiNNaker system that to stop sending "SpinnakerRequestBuffers"
  packet.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.notification">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a> in <a href="../notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Subinterfaces of <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a> in <a href="../notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Interface</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>interface&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../notification/NotificationMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.notification">NotificationMessage</a></span></code></th>
+<td class="colLast">
+<div class="block">A notification message.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="../notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a> that implement <a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../notification/AbstractNotificationMessage.html" title="class in uk.ac.manchester.spinnaker.messages.notification">AbstractNotificationMessage</a></span></code></th>
+<td class="colLast">
+<div class="block">An notification message.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../notification/DatabaseConfirmation.html" title="class in uk.ac.manchester.spinnaker.messages.notification">DatabaseConfirmation</a></span></code></th>
+<td class="colLast">
+<div class="block">Packet which contains the path to the database created by the toolchain which
+ is to be used by any software which interfaces with SpiNNaker.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../notification/PauseStop.html" title="class in uk.ac.manchester.spinnaker.messages.notification">PauseStop</a></span></code></th>
+<td class="colLast">
+<div class="block">Packet which indicates that the toolchain has paused or stopped.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../notification/StartResume.html" title="class in uk.ac.manchester.spinnaker.messages.notification">StartResume</a></span></code></th>
+<td class="colLast">
+<div class="block">Packet which indicates that the toolchain has started or resumed.</div>
 </td>
 </tr>
 </tbody>

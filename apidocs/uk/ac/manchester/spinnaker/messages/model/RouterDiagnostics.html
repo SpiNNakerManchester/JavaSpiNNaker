@@ -159,20 +159,27 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#NUM_REGISTERS">NUM_REGISTERS</a></span></code></th>
+<td class="colLast">
+<div class="block">The number of router registers.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>int[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#registerValues">registerValues</a></span></code></th>
 <td class="colLast">
 <div class="block">The values in all of the registers.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#wait1">wait1</a></span></code></th>
 <td class="colLast">
 <div class="block">The "wait_1" part of the control register.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#wait2">wait2</a></span></code></th>
 <td class="colLast">
@@ -373,7 +380,19 @@ int[]&nbsp;registerValues)</code></th>
 <h3><a id="registerValues">registerValues</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int[]</span>&nbsp;<span class="memberName">registerValues</span></div>
 <div class="block">The values in all of the registers. Can be used to directly access the
- registers if they have been programmed to give different values.</div>
+ registers if they have been programmed to give different values.
+ Will be of length <a href="#NUM_REGISTERS">16</a>.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="NUM_REGISTERS">NUM_REGISTERS</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">NUM_REGISTERS</span></div>
+<div class="block">The number of router registers.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.NUM_REGISTERS">Constant Field Values</a></dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -397,7 +416,7 @@ int[]&nbsp;registerValues)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>controlRegister</code> - The control register value.</dd>
 <dd><code>errorStatus</code> - The error status value.</dd>
-<dd><code>registerValues</code> - The register values. (Should have 16
+<dd><code>registerValues</code> - The register values. (Should have <a href="#NUM_REGISTERS">16</a>
             elements.)</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - if the state size doesn't match the model of the state size</dd>

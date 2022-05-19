@@ -113,7 +113,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../EIEIOMessage.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOMessage</a>&lt;? extends <a href="../EIEIOHeader.html" title="interface in uk.ac.manchester.spinnaker.messages.eieio">EIEIOHeader</a>&gt;</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">EIEIOConnection.</span><code><span class="memberNameLink"><a href="../../../connections/EIEIOConnection.html#receiveMessage(java.lang.Integer)">receiveMessage</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">EIEIOConnection.</span><code><span class="memberNameLink"><a href="../../../connections/EIEIOConnection.html#receiveMessage(int)">receiveMessage</a></span>&#8203;(int&nbsp;timeout)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -200,27 +200,19 @@ int&nbsp;port)</code></th>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../DatabaseConfirmation.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">DatabaseConfirmation</a></span></code></th>
-<td class="colLast">
-<div class="block">Packet which contains the path to the database created by the toolchain which
- is to be used by any software which interfaces with SpiNNaker.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../EIEIOCommandMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIOCommandMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">An EIEIO message containing a command.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../EIEIODataMessage.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EIEIODataMessage</a></span></code></th>
 <td class="colLast">
 <div class="block">An EIEIO message containing data.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../EventStopRequest.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">EventStopRequest</a></span></code></th>
 <td class="colLast">
@@ -228,7 +220,7 @@ int&nbsp;port)</code></th>
  input packet to terminate its execution.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../HostDataRead.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostDataRead</a></span></code></th>
 <td class="colLast">
@@ -238,7 +230,7 @@ int&nbsp;port)</code></th>
  use again.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../HostDataReadAck.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostDataReadAck</a></span></code></th>
 <td class="colLast">
@@ -247,7 +239,7 @@ int&nbsp;port)</code></th>
  to read data.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../HostSendSequencedData.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">HostSendSequencedData</a></span></code></th>
 <td class="colLast">
@@ -256,28 +248,14 @@ int&nbsp;port)</code></th>
  future use.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../NotificationProtocolPauseStop.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">NotificationProtocolPauseStop</a></span></code></th>
-<td class="colLast">
-<div class="block">Packet which indicates that the toolchain has paused or stopped.</div>
-</td>
-</tr>
 <tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../NotificationProtocolStartResume.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">NotificationProtocolStartResume</a></span></code></th>
-<td class="colLast">
-<div class="block">Packet which indicates that the toolchain has started or resumed.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../PaddingRequest.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">PaddingRequest</a></span></code></th>
 <td class="colLast">
 <div class="block">Packet used to pad space in the buffering area, if needed.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SpinnakerRequestBuffers.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">SpinnakerRequestBuffers</a></span></code></th>
 <td class="colLast">
@@ -286,7 +264,7 @@ int&nbsp;port)</code></th>
  during the simulation.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SpinnakerRequestReadData.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">SpinnakerRequestReadData</a></span></code></th>
 <td class="colLast">
@@ -295,7 +273,7 @@ int&nbsp;port)</code></th>
  available to be read.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../StartRequests.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">StartRequests</a></span></code></th>
 <td class="colLast">
@@ -304,7 +282,7 @@ int&nbsp;port)</code></th>
  "SpinnakerRequestBuffers" packet.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../StopRequests.html" title="class in uk.ac.manchester.spinnaker.messages.eieio">StopRequests</a></span></code></th>
 <td class="colLast">
