@@ -34,7 +34,7 @@ public interface Listenable<MessageType> extends MessageReceiver<MessageType> {
 	 * @throws IOException
 	 *             If anything goes wrong, e.g., if the socket is closed under
 	 *             our feet.
-	 * @see #isReadyToReceive(Integer)
+	 * @see #isReadyToReceive(int)
 	 */
 	default boolean isReadyToReceive() throws IOException {
 		return isReadyToReceive(0);
