@@ -95,6 +95,8 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 
 	private final ThreadLocal<SelectionKey> selectionKeyFactory;
 
+	private int receivePacketSize = PACKET_MAX_SIZE;
+
 	/**
 	 * Main constructor, any argument of which could {@code null}.
 	 * <p>
@@ -132,6 +134,18 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (channel != null && log.isDebugEnabled()) {
 			logInitialCreation();
 		}
+	}
+
+	/**
+	 * Set the maximum size of packet that can be received. Packets larger than
+	 * this will be truncated. The default is large enough for any packet that
+	 * is sent by SCAMP.
+	 *
+	 * @param receivePacketSize
+	 *            The new maximum packet size.
+	 */
+	protected void setReceivePacketSize(int receivePacketSize) {
+		this.receivePacketSize = receivePacketSize;
 	}
 
 	/**
@@ -355,7 +369,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 			log.debug("not ready to recieve");
 			throw new SocketTimeoutException();
 		}
-		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
+		ByteBuffer buffer = allocate(receivePacketSize);
 		SocketAddress addr = channel.receive(buffer);
 		receivable = false;
 		if (addr == null) {
@@ -427,7 +441,7 @@ public abstract class UDPConnection<T> implements Connection, Listenable<T> {
 		if (!receivable && !isReadyToReceive(timeout)) {
 			throw new SocketTimeoutException();
 		}
-		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
+		ByteBuffer buffer = ByteBuffer.allocate(receivePacketSize);
 		SocketAddress addr = channel.receive(buffer);
 		receivable = false;
 		if (addr == null) {
