@@ -98,6 +98,8 @@ public abstract class UDPConnection<T>
 
 	private final DatagramSocket socket;
 
+	private int receivePacketSize = PACKET_MAX_SIZE;
+
 	/**
 	 * Main constructor, any argument of which could {@code null}.
 	 * <p>
@@ -139,6 +141,18 @@ public abstract class UDPConnection<T>
 		if (log.isDebugEnabled()) {
 			logInitialCreation();
 		}
+	}
+
+	/**
+	 * Set the maximum size of packet that can be received. Packets larger than
+	 * this will be truncated. The default is large enough for any packet that
+	 * is sent by SCAMP.
+	 *
+	 * @param receivePacketSize
+	 *            The new maximum packet size.
+	 */
+	protected void setReceivePacketSize(int receivePacketSize) {
+		this.receivePacketSize = receivePacketSize;
 	}
 
 	private void logInitialCreation() {
@@ -359,9 +373,9 @@ public abstract class UDPConnection<T>
 	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
-		ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
+		ByteBuffer buffer = allocate(receivePacketSize);
 		DatagramPacket pkt = new DatagramPacket(
-				buffer.array(), PACKET_MAX_SIZE);
+				buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength());
 		buffer.flip();
@@ -440,9 +454,9 @@ public abstract class UDPConnection<T>
 	DatagramPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
-		ByteBuffer buffer = ByteBuffer.allocate(PACKET_MAX_SIZE);
+		ByteBuffer buffer = allocate(receivePacketSize);
 		DatagramPacket pkt = new DatagramPacket(
-				buffer.array(), PACKET_MAX_SIZE);
+				buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength());
 		logRecv(buffer, pkt.getSocketAddress());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.eieio;
+package uk.ac.manchester.spinnaker.messages.notification;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Objects.requireNonNull;
-import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.DATABASE_CONFIRMATION;
+import static uk.ac.manchester.spinnaker.messages.notification.NotificationMessageCode.DATABASE_CONFIRMATION;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -27,7 +27,7 @@ import java.nio.charset.Charset;
  * Packet which contains the path to the database created by the toolchain which
  * is to be used by any software which interfaces with SpiNNaker.
  */
-public class DatabaseConfirmation extends EIEIOCommandMessage {
+public class DatabaseConfirmation extends AbstractNotificationMessage {
 	/**
 	 * The path to the database. Note that there is a length limit; the overall
 	 * message must fit in a SpiNNaker UDP message.
@@ -67,7 +67,7 @@ public class DatabaseConfirmation extends EIEIOCommandMessage {
 	DatabaseConfirmation(ByteBuffer data) {
 		super(data);
 		if (data.remaining() > 0) {
-			if (data.hasArray()) {
+			if (data.hasArray() && !data.isReadOnly()) {
 				databasePath = new String(data.array(), data.position(),
 						data.remaining(), CHARSET);
 			} else {
