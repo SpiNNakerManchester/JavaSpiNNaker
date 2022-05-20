@@ -55,9 +55,6 @@ public enum SCPCommand implements CommandCode {
 	CMD_AR(19),
 	/** Send a broadcast Nearest-Neighbour packet. */
 	CMD_NNP(20),
-	/** unsupported by current spinnaker tools? */
-	@Deprecated
-	CMD_P2PC(21),
 	/** Send a Signal. */
 	CMD_SIG(22),
 	/** Send Flood-Fill Data. */
