@@ -43,9 +43,10 @@ public class Gather implements HasCoreLocation {
 	/**
 	 * Type reference for deserializing a list of gatherer descriptions.
 	 */
-	public static final TypeReference<List<Gather>> LIST =
-			new TypeReference<List<Gather>>() {
-	};
+	public static final TypeReference<List<Gather>> LIST = new TR();
+
+	private static class TR extends TypeReference<List<Gather>> {
+	}
 
 	/** The x value of the core this placement is on. */
 	private final int x;

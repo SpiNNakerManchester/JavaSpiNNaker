@@ -36,9 +36,10 @@ public class Placement implements HasCoreLocation {
 	/**
 	 * Type reference for deserializing a list of placements.
 	 */
-	public static final TypeReference<List<Placement>> LIST =
-			new TypeReference<List<Placement>>() {
-	};
+	public static final TypeReference<List<Placement>> LIST = new TR();
+
+	private static class TR extends TypeReference<List<Placement>> {
+	}
 
 	/** The X coordinate of the core this vertex is placed on. */
 	private final int x;
