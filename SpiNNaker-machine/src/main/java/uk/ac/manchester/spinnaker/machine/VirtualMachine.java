@@ -77,6 +77,9 @@ public class VirtualMachine extends Machine {
 		}
 		if (ignoreLinks == null) {
 			ignoreLinks = new HashMap<>();
+		} else {
+			// Copy because we want to modify this below
+			ignoreLinks = new HashMap<>(ignoreLinks);
 		}
 
 		addVersionIgnores(ignoreLinks);
