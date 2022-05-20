@@ -54,10 +54,11 @@ public class RouterDiagnostics {
 	/**
 	 * The values in all of the registers. Can be used to directly access the
 	 * registers if they have been programmed to give different values.
+	 * Will be of length {@value #NUM_REGISTERS}.
 	 */
 	public final int[] registerValues;
 
-	/** The number of registers in the router. */
+	/** The number of router registers. */
 	public static final int NUM_REGISTERS = 16;
 
 	private static final int NUM_USER_CONTROL_REGISTERS = 4;

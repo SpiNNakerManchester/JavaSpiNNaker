@@ -81,6 +81,15 @@ spalloc:
   wait: 30s
   # Whether to pause ALL periodic callbacks; probably only useful for debugging
   pause: false
+  proxy:
+    # Whether to enable proxying
+    enable: true
+    # Whether to log the number of proxied packets when connections are clsoed
+    log-write-counts: false
+    # The local host IP address for listening for messages from multiple boards
+    # for EIEIO listeners. If the empty string (default) such listeners are
+    # disabled.
+    local-host: ""
   historical-data:
     # Where to we back up old jobs to?
     path: ${spalloc.working-directory}/spalloc-history.sqlite3

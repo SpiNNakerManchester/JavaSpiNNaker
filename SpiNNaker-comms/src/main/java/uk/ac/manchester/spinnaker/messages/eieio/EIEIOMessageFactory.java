@@ -45,8 +45,6 @@ public abstract class EIEIOMessageFactory {
 			return new EIEIOCommandMessage(data);
 		}
 		switch ((EIEIOCommandID) command) {
-		case DATABASE_CONFIRMATION:
-			return new DatabaseConfirmation(data);
 		case EVENT_PADDING:
 			// Fill in buffer area with padding
 			return new PaddingRequest();
