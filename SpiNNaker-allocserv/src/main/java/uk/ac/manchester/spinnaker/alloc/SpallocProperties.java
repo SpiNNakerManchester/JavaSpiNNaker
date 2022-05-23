@@ -450,16 +450,21 @@ public class SpallocProperties {
 		/** Properties relating to board issue reporting. */
 		private ReportProperties reportEmail;
 
+		/** Name of user that system-generated reports are done by. */
+		private String systemReportUser;
+
 		public AllocatorProperties(@DefaultValue("5s") Duration period,
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
-				@DefaultValue ReportProperties reportEmail) {
+				@DefaultValue ReportProperties reportEmail,
+				@DefaultValue("") String systemReportUser) {
 			this.period = period;
 			this.importanceSpan = importanceSpan;
 			this.priorityScale = priorityScale;
 			this.reportActionThreshold = reportActionThreshold;
 			this.reportEmail = reportEmail;
+			this.systemReportUser = systemReportUser;
 		}
 
 		/**
@@ -529,6 +534,16 @@ public class SpallocProperties {
 
 		public void setReportEmail(ReportProperties reportEmail) {
 			this.reportEmail = reportEmail;
+		}
+
+		/** @return Name of user that system-generated reports are done by. */
+		@NotNull
+		public String getSystemReportUser() {
+			return systemReportUser;
+		}
+
+		public void setSystemReportUser(String systemReportUser) {
+			this.systemReportUser = systemReportUser;
 		}
 	}
 

@@ -33,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
@@ -65,6 +67,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -111,6 +114,9 @@ public class BMPController extends DatabaseAwareBean {
 
 	@Autowired
 	private TxrxProperties props;
+
+	@Autowired
+	private AllocatorProperties allocProps;
 
 	/**
 	 * Factory for {@linkplain SpiNNakerControl controllers}. Only use via
@@ -283,6 +289,8 @@ public class BMPController extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	private final class Request {
+		private static final int NO_BOARD = -1;
+
 		private final Machine machine;
 
 		private final Map<BMPCoords, List<Integer>> powerOnBoards;
@@ -505,7 +513,8 @@ public class BMPController extends DatabaseAwareBean {
 			return sb.append(")").toString();
 		}
 
-		int systemReportOwner = 0; // FIXME
+		private static final String REPORT_MSG =
+				"board was not reachable when trying to power it";
 
 		/**
 		 * When a BMP is unroutable, we must tell the alloc engine to pick
@@ -521,36 +530,49 @@ public class BMPController extends DatabaseAwareBean {
 		 * @return Whether the state of boards or jobs has changed.
 		 */
 		private boolean badBoard(AfterSQL sql, SDPHeader failureHeader) {
-			int problemBoardId = getBoardId(failureHeader.getSource());
-			if (problemBoardId >= 0) {
-				/*
-				 * FIXME handle hardware unreachable
-				 */
-
-				int reportId = sql.insertBoardReport(problemBoardId, jobId,
-						"board was not reachable when trying to power it",
-						systemReportOwner);
-			}
-			return false;
+			boolean changed = false;
+			// Mark job for reallocation
+			changed |= sql.setJobState(QUEUED, 0, jobId) > 0;
+			// Mark boards allocated to job as free
+			changed |= sql.deallocateBoards(jobId) > 0;
+			// Delete all queued BMP commands
+			sql.deleteChangesForJob(jobId);
+			// ensure that the request to allocate is present
+			reissueAllocateRequest(jobId);
+			// Add a report
+			getBoardId(failureHeader.getSource())
+					.ifPresent(problemBoardId -> sql
+							.getUser(allocProps.getSystemReportUser())
+							.ifPresent(systemReportOwner -> sql
+									.insertBoardReport(problemBoardId, jobId,
+											REPORT_MSG, systemReportOwner)));
+			return changed;
 		}
 
 		/**
 		 * Given a board address, get the ID that it corresponds to. Reverses
 		 * {@link #idToBoard}.
 		 *
-		 * @param boardAddress
+		 * @param addr
 		 *            The board address.
-		 * @return The ID, or {@code -1} on failure.
+		 * @return The ID, if one can be found.
 		 */
-		private int getBoardId(HasCoreLocation boardAddress) {
-			for (Entry<Integer, BMPBoard> ib2 : idToBoard.get(
-					new BMPCoords(boardAddress.getX(), boardAddress.getY()))
-					.entrySet()) {
-				if (ib2.getValue().board == boardAddress.getP()) {
-					return ib2.getKey();
-				}
-			}
-			return -1;
+		private Optional<Integer> getBoardId(HasCoreLocation addr) {
+			return idToBoard.get(new BMPCoords(addr.getX(), addr.getY()))
+					.entrySet().stream()
+					.filter(ib2 -> ib2.getValue().board == addr.getP())
+					.map(Entry::getKey).findFirst();
+		}
+
+		/**
+		 * Create a new entry in the {@code job_request} for the job. The old
+		 * one was deleted when the allocation happened, but that's now failed.
+		 *
+		 * @param jobId The job ID.
+		 */
+		private void reissueAllocateRequest(Integer jobId) {
+			// FIXME regenerate the allocation request
+			// This is a pain because we're currently deleting it...
 		}
 	}
 
@@ -679,7 +701,11 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update deleteChange;
 
+		private final Update deleteChangesForJob;
+
 		private final Update insertBoardReport;
+
+		private final Query getUser;
 
 		AfterSQL(Connection conn) {
 			super(conn);
@@ -688,12 +714,16 @@ public class BMPController extends DatabaseAwareBean {
 			setInProgress = conn.update(SET_IN_PROGRESS);
 			deallocateBoards = conn.update(DEALLOCATE_BOARDS_JOB);
 			deleteChange = conn.update(FINISHED_PENDING);
+			deleteChangesForJob = conn.update(KILL_JOB_PENDING);
 			insertBoardReport = conn.update(INSERT_BOARD_REPORT);
+			getUser = conn.query(GET_USER_ID);
 		}
 
 		@Override
 		public void close() {
+			getUser.close();
 			insertBoardReport.close();
+			deleteChangesForJob.close();
 			deleteChange.close();
 			deallocateBoards.close();
 			setInProgress.close();
@@ -724,9 +754,17 @@ public class BMPController extends DatabaseAwareBean {
 			return deleteChange.call(changeId);
 		}
 
+		int deleteChangesForJob(Integer jobId) {
+			return deleteChangesForJob.call(jobId);
+		}
+
 		int insertBoardReport(
 				int boardId, int jobId, String issue, int userId) {
 			return insertBoardReport.key(boardId, jobId, issue, userId).get();
+		}
+
+		Optional<Integer> getUser(String userName) {
+			return getUser.call1(userName).map(integer("user_id"));
 		}
 	}
 
