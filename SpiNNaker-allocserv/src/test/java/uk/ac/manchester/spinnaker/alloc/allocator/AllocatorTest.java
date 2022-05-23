@@ -195,7 +195,8 @@ class AllocatorTest extends SQLQueries {
 	@ResultColumn("cnt")
 	@SingleRowResult
 	private static final String COUNT_REQUESTS =
-			"SELECT COUNT(*) AS cnt FROM job_request";
+			"SELECT COUNT(*) AS cnt FROM job_request "
+					+ "JOIN jobs USING (job_id) WHERE job_state = 1";
 
 	private int getJobRequestCount() {
 		try (Query q = conn.query(COUNT_REQUESTS)) {
