@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.connections;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_RELIABILITY;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -46,7 +47,7 @@ public class NotificationConnection
 	 *             If there is an error setting up the communication channel
 	 */
 	public NotificationConnection(InetAddress localHost) throws IOException {
-		super(localHost, null, null, null);
+		super(localHost, null, null, null, null);
 		setReceivePacketSize(NOTIFICATION_MESSAGE_BUFFER_SIZE);
 	}
 
@@ -62,7 +63,7 @@ public class NotificationConnection
 	 */
 	public NotificationConnection(InetAddress localHost, Integer localPort)
 			throws IOException {
-		super(localHost, localPort, null, null);
+		super(localHost, localPort, null, null, null);
 		setReceivePacketSize(NOTIFICATION_MESSAGE_BUFFER_SIZE);
 	}
 
@@ -91,7 +92,7 @@ public class NotificationConnection
 	 */
 	public NotificationConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
-		super(localHost, localPort, remoteHost, remotePort);
+		super(localHost, localPort, remoteHost, remotePort, IPTOS_RELIABILITY);
 		setReceivePacketSize(NOTIFICATION_MESSAGE_BUFFER_SIZE);
 	}
 

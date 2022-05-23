@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_THROUGHPUT;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -71,7 +73,7 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 	public SDPConnection(HasChipLocation remoteChip, InetAddress localHost,
 			Integer localPort, InetAddress remoteHost, Integer remotePort)
 			throws IOException {
-		super(localHost, localPort, remoteHost, remotePort);
+		super(localHost, localPort, remoteHost, remotePort, IPTOS_THROUGHPUT);
 		this.chip = remoteChip.asChipLocation();
 	}
 
