@@ -93,7 +93,7 @@ public class ConnectionListener<MessageType> extends Thread
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
 		this.connection = connection;
-		this.timeout = timeout == null ? TIMEOUT : timeout;
+		this.timeout = timeout;
 		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;
