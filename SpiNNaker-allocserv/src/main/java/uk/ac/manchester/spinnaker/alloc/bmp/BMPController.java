@@ -34,6 +34,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 
 import java.io.IOException;
@@ -534,9 +535,7 @@ public class BMPController extends DatabaseAwareBean {
 			changed |= sql.deallocateBoards(jobId) > 0;
 			// Delete all queued BMP commands
 			sql.deleteChangesForJob(jobId);
-			// ensure that the request to allocate is present
-			reissueAllocateRequest(jobId);
-			// Add a report
+			// Add a report if we can
 			getBoardId(failureHeader.getSource())
 					.ifPresent(problemBoardId -> sql
 							.getUser(allocProps.getSystemReportUser())
@@ -559,17 +558,6 @@ public class BMPController extends DatabaseAwareBean {
 					.entrySet().stream()
 					.filter(ib2 -> ib2.getValue().board == addr.getP())
 					.map(Entry::getKey).findFirst();
-		}
-
-		/**
-		 * Create a new entry in the {@code job_request} for the job. The old
-		 * one was deleted when the allocation happened, but that's now failed.
-		 *
-		 * @param jobId The job ID.
-		 */
-		private void reissueAllocateRequest(Integer jobId) {
-			// FIXME regenerate the allocation request
-			// This is a pain because we're currently deleting it...
 		}
 	}
 
@@ -1049,7 +1037,13 @@ public class BMPController extends DatabaseAwareBean {
 						e.getCause();
 				log.error("BMP {} on {} is unroutable", ume.header.getSource(),
 						request.machine);
-				cleanupTasks.add(sql -> request.badBoard(sql, ume.header));
+				/*
+				 * If we were switching boards on and going to READY, we should
+				 * handle failure to route by asking for reallocation.
+				 */
+				if (request.to == READY && request.powerOffBoards.isEmpty()) {
+					cleanupTasks.add(sql -> request.badBoard(sql, ume.header));
+				}
 				return true;
 			}
 			if (!isLastTry) {
