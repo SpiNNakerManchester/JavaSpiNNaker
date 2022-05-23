@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.connections;
 import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.BIG_ENDIAN;
+import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_RELIABILITY;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 			InetAddress remoteHost, Integer remotePort) throws IOException {
 		super(localHost, localPort, remoteHost,
 				remotePort == null ? UDP_BOOT_CONNECTION_DEFAULT_PORT
-						: remotePort);
+						: remotePort, IPTOS_RELIABILITY);
 	}
 
 	/**
@@ -82,7 +83,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 			throws IOException {
 		super(null, null, remoteHost,
 				remotePort == null ? UDP_BOOT_CONNECTION_DEFAULT_PORT
-						: remotePort);
+						: remotePort, IPTOS_RELIABILITY);
 	}
 
 	@Override
