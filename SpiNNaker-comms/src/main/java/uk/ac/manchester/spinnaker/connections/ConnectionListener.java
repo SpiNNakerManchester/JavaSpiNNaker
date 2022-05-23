@@ -16,12 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.util.Collections.synchronizedSet;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -91,19 +93,27 @@ public class ConnectionListener<MessageType> extends Thread
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
 		this.connection = connection;
-		this.timeout = timeout;
+		this.timeout = timeout == null ? TIMEOUT : timeout;
 		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;
-		callbacks = new HashSet<MessageHandler<MessageType>>();
+		callbacks = synchronizedSet(new HashSet<>());
 	}
 
+	/**
+	 * Receive messages and dispatch them to the registered
+	 * {@linkplain MessageHandler handlers}. Stops running when
+	 * {@linkplain #close() closed}.
+	 */
 	@Override
 	public final void run() {
 		try {
 			while (!done) {
 				try {
 					runStep();
+				} catch (SocketTimeoutException e) {
+					// Timed out at the base level
+					continue;
 				} catch (Exception e) {
 					if (!done) {
 						log.warn("problem when dispatching message", e);
@@ -117,13 +127,15 @@ public class ConnectionListener<MessageType> extends Thread
 	}
 
 	private void runStep() throws IOException {
-		try {
-			MessageType message = connection.receiveMessage(timeout);
-			for (MessageHandler<MessageType> callback : callbacks) {
-				callbackPool.submit(() -> callback.handle(message));
-			}
-		} catch (SocketTimeoutException e) {
-			// Do Nothing; this is expected and can be skipped
+		MessageType message = connection.receiveMessage(timeout);
+		for (MessageHandler<MessageType> callback : checkpointCallbacks()) {
+			callbackPool.submit(() -> callback.handle(message));
+		}
+	}
+
+	private Iterable<MessageHandler<MessageType>> checkpointCallbacks() {
+		synchronized (callbacks) {
+			return new ArrayList<>(callbacks);
 		}
 	}
 

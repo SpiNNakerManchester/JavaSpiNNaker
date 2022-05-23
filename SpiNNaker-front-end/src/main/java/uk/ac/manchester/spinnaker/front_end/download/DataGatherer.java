@@ -79,7 +79,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	protected static final Logger log = getLogger(DataGatherer.class);
 
 	/** The maximum number of times to retry. */
-	private static final int TIMEOUT_RETRY_LIMIT = 10;
+	private static final int TIMEOUT_RETRY_LIMIT = 15;
 
 	/**
 	 * The time delay between sending each message. In
@@ -663,6 +663,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				} while (!finished);
 				conn.sendClear(monitorCore.asCoreLocation(),
 						monitorCore.getTransactionId());
+			} catch (TimeoutException e) {
+				if (received) {
+					log.warn("received only some of the packets from <{}> "
+							+ "for {}; has something crashed?", monitorCore,
+							region);
+				}
+				throw e;
 			} finally {
 				if (!received) {
 					log.warn("never actually received any packets from "
@@ -772,13 +779,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 */
 		private boolean processTimeout(int transactionId)
 				throws IOException, TimeoutException {
-			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
+			if (++timeoutcount > TIMEOUT_RETRY_LIMIT) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
 			}
 
 			// retransmit missing packets
-			received = false;
 			log.debug("doing reinjection");
 			return retransmitMissingSequences(transactionId);
 		}

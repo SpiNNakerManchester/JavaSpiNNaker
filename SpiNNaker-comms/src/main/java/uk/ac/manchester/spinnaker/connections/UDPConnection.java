@@ -17,8 +17,6 @@
 package uk.ac.manchester.spinnaker.connections;
 
 import static java.net.InetAddress.getByAddress;
-import static java.net.StandardProtocolFamily.INET;
-import static java.net.StandardSocketOptions.SO_RCVBUF;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -35,6 +33,7 @@ import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -42,11 +41,7 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
 import java.util.function.IntFunction;
 
 import org.slf4j.Logger;
@@ -73,7 +68,27 @@ public abstract class UDPConnection<T>
 
 	private static final int PACKET_MAX_SIZE = 300;
 
-	private static final int MAX_QUEUE_SIZE = 10;
+	/**
+	 * The type of traffic being sent on a socket.
+	 *
+	 * @see DatagramSocket#setTrafficClass(int)
+	 */
+	public enum TrafficClass {
+		/** Minimise cost. */
+		IPTOS_LOWCOST(0x02),
+		/** Maximise reliability. */
+		IPTOS_RELIABILITY(0x04),
+		/** Maximise throughput. */
+		IPTOS_THROUGHPUT(0x08),
+		/** Minimise delay. */
+		IPTOS_LOWDELAY(0x10);
+
+		private final int value;
+
+		TrafficClass(int value) {
+			this.value = value;
+		}
+	}
 
 	private boolean canSend;
 
@@ -81,12 +96,9 @@ public abstract class UDPConnection<T>
 
 	private InetSocketAddress remoteAddress;
 
-	private final DatagramChannel channel;
+	private final DatagramSocket socket;
 
-	private final BlockingDeque<UDPPacket> readQueue =
-			new LinkedBlockingDeque<>(MAX_QUEUE_SIZE);
-
-	private final ReadThread readThread;
+	private int receivePacketSize = PACKET_MAX_SIZE;
 
 	/**
 	 * Main constructor, any argument of which could {@code null}.
@@ -107,29 +119,40 @@ public abstract class UDPConnection<T>
 	 * @param remoteHost
 	 *            The remote host name or IP address to send packets to. If
 	 *            {@code null}, the socket will be available for listening only,
-	 *            and will throw and exception if used for sending.
+	 *            and will throw an exception if used for sending.
 	 * @param remotePort
-	 *            The remote port to send packets to. If remoteHost is
-	 *            {@code null}, this is ignored. If remoteHost is specified,
-	 *            this must also be specified as non-zero for the connection to
-	 *            allow sending.
+	 *            The remote port to send packets to. If {@code remoteHost} is
+	 *            {@code null}, this is ignored. If {@code remoteHost} is
+	 *            specified, this must also be specified as non-zero for the
+	 *            connection to allow sending.
+	 * @param trafficClass
+	 *            What sort of traffic is this socket going to send. If
+	 *            {@code null}, no traffic class will be used. Receive-only
+	 *            sockets should leave this as {@code null}.
 	 * @throws IOException
 	 *             If there is an error setting up the communication channel
 	 */
 	public UDPConnection(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort) throws IOException {
+			InetAddress remoteHost, Integer remotePort,
+			TrafficClass trafficClass) throws IOException {
 		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
-		channel = initialiseSocket(localHost, localPort, remoteHost,
-				remotePort);
-		if (channel != null) {
-			if (log.isDebugEnabled()) {
-				logInitialCreation();
-			}
-			readThread = new ReadThread();
-			readThread.start();
-		} else {
-			readThread = null;
+		socket = initialiseSocket(localHost, localPort, remoteHost, remotePort,
+				trafficClass);
+		if (log.isDebugEnabled()) {
+			logInitialCreation();
 		}
+	}
+
+	/**
+	 * Set the maximum size of packet that can be received. Packets larger than
+	 * this will be truncated. The default is large enough for any packet that
+	 * is sent by SCAMP.
+	 *
+	 * @param receivePacketSize
+	 *            The new maximum packet size.
+	 */
+	protected void setReceivePacketSize(int receivePacketSize) {
+		this.receivePacketSize = receivePacketSize;
 	}
 
 	private void logInitialCreation() {
@@ -164,22 +187,29 @@ public abstract class UDPConnection<T>
 	 *            Remote side address.
 	 * @param remotePort
 	 *            Remote side port.
+	 * @param trafficClass
+	 *            Traffic class, at least for sending. If {@code null}, no
+	 *            traffic class will be set.
 	 * @return The configured, connected socket.
 	 * @throws IOException
 	 *             If anything fails.
 	 */
-	DatagramChannel initialiseSocket(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort) throws IOException {
+	DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
+			InetAddress remoteHost, Integer remotePort,
+			TrafficClass trafficClass) throws IOException {
 		// SpiNNaker only speaks IPv4
-		DatagramChannel chan = DatagramChannel.open(INET);
-		chan.bind(createLocalAddress(localHost, localPort));
-		chan.setOption(SO_RCVBUF, RECEIVE_BUFFER_SIZE);
+		DatagramSocket sock = new DatagramSocket(
+				createLocalAddress(localHost, localPort));
+		if (trafficClass != null) {
+			sock.setTrafficClass(trafficClass.value);
+		}
+		sock.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
 		if (canSend) {
 			remoteIPAddress = (Inet4Address) remoteHost;
 			remoteAddress = new InetSocketAddress(remoteIPAddress, remotePort);
-			chan.connect(remoteAddress);
+			sock.connect(remoteAddress);
 		}
-		return chan;
+		return sock;
 	}
 
 	private static SocketAddress createLocalAddress(InetAddress localHost,
@@ -213,7 +243,7 @@ public abstract class UDPConnection<T>
 	 *             If the socket is closed.
 	 */
 	InetSocketAddress getLocalAddress() throws IOException {
-		return (InetSocketAddress) channel.getLocalAddress();
+		return (InetSocketAddress) socket.getLocalSocketAddress();
 	}
 
 	/**
@@ -228,7 +258,7 @@ public abstract class UDPConnection<T>
 	 *             If the socket is closed.
 	 */
 	InetSocketAddress getRemoteAddress() throws IOException {
-		return (InetSocketAddress) channel.getRemoteAddress();
+		return (InetSocketAddress) socket.getRemoteSocketAddress();
 	}
 
 	/** @return The local IP address to which the connection is bound. */
@@ -292,7 +322,17 @@ public abstract class UDPConnection<T>
 	 */
 	public final ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		return receive(convertTimeout(timeout));
+		if (timeout != null) {
+			return receive(convertTimeout(timeout));
+		}
+		// Want to wait forever but the underlying engine won't...
+		while (true) {
+			try {
+				return receive(convertTimeout(timeout));
+			} catch (SocketTimeoutException e) {
+				continue;
+			}
+		}
 	}
 
 	/**
@@ -332,16 +372,15 @@ public abstract class UDPConnection<T>
 	 */
 	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
-		try {
-			UDPPacket packet = readQueue.pollFirst(timeout,
-					TimeUnit.MILLISECONDS);
-			if (packet == null) {
-				throw new SocketTimeoutException();
-			}
-			return packet.getByteBuffer();
-		} catch (InterruptedException e) {
-			throw new SocketTimeoutException();
-		}
+		socket.setSoTimeout(timeout);
+		ByteBuffer buffer = allocate(receivePacketSize);
+		DatagramPacket pkt = new DatagramPacket(
+				buffer.array(), receivePacketSize);
+		socket.receive(pkt);
+		buffer.position(pkt.getLength());
+		buffer.flip();
+		logRecv(buffer, pkt.getSocketAddress());
+		return buffer.order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -350,7 +389,8 @@ public abstract class UDPConnection<T>
 	 *
 	 * @param timeout
 	 *            The timeout in milliseconds
-	 * @return The datagram packet received
+	 * @return The datagram packet received; caller is responsible for only
+	 *         accessing the valid part of the buffer.
 	 * @throws SocketTimeoutException
 	 *             If a timeout occurs before any data is received
 	 * @throws EOFException
@@ -383,15 +423,39 @@ public abstract class UDPConnection<T>
 	 */
 	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
-		try {
-			UDPPacket packet = readQueue.pollFirst(timeout,
-					TimeUnit.MILLISECONDS);
-			if (packet == null) {
-				throw new SocketTimeoutException();
-			}
-			return packet;
-		} catch (InterruptedException e) {
-			throw new SocketTimeoutException();
+		socket.setSoTimeout(timeout);
+		ByteBuffer buffer = allocate(receivePacketSize);
+		DatagramPacket pkt = new DatagramPacket(
+				buffer.array(), receivePacketSize);
+		socket.receive(pkt);
+		buffer.position(pkt.getLength());
+		buffer.flip();
+		logRecv(buffer, pkt.getSocketAddress());
+		return new UDPPacket(buffer.order(LITTLE_ENDIAN), remoteAddress);
+	}
+
+	/**
+	 * Create the actual message to send.
+	 *
+	 * @param data
+	 *            The content of the message
+	 * @param remoteAddress
+	 *            Where to send it to
+	 * @return The full packet to send.
+	 */
+	private static DatagramPacket formSendPacket(
+			ByteBuffer data, InetSocketAddress remoteAddress) {
+		if (data.isReadOnly() || !data.hasArray()) {
+			// Yuck; must copy because can't touch the backing array
+			byte[] buffer = new byte[data.remaining()];
+			data.duplicate().get(buffer);
+			return new DatagramPacket(buffer, 0, buffer.length, remoteAddress);
+		} else {
+			// Unsafe, but we can get away with it as we send immediately
+			// and never actually write to the array
+			return new DatagramPacket(
+					data.array(), data.arrayOffset() + data.position(),
+					data.remaining(), remoteAddress);
 		}
 	}
 
@@ -428,13 +492,7 @@ public abstract class UDPConnection<T>
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
 		}
-		while (true) {
-			int sent = channel.send(data.slice(), remoteAddress);
-			if (sent > 0) {
-				log.debug("sent {} bytes", sent);
-				break;
-			}
-		}
+		socket.send(formSendPacket(data, remoteAddress));
 	}
 
 	/**
@@ -564,13 +622,7 @@ public abstract class UDPConnection<T>
 		if (log.isDebugEnabled()) {
 			logSend(data, addr);
 		}
-		while (true) {
-			int sent = channel.send(data.slice(), addr);
-			if (sent > 0) {
-				log.debug("sent {} bytes", sent);
-				break;
-			}
-		}
+		socket.send(formSendPacket(data, addr));
 	}
 
 	private void logSend(ByteBuffer data, SocketAddress addr) {
@@ -604,12 +656,17 @@ public abstract class UDPConnection<T>
 
 	@Override
 	public void close() throws IOException {
-		channel.close();
+		try {
+			socket.disconnect();
+		} catch (Exception e) {
+			// Ignore any possible exception here
+		}
+		socket.close();
 	}
 
 	@Override
 	public boolean isClosed() {
-		return !channel.isOpen();
+		return socket.isClosed();
 	}
 
 	/**
@@ -650,24 +707,5 @@ public abstract class UDPConnection<T>
 		return String.format("%s(%s <-%s-> %s)",
 				getClass().getSimpleName().replaceAll("^.*\\.", ""), la,
 				isClosed() ? "|" : "", ra);
-	}
-
-	private class ReadThread extends Thread {
-		public void run() {
-			while (channel.isOpen()) {
-				try {
-					ByteBuffer buffer = allocate(PACKET_MAX_SIZE);
-					SocketAddress addr = channel.receive(buffer);
-					buffer.flip();
-					logRecv(buffer, addr);
-					readQueue.putLast(
-							new UDPPacket(buffer.order(LITTLE_ENDIAN), addr));
-				} catch (InterruptedException | IOException e) {
-					if (channel.isOpen()) {
-						log.warn("Error while reading data", e);
-					}
-				}
-			}
-		}
 	}
 }

@@ -14,15 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.eieio;
-
-import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.START_RESUME_NOTIFICATION;
-
 /**
- * Packet which indicates that the toolchain has started or resumed.
+ * The messages of the notification protocol.
  */
-public class NotificationProtocolStartResume extends EIEIOCommandMessage {
-	public NotificationProtocolStartResume() {
-		super(START_RESUME_NOTIFICATION);
-	}
-}
+package uk.ac.manchester.spinnaker.messages.notification;

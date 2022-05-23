@@ -44,7 +44,7 @@ public class IPAddressConnection extends UDPConnection<InetAddress>
 
 	public IPAddressConnection(InetAddress localHost, int localPort)
 			throws IOException {
-		super(localHost, localPort, null, null);
+		super(localHost, localPort, null, null, null);
 	}
 
 	/**
