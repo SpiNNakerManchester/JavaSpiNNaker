@@ -100,7 +100,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl>
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="BootReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">BootReceiver</a></code>, <code><a href="EIEIOReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">EIEIOReceiver</a></code>, <code><a href="Listenable.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Listenable</a>&lt;MessageType&gt;</code>, <code><a href="NotificationReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">NotificationReceiver</a></code>, <code><a href="SDPReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SDPReceiver</a></code></dd>
+<dd><code><a href="BootReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">BootReceiver</a></code>, <code><a href="EIEIOReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">EIEIOReceiver</a></code>, <code><a href="NotificationReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">NotificationReceiver</a></code>, <code><a href="SDPReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SDPReceiver</a></code></dd>
 </dl>
 <dl>
 <dt>All Known Implementing Classes:</dt>
@@ -234,6 +234,7 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <dd>the received message</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error receiving the message</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If there is a timeout during receiving</dd>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If one of the fields of the SpiNNaker message is invalid</dd>
 </dl>
 </section>

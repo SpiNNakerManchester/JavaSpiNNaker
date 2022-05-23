@@ -173,6 +173,34 @@ loadScripts(document, 'script');</script>
 </tbody>
 </table>
 </div>
+<div class="useSummary">
+<table>
+<caption><span>Constructors in <a href="../../package-summary.html">uk.ac.manchester.spinnaker.connections</a> with parameters of type <a href="../MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Constructor</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ConnectionListener.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver)">ConnectionListener</a></span>&#8203;(<a href="../MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="../../ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</code></th>
+<td class="colLast">
+<div class="block">Create a connection listener with the default number of listening threads
+ and the default OS-level timeout.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../ConnectionListener.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,java.lang.Integer)">ConnectionListener</a></span>&#8203;(<a href="../MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="../../ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
+int&nbsp;numProcesses,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Create a connection listener.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </li>
 <li class="blockList">
@@ -207,19 +235,12 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>interface&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../Listenable.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Listenable</a>&lt;MessageType&gt;</span></code></th>
-<td class="colLast">
-<div class="block">How to listen for a message on a connection.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>interface&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../NotificationReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">NotificationReceiver</a></span></code></th>
 <td class="colLast">
 <div class="block">A receiver of notification messages.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>interface&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SDPReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SDPReceiver</a></span></code></th>
 <td class="colLast">
