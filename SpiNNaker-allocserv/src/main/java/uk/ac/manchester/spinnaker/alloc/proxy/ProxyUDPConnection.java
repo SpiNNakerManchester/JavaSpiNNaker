@@ -21,6 +21,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_THROUGHPUT;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -68,7 +69,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 			int remotePort, int id, Runnable emergencyRemove,
 			InetAddress localHost)
 			throws IOException {
-		super(localHost, null, remoteHost, remotePort);
+		super(localHost, null, remoteHost, remotePort, IPTOS_THROUGHPUT);
 		this.session = session;
 		this.emergencyRemove = emergencyRemove;
 		workingBuffer = allocate(WORKING_BUFFER_SIZE).order(LITTLE_ENDIAN);
@@ -169,14 +170,12 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 
 	private void mainLoop() throws IOException {
 		while (!isClosed()) {
-			while (!isReadyToReceive(TIMEOUT)) {
-				if (!session.isOpen() || isClosed()) {
-					return;
-				}
-			}
 			Optional<ByteBuffer> msg = receiveMessage(TIMEOUT);
 			if (!msg.isPresent()) {
 				// Timeout; go round the loop again.
+				if (!session.isOpen() || isClosed()) {
+					return;
+				}
 				continue;
 			}
 			handleReceivedMessage(msg.get());
@@ -241,16 +240,14 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 */
 	private void mainLoop(Set<InetAddress> recvFrom) throws IOException {
 		while (!isClosed()) {
-			while (!isReadyToReceive(TIMEOUT)) {
-				if (!session.isOpen() || isClosed()) {
-					return;
-				}
-			}
 			DatagramPacket packet;
 			try {
 				packet = receiveWithAddress(TIMEOUT);
 			} catch (SocketTimeoutException e) {
 				// Timeout; go round the loop again.
+				if (!session.isOpen() || isClosed()) {
+					return;
+				}
 				continue;
 			}
 			// SECURITY: drop any packet not from an allocated board
