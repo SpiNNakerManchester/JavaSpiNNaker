@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 
 /**
  * A receiver of SpiNNaker messages.
