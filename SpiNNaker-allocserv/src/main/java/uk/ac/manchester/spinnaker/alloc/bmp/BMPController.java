@@ -289,8 +289,6 @@ public class BMPController extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	private final class Request {
-		private static final int NO_BOARD = -1;
-
 		private final Machine machine;
 
 		private final Map<BMPCoords, List<Integer>> powerOnBoards;
@@ -343,7 +341,6 @@ public class BMPController extends DatabaseAwareBean {
 		 * @param idToBoard
 		 *            How to get the physical ID of a board from its database ID
 		 */
-		@SuppressWarnings("checkstyle:ParameterNumber")
 		Request(TakeReqsSQL sql, Machine machine,
 				Map<BMPCoords, List<Integer>> powerOn,
 				Map<BMPCoords, List<Integer>> powerOff,

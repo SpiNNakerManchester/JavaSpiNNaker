@@ -51,7 +51,6 @@ import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 @ConfigurationProperties("spalloc")
 @ConstructorBinding
 @Validated
-@SuppressWarnings("checkstyle:ParameterNumber")
 public class SpallocProperties {
 	/** Path to the main database file. */
 	private File databasePath;

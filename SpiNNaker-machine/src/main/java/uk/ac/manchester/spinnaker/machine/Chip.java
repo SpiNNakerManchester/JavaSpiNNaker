@@ -114,7 +114,6 @@ public class Chip implements HasChipLocation {
 	 * @throws IllegalArgumentException
 	 *             Thrown if multiple chips share the same id.
 	 */
-	@SuppressWarnings("checkstyle:parameternumber")
 	public Chip(ChipLocation location, Iterable<Processor> processors,
 			Router router, int sdram, InetAddress ipAddress, boolean virtual,
 			List<Integer> tagIds, ChipLocation nearestEthernet) {

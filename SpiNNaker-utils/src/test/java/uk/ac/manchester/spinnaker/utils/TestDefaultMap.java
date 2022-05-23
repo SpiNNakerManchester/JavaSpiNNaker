@@ -80,18 +80,16 @@ public class TestDefaultMap {
     @Test
     public void testKeyAware2() {
          DefaultMap<Integer, Integer> instance =
-                DefaultMap.newAdvancedDefaultMap(i->i*2);
+                DefaultMap.newAdvancedDefaultMap(i -> i*2);
         Integer two = instance.get(1);
         assertEquals(2, two.intValue());
     }
 
-    public class Doubler implements DefaultMap.KeyAwareFactory<Integer, Integer> {
-
-        @Override
-        public Integer createValue(Integer key) {
-            return new Integer(key.intValue() * 2);
-        }
-
-    }
-
+	public static class Doubler
+			implements DefaultMap.KeyAwareFactory<Integer, Integer> {
+		@Override
+		public Integer createValue(Integer key) {
+			return key * 2;
+		}
+	}
 }
