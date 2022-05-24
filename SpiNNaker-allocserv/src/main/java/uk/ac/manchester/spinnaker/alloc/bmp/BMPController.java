@@ -970,7 +970,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	@SuppressWarnings("unused")
 	private abstract static class Use {
-		Use(ThreadFactory q) {
+		Use(ThreadFactory q1, UncaughtExceptionHandler q2) {
 		}
 	}
 }
