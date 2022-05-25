@@ -228,7 +228,7 @@ public enum MachineVersion {
 	 *             If the ID doesn't correspond to a supported version.
 	 */
 	public static MachineVersion byId(Integer id) {
-		for (MachineVersion possible : MachineVersion.values()) {
+		for (var possible : MachineVersion.values()) {
 			if (possible.id != null && possible.id.equals(id)) {
 				return possible;
 			}
@@ -267,7 +267,7 @@ public enum MachineVersion {
 		if (FIVE.machineDimensions.equals(dimensions)) {
 			return FIVE;
 		}
-		for (MachineVersion possible : MachineVersion.values()) {
+		for (var possible : MachineVersion.values()) {
 			if (dimensions.equals(possible.machineDimensions)) {
 				return possible;
 			}

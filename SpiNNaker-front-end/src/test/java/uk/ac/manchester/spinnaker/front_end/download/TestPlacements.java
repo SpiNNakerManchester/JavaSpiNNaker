@@ -16,17 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
+
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
-import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 
 /**
  *
@@ -36,25 +33,22 @@ public class TestPlacements {
 
     @Test
     public void testVertexJson() throws IOException {
-        URL url = TestPlacements.class.getResource("/vertex.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        Vertex fromJson = mapper.readValue(url, Vertex.class);
+        var url = TestPlacements.class.getResource("/vertex.json");
+        var fromJson = createMapper().readValue(url, Vertex.class);
         assertEquals(1612972372, fromJson.getBaseAddress());
     }
 
     @Test
     public void testPlacementJson() throws IOException {
-        URL url = TestPlacements.class.getResource("/placement.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        Placement fromJson = mapper.readValue(url, Placement.class);
+        var url = TestPlacements.class.getResource("/placement.json");
+        var fromJson = createMapper().readValue(url, Placement.class);
         assertEquals(2, fromJson.getY());
     }
 
     @Test
     public void testSimpleJson() throws IOException {
-        URL url = TestPlacements.class.getResource("/simple.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        List<Placement> fromJson = mapper.readValue(url, new TypeReference<List<Placement>>(){});
+        var url = TestPlacements.class.getResource("/simple.json");
+        var fromJson = createMapper().readValue(url, Placement.LIST);
         assertEquals(2, fromJson.size());
     }
 

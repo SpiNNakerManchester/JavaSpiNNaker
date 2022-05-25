@@ -51,7 +51,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
-import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
  * A high-level interface for requesting and managing allocations of SpiNNaker
@@ -425,7 +424,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		 * If the job no longer exists, we can't get the keepalive interval (and
 		 * there's nothing to keepalive) so just bail out.
 		 */
-		JobState jobState = getStatus();
+		var jobState = getStatus();
 		if (jobState.getState() == UNKNOWN
 				|| jobState.getState() == DESTROYED) {
 			if (jobState.getReason() != null) {
@@ -518,7 +517,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 */
 	protected void assertCompatibleVersion()
 			throws IOException, SpallocServerException {
-		Version v = client.version(timeout);
+		var v = client.version(timeout);
 		if (MIN_VER.compareTo(v) <= 0 && MAX_VER.compareTo(v) > 0) {
 			return;
 		}
@@ -666,7 +665,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public State waitForStateChange(State oldState, Integer timeout)
 			throws SpallocServerException {
-		Long finishTime = makeTimeout(timeout);
+		var finishTime = makeTimeout(timeout);
 
 		// We may get disconnected while waiting so keep listening...
 		while (!timedOut(finishTime)) {
@@ -678,7 +677,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				while (!timedOut(finishTime)) {
 					// Has the job changed state?
 					purgeStatus();
-					State newState = getStatus().getState();
+					var newState = getStatus().getState();
 					if (newState != oldState) {
 						return newState;
 					}
@@ -790,7 +789,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			throws JobDestroyedException, IOException, SpallocServerException,
 			SpallocStateChangeTimeoutException {
 		State curState = null;
-		Long finishTime = makeTimeout(timeout);
+		var finishTime = makeTimeout(timeout);
 		while (!timedOut(finishTime)) {
 			if (curState == null) {
 				/*
@@ -831,7 +830,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public BoardPhysicalCoordinates whereIs(HasChipLocation chip)
 			throws IOException, SpallocServerException {
-		WhereIs result = client.whereIs(id, chip, timeout);
+		var result = client.whereIs(id, chip, timeout);
 		if (result == null) {
 			throw new IllegalStateException(
 					"received null instead of machine location");

@@ -57,9 +57,9 @@ public class TestSpinnakerLinkData {
 
     @Test
     public void testEquals() throws UnknownHostException {
-        SpinnakerLinkData link1 = new SpinnakerLinkData(34, location00,
+        var link1 = new SpinnakerLinkData(34, location00,
                 Direction.NORTHEAST, createInetAddress());
-        SpinnakerLinkData link2= new SpinnakerLinkData(34, location00,
+        var link2= new SpinnakerLinkData(34, location00,
                 Direction.NORTHEAST, createInetAddress());
         assertTrue(link1.sameAs(link2));
         checkSame(link1, link2);
@@ -68,17 +68,17 @@ public class TestSpinnakerLinkData {
 
     @Test
     public void testDifferent() throws UnknownHostException {
-        SpinnakerLinkData link1 = new SpinnakerLinkData(34, location00,
+        var link1 = new SpinnakerLinkData(34, location00,
                 Direction.NORTHEAST, createInetAddress());
-        SpinnakerLinkData link2= new SpinnakerLinkData(33, location00,
+        var link2= new SpinnakerLinkData(33, location00,
                 Direction.NORTHEAST, createInetAddress());
-        SpinnakerLinkData link3 = new SpinnakerLinkData(34, location01,
+        var link3 = new SpinnakerLinkData(34, location01,
                 Direction.NORTHEAST, createInetAddress());
-        SpinnakerLinkData link4 = new SpinnakerLinkData(34, location00,
+        var link4 = new SpinnakerLinkData(34, location00,
                 Direction.NORTH, createInetAddress());
         byte[] bytes = {127,0,0,1};
-        InetAddress address2 =  InetAddress.getByAddress(bytes);
-        SpinnakerLinkData link5 = new SpinnakerLinkData(34, location00,
+        var address2 = InetAddress.getByAddress(bytes);
+        var link5 = new SpinnakerLinkData(34, location00,
                 Direction.NORTHEAST, address2);
 
         checkDifferent(link1, link2);
@@ -88,21 +88,20 @@ public class TestSpinnakerLinkData {
 
         assertNotEquals(link1, null);
         assertNotEquals(link1, "link1");
-
     }
 
     @Test
     @SuppressWarnings("unused")
     public void testBad() throws UnknownHostException {
         assertThrows(IllegalArgumentException.class, () -> {
-            SpinnakerLinkData link1 = new SpinnakerLinkData(34, null,
+            var link1 = new SpinnakerLinkData(34, null,
                     Direction.NORTHEAST, createInetAddress());
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            SpinnakerLinkData link1 = new SpinnakerLinkData(34, location00,
+            var link1 = new SpinnakerLinkData(34, location00,
                     null, createInetAddress());
         });
-        SpinnakerLinkData link1 = new SpinnakerLinkData(34, location00,
+        var link1 = new SpinnakerLinkData(34, location00,
                 Direction.NORTHEAST, null);
     }
 }

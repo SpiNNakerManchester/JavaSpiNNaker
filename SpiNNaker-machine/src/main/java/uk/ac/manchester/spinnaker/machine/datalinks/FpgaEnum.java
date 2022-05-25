@@ -248,7 +248,7 @@ public enum FpgaEnum implements HasChipLocation {
 	 *             If the arguments don't describe a supported FPGA link.
 	 */
 	public static FpgaEnum findId(int x, int y, Direction direction) {
-		for (FpgaEnum linkId : FpgaEnum.values()) {
+		for (var linkId : FpgaEnum.values()) {
 			if (linkId.x == x && linkId.y == y
 					&& linkId.direction == direction) {
 				return linkId;
@@ -270,7 +270,7 @@ public enum FpgaEnum implements HasChipLocation {
 	 *             If the arguments don't describe a supported FPGA link.
 	 */
 	public static FpgaEnum findId(FpgaId fpgaId, int id) {
-		for (FpgaEnum linkId : FpgaEnum.values()) {
+		for (var linkId : FpgaEnum.values()) {
 			if (linkId.fpgaId == fpgaId && linkId.id == id) {
 				return linkId;
 			}

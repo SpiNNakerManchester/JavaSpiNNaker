@@ -18,10 +18,10 @@ package uk.ac.manchester.spinnaker.machine.bean;
 
 import static java.net.InetAddress.getByName;
 import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -84,12 +84,10 @@ public class ChipDetails {
 			this.ipAddress = null;
 		}
 		if (deadLinks != null) {
-			this.deadDirections = new HashSet<>();
-			for (Integer deadLink : deadLinks) {
-				this.deadDirections.add(Direction.byId(deadLink));
-			}
+			deadDirections = deadLinks.stream().map(Direction::byId)
+					.collect(toUnmodifiableSet());
 		} else {
-			this.deadDirections = emptySet();
+			deadDirections = emptySet();
 		}
 	}
 
@@ -124,7 +122,7 @@ public class ChipDetails {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("[");
+		var builder = new StringBuilder("[");
 		builder.append("ethernet: ").append(ethernet).append(", ");
 		builder.append(" cores: ").append(cores).append(", ");
 		if (ipAddress != null) {
@@ -152,7 +150,7 @@ public class ChipDetails {
 	public ChipLocation getLinkDestination(Direction direction,
 			HasChipLocation source, Machine machine) {
 		if (links != null) {
-			for (LinkBean bean : links) {
+			for (var bean : links) {
 				if (bean.sourceDirection == direction) {
 					return bean.destination;
 				}

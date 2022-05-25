@@ -16,11 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.Collection;
-import java.util.function.Consumer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
+
 import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.utils.Counter;
 
@@ -66,11 +67,11 @@ public class TestSpiNNakerTriadGeometry {
      */
     @Test
     public void testLocalChipCoordinate() {
-        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
+        var instance = getSpinn5Geometry();
         for (int x = 0; x < 12; x++) {
             for (int y = 0; y < 12; y++) {
                 //px, py = delta_table[y][x]
-                ChipLocation result = instance.getLocalChipCoordinate(new ChipLocation(x, y));
+                var result = instance.getLocalChipCoordinate(new ChipLocation(x, y));
                 assertEquals(localTable[y][x][0], result.getX());
                 assertEquals(localTable[y][x][1], result.getY());
             }
@@ -82,7 +83,7 @@ public class TestSpiNNakerTriadGeometry {
 
     @Test
     public void testGetEthernetChip() {
-        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
+        var instance = getSpinn5Geometry();
         assertEquals(new ChipLocation(0,0), instance.getRootChip(new ChipLocation(0,0), 96, 60));
         assertEquals(new ChipLocation(0,0), instance.getRootChip(new ChipLocation(0,3), 96, 60));
         assertEquals(new ChipLocation(0,0), instance.getRootChip(new ChipLocation(4,7), 96, 60));
@@ -114,34 +115,31 @@ public class TestSpiNNakerTriadGeometry {
 
     @Test
     public void testGetPotentialEthernetChips() {
-        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
+        var instance = getSpinn5Geometry();
 
-        Collection<ChipLocation> ethers = instance.getPotentialRootChips(
+        var ethers = instance.getPotentialRootChips(
                 new MachineDimensions(2, 2));
-        assertThat(ethers, contains(ChipLocation.ZERO_ZERO));
+        assertThat(ethers, contains(ZERO_ZERO));
 
         ethers = instance.getPotentialRootChips(new MachineDimensions(8, 8));
-        assertThat(ethers, contains(ChipLocation.ZERO_ZERO));
+        assertThat(ethers, contains(ZERO_ZERO));
 
-        ChipLocation chip48 = new ChipLocation(4, 8);
-        ChipLocation chip84 = new ChipLocation(8, 4);
+        var chip48 = new ChipLocation(4, 8);
+        var chip84 = new ChipLocation(8, 4);
 
         ethers = instance.getPotentialRootChips(new MachineDimensions(12, 12));
-        assertThat(ethers, containsInAnyOrder(
-                ChipLocation.ZERO_ZERO, chip48, chip84));
+        assertThat(ethers, containsInAnyOrder(ZERO_ZERO, chip48, chip84));
 
         ethers = instance.getPotentialRootChips(new MachineDimensions(16, 16));
-        assertThat(ethers, containsInAnyOrder(
-                ChipLocation.ZERO_ZERO, chip48, chip84));
+        assertThat(ethers, containsInAnyOrder(ZERO_ZERO, chip48, chip84));
 
-        ChipLocation chip12_12 = new ChipLocation(12, 12);
-        ChipLocation chip0_12 = new ChipLocation(0, 12);
-        ChipLocation chip12_0 = new ChipLocation(12, 0);
+        var chip12_12 = new ChipLocation(12, 12);
+        var chip0_12 = new ChipLocation(0, 12);
+        var chip12_0 = new ChipLocation(12, 0);
 
         ethers = instance.getPotentialRootChips(new MachineDimensions(20, 20));
         assertThat(ethers, containsInAnyOrder(
-                ChipLocation.ZERO_ZERO, chip48, chip84, chip12_0, chip12_12,
-                chip0_12));
+                ZERO_ZERO, chip48, chip84, chip12_0, chip12_12, chip0_12));
 
         ethers = instance.getPotentialRootChips(new MachineDimensions(24, 24));
         assertThat(ethers, hasSize(12));
@@ -150,24 +148,23 @@ public class TestSpiNNakerTriadGeometry {
 
     @Test
     public void testSingleBoard() {
-        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
+        var instance = getSpinn5Geometry();
         int count = 0;
-        for (ChipLocation chip: instance.singleBoard()) {
+        for (var chip: instance.singleBoard()) {
             count+= 1;
-            assertEquals(ChipLocation.ZERO_ZERO, instance.getRootChip(chip, 12, 12));
+            assertEquals(ZERO_ZERO, instance.getRootChip(chip, 12, 12));
         }
         assertEquals(48, count);
     }
 
     @Test
     public void testSingleBoardForEach() {
-        SpiNNakerTriadGeometry instance = SpiNNakerTriadGeometry.getSpinn5Geometry();
-        final Counter count = new Counter();
-        Consumer<ChipLocation> checkandCount = chip -> {
+        var instance = getSpinn5Geometry();
+        var count = new Counter();
+        instance.singleBoardForEach(chip -> {
             count.increment();
-            assertEquals(ChipLocation.ZERO_ZERO, instance.getRootChip(chip, 12, 12));
-        };
-        instance.singleBoardForEach(checkandCount);
+            assertEquals(ZERO_ZERO, instance.getRootChip(chip, 12, 12));
+        });
         assertEquals(48, count.get());
     }
 

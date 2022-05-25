@@ -45,6 +45,7 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  *             but hasn't been yet.
  * @see RecordingRegionDataGatherer
  */
+@Deprecated
 public class DirectDataGatherer extends DataGatherer {
 	/** The number of memory regions in the DSE model. */
 	private static final int MAX_MEM_REGIONS = 16;
@@ -110,7 +111,7 @@ public class DirectDataGatherer extends DataGatherer {
 			}
 		}
 		// Individual cores are only ever handled from one thread
-		ByteBuffer buffer = map.get(vertex.getBaseAddress());
+		var buffer = map.get(vertex.getBaseAddress());
 		if (buffer == null) {
 			buffer = txrx.readMemory(core, vertex.getBaseAddress(),
 					WORD_SIZE * (MAX_MEM_REGIONS + 2));
@@ -132,7 +133,7 @@ public class DirectDataGatherer extends DataGatherer {
 	@Override
 	protected List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException {
-		IntBuffer b = getCoreRegionTable(placement.asCoreLocation(),
+		var b = getCoreRegionTable(placement.asCoreLocation(),
 				placement.getVertex());
 		// TODO This is probably wrong!
 		int size = b.get(regionID + 1) - b.get(regionID);

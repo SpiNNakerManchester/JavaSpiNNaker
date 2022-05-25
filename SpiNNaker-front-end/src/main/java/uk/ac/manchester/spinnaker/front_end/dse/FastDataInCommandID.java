@@ -40,7 +40,7 @@ public enum FastDataInCommandID {
 			new HashMap<>();
 
 	static {
-		for (FastDataInCommandID c : values()) {
+		for (var c : values()) {
 			MAP.put(c.value, c);
 		}
 	}
@@ -62,7 +62,7 @@ public enum FastDataInCommandID {
 	 *             if the value isn't one of the ones accepted by this class.
 	 */
 	public static FastDataInCommandID forValue(int value) {
-		FastDataInCommandID id = MAP.get(value);
+		var id = MAP.get(value);
 		if (id == null) {
 			throw new IllegalArgumentException(
 					"unexpected command code: " + value);

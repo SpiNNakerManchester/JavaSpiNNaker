@@ -39,7 +39,7 @@ public class TestMachineVersion {
 
     @Test
     public void testThree() {
-        MachineVersion instance = MachineVersion.THREE;
+        var instance = MachineVersion.THREE;
         assertEquals(new MachineDimensions(2,2), instance.machineDimensions);
     }
 
@@ -76,7 +76,7 @@ public class TestMachineVersion {
                 new MachineDimensions(3, 2)));
         assertThrows(IllegalArgumentException.class, () -> {
             @SuppressWarnings("unused")
-            MachineVersion v  = MachineVersion.bySize(new MachineDimensions(13, 16));
+            var v = MachineVersion.bySize(new MachineDimensions(13, 16));
         });
         assertThrows(IllegalArgumentException.class, () -> {
             MachineVersion.bySize(new MachineDimensions(12, 4));

@@ -41,7 +41,7 @@ public enum MailboxCommand {
 
 	private static final Map<Integer, MailboxCommand> MAP = new HashMap<>();
 	static {
-		for (MailboxCommand v : values()) {
+		for (var v : values()) {
 			MAP.put(v.value, v);
 		}
 	}

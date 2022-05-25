@@ -34,13 +34,13 @@ public class TestTripleMapIterable {
 
         Map<Double, Map<String, Integer>> aMap = new HashMap<>();
 
-        Map<String, Integer> inner = new HashMap<>();
+        var inner = new HashMap<String, Integer>();
         inner.put("One", 1);
         inner.put("Two", 2);
         inner.put("Three", 3);
         aMap.put(23.2, inner);
 
-        Map<String, Integer> inner2 = new HashMap<>();
+        var inner2 = new HashMap<String, Integer>();
         inner2.put("Ten", 10);
         inner2.put("Eleven", 11);
         inner2.put("Twelve", 12);
@@ -50,13 +50,13 @@ public class TestTripleMapIterable {
 
         Map<Double, Map<String, Integer>> aMap2 = new HashMap<>();
 
-        Map<String, Integer> inner11 = new HashMap<>();
+        var inner11 = new HashMap<String, Integer>();
         inner.put("Un", -1);
         inner.put("Duex", -2);
         inner.put("Trois", -3);
         aMap2.put(423.2, inner11);
 
-        Map<String, Integer> inner12 = new HashMap<>();
+        var inner12 = new HashMap<String, Integer>();
         inner2.put("Dix", -10);
         inner2.put("Onze", -11);
         inner2.put("Douze", -12);
@@ -64,14 +64,13 @@ public class TestTripleMapIterable {
 
         bigMap.put((float)2.5, aMap2);
 
-        TripleMapIterable<Integer> instance;
-        instance = new TripleMapIterable<>(bigMap);
+        var instance = new TripleMapIterable<>(bigMap);
         int count = 0;
-        for (Integer value: instance) {
+        for (var value: instance) {
             count += 1;
         }
         assertEquals(12, count);
-        for (Integer value: instance) {
+        for (var value: instance) {
             count += 1;
         }
         assertEquals(24, count);
@@ -81,10 +80,9 @@ public class TestTripleMapIterable {
     public void testEmpty() {
         Map<Float, Map<Double, Map<String, Integer>>> bigMap = new HashMap<>();
 
-        TripleMapIterable<Integer> instance;
-        instance = new TripleMapIterable<>(bigMap);
+        var instance = new TripleMapIterable<>(bigMap);
         int count = 0;
-        for (Integer value: instance) {
+        for (var value: instance) {
             count += 1;
         }
         assertEquals(0, count);

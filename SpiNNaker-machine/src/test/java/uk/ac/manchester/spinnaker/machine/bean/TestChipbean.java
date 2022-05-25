@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -33,8 +32,8 @@ public class TestChipbean {
                 + "\"sdram\": 123469692, "
                 + "\"routerEntries\": 1013, \"monitors\": 2, "
                 + "\"virtual\": true}]";
-        ObjectMapper mapper = MapperFactory.createMapper();
-        ChipBean fromJson = mapper.readValue(json, ChipBean.class);
+        var mapper = MapperFactory.createMapper();
+        var fromJson = mapper.readValue(json, ChipBean.class);
         assertNotNull(fromJson);
         System.out.println(fromJson);
     }

@@ -16,11 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
 import org.junit.jupiter.api.Test;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
@@ -32,18 +33,17 @@ public class TestWhereIs {
 
 	@Test
 	void testFromJson() throws IOException {
-		ChipLocation jobChip = new ChipLocation(1, 2);
-		ChipLocation chip = new ChipLocation(3, 4);
-		ChipLocation boardChip = new ChipLocation(8, 9);
-		BoardCoordinates logical = new BoardCoordinates(5, 6, 7);
-		BoardPhysicalCoordinates physical =
-				new BoardPhysicalCoordinates(10, 11, 12);
+		var jobChip = new ChipLocation(1, 2);
+		var chip = new ChipLocation(3, 4);
+		var boardChip = new ChipLocation(8, 9);
+		var logical = new BoardCoordinates(5, 6, 7);
+		var physical = new BoardPhysicalCoordinates(10, 11, 12);
 
-		String json = "{\"job_chip\":[1,2],\"job_id\":666,\"chip\":[3,4],"
+		var json = "{\"job_chip\":[1,2],\"job_id\":666,\"chip\":[3,4],"
 				+ "\"logical\":[5,6,7],\"machine\":\"Spin24b-001\","
 				+ "\"board_chip\":[8,9],\"physical\":[10,11,12]}";
-		ObjectMapper mapper = SpallocClient.createMapper();
-		WhereIs fromJson = mapper.readValue(json, WhereIs.class);
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertEquals(jobChip, fromJson.getJobChip());
 		assertEquals(666, fromJson.getJobId());
 		assertEquals(chip, fromJson.getChip());
@@ -53,7 +53,7 @@ public class TestWhereIs {
 		BoardPhysicalCoordinates physical2 = fromJson.getPhysical();
 		assertEquals(physical, physical2);
 
-		WhereIs direct = new WhereIs(jobChip, 666, chip, logical, "Spin24b-001",
+		var direct = new WhereIs(jobChip, 666, chip, logical, "Spin24b-001",
 				boardChip, physical);
 		assertEquals(direct, fromJson);
 		// assertEquals(direct.hashCode(), fromJson.hashCode());
@@ -62,17 +62,16 @@ public class TestWhereIs {
 
 	@Test
 	void testBug() throws IOException {
-		ChipLocation chip = new ChipLocation(8, 4);
-		ChipLocation boardChip = new ChipLocation(0, 0);
-		BoardCoordinates logical = new BoardCoordinates(0, 0, 1);
-		BoardPhysicalCoordinates physical =
-				new BoardPhysicalCoordinates(0, 0, 8);
+		var chip = new ChipLocation(8, 4);
+		var boardChip = new ChipLocation(0, 0);
+		var logical = new BoardCoordinates(0, 0, 1);
+		var physical = new BoardPhysicalCoordinates(0, 0, 8);
 
-		String json = "{\"job_chip\":null,\"job_id\":null,\"chip\":[8,4],"
+		var json = "{\"job_chip\":null,\"job_id\":null,\"chip\":[8,4],"
 				+ "\"logical\":[0,0,1],\"machine\":\"Spin24b-001\","
 				+ "\"board_chip\":[0,0],\"physical\":[0,0,8]}";
-		ObjectMapper mapper = SpallocClient.createMapper();
-		WhereIs fromJson = mapper.readValue(json, WhereIs.class);
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertNull(fromJson.getJobChip());
 		assertNull(fromJson.getJobId());
 		assertEquals(chip, fromJson.getChip());
@@ -81,7 +80,7 @@ public class TestWhereIs {
 		assertEquals(boardChip, fromJson.getBoardChip());
 		assertEquals(physical, fromJson.getPhysical());
 
-		WhereIs direct = new WhereIs(null, null, chip, logical, "Spin24b-001",
+		var direct = new WhereIs(null, null, chip, logical, "Spin24b-001",
 				boardChip, physical);
 		assertEquals(direct, fromJson);
 		// assertEquals(direct.hashCode(), fromJson.hashCode());
@@ -91,11 +90,11 @@ public class TestWhereIs {
 	@Test
 	void testNulls() throws IOException {
 
-		String json = "{\"job_chip\":null,\"job_id\":null,\"chip\":null,"
+		var json = "{\"job_chip\":null,\"job_id\":null,\"chip\":null,"
 				+ "\"logical\":null,\"machine\":null,\"board_chip\":null,"
 				+ "\"physical\":null}";
-		ObjectMapper mapper = SpallocClient.createMapper();
-		WhereIs fromJson = mapper.readValue(json, WhereIs.class);
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertNull(fromJson.getJobChip());
 		assertNull(fromJson.getJobId());
 		assertNull(fromJson.getChip());
@@ -104,7 +103,7 @@ public class TestWhereIs {
 		assertNull(fromJson.getBoardChip());
 		assertNull(fromJson.getPhysical());
 
-		WhereIs direct = new WhereIs(null, null, null, null, null, null, null);
+		var direct = new WhereIs(null, null, null, null, null, null, null);
 		assertEquals(direct, fromJson);
 		// assertEquals(direct.hashCode(), fromJson.hashCode());
 		assertEquals(direct.toString(), fromJson.toString());

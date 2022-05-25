@@ -127,8 +127,8 @@ public class ConnectionListener<MessageType> extends Thread
 	}
 
 	private void runStep() throws IOException {
-		MessageType message = connection.receiveMessage(timeout);
-		for (MessageHandler<MessageType> callback : checkpointCallbacks()) {
+		var message = connection.receiveMessage(timeout);
+		for (var callback : checkpointCallbacks()) {
 			callbackPool.submit(() -> callback.handle(message));
 		}
 	}

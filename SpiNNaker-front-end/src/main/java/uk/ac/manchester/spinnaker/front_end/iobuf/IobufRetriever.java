@@ -28,18 +28,13 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
-import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -109,15 +104,15 @@ public class IobufRetriever extends BoardLocalSupport {
 	 */
 	public NotableMessages retrieveIobufContents(IobufRequest request,
 			String provenanceDir) throws IOException, ProcessException {
-		File provDir = new File(provenanceDir);
+		var provDir = new File(provenanceDir);
 		validateProvenanceDirectory(provDir);
-		List<String> errorEntries = new ArrayList<>();
-		List<String> warnEntries = new ArrayList<>();
+		var errorEntries = new ArrayList<String>();
+		var warnEntries = new ArrayList<String>();
 		try {
-			Map<File, CoreSubsets> mapping = request.getRequestDetails();
-			Tasks tasks = executor
+			var mapping = request.getRequestDetails();
+			var tasks = executor
 					.submitTasks(mapping.entrySet().stream().flatMap(entry -> {
-						Replacer r = new Replacer(entry.getKey());
+						var r = new Replacer(entry.getKey());
 						return partitionByBoard(entry.getValue())
 								.map(cores -> () -> retrieveIobufContents(cores,
 										r, provDir, errorEntries, warnEntries));
@@ -158,11 +153,11 @@ public class IobufRetriever extends BoardLocalSupport {
 			File binaryFile, File provenanceDir)
 			throws IOException, ProcessException {
 		validateProvenanceDirectory(provenanceDir);
-		List<String> errorEntries = new ArrayList<>();
-		List<String> warnEntries = new ArrayList<>();
+		var errorEntries = new ArrayList<String>();
+		var warnEntries = new ArrayList<String>();
 		try {
-			Replacer replacer = new Replacer(binaryFile);
-			Tasks tasks = executor.submitTasks(partitionByBoard(coreSubsets)
+			var replacer = new Replacer(binaryFile);
+			var tasks = executor.submitTasks(partitionByBoard(coreSubsets)
 					.map(boardSubset -> () -> retrieveIobufContents(boardSubset,
 							replacer, provenanceDir, errorEntries,
 							warnEntries)));
@@ -188,8 +183,8 @@ public class IobufRetriever extends BoardLocalSupport {
 	}
 
 	private Stream<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
-		Map<ChipLocation, CoreSubsets> map = new DefaultMap<>(CoreSubsets::new);
-		for (CoreLocation core : coreSubsets) {
+		var map = new DefaultMap<>(CoreSubsets::new);
+		for (var core : coreSubsets) {
 			map.get(machine.getChipAt(core).nearestEthernet).addCore(core);
 		}
 		return map.values().stream();
@@ -198,17 +193,17 @@ public class IobufRetriever extends BoardLocalSupport {
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
 			File provenanceDir, List<String> errorEntries,
 			List<String> warnEntries) throws IOException, ProcessException {
-		try (BoardLocal bl = new BoardLocal(cores.first().get())) {
+		try (var bl = new BoardLocal(cores.first().get())) {
 			// extract iobuf, write to file and check for errors for provenance
-			for (IOBuffer iobuf : txrx.getIobuf(cores)) {
-				File file = getProvenanceFile(provenanceDir, iobuf);
-				try (BufferedWriter w = openFileForAppending(file)) {
+			for (var iobuf : txrx.getIobuf(cores)) {
+				var file = getProvenanceFile(provenanceDir, iobuf);
+				try (var w = openFileForAppending(file)) {
 					log.info("storing iobuf from {} (running {}) in {}",
 							iobuf.asCoreLocation(), replacer.origin, file);
 					// ISO 8859-1: bytes are zero-extended to chars
-					for (String originalLine : iobuf
+					for (var originalLine : iobuf
 							.getContentsString(ISO_8859_1).split("\n")) {
-						String line = replacer.replace(originalLine);
+						var line = replacer.replace(originalLine);
 						w.write(line);
 						w.newLine();
 						addValueIfMatch(ERROR_ENTRY, line, errorEntries, iobuf);
@@ -234,7 +229,7 @@ public class IobufRetriever extends BoardLocalSupport {
 
 	private static void addValueIfMatch(Pattern regex, String line,
 			List<String> entries, HasCoreLocation core) {
-		Matcher match = regex.matcher(line);
+		var match = regex.matcher(line);
 		if (match.matches()) {
 			synchronized (entries) {
 				entries.add(format("%d, %d, %d: %s (%s)", core.getX(),

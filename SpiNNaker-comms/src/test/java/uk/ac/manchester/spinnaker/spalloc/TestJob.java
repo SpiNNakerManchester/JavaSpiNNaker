@@ -27,7 +27,6 @@ import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.withConnection;
 import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.json.JSONObject;
@@ -59,9 +58,9 @@ class TestJob {
 	@Test
 	@Disabled("unreliable: depends on timing")
 	void testCoreJobFlow() throws Exception {
-		BlockingDeque<String> send = new LinkedBlockingDeque<>();
-		BlockingDeque<JSONObject> received = new LinkedBlockingDeque<>();
-		BlockingDeque<JSONObject> keepalives = new LinkedBlockingDeque<>();
+		var send = new LinkedBlockingDeque<String>();
+		var received = new LinkedBlockingDeque<JSONObject>();
+		var keepalives = new LinkedBlockingDeque<JSONObject>();
 
 		// Set the sequence of messages that the server will send
 		send.offer("{\"return\": 123}");
@@ -89,7 +88,7 @@ class TestJob {
 			s.advancedEmulationMode(send, received, keepalives, bgAccept);
 
 			// The actual flow that we'd expect from normal usage
-			try (SpallocJob j = new SpallocJob("localhost",
+			try (var j = new SpallocJob("localhost",
 					new CreateJob(1, 2, 3).owner(OWNER).keepAlive(1))) {
 				id = j.getID();
 				sleep(1200);
@@ -150,7 +149,7 @@ class TestJob {
 					+ keepalives.size();
 		});
 		// All should have the same message sent
-		JSONObject first = keepalives.take();
+		var first = keepalives.take();
 		assertNotNull(first, "null in keepalive queue!");
 		JSONAssert.assertEquals(
 				"{\"command\": \"job_keepalive\", "

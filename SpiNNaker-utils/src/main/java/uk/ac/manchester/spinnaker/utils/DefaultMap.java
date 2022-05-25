@@ -152,8 +152,8 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	@Override
 	public V get(Object key) {
 		@SuppressWarnings("unchecked")
-		K k = (K) key;
-		V value = super.get(k);
+		var k = (K) key;
+		var value = super.get(key);
 		if (value == null) {
 			value = makeDefault(k);
 			put(k, value);

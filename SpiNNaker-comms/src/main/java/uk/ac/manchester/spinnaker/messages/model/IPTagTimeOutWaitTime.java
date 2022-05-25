@@ -58,7 +58,7 @@ public enum IPTagTimeOutWaitTime {
 	}
 
 	static {
-		for (IPTagTimeOutWaitTime tto : values()) {
+		for (var tto : values()) {
 			MAP.put(tto.value, tto);
 		}
 	}

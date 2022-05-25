@@ -30,14 +30,14 @@ class TestSCPMessageAssembly {
 
 	@Test
 	void testCreateNewSCPHeader() {
-		SCPRequestHeader header = new SCPRequestHeader(CMD_VER);
+		var header = new SCPRequestHeader(CMD_VER);
 		assertEquals(CMD_VER, header.command);
 		assertEquals(0, header.getSequence());
 	}
 
 	@Test
 	void testCreateNewVerSCPPacket() {
-		GetVersion scp = new GetVersion(ZERO_CORE);
+		var scp = new GetVersion(ZERO_CORE);
 		assertEquals(0, scp.argument1);
 		assertEquals(0, scp.argument2);
 		assertEquals(0, scp.argument3);
@@ -46,7 +46,7 @@ class TestSCPMessageAssembly {
 
 	@Test
 	void testCreateNewLinkSCPPacket() {
-		ReadLink scp = new ReadLink(ZERO_CORE, EAST, 0, 252);
+		var scp = new ReadLink(ZERO_CORE, EAST, 0, 252);
 		assertEquals(0, scp.argument1);
 		assertEquals(252, scp.argument2);
 		assertEquals(0, scp.argument3);
@@ -55,7 +55,7 @@ class TestSCPMessageAssembly {
 
 	@Test
 	void testCreateNewMemorySCPPacket() {
-		ReadMemory scp = new ReadMemory(ZERO_CORE, 0, 252);
+		var scp = new ReadMemory(ZERO_CORE, 0, 252);
 		assertEquals(0, scp.argument1);
 		assertEquals(252, scp.argument2);
 		assertEquals(2, scp.argument3);

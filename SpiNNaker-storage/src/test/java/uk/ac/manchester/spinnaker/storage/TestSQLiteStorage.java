@@ -31,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
-import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 class TestSQLiteStorage {
 	File db;
@@ -56,13 +55,12 @@ class TestSQLiteStorage {
 
 	@Test
 	void testBasicOps() throws StorageException {
-		BufferManagerStorage storage =
-				new BufferManagerDatabaseEngine(db).getStorageInterface();
-		HasCoreLocation core = new CoreLocation(0, 0, 0);
+		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
+		var core = new CoreLocation(0, 0, 0);
 
 		assertEquals(emptyList(), storage.getCoresWithStorage());
 
-		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 0, 0, 100);
+		var rr = new BufferManagerStorage.Region(core, 0, 0, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
@@ -73,12 +71,11 @@ class TestSQLiteStorage {
 
 	@Test
 	void testWithExisting() throws StorageException {
-		BufferManagerStorage storage =
-				new BufferManagerDatabaseEngine(db).getStorageInterface();
-		HasCoreLocation core = new CoreLocation(0, 0, 0);
+		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
+		var core = new CoreLocation(0, 0, 0);
 
 		// append creates
-		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
+		var rr = new BufferManagerStorage.Region(core, 1, 0, 100);
 		storage.appendRecordingContents(rr, bytes("ab"));
 		storage.appendRecordingContents(rr, bytes("cd"));
 		storage.appendRecordingContents(rr, bytes("ef"));

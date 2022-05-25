@@ -16,16 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import uk.ac.manchester.spinnaker.front_end.BasicExecutor.Tasks;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 public class TestBasicExecutor {
@@ -37,10 +37,10 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testRunOne() throws Exception {
-		ValueHolder<Object> val = new ValueHolder<>();
+		var val = new ValueHolder<>();
 
-		try (BasicExecutor exe = new BasicExecutor(1)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(1)) {
+			var t = exe.submitTasks(asList(() -> {
 				val.setValue(true);
 			}));
 			t.awaitAndCombineExceptions();
@@ -51,11 +51,11 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testRunTwo() throws Exception {
-		ValueHolder<Object> val1 = new ValueHolder<>();
-		ValueHolder<Object> val2 = new ValueHolder<>();
+		var val1 = new ValueHolder<>();
+		var val2 = new ValueHolder<>();
 
-		try (BasicExecutor exe = new BasicExecutor(1)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(1)) {
+			var t = exe.submitTasks(asList(() -> {
 				val1.setValue(true);
 			}, () -> {
 				val2.setValue(false);
@@ -69,13 +69,13 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testRunThreeStream() throws Exception {
-		ValueHolder<Object> val1 = new ValueHolder<>();
-		ValueHolder<Object> val2 = new ValueHolder<>();
-		ValueHolder<Object> val3 = new ValueHolder<>();
+		var val1 = new ValueHolder<>();
+		var val2 = new ValueHolder<>();
+		var val3 = new ValueHolder<>();
 
-		try (BasicExecutor exe = new BasicExecutor(1)) {
+		try (var exe = new BasicExecutor(1)) {
 			val3.setValue(TOKEN);
-			Tasks t = exe.submitTasks(asList(val1, val2, val3).parallelStream()
+			var t = exe.submitTasks(asList(val1, val2, val3).parallelStream()
 					.map(val -> () -> val.setValue(val == val1)));
 			t.awaitAndCombineExceptions();
 		}
@@ -87,11 +87,11 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testRunTwoParallel() throws Exception {
-		ValueHolder<Object> val1 = new ValueHolder<>();
-		ValueHolder<Object> val2 = new ValueHolder<>();
+		var val1 = new ValueHolder<>();
+		var val2 = new ValueHolder<>();
 
-		try (BasicExecutor exe = new BasicExecutor(2)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(2)) {
+			var t = exe.submitTasks(asList(() -> {
 				Thread.sleep(SHORT);
 				val1.setValue(TOKEN);
 			}, () -> {
@@ -108,18 +108,17 @@ public class TestBasicExecutor {
 	@Test
 	public void testRunTenParallel() throws Exception {
 		final int SCALE = 10;
-		AtomicInteger sum = new AtomicInteger(0);
+		var sum = new AtomicInteger(0);
 		long before, after;
 
 		try (BasicExecutor exe = new BasicExecutor(SCALE)) {
-			before = System.currentTimeMillis();
-			Tasks t = exe
-					.submitTasks(IntStream.range(0, SCALE).mapToObj(i -> () -> {
-						Thread.sleep(SHORT);
-						sum.addAndGet(i);
-					}));
+			before = currentTimeMillis();
+			var t = exe.submitTasks(range(0, SCALE).mapToObj(i -> () -> {
+				Thread.sleep(SHORT);
+				sum.addAndGet(i);
+			}));
 			t.awaitAndCombineExceptions();
-			after = System.currentTimeMillis();
+			after = currentTimeMillis();
 		}
 
 		assertEquals(45, sum.get());
@@ -134,8 +133,8 @@ public class TestBasicExecutor {
 	public void testRunOneAndThrow() throws Exception {
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(1)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(1)) {
+			var t = exe.submitTasks(asList(() -> {
 				throw new IOException(EXN_MSG_1);
 			}));
 			e = assertThrows(IOException.class,
@@ -149,8 +148,8 @@ public class TestBasicExecutor {
 	public void testRunTwoAndThrow() throws Exception {
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(1)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(1)) {
+			var t = exe.submitTasks(asList(() -> {
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
 				throw new RuntimeException(EXN_MSG_2);
@@ -167,8 +166,8 @@ public class TestBasicExecutor {
 	public void testRunTwoParallelAndThrow() throws Exception {
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(2)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(2)) {
+			var t = exe.submitTasks(asList(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
@@ -186,8 +185,8 @@ public class TestBasicExecutor {
 	public void testRunTwoOverParallelAndThrow() throws Exception {
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(5)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(5)) {
+			var t = exe.submitTasks(asList(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
@@ -203,11 +202,11 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testRunAgain() throws Exception {
-		ValueHolder<Object> val = new ValueHolder<>();
+		var val = new ValueHolder<>();
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(2)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(2)) {
+			var t = exe.submitTasks(asList(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
@@ -216,7 +215,7 @@ public class TestBasicExecutor {
 			e = assertThrows(IOException.class,
 					() -> t.awaitAndCombineExceptions());
 
-			Tasks t2 = exe.submitTasks(asList(() -> {
+			var t2 = exe.submitTasks(asList(() -> {
 				val.setValue(TOKEN);
 			}));
 			t2.awaitAndCombineExceptions();
@@ -229,17 +228,17 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testRunInterleaved() throws Exception {
-		ValueHolder<Object> val = new ValueHolder<>();
+		var val = new ValueHolder<>();
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(2)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(2)) {
+			var t = exe.submitTasks(asList(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
 				throw new RuntimeException(EXN_MSG_2);
 			}));
-			Tasks t2 = exe.submitTasks(asList(() -> {
+			var t2 = exe.submitTasks(asList(() -> {
 				Thread.sleep(SHORT);
 				val.setValue(TOKEN);
 			}));
@@ -256,17 +255,17 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testRunInterleaved2() throws Exception {
-		ValueHolder<Object> val = new ValueHolder<>();
+		var val = new ValueHolder<>();
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(2)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(2)) {
+			var t = exe.submitTasks(asList(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
 				throw new RuntimeException(EXN_MSG_2);
 			}));
-			Tasks t2 = exe.submitTasks(asList(() -> {
+			var t2 = exe.submitTasks(asList(() -> {
 				Thread.sleep(SHORT);
 				val.setValue(TOKEN);
 			}));
@@ -283,11 +282,11 @@ public class TestBasicExecutor {
 
 	@Test
 	public void testMixedSuccess() throws Exception {
-		ValueHolder<Object> val = new ValueHolder<>();
+		var val = new ValueHolder<>();
 		Exception e;
 
-		try (BasicExecutor exe = new BasicExecutor(5)) {
-			Tasks t = exe.submitTasks(asList(() -> {
+		try (var exe = new BasicExecutor(5)) {
+			var t = exe.submitTasks(asList(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {

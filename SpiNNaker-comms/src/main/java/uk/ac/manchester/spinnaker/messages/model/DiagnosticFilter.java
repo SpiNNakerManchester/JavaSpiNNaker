@@ -217,22 +217,22 @@ public class DiagnosticFilter {
 		if (!emergencyMode) {
 			data |= 1 << EMERGENCY_ROUTE_MODE_OFFSET;
 		}
-		for (Destination val : destinations) {
+		for (var val : destinations) {
 			data |= val.bit;
 		}
-		for (Source val : sources) {
+		for (var val : sources) {
 			data |= val.bit;
 		}
-		for (PayloadStatus val : payloads) {
+		for (var val : payloads) {
 			data |= val.bit;
 		}
-		for (DefaultRoutingStatus val : defaultStatuses) {
+		for (var val : defaultStatuses) {
 			data |= val.bit;
 		}
-		for (EmergencyRoutingStatus val : emergencyStatuses) {
+		for (var val : emergencyStatuses) {
 			data |= val.bit;
 		}
-		for (PacketType val : packetTypes) {
+		for (var val : packetTypes) {
 			data |= val.bit;
 		}
 		return data;
@@ -262,7 +262,7 @@ public class DiagnosticFilter {
 
 		static {
 			MAP = new HashMap<>();
-			for (DefaultRoutingStatus d : values()) {
+			for (var d : values()) {
 				MAP.put(d.value, d);
 			}
 		}
@@ -315,7 +315,7 @@ public class DiagnosticFilter {
 
 		static {
 			MAP = new HashMap<>();
-			for (Destination d : values()) {
+			for (var d : values()) {
 				MAP.put(d.value, d);
 			}
 		}
@@ -367,7 +367,7 @@ public class DiagnosticFilter {
 
 		static {
 			MAP = new HashMap<>();
-			for (EmergencyRoutingStatus e : values()) {
+			for (var e : values()) {
 				MAP.put(e.value, e);
 			}
 		}
@@ -410,7 +410,7 @@ public class DiagnosticFilter {
 
 		static {
 			MAP = new HashMap<>();
-			for (PacketType p : values()) {
+			for (var p : values()) {
 				MAP.put(p.value, p);
 			}
 		}
@@ -449,7 +449,7 @@ public class DiagnosticFilter {
 
 		static {
 			MAP = new HashMap<>();
-			for (PayloadStatus p : values()) {
+			for (var p : values()) {
 				MAP.put(p.value, p);
 			}
 		}
@@ -488,7 +488,7 @@ public class DiagnosticFilter {
 
 		static {
 			MAP = new HashMap<>();
-			for (Source s : values()) {
+			for (var s : values()) {
 				MAP.put(s.value, s);
 			}
 		}

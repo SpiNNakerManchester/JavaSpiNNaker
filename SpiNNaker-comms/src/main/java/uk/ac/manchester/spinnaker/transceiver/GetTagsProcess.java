@@ -31,7 +31,6 @@ import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGet;
 import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo;
-import uk.ac.manchester.spinnaker.messages.scp.IPTagGetInfo.Response;
 
 /** Gets IP tags and reverse IP tags. */
 class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
@@ -61,8 +60,8 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	Collection<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
-		Map<Integer, Tag> tags = new TreeMap<>();
-		for (int tag : range(0, getTagCount(connection)).toArray()) {
+		var tags = new TreeMap<Integer, Tag>();
+		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
 				if (response.isInUse()) {
 					tags.put(tag, createTag(connection.getRemoteIPAddress(),
@@ -77,8 +76,7 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private int getTagCount(SCPConnection connection)
 			throws IOException, ProcessException {
-		Response tagInfo =
-				synchronousCall(new IPTagGetInfo(connection.getChip()));
+		var tagInfo = synchronousCall(new IPTagGetInfo(connection.getChip()));
 		return tagInfo.poolSize + tagInfo.fixedSize;
 	}
 
@@ -107,8 +105,8 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException {
-		Map<Tag, Integer> tagUsages = new TreeMap<>();
-		for (int tag : range(0, getTagCount(connection)).toArray()) {
+		var tagUsages = new TreeMap<Tag, Integer>();
+		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
 				if (response.isInUse()) {
 					tagUsages.put(createTag(connection.getRemoteIPAddress(),

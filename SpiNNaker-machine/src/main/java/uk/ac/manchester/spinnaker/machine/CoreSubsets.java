@@ -25,7 +25,6 @@ import static java.util.Collections.unmodifiableSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
@@ -159,8 +158,8 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 			throw new IllegalStateException("The subsets is immutable. "
 					+ "Possibly because a hashcode has been generated.");
 		}
-		Map<Integer, CoreLocation> map = getOrCreate(chip);
-		for (Integer p : processors) {
+		var map = getOrCreate(chip);
+		for (var p : processors) {
 			map.put(p, new CoreLocation(chip, p));
 		}
 	}
@@ -195,7 +194,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *            the locations to add.
 	 */
 	public void addCores(Iterable<CoreLocation> locations) {
-		for (CoreLocation location : locations) {
+		for (var location : locations) {
 			addCore(location);
 		}
 	}
@@ -271,8 +270,8 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	public final int hashCode() {
 		immutable = true;
 		int hash = 7;
-		for (Map<Integer, CoreLocation> subset : locations.values()) {
-			for (CoreLocation location : subset.values()) {
+		for (var subset : locations.values()) {
+			for (var location : subset.values()) {
 				hash = 89 * hash + location.hashCode();
 			}
 		}
@@ -303,8 +302,8 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final CoreSubsets other = (CoreSubsets) obj;
-		return Objects.equals(this.locations, other.locations);
+		var other = (CoreSubsets) obj;
+		return Objects.equals(locations, other.locations);
 	}
 
 	@Override
@@ -321,15 +320,13 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *         Therefore the result may be empty.
 	 */
 	public CoreSubsets intersection(CoreSubsets other) {
-		CoreSubsets results = new CoreSubsets();
-		for (Entry<?, Map<Integer, CoreLocation>> entry : locations
-				.entrySet()) {
-			Map<?, CoreLocation> otherSubset =
-					other.locations.get(entry.getKey());
+		var results = new CoreSubsets();
+		for (var entry : locations.entrySet()) {
+			var otherSubset = other.locations.get(entry.getKey());
 			if (otherSubset == null) {
 				continue;
 			}
-			for (CoreLocation location : entry.getValue().values()) {
+			for (var location : entry.getValue().values()) {
 				if (otherSubset.containsValue(location)) {
 					results.addCore(location);
 				}

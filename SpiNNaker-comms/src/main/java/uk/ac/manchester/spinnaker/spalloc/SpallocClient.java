@@ -173,8 +173,8 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 * @return The Object Mapper used by the Spalloc client,
 	 */
 	public static ObjectMapper createMapper() {
-		ObjectMapper mapper = new ObjectMapper();
-		SimpleModule module = new SimpleModule();
+		var mapper = new ObjectMapper();
+		var module = new SimpleModule();
 		module.addDeserializer(Response.class, new ResponseDeserializer());
 		mapper.registerModule(module);
 		mapper.setPropertyNamingStrategy(SNAKE_CASE);
@@ -187,7 +187,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	public Notification waitForNotification(Integer timeout)
 			throws SpallocProtocolException, SpallocProtocolTimeoutException {
 		// If we already have a notification, return it
-		Notification n = notifications.poll();
+		var n = notifications.poll();
 		if (n != null) {
 			return n;
 		}
@@ -213,7 +213,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public Version version(Integer timeout)
 			throws IOException, SpallocServerException {
-		String result = call(new VersionCommand(), timeout);
+		var result = call(new VersionCommand(), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("version result: {}", result);
 		}
@@ -223,7 +223,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public int createJob(CreateJob builder, Integer timeout)
 			throws IOException, SpallocServerException {
-		String result = call(builder.build(), timeout);
+		var result = call(builder.build(), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("create result: {}", result);
 		}
@@ -241,7 +241,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		}
 
 		// Test for bad kwargs and log them as a problem if present
-		Set<String> unwanted = new HashSet<>(kwargs.keySet());
+		var unwanted = new HashSet<>(kwargs.keySet());
 		unwanted.removeAll(ALLOWED_KWARGS);
 		if (!unwanted.isEmpty()) {
 			kwargs.keySet().removeAll(unwanted);
@@ -249,7 +249,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 					unwanted);
 		}
 
-		String result = call(new CreateJobCommand(args, kwargs), timeout);
+		var result = call(new CreateJobCommand(args, kwargs), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("create result: {}", result);
 		}
@@ -259,7 +259,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public void jobKeepAlive(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String result = call(new JobKeepAliveCommand(jobID), timeout);
+		var result = call(new JobKeepAliveCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("keepalive result: {}", result);
 		}
@@ -268,7 +268,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public JobState getJobState(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new GetJobStateCommand(jobID), timeout);
+		var json = call(new GetJobStateCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("get-state result: {}", json);
 		}
@@ -278,7 +278,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public JobMachineInfo getJobMachineInfo(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new GetJobMachineInfoCommand(jobID), timeout);
+		var json = call(new GetJobMachineInfoCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("get-info result: {}", json);
 		}
@@ -288,7 +288,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public void powerOnJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String result = call(new PowerOnJobBoardsCommand(jobID), timeout);
+		var result = call(new PowerOnJobBoardsCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("power-on result: {}", result);
 		}
@@ -297,7 +297,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public void powerOffJobBoards(int jobID, Integer timeout)
 			throws IOException, SpallocServerException {
-		String result = call(new PowerOffJobBoardsCommand(jobID), timeout);
+		var result = call(new PowerOffJobBoardsCommand(jobID), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("power-off result: {}", result);
 		}
@@ -306,7 +306,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public void destroyJob(int jobID, String reason, Integer timeout)
 			throws IOException, SpallocServerException {
-		String result = call(new DestroyJobCommand(jobID, reason), timeout);
+		var result = call(new DestroyJobCommand(jobID, reason), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("destroy result: {}", result);
 		}
@@ -329,7 +329,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 				c = new NoNotifyJobCommand(jobID);
 			}
 		}
-		String result = call(c, timeout);
+		var result = call(c, timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("notify-job result: {}", result);
 		}
@@ -352,7 +352,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 				c = new NoNotifyMachineCommand(machineName);
 			}
 		}
-		String result = call(c, timeout);
+		var result = call(c, timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("notify-machine result: {}", result);
 		}
@@ -372,7 +372,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public List<JobDescription> listJobs(Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new ListJobsCommand(), timeout);
+		var json = call(new ListJobsCommand(), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("list-jobs result: {}", json);
 		}
@@ -382,7 +382,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public List<Machine> listMachines(Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new ListMachinesCommand(), timeout);
+		var json = call(new ListMachinesCommand(), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("list-machines result: {}", json);
 		}
@@ -393,8 +393,8 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	public BoardPhysicalCoordinates getBoardPosition(String machineName,
 			BoardCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json =
-				call(new GetBoardPositionCommand(machineName, coords), timeout);
+		var json = call(new GetBoardPositionCommand(machineName, coords),
+				timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("position result: {}", json);
 		}
@@ -405,7 +405,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	public BoardCoordinates getBoardPosition(String machineName,
 			BoardPhysicalCoordinates coords, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new GetBoardAtPositionCommand(machineName, coords),
+		var json = call(new GetBoardAtPositionCommand(machineName, coords),
 				timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("position result: {}", json);
@@ -416,7 +416,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public WhereIs whereIs(int jobID, HasChipLocation chip, Integer timeout)
 			throws IOException, SpallocServerException {
-		String json = call(new WhereIsJobChipCommand(jobID, chip), timeout);
+		var json = call(new WhereIsJobChipCommand(jobID, chip), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("where-is result: {}", json);
 		}
@@ -426,8 +426,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public WhereIs whereIs(String machine, HasChipLocation chip,
 			Integer timeout) throws IOException, SpallocServerException {
-		String json =
-				call(new WhereIsMachineChipCommand(machine, chip), timeout);
+		var json = call(new WhereIsMachineChipCommand(machine, chip), timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("where-is result: {}", json);
 		}
@@ -437,9 +436,8 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public WhereIs whereIs(String machine, BoardPhysicalCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
-		String json =
-				call(new WhereIsMachineBoardPhysicalCommand(machine, coords),
-						timeout);
+		var json = call(new WhereIsMachineBoardPhysicalCommand(machine, coords),
+				timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("where-is result: {}", json);
 		}
@@ -449,9 +447,8 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	@Override
 	public WhereIs whereIs(String machine, BoardCoordinates coords,
 			Integer timeout) throws IOException, SpallocServerException {
-		String json =
-				call(new WhereIsMachineBoardLogicalCommand(machine, coords),
-						timeout);
+		var json = call(new WhereIsMachineBoardLogicalCommand(machine, coords),
+				timeout);
 		if (log.isDebugEnabled()) {
 			log.debug("where-is result: {}", json);
 		}

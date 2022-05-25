@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
@@ -162,11 +160,11 @@ public final class Router implements MappableIterable<Link> {
 	public Router(HasChipLocation source, int nAvailableMulticastEntries,
 			ChipDetails details, Machine machine) {
 		this(nAvailableMulticastEntries);
-		Set<Direction> ignoreDirections = details.getDeadDirections();
-		for (Direction direction : Direction.values()) {
+		var ignoreDirections = details.getDeadDirections();
+		for (var direction : Direction.values()) {
 			if (!ignoreDirections.contains(direction)) {
-				ChipLocation destination =
-						details.getLinkDestination(direction, source, machine);
+				var destination = details.getLinkDestination(direction, source,
+						machine);
 				addLink(new Link(source, direction,
 						requireNonNull(destination)));
 			}
@@ -271,8 +269,8 @@ public final class Router implements MappableIterable<Link> {
 	 * @return The destination locations
 	 */
 	public List<ChipLocation> neighbouringChipsCoords() {
-		List<ChipLocation> neighbours = new ArrayList<>();
-		for (Link link : links.values()) {
+		var neighbours = new ArrayList<ChipLocation>();
+		for (var link : links.values()) {
 			neighbours.add(link.destination);
 		}
 		return neighbours;
@@ -280,9 +278,9 @@ public final class Router implements MappableIterable<Link> {
 
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder("Router[");
+		var result = new StringBuilder("Router[");
 		String sep = "";
-		for (Entry<Direction, Link> entry : links.entrySet()) {
+		for (var entry : links.entrySet()) {
 			result.append(sep);
 			result.append(entry.getKey());
 			result.append(":");

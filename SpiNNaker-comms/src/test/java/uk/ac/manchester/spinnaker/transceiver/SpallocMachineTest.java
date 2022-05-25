@@ -23,13 +23,10 @@ import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.net.InetAddress;
-import java.net.URL;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.jcip.annotations.NotThreadSafe;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -44,9 +41,9 @@ class SpallocMachineTest {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		URL url = SpallocMachineTest.class.getResource("/spinn4.json");
-		ObjectMapper mapper = MapperFactory.createMapper();
-		MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+		var url = SpallocMachineTest.class.getResource("/spinn4.json");
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(url, MachineBean.class);
 		jsonMachine = new Machine(fromJson);
 	}
 
@@ -61,20 +58,20 @@ class SpallocMachineTest {
 	void testSpallocMachine() throws Exception {
 		assumeTrue(ping(SPALLOC) == 0);
 
-		try (SpallocJob job = new SpallocJob(SPALLOC, PORT, TEN_S,
+		try (var job = new SpallocJob(SPALLOC, PORT, TEN_S,
 				new CreateJob().owner(OWNER))) {
 			job.waitUntilReady(null);
 
 			System.out.println(job.getState());
 			System.out.println(job.getHostname());
-			InetAddress host = InetAddress.getByName(job.getHostname());
+			var host = InetAddress.getByName(job.getHostname());
 
 			// InetAddress host = InetAddress.getByName("spinn-2.cs.man.ac.uk");
-			try (Transceiver txrx = new Transceiver(host, FIVE)) {
+			try (var txrx = new Transceiver(host, FIVE)) {
 				txrx.ensureBoardIsReady();
 				txrx.getMachineDimensions();
 				txrx.getScampVersion();
-				Machine machine = txrx.getMachineDetails();
+				var machine = txrx.getMachineDetails();
 				assertNull(jsonMachine.difference(machine));
 			}
 		}

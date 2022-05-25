@@ -59,7 +59,6 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -704,7 +703,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void setWatchDogTimeout(int watchdog)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
+		for (var chip : getMachineDetails().chipCoordinates()) {
 			setWatchDogTimeoutOnChip(chip, watchdog);
 		}
 	}
@@ -723,7 +722,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void enableWatchDogTimer(boolean watchdog)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
+		for (var chip : getMachineDetails().chipCoordinates()) {
 			enableWatchDogTimerOnChip(chip, watchdog);
 		}
 	}
@@ -1279,7 +1278,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			AppID appID) throws IOException, ProcessException,
 			InterruptedException, SpinnmanException {
 		// Execute each of the binaries and get them in to a "wait" state
-		for (String binary : executableTargets.getBinaries()) {
+		for (var binary : executableTargets.getBinaries()) {
 			executeFlood(executableTargets.getCoresForBinary(binary),
 					new File(binary), appID, true);
 		}
@@ -1290,13 +1289,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 		// Check that the binaries have reached a wait state
 		int count = getCoreStateCount(appID, READY);
 		if (count < executableTargets.getTotalProcessors()) {
-			Map<CoreLocation, CPUInfo> coresNotReady = getCoresNotInState(
+			var coresNotReady = getCoresNotInState(
 					executableTargets.getAllCoreSubsets(), READY);
 			if (!coresNotReady.isEmpty()) {
-				try (Formatter f = new Formatter()) {
+				try (var f = new Formatter()) {
 					f.format("Only %d of %d cores reached ready state:", count,
 							executableTargets.getTotalProcessors());
-					for (CPUInfo info : coresNotReady.values()) {
+					for (var info : coresNotReady.values()) {
 						f.format("\n%s", info.getStatusDescription());
 					}
 					throw new SpinnmanException(f.toString());
@@ -1691,7 +1690,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemory(core, baseAddress, b);
 	}
@@ -2264,7 +2263,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			int baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeNeighbourMemory(core, link, baseAddress, b);
 	}
@@ -2660,7 +2659,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(int baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemoryFlood(baseAddress, b);
 	}

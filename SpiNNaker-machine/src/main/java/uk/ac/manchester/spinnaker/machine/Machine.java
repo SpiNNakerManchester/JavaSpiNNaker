@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.machine;
 
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Collections.unmodifiableSortedMap;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -39,14 +40,12 @@ import java.util.TreeMap;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
 import uk.ac.manchester.spinnaker.machine.bean.MachineBean;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaEnum;
 import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
@@ -143,7 +142,7 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public Machine(MachineBean bean) {
 		this(bean.getMachineDimensions(), bean.getRoot());
-		for (ChipBean chipBean : bean.getChips()) {
+		for (var chipBean : bean.getChips()) {
 			chipBean.addDefaults(bean);
 			addChip(new Chip(chipBean, this));
 		}
@@ -212,16 +211,15 @@ public class Machine implements MappableIterable<Chip> {
 		if (ignoreLinks.isEmpty() && ignoreChips.isEmpty()) {
 			return this;
 		}
-		Machine rebuilt = new Machine(machineDimensions, boot);
-		for (Chip chip : this) {
-			ChipLocation location = chip.asChipLocation();
+		var rebuilt = new Machine(machineDimensions, boot);
+		for (var chip : this) {
+			var location = chip.asChipLocation();
 			if (ignoreChips.contains(location)) {
 				log.info("Rebuilt machine without Chip {}", location);
 			} else if (ignoreLinks.containsKey(location)) {
-				Collection<Direction> downDirections =
-						ignoreLinks.get(location);
-				ArrayList<Link> links = new ArrayList<>();
-				for (Link link : chip.router) {
+				var downDirections = ignoreLinks.get(location);
+				var links = new ArrayList<Link>();
+				for (var link : chip.router) {
 					if (downDirections.contains(link.sourceLinkDirection)) {
 						log.info("Rebuilt machine without Link {} {}",
 								location, link.sourceLinkDirection);
@@ -247,7 +245,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *             On an attempt to add a second Chip with the same location.
 	 */
 	public final void addChip(Chip chip) {
-		ChipLocation location = chip.asChipLocation();
+		var location = chip.asChipLocation();
 		if (chips.containsKey(location)) {
 			throw new IllegalArgumentException(
 					"There is already a Chip at location: " + location);
@@ -287,7 +285,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *            an iterable of chips.
 	 */
 	public final void addChips(Iterable<Chip> chips) {
-		for (Chip chip : chips) {
+		for (var chip : chips) {
 			addChip(chip);
 		}
 	}
@@ -398,7 +396,7 @@ public class Machine implements MappableIterable<Chip> {
 	 *             Thrown is either x or y is negative or too big.
 	 */
 	public final Chip getChipAt(int x, int y) {
-		ChipLocation location = new ChipLocation(x, y);
+		var location = new ChipLocation(x, y);
 		return chips.get(location);
 	}
 
@@ -442,16 +440,9 @@ public class Machine implements MappableIterable<Chip> {
 	 *             Thrown is either x or y is negative or too big.
 	 */
 	public final boolean hasChipAt(int x, int y) {
-		ChipLocation location = new ChipLocation(x, y);
+		var location = new ChipLocation(x, y);
 		return chips.containsKey(location);
 	}
-	// public Chip getChipAt(int x, int y) {
-	// return chipArray[x][y];
-	// }
-
-	// public boolean hasChipAt(int x, int y) {
-	// return chipArray[x][y] != null;
-	// }
 
 	/**
 	 * Determine if a link exists at the given coordinates.
@@ -463,7 +454,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return True if and only if the Machine/Chip has a link as specified.
 	 */
 	public final boolean hasLinkAt(ChipLocation source, Direction link) {
-		Chip chip = chips.get(source);
+		var chip = chips.get(source);
 		if (chip == null) {
 			return false;
 		}
@@ -590,7 +581,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return The associated SpinnakerLink or {@code null} if not found.
 	 */
 	public final SpinnakerLinkData getBootSpinnakerLink(int id) {
-		InetIdTuple key = new InetIdTuple(bootEthernetAddress, id);
+		var key = new InetIdTuple(bootEthernetAddress, id);
 		return spinnakerLinks.get(key);
 	}
 
@@ -603,21 +594,21 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final void addSpinnakerLinks() {
 		if (version.isFourChip) {
-			Chip chip00 = getChipAt(new ChipLocation(0, 0));
+			var chip00 = getChipAt(new ChipLocation(0, 0));
 			if (!chip00.router.hasLink(Direction.WEST)) {
 				spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 0),
 						new SpinnakerLinkData(0, chip00, Direction.WEST,
 								chip00.ipAddress));
 			}
-			Chip chip10 = getChipAt(new ChipLocation(1, 0));
+			var chip10 = getChipAt(new ChipLocation(1, 0));
 			if (!chip10.router.hasLink(Direction.EAST)) {
-				// As in Python the Ethernet address of chip 0 0 is used.
+				// As in Python, the Ethernet address of chip 0 0 is used.
 				spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 1),
 						new SpinnakerLinkData(1, chip10, Direction.WEST,
 								chip00.ipAddress));
 			}
 		} else {
-			for (Chip chip : ethernetConnectedChips) {
+			for (var chip : ethernetConnectedChips) {
 				if (!chip.router.hasLink(Direction.SOUTHWEST)) {
 					spinnakerLinks.put(new InetIdTuple(chip.ipAddress, 0),
 							new SpinnakerLinkData(0, chip, Direction.SOUTHWEST,
@@ -708,12 +699,11 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final FPGALinkData getFpgaLink(FpgaId fpgaId, int fpgaLinkId,
 			InetAddress address) {
-		Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
-		byAddress = fpgaLinks.get(address);
+		var byAddress = fpgaLinks.get(address);
 		if (byAddress == null) {
 			return null;
 		}
-		Map<Integer, FPGALinkData> byId = byAddress.get(fpgaId);
+		var byId = byAddress.get(fpgaId);
 		if (byId == null) {
 			return null;
 		}
@@ -744,8 +734,7 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final MappableIterable<FPGALinkData>
 			getFpgaLinks(InetAddress address) {
-		Map<FpgaId, Map<Integer, FPGALinkData>> byAddress =
-				fpgaLinks.get(address);
+		var byAddress = fpgaLinks.get(address);
 		if (byAddress == null) {
 			return Collections::emptyIterator;
 		}
@@ -753,12 +742,12 @@ public class Machine implements MappableIterable<Chip> {
 	}
 
 	private void addFpgaLinks(int rootX, int rootY, InetAddress address) {
-		for (FpgaEnum fpgaEnum : FpgaEnum.values()) {
-			ChipLocation location = normalizedLocation(rootX + fpgaEnum.getX(),
+		for (var fpgaEnum : FpgaEnum.values()) {
+			var location = normalizedLocation(rootX + fpgaEnum.getX(),
 					rootY + fpgaEnum.getY());
 			if (hasChipAt(location)
 					&& !hasLinkAt(location, fpgaEnum.direction)) {
-				Map<Integer, FPGALinkData> byId = fpgaLinks
+				var byId = fpgaLinks
 						.computeIfAbsent(address, k -> new HashMap<>())
 						.computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>());
 				byId.put(fpgaEnum.id,
@@ -779,7 +768,7 @@ public class Machine implements MappableIterable<Chip> {
 		if (version.isFourChip) {
 			return; // NO fpga links
 		}
-		for (Chip ethernetConnectedChip : ethernetConnectedChips) {
+		for (var ethernetConnectedChip : ethernetConnectedChips) {
 			addFpgaLinks(ethernetConnectedChip.getX(),
 					ethernetConnectedChip.getY(),
 					ethernetConnectedChip.ipAddress);
@@ -797,7 +786,7 @@ public class Machine implements MappableIterable<Chip> {
 	public final String coresAndLinkOutputString() {
 		int cores = 0;
 		int everyLink = 0;
-		for (Chip chip : chips.values()) {
+		for (var chip : chips.values()) {
 			cores += chip.nProcessors();
 			everyLink += chip.router.size();
 		}
@@ -850,7 +839,7 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final int totalAvailableUserCores() {
 		int count = 0;
-		for (Chip chip : chips.values()) {
+		for (var chip : chips.values()) {
 			count += chip.nUserProcessors();
 		}
 		return count;
@@ -863,7 +852,7 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final int totalCores() {
 		int count = 0;
-		for (Chip chip : chips.values()) {
+		for (var chip : chips.values()) {
 			count += chip.nProcessors();
 		}
 		return count;
@@ -888,7 +877,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return True if and only if there is a active inverse link
 	 */
 	public boolean hasInverseLinkAt(ChipLocation chip, Direction direction) {
-		Chip source = getChipOverLink(chip, direction);
+		var source = getChipOverLink(chip, direction);
 		if (source == null) {
 			return false;
 		}
@@ -914,25 +903,26 @@ public class Machine implements MappableIterable<Chip> {
 	 *         identifies links to remove
 	 */
 	public Map<ChipLocation, Set<Direction>> findAbnormalLinks() {
-		Map<ChipLocation, Set<Direction>> abnormalLinks =
-				new DefaultMap<>(HashSet::new);
-		for (Chip chip : chips.values()) {
-			for (Link link : chip.router) {
+		var abnormalLinks = new HashMap<ChipLocation, Set<Direction>>();
+		for (var chip : chips.values()) {
+			for (var link : chip.router) {
 				if (!hasChipAt(link.destination)) {
-					abnormalLinks.get(link.source)
+					abnormalLinks.computeIfAbsent(
+							link.source, k -> new HashSet<>())
 							.add(link.sourceLinkDirection);
 				} else {
-					Chip destChip = getChipAt(link.destination);
-					Link inverse = destChip.router
+					var destChip = getChipAt(link.destination);
+					var inverse = destChip.router
 							.getLink(link.sourceLinkDirection.inverse());
 					if (inverse == null) {
-						abnormalLinks.get(link.source)
+						abnormalLinks.computeIfAbsent(
+								link.source, k -> new HashSet<>())
 								.add(link.sourceLinkDirection);
 					}
 				}
 			}
 		}
-		return abnormalLinks;
+		return unmodifiableMap(abnormalLinks);
 	}
 
 	/**
@@ -946,13 +936,13 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return A set (hopefully empty) of ChipLocations to remove.
 	 */
 	public Set<ChipLocation> findAbnormalChips() {
-		Set<ChipLocation> abnormalCores = new HashSet<>();
-		for (Chip chip : chips.values()) {
+		var abnormalCores = new HashSet<ChipLocation>();
+		for (var chip : chips.values()) {
 			if (chip.router.size() == 0) {
 				abnormalCores.add(chip.asChipLocation());
 			}
 		}
-		return abnormalCores;
+		return unmodifiableSet(abnormalCores);
 	}
 
 	@Override
@@ -1016,9 +1006,9 @@ public class Machine implements MappableIterable<Chip> {
 			return "bootEthernetAddress " + bootEthernetAddress + " != "
 					+ other.bootEthernetAddress;
 		}
-		for (ChipLocation loc : chips.keySet()) {
-			Chip c1 = chips.get(loc);
-			Chip c2 = other.chips.get(loc);
+		for (var loc : chips.keySet()) {
+			var c1 = chips.get(loc);
+			var c2 = other.chips.get(loc);
 			if (!c1.equals(c2)) {
 				return c1 + " != " + c2;
 			}
@@ -1054,23 +1044,23 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return Some useful human readable information.
 	 */
 	public String chipLocationDifference(Machine that) {
-		Set<ChipLocation> setThis = chips.keySet();
-		Set<ChipLocation> setThat = that.chips.keySet();
+		var setThis = chips.keySet();
+		var setThat = that.chips.keySet();
 		if (setThis.size() < setThat.size()) {
-			Set<ChipLocation> temp = new HashSet<>(setThat);
+			var temp = new HashSet<>(setThat);
 			temp.removeAll(setThis);
 			return "other has extra Chips at " + temp;
 		} else if (setThis.size() > setThat.size()) {
-			Set<ChipLocation> temp = new HashSet<>(setThis);
+			var temp = new HashSet<>(setThis);
 			temp.removeAll(setThat);
 			return "other has missing Chips at " + temp;
 		} else {
-			Set<ChipLocation> temp1 = new HashSet<>(setThis);
+			var temp1 = new HashSet<>(setThis);
 			temp1.removeAll(setThat);
 			if (temp1.isEmpty()) {
 				return "No difference between chip key sets found.";
 			}
-			Set<ChipLocation> temp2 = new HashSet<>(setThat);
+			var temp2 = new HashSet<>(setThat);
 			temp2.removeAll(setThis);
 			return "other has missing Chips at " + temp1 + "and extra Chips at "
 					+ temp2;
@@ -1095,7 +1085,7 @@ public class Machine implements MappableIterable<Chip> {
 
 		ChipOnBoardIterator(HasChipLocation root) {
 			this.root = root;
-			SpiNNakerTriadGeometry geometry = getSpinn5Geometry();
+			var geometry = getSpinn5Geometry();
 			singleBoardIterator = geometry.singleBoardIterator();
 			prepareNextChip();
 		}
@@ -1110,15 +1100,15 @@ public class Machine implements MappableIterable<Chip> {
 			if (nextChip == null) {
 				throw new NoSuchElementException("No more chips available.");
 			}
-			Chip result = nextChip;
+			var result = nextChip;
 			prepareNextChip();
 			return result;
 		}
 
 		private void prepareNextChip() {
 			while (singleBoardIterator.hasNext()) {
-				ChipLocation local = singleBoardIterator.next();
-				ChipLocation global = normalizedLocation(
+				var local = singleBoardIterator.next();
+				var global = normalizedLocation(
 						root.getX() + local.getX(), root.getY() + local.getY());
 				nextChip = getChipAt(global);
 				if (nextChip != null) {

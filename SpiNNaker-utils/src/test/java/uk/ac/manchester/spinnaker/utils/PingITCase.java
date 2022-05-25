@@ -31,16 +31,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PingITCase {
     @Test
     public void testPingSpalloc() throws UnknownHostException {
-        InetAddress spalloc = InetAddress.getByName("spinnaker.cs.man.ac.uk");
+        var spalloc = InetAddress.getByName("spinnaker.cs.man.ac.uk");
         // Should be able to reach Spalloc...
         assertEquals(0, Ping.ping(spalloc));
     }
 
     @Test
     public void testPingGoogle() throws UnknownHostException {
-        InetAddress travis = InetAddress.getByName("8.8.8.8");
+        var google = InetAddress.getByName("8.8.8.8");
         // *REALLY* should be able to reach Google's DNS...
-        assertEquals(0, Ping.ping(travis));
+        assertEquals(0, Ping.ping(google));
     }
 
     @Test

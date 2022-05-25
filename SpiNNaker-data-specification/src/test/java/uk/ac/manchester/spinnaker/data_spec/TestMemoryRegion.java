@@ -24,7 +24,7 @@ class TestMemoryRegion {
 
 	@Test
 	void test() {
-		MemoryRegionReal r = new MemoryRegionReal(77, 123, false, 5);
+		var r = new MemoryRegionReal(77, 123, false, 5);
 		assertEquals(77, r.getIndex());
 		assertEquals(123, r.getMemoryPointer());
 		assertEquals(5, r.getAllocatedSize());

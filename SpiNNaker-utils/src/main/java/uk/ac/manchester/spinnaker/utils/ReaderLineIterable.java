@@ -126,7 +126,7 @@ public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 						throw new NoSuchElementException("No lines left.");
 					}
 				}
-				String temp = s;
+				var temp = s;
 				s = null;
 				return temp;
 			}
@@ -149,7 +149,7 @@ public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 	public void close() throws IOException {
 		silentClose();
 		if (caught != null) {
-			IOException temp = caught;
+			var temp = caught;
 			caught = null;
 			throw temp;
 		}

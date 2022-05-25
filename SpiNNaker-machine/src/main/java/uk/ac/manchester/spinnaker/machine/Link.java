@@ -88,9 +88,9 @@ public final class Link {
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 47 * hash + Objects.hashCode(this.source);
-		hash = 47 * hash + Objects.hashCode(this.sourceLinkDirection);
-		hash = 47 * hash + Objects.hashCode(this.destination);
+		hash = 47 * hash + Objects.hashCode(source);
+		hash = 47 * hash + Objects.hashCode(sourceLinkDirection);
+		hash = 47 * hash + Objects.hashCode(destination);
 		return hash;
 	}
 
@@ -118,15 +118,15 @@ public final class Link {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Link other = (Link) obj;
+		var other = (Link) obj;
 		log.trace("Equals called {} {}", this, other);
-		if (this.sourceLinkDirection != other.sourceLinkDirection) {
+		if (sourceLinkDirection != other.sourceLinkDirection) {
 			return false;
 		}
-		if (!Objects.equals(this.source, other.source)) {
+		if (!Objects.equals(source, other.source)) {
 			return false;
 		}
-		return Objects.equals(this.destination, other.destination);
+		return Objects.equals(destination, other.destination);
 	}
 
 	@Override

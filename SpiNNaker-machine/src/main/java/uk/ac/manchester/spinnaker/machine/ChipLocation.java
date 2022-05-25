@@ -87,8 +87,8 @@ public final class ChipLocation
 		if (!(obj instanceof ChipLocation)) {
 			return false;
 		}
-		ChipLocation that = (ChipLocation) obj;
-		return (this.x == that.x) && (this.y == that.y);
+		var that = (ChipLocation) obj;
+		return (x == that.x) && (y == that.y);
 	}
 
 	@Override
@@ -97,10 +97,10 @@ public final class ChipLocation
 	}
 
 	@Override
-	public int compareTo(ChipLocation o) {
-		int cmp = compare(this.x, o.x);
+	public int compareTo(ChipLocation other) {
+		int cmp = compare(x, other.x);
 		if (cmp == 0) {
-			cmp = compare(this.y, o.y);
+			cmp = compare(y, other.y);
 		}
 		return cmp;
 	}

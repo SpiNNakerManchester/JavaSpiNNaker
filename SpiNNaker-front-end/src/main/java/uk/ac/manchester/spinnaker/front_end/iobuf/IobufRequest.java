@@ -63,15 +63,15 @@ public class IobufRequest {
 	@JsonCreator(mode = DELEGATING)
 	public IobufRequest(Map<String, List<List<Integer>>> map) {
 		requestMap = new HashMap<>();
-		for (String name : map.keySet()) {
-			CoreSubsets cores = requestMap.computeIfAbsent(
+		for (var name : map.keySet()) {
+			var cores = requestMap.computeIfAbsent(
 					new File(name).getAbsoluteFile(), f -> new CoreSubsets());
 			map.get(name).forEach(node -> parseCore(cores, node));
 		}
 
 		int expectedSize = 0;
-		CoreSubsets validator = new CoreSubsets();
-		for (CoreSubsets s : requestMap.values()) {
+		var validator = new CoreSubsets();
+		for (var s : requestMap.values()) {
 			validator.addCores(s);
 			expectedSize += s.size();
 		}

@@ -152,7 +152,7 @@ public enum Commands {
 
 	static {
 		MAP = new HashMap<>();
-		for (Commands cmd : values()) {
+		for (var cmd : values()) {
 			MAP.put(cmd.value, cmd);
 		}
 	}

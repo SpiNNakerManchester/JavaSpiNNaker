@@ -48,8 +48,7 @@ public final class StartSendingMessage extends GatherProtocolMessage {
 	 */
 	static StartSendingMessage create(HasCoreLocation destination, int address,
 			int length, int transactionId) {
-		ByteBuffer payload =
-				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+		var payload = allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
 		payload.putInt(START_SENDING_DATA.value);
 		payload.putInt(transactionId);
 		payload.putInt(address);

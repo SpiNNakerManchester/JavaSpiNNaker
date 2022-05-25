@@ -69,7 +69,7 @@ public enum CPUState {
 	}
 
 	static {
-		for (CPUState state : values()) {
+		for (var state : values()) {
 			MAP.put(state.value, state);
 		}
 	}

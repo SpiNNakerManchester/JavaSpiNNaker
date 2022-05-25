@@ -48,24 +48,24 @@ public class Generator {
 	private ByteBuffer buffer;
 
 	public static ByteBuffer makeSpec(SpecGen specGen) {
-		Generator spec = new Generator();
+		var spec = new Generator();
 		specGen.generate(spec);
-		ByteBuffer result = spec.buffer.asReadOnlyBuffer();
+		var result = spec.buffer.asReadOnlyBuffer();
 		result.order(LITTLE_ENDIAN).flip();
 		return result;
 	}
 
 	public static void makeSpec(File f, SpecGen specGen) throws IOException {
-		Generator spec = new Generator();
+		var spec = new Generator();
 		specGen.generate(spec);
-		try (FileOutputStream os = new FileOutputStream(f)) {
+		try (var os = new FileOutputStream(f)) {
 			os.write(spec.buffer.array(), 0, spec.buffer.position());
 		}
 	}
 
 	public static ByteArrayInputStream makeSpecStream(SpecGen specGen)
 			throws IOException {
-		Generator spec = new Generator();
+		var spec = new Generator();
 		specGen.generate(spec);
 		return new ByteArrayInputStream(spec.buffer.array(), 0,
 				spec.buffer.position());
@@ -196,8 +196,8 @@ public class Generator {
 		word |= length << Field.LENGTH.offset;
 		word |= usage << Field.USAGE.offset;
 		for (int i = 0; i < arguments.length; i += 2) {
-			Field f = (Field) arguments[i];
-			Object val = arguments[i + 1];
+			var f = (Field) arguments[i];
+			var val = arguments[i + 1];
 			if (val instanceof Boolean) {
 				word |= (((Boolean) val) ? 1 : 0) << f.offset;
 			} else if (val instanceof Enum && !(val instanceof Field)) {
@@ -271,7 +271,7 @@ public class Generator {
 		int pos = buffer.position();
 		buffer.putInt(0); // dummy
 		int mark = buffer.position();
-		for (Number n : values) {
+		for (var n : values) {
 			type.putPacked(buffer, n);
 		}
 		buffer.putInt(pos, (buffer.position() - mark) / INT_SIZE);
@@ -296,7 +296,7 @@ public class Generator {
 
 	public void writeValueFromRegister(int register) {
 		int repeats = 1;
-		DataType type = DataType.INT32;
+		var type = DataType.INT32;
 		command(WRITE, LEN1, SRC1_ONLY, Field.DESTINATION, type, Field.SOURCE_1,
 				register, Field.IMMEDIATE, repeats);
 	}

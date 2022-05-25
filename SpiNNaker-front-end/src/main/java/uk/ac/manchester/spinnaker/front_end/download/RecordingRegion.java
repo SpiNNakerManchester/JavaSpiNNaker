@@ -89,7 +89,7 @@ public final class RecordingRegion {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("Recording Channel:{")
+		var sb = new StringBuilder("Recording Channel:{")
 				.append("space:").append(space).append(",size:").append(size)
 				.append(",data:0x").append(toHexString(data));
 		if (missing) {
@@ -121,11 +121,11 @@ public final class RecordingRegion {
 				recordingDataAddress, WORD_SIZE).getInt();
 
 		// Read all the channels' metadata
-		ByteBuffer channelData = txrx.readMemory(placement.getScampCore(),
+		var channelData = txrx.readMemory(placement.getScampCore(),
 				recordingDataAddress + WORD_SIZE, SIZE * nRegions);
 
 		// Parse the data
-		List<RecordingRegion> regions = new ArrayList<>(nRegions);
+		var regions = new ArrayList<RecordingRegion>(nRegions);
 		for (int i = 0; i < nRegions; i++) {
 			regions.add(new RecordingRegion(channelData));
 		}

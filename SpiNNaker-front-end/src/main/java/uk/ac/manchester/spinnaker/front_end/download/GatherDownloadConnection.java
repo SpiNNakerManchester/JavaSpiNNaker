@@ -136,7 +136,7 @@ final class GatherDownloadConnection extends SDPConnection {
 	 */
 	ByteBuffer getNextPacket(int timeout) throws IOException {
 		try {
-			ByteBuffer b = receive(timeout);
+			var b = receive(timeout);
 			if (b == null) {
 				return EMPTY_DATA;
 			}

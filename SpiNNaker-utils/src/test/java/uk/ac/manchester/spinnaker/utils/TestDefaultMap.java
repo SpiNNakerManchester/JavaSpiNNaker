@@ -35,10 +35,10 @@ public class TestDefaultMap {
 	})
 	@Test
     public void testUntyped() {
-        DefaultMap instance = new DefaultMap(ArrayList::new);
-        Object foo = instance.get("foo");
+        var instance = new DefaultMap(ArrayList::new);
+        var foo = instance.get("foo");
         assertTrue(foo instanceof ArrayList);
-        ArrayList fooList = (ArrayList)foo;
+        var fooList = (ArrayList)foo;
         fooList.add("a");
         fooList.add(1);
     }
@@ -47,7 +47,7 @@ public class TestDefaultMap {
     public void testTyped() {
         DefaultMap<String, List<Integer>> instance =
                 new DefaultMap<>(ArrayList<Integer>::new);
-        List<Integer> foo = instance.get("foo");
+        var foo = instance.get("foo");
         assertTrue(foo instanceof ArrayList);
         //foo.add("a");
         foo.add(1);
@@ -61,9 +61,9 @@ public class TestDefaultMap {
     public void testBad() {
         DefaultMap<String, List<Integer>> instance =
                 new DefaultMap<>(new ArrayList<Integer>());
-        List<Integer> foo = instance.get("one");
+        var foo = instance.get("one");
         foo.add(11);
-        List<Integer> bar = instance.get("two");
+        var bar = instance.get("two");
         bar.add(12);
         assertEquals(2, bar.size());
         assertTrue(foo == bar);
@@ -73,25 +73,24 @@ public class TestDefaultMap {
     public void testKeyAware() {
         DefaultMap<Integer, Integer> instance =
                 DefaultMap.newAdvancedDefaultMap(new Doubler());
-        Integer two = instance.get(1);
+        var two = instance.get(1);
         assertEquals(2, two.intValue());
     }
 
     @Test
     public void testKeyAware2() {
-         DefaultMap<Integer, Integer> instance =
-                DefaultMap.newAdvancedDefaultMap(i->i*2);
-        Integer two = instance.get(1);
+    	DefaultMap<Integer, Integer> instance =
+                DefaultMap.newAdvancedDefaultMap(i -> i*2);
+        var two = instance.get(1);
         assertEquals(2, two.intValue());
     }
 
-    public class Doubler implements DefaultMap.KeyAwareFactory<Integer, Integer> {
-
+    public static class Doubler
+    		implements DefaultMap.KeyAwareFactory<Integer, Integer> {
         @Override
         public Integer createValue(Integer key) {
-            return new Integer(key.intValue() * 2);
+            return key * 2;
         }
-
     }
 
 }

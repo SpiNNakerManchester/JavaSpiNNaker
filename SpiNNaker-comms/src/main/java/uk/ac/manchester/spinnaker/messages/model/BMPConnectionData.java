@@ -96,7 +96,7 @@ public class BMPConnectionData {
 	public BMPConnectionData(InetAddress host, int numBoards)
 			throws UnknownHostException {
 		// take the IP address, split by dots, and subtract 1 off last bit
-		byte[] ipBits = host.getAddress();
+		var ipBits = host.getAddress();
 		if (ipBits[MIN_BYTE_FIELD] == 0 || ipBits[MIN_BYTE_FIELD] == 1) {
 			// Last digit of valid IP address can't really be 0 or 255
 			throw new IllegalArgumentException(

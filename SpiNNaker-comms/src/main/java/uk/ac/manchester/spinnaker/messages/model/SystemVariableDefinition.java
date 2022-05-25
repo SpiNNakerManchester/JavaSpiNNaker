@@ -274,7 +274,7 @@ public enum SystemVariableDefinition {
 	 * @return The list of all variables.
 	 */
 	public static List<SystemVariableDefinition> variables() {
-		SystemVariableDefinition[] vals = values().clone();
+		var vals = values().clone();
 		sort(vals, (a, b) -> compare(a.offset, b.offset));
 		return unmodifiableList(asList(vals));
 	}

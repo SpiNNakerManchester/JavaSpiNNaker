@@ -34,7 +34,7 @@ public class TestDirection {
      */
     @Test
     public void testValues() {
-        Direction[] result = Direction.values();
+        var result = Direction.values();
         assertEquals(6, result.length);
     }
 
@@ -43,9 +43,9 @@ public class TestDirection {
      */
     @Test
     public void testValueOf() {
-        String name = "NORTH";
-        Direction expResult = Direction.NORTH;
-        Direction result = Direction.valueOf(name);
+        var name = "NORTH";
+        var expResult = Direction.NORTH;
+        var result = Direction.valueOf(name);
         assertEquals(expResult, result);
     }
 
@@ -55,8 +55,8 @@ public class TestDirection {
     @Test
     public void testById() {
         int id = 2;
-        Direction expResult = Direction.NORTH;
-        Direction result = Direction.byId(id);
+        var expResult = Direction.NORTH;
+        var result = Direction.byId(id);
         assertEquals(expResult, result);
     }
 
@@ -67,8 +67,8 @@ public class TestDirection {
      */
     @Test
     public void testInverse() {
-        HashSet<Direction> inverses = new HashSet<>();
-        for (Direction direction: Direction.values()) {
+        var inverses = new HashSet<Direction>();
+        for (var direction: Direction.values()) {
             inverses.add(direction.inverse());
         }
         assertEquals(Direction.values().length, inverses.size());

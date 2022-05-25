@@ -26,21 +26,19 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.model.Version;
-import uk.ac.manchester.spinnaker.messages.scp.GetVersion.Response;
 
 class TestVersion {
 	private static final short PADDING = 0;
 
 	@Test
 	void testNewVersionRequest() {
-		GetVersion verRequest = new GetVersion(new CoreLocation(0, 1, 2));
+		var verRequest = new GetVersion(new CoreLocation(0, 1, 2));
 		assertEquals(CMD_VER, verRequest.scpRequestHeader.command);
 		assertEquals(new CoreLocation(0, 1, 2),
 				verRequest.sdpHeader.getDestination());
@@ -58,7 +56,7 @@ class TestVersion {
 		short version = 234;
 		short buffer = 250;
 		int buildDate = 103117;
-		byte[] verString = "sark/spinnaker".getBytes(US_ASCII);
+		var verString = "sark/spinnaker".getBytes(US_ASCII);
 
 		// SDP stuff
 		byte flags = REPLY_NOT_EXPECTED.value;
@@ -70,7 +68,7 @@ class TestVersion {
 		byte srcX = 0x7;
 		byte srcY = 0x0;
 
-		ByteBuffer data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
+		var data = allocate(41).order(LITTLE_ENDIAN).putShort(PADDING);
 		data.put(flags).put(tag).put(destPortCPU).put(srcPortCPU);
 		data.put(destY).put(destX).put(srcY).put(srcX);
 		data.putShort(rc).putShort(seq).putShort(p2pAddr);
@@ -78,7 +76,7 @@ class TestVersion {
 		data.putInt(buildDate).put(verString);
 		data.flip();
 
-		Response response = new GetVersion.Response(data);
+		var response = new GetVersion.Response(data);
 		assertEquals("sark", response.versionInfo.name);
 		assertEquals("spinnaker", response.versionInfo.hardware);
 		assertEquals(new Version(2, 34, 0), response.versionInfo.versionNumber);
@@ -97,7 +95,7 @@ class TestVersion {
 		short version = -1;
 		short buffer = 250;
 		int buildDate = 103117;
-		byte[] verString = join("\u0000", "SC&MP/SpiNNaker", "3.2.0", "")
+		var verString = join("\u0000", "SC&MP/SpiNNaker", "3.2.0", "")
 				.getBytes(US_ASCII);
 
 		// SDP stuff
@@ -110,7 +108,7 @@ class TestVersion {
 		byte srcX = 0x7;
 		byte srcY = 0x0;
 
-		ByteBuffer data = allocate(60).order(LITTLE_ENDIAN).putShort(PADDING);
+		var data = allocate(60).order(LITTLE_ENDIAN).putShort(PADDING);
 		data.put(flags).put(tag).put(destPortCpu).put(srcPortCpu);
 		data.put(destY).put(destX).put(srcY).put(srcX);
 		data.putShort(rc).putShort(seq).putShort(p2pAddr);
@@ -118,7 +116,7 @@ class TestVersion {
 		data.putInt(buildDate).put(verString);
 		data.flip();
 
-		Response response = new GetVersion.Response(data);
+		var response = new GetVersion.Response(data);
 		assertEquals("SC&MP", response.versionInfo.name);
 		assertEquals("SpiNNaker", response.versionInfo.hardware);
 		assertEquals(new Version(3, 2, 0), response.versionInfo.versionNumber);

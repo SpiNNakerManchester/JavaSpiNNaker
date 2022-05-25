@@ -210,9 +210,9 @@ public class ChipInfo implements HasChipLocation {
 		if (var.type != BYTE_ARRAY) {
 			throw new IllegalArgumentException();
 		}
-		ByteBuffer b = systemData.duplicate();
+		var b = systemData.duplicate();
 		b.position(b.position() + var.offset);
-		byte[] bytes = (byte[]) var.getDefault();
+		var bytes = (byte[]) var.getDefault();
 		b.get(bytes);
 		return bytes;
 	}

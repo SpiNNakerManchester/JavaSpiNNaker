@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Collection;
 
 import org.slf4j.Logger;
@@ -107,7 +106,7 @@ public class Executor implements Closeable {
 	}
 
 	private void logInput() {
-		IntBuffer b = input.asIntBuffer();
+		var b = input.asIntBuffer();
 		int[] a = new int[b.limit()];
 		b.get(a);
 		if (log.isDebugEnabled()) {
@@ -139,7 +138,7 @@ public class Executor implements Closeable {
 		while (true) {
 			int index = input.position();
 			int cmd = input.getInt();
-			Callable instruction = funcs.getOperation(cmd, index);
+			var instruction = funcs.getOperation(cmd, index);
 			if (END_SPEC_EXECUTOR == instruction.execute(cmd)) {
 				break;
 			}
@@ -175,9 +174,9 @@ public class Executor implements Closeable {
 	 */
 	public void setBaseAddress(int startAddress) {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
-		for (MemoryRegion reg : memRegions) {
+		for (var reg : memRegions) {
 			if (reg instanceof MemoryRegionReal) {
-				MemoryRegionReal r = (MemoryRegionReal) reg;
+				var r = (MemoryRegionReal) reg;
 				r.setRegionBase(nextOffset + startAddress);
 				nextOffset += r.getAllocatedSize();
 			}

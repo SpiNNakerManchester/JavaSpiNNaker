@@ -64,7 +64,7 @@ public enum SCPResult {
 	}
 
 	static {
-		for (SCPResult r : values()) {
+		for (var r : values()) {
 			MAP.put(r.value, r);
 		}
 	}

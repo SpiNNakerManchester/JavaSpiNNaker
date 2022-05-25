@@ -96,7 +96,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Get a word of data regardless of the type
-		ByteBuffer buffer = allocate(TWO_WORDS).order(LITTLE_ENDIAN);
+		var buffer = allocate(TWO_WORDS).order(LITTLE_ENDIAN);
 		while (buffer.hasRemaining()) {
 			dataType.writeTo(data, buffer);
 		}
@@ -122,7 +122,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		 */
 		int extraBytes = (ALIGNMENT - base % ALIGNMENT) % ALIGNMENT;
 		if (extraBytes != 0) {
-			ByteBuffer preBytes = buffer.duplicate();
+			var preBytes = buffer.duplicate();
 			preBytes.limit(extraBytes);
 			// Send the preBytes to make the memory aligned
 			if (preBytes.hasRemaining()) {

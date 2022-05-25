@@ -35,7 +35,6 @@ import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
-import uk.ac.manchester.spinnaker.messages.scp.GetVersion.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
@@ -57,11 +56,10 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPVersionWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		GetVersion scpReq = new GetVersion(ZERO_CORE);
+		var scpReq = new GetVersion(ZERO_CORE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
-		try (SCPConnection connection =
-				new SCPConnection(boardConfig.remotehost)) {
+		try (var connection = new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -69,7 +67,7 @@ public class TestUDPConnection {
 			assumeTrue(false, "timed out (general connectivity issue?)");
 			throw e; // unreachable
 		}
-		Response scpResponse = result.parsePayload(scpReq);
+		var scpResponse = result.parsePayload(scpReq);
 		System.out.println(scpResponse.versionInfo);
 		assertEquals(scpResponse.result, RC_OK);
 	}
@@ -81,11 +79,10 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadLinkWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		ReadLink scpReq = new ReadLink(ZERO_CHIP, EAST, ADDR, LINK_SIZE);
+		var scpReq = new ReadLink(ZERO_CHIP, EAST, ADDR, LINK_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
-		try (SCPConnection connection =
-				new SCPConnection(boardConfig.remotehost)) {
+		try (var connection = new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -99,12 +96,10 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadMemoryWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		ReadMemory scpReq =
-				new ReadMemory(ZERO_CHIP, ADDR, UDP_MESSAGE_MAX_SIZE);
+		var scpReq = new ReadMemory(ZERO_CHIP, ADDR, UDP_MESSAGE_MAX_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
-		try (SCPConnection connection =
-				new SCPConnection(boardConfig.remotehost)) {
+		try (var connection = new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
 			result = connection.receiveSCPResponse(TIMEOUT);
 		} catch (SocketTimeoutException e) {
@@ -120,10 +115,8 @@ public class TestUDPConnection {
 			throws UnknownHostException {
 		boardConfig.setUpNonexistentBoard();
 		assertThrows(IOException.class, () -> {
-			try (SCPConnection connection =
-					new SCPConnection(boardConfig.remotehost)) {
-				ReadMemory scp =
-						new ReadMemory(ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
+			try (var connection = new SCPConnection(boardConfig.remotehost)) {
+				var scp = new ReadMemory(ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(emptySet());
 				connection.send(scp);
 				connection.receiveSCPResponse(2);

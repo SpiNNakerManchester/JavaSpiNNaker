@@ -33,8 +33,6 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.Inet4Address;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +49,6 @@ import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -71,12 +68,12 @@ class TestTransceiver {
 
 	@Test
 	void testCreateNewTransceiverToBoard() throws Exception {
-		List<Connection> connections = new ArrayList<>();
+		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
+		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			assertEquals(1, txrx.getConnections().size());
 		}
@@ -84,12 +81,12 @@ class TestTransceiver {
 
 	@Test
 	void testCreateNewTransceiverOneConnection() throws Exception {
-		List<Connection> connections = new ArrayList<>();
+		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
+		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			assertEquals(new HashSet<>(connections), txrx.getConnections());
 		}
@@ -97,7 +94,7 @@ class TestTransceiver {
 
 	@Test
 	void testCreateNewTransceiverFromListConnections() throws Exception {
-		List<Connection> connections = new ArrayList<>();
+		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
@@ -105,9 +102,9 @@ class TestTransceiver {
 		boardConfig.setUpLocalVirtualBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
+		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
-			for (Connection c : txrx.getConnections()) {
+			for (var c : txrx.getConnections()) {
 				assertTrue(connections.contains(c));
 			}
 			assertEquals(new HashSet<>(connections), txrx.getConnections());
@@ -116,7 +113,7 @@ class TestTransceiver {
 
 	@Test
 	void testRetrievingMachineDetails() throws Exception {
-		List<Connection> connections = new ArrayList<>();
+		var connections = new ArrayList<Connection>();
 
 		boardConfig.setUpRemoteBoard();
 		connections.add(new SCPConnection(boardConfig.remotehost));
@@ -125,7 +122,7 @@ class TestTransceiver {
 		connections.add(
 				new BootConnection(null, null, boardConfig.remotehost, null));
 
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
+		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			if (boardConfig.boardVersion.isFourChip) {
 				assertEquals(2, txrx.getMachineDimensions().width);
@@ -134,7 +131,7 @@ class TestTransceiver {
 				assertEquals(8, txrx.getMachineDimensions().width);
 				assertEquals(8, txrx.getMachineDimensions().height);
 			} else {
-				MachineDimensions size = txrx.getMachineDimensions();
+				var size = txrx.getMachineDimensions();
 				fail(format("Unknown board with size %dx%d", size.width,
 						size.height));
 			}
@@ -152,7 +149,7 @@ class TestTransceiver {
 	@Test
 	void testBootBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		try (Transceiver txrx = new Transceiver(boardConfig.remotehost,
+		try (var txrx = new Transceiver(boardConfig.remotehost,
 				boardConfig.boardVersion)) {
 			// self.assertFalse(trans.is_connected())
 			txrx.bootBoard();
@@ -164,26 +161,26 @@ class TestTransceiver {
 	@Disabled("host reachability; issue #215")
 	void testListenerCreation() throws Exception {
 		// Create board connections
-		Inet4Address noHost = InetFactory.getByName(NOHOST);
+		var noHost = InetFactory.getByName(NOHOST);
 		assumeFalse(ping(noHost) == 0,
 				() -> "unreachable host (" + noHost + ") appears to be up");
-		List<Connection> connections = new ArrayList<>();
+		var connections = new ArrayList<Connection>();
 		connections.add(new SCPConnection(null, (Integer) null, noHost, null));
-		EIEIOConnection orig = new EIEIOConnection(null, null, null, null);
+		var orig = new EIEIOConnection(null, null, null, null);
 		connections.add(orig);
 
 		// Create transceiver
-		try (Transceiver txrx = new Transceiver(FIVE, connections, null,
+		try (var txrx = new Transceiver(FIVE, connections, null,
 				null, null, null, null)) {
 			int port = orig.getLocalPort();
 			// Register a UDP listeners
-			Connection c1 = txrx.registerEIEIOListener(null);
+			var c1 = txrx.registerEIEIOListener(null);
 			assertTrue(c1 == orig, "first connection must be original");
-			Connection c2 = txrx.registerEIEIOListener(null);
+			var c2 = txrx.registerEIEIOListener(null);
 			assertTrue(c2 == orig, "second connection must be original");
-			Connection c3 = txrx.registerEIEIOListener(null, port);
+			var c3 = txrx.registerEIEIOListener(null, port);
 			assertTrue(c3 == orig, "third connection must be original");
-			Connection c4 = txrx.registerEIEIOListener(null, port + 1);
+			var c4 = txrx.registerEIEIOListener(null, port + 1);
 			assertFalse(c4 == orig, "fourth connection must not be original");
 		}
 	}
@@ -192,7 +189,7 @@ class TestTransceiver {
 	@Disabled("host reachability; issue #215")
 	void testSetWatchdog() throws Exception {
 		// The expected write values for the watch dog
-		List<byte[]> expectedWrites = asList(new byte[] {
+		var expectedWrites = asList(new byte[] {
 			((Number) software_watchdog_count.getDefault()).byteValue()
 		}, new byte[] {
 			0
@@ -200,11 +197,10 @@ class TestTransceiver {
 			5
 		});
 
-		List<Connection> connections = new ArrayList<>();
-		Inet4Address noHost = InetFactory.getByName(NOHOST);
+		var connections = new ArrayList<Connection>();
+		var noHost = InetFactory.getByName(NOHOST);
 		connections.add(new SCPConnection(noHost));
-		try (MockWriteTransceiver txrx =
-				new MockWriteTransceiver(FIVE, connections)) {
+		try (var txrx = new MockWriteTransceiver(FIVE, connections)) {
 			// All chips
 			txrx.enableWatchDogTimer(true);
 			txrx.enableWatchDogTimer(false);
@@ -215,11 +211,9 @@ class TestTransceiver {
 			 * should be one per chip
 			 */
 			int writeItem = 0;
-			for (byte[] expectedData : expectedWrites) {
-				for (ChipLocation chip : txrx.getMachineDetails()
-						.chipCoordinates()) {
-					MockWriteTransceiver.Write write =
-							txrx.writtenMemory.get(writeItem++);
+			for (var expectedData : expectedWrites) {
+				for (var chip : txrx.getMachineDetails().chipCoordinates()) {
+					var write = txrx.writtenMemory.get(writeItem++);
 					assertEquals(chip.getScampCore(), write.core);
 					assertEquals(
 							SYSTEM_VARIABLE_BASE_ADDRESS
@@ -239,8 +233,7 @@ class TestTransceiver {
 		Machine first = null;
 
 		for (int i = 0; i < REPETITIONS; i++) {
-			try (Transceiver txrx =
-					new Transceiver(boardConfig.remotehost, FIVE)) {
+			try (var txrx = new Transceiver(boardConfig.remotehost, FIVE)) {
 				txrx.ensureBoardIsReady();
 				txrx.getMachineDimensions();
 				txrx.getScampVersion();
@@ -297,9 +290,9 @@ class MockWriteTransceiver extends Transceiver {
 
 	@Override
 	void updateMachine() {
-		Machine details = getMachineDetails();
+		var details = getMachineDetails();
 		try {
-			Field machineField = Transceiver.class.getField("machine");
+			var machineField = Transceiver.class.getField("machine");
 			machineField.setAccessible(true);
 			machineField.set(this, details);
 		} catch (Exception e) {

@@ -71,13 +71,13 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	List<HeapElement> getBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
-		HeapHeader header = getHeapHeader(chip, heap);
+		var header = getHeapHeader(chip, heap);
 		long nextBlock = header.first;
 
-		List<HeapElement> blocks = new ArrayList<>();
+		var blocks = new ArrayList<HeapElement>();
 
 		while (nextBlock != 0) {
-			BlockHeader block = getBlockHeader(chip, nextBlock);
+			var block = getBlockHeader(chip, nextBlock);
 			if (block.next != 0) {
 				blocks.add(new HeapElement(nextBlock, block.next, block.free));
 			}
@@ -105,13 +105,13 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	List<HeapElement> getFreeBlocks(HasChipLocation chip,
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
-		HeapHeader header = getHeapHeader(chip, heap);
+		var header = getHeapHeader(chip, heap);
 		long nextBlock = header.free;
 
-		List<HeapElement> blocks = new ArrayList<>();
+		var blocks = new ArrayList<HeapElement>();
 
 		while (nextBlock != 0 && nextBlock != header.last) {
-			BlockHeader block = getBlockHeader(chip, nextBlock);
+			var block = getBlockHeader(chip, nextBlock);
 			if (block.next != 0) {
 				blocks.add(new HeapElement(nextBlock, block.next, block.free));
 			}
@@ -145,9 +145,8 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 		int heapBase = readFromAddress(chip,
 				SYSTEM_VARIABLE_BASE_ADDRESS + heap.offset, heap.type.value)
 						.get();
-		HeapHeader header = new HeapHeader(
+		return new HeapHeader(
 				readFromAddress(chip, heapBase, HEAP_HEADER_SIZE));
-		return header;
 	}
 
 	private BlockHeader getBlockHeader(HasChipLocation chip, long address)

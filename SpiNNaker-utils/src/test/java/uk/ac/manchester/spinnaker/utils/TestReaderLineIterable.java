@@ -38,15 +38,15 @@ public class TestReaderLineIterable {
 
     @Test
     public void testSimple() {
-        StringReader reader = new StringReader("First\nSecond\nThird");
-        ReaderLineIterable iterable = new ReaderLineIterable(reader);
+        var reader = new StringReader("First\nSecond\nThird");
+        var iterable = new ReaderLineIterable(reader);
         int count = 0;
-        for (String line:iterable) {
+        for (var line: iterable) {
             count += 1;
         }
         assertEquals(3, count);
         assertThrows(IllegalStateException.class, () -> {
-            for (String line:iterable) {
+            for (var line: iterable) {
             }
         });
         assertEquals(3, count);
@@ -59,15 +59,15 @@ public class TestReaderLineIterable {
 
 	@Test
     public void testStream() {
-        InputStream inputStream = new ByteArrayInputStream("First\nSecond\nThird".getBytes());
-        ReaderLineIterable iterable = new ReaderLineIterable(inputStream);
+        var inputStream = new ByteArrayInputStream("First\nSecond\nThird".getBytes());
+        var iterable = new ReaderLineIterable(inputStream);
         int count = 0;
-        for (String line:iterable) {
+        for (var line: iterable) {
             count += 1;
         }
         assertEquals(3, count);
         assertThrows(IllegalStateException.class, () -> {
-            for (String line:iterable) {
+            for (var line: iterable) {
             }
         });
         assertEquals(3, count);
@@ -80,15 +80,15 @@ public class TestReaderLineIterable {
 
     @Test
     public void testEarlyClose() {
-        StringReader reader = new StringReader("First\nSecond\nThird");
-        ReaderLineIterable iterable = new ReaderLineIterable(reader);
+        var reader = new StringReader("First\nSecond\nThird");
+        var iterable = new ReaderLineIterable(reader);
         try {
             iterable.close();
         } catch (IOException ex) {
             assertTrue(false, "Unexpected Exception");
         }
         assertThrows(IllegalStateException.class, () -> {
-            for (String line:iterable) {
+            for (var line: iterable) {
             }
         });
     }
@@ -98,15 +98,14 @@ public class TestReaderLineIterable {
      */
     @Test
     public void testClose() {
-        Reader reader = new CloseError();
-        try (ReaderLineIterable iterable = new ReaderLineIterable(reader)) {
-            for (String line:iterable) {
-            }
-        } catch (IOException ex) {
-            assertEquals ("Close marker", ex.getMessage());
-            return;
-        }
-        assertFalse(true, "Exception not thrown");
+        var reader = new CloseError();
+        var ex = assertThrows(IOException.class, ()-> {
+        	try (var iterable = new ReaderLineIterable(reader)) {
+        		for (var line: iterable) {
+        		}
+        	}
+        });
+        assertEquals("Close marker", ex.getMessage());
     }
 
     /**
@@ -115,8 +114,8 @@ public class TestReaderLineIterable {
 	@Test
 	@SuppressWarnings("resource")
     public void testNoClose() {
-        Reader reader = new CloseError();
-        for (String line:new ReaderLineIterable(reader)) {
+        var reader = new CloseError();
+        for (var line: new ReaderLineIterable(reader)) {
         }
     }
 
@@ -125,9 +124,9 @@ public class TestReaderLineIterable {
      */
     @Test
     public void testDelayedException() {
-        ReaderLineIterable iterable = new ReaderLineIterable(new WeirdReader());
+        var iterable = new ReaderLineIterable(new WeirdReader());
         int count = 0;
-        for (String line:iterable) {
+        for (var line: iterable) {
             count += 1;
         }
         assertEquals(0, count);
@@ -141,9 +140,9 @@ public class TestReaderLineIterable {
 
     @Test
     public void testHasNext() {
-        StringReader reader = new StringReader("First\nSecond\nThird");
-        ReaderLineIterable iterable = new ReaderLineIterable(reader);
-        Iterator<String> iterator = iterable.iterator();
+        var reader = new StringReader("First\nSecond\nThird");
+        var iterable = new ReaderLineIterable(reader);
+        var iterator = iterable.iterator();
         assertEquals("First", iterator.next());
         iterator.hasNext();
         iterator.hasNext();

@@ -129,17 +129,17 @@ public final class Processor implements Comparable<Processor> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Processor other = (Processor) obj;
-		if (this.processorId != other.processorId) {
+		var other = (Processor) obj;
+		if (processorId != other.processorId) {
 			return false;
 		}
-		if (this.clockSpeed != other.clockSpeed) {
+		if (clockSpeed != other.clockSpeed) {
 			return false;
 		}
-		if (this.isMonitor != other.isMonitor) {
+		if (isMonitor != other.isMonitor) {
 			return false;
 		}
-		return this.dtcmAvailable == other.dtcmAvailable;
+		return dtcmAvailable == other.dtcmAvailable;
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public final class Processor implements Comparable<Processor> {
 			return cmp;
 		}
 		// Check the other parameters for consistency with equals.
-		if (this.isMonitor) {
+		if (isMonitor) {
 			if (!other.isMonitor) {
 				return 1;
 			}

@@ -116,7 +116,7 @@ public enum SCPCommand implements CommandCode {
 	}
 
 	static {
-		for (SCPCommand r : values()) {
+		for (var r : values()) {
 			MAP.put(r.value, r);
 		}
 	}

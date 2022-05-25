@@ -59,19 +59,19 @@ public class TestProcessor {
 
     @Test
     public void testEquals() {
-        Processor p1 = Processor.factory(1);
-        Processor p2 = Processor.factory(2);
+        var p1 = Processor.factory(1);
+        var p2 = Processor.factory(2);
         checkDifferent(p1, p2);
-        Processor p1f = Processor.factory(1, false);
+        var p1f = Processor.factory(1, false);
         checkSame(p1, p1f);
-        Processor p1m = Processor.factory(1, true);
+        var p1m = Processor.factory(1, true);
         checkDifferent(p1, p1m);
         assertNotEquals(p1 ,null);
         assertNotEquals(p1, "p1");
-        Processor faster = Processor.factory(
+        var faster = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED * + 10000000,
                 MachineDefaults.DTCM_AVAILABLE, false);
-        Processor faster2 = Processor.factory(
+        var faster2 = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED * + 10000000,
                 MachineDefaults.DTCM_AVAILABLE, false);
         checkSame(faster, faster2);
@@ -79,20 +79,20 @@ public class TestProcessor {
 
     @Test
     public void testComparesTo() {
-        Processor p1 = Processor.factory(1);
-        Processor standard = Processor.factory(
+        var p1 = Processor.factory(1);
+        var standard = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE, false);
-        Processor two = Processor.factory(
+        var two = Processor.factory(
                 2, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE, false);
-        Processor monitor = Processor.factory(
+        var monitor = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE, true);
-        Processor faster = Processor.factory(
+        var faster = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED * + 10000000,
                 MachineDefaults.DTCM_AVAILABLE, false);
-        Processor more = Processor.factory(
+        var more = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
                 MachineDefaults.DTCM_AVAILABLE + 10, false);
         assertThat(p1, lessThanOrEqualTo(standard));
@@ -104,14 +104,14 @@ public class TestProcessor {
 
     @Test
     public void testClone() {
-        Processor p1 = Processor.factory(1);
-        Processor p1m = Processor.factory(1, true);
-        Processor clone = p1.cloneAsSystemProcessor();
+        var p1 = Processor.factory(1);
+        var p1m = Processor.factory(1, true);
+        var clone = p1.cloneAsSystemProcessor();
         checkSame(p1m, clone);
-        Processor faster = Processor.factory(
+        var faster = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED + 10,
                 MachineDefaults.DTCM_AVAILABLE, false);
-        Processor fasterM = Processor.factory(
+        var fasterM = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED + 10,
                 MachineDefaults.DTCM_AVAILABLE, true);
         clone = faster.cloneAsSystemProcessor();
@@ -120,7 +120,7 @@ public class TestProcessor {
 
     @Test
     public void testCpuCyclesAvailable() {
-        Processor p1 = Processor.factory(1);
+        var p1 = Processor.factory(1);
         assertEquals(200000, p1.cpuCyclesAvailable());
     }
 
@@ -128,11 +128,11 @@ public class TestProcessor {
     @SuppressWarnings("unused")
     public void testBad() {
         assertThrows(IllegalArgumentException.class, () -> {
-            Processor bad = Processor.factory(
+            var bad = Processor.factory(
                 1, -10, MachineDefaults.DTCM_AVAILABLE, false);
         });
         assertThrows(IllegalArgumentException.class, () -> {
-            Processor bad = Processor.factory(
+            var bad = Processor.factory(
                 1, MachineDefaults.PROCESSOR_CLOCK_SPEED, -10, false);
         });
     }

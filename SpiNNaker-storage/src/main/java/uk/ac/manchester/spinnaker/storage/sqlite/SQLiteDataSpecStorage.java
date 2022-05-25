@@ -26,8 +26,6 @@ import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.LIST_ETHERNETS;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,8 +71,8 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	}
 
 	private static int countWorkRequired(Connection conn) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(COUNT_WORK);
-				ResultSet rs = s.executeQuery()) {
+		try (var s = conn.prepareStatement(COUNT_WORK);
+				var rs = s.executeQuery()) {
 			while (rs.next()) {
 				// count_content
 				return rs.getInt(FIRST);
@@ -91,9 +89,9 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	private static List<Ethernet> listEthernetsToLoad(Connection conn)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(LIST_ETHERNETS);
-				ResultSet rs = s.executeQuery()) {
-			List<Ethernet> result = new ArrayList<>();
+		try (var s = conn.prepareStatement(LIST_ETHERNETS);
+				var rs = s.executeQuery()) {
+			var result = new ArrayList<Ethernet>();
 			while (rs.next()) {
 				// ethernet_id, ethernet_x, ethernet_y, ip_address
 				result.add(new EthernetImpl(rs.getInt(FIRST), rs.getInt(SECOND),
@@ -128,11 +126,11 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	private List<CoreToLoad> listCoresToLoad(Connection conn,
 			EthernetImpl ethernet) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
+		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD)) {
 			// ethernet_id
 			s.setInt(FIRST, ethernet.id);
-			try (ResultSet rs = s.executeQuery()) {
-				List<CoreToLoad> result = new ArrayList<>();
+			try (var rs = s.executeQuery()) {
+				var result = new ArrayList<CoreToLoad>();
 				while (rs.next()) {
 					// core_id, x, y, processor, content
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
@@ -155,13 +153,12 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	private List<CoreToLoad> listCoresToLoad(Connection conn,
 			EthernetImpl ethernet, boolean loadSystemCores)
 			throws SQLException {
-		try (PreparedStatement s =
-				conn.prepareStatement(LIST_CORES_TO_LOAD_FILTERED)) {
+		try (var s = conn.prepareStatement(LIST_CORES_TO_LOAD_FILTERED)) {
 			// ethernet_id
 			s.setInt(FIRST, ethernet.id);
 			s.setBoolean(SECOND, loadSystemCores);
-			try (ResultSet rs = s.executeQuery()) {
-				List<CoreToLoad> result = new ArrayList<>();
+			try (var rs = s.executeQuery()) {
+				var result = new ArrayList<CoreToLoad>();
 				while (rs.next()) {
 					// core_id, x, y, processor, content
 					result.add(new CoreToLoadImpl(rs.getInt(FIRST),
@@ -192,9 +189,9 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 
 	private static ByteBuffer getDataSpec(Connection conn, CoreToLoadImpl core)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(GET_CORE_DATA_SPEC)) {
+		try (var s = conn.prepareStatement(GET_CORE_DATA_SPEC)) {
 			s.setInt(FIRST, core.id);
-			try (ResultSet rs = s.executeQuery()) {
+			try (var rs = s.executeQuery()) {
 				while (rs.next()) {
 					return wrap(rs.getBytes(FIRST)).asReadOnlyBuffer();
 				}
@@ -215,8 +212,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	private static void saveLoadingMetadata(Connection conn,
 			CoreToLoadImpl core, int startAddress, int memoryUsed,
 			int memoryWritten) throws SQLException {
-		try (PreparedStatement s =
-				conn.prepareStatement(ADD_LOADING_METADATA)) {
+		try (var s = conn.prepareStatement(ADD_LOADING_METADATA)) {
 			s.setInt(FIRST, startAddress);
 			s.setInt(SECOND, memoryUsed);
 			s.setInt(THIRD, memoryWritten);

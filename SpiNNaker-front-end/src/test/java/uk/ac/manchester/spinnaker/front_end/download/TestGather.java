@@ -16,16 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
+
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
-import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
 
 /**
  *
@@ -35,10 +32,8 @@ public class TestGather {
 
     @Test
     public void testSimpleJson() throws IOException {
-        URL url = TestGather.class.getResource("/gather.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        List<Gather> fromJson = mapper.readValue(
-                url, new TypeReference<List<Gather>>() { });
+        var url = TestGather.class.getResource("/gather.json");
+        var fromJson = createMapper().readValue(url, Gather.LIST);
         assertEquals(1, fromJson.size());
     }
 

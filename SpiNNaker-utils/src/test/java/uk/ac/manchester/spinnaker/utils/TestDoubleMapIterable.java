@@ -47,11 +47,11 @@ public class TestDoubleMapIterable {
         DoubleMapIterable<Integer> instance;
         instance = new DoubleMapIterable<>(aMap);
         int count = 0;
-        for (Integer value: instance) {
+        for (var value: instance) {
             count += 1;
         }
         assertEquals(6, count);
-        for (Integer value: instance) {
+        for (var value: instance) {
             count += 1;
         }
         assertEquals(12, count);

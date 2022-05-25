@@ -38,8 +38,7 @@ public class TestDoubleMapIterator {
         inner.put("Three", 3);
         aMap.put(23.2, inner);
 
-        DoubleMapIterator<Integer> instance;
-        instance = new DoubleMapIterator<>(aMap);
+        var instance = new DoubleMapIterator<>(aMap);
         int count = 0;
         while (instance.hasNext()) {
             int value = instance.next();
@@ -65,8 +64,7 @@ public class TestDoubleMapIterator {
         inner2.put("Twelve", 12);
         aMap.put(43.6, inner2);
 
-        DoubleMapIterator<Integer> instance;
-        instance = new DoubleMapIterator<>(aMap);
+        var instance = new DoubleMapIterator<>(aMap);
         int count = 0;
         while (instance.hasNext()) {
             int value = instance.next();
@@ -84,8 +82,7 @@ public class TestDoubleMapIterator {
     @Test
     public void testEmptyWhole() {
         Map<Double, Map<String, Integer>> aMap = new HashMap<>();
-        DoubleMapIterator<Integer> instance;
-        instance = new DoubleMapIterator<>(aMap);
+        var instance = new DoubleMapIterator<>(aMap);
         int count = 0;
         while (instance.hasNext()) {
             int value = instance.next();
@@ -100,23 +97,22 @@ public class TestDoubleMapIterator {
     public void testOneEmpty() {
         Map<Double, Map<String, Integer>> aMap = new HashMap<>();
 
-        Map<String, Integer> inner0 = new HashMap<>();
+        var inner0 = new HashMap<String, Integer>();
         aMap.put(343.2, inner0);
 
-        Map<String, Integer> inner = new HashMap<>();
+        var inner = new HashMap<String, Integer>();
         inner.put("One", 1);
         inner.put("Two", 2);
         inner.put("Three", 3);
         aMap.put(23.2, inner);
 
-        Map<String, Integer> inner2 = new HashMap<>();
+        var inner2 = new HashMap<String, Integer>();
         inner2.put("Ten", 10);
         inner2.put("Eleven", 11);
         inner2.put("Twelve", 12);
         aMap.put(43.6, inner2);
 
-        DoubleMapIterator<Integer> instance;
-        instance = new DoubleMapIterator<>(aMap);
+        var instance = new DoubleMapIterator<>(aMap);
         int count = 0;
         while (instance.hasNext()) {
             int value = instance.next();
