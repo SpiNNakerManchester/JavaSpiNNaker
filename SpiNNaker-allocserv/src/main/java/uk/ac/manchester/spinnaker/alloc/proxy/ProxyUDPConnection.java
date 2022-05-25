@@ -95,7 +95,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	public Optional<ByteBuffer> receiveMessage(int timeout) throws IOException {
 		try {
 			// Raw buffer, including header bytes
-			ByteBuffer msg = receive(timeout);
+			var msg = receive(timeout);
 			receiveCount++;
 			return Optional.of(msg);
 		} catch (SocketTimeoutException e) {
@@ -148,8 +148,8 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 * Core SpiNNaker message receive and dispatch-to-websocket loop.
 	 */
 	protected void connectedReceiverTask() {
-		Thread me = currentThread();
-		String oldThreadName = me.getName();
+		var me = currentThread();
+		var oldThreadName = me.getName();
 		me.setName("ws/udp " + name);
 		log.debug("launched listener {}", name);
 		try {
@@ -170,7 +170,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 
 	private void mainLoop() throws IOException {
 		while (!isClosed()) {
-			Optional<ByteBuffer> msg = receiveMessage(TIMEOUT);
+			var msg = receiveMessage(TIMEOUT);
 			if (!msg.isPresent()) {
 				// Timeout; go round the loop again.
 				if (!session.isOpen() || isClosed()) {
@@ -192,7 +192,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 */
 	private void handleReceivedMessage(ByteBuffer msg) throws IOException {
 		log.debug("{} received message {}", name, msg);
-		ByteBuffer outgoing = workingBuffer.duplicate();
+		var outgoing = workingBuffer.duplicate();
 		outgoing.put(msg);
 		outgoing.flip();
 		session.sendMessage(new BinaryMessage(outgoing));
@@ -209,8 +209,8 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 *            Messages from elsewhere will be discarded.
 	 */
 	protected void eieioReceiverTask(Set<InetAddress> recvFrom) {
-		Thread me = currentThread();
-		String oldThreadName = me.getName();
+		var me = currentThread();
+		var oldThreadName = me.getName();
 		me.setName("ws/udp(eieio) " + name);
 		log.debug("launched eieio listener {}", name);
 		try {
@@ -255,8 +255,8 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 				log.debug("dropped packet from {}", packet.getAddress());
 				continue;
 			}
-			ByteBuffer msg = wrap(packet.getData(), 0,
-					packet.getLength()).order(LITTLE_ENDIAN);
+			var msg = wrap(packet.getData(), 0, packet.getLength())
+					.order(LITTLE_ENDIAN);
 			handleReceivedMessage(msg);
 		}
 	}

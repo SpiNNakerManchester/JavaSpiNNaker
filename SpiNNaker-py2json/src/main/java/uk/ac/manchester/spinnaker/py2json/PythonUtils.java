@@ -130,8 +130,8 @@ public final class PythonUtils {
 	public static <S extends Collection<U>, T, U> Map<T, S> toCollectingMap(
 			PyObject mapObject, Depythonizer<T> makeKey,
 			Function<T, S> makeCollector, Depythonizer<U> makeValue) {
-		Map<T, S> result = new HashMap<>();
-		for (PyObject value : mapObject.asIterable()) {
+		var result = new HashMap<T, S>();
+		for (var value : mapObject.asIterable()) {
 			result.computeIfAbsent(makeKey.act(value), makeCollector)
 					.add(makeValue.act(value));
 		}
@@ -155,8 +155,8 @@ public final class PythonUtils {
 	 */
 	public static <T, U> Map<T, U> toMap(PyObject dictObject,
 			Depythonizer<T> makeKey, Depythonizer<U> makeValue) {
-		Map<T, U> result = new HashMap<>();
-		for (PyObject key : dictObject.asIterable()) {
+		var result = new HashMap<T, U>();
+		for (var key : dictObject.asIterable()) {
 			result.put(makeKey.act(key), makeValue.act(item(dictObject, key)));
 		}
 		return result;
@@ -175,8 +175,8 @@ public final class PythonUtils {
 	 */
 	public static <T> List<T> toList(PyObject listObject,
 			Depythonizer<T> makeValue) {
-		List<T> result = new ArrayList<>();
-		for (PyObject value : listObject.asIterable()) {
+		var result = new ArrayList<T>();
+		for (var value : listObject.asIterable()) {
 			result.add(makeValue.act(value));
 		}
 		return result;
@@ -195,8 +195,8 @@ public final class PythonUtils {
 	 */
 	public static <T> Set<T> toSet(PyObject listObject,
 			Depythonizer<T> makeValue) {
-		Set<T> result = new HashSet<>();
-		for (PyObject value : listObject.asIterable()) {
+		var result = new HashSet<T>();
+		for (var value : listObject.asIterable()) {
 			result.add(makeValue.act(value));
 		}
 		return result;

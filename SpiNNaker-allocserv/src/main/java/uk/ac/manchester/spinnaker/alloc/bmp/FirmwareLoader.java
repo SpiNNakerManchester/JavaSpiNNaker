@@ -64,7 +64,6 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
-import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -220,7 +219,7 @@ public class FirmwareLoader {
 		}
 
 		static FlashDataSector registers(int numItems, List<Integer> data) {
-			FlashDataSector fds = new FlashDataSector();
+			var fds = new FlashDataSector();
 			fds.registersHeader(numItems);
 			fds.registersPayload(data);
 			fds.buf.flip();
@@ -229,7 +228,7 @@ public class FirmwareLoader {
 
 		static FlashDataSector bitfile(String name, int mtime, int crc,
 				FPGA chip, int timestamp, int baseAddress, int length) {
-			FlashDataSector fds = new FlashDataSector();
+			var fds = new FlashDataSector();
 			fds.bitfileHeader(mtime, crc, chip, timestamp, baseAddress, length);
 			fds.bitfileName(name);
 			fds.buf.flip();
@@ -276,7 +275,7 @@ public class FirmwareLoader {
 		}
 
 		private void bitfileName(String name) {
-			byte[] namedata = name.getBytes(StandardCharsets.UTF_8);
+			var namedata = name.getBytes(StandardCharsets.UTF_8);
 			int namesize = min(namedata.length, BITFILE_NAME_MAX_LENGTH);
 			buf.put(1, (byte) namesize);
 			buf.put(namedata, 0, namesize);
@@ -316,7 +315,7 @@ public class FirmwareLoader {
 	private static void putBuffer(ByteBuffer target, ByteBuffer source,
 			int offset) {
 		// Dupe so we can freely manipulate the position
-		ByteBuffer slice = target.duplicate();
+		var slice = target.duplicate();
 		slice.position(offset);
 		slice.put(source.array(), source.arrayOffset(), source.remaining());
 	}
@@ -334,7 +333,7 @@ public class FirmwareLoader {
 	 *         the original buffer is read-only.
 	 */
 	private static ByteBuffer slice(ByteBuffer src, int from, int len) {
-		ByteBuffer s = src.duplicate();
+		var s = src.duplicate();
 		s.position(from);
 		s.limit(from + len);
 		return s.slice().order(LITTLE_ENDIAN);
@@ -351,7 +350,7 @@ public class FirmwareLoader {
 	}
 
 	private static int crc(ByteBuffer buffer, int from, int len) {
-		CRC32 crc = new CRC32();
+		var crc = new CRC32();
 		crc.update(slice(buffer, from, len));
 		return (int) (crc.getValue() & CRC_MASK);
 	}
@@ -363,8 +362,8 @@ public class FirmwareLoader {
 	}
 
 	private static int crc(InputStream s) throws IOException {
-		CRC32 crc = new CRC32();
-		byte[] buffer = new byte[CRC_BUFFER_LENGTH];
+		var crc = new CRC32();
+		var buffer = new byte[CRC_BUFFER_LENGTH];
 		while (true) {
 			int len = s.read(buffer);
 			if (len < 1) {
@@ -382,14 +381,14 @@ public class FirmwareLoader {
 		int fb = txrx.getSerialFlashBuffer(board);
 		txrx.writeBMPMemory(board, fb, data);
 		txrx.writeBMPFlash(board, FLASH_DATA_ADDRESS);
-		ByteBuffer newData = readFlashData();
+		var newData = readFlashData();
 		if (!data.equals(newData)) {
 			throw new UpdateFailedException(newData);
 		}
 	}
 
 	private void logBMPVersion() throws ProcessException, IOException {
-		VersionInfo info = txrx.readBMPVersion(board);
+		var info = txrx.readBMPVersion(board);
 		// TODO validate which field is which; some of these seem... unlikely
 		log.info("BMP INFO:       {}",
 				format("%s %s at %s:%s (built %s) [C=%s, F=%s, B=%s]",
@@ -406,9 +405,9 @@ public class FirmwareLoader {
 	 * traffic.
 	 */
 	private void listFPGABootChunks() throws ProcessException, IOException {
-		ByteBuffer data = readFlashDataHead();
+		var data = readFlashDataHead();
 		for (int i = 0; i < NUM_DATA_SECTORS; i++) {
-			ByteBuffer chunk = slice(data, DATA_SECTOR_CHUNK_SIZE * i,
+			var chunk = slice(data, DATA_SECTOR_CHUNK_SIZE * i,
 					DATA_SECTOR_CHUNK_SIZE);
 			byte type = chunk.get();
 			switch (DataSectorTypes.get(type)) {
@@ -464,11 +463,11 @@ public class FirmwareLoader {
 		int base = data.getInt();
 		int length = data.getInt();
 		int mtime = data.getInt();
-		byte[] filenameBytes = new byte[size];
+		var filenameBytes = new byte[size];
 		data.get(filenameBytes, DATA_SECTOR_HEADER_BYTES, size);
 
-		String state =
-				(flags & BITFILE_ENABLED_FLAG) > 0 ? "ENABLED " : "DISABLED";
+		var state = (flags & BITFILE_ENABLED_FLAG) > 0 ? "ENABLED "
+				: "DISABLED";
 		log.info("FPGA BOOT:      {}", format(
 				"%3s  %s  Chips %-3s, Base 0x%06x, Length %8d, CRC 0x%08x",
 				SLOT_LABELS[i], state, CHIP_LABELS[flags & CHIP_MASK], base,
@@ -496,15 +495,14 @@ public class FirmwareLoader {
 	 */
 	public void setupRegisters(RegisterSet... settings)
 			throws ProcessException, IOException {
-		List<Integer> data = new ArrayList<>();
-		for (RegisterSet r : settings) {
+		var data = new ArrayList<Integer>();
+		for (var r : settings) {
 			data.add(r.address | r.fpga.value);
 			data.add(r.value);
 		}
-		FlashDataSector sector =
-				FlashDataSector.registers(settings.length, data);
+		var sector = FlashDataSector.registers(settings.length, data);
 
-		ByteBuffer flashData = readFlashData();
+		var flashData = readFlashData();
 		putBuffer(flashData, sector.buf, REGISTER_DATA_SECTOR_LOCATION);
 		updateFlashData(flashData);
 	}
@@ -533,9 +531,9 @@ public class FirmwareLoader {
 	 */
 	public void setupBitfile(String handle, int slot, FPGA chip)
 			throws IOException, ProcessException {
-		Resource resource = firmware.resource(handle);
+		var resource = firmware.resource(handle);
 		int mtime = firmware.mtime(handle);
-		String name = resource.getFilename();
+		var name = resource.getFilename();
 		int size = (int) resource.contentLength();
 		int crc = crc(resource);
 
@@ -544,8 +542,7 @@ public class FirmwareLoader {
 		}
 
 		int base = BITFILE_BASE + slot * BITFILE_MAX_SIZE;
-		try (InputStream s =
-				new BufferedInputStream(resource.getInputStream())) {
+		try (var s = new BufferedInputStream(resource.getInputStream())) {
 			txrx.writeSerialFlash(board, base, size, s);
 		}
 		int otherCRC = txrx.readSerialFlashCRC(board, base, size);
@@ -555,10 +552,10 @@ public class FirmwareLoader {
 
 		int timestamp = (int) (currentTimeMillis() / MSEC_PER_SEC);
 
-		FlashDataSector sector = FlashDataSector.bitfile(name, mtime, crc, chip,
+		var sector = FlashDataSector.bitfile(name, mtime, crc, chip,
 				timestamp, base, size);
 
-		ByteBuffer flashData = readFlashData();
+		var flashData = readFlashData();
 		putBuffer(flashData, sector.buf, BITFILE_DATA_SECTOR_LOCATION);
 		updateFlashData(flashData);
 	}
@@ -591,7 +588,7 @@ public class FirmwareLoader {
 				new RegisterSet(FPGA_ALL, LEDO, CLEAR));
 		sleep(SMALL_SLEEP);
 
-		String nameDef = firmware.bitfileNames.get(idx);
+		var nameDef = firmware.bitfileNames.get(idx);
 		setupBitfile(nameDef, 0, FPGA_ALL);
 		idx++;
 
@@ -661,21 +658,21 @@ class FirmwareDefinition {
 
 	@PostConstruct
 	private void loadManifest() throws IOException {
-		Properties props = new Properties();
-		try (InputStream is = manifestLocation.getInputStream()) {
+		var props = new Properties();
+		try (var is = manifestLocation.getInputStream()) {
 			props.load(is);
 		}
 		bitfileNames = stream(props.getProperty("bitfiles").split(","))
 				.map(String::trim).collect(toList());
-		for (String f : bitfileNames) {
+		for (var f : bitfileNames) {
 			modTimes.put(f, parseUnsignedInt(props.getProperty(f)));
-			Resource r = manifestLocation.createRelative(f);
-			try (InputStream dummy = r.getInputStream()) {
+			var r = manifestLocation.createRelative(f);
+			try (var dummy = r.getInputStream()) {
 				// We do this to check that the bit file is readable at all
 				bitFiles.put(f, r);
 				log.info("loaded firmware definition: {}", f);
 			} catch (IOException e) {
-				FileNotFoundException fnf = new FileNotFoundException(
+				var fnf = new FileNotFoundException(
 						"failed to open bitfile resource: " + r);
 				fnf.initCause(e);
 				throw fnf;

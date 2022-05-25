@@ -21,9 +21,7 @@ import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.getJ
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -35,11 +33,10 @@ class TestConvert {
 	private static final int BUFFER_SIZE = 1024;
 
 	private String readFile(String filename) throws IOException {
-		try (InputStream i =
-				getClass().getClassLoader().getResourceAsStream(filename);
-				Reader isr = new InputStreamReader(i)) {
-			StringBuilder sb = new StringBuilder();
-			char[] buffer = new char[BUFFER_SIZE];
+		try (var i = getClass().getClassLoader().getResourceAsStream(filename);
+				var isr = new InputStreamReader(i)) {
+			var sb = new StringBuilder();
+			var buffer = new char[BUFFER_SIZE];
 			while (true) {
 				int len = isr.read(buffer);
 				if (len < 0) {
@@ -52,7 +49,7 @@ class TestConvert {
 	}
 
 	private File getFile(String filename) {
-		File f = new File(
+		var f = new File(
 				getClass().getClassLoader().getResource(filename).getFile());
 		System.setProperty("user.dir", f.getAbsoluteFile().getParent());
 		return f;
@@ -60,10 +57,9 @@ class TestConvert {
 
 	@Test
 	void testReadPythonSingleBoard() {
-		File f = getFile("single_board.py");
+		var f = getFile("single_board.py");
 		Configuration c;
-		try (MachineDefinitionConverter mdl =
-				new MachineDefinitionConverter()) {
+		try (var mdl = new MachineDefinitionConverter()) {
 			c = mdl.loadClassicConfigurationDefinition(f, false);
 		}
 		assertNotNull(c.machines.get(0));
@@ -71,10 +67,9 @@ class TestConvert {
 
 	@Test
 	void testReadPythonFromCSV() {
-		File f = getFile("from_csv.py");
+		var f = getFile("from_csv.py");
 		Configuration c;
-		try (MachineDefinitionConverter mdl =
-				new MachineDefinitionConverter()) {
+		try (var mdl = new MachineDefinitionConverter()) {
 			c = mdl.loadClassicConfigurationDefinition(f, true);
 		}
 		assertNotNull(c.machines.get(0));
@@ -82,12 +77,11 @@ class TestConvert {
 
 	@Test
 	void testProduceJSON() throws IOException, JSONException {
-		String expectedJson = readFile("expected.json");
-		File f = getFile("single_board.py");
+		var expectedJson = readFile("expected.json");
+		var f = getFile("single_board.py");
 		String json;
-		try (MachineDefinitionConverter mdl =
-				new MachineDefinitionConverter()) {
-			Configuration c = mdl.loadClassicConfigurationDefinition(f, true);
+		try (var mdl = new MachineDefinitionConverter()) {
+			var c = mdl.loadClassicConfigurationDefinition(f, true);
 			json = getJsonWriter().writeValueAsString(c);
 		}
 		assertNotNull(json);

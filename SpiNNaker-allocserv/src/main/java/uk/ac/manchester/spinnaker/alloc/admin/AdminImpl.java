@@ -35,7 +35,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
@@ -46,7 +45,6 @@ import org.springframework.stereotype.Service;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
@@ -120,7 +118,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public boolean getBoardStateXYZ(String name, int x, int y, int z) {
 		log.info("CALLED boardState({}:XYZ=({},{},{}))", name, x, y, z);
-		BoardState board = machineController.findTriad(name, x, y, z)
+		var board = machineController.findTriad(name, x, y, z)
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
@@ -131,7 +129,7 @@ public class AdminImpl implements AdminAPI {
 			boolean enabled) {
 		log.warn("CALLED boardState({}:XYZ=({},{},{})) := {}", name, x, y, z,
 				enabled);
-		BoardState board = machineController.findTriad(name, x, y, z)
+		var board = machineController.findTriad(name, x, y, z)
 				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();
@@ -140,7 +138,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public boolean getBoardStateCFB(String name, int c, int f, int b) {
 		log.info("CALLED boardState({}:CFB=({},{},{}))", name, c, f, b);
-		BoardState board = machineController.findPhysical(name, c, f, b)
+		var board = machineController.findPhysical(name, c, f, b)
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
@@ -151,7 +149,7 @@ public class AdminImpl implements AdminAPI {
 			boolean enabled) {
 		log.warn("CALLED boardState({}:CFB=({},{},{})) := {}", name, c, f, b,
 				enabled);
-		BoardState board = machineController.findPhysical(name, c, f, b)
+		var board = machineController.findPhysical(name, c, f, b)
 				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();
@@ -160,7 +158,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public boolean getBoardStateAddress(String name, String address) {
 		log.info("CALLED boardState({}:IP=({}))", name, address);
-		BoardState board = machineController.findIP(name, address)
+		var board = machineController.findIP(name, address)
 				.orElseThrow(AdminImpl::noBoard);
 		return board.getState();
 	}
@@ -170,7 +168,7 @@ public class AdminImpl implements AdminAPI {
 	public boolean setBoardStateAddress(String name, String address,
 			boolean enabled) {
 		log.warn("CALLED boardState({}:IP=({})) := {}", name, address, enabled);
-		BoardState board = machineController.findIP(name, address)
+		var board = machineController.findIP(name, address)
 				.orElseThrow(AdminImpl::noBoard);
 		board.setState(enabled);
 		return board.getState();
@@ -179,7 +177,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Map<String, URI> listUsers(UriInfo ui) {
 		log.info("CALLED listUsers()");
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		return unmodifiableMap(
 				userManager.listUsers(user -> ub.build(user.getUserId())));
 	}
@@ -188,10 +186,10 @@ public class AdminImpl implements AdminAPI {
 	public Response createUser(UserRecord providedUser, UriInfo ui) {
 		log.warn("CALLED createUser({})", providedUser.getUserName());
 		providedUser.initCreationDefaults();
-		UserRecord realUser = userManager.createUser(providedUser)
+		var realUser = userManager.createUser(providedUser)
 				.orElseThrow(() -> new RequestFailedException(NOT_MODIFIED,
 						"user already exists"));
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		int id = realUser.getUserId();
 		return created(ub.build(id)).type(APPLICATION_JSON)
 				.entity(realUser.sanitise()).build();
@@ -200,7 +198,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public UserRecord describeUser(int id, UriInfo ui) {
 		log.info("CALLED describeUser({})", id);
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
 		return userManager.getUser(id, m -> ub.build(m.getGroupId()))
 				.orElseThrow(AdminImpl::noUser).sanitise();
 	}
@@ -209,9 +207,9 @@ public class AdminImpl implements AdminAPI {
 	public UserRecord updateUser(int id, UserRecord providedUser, UriInfo ui,
 			SecurityContext security) {
 		log.warn("CALLED updateUser({})", providedUser.getUserName());
-		String adminUser = security.getUserPrincipal().getName();
+		var adminUser = security.getUserPrincipal().getName();
 		providedUser.setUserId(null);
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
 		return userManager
 				.updateUser(id, providedUser, adminUser,
 						m -> ub.build(m.getGroupId()))
@@ -221,7 +219,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Response deleteUser(int id, SecurityContext security) {
 		log.warn("CALLED deleteUser({})", id);
-		String adminUser = security.getUserPrincipal().getName();
+		var adminUser = security.getUserPrincipal().getName();
 		userManager.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
 		return noContent().build();
 	}
@@ -229,18 +227,17 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Map<String, URI> listGroups(UriInfo ui) {
 		log.warn("CALLED listGroups()");
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
 		return userManager.listGroups(g -> ub.build(g.getGroupId()));
 	}
 
 	@Override
 	public Response createGroup(GroupRecord group, UriInfo ui) {
 		log.warn("CALLED createGroup({})", group.getGroupName());
-		GroupRecord realGroup =
-				userManager.createGroup(group, group.getType())
-						.orElseThrow(() -> new WebApplicationException(
-								"group already exists", BAD_REQUEST));
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var realGroup = userManager.createGroup(group, group.getType())
+				.orElseThrow(() -> new WebApplicationException(
+						"group already exists", BAD_REQUEST));
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
 		return created(ub.build(realGroup.getGroupId())).type(APPLICATION_JSON)
 				.entity(realGroup).build();
 	}
@@ -248,7 +245,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public GroupRecord describeGroup(int groupId, UriInfo ui) {
 		log.warn("CALLED describeGroup({})", groupId);
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
 		return userManager.getGroup(groupId, m -> ub.build(groupId, m.getId()))
 				.orElseThrow(AdminImpl::noGroup);
 	}
@@ -256,7 +253,7 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public GroupRecord updateGroup(int groupId, GroupRecord group, UriInfo ui) {
 		log.warn("CALLED updateGroup({})", groupId);
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
 		return userManager
 				.updateGroup(groupId, group,
 						m -> ub.build(group.getGroupId(), m.getId()))
@@ -274,10 +271,10 @@ public class AdminImpl implements AdminAPI {
 	public Response addMember(int groupId, MemberRecord request, UriInfo ui) {
 		String userName = request.getUserName();
 		log.warn("CALLED addMember({},{})", groupId, userName);
-		UriBuilder ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
-		GroupRecord group = userManager.getGroup(groupId, null)
+		var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
+		var group = userManager.getGroup(groupId, null)
 				.orElseThrow(AdminImpl::noGroup);
-		UserRecord user = userManager.getUser(userName, null)
+		var user = userManager.getUser(userName, null)
 				.orElseThrow(AdminImpl::noUser);
 		return userManager.addUserToGroup(user, group)
 				.map(member -> created(ub.build(member.getId()))
@@ -290,8 +287,8 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public MemberRecord describeMember(int groupId, int memberId, UriInfo ui) {
 		log.warn("CALLED describeMember({},{})", groupId, memberId);
-		UriBuilder ubGroup = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
-		UriBuilder ubUser = ui.getBaseUriBuilder().path(DESCRIBE_USER);
+		var ubGroup = ui.getBaseUriBuilder().path(DESCRIBE_GROUP);
+		var ubUser = ui.getBaseUriBuilder().path(DESCRIBE_USER);
 		return userManager
 				.describeMembership(memberId,
 						m -> ubGroup.build(m.getGroupId()),
@@ -302,11 +299,10 @@ public class AdminImpl implements AdminAPI {
 	@Override
 	public Response removeMember(int groupId, int memberId) {
 		log.warn("CALLED removeMember({groupId},{memberId})");
-		GroupRecord group = userManager.getGroup(groupId, null)
+		var group = userManager.getGroup(groupId, null)
 				.orElseThrow(AdminImpl::noGroup);
-		MemberRecord member =
-				userManager.describeMembership(memberId, null, null)
-						.orElseThrow(AdminImpl::noMember);
+		var member = userManager.describeMembership(memberId, null, null)
+				.orElseThrow(AdminImpl::noMember);
 		if (!userManager.removeMembershipOfGroup(member, group)) {
 			throw new WebApplicationException("remove failed", BAD_REQUEST);
 		}

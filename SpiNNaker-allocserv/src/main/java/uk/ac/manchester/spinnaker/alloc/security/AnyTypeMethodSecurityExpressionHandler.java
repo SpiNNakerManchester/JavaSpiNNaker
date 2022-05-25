@@ -19,9 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.security;
 import static java.util.Objects.isNull;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -66,10 +64,8 @@ class AnyTypeMethodSecurityExpressionHandler
 	@SuppressWarnings("unchecked")
 	private <T> Optional<T> filterOptional(Optional<T> target, Expression expr,
 			EvaluationContext ctx) {
-		// Java 8 language profile makes this a little messy
-		List<T> a = new ArrayList<T>();
-		target.ifPresent(a::add);
-		return ((Stream<T>) super.filter(a.stream(), expr, ctx)).findFirst();
+		return ((Stream<T>) super.filter(target.stream(), expr, ctx))
+				.findFirst();
 	}
 
 	@SuppressWarnings("unused")

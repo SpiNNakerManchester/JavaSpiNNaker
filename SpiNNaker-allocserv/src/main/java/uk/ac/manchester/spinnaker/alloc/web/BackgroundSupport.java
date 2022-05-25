@@ -112,7 +112,7 @@ public abstract class BackgroundSupport {
 	protected static void fgAction(AsyncResponse response,
 			BackgroundAction action) {
 		try {
-			Object r = action.respond();
+			var r = action.respond();
 			if (isNull(r)) {
 				// If you want something else, don't return null
 				response.resume(new NotFound("not found"));

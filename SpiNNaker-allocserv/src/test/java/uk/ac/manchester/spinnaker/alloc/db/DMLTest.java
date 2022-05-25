@@ -47,8 +47,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
@@ -96,8 +94,8 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertJob() {
 		assumeWritable(c);
-		Duration d = Duration.ofSeconds(100);
-		try (Update u = c.update(INSERT_JOB)) {
+		var d = Duration.ofSeconds(100);
+		try (var u = c.update(INSERT_JOB)) {
 			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// No such machine
@@ -110,7 +108,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertReqNBoards() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_REQ_N_BOARDS)) {
+		try (var u = c.update(INSERT_REQ_N_BOARDS)) {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
@@ -123,7 +121,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertReqSize() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_REQ_SIZE)) {
+		try (var u = c.update(INSERT_REQ_SIZE)) {
 			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
@@ -136,7 +134,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertReqSizeBoard() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_REQ_SIZE_BOARD)) {
+		try (var u = c.update(INSERT_REQ_SIZE_BOARD)) {
 			assertEquals(6, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
@@ -149,7 +147,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertReqBoard() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_REQ_BOARD)) {
+		try (var u = c.update(INSERT_REQ_BOARD)) {
 			c.transaction(() -> {
 				assertEquals(3, u.getNumArguments());
 				// No such job or board
@@ -161,7 +159,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void updateKeepalive() {
 		assumeWritable(c);
-		try (Update u = c.update(UPDATE_KEEPALIVE)) {
+		try (var u = c.update(UPDATE_KEEPALIVE)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_NAME, NO_JOB));
@@ -172,7 +170,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void destroyJob() {
 		assumeWritable(c);
-		try (Update u = c.update(DESTROY_JOB)) {
+		try (var u = c.update(DESTROY_JOB)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call("anything", NO_JOB));
@@ -183,7 +181,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void deleteTask() {
 		assumeWritable(c);
-		try (Update u = c.update(DELETE_TASK)) {
+		try (var u = c.update(DELETE_TASK)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
@@ -194,7 +192,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void allocateBoardsJob() {
 		assumeWritable(c);
-		try (Update u = c.update(ALLOCATE_BOARDS_JOB)) {
+		try (var u = c.update(ALLOCATE_BOARDS_JOB)) {
 			assertEquals(6, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(-1, -1, -1, NO_BOARD, 0, NO_JOB));
@@ -205,7 +203,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void deallocateBoardsJob() {
 		assumeWritable(c);
-		try (Update u = c.update(DEALLOCATE_BOARDS_JOB)) {
+		try (var u = c.update(DEALLOCATE_BOARDS_JOB)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
@@ -216,7 +214,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void allocateBoardsBoard() {
 		assumeWritable(c);
-		try (Update u = c.update(ALLOCATE_BOARDS_BOARD)) {
+		try (var u = c.update(ALLOCATE_BOARDS_BOARD)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB, NO_BOARD));
@@ -227,7 +225,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setStatePending() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_STATE_PENDING)) {
+		try (var u = c.update(SET_STATE_PENDING)) {
 			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(JobState.UNKNOWN, 0, NO_JOB));
@@ -238,7 +236,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void bumpImportance() {
 		assumeWritable(c);
-		try (Update u = c.update(BUMP_IMPORTANCE)) {
+		try (var u = c.update(BUMP_IMPORTANCE)) {
 			assertEquals(0, u.getNumArguments());
 			c.transaction(() -> {
 				// table should be empty
@@ -250,7 +248,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void killJobAllocTask() {
 		assumeWritable(c);
-		try (Update u = c.update(KILL_JOB_ALLOC_TASK)) {
+		try (var u = c.update(KILL_JOB_ALLOC_TASK)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
@@ -261,7 +259,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void killJobPending() {
 		assumeWritable(c);
-		try (Update u = c.update(KILL_JOB_PENDING)) {
+		try (var u = c.update(KILL_JOB_PENDING)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
@@ -272,7 +270,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setInProgress() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_IN_PROGRESS)) {
+		try (var u = c.update(SET_IN_PROGRESS)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_JOB));
@@ -283,7 +281,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void issueChangeForJob() {
 		assumeWritable(c);
-		try (Update u = c.update(issueChangeForJob)) {
+		try (var u = c.update(issueChangeForJob)) {
 			assertEquals(11, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
@@ -296,7 +294,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setBoardPower() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_BOARD_POWER)) {
+		try (var u = c.update(SET_BOARD_POWER)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_BOARD));
@@ -307,7 +305,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void finishedPending() {
 		assumeWritable(c);
-		try (Update u = c.update(FINISHED_PENDING)) {
+		try (var u = c.update(FINISHED_PENDING)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_CHANGE));
@@ -318,7 +316,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertMachine() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_MACHINE_SPINN_5)) {
+		try (var u = c.update(INSERT_MACHINE_SPINN_5)) {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// Bad depth
@@ -330,7 +328,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertTag() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_TAG)) {
+		try (var u = c.update(INSERT_TAG)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
@@ -342,7 +340,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void deleteMachineTags() {
 		assumeWritable(c);
-		try (Update u = c.update(DELETE_MACHINE_TAGS)) {
+		try (var u = c.update(DELETE_MACHINE_TAGS)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine, no tags for it
@@ -354,7 +352,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertBMP() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_BMP)) {
+		try (var u = c.update(INSERT_BMP)) {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
@@ -366,7 +364,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertBoard() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_BOARD)) {
+		try (var u = c.update(INSERT_BOARD)) {
 			assertEquals(10, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
@@ -379,7 +377,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertLink() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_LINK)) {
+		try (var u = c.update(INSERT_LINK)) {
 			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// No board
@@ -392,7 +390,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setMaxCoords() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_MAX_COORDS)) {
+		try (var u = c.update(SET_MAX_COORDS)) {
 			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
@@ -404,7 +402,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setMachineState() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_MACHINE_STATE)) {
+		try (var u = c.update(SET_MACHINE_STATE)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// No machine
@@ -416,7 +414,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setFunctioningField() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_FUNCTIONING_FIELD)) {
+		try (var u = c.update(SET_FUNCTIONING_FIELD)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_BOARD));
@@ -427,7 +425,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void decrementQuota() {
 		assumeWritable(c);
-		try (Update u = c.update(DECREMENT_QUOTA)) {
+		try (var u = c.update(DECREMENT_QUOTA)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(0, NO_USER)); // really quota_id
@@ -438,7 +436,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void markConsolidated() {
 		assumeWritable(c);
-		try (Update u = c.update(MARK_CONSOLIDATED)) {
+		try (var u = c.update(MARK_CONSOLIDATED)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
@@ -449,7 +447,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void adjustQuota() {
 		assumeWritable(c);
-		try (Query u = c.query(ADJUST_QUOTA)) {
+		try (var u = c.query(ADJUST_QUOTA)) {
 			assertEquals(2, u.getNumArguments());
 			assertSetEquals(set("group_name", "quota"), u.getRowColumnNames());
 			c.transaction(() -> {
@@ -461,7 +459,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void markLoginSuccess() {
 		assumeWritable(c);
-		try (Update u = c.update(MARK_LOGIN_SUCCESS)) {
+		try (var u = c.update(MARK_LOGIN_SUCCESS)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_NAME, NO_USER));
@@ -473,7 +471,7 @@ class DMLTest extends SQLQueries {
 	void markLoginFailure() {
 		assumeWritable(c);
 		// Tricky! Has a RETURNING clause
-		try (Query u = c.query(MARK_LOGIN_FAILURE)) {
+		try (var u = c.query(MARK_LOGIN_FAILURE)) {
 			assertEquals(2, u.getNumArguments());
 			assertSetEquals(set("locked"), u.getRowColumnNames());
 			c.transaction(() -> {
@@ -486,7 +484,7 @@ class DMLTest extends SQLQueries {
 	void unlockLockedUsers() {
 		assumeWritable(c);
 		// Tricky! Has a RETURNING clause
-		try (Query u = c.query(UNLOCK_LOCKED_USERS)) {
+		try (var u = c.query(UNLOCK_LOCKED_USERS)) {
 			assertEquals(1, u.getNumArguments());
 			assertSetEquals(set("user_name"), u.getRowColumnNames());
 			c.transaction(() -> {
@@ -498,7 +496,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void deleteUser() {
 		assumeWritable(c);
-		try (Update u = c.update(DELETE_USER)) {
+		try (var u = c.update(DELETE_USER)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_USER));
@@ -509,7 +507,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setUserTrust() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_USER_TRUST)) {
+		try (var u = c.update(SET_USER_TRUST)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(TrustLevel.BASIC, NO_USER));
@@ -520,7 +518,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setUserLocked() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_USER_LOCKED)) {
+		try (var u = c.update(SET_USER_LOCKED)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_USER));
@@ -531,7 +529,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setUserDisabled() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_USER_DISABLED)) {
+		try (var u = c.update(SET_USER_DISABLED)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(false, NO_USER));
@@ -542,7 +540,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setUserPass() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_USER_PASS)) {
+		try (var u = c.update(SET_USER_PASS)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call("*", NO_USER));
@@ -553,7 +551,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void setUserName() {
 		assumeWritable(c);
-		try (Update u = c.update(SET_USER_NAME)) {
+		try (var u = c.update(SET_USER_NAME)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_NAME, NO_USER));
@@ -564,7 +562,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void createUser() {
 		assumeWritable(c);
-		try (Update u = c.update(CREATE_USER)) {
+		try (var u = c.update(CREATE_USER)) {
 			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was userless; this makes one
@@ -577,7 +575,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void createGroup() {
 		assumeWritable(c);
-		try (Update u = c.update(CREATE_GROUP)) {
+		try (var u = c.update(CREATE_GROUP)) {
 			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was groupless; this makes one
@@ -589,7 +587,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void createGroupIfNotExists() {
 		assumeWritable(c);
-		try (Update u = c.update(CREATE_GROUP_IF_NOT_EXISTS)) {
+		try (var u = c.update(CREATE_GROUP_IF_NOT_EXISTS)) {
 			assertEquals(3, u.getNumArguments());
 			c.transaction(() -> {
 				// DB was groupless; this makes one
@@ -603,7 +601,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void updateGroup() {
 		assumeWritable(c);
-		try (Query u = c.query(UPDATE_GROUP)) {
+		try (var u = c.query(UPDATE_GROUP)) {
 			assertEquals(3, u.getNumArguments());
 			assertSetEquals(
 					set("group_id", "group_name", "quota", "group_type"),
@@ -617,7 +615,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void deleteGroup() {
 		assumeWritable(c);
-		try (Query u = c.query(DELETE_GROUP)) {
+		try (var u = c.query(DELETE_GROUP)) {
 			assertEquals(1, u.getNumArguments());
 			assertSetEquals(set("group_name"), u.getRowColumnNames());
 			c.transaction(() -> {
@@ -629,7 +627,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void addUserToGroup() {
 		assumeWritable(c);
-		try (Update u = c.update(ADD_USER_TO_GROUP)) {
+		try (var u = c.update(ADD_USER_TO_GROUP)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				// Can't do this; neither exists
@@ -641,7 +639,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void removeUserFromGroup() {
 		assumeWritable(c);
-		try (Update u = c.update(REMOVE_USER_FROM_GROUP)) {
+		try (var u = c.update(REMOVE_USER_FROM_GROUP)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_USER, NO_GROUP));
@@ -653,14 +651,14 @@ class DMLTest extends SQLQueries {
 	void synchGroups() {
 		// Compound test: these statements are designed to be used together
 		assumeWritable(c);
-		try (Update u1 = c.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
+		try (var u1 = c.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
 			c.transaction(() -> {
 				assertEquals(0, u1.getNumArguments());
 				u1.call();
-				try (Update u2 = c.update(GROUP_SYNC_INSERT_TEMP_ROW);
-						Update u3 = c.update(GROUP_SYNC_ADD_GROUPS);
-						Update u4 = c.update(GROUP_SYNC_REMOVE_GROUPS);
-						Update u5 = c.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
+				try (var u2 = c.update(GROUP_SYNC_INSERT_TEMP_ROW);
+						var u3 = c.update(GROUP_SYNC_ADD_GROUPS);
+						var u4 = c.update(GROUP_SYNC_REMOVE_GROUPS);
+						var u5 = c.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
 					assertEquals(2, u2.getNumArguments());
 					assertEquals(1, u3.getNumArguments());
 					assertEquals(1, u4.getNumArguments());
@@ -677,7 +675,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void insertBoardReport() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_BOARD_REPORT)) {
+		try (var u = c.update(INSERT_BOARD_REPORT)) {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(
@@ -689,7 +687,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void deleteJobRecord() {
 		assumeWritable(c);
-		try (Update u = c.update(DELETE_JOB_RECORD)) {
+		try (var u = c.update(DELETE_JOB_RECORD)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_JOB));
@@ -700,7 +698,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void deleteAllocRecord() {
 		assumeWritable(c);
-		try (Update u = c.update(DELETE_ALLOC_RECORD)) {
+		try (var u = c.update(DELETE_ALLOC_RECORD)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_ALLOC));
@@ -711,7 +709,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void copyAllocsToHistoricalData() {
 		assumeWritable(c);
-		try (Query q = c.query(copyAllocsToHistoricalData)) {
+		try (var q = c.query(copyAllocsToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("alloc_id"), q.getRowColumnNames());
 			c.transaction(() -> {
@@ -723,7 +721,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void copyJobsToHistoricalData() {
 		assumeWritable(c);
-		try (Query q = c.query(copyJobsToHistoricalData)) {
+		try (var q = c.query(copyJobsToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
@@ -735,7 +733,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void clearStuckPending() {
 		assumeWritable(c);
-		try (Update u = c.update(CLEAR_STUCK_PENDING)) {
+		try (var u = c.update(CLEAR_STUCK_PENDING)) {
 			assertEquals(0, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call());

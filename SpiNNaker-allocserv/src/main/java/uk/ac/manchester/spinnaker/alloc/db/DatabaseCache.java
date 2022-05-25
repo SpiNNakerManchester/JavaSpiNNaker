@@ -92,7 +92,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 		}
 		if (isLongTermThread()) {
 			// Special case for the main thread
-			Thread t = currentThread();
+			var t = currentThread();
 			getRuntime().addShutdownHook(new Thread(() -> {
 				closeDatabaseConnection(connection, t);
 			}, "database closer for " + t));
@@ -155,7 +155,7 @@ abstract class DatabaseCache<Conn extends Connection> {
 	private void shutdown() {
 		log.info("waiting for all database connections to close");
 		long before = currentTimeMillis();
-		for (CloserThread t : new ArrayList<>(closerThreads)) {
+		for (var t : new ArrayList<>(closerThreads)) {
 			try {
 				t.join();
 			} catch (InterruptedException ignored) {

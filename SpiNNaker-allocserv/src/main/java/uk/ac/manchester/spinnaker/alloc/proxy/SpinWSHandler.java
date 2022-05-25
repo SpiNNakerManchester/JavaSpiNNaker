@@ -50,7 +50,6 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.util.UriTemplate;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.ProxyProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
@@ -108,7 +107,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	@PostConstruct
 	private void initLocalHost() throws UnknownHostException {
-		ProxyProperties props = properties.getProxy();
+		var props = properties.getProxy();
 		if (!props.getLocalHost().isEmpty()) {
 			this.localHost = InetAddress.getByName(props.getLocalHost());
 		}
@@ -190,7 +189,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 *         details of it (owner or admin).
 	 */
 	private Optional<Job> getJob(int jobId) {
-		Permit permit = new Permit(SecurityContextHolder.getContext());
+		var permit = new Permit(SecurityContextHolder.getContext());
 		// How to look up a job; the permit is needed!
 		return permit.authorize(() -> spallocCore.getJob(permit, jobId));
 	}
@@ -214,7 +213,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 *             If the job doesn't have an allocated machine
 	 */
 	protected final void initProxyCore(WebSocketSession session, Job job) {
-		ProxyCore proxy = job.getMachine()
+		var proxy = job.getMachine()
 				.map(machine -> new ProxyCore(session, machine.getConnections(),
 						executor, idIssuer::issueId,
 						properties.getProxy().isLogWriteCounts(), localHost))
@@ -304,11 +303,11 @@ abstract class Utils {
 	 */
 	static Optional<String> getFieldFromTemplate(UriTemplate template,
 			URI uri, String key) {
-		Map<String, String> templateResults = template.match(uri.getPath());
+		var templateResults = template.match(uri.getPath());
 		if (templateResults == null) {
 			return Optional.empty();
 		}
-		String val = templateResults.get(key);
+		var val = templateResults.get(key);
 		return Optional.ofNullable(val);
 	}
 

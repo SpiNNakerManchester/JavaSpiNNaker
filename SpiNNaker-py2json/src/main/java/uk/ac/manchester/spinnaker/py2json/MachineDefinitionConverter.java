@@ -86,7 +86,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof XYZ) {
-				XYZ other = (XYZ) obj;
+				var other = (XYZ) obj;
 				return x == other.x && y == other.y && z == other.z;
 			}
 			return false;
@@ -125,7 +125,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof CF) {
-				CF other = (CF) obj;
+				var other = (CF) obj;
 				return c == other.c && f == other.f;
 			}
 			return false;
@@ -169,7 +169,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof CFB) {
-				CFB other = (CFB) obj;
+				var other = (CFB) obj;
 				return c == other.c && f == other.f && b == other.b;
 			}
 			return false;
@@ -336,7 +336,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	public MachineDefinitionConverter() {
 		initialize(null, null);
 		sys = new PySystemState();
-		File enumPy = new File(
+		var enumPy = new File(
 				getClass().getClassLoader().getResource("enum.py").getFile());
 		sys.path.append(new PyString(enumPy.getParent()));
 	}
@@ -361,9 +361,9 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	 */
 	public Configuration loadClassicConfigurationDefinition(File definitionFile,
 			boolean doCd) {
-		String what = definitionFile.getAbsolutePath();
-		String cwd = getProperty("user.dir");
-		try (PythonInterpreter py = new PythonInterpreter(null, sys)) {
+		var what = definitionFile.getAbsolutePath();
+		var cwd = getProperty("user.dir");
+		try (var py = new PythonInterpreter(null, sys)) {
 			if (doCd) {
 				/*
 				 * Hack for Java 11 and later, where just changing user.dir is

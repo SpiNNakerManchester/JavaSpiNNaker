@@ -53,7 +53,6 @@ import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
@@ -61,7 +60,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
@@ -128,17 +126,17 @@ class V1TaskImpl extends V1CompatTask {
 
 	@PostConstruct
 	void initUser() {
-		CompatibilityProperties props = mainProps.getCompat();
+		var props = mainProps.getCompat();
 		permit = new Permit(props.getServiceUser());
 		groupName = props.getServiceGroup();
 	}
 
 	@Override
 	protected final void closeNotifiers() {
-		for (Future<Void> n : jobNotifiers.values()) {
+		for (var n : jobNotifiers.values()) {
 			n.cancel(true);
 		}
-		for (Future<Void> n : machNotifiers.values()) {
+		for (var n : machNotifiers.values()) {
 			n.cancel(true);
 		}
 	}
@@ -151,11 +149,11 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final JobMachineInfo getJobMachineInfo(int jobId)
 			throws TaskException {
-		Job job = getJob(jobId);
+		var job = getJob(jobId);
 		job.access(host());
-		SubMachine machine = job.getMachine()
+		var machine = job.getMachine()
 				.orElseThrow(() -> new TaskException("boards not allocated"));
-		JobMachineInfo jmi = new JobMachineInfo();
+		var jmi = new JobMachineInfo();
 		jmi.setMachineName(machine.getMachine().getName());
 		jmi.setBoards(machine.getBoards());
 		jmi.setConnections(machine.getConnections().stream()
@@ -168,9 +166,9 @@ class V1TaskImpl extends V1CompatTask {
 
 	@Override
 	protected final JobState getJobState(int jobId) throws TaskException {
-		Job job = getJob(jobId);
+		var job = getJob(jobId);
 		job.access(host());
-		JobState js = new JobState();
+		var js = new JobState();
 		js.setKeepalive(timestamp(job.getKeepaliveTimestamp()));
 		js.setKeepalivehost(job.getKeepaliveHost().orElse(""));
 		js.setPower(job.getMachine().map(m -> {
@@ -203,7 +201,7 @@ class V1TaskImpl extends V1CompatTask {
 		if (isNull(keepalive)) {
 			return mainProps.getCompat().getDefaultKeepalive();
 		}
-		Duration d = Duration.ofSeconds(keepalive.longValue());
+		var d = Duration.ofSeconds(keepalive.longValue());
 		if (!(keepalive instanceof Double || keepalive instanceof Float)) {
 			return d;
 		}
@@ -221,16 +219,16 @@ class V1TaskImpl extends V1CompatTask {
 	 * @return The list of tags. Never {@code null}.
 	 */
 	private static List<String> tags(Object src, boolean mayForceDefault) {
-		List<String> vals = new ArrayList<>();
+		var vals = new ArrayList<String>();
 		if (src instanceof List) {
-			for (Object o : (List<?>) src) {
+			for (var o : (List<?>) src) {
 				vals.add(Objects.toString(o));
 			}
 		} else if (src instanceof String) {
 			vals.add((String) src);
 		}
 		if (vals.isEmpty() && mayForceDefault) {
-			vals = asList("default");
+			return asList("default");
 		}
 		return vals;
 	}
@@ -255,14 +253,13 @@ class V1TaskImpl extends V1CompatTask {
 
 	private Optional<Integer> createJob(SpallocAPI.CreateDescriptor create,
 			Map<String, Object> kwargs, byte[] cmd) {
-		String owner = kwargs.get("owner").toString();
-		Integer maxDead = parseDec(kwargs.get("max_dead_boards"));
-		Duration keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
-		String machineName = (String) kwargs.get("machine");
-		List<String> ts = tags(kwargs.get("tags"), isNull(machineName));
-		Optional<Job> result =
-				permit.authorize(() -> spalloc.createJob(permit.name, groupName,
-						create, machineName, ts, keepalive, maxDead, cmd));
+		var owner = kwargs.get("owner").toString();
+		var maxDead = parseDec(kwargs.get("max_dead_boards"));
+		var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
+		var machineName = (String) kwargs.get("machine");
+		var ts = tags(kwargs.get("tags"), isNull(machineName));
+		var result = permit.authorize(() -> spalloc.createJob(permit.name,
+				groupName, create, machineName, ts, keepalive, maxDead, cmd));
 		result.ifPresent(
 				j -> log.info(
 						"made compatibility-mode job {} "
@@ -394,11 +391,11 @@ class V1TaskImpl extends V1CompatTask {
 	protected final void notifyJob(Integer jobId, boolean wantNotify)
 			throws TaskException {
 		if (nonNull(jobId)) {
-			Job job = getJob(jobId);
+			var job = getJob(jobId);
 			job.access(host());
 		}
 		manageNotifier(jobNotifiers, jobId, wantNotify, () -> {
-			List<Integer> actual = permit.authorize(() -> {
+			var actual = permit.authorize(() -> {
 				spalloc.getJobs(false, LOTS, 0).waitForChange(
 						mainProps.getCompat().getNotifyWaitTime());
 				return spalloc.getJobs(false, LOTS, 0).ids();
@@ -420,7 +417,7 @@ class V1TaskImpl extends V1CompatTask {
 		manageNotifier(machNotifiers, machine, wantNotify, () -> {
 			epochs.getMachineEpoch()
 					.waitForChange(mainProps.getCompat().getNotifyWaitTime());
-			List<String> actual = new ArrayList<>(permit
+			var actual = new ArrayList<>(permit
 					.authorize(() -> spalloc.getMachines(false)).keySet());
 			if (nonNull(machine)) {
 				actual.retainAll(singleton(machine));
@@ -432,7 +429,7 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final void powerJobBoards(int jobId, PowerState switchOn)
 			throws TaskException {
-		Job job = getJob(jobId);
+		var job = getJob(jobId);
 		job.access(host());
 		job.getMachine().orElseThrow(
 				() -> new TaskException("no boards currently allocated"))
@@ -459,13 +456,13 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	private static WhereIs makeWhereIs(BoardLocation bl) {
-		WhereIs wi = new WhereIs();
+		var wi = new WhereIs();
 		wi.setMachine(bl.getMachine());
 		wi.setLogical(bl.getLogical());
 		wi.setPhysical(bl.getPhysical());
 		wi.setChip(bl.getChip());
 		wi.setBoardChip(bl.getBoardChip());
-		Job j = bl.getJob();
+		var j = bl.getJob();
 		if (nonNull(j)) {
 			wi.setJobId(j.getId());
 			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().get()));
@@ -476,7 +473,7 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final WhereIs whereIsJobChip(int jobId, int x, int y)
 			throws TaskException {
-		Job job = getJob(jobId);
+		var job = getJob(jobId);
 		job.access(host());
 		return job.whereIs(x, y).map(V1TaskImpl::makeWhereIs).orElseThrow(
 				() -> new TaskException("no boards currently allocated"));
@@ -526,7 +523,7 @@ class V1TaskImpl extends V1CompatTask {
 				notifiers.put(key, getExecutor().submit(notifier));
 			}
 		} else {
-			Future<Void> n = notifiers.remove(key);
+			var n = notifiers.remove(key);
 			if (nonNull(n)) {
 				n.cancel(true);
 			}

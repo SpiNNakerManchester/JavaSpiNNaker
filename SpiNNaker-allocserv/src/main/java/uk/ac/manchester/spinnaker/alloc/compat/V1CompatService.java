@@ -92,8 +92,8 @@ public class V1CompatService {
 	public V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
-		ThreadGroup group = new ThreadGroup("spalloc-legacy-service");
-		ValueHolder<Integer> counter = new ValueHolder<>(1);
+		var group = new ThreadGroup("spalloc-legacy-service");
+		var counter = new ValueHolder<>(1);
 		threadFactory = r -> new Thread(group, r,
 				"spalloc-legacy-" + counter.update(i -> i + 1));
 	}
@@ -128,7 +128,7 @@ public class V1CompatService {
 
 	@PostConstruct
 	private void open() throws IOException {
-		CompatibilityProperties props = mainProps.getCompat();
+		var props = mainProps.getCompat();
 		if (props.getThreadPoolSize() > 0) {
 			executor = newFixedThreadPool(props.getThreadPoolSize(),
 					threadFactory);
@@ -137,8 +137,7 @@ public class V1CompatService {
 		}
 
 		if (props.isEnable()) {
-			InetSocketAddress addr =
-					new InetSocketAddress(props.getHost(), props.getPort());
+			var addr = new InetSocketAddress(props.getHost(), props.getPort());
 			serv = new ServerSocket();
 			serv.bind(addr);
 			servThread = threadFactory.newThread(this::acceptConnections);
@@ -202,7 +201,7 @@ public class V1CompatService {
 	 */
 	private boolean acceptConnection() {
 		try {
-			V1CompatTask service = getTask(serv.accept());
+			var service = getTask(serv.accept());
 			executor.execute(() -> service.handleConnection());
 		} catch (SocketException e) {
 			// Check here; interrupt = shutting down = no errors, please

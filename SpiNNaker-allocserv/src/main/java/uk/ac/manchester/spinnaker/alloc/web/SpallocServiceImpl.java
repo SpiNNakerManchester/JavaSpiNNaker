@@ -37,13 +37,11 @@ import static uk.ac.manchester.spinnaker.utils.OptionalUtils.ifElse;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -57,15 +55,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.KeepaliveProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDescriptor;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensionsAt;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Jobs;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
@@ -107,7 +101,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Override
 	public ServiceDescription describeService(UriInfo ui, SecurityContext sec,
 			HttpServletRequest req) {
-		CsrfToken token = (CsrfToken) req.getAttribute("_csrf");
+		var token = (CsrfToken) req.getAttribute("_csrf");
 		return new ServiceDescription(version.getVersion(), ui, sec, token);
 	}
 
@@ -118,8 +112,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	@Override
 	public MachineAPI getMachine(String name, UriInfo ui, SecurityContext sec) {
-		Permit permit = new Permit(sec);
-		Machine machine = core.getMachine(name, permit.admin)
+		var permit = new Permit(sec);
+		var machine = core.getMachine(name, permit.admin)
 				.orElseThrow(() -> new NotFound("no such machine"));
 		// Wrap so we can use security annotations
 		return machineFactory.getObject(machine, ui);
@@ -128,8 +122,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Override
 	public JobAPI getJob(int id, UriInfo ui, HttpServletRequest req,
 			SecurityContext security) {
-		Permit permit = new Permit(security);
-		Job j = core.getJob(permit, id)
+		var permit = new Permit(security);
+		var j = core.getJob(permit, id)
 				.orElseThrow(() -> new NotFound("no such job"));
 		// Wrap so we can use security annotations
 		return jobFactory.getObject(j, req.getRemoteHost(), permit, ui);
@@ -141,31 +135,27 @@ public class SpallocServiceImpl extends BackgroundSupport
 	/**
 	 * Adds in the {@code Link:} header with general paging info.
 	 *
-	 * @param value
-	 *            The core response.
-	 * @param ui
-	 *            Information about URIs
-	 * @param start
-	 *            The start offset.
-	 * @param limit
-	 *            The size of chunk.
+	 * @param value The core response.
+	 * @param ui    Information about URIs
+	 * @param start The start offset.
+	 * @param limit The size of chunk.
 	 * @return Annotated response.
 	 */
 	private Response wrapPaging(ListJobsResponse value, UriInfo ui, int start,
 			int limit) {
-		ResponseBuilder r = ok(value);
-		Map<String, URI> links = new HashMap<>();
+		var r = ok(value);
+		var links = new HashMap<String, URI>();
 		if (start > 0) {
-			URI prev = ui.getRequestUriBuilder()
+			var prev = ui.getRequestUriBuilder()
 					.replaceQueryParam("wait", false)
 					.replaceQueryParam("start", max(start - limit, 0)).build();
 			value.setPrev(prev);
 			links.put("prev", prev);
 		}
 		if (value.jobs.size() == limit) {
-			URI next =
-					ui.getRequestUriBuilder().replaceQueryParam("wait", false)
-							.replaceQueryParam("start", start + limit).build();
+			var next = ui.getRequestUriBuilder()
+					.replaceQueryParam("wait", false)
+					.replaceQueryParam("start", start + limit).build();
 			value.setNext(next);
 			links.put("next", next);
 		}
@@ -186,12 +176,12 @@ public class SpallocServiceImpl extends BackgroundSupport
 		if (start < 0) {
 			throw new BadArgs("start must not be less than 0");
 		}
-		Jobs jc = core.getJobs(destroyed, limit, start);
+		var jc = core.getJobs(destroyed, limit, start);
 		if (wait) {
 			bgAction(response, () -> {
 				log.debug("starting wait for change of job list");
 				jc.waitForChange(properties.getWait());
-				Jobs newJc = core.getJobs(destroyed, limit, start);
+				var newJc = core.getJobs(destroyed, limit, start);
 				return wrapPaging(new ListJobsResponse(newJc, ui), ui, start,
 						limit);
 			});
@@ -211,8 +201,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 	@Override
 	public void createJob(CreateJobRequest req, UriInfo ui,
 			SecurityContext security, AsyncResponse response) {
-		CreateDescriptor crds =
-				validateAndApplyDefaultsToJobRequest(req, security);
+		var crds = validateAndApplyDefaultsToJobRequest(req, security);
 
 		// Async because it involves getting a write lock
 		bgAction(response, () -> ifElse(
@@ -243,7 +232,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 		req.owner = req.owner.trim();
 
-		KeepaliveProperties ka = properties.getKeepalive();
+		var ka = properties.getKeepalive();
 		if (isNull(req.keepaliveInterval)
 				|| req.keepaliveInterval.compareTo(ka.getMin()) < 0) {
 			throw new BadArgs(

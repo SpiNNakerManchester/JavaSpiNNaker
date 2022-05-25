@@ -26,7 +26,6 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.exists;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -54,7 +53,6 @@ import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseable
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -283,7 +281,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	}
 
 	static Set<String> columnNames(ResultSetMetaData md) throws SQLException {
-		Set<String> names = new LinkedHashSet<>();
+		var names = new LinkedHashSet<String>();
 		for (int i = 1; i <= md.getColumnCount(); i++) {
 			names.add(md.getColumnName(i));
 		}
@@ -295,8 +293,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		threadFactory.setTerminationCallback(this::optimiseDB);
 		setupConfig();
 		// Check that the connection is correct
-		try (Connection conn = getConnection();
-				Query countMovements = conn.query(COUNT_MOVEMENTS)) {
+		try (var conn = getConnection();
+				var countMovements = conn.query(COUNT_MOVEMENTS)) {
 			int numMovements = conn.transaction(false,
 					() -> countMovements.call1().map(integer("c"))).orElse(-1);
 			if (numMovements != EXPECTED_NUM_MOVEMENTS) {
@@ -447,7 +445,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 
 		int nArgs = -1;
-		ArgumentCount c = findAnnotation(func.getClass(), ArgumentCount.class);
+		var c = findAnnotation(func.getClass(), ArgumentCount.class);
 		if (nonNull(c)) {
 			nArgs = c.value();
 		}
@@ -488,7 +486,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			throw mapException(e, null);
 		}
 		// Note that we don't close the wrapper; this is deliberate!
-		Connection wrapper = new Connection(conn);
+		var wrapper = new Connection(conn);
 		synchronized (this) {
 			wrapper.transaction(true, () -> {
 				wrapper.exec(sqlDDLFile);
@@ -514,7 +512,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * @see #schemaUpdates
 	 */
 	private void execSchemaUpdates(Connection wrapper) {
-		for (Resource r : schemaUpdates) {
+		for (var r : schemaUpdates) {
 			try {
 				wrapper.exec(r);
 				log.info("applied schema update from {}", r);
@@ -534,13 +532,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private void prepareConnectionForService(SQLiteConnection conn)
 			throws SQLException {
-		for (Entry<String, Function> func : functions.entrySet()) {
+		for (var func : functions.entrySet()) {
 			log.debug("installing function from bean '{}'", func.getKey());
 			installFunction(conn, func.getKey(), func.getValue());
 		}
 		log.debug("attaching historical job DB ({})", tombstoneFile);
-		try (PreparedStatement s =
-				conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
+		try (var s = conn.prepareStatement("ATTACH DATABASE ? AS tombstone")) {
 			s.setString(1, tombstoneFile);
 			s.execute();
 		}
@@ -566,8 +563,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	SQLiteConnection openDatabaseConnection() {
 		log.debug("opening database connection {}", dbConnectionUrl);
 		try {
-			SQLiteConnection conn =
-					(SQLiteConnection) config.createConnection(dbConnectionUrl);
+			var conn = (SQLiteConnection) config
+					.createConnection(dbConnectionUrl);
 			prepareConnectionForService(conn);
 			return conn;
 		} catch (SQLException e) {
@@ -595,7 +592,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		try {
 			long start = currentTimeMillis();
 			// NB: Not a standard query! Safe, because we know we have an int
-			try (Connection conn = getConnection()) {
+			try (var conn = getConnection()) {
 				conn.unwrap(SQLiteConnection.class).setBusyTimeout(0);
 				conn.transaction(true, () -> {
 					conn.exec(format(OPTIMIZE_DB, props.getAnalysisLimit()));
@@ -677,7 +674,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 */
 			Locker(boolean lockForWriting) {
 				noteThreshold = props.getLockNoteThreshold().toNanos();
-				Lock l = getLock(lockForWriting);
+				var l = getLock(lockForWriting);
 				currentLock = l;
 				isLockedForWrites = lockForWriting;
 				lockingContext = getDebugContext();
@@ -831,7 +828,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public <T> T transaction(boolean lockForWriting,
 				TransactedWithResult<T> operation) {
-			Object context = getDebugContext();
+			var context = getDebugContext();
 			if (inTransaction) {
 				if (lockForWriting && !isLockedForWrites) {
 					log.warn("attempt to upgrade lock: {}", context);
@@ -845,11 +842,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				if (log.isDebugEnabled()) {
 					log.debug("start transaction: {}", context);
 				}
-				try (Locker locker = new Locker(lockForWriting)) {
+				try (var locker = new Locker(lockForWriting)) {
 					realBegin(lockForWriting ? IMMEDIATE : DEFERRED);
 					boolean done = false;
-					try (Hold hold = new Hold()) {
-						T result = operation.act();
+					try (var hold = new Hold()) {
+						var result = operation.act();
 						log.debug("commence commit: {}", context);
 						realCommit();
 						done = true;
@@ -886,7 +883,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 		private void cantWarning(String op, DataAccessException e) {
 			if (e.getMostSpecificCause() instanceof SQLiteException) {
-				SQLiteException ex = (SQLiteException) e.getMostSpecificCause();
+				var ex = (SQLiteException) e.getMostSpecificCause();
 				if (ex.getMessage().contains(
 						"cannot " + op + " - no transaction is active")) {
 					log.warn(
@@ -901,15 +898,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * Create a new query. Usage pattern:
 		 * <pre>
-		 * try (Query q = conn.query(SQL_SELECT)) {
-		 *     for (Row row : u.call(argument1, argument2)) {
+		 * try (var q = conn.query(SQL_SELECT)) {
+		 *     for (var row : u.call(argument1, argument2)) {
 		 *         // Do something with the row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (Query q = conn.query(SQL_SELECT)) {
+		 * try (var q = conn.query(SQL_SELECT)) {
 		 *     u.call(argument1, argument2).forEach(row -&gt; {
 		 *         // Do something with the row
 		 *     });
@@ -932,15 +929,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * Create a new query. Usage pattern:
 		 * <pre>
-		 * try (Query q = conn.query(SQL_SELECT)) {
-		 *     for (Row row : u.call(argument1, argument2)) {
+		 * try (var q = conn.query(SQL_SELECT)) {
+		 *     for (var row : u.call(argument1, argument2)) {
 		 *         // Do something with the row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (Query q = conn.query(SQL_SELECT)) {
+		 * try (var q = conn.query(SQL_SELECT)) {
 		 *     u.call(argument1, argument2).forEach(row -&gt; {
 		 *         // Do something with the row
 		 *     });
@@ -965,15 +962,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * Create a new query.
 		 * <pre>
-		 * try (Query q = conn.query(sqlSelectResource)) {
-		 *     for (Row row : u.call(argument1, argument2)) {
+		 * try (var q = conn.query(sqlSelectResource)) {
+		 *     for (var row : u.call(argument1, argument2)) {
 		 *         // Do something with the row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (Query q = conn.query(sqlSelectResource)) {
+		 * try (var q = conn.query(sqlSelectResource)) {
 		 *     u.call(argument1, argument2).forEach(row -&gt; {
 		 *         // Do something with the row
 		 *     });
@@ -996,15 +993,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * Create a new query.
 		 * <pre>
-		 * try (Query q = conn.query(sqlSelectResource)) {
-		 *     for (Row row : u.call(argument1, argument2)) {
+		 * try (var q = conn.query(sqlSelectResource)) {
+		 *     for (var row : u.call(argument1, argument2)) {
 		 *         // Do something with the row
 		 *     }
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (Query q = conn.query(sqlSelectResource)) {
+		 * try (var q = conn.query(sqlSelectResource)) {
 		 *     u.call(argument1, argument2).forEach(row -&gt; {
 		 *         // Do something with the row
 		 *     });
@@ -1030,21 +1027,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * Create a new update. Usage pattern:
 		 * <pre>
-		 * try (Update u = conn.update(SQL_UPDATE)) {
+		 * try (var u = conn.update(SQL_UPDATE)) {
 		 *     int numRows = u.call(argument1, argument2);
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (Update u = conn.update(SQL_INSERT)) {
-		 *     for (Integer key : u.keys(argument1, argument2)) {
+		 * try (var u = conn.update(SQL_INSERT)) {
+		 *     for (var key : u.keys(argument1, argument2)) {
 		 *         // Do something with the key
 		 *     }
 		 * }
 		 * </pre>
 		 * or even:
 		 * <pre>
-		 * try (Update u = conn.update(SQL_INSERT)) {
+		 * try (var u = conn.update(SQL_INSERT)) {
 		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
 		 *         // Do something with the key
 		 *     });
@@ -1071,21 +1068,21 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		/**
 		 * Create a new update.
 		 * <pre>
-		 * try (Update u = conn.update(sqlUpdateResource)) {
+		 * try (var u = conn.update(sqlUpdateResource)) {
 		 *     int numRows = u.call(argument1, argument2);
 		 * }
 		 * </pre>
 		 * or:
 		 * <pre>
-		 * try (Update u = conn.update(sqlInsertResource)) {
-		 *     for (Integer key : u.keys(argument1, argument2)) {
+		 * try (var u = conn.update(sqlInsertResource)) {
+		 *     for (var key : u.keys(argument1, argument2)) {
 		 *         // Do something with the key
 		 *     }
 		 * }
 		 * </pre>
 		 * or even:
 		 * <pre>
-		 * try (Update u = conn.update(sqlInsertResource)) {
+		 * try (var u = conn.update(sqlInsertResource)) {
 		 *     u.key(argument1, argument2).ifPresent(key -&gt; {
 		 *         // Do something with the key
 		 *     });
@@ -1119,7 +1116,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 */
 		public void exec(String sql) {
 			checkInTransaction(true);
-			try (Statement s = createStatement()) {
+			try (var s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
 				s.executeUpdate(sql);
 				/*
@@ -1169,17 +1166,17 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	public Connection getConnection() {
 		if (isNull(dbPath)) {
 			// In-memory DB (dbPath null) always must be initialised
-			SQLiteConnection conn = openDatabaseConnection();
+			var conn = openDatabaseConnection();
 			initDBConn(conn);
 			return new Connection(threadBound(conn));
 		}
 		synchronized (this) {
 			if (threadCacheConnections && !isLongTermThread()) {
-				SQLiteConnection conn = getCachedDatabaseConnection();
+				var conn = getCachedDatabaseConnection();
 				maybeInit(conn);
 				return new Connection(uncloseableThreadBound(conn));
 			} else {
-				SQLiteConnection conn = openDatabaseConnection();
+				var conn = openDatabaseConnection();
 				maybeInit(conn);
 				return new Connection(threadBound(conn));
 			}
@@ -1202,7 +1199,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *            The backup file to create.
 	 */
 	public void createBackup(File backupFilename) {
-		try (SQLiteConnection conn = getCachedDatabaseConnection()) {
+		try (var conn = getCachedDatabaseConnection()) {
 			conn.getDatabase().backup(MAIN_DB_NAME,
 					backupFilename.getAbsolutePath(),
 					(remaining, pageCount) -> log.info(
@@ -1229,7 +1226,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 							+ "\" doesn't exist or isn't a readable file",
 					new FileNotFoundException(backupFilename.toString()));
 		}
-		try (SQLiteConnection conn = getCachedDatabaseConnection()) {
+		try (var conn = getCachedDatabaseConnection()) {
 			conn.getDatabase().restore(MAIN_DB_NAME,
 					backupFilename.getAbsolutePath(),
 					(remaining, pageCount) -> log.info(
@@ -1249,26 +1246,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		return dbPath;
 	}
 
-	private static final Set<String> FILTERED_CLASSES;
+	private static final Set<String> FILTERED_CLASSES = Set.of(
+			Query.class.getName(), Update.class.getName(),
+			Connection.class.getName(), DatabaseAwareBean.class.getName(),
+			"uk.ac.manchester.spinnaker.alloc.bmp."
+					+ "BMPController$AbstractSQL");
 
-	private static final Set<String> FILTERED_PREFIXES;
-
-	static {
-		Set<String> filteredPrefixes = new HashSet<>();
-		filteredPrefixes.add("java");
-		filteredPrefixes.add("javax");
-		filteredPrefixes.add("sun");
-		FILTERED_PREFIXES = unmodifiableSet(filteredPrefixes);
-
-		Set<String> filteredClasses = new HashSet<>();
-		filteredClasses.add(Query.class.getName());
-		filteredClasses.add(Update.class.getName());
-		filteredClasses.add(Connection.class.getName());
-		filteredClasses.add(DatabaseAwareBean.class.getName());
-		filteredClasses.add("uk.ac.manchester.spinnaker.alloc.bmp."
-				+ "BMPController$AbstractSQL");
-		FILTERED_CLASSES = unmodifiableSet(filteredClasses);
-	}
+	private static final Set<String> FILTERED_PREFIXES = Set.of(//
+			"java", "javax", "sun");
 
 	/**
 	 * Get the stack frame description of the caller of the of the transaction.
@@ -1280,9 +1265,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private static StackTraceElement getCaller() {
 		boolean found = false;
-		for (StackTraceElement frame : currentThread().getStackTrace()) {
-			String name = frame.getClassName();
-			String first = name.substring(0, max(0, name.indexOf('.')));
+		for (var frame : currentThread().getStackTrace()) {
+			var name = frame.getClassName();
+			var first = name.substring(0, max(0, name.indexOf('.')));
 			if (FILTERED_PREFIXES.contains(first)) {
 				continue;
 			}
@@ -1312,7 +1297,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *             contained code.
 	 */
 	public void executeVoid(boolean lockForWriting, Connected operation) {
-		try (Connection conn = getConnection()) {
+		try (var conn = getConnection()) {
 			conn.transaction(lockForWriting, () -> {
 				operation.act(conn);
 				return this;
@@ -1357,7 +1342,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	public <T> T execute(boolean lockForWriting,
 			ConnectedWithResult<T> operation) {
-		try (Connection conn = getConnection()) {
+		try (var conn = getConnection()) {
 			return conn.transaction(lockForWriting, () -> operation.act(conn));
 		}
 	}
@@ -1460,8 +1445,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				return queryCache.get(resource);
 			}
 		}
-		try (InputStream is = resource.getInputStream()) {
-			String s = IOUtils.toString(is, UTF_8);
+		try (var is = resource.getInputStream()) {
+			var s = IOUtils.toString(is, UTF_8);
 			synchronized (queryCache) {
 				// Not really a problem if it is put in twice
 				queryCache.put(resource, s);
@@ -1528,7 +1513,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			s.clearParameters();
 
 			int idx = 0;
-			for (Object arg : arguments) {
+			for (var arg : arguments) {
 				// The classes we augment the DB driver with
 				if (arg instanceof Optional) {
 					// Unpack one layer of Optional only; absent = NULL

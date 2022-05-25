@@ -31,8 +31,6 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
@@ -92,7 +90,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 */
 		public boolean getState() {
 			return execute(false, conn -> {
-				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
+				try (var q = conn.query(GET_FUNCTIONING_FIELD)) {
 					return q.call1(id).map(bool("functioning")).orElse(false);
 				}
 			});
@@ -100,7 +98,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 		public void setState(boolean newValue) {
 			execute(conn -> {
-				try (Update u = conn.update(SET_FUNCTIONING_FIELD)) {
+				try (var u = conn.update(SET_FUNCTIONING_FIELD)) {
 					return u.call(newValue, id);
 				}
 			});
@@ -109,7 +107,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** @return What job has been allocated to the board? */
 		public Optional<Integer> getAllocatedJob() {
 			return execute(false, conn -> {
-				try (Query q = conn.query(GET_BOARD_JOB)) {
+				try (var q = conn.query(GET_BOARD_JOB)) {
 					return q.call1(id).map(integer("allocated_job"));
 				}
 			});
@@ -118,7 +116,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** @return Is the board switched on? */
 		public boolean getPower() {
 			return execute(false, conn -> {
-				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
+				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
 					return q.call1(id).map(bool("board_power")).orElse(false);
 				}
 			});
@@ -127,7 +125,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** @return When was the board last switched on? */
 		public Optional<Instant> getPowerOnTime() {
 			return execute(false, conn -> {
-				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
+				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
 					return q.call1(id).map(instant("power_on_timestamp"));
 				}
 			});
@@ -136,7 +134,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** @return When was the board last switched off? */
 		public Optional<Instant> getPowerOffTime() {
 			return execute(false, conn -> {
-				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
+				try (var q = conn.query(GET_BOARD_POWER_INFO)) {
 					return q.call1(id).map(instant("power_off_timestamp"));
 				}
 			});
@@ -145,7 +143,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** @return What issues have been logged against the board? */
 		public List<BoardIssueReport> getReports() {
 			return execute(false, conn -> {
-				try (Query q = conn.query(GET_BOARD_REPORTS)) {
+				try (var q = conn.query(GET_BOARD_REPORTS)) {
 					return q.call(id).map(BoardIssueReport::new).toList();
 				}
 			});
@@ -162,7 +160,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<BoardState> findId(int id) {
 		return execute(false, conn -> {
-			try (Query q = conn.query(FIND_BOARD_BY_ID)) {
+			try (var q = conn.query(FIND_BOARD_BY_ID)) {
 				return q.call1(id).map(BoardState::new);
 			}
 		});
@@ -183,7 +181,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
 		return execute(false, conn -> {
-			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
+			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 				return q.call1(machine, x, y, z).map(BoardState::new);
 			}
 		});
@@ -205,7 +203,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public Optional<BoardState> findPhysical(String machine, int c, int f,
 			int b) {
 		return execute(false, conn -> {
-			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
+			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 				return q.call1(machine, c, f, b).map(BoardState::new);
 			}
 		});
@@ -222,7 +220,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<BoardState> findIP(String machine, String address) {
 		return execute(false, conn -> {
-			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
+			try (var q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				return q.call1(machine, address).map(BoardState::new);
 			}
 		});
@@ -233,12 +231,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public List<MachineTagging> getMachineTagging() {
 		return execute(false, conn -> {
-			try (Query getMachines = conn.query(GET_ALL_MACHINES);
-					Query getTags = conn.query(GET_TAGS)) {
-				List<MachineTagging> infos = new ArrayList<>();
+			try (var getMachines = conn.query(GET_ALL_MACHINES);
+					var getTags = conn.query(GET_TAGS)) {
+				var infos = new ArrayList<MachineTagging>();
 				getMachines.call(true).map(MachineTagging::new)
 						.forEach(infos::add);
-				for (MachineTagging t : infos) {
+				for (var t : infos) {
 					t.setTags(getTags.call(t.getId()).map(string("tag")));
 				}
 				return infos;
@@ -252,8 +250,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Map<String, List<BoardIssueReport>> getMachineReports() {
 		return execute(false, conn -> {
-			try (Query getMachines = conn.query(GET_ALL_MACHINES);
-					Query getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
+			try (var getMachines = conn.query(GET_ALL_MACHINES);
+					var getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
 				return getMachines.call(true).toMap(string("machine_name"),
 						machine -> getMachineReports
 								.call(machine.getInt("machine_id"))
@@ -274,14 +272,14 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public void updateTags(String machineName, Set<String> tags) {
 		execute(conn -> {
-			try (Query getMachine = conn.query(GET_NAMED_MACHINE);
-					Update deleteTags = conn.update(DELETE_MACHINE_TAGS);
-					Update addTag = conn.update(INSERT_TAG)) {
+			try (var getMachine = conn.query(GET_NAMED_MACHINE);
+					var deleteTags = conn.update(DELETE_MACHINE_TAGS);
+					var addTag = conn.update(INSERT_TAG)) {
 				int machineId = getMachine.call1(machineName, true).orElseThrow(
 						() -> new IllegalArgumentException("no such machine"))
 						.getInt("machine_id");
 				deleteTags.call(machineId);
-				for (String tag : tags) {
+				for (var tag : tags) {
 					addTag.call(machineId, tag);
 				}
 				return this; // Unimportant value
@@ -299,7 +297,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public void setMachineState(String machineName, boolean inService) {
 		execute(conn -> {
-			try (Update setState = conn.update(SET_MACHINE_STATE)) {
+			try (var setState = conn.update(SET_MACHINE_STATE)) {
 				setState.call(inService, machineName);
 				return this; // Unimportant value
 			}

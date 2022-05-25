@@ -24,7 +24,6 @@ import java.time.Instant;
 import org.springframework.lang.NonNull;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
 import uk.ac.manchester.spinnaker.storage.Parameter;
@@ -84,10 +83,10 @@ abstract class Cfg {
 
 	private static void makeMachine(Connection c, int width, int height,
 			int depth) {
-		try (Update u = c.update(INSERT_MACHINE)) {
+		try (var u = c.update(INSERT_MACHINE)) {
 			u.call(MACHINE, "foo", width, height, depth);
 		}
-		try (Update u = c.update(INSERT_BMP)) {
+		try (var u = c.update(INSERT_BMP)) {
 			u.call(BMP, MACHINE, BMP_ADDR, 1, 1);
 		}
 	}
@@ -119,13 +118,13 @@ abstract class Cfg {
 					+ "membership_id, user_id, group_id) VALUES (?, ?, ?)";
 
 	private static void makeUser(Connection c) {
-		try (Update u = c.update(INSERT_USER)) {
+		try (var u = c.update(INSERT_USER)) {
 			u.call(USER, "bar", BASIC, true);
 		}
-		try (Update u = c.update(INSERT_GROUP)) {
+		try (var u = c.update(INSERT_GROUP)) {
 			u.call(GROUP, "grill", INITIAL_QUOTA);
 		}
-		try (Update u = c.update(INSERT_MEMBER)) {
+		try (var u = c.update(INSERT_MEMBER)) {
 			u.call(MEMBERSHIP, USER, GROUP);
 		}
 	}
@@ -167,7 +166,7 @@ abstract class Cfg {
 		// A simple machine
 		makeMachine(c, 1, 1, 1);
 		// Add one board to the machine
-		try (Update u = c.update(INSERT_BOARD)) {
+		try (var u = c.update(INSERT_BOARD)) {
 			u.call(BOARD, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
 		}
 		// A disabled permission-less user with a quota
@@ -185,12 +184,12 @@ abstract class Cfg {
 		makeMachine(c, 1, 1, 3);
 		// Add three connected boards to the machine
 		int b0 = BOARD, b1 = BOARD + 1, b2 = BOARD + 2;
-		try (Update u = c.update(INSERT_BOARD)) {
+		try (var u = c.update(INSERT_BOARD)) {
 			u.call(b0, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
 			u.call(b1, "2.2.2.3", BMP, 1, MACHINE, 0, 0, 1, 8, 4, false);
 			u.call(b2, "2.2.2.4", BMP, 2, MACHINE, 0, 0, 2, 4, 8, false);
 		}
-		try (Update u = c.update(INSERT_LINK)) {
+		try (var u = c.update(INSERT_LINK)) {
 			u.call(b0, 0, b1, 3);
 			u.call(b0, 1, b2, 4);
 			u.call(b1, 2, b2, 5);
@@ -244,7 +243,7 @@ abstract class Cfg {
 	static int makeJob(Connection c, Integer root, @NonNull JobState state,
 			Integer size, Instant createTime, Instant allocateTime,
 			Instant deathTime, Duration keepalive, Instant keepaliveTime) {
-		try (Update u = c.update(INSERT_JOB)) {
+		try (var u = c.update(INSERT_JOB)) {
 			return u.key(MACHINE, USER, GROUP, root, state, createTime,
 					allocateTime, deathTime, size, keepalive, keepaliveTime)
 					.orElseThrow(

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
+import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
@@ -32,12 +33,10 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -124,7 +123,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		@Override
 		public String toString() {
-			return String.format("%dx%dx%d", width, height, depth);
+			return format("%dx%dx%d", width, height, depth);
 		}
 
 		public int getArea() {
@@ -152,7 +151,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		@Override
 		public String toString() {
-			return String.format("[%d,%d,%d]", x, y, z);
+			return format("[%d,%d,%d]", x, y, z);
 		}
 	}
 
@@ -352,10 +351,10 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	@Deprecated
 	boolean allocate(Connection conn) {
-		try (AllocSQL sql = new AllocSQL(conn)) {
+		try (var sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
-			for (Row row : sql.getTasks.call()) {
+			for (var row : sql.getTasks.call()) {
 				int id = row.getInt("req_id");
 				int importance = row.getInt("importance");
 				if (importance > maxImportance) {
@@ -365,8 +364,7 @@ public class AllocatorTask extends DatabaseAwareBean
 					// Too much of a span
 					continue;
 				}
-				JobState currentState =
-						row.getEnum("job_state", JobState.class);
+				var currentState = row.getEnum("job_state", JobState.class);
 				boolean handled = true;
 				try {
 					// Non-queued jobs should not have allocations done!
@@ -428,21 +426,21 @@ public class AllocatorTask extends DatabaseAwareBean
 	@Deprecated // INTERNAL
 	boolean expireJobs(Connection conn) {
 		boolean changed = false;
-		try (Query find = conn.query(FIND_EXPIRED_JOBS)) {
-			List<Integer> toKill = find.call().map(integer("job_id")).toList();
-			for (Integer id : toKill) {
+		try (var find = conn.query(FIND_EXPIRED_JOBS)) {
+			var toKill = find.call().map(integer("job_id")).toList();
+			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "keepalive expired");
 			}
 		}
-		try (Query find = conn.query(GET_LIVE_JOB_IDS)) {
-			List<Integer> toKill = new ArrayList<>();
-			for (Row row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
+		try (var find = conn.query(GET_LIVE_JOB_IDS)) {
+			var toKill = new ArrayList<Integer>();
+			for (var row : find.call(NUMBER_OF_JOBS_TO_QUOTA_CHECK, 0)) {
 				int jobId = row.getInt("job_id");
 				if (!quotaManager.mayLetJobContinue(jobId)) {
 					toKill.add(jobId);
 				}
 			}
-			for (Integer id : toKill) {
+			for (var id : toKill) {
 				changed |= destroyJob(conn, id, "quota exceeded");
 			}
 		}
@@ -458,8 +456,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			return;
 		}
 
-		try (Connection conn = getConnection()) {
-			Copied c = tombstone(conn);
+		try (var conn = getConnection()) {
+			var c = tombstone(conn);
 			log.info("tombstoning completed: "
 					+ "moved {} job records and {} allocation records",
 					c.numJobs(), c.numAllocs());
@@ -522,12 +520,12 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @return Description of the tombstoned IDs
 	 */
 	Copied tombstone(Connection conn) {
-		try (Query copyJobs = conn.query(copyJobsToHistoricalData);
-				Query copyAllocs = conn.query(copyAllocsToHistoricalData);
-				Update deleteJobs = conn.update(DELETE_JOB_RECORD);
-				Update deleteAllocs = conn.update(DELETE_ALLOC_RECORD)) {
-			Duration grace = historyProps.getGracePeriod();
-			Copied copied = conn.transaction(() -> new Copied(
+		try (var copyJobs = conn.query(copyJobsToHistoricalData);
+				var copyAllocs = conn.query(copyAllocsToHistoricalData);
+				var deleteJobs = conn.update(DELETE_JOB_RECORD);
+				var deleteAllocs = conn.update(DELETE_ALLOC_RECORD)) {
+			var grace = historyProps.getGracePeriod();
+			var copied = conn.transaction(() -> new Copied(
 					copyJobs.call(grace).map(integer("job_id")).toList(),
 					copyAllocs.call(grace).map(integer("alloc_id")).toList()));
 			conn.transaction(() -> {
@@ -560,7 +558,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	@Deprecated // INTERNAL
 	boolean destroyJob(Connection conn, int id, String reason) {
 		JobLifecycle.log.info("destroying job {} \"{}\"", id, reason);
-		try (DestroySQL sql = new DestroySQL(conn)) {
+		try (var sql = new DestroySQL(conn)) {
 			if (sql.getJob.call1(id).map(enumerate("job_state", JobState.class))
 					.orElse(DESTROYED) == DESTROYED) {
 				/*
@@ -660,21 +658,21 @@ public class AllocatorTask extends DatabaseAwareBean
 	private boolean allocate(AllocSQL sql, Row task) {
 		int jobId = task.getInt("job_id");
 		int machineId = task.getInt("machine_id");
-		Rectangle max = new Rectangle(task);
+		var max = new Rectangle(task);
 		int maxDeadBoards = task.getInt("max_dead_boards");
-		Integer numBoards = task.getInteger("num_boards");
+		var numBoards = task.getInteger("num_boards");
 		if (nonNull(numBoards) && numBoards > 0) {
 			if (numBoards == 1) {
 				return allocateOneBoard(sql, jobId, machineId);
 			}
-			DimensionEstimate estimate = new DimensionEstimate(numBoards, max);
+			var estimate = new DimensionEstimate(numBoards, max);
 			return allocateDimensions(sql, jobId, machineId, estimate,
 					maxDeadBoards);
 		}
 
-		Integer width = task.getInteger("width");
-		Integer height = task.getInteger("height");
-		Integer root = task.getInteger("board_id");
+		var width = task.getInteger("width");
+		var height = task.getInteger("height");
+		var root = task.getInteger("board_id");
 
 		if (nonNull(width) && nonNull(height) && nonNull(root)) {
 			return allocateTriadsAt(sql, jobId, machineId, root, width, height,
@@ -685,8 +683,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			if (height == 1 && width == 1) {
 				return allocateOneBoard(sql, jobId, machineId);
 			}
-			DimensionEstimate estimate =
-					new DimensionEstimate(width, height, max);
+			var estimate = new DimensionEstimate(width, height, max);
 			log.debug(
 					"resolved request for {}x{} boards to {}x{} triads "
 							+ "with tolerance {}",
@@ -719,7 +716,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		int tolerance = userMaxDead + estimate.tolerance;
 		int minArea =
 				estimate.width * estimate.height * TRIAD_DEPTH - tolerance;
-		for (TriadCoords root : sql.getRectangles
+		for (var root : sql.getRectangles
 				.call(estimate.width, estimate.height, machineId, tolerance)
 				.map(TriadCoords::new)) {
 			if (minArea > 1) {
@@ -814,7 +811,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 	private boolean allocateTriadsAt(AllocSQL sql, int jobId, int machineId,
 			int rootId, int width, int height, int maxDeadBoards) {
-		Rectangle rect = new Rectangle(width, height, TRIAD_DEPTH);
+		var rect = new Rectangle(width, height, TRIAD_DEPTH);
 		return sql.getRectangleAt
 				.call1(rootId, width, height, machineId, maxDeadBoards)
 				.map(TriadCoords::new)
@@ -854,14 +851,14 @@ public class AllocatorTask extends DatabaseAwareBean
 			int machineId, TriadCoords root) {
 		log.debug("performing allocation for {}: {}x{}x{} at {}:{}:{}", jobId,
 				rect.width, rect.height, rect.depth, root.x, root.y, root.z);
-		List<Integer> boardsToAllocate = sql.getConnectedBoardIDs
+		var boardsToAllocate = sql.getConnectedBoardIDs
 				.call(machineId, root.x, root.y, root.z, rect.width,
 						rect.height, rect.depth)
 				.map(integer("board_id")).toList();
 		if (boardsToAllocate.isEmpty()) {
 			return false;
 		}
-		for (Integer boardId : boardsToAllocate) {
+		for (var boardId : boardsToAllocate) {
 			sql.allocBoard.call(jobId, boardId);
 		}
 
@@ -877,7 +874,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	@Override
 	public boolean setPower(int jobId, PowerState power, JobState targetState) {
 		boolean updated = execute(conn -> {
-			try (PowerSQL sql = new PowerSQL(conn)) {
+			try (var sql = new PowerSQL(conn)) {
 				return setPower(sql, jobId, power, targetState);
 			}
 		});
@@ -904,10 +901,10 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private boolean setPower(PowerSQL sql, int jobId, PowerState power,
 			JobState targetState) {
-		JobState sourceState = sql.getJobState.call1(jobId).get()
+		var sourceState = sql.getJobState.call1(jobId).get()
 				.getEnum("job_state", JobState.class);
-		List<Integer> boards = sql.getJobBoards.call(jobId)
-				.map(integer("board_id")).toList();
+		var boards = sql.getJobBoards.call(jobId).map(integer("board_id"))
+				.toList();
 		if (boards.isEmpty()) {
 			if (targetState == DESTROYED) {
 				log.debug("no boards for {} in destroy", jobId);
@@ -925,17 +922,17 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			Map<Integer, EnumSet<Direction>> perimeterLinks = new HashMap<>();
-			for (Row row : sql.getPerimeter.call(jobId)) {
+			var perimeterLinks = new HashMap<Integer, EnumSet<Direction>>();
+			for (var row : sql.getPerimeter.call(jobId)) {
 				perimeterLinks
 						.computeIfAbsent(row.getInt("board_id"),
 								k -> EnumSet.noneOf(Direction.class))
 						.add(row.getEnum("direction", Direction.class));
 			}
 
-			for (Integer boardId : boards) {
-				EnumSet<Direction> toChange =
-						perimeterLinks.getOrDefault(boardId, NO_PERIMETER);
+			for (var boardId : boards) {
+				var toChange = perimeterLinks.getOrDefault(boardId,
+						NO_PERIMETER);
 				numPending += sql.issuePowerChange.call(jobId, boardId,
 						sourceState, targetState, true,
 						!toChange.contains(Direction.N),
@@ -947,7 +944,7 @@ public class AllocatorTask extends DatabaseAwareBean
 			}
 		} else {
 			// Powering off; all links switch to off so no perimeter check
-			for (Integer boardId : boards) {
+			for (var boardId : boards) {
 				numPending += sql.issuePowerChange.call(jobId, boardId,
 						sourceState, targetState, false, false, false, false,
 						false, false, false);

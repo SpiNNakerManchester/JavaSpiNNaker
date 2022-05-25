@@ -30,10 +30,8 @@ import static org.apache.commons.io.IOUtils.readLines;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -41,7 +39,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -90,7 +87,7 @@ public class SpallocClientFactory {
 	 * @return The amended URI.
 	 */
 	static URI asDir(URI uri) {
-		String path = uri.getPath();
+		var path = uri.getPath();
 		if (!path.endsWith("/")) {
 			path += "/";
 			uri = uri.resolve(path);
@@ -134,9 +131,9 @@ public class SpallocClientFactory {
 	 */
 	static void writeForm(HttpURLConnection connection, Map<String, String> map)
 			throws IOException {
-		StringBuilder sb = new StringBuilder();
-		String sep = "";
-		for (Entry<String, String> e : map.entrySet()) {
+		var sb = new StringBuilder();
+		var sep = "";
+		for (var e : map.entrySet()) {
 			sb.append(sep).append(e.getKey()).append("=")
 					.append(encode(e.getValue()));
 			sep = "&";
@@ -144,8 +141,8 @@ public class SpallocClientFactory {
 
 		connection.setDoOutput(true);
 		connection.setRequestProperty(CONTENT_TYPE, FORM_ENCODED);
-		try (Writer w =
-				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
+		try (var w = new OutputStreamWriter(connection.getOutputStream(),
+				UTF_8)) {
 			w.write(sb.toString());
 		}
 	}
@@ -164,7 +161,7 @@ public class SpallocClientFactory {
 			throws IOException {
 		connection.setDoOutput(true);
 		connection.setRequestProperty(CONTENT_TYPE, APPLICATION_JSON);
-		try (OutputStream out = connection.getOutputStream()) {
+		try (var out = connection.getOutputStream()) {
 			JSON_MAPPER.writeValue(out, object);
 		}
 	}
@@ -183,8 +180,8 @@ public class SpallocClientFactory {
 			throws IOException {
 		connection.setDoOutput(true);
 		connection.setRequestProperty(CONTENT_TYPE, TEXT_PLAIN);
-		try (Writer w =
-				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
+		try (var w = new OutputStreamWriter(connection.getOutputStream(),
+				UTF_8)) {
 			w.write(string);
 		}
 	}
@@ -234,7 +231,7 @@ public class SpallocClientFactory {
 	 */
 	public SpallocClient createClient(URI baseUrl, String username,
 			String password) throws IOException {
-		ClientSession s = new ClientSession(baseUrl, username, password);
+		var s = new ClientSession(baseUrl, username, password);
 
 		return new ClientImpl(s, s.discoverRoot());
 	}
@@ -267,8 +264,8 @@ public class SpallocClientFactory {
 		}
 
 		private WhereIs whereis(HttpURLConnection conn) throws IOException {
-			try (InputStream is =
-					checkForError(conn, "couldn't get board information")) {
+			try (var is = checkForError(conn,
+					"couldn't get board information")) {
 				if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 					throw new FileNotFoundException("machine not allocated");
 				}
@@ -280,8 +277,8 @@ public class SpallocClientFactory {
 
 		final WhereIs whereis(URI uri) throws IOException {
 			return s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(uri);
-				WhereIs w = whereis(conn);
+				var conn = s.connection(uri);
+				var w = whereis(conn);
 				w.setMachineHandle(getMachine(w.getMachineName()));
 				w.setMachineRef(null);
 				return w;
@@ -320,14 +317,13 @@ public class SpallocClientFactory {
 			private List<URI> first;
 
 			JobLister(URI initial) throws IOException {
-				Jobs first = getJobList(s.connection(initial));
+				var first = getJobList(s.connection(initial));
 				next = first.next;
 				this.first = first.jobs;
 			}
 
 			private Jobs getJobList(HttpURLConnection conn) throws IOException {
-				try (InputStream is =
-						checkForError(conn, "couldn't list jobs")) {
+				try (var is = checkForError(conn, "couldn't list jobs")) {
 					return readJson(is, Jobs.class);
 				} finally {
 					s.trackCookie(conn);
@@ -358,8 +354,8 @@ public class SpallocClientFactory {
 		}
 
 		private Stream<Job> listJobs(URI flags) throws IOException {
-			JobLister basicData =
-					new JobLister(flags != null ? jobs.resolve(flags) : jobs);
+			var basicData = new JobLister(
+					flags != null ? jobs.resolve(flags) : jobs);
 			return basicData.stream().flatMap(Collection::stream)
 					.map(this::job);
 		}
@@ -372,7 +368,7 @@ public class SpallocClientFactory {
 		@Override
 		public Stream<Job> listJobsWithDeleted(boolean wait)
 				throws IOException {
-			StringBuilder opts = new StringBuilder("?deleted=true");
+			var opts = new StringBuilder("?deleted=true");
 			if (wait) {
 				opts.append("&wait=true");
 			}
@@ -381,12 +377,11 @@ public class SpallocClientFactory {
 
 		@Override
 		public Job createJob(CreateJob createInstructions) throws IOException {
-			URI uri = s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(jobs, true);
+			var uri = s.withRenewal(() -> {
+				var conn = s.connection(jobs, true);
 				writeObject(conn, createInstructions);
 				// Get the response entity... and discard it
-				try (InputStream is =
-						checkForError(conn, "job create failed")) {
+				try (var is = checkForError(conn, "job create failed")) {
 					readLines(is, UTF_8);
 					// But we do want the Location header
 					return URI.create(conn.getHeaderField("Location"));
@@ -404,12 +399,11 @@ public class SpallocClientFactory {
 		@Override
 		public List<Machine> listMachines() throws IOException {
 			return s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(machines);
-				try (InputStream is =
-						checkForError(conn, "list machines failed")) {
-					Machines ms = readJson(is, Machines.class);
+				var conn = s.connection(machines);
+				try (var is = checkForError(conn, "list machines failed")) {
+					var ms = readJson(is, Machines.class);
 					// Assume we can cache this
-					for (BriefMachineDescription bmd : ms.machines) {
+					for (var bmd : ms.machines) {
 						machineMap.computeIfAbsent(bmd.name,
 								name -> new MachineImpl(this, s, bmd));
 					}
@@ -434,10 +428,9 @@ public class SpallocClientFactory {
 		@Override
 		public JobDescription describe(boolean wait) throws IOException {
 			return s.withRenewal(() -> {
-				HttpURLConnection conn =
-						wait ? s.connection(uri, WAIT_FLAG) : s.connection(uri);
-				try (InputStream is =
-						checkForError(conn, "couldn't get job state")) {
+				var conn = wait ? s.connection(uri, WAIT_FLAG)
+						: s.connection(uri);
+				try (var is = checkForError(conn, "couldn't get job state")) {
 					return readJson(is, JobDescription.class);
 				} finally {
 					s.trackCookie(conn);
@@ -448,11 +441,10 @@ public class SpallocClientFactory {
 		@Override
 		public void keepalive() throws IOException {
 			s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(uri, KEEPALIVE, true);
+				var conn = s.connection(uri, KEEPALIVE, true);
 				conn.setRequestMethod("PUT");
 				writeString(conn, "alive");
-				try (InputStream is =
-						checkForError(conn, "couldn't keep job alive")) {
+				try (var is = checkForError(conn, "couldn't keep job alive")) {
 					return readLines(is, UTF_8);
 					// Ignore the output
 				} finally {
@@ -464,11 +456,9 @@ public class SpallocClientFactory {
 		@Override
 		public void delete(String reason) throws IOException {
 			s.withRenewal(() -> {
-				HttpURLConnection conn =
-						s.connection(uri, "?reason=" + encode(reason), true);
+				var conn = s.connection(uri, "?reason=" + encode(reason), true);
 				conn.setRequestMethod("DELETE");
-				try (InputStream is =
-						checkForError(conn, "couldn't delete job")) {
+				try (var is = checkForError(conn, "couldn't delete job")) {
 					readLines(is, UTF_8);
 					// Ignore the output
 				} finally {
@@ -480,9 +470,9 @@ public class SpallocClientFactory {
 
 		@Override
 		public AllocatedMachine machine() throws IOException {
-			AllocatedMachine am = s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(uri, MACHINE);
-				try (InputStream is = checkForError(conn,
+			var am = s.withRenewal(() -> {
+				var conn = s.connection(uri, MACHINE);
+				try (var is = checkForError(conn,
 						"couldn't get allocation description")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
@@ -499,9 +489,8 @@ public class SpallocClientFactory {
 		@Override
 		public boolean getPower() throws IOException {
 			return s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(uri, POWER);
-				try (InputStream is =
-						checkForError(conn, "couldn't get power state")) {
+				var conn = s.connection(uri, POWER);
+				try (var is = checkForError(conn, "couldn't get power state")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
@@ -514,14 +503,13 @@ public class SpallocClientFactory {
 
 		@Override
 		public boolean setPower(boolean switchOn) throws IOException {
-			Power power = new Power();
+			var power = new Power();
 			power.power = (switchOn ? "ON" : "OFF");
 			return s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(uri, POWER, true);
+				var conn = s.connection(uri, POWER, true);
 				conn.setRequestMethod("PUT");
 				writeObject(conn, power);
-				try (InputStream is =
-						checkForError(conn, "couldn't set power state")) {
+				try (var is = checkForError(conn, "couldn't set power state")) {
 					if (conn.getResponseCode() == HTTP_NO_CONTENT) {
 						throw new IOException("machine not allocated");
 					}
@@ -593,10 +581,10 @@ public class SpallocClientFactory {
 
 		@Override
 		public void waitForChange() throws IOException {
-			BriefMachineDescription nbmd = s.withRenewal(() -> {
-				HttpURLConnection conn = s.connection(bmd.uri, WAIT_FLAG);
-				try (InputStream is =
-						checkForError(conn, "couldn't wait for state change")) {
+			var nbmd = s.withRenewal(() -> {
+				var conn = s.connection(bmd.uri, WAIT_FLAG);
+				try (var is = checkForError(conn,
+						"couldn't wait for state change")) {
 					return readJson(is, BriefMachineDescription.class);
 				} finally {
 					s.trackCookie(conn);

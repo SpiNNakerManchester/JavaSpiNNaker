@@ -19,16 +19,13 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableSet;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.function.Executable;
@@ -154,9 +151,9 @@ abstract class DBTestingUtils {
 	 */
 	static <T extends Comparable<T>> void assertSetEquals(Set<T> expected,
 			Set<T> actual) {
-		List<T> e = new ArrayList<>(expected);
+		var e = new ArrayList<>(expected);
 		sort(e);
-		List<T> a = new ArrayList<>(actual);
+		var a = new ArrayList<>(actual);
 		sort(a);
 		assertEquals(e, a);
 	}
@@ -178,7 +175,7 @@ abstract class DBTestingUtils {
 	}
 
 	private static SQLiteException causedBySQLite(DataAccessException e) {
-		Throwable t = e.getMostSpecificCause();
+		var t = e.getMostSpecificCause();
 		assertEquals(SQLiteException.class, t.getClass());
 		return (SQLiteException) t;
 	}
@@ -192,8 +189,8 @@ abstract class DBTestingUtils {
 	 *            The executable operation being tested.
 	 */
 	static void assertThrowsFK(Executable op) {
-		DataAccessException e = assertThrows(DataAccessException.class, op);
-		SQLiteException exn = causedBySQLite(e);
+		var e = assertThrows(DataAccessException.class, op);
+		var exn = causedBySQLite(e);
 		assertEquals(SQLITE_CONSTRAINT_FOREIGNKEY, exn.getResultCode());
 	}
 
@@ -206,8 +203,8 @@ abstract class DBTestingUtils {
 	 *            The executable operation being tested.
 	 */
 	static void assertThrowsCheck(Executable op) {
-		DataAccessException e = assertThrows(DataAccessException.class, op);
-		SQLiteException exn = causedBySQLite(e);
+		var e = assertThrows(DataAccessException.class, op);
+		var exn = causedBySQLite(e);
 		assertEquals(SQLITE_CONSTRAINT_CHECK, exn.getResultCode());
 	}
 

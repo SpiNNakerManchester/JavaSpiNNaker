@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -85,7 +84,7 @@ public class TransceiverFactory
 
 		@Override
 		public boolean equals(Object o) {
-			Key other = (Key) o;
+			var other = (Key) o;
 			return machine.equals(other.machine) && bmp.equals(other.bmp);
 		}
 
@@ -128,7 +127,7 @@ public class TransceiverFactory
 						k -> makeTransceiver(machineDescription, bmp));
 			}
 		} catch (TransceiverFactoryException e) {
-			Throwable t = e.getCause();
+			var t = e.getCause();
 			if (t instanceof IOException) {
 				throw (IOException) t;
 			} else if (t instanceof SpinnmanException) {
@@ -148,8 +147,7 @@ public class TransceiverFactory
 
 	private BMPTransceiverInterface makeTransceiver(Machine machineDescription,
 			BMPCoords bmp) {
-		BMPConnectionData connData =
-				makeConnectionData(machineDescription, bmp);
+		var connData = makeConnectionData(machineDescription, bmp);
 		try {
 			if (control.isUseDummyBMP()) {
 				return new DummyTransceiver(machineDescription.getName(),
@@ -166,8 +164,8 @@ public class TransceiverFactory
 	private BMPConnectionData makeConnectionData(Machine machine,
 			BMPCoords bmp) {
 		try {
-			String address = machine.getBMPAddress(bmp);
-			List<Integer> boards = machine.getBoardNumbers(bmp);
+			var address = machine.getBMPAddress(bmp);
+			var boards = machine.getBoardNumbers(bmp);
 			return new BMPConnectionData(0, 0, getByName(address), boards,
 					SCP_SCAMP_PORT);
 		} catch (IOException e) {
@@ -212,7 +210,7 @@ public class TransceiverFactory
 
 	@PreDestroy
 	void closeTransceivers() throws Exception {
-		for (BMPTransceiverInterface txrx : txrxMap.values()) {
+		for (var txrx : txrxMap.values()) {
 			if (txrx instanceof AutoCloseable) {
 				((AutoCloseable) txrx).close();
 			}
@@ -243,7 +241,7 @@ class DummyTransceiver extends UnimplementedTransceiver {
 	 *         checks, and arbitrary (zero) elsewhere.
 	 */
 	private static ByteBuffer syntheticVersionData() {
-		ByteBuffer b = allocate(VERSION_INFO_SIZE);
+		var b = allocate(VERSION_INFO_SIZE);
 		b.order(LITTLE_ENDIAN);
 		b.putInt(0);
 		b.putInt(0);
@@ -265,7 +263,7 @@ class DummyTransceiver extends UnimplementedTransceiver {
 	public void power(PowerCommand powerCommand, BMPCoords bmp,
 			Collection<BMPBoard> boards) {
 		log.info("power({},{},{})", powerCommand, bmp, boards);
-		for (BMPBoard b : boards) {
+		for (var b : boards) {
 			status.put(b.board, powerCommand == POWER_ON);
 		}
 	}

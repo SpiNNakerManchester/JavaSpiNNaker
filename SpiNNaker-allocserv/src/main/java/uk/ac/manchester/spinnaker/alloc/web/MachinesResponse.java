@@ -22,10 +22,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -83,12 +81,12 @@ public final class MachinesResponse {
 	public final List<BriefMachineDescription> machines;
 
 	MachinesResponse(Map<String, Machine> machines, UriInfo ui) {
-		List<BriefMachineDescription> mlist = new ArrayList<>();
-		UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
-		for (Entry<String, Machine> ment : machines.entrySet()) {
-			String name = ment.getKey();
-			URI uri = ub.build(name);
-			Machine m = ment.getValue();
+		var mlist = new ArrayList<BriefMachineDescription>();
+		var ub = ui.getAbsolutePathBuilder().path("{name}");
+		for (var ment : machines.entrySet()) {
+			var name = ment.getKey();
+			var uri = ub.build(name);
+			var m = ment.getValue();
 
 			mlist.add(new BriefMachineDescription(name, uri, m.getWidth(),
 					m.getHeight(), m.getTags(), m.getDeadBoards(),

@@ -23,9 +23,7 @@ import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
 import static java.time.Instant.ofEpochMilli;
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
@@ -37,9 +35,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,9 +54,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.storage.Parameter;
@@ -101,7 +95,7 @@ class AllocatorTest extends SQLQueries {
 	private BMPController bmpCtrl;
 
 	private void doTest(Transacted action) {
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			c.transaction(() -> {
 				try {
 					conn = c;
@@ -119,7 +113,7 @@ class AllocatorTest extends SQLQueries {
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
+		var dbp = Paths.get(DB);
 		if (exists(dbp)) {
 			log.info("deleting old database: {}", dbp);
 			delete(dbp);
@@ -129,7 +123,7 @@ class AllocatorTest extends SQLQueries {
 	@BeforeEach
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			c.transaction(() -> setupDB3(c));
 		}
 	}
@@ -167,26 +161,26 @@ class AllocatorTest extends SQLQueries {
 			"INSERT INTO job_request(job_id, board_id) VALUES (?, ?)";
 
 	private void makeAllocBySizeRequest(int job, int size) {
-		try (Update u = conn.update(INSERT_REQ_SIZE)) {
+		try (var u = conn.update(INSERT_REQ_SIZE)) {
 			conn.transaction(() -> u.call(job, size));
 		}
 	}
 
 	private void makeAllocByDimensionsRequest(int job, int width, int height,
 			int allowedDead) {
-		try (Update u = conn.update(INSERT_REQ_DIMS)) {
+		try (var u = conn.update(INSERT_REQ_DIMS)) {
 			conn.transaction(() -> u.call(job, width, height, allowedDead));
 		}
 	}
 
 	private void makeAllocByBoardIdRequest(int job, int board) {
-		try (Update u = conn.update(INSERT_REQ_BOARD)) {
+		try (var u = conn.update(INSERT_REQ_BOARD)) {
 			conn.transaction(() -> u.call(job, board));
 		}
 	}
 
 	private JobState getJobState(int job) {
-		try (Query q = conn.query(GET_JOB)) {
+		try (var q = conn.query(GET_JOB)) {
 			return conn.transaction(() -> q.call1(job).get()
 					.getEnum("job_state", JobState.class));
 		}
@@ -198,7 +192,7 @@ class AllocatorTest extends SQLQueries {
 			"SELECT COUNT(*) AS cnt FROM job_request";
 
 	private int getJobRequestCount() {
-		try (Query q = conn.query(COUNT_REQUESTS)) {
+		try (var q = conn.query(COUNT_REQUESTS)) {
 			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
@@ -209,25 +203,23 @@ class AllocatorTest extends SQLQueries {
 			"SELECT COUNT(*) AS cnt FROM pending_changes";
 
 	private int getPendingPowerChanges() {
-		try (Query q = conn.query(COUNT_POWER_CHANGES)) {
+		try (var q = conn.query(COUNT_POWER_CHANGES)) {
 			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
 
 	private void assertState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		List<?> expected =
-				asList(state, "req", requestCount, "power", powerCount);
-		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
+		var expected = asList(state, "req", requestCount, "power", powerCount);
+		var got = asList(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assertEquals(expected, got);
 	}
 
 	private void assumeState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		List<?> expected =
-				asList(state, "req", requestCount, "power", powerCount);
-		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
+		var expected = asList(state, "req", requestCount, "power", powerCount);
+		var got = asList(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assumeTrue(expected.equals(got),
 				() -> format("expected %s but got %s", expected, got));
@@ -458,7 +450,7 @@ class AllocatorTest extends SQLQueries {
 	@Test
 	public void expireReady() throws Exception {
 		// This is messier; can't have a transaction open and roll it back
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			this.conn = c;
 			int job = makeQueuedJob(1);
 			try {
@@ -512,7 +504,7 @@ class AllocatorTest extends SQLQueries {
 			assertTrue(preMain == 1,
 					() -> "must have created a job we can tombstone");
 			int preTomb = countJobInTable(job, "tombstone.jobs");
-			AllocatorTask.Copied moved = alloc.tombstone(conn);
+			var moved = alloc.tombstone(conn);
 			assertEquals(1, moved.numJobs());
 			// No resources were ever allocated, so no moves to do
 			assertEquals(0, moved.numAllocs());

@@ -38,14 +38,12 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -53,7 +51,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
@@ -68,8 +65,6 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
@@ -212,8 +207,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private QuotaManager quotaManager;
 
 	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
-		try (Connection conn = getConnection();
-				Query listMachines = conn.query(LIST_MACHINE_NAMES)) {
+		try (var conn = getConnection();
+				var listMachines = conn.query(LIST_MACHINE_NAMES)) {
 			return conn.transaction(false,
 					() -> listMachines.call(allowOutOfService)
 							.toMap(string("machine_name"), bool("in_service")));
@@ -246,12 +241,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private static ModelAndView addStandardContext(ModelAndView mav,
 			RedirectAttributes attrs) {
-		Authentication auth = getContext().getAuthentication();
+		var auth = getContext().getAuthentication();
 		boolean mayChangePassword =
 				auth instanceof UsernamePasswordAuthenticationToken;
 
 		// Real implementation of these is always a ModelMap
-		ModelMap model = (ModelMap) (nonNull(attrs) ? attrs.getFlashAttributes()
+		var model = (ModelMap) (nonNull(attrs) ? attrs.getFlashAttributes()
 				: mav.getModel());
 
 		model.addAttribute(BASE_URI, fromCurrentRequestUri().toUriString());
@@ -334,7 +329,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	@ExceptionHandler(DataAccessException.class)
 	ModelAndView dbException(DataAccessException e, HandlerMethod hm) {
-		Action a = hm.getMethodAnnotation(Action.class);
+		var a = hm.getMethodAnnotation(Action.class);
 		if (nonNull(a)) {
 			log.warn("database access issue when {}", a.value(), e);
 		} else {
@@ -364,7 +359,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	@ExceptionHandler(AdminException.class)
 	ModelAndView adminException(AdminException e, HandlerMethod hm) {
-		Action a = hm.getMethodAnnotation(Action.class);
+		var a = hm.getMethodAnnotation(Action.class);
 		if (nonNull(a)) {
 			log.warn("general issue when {}", a.value(), e);
 		} else {
@@ -382,7 +377,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("listing the users")
 	public ModelAndView listUsers() {
-		ModelAndView mav = USER_LIST_VIEW.view();
+		var mav = USER_LIST_VIEW.view();
 		// Share this function
 		Function<UserRecord, URI> urlMaker =
 				user -> uri(admin().showUserForm(user.getUserId()));
@@ -405,7 +400,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView createUser(UserRecord user, ModelMap model,
 			RedirectAttributes attrs) {
 		user.initCreationDefaults();
-		UserRecord realUser = userManager.createUser(user)
+		var realUser = userManager.createUser(user)
 				.orElseThrow(() -> new AdminException(
 						"user creation failed (duplicate username?)"));
 		int id = realUser.getUserId();
@@ -416,8 +411,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting info about a user")
 	public ModelAndView showUserForm(int id) {
-		ModelAndView mav = USER_DETAILS_VIEW.view();
-		UserRecord user = userManager
+		var mav = USER_DETAILS_VIEW.view();
+		var user = userManager
 				.getUser(id, m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(() -> new AdminException("no such user"));
 		mav.addObject(USER_OBJ, user.sanitise());
@@ -430,14 +425,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("updating a user's details")
 	public ModelAndView submitUserForm(int id, UserRecord user, ModelMap model,
 			Principal principal) {
-		String adminUser = principal.getName();
+		var adminUser = principal.getName();
 		user.setUserId(null);
 		log.info("updating user ID={}", id);
-		UserRecord updatedUser = userManager
+		var updatedUser = userManager
 				.updateUser(id, user, adminUser,
 						m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(() -> new AdminException("no such user"));
-		ModelAndView mav = USER_DETAILS_VIEW.view(model);
+		var mav = USER_DETAILS_VIEW.view(model);
 		mav.addObject(USER_OBJ, updatedUser.sanitise());
 		return addStandardContext(mav);
 	}
@@ -446,13 +441,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("deleting a user")
 	public ModelAndView deleteUser(int id, Principal principal,
 			RedirectAttributes attrs) {
-		String adminUser = principal.getName();
-		String deletedUsername =
+		var adminUser = principal.getName();
+		var deletedUsername =
 				userManager.deleteUser(id, adminUser).orElseThrow(
 						() -> new AdminException("could not delete that user"));
 		log.info("deleted user ID={} username={}", id, deletedUsername);
 		// Not sure that these are the correct place
-		ModelAndView mav = redirectTo(uri(admin().listUsers()), attrs);
+		var mav = redirectTo(uri(admin().listUsers()), attrs);
 		attrs.addFlashAttribute("notice", "deleted " + deletedUsername);
 		attrs.addFlashAttribute(USER_OBJ, new UserRecord());
 		return mav;
@@ -461,7 +456,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("listing the groups")
 	public ModelAndView listGroups() {
-		ModelAndView mav = GROUP_LIST_VIEW.view();
+		var mav = GROUP_LIST_VIEW.view();
 		// Share this function
 		Function<GroupRecord, URI> urlMaker =
 				group -> uri(admin().showGroupInfo(group.getGroupId()));
@@ -477,8 +472,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting info about a group")
 	public ModelAndView showGroupInfo(int id) {
-		ModelAndView mav = GROUP_DETAILS_VIEW.view();
-		Map<String, URI> userLocations = new HashMap<>();
+		var mav = GROUP_DETAILS_VIEW.view();
+		var userLocations = new HashMap<String, URI>();
 		mav.addObject(GROUP_OBJ, userManager.getGroup(id, m -> {
 			userLocations.put(m.getUserName(),
 					uri(admin().showUserForm(m.getUserId())));
@@ -505,10 +500,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("creating a group")
 	public ModelAndView createGroup(CreateGroupModel groupRequest,
 			RedirectAttributes attrs) {
-		GroupRecord realGroup =
-				userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
-						.orElseThrow(() -> new AdminException(
-								"group creation failed (duplicate name?)"));
+		var realGroup = userManager
+				.createGroup(groupRequest.toGroupRecord(), INTERNAL)
+				.orElseThrow(() -> new AdminException(
+						"group creation failed (duplicate name?)"));
 		int id = realGroup.getGroupId();
 		log.info("created group ID={} name={}", id, realGroup.getGroupName());
 		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
@@ -518,9 +513,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("adding a user to a group")
 	public ModelAndView addUserToGroup(int id, String user,
 			RedirectAttributes attrs) {
-		GroupRecord g = userManager.getGroup(id, null)
+		var g = userManager.getGroup(id, null)
 				.orElseThrow(() -> new AdminException("no such group"));
-		UserRecord u = userManager.getUser(user, null)
+		var u = userManager.getUser(user, null)
 				.orElseThrow(() -> new AdminException("no such user"));
 		String notice;
 		if (userManager.addUserToGroup(u, g).isPresent()) {
@@ -540,9 +535,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("removing a user from a group")
 	public ModelAndView removeUserFromGroup(int id, int userid,
 			RedirectAttributes attrs) {
-		GroupRecord g = userManager.getGroup(id, null)
+		var g = userManager.getGroup(id, null)
 				.orElseThrow(() -> new AdminException("no such group"));
-		UserRecord u = userManager.getUser(userid, null)
+		var u = userManager.getUser(userid, null)
 				.orElseThrow(() -> new AdminException("no such user"));
 		String notice;
 		if (userManager.removeUserFromGroup(u, g)) {
@@ -573,10 +568,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("deleting a group")
 	public ModelAndView deleteGroup(int id, RedirectAttributes attrs) {
-		String deletedGroupName = userManager.deleteGroup(id)
+		var deletedGroupName = userManager.deleteGroup(id)
 				.orElseThrow(() -> new AdminException("no such group"));
 		log.info("deleted group ID={} groupname={}", id, deletedGroupName);
-		ModelAndView mav = redirectTo(uri(admin().listGroups()), attrs);
+		var mav = redirectTo(uri(admin().listGroups()), attrs);
 		attrs.addFlashAttribute("notice", "deleted " + deletedGroupName);
 		return mav;
 	}
@@ -584,7 +579,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting the UI for finding boards")
 	public ModelAndView boards() {
-		ModelAndView mav = BOARD_VIEW.view();
+		var mav = BOARD_VIEW.view();
 		mav.addObject(BOARD_OBJ, new BoardRecord());
 		mav.addObject(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
@@ -612,8 +607,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("processing changes to a board's configuration")
 	public ModelAndView board(BoardRecord board, ModelMap model) {
-		ModelAndView mav = BOARD_VIEW.view(model);
-		BoardState bs = getBoardState(board)
+		var mav = BOARD_VIEW.view(model);
+		var bs = getBoardState(board)
 				.orElseThrow(() -> new AdminException("no such board"));
 
 		inflateBoardRecord(board, bs);
@@ -675,9 +670,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting a machine's configuration")
 	public ModelAndView machineManagement() {
-		ModelAndView mav =
-				MACHINE_VIEW.view(MACHINE_LIST_OBJ, getMachineNames(true));
-		List<MachineTagging> tagging = machineController.getMachineTagging();
+		var mav = MACHINE_VIEW.view(MACHINE_LIST_OBJ, getMachineNames(true));
+		var tagging = machineController.getMachineTagging();
 		tagging.forEach(
 				t -> t.setUrl(uri(system().getMachineInfo(t.getName()))));
 		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
@@ -691,8 +685,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("retagging a machine")
 	public ModelAndView retagMachine(String machineName, String newTags) {
-		Set<String> tags =
-				stream(newTags.split(",")).map(String::trim).collect(toSet());
+		var tags = stream(newTags.split(",")).map(String::trim)
+				.collect(toSet());
 		machineController.updateTags(machineName, tags);
 		log.info("retagged {} to have tags {}", machineName, tags);
 		return machineManagement();
@@ -717,19 +711,19 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("defining a machine")
 	public ModelAndView defineMachine(MultipartFile file) {
-		List<Machine> machines = extractMachineDefinitions(file);
-		for (Machine m : machines) {
+		var machines = extractMachineDefinitions(file);
+		for (var m : machines) {
 			machineDefiner.loadMachineDefinition(m);
 			log.info("defined machine {}", m.getName());
 		}
-		ModelAndView mav = machineManagement();
+		var mav = machineManagement();
 		// Tailor with extra objects here
 		mav.addObject(DEFINED_MACHINES_OBJ, machines);
 		return mav;
 	}
 
 	private List<Machine> extractMachineDefinitions(MultipartFile file) {
-		try (InputStream input = file.getInputStream()) {
+		try (var input = file.getInputStream()) {
 			return machineDefiner.readMachineDefinitions(input);
 		} catch (IOException e) {
 			throw new AdminException(

@@ -20,8 +20,7 @@ import static java.nio.file.Files.delete;
 import static java.nio.file.Files.exists;
 import static java.time.Duration.ofSeconds;
 import static java.time.Instant.ofEpochSecond;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
@@ -34,7 +33,6 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -53,8 +51,6 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
@@ -99,7 +95,7 @@ class QuotaManagerTest extends SQLQueries {
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
+		var dbp = Paths.get(DB);
 		if (exists(dbp)) {
 			log.info("deleting old database: {}", dbp);
 			delete(dbp);
@@ -109,7 +105,7 @@ class QuotaManagerTest extends SQLQueries {
 	@BeforeEach
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
 	}
@@ -132,13 +128,13 @@ class QuotaManagerTest extends SQLQueries {
 	}
 
 	private Object getQuota(Connection c) {
-		try (Query q = c.query(GET_QUOTA)) {
+		try (var q = c.query(GET_QUOTA)) {
 			return q.call1(MACHINE, USER).get().getObject("quota");
 		}
 	}
 
 	private void setQuota(Connection c, Integer quota) {
-		try (Update u = c.update(SET_QUOTA)) {
+		try (var u = c.update(SET_QUOTA)) {
 			u.call(quota, GROUP);
 		}
 	}

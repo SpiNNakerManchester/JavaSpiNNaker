@@ -55,7 +55,7 @@ public class PasswordServices {
 	 *         characters.
 	 */
 	public final String generatePassword() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		rng.ints(PASSWORD_LENGTH, '\u0021', '\u007f')
 				.forEachOrdered(c -> sb.append((char) c));
 		return sb.toString();

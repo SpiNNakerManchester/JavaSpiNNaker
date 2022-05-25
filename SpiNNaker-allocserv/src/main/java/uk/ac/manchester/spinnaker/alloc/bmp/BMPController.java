@@ -43,7 +43,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
@@ -73,7 +72,6 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
@@ -136,7 +134,7 @@ public class BMPController extends DatabaseAwareBean {
 	 * @return The thread.
 	 */
 	private Thread makeThread(Runnable target) {
-		Thread t = new Thread(group, target);
+		var t = new Thread(group, target);
 		t.setUncaughtExceptionHandler(this::handleException);
 		return t;
 	}
@@ -162,7 +160,7 @@ public class BMPController extends DatabaseAwareBean {
 	 */
 	private void clearStuckPending() {
 		int changes = execute(c -> {
-			try (Update u = c.update(CLEAR_STUCK_PENDING)) {
+			try (var u = c.update(CLEAR_STUCK_PENDING)) {
 				return u.call();
 			}
 		});
@@ -217,9 +215,9 @@ public class BMPController extends DatabaseAwareBean {
 			throws IOException, SpinnmanException, InterruptedException {
 		if (execute(conn -> {
 			boolean changed = false;
-			for (Cleanup cleanup = cleanupTasks.poll(); nonNull(
+			for (var cleanup = cleanupTasks.poll(); nonNull(
 					cleanup); cleanup = cleanupTasks.poll()) {
-				try (AfterSQL sql = new AfterSQL(conn)) {
+				try (var sql = new AfterSQL(conn)) {
 					changed |= cleanup.run(sql);
 				} catch (DataAccessException e) {
 					log.error("problem with database", e);
@@ -245,8 +243,8 @@ public class BMPController extends DatabaseAwareBean {
 	@ManagedAttribute(
 			description = "An estimate of the number of requests " + "pending.")
 	public int getPendingRequestLoading() {
-		try (Connection conn = getConnection();
-				Query countChanges = conn.query(COUNT_PENDING_CHANGES)) {
+		try (var conn = getConnection();
+				var countChanges = conn.query(COUNT_PENDING_CHANGES)) {
 			return conn.transaction(false, () -> countChanges.call1()
 					.map(integer("c")).orElse(0));
 		}
@@ -368,29 +366,27 @@ public class BMPController extends DatabaseAwareBean {
 		private void changeBoardPowerState(
 				Map<BMPCoords, SpiNNakerControl> controllers)
 				throws ProcessException, InterruptedException, IOException {
-			for (Entry<BMPCoords, Map<Integer, BMPBoard>> bmp : idToBoard
-					.entrySet()) {
+			for (var bmp : idToBoard.entrySet()) {
 				// Init the real controller
-				SpiNNakerControl controller = controllers.get(bmp.getKey());
+				var controller = controllers.get(bmp.getKey());
 				controller.setIdToBoardMap(bmp.getValue());
 
 				// Send any power on commands
-				List<Integer> on =
-						powerOnBoards.getOrDefault(bmp.getKey(), emptyList());
+				var on = powerOnBoards.getOrDefault(bmp.getKey(), emptyList());
 				if (!on.isEmpty()) {
 					controller.powerOnAndCheck(on);
 				}
 
 				// Process perimeter link requests next
-				for (Link linkReq : linkRequests.getOrDefault(bmp.getKey(),
+				for (var linkReq : linkRequests.getOrDefault(bmp.getKey(),
 						emptyList())) {
 					// Set the link state, as required
 					controller.setLinkOff(linkReq);
 				}
 
 				// Finally send any power off commands
-				List<Integer> off =
-						powerOffBoards.getOrDefault(bmp.getKey(), emptyList());
+				var off = powerOffBoards.getOrDefault(bmp.getKey(),
+						emptyList());
 				if (!off.isEmpty()) {
 					controller.powerOff(off);
 				}
@@ -488,7 +484,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		@Override
 		public String toString() {
-			StringBuilder sb =
+			var sb =
 					new StringBuilder("Request(for=").append(machine.getName());
 			sb.append(";on=").append(powerOnBoards);
 			sb.append(",off=").append(powerOffBoards);
@@ -530,13 +526,12 @@ public class BMPController extends DatabaseAwareBean {
 	 * @return List of requests to pass to the {@link WorkerThread}s.
 	 */
 	private List<Request> takeRequests() {
-		List<Machine> machines =
-				new ArrayList<>(spallocCore.getMachines(true).values());
-		try (TakeReqsSQL sql = new TakeReqsSQL()) {
+		var machines = new ArrayList<>(spallocCore.getMachines(true).values());
+		try (var sql = new TakeReqsSQL()) {
 			return sql.transaction(() -> {
-				List<Request> requestCollector = new ArrayList<>();
+				var requestCollector = new ArrayList<Request>();
 				// The outer loop is always over a small set, fortunately
-				for (Machine machine : machines) {
+				for (var machine : machines) {
 					sql.getJobIdsWithChanges.call(machine.getId())
 							.map(integer("job_id"))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
@@ -549,21 +544,19 @@ public class BMPController extends DatabaseAwareBean {
 
 	private void takeRequestsForJob(Machine machine, Integer jobId,
 			TakeReqsSQL sql, List<Request> requestCollector) {
-		List<Integer> changeIds = new ArrayList<>();
-		Map<BMPCoords, List<Integer>> boardsOn =
-				new DefaultMap<>(ArrayList::new);
-		Map<BMPCoords, List<Integer>> boardsOff =
-				new DefaultMap<>(ArrayList::new);
-		Map<BMPCoords, List<Link>> linksOff = new DefaultMap<>(ArrayList::new);
+		var changeIds = new ArrayList<Integer>();
+		var boardsOn = new DefaultMap<BMPCoords, List<Integer>>(ArrayList::new);
+		var boardsOff = new DefaultMap<BMPCoords, List<Integer>>(
+				ArrayList::new);
+		var linksOff = new DefaultMap<BMPCoords, List<Link>>(ArrayList::new);
 		JobState from = UNKNOWN, to = UNKNOWN;
-		Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard =
-				new DefaultMap<>(HashMap::new);
+		var idToBoard = new DefaultMap<BMPCoords, Map<Integer, BMPBoard>>(
+				HashMap::new);
 
-		for (Row row : sql.getPowerChangesToDo.call(jobId)) {
+		for (var row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
-			BMPCoords bmp =
-					new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
-			Integer board = row.getInteger("board_id");
+			var bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
+			var board = row.getInteger("board_id");
 			idToBoard.get(bmp).put(board,
 					new BMPBoard(row.getInteger("board_num")));
 			boolean switchOn = row.getBoolean("power");
@@ -602,7 +595,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		requestCollector.add(new Request(sql, machine, boardsOn, boardsOff,
 				linksOff, jobId, from, to, changeIds, idToBoard));
-		for (Integer changeId : changeIds) {
+		for (var changeId : changeIds) {
 			sql.setInProgress.call(true, changeId);
 		}
 	}
@@ -674,7 +667,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * doesn't need that... provided we get the transceiver now.
 		 */
 		getControllers(request);
-		WorkerState ws = getWorkerState(request.machine);
+		var ws = getWorkerState(request.machine);
 		ws.requests.add(request);
 		synchronized (this) {
 			if (!ws.requestsPending) {
@@ -697,7 +690,7 @@ public class BMPController extends DatabaseAwareBean {
 	private WorkerState getWorkerState(Machine machine)
 			throws InterruptedException {
 		synchronized (state) {
-			WorkerState ws = state.computeIfAbsent(machine, WorkerState::new);
+			var ws = state.computeIfAbsent(machine, WorkerState::new);
 			if (isNull(ws.workerThread)) {
 				executor.execute(() -> backgroundThread(ws));
 				while (isNull(ws.workerThread)) {
@@ -736,7 +729,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		void interrupt() {
-			Thread wt = workerThread;
+			var wt = workerThread;
 			if (nonNull(wt)) {
 				wt.interrupt();
 			}
@@ -827,7 +820,7 @@ public class BMPController extends DatabaseAwareBean {
 	 *            What SpiNNaker machine is this thread servicing?
 	 */
 	void backgroundThread(WorkerState ws) {
-		try (BindWorker binding = ws.bind()) {
+		try (var binding = ws.bind()) {
 			do {
 				waitForPending(ws);
 
@@ -872,7 +865,7 @@ public class BMPController extends DatabaseAwareBean {
 			return;
 		}
 
-		try (MDCCloseable mdc = putCloseable("changes",
+		try (var mdc = putCloseable("changes",
 				asList(request.powerOnBoards.size(),
 						request.powerOffBoards.size(),
 						request.linkRequests.size()).toString())) {
@@ -903,15 +896,15 @@ public class BMPController extends DatabaseAwareBean {
 	private Map<BMPCoords, SpiNNakerControl> getControllers(Request request)
 			throws IOException, SpinnmanException {
 		try {
-			Map<BMPCoords, SpiNNakerControl> map =
-					new HashMap<>(request.idToBoard.size());
-			for (BMPCoords bmp : request.idToBoard.keySet()) {
+			var map = new HashMap<BMPCoords, SpiNNakerControl>(
+					request.idToBoard.size());
+			for (var bmp : request.idToBoard.keySet()) {
 				map.put(bmp, controllerFactory.getObject(request.machine, bmp));
 			}
 			return map;
 		} catch (BeanInitializationException | BeanCreationException e) {
 			// Smuggle the exception out from the @PostConstruct method
-			Throwable cause = e.getCause();
+			var cause = e.getCause();
 			if (cause instanceof IOException) {
 				throw (IOException) cause;
 			} else if (cause instanceof SpinnmanException) {

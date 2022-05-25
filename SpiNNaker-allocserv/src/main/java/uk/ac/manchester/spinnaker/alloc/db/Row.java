@@ -321,7 +321,7 @@ public final class Row {
 	 */
 	public Long getLong(String columnLabel) {
 		try {
-			Number value = (Number) rs.getObject(columnLabel);
+			var value = (Number) rs.getObject(columnLabel);
 			if (rs.wasNull()) {
 				return null;
 			}

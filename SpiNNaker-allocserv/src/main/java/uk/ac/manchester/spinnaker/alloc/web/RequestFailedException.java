@@ -90,7 +90,7 @@ public class RequestFailedException extends RuntimeException {
 	}
 
 	private void log(Logger log) {
-		Throwable cause = getCause();
+		var cause = getCause();
 
 		if (code.getFamily().equals(SERVER_ERROR)) {
 			if (nonNull(cause)) {

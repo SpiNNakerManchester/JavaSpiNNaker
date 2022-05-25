@@ -18,8 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -43,12 +41,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BMPCoords;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.BoardPhysicalCoords;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
  * Test that the database engine interface works and that the queries are
@@ -85,9 +80,9 @@ class MDefLoaderTest {
 
 	private static <T extends Comparable<T>> void
 			assertSetEquals(Set<T> expected, Set<T> actual) {
-		List<T> e = new ArrayList<>(expected);
+		var e = new ArrayList<>(expected);
 		Collections.sort(e);
-		List<T> a = new ArrayList<>(actual);
+		var a = new ArrayList<>(actual);
 		Collections.sort(a);
 		assertEquals(e, a);
 	}
@@ -116,12 +111,11 @@ class MDefLoaderTest {
 
 	@Test
 	void readSingleBoardExample() throws IOException {
-		List<Machine> machines =
-				loader.readMachineDefinitions(singleBoard.getFile());
+		var machines = loader.readMachineDefinitions(singleBoard.getFile());
 
 		assertNotNull(machines);
 		assertEquals(1, machines.size());
-		Machine m = machines.get(0);
+		var m = machines.get(0);
 		assertEquals("my-board", m.getName());
 		assertSetEquals(set(new TriadCoords(0, 0, 0)),
 				m.getBoardLocations().keySet());
@@ -134,23 +128,22 @@ class MDefLoaderTest {
 
 	@Test
 	void loadSingleBoardExample() throws IOException {
-		List<Machine> machines =
-				loader.readMachineDefinitions(singleBoard.getFile());
+		var machines = loader.readMachineDefinitions(singleBoard.getFile());
 		assumeTrue(machines != null && machines.size() == 1);
 		@SuppressWarnings("null")
-		Machine machine = machines.get(0);
+		var machine = machines.get(0);
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
+			try (var q = loader.new Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});
 
 		c.transaction(() -> {
-			try (Query q = c.query("SELECT machine_name FROM machines")) {
+			try (var q = c.query("SELECT machine_name FROM machines")) {
 				int rows = 0;
-				for (Row row : q.call()) {
+				for (var row : q.call()) {
 					assertEquals("my-board", row.getString("machine_name"));
 					rows++;
 				}
@@ -158,17 +151,17 @@ class MDefLoaderTest {
 			}
 
 			// Should be just one BMP
-			try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
+			try (var q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
 				assertEquals(1, q.call1().get().getInt("c"));
 			}
 
 			// Should be just one board
-			try (Query q = c.query(COUNT_LIVE_BOARDS)) {
+			try (var q = c.query(COUNT_LIVE_BOARDS)) {
 				assertEquals(1, q.call1().get().getInt("c"));
 			}
 
 			// Single-board setups have no inter-board links
-			try (Query q = c.query(COUNT_LIVE_LINKS)) {
+			try (var q = c.query(COUNT_LIVE_LINKS)) {
 				assertEquals(0, q.call1().get().getInt("c"));
 			}
 		});
@@ -176,23 +169,22 @@ class MDefLoaderTest {
 
 	@Test
 	void loadThreeBoardExample() throws IOException {
-		List<Machine> machines =
-				loader.readMachineDefinitions(threeBoard.getFile());
+		var machines = loader.readMachineDefinitions(threeBoard.getFile());
 		assumeTrue(machines != null && machines.size() == 1);
 		@SuppressWarnings("null")
-		Machine machine = machines.get(0);
+		var machine = machines.get(0);
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
+			try (var q = loader.new Updates(c)) {
 				loader.loadMachineDefinition(q, machine);
 			}
 		});
 
 		c.transaction(() -> {
-			try (Query q = c.query("SELECT machine_name FROM machines")) {
+			try (var q = c.query("SELECT machine_name FROM machines")) {
 				int rows = 0;
-				for (Row row : q.call()) {
+				for (var row : q.call()) {
 					assertEquals("SpiNNaker3board",
 							row.getString("machine_name"));
 					rows++;
@@ -201,17 +193,17 @@ class MDefLoaderTest {
 			}
 
 			// Should be just one BMP
-			try (Query q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
+			try (var q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
 				assertEquals(1, q.call1().get().getInt("c"));
 			}
 
 			// Should be just one board
-			try (Query q = c.query(COUNT_LIVE_BOARDS)) {
+			try (var q = c.query(COUNT_LIVE_BOARDS)) {
 				assertEquals(3, q.call1().get().getInt("c"));
 			}
 
 			// Single-board setups have no inter-board links
-			try (Query q = c.query(COUNT_LIVE_LINKS)) {
+			try (var q = c.query(COUNT_LIVE_LINKS)) {
 				assertEquals(9, q.call1().get().getInt("c"));
 			}
 		});

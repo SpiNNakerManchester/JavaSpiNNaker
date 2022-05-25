@@ -271,7 +271,7 @@ public interface AdminController {
 		 * @return This request, as a partial group record.
 		 */
 		public GroupRecord toGroupRecord() {
-			GroupRecord gr = new GroupRecord();
+			var gr = new GroupRecord();
 			gr.setGroupName(name);
 			if (quotaDefined) {
 				gr.setQuota(quota);
