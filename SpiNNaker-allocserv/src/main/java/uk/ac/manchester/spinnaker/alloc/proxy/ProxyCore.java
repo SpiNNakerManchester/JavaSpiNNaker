@@ -254,7 +254,7 @@ public class ProxyCore implements AutoCloseable {
 		this.idIssuer = idIssuer;
 		this.writeCounts = writeCounts;
 		this.localHost = localHost;
-		for (ConnectionInfo ci : connections) {
+		for (var ci : connections) {
 			try {
 				hosts.put(ci.getChip(),
 						InetAddress.getByName(ci.getHostname()));

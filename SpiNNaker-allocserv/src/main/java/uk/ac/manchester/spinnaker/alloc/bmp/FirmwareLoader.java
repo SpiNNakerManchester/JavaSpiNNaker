@@ -356,7 +356,7 @@ public class FirmwareLoader {
 	}
 
 	private static int crc(Resource r) throws IOException {
-		try (InputStream s = new BufferedInputStream(r.getInputStream())) {
+		try (var s = new BufferedInputStream(r.getInputStream())) {
 			return crc(s);
 		}
 	}

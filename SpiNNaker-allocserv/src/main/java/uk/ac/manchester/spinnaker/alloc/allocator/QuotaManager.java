@@ -190,7 +190,7 @@ public class QuotaManager extends DatabaseAwareBean {
 			return;
 		}
 		// Split off for testability
-		try (Connection c = getConnection()) {
+		try (var c = getConnection()) {
 			doConsolidate(c);
 		} catch (DataAccessException e) {
 			if (isBusy(e)) {

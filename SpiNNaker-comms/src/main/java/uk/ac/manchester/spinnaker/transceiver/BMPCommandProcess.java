@@ -165,12 +165,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	@SuppressWarnings("unchecked")
 	<T extends R> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException {
-		ValueHolder<R> holder = new ValueHolder<>();
+		var holder = new ValueHolder<R>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
-		RequestPipeline requestPipeline = new RequestPipeline(
+		var requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
 		requestPipeline.sendRequest((BMPRequest<R>) request, retries,
 				holder::setValue);
@@ -202,9 +202,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
 			throws IOException, ProcessException {
-		List<R> results = new ArrayList<>();
+		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
-		for (BMPRequest<T> request : requests) {
+		for (var request : requests) {
 			if (requestPipeline == null) {
 				/*
 				 * If no pipeline built yet, build one on the connection
@@ -246,9 +246,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
 			int retries) throws IOException, ProcessException {
-		List<R> results = new ArrayList<>();
+		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
-		for (BMPRequest<T> request : requests) {
+		for (var request : requests) {
 			if (requestPipeline == null) {
 				/*
 				 * If no pipeline built yet, build one on the connection
@@ -414,7 +414,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 					.issueSequenceNumber(requests.keySet());
 
 			// Send the request, keeping track of how many are sent
-			Request req = new Request(request, retries, callback);
+			var req = new Request(request, retries, callback);
 			if (requests.put(sequence, req) != null) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");

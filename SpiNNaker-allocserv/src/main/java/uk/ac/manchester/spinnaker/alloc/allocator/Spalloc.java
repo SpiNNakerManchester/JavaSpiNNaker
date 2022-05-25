@@ -763,7 +763,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			width = rs.getInt("width");
 			height = rs.getInt("height");
 			inService = rs.getBoolean("in_service");
-			try (Query getTags = conn.query(GET_TAGS)) {
+			try (var getTags = conn.query(GET_TAGS)) {
 				tags = getTags.call(id).map(string("tag")).toSet();
 			}
 		}

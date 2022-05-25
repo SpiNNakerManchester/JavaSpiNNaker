@@ -417,7 +417,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	private static class ExistingFileConverter implements ITypeConverter<File> {
 		@Override
 		public File convert(String value) throws Exception {
-			File f = new File(value);
+			var f = new File(value);
 			if (!f.isFile() || !f.canRead()) {
 				throw new TypeConversionException("file must be readable");
 			}
@@ -435,11 +435,10 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	 *             If things go wrong
 	 */
 	public static void main(String... args) throws Exception {
-		try (MachineDefinitionConverter loader =
-				new MachineDefinitionConverter()) {
-			Arguments a = populateCommand(new Arguments(), args);
-			Configuration config = loader
-					.loadClassicConfigurationDefinition(a.configFile, false);
+		try (var loader = new MachineDefinitionConverter()) {
+			var a = populateCommand(new Arguments(), args);
+			var config = loader.loadClassicConfigurationDefinition(a.configFile,
+					false);
 			getJsonWriter().writeValue(a.destination, config);
 		} catch (ParameterException e) {
 			err.println(e.getMessage());

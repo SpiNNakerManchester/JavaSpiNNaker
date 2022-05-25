@@ -113,7 +113,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * Context adapter. Allows this code to be used like this:
 	 *
 	 * <pre>
-	 * try (AutoCloseable c = client.withConnection()) {
+	 * try (var c = client.withConnection()) {
 	 *     ...
 	 * }
 	 * </pre>

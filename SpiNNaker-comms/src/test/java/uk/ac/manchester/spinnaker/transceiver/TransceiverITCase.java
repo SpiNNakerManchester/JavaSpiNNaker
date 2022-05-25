@@ -171,7 +171,7 @@ public class TransceiverITCase {
 	}
 
 	private void section(String title, Call call) throws Exception {
-		try (Section s = new Section(title)) {
+		try (var s = new Section(title)) {
 			call.call();
 		}
 	}

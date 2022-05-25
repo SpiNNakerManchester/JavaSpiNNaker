@@ -229,7 +229,7 @@ public class BMPController extends DatabaseAwareBean {
 			epochs.nextJobsEpoch();
 			epochs.nextMachineEpoch();
 		}
-		for (Request req : takeRequests()) {
+		for (var req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
 	}
@@ -780,7 +780,7 @@ public class BMPController extends DatabaseAwareBean {
 		markAllForStop();
 		executor.shutdown();
 		synchronized (state) {
-			for (WorkerState ws : state.values()) {
+			for (var ws : state.values()) {
 				ws.interrupt();
 			}
 		}

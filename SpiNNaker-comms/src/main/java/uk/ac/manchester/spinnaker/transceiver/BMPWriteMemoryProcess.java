@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.util.Optional.empty;
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,7 +77,7 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
-				ByteBuffer buffer = data.asReadOnlyBuffer();
+				var buffer = data.asReadOnlyBuffer();
 				buffer.position(offset);
 				buffer.limit(offset + chunkSize);
 				offset += chunkSize;
@@ -106,12 +107,12 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 		ValueHolder<IOException> exn = new ValueHolder<IOException>();
 		execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
 			private ByteBuffer workingBuffer =
-					allocate(Constants.UDP_MESSAGE_MAX_SIZE);
+					allocate(UDP_MESSAGE_MAX_SIZE);
 
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
 				try {
-					ByteBuffer buffer = workingBuffer.slice();
+					var buffer = workingBuffer.slice();
 					// After this, chunkSize is REAL chunk size or -1
 					chunkSize = data.read(buffer.array(), 0, chunkSize);
 					if (chunkSize < 1) {
@@ -181,8 +182,7 @@ abstract class BMPWriteIterator
 		if (sizeRemaining < 1) {
 			return false;
 		}
-		Optional<ByteBuffer> bb = prepareSendBuffer(
-				min(sizeRemaining, Constants.UDP_MESSAGE_MAX_SIZE));
+		var bb = prepareSendBuffer(min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
 		sendBuffer = bb.orElse(null);
 		return bb.isPresent();
 	}
@@ -201,5 +201,9 @@ abstract class BMPWriteIterator
 	@Override
 	public Iterator<BMPWriteMemory> iterator() {
 		return this;
+	}
+
+	static {
+		Constants.class.getClass();
 	}
 }

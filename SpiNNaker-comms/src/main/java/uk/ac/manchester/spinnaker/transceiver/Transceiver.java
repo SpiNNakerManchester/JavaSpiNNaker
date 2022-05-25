@@ -1726,8 +1726,7 @@ public class Transceiver extends UDPTransceiver
 			File file) throws IOException, ProcessException {
 		BMPWriteMemoryProcess wmp =
 				new BMPWriteMemoryProcess(bmpConnection(bmp), this);
-		try (BufferedInputStream f =
-				new BufferedInputStream(new FileInputStream(file))) {
+		try (var f = new BufferedInputStream(new FileInputStream(file))) {
 			// The file had better fit...
 			wmp.writeMemory(board, baseAddress, f, (int) file.length());
 		}
@@ -1776,8 +1775,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
 			File file) throws ProcessException, IOException {
-		try (BufferedInputStream f =
-				new BufferedInputStream(new FileInputStream(file))) {
+		try (var f = new BufferedInputStream(new FileInputStream(file))) {
 			// The file had better fit...
 			new BMPWriteSerialFlashProcess(bmpConnection(bmp), this)
 					.write(board, baseAddress, f, (int) file.length());

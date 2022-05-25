@@ -278,7 +278,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public int read() throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(1);
+					var b = AbstractIO.this.read(1);
 					return b[0];
 				} catch (EOFException e) {
 					return -1;
@@ -292,7 +292,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public int read(byte[] buffer) throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(buffer.length);
+					var b = AbstractIO.this.read(buffer.length);
 					arraycopy(b, 0, buffer, 0, b.length);
 					return b.length;
 				} catch (EOFException e) {
@@ -308,7 +308,7 @@ public interface AbstractIO extends AutoCloseable {
 			public int read(byte[] buffer, int offset, int length)
 					throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(length);
+					var b = AbstractIO.this.read(length);
 					arraycopy(b, 0, buffer, offset, b.length);
 					return b.length;
 				} catch (EOFException e) {
@@ -345,7 +345,7 @@ public interface AbstractIO extends AutoCloseable {
 		return new OutputStream() {
 			@Override
 			public void write(int b) throws IOException {
-				byte[] buffer = new byte[1];
+				var buffer = new byte[1];
 				buffer[0] = (byte) (b & BYTE_MASK);
 				try {
 					AbstractIO.this.write(buffer);
@@ -370,7 +370,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public void write(byte[] bytes, int offset, int length)
 					throws IOException {
-				byte[] buffer = new byte[length];
+				var buffer = new byte[length];
 				arraycopy(bytes, offset, buffer, 0, length);
 				try {
 					AbstractIO.this.write(buffer);

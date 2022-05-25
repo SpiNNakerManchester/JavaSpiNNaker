@@ -1042,7 +1042,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default int readBMPMemoryWord(BMPCoords bmp, BMPBoard board, int address)
 			throws IOException, ProcessException {
-		ByteBuffer b = readBMPMemory(bmp, board, address, WORD_SIZE);
+		var b = readBMPMemory(bmp, board, address, WORD_SIZE);
 		return b.getInt(0);
 	}
 
@@ -1129,8 +1129,7 @@ public interface BMPTransceiverInterface {
 	 */
 	default void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		ByteBuffer data = ByteBuffer.allocate(WORD_SIZE);
-		data.order(LITTLE_ENDIAN);
+		var data = ByteBuffer.allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		data.putInt(dataWord);
 		data.flip();
 		writeBMPMemory(bmp, board, baseAddress, data);
@@ -1544,7 +1543,7 @@ public interface BMPTransceiverInterface {
 		int offset = 0;
 
 		while (true) {
-			ByteBuffer buf = data.asReadOnlyBuffer();
+			var buf = data.asReadOnlyBuffer();
 			buf.position(offset)
 					.limit(min(offset + FLASH_CHUNK_SIZE, buf.capacity()));
 			int length = buf.remaining();

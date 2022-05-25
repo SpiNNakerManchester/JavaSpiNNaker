@@ -474,10 +474,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		default String getStringClaim(String claimName) {
 			return getOpenIdUser()
 					.map(u -> Objects.toString(u.getAttribute(claimName)))
-					.orElseGet(() -> getOpenIdToken()
-							.map(t -> t.getClaimAsString(claimName))
-							.orElseThrow(() -> new IllegalStateException(
-									"no user or token to supply claim")));
+					.or(() -> getOpenIdToken()
+							.map(t -> t.getClaimAsString(claimName)))
+					.orElseThrow(() -> new IllegalStateException(
+							"no user or token to supply claim"));
 		}
 
 		/**

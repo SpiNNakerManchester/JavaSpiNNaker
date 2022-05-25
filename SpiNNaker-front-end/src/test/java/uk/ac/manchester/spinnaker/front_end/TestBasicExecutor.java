@@ -111,7 +111,7 @@ public class TestBasicExecutor {
 		var sum = new AtomicInteger(0);
 		long before, after;
 
-		try (BasicExecutor exe = new BasicExecutor(SCALE)) {
+		try (var exe = new BasicExecutor(SCALE)) {
 			before = currentTimeMillis();
 			var t = exe.submitTasks(range(0, SCALE).mapToObj(i -> () -> {
 				Thread.sleep(SHORT);

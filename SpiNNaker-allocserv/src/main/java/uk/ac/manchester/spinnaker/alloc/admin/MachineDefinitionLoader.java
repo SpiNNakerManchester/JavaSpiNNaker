@@ -774,7 +774,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 	@PostConstruct
 	private void setUp() {
-		try (Connection conn = getConnection()) {
+		try (var conn = getConnection()) {
 			DirInfo.load(conn);
 		}
 	}
