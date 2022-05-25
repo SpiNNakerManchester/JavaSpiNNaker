@@ -41,7 +41,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
@@ -49,6 +48,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -72,7 +72,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
 @EnableWebSecurity
 @Role(ROLE_APPLICATION)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 	private static final Logger log = getLogger(SecurityConfig.class);
 
 	/** How to assert that a user must be an admin. */
@@ -164,15 +164,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return urlMaker.systemUrl("perform_oidc/" + suffix);
 	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		/*
-		 * The /info part reveals admin details; you need ROLE_ADMIN to view it.
-		 * Everything to do with logging in MUST NOT require being logged in.
-		 * For anything else, as long as you are authenticated we're happy. SOME
-		 * calls have additional requirements; those are annotated
-		 * with @PreAuthorize and a suitable auth expression.
-		 */
+	/**
+	 * Set up access control policies where they're not done by method security.
+	 * The {@code /info} part reveals admin details; you need {@code ROLE_ADMIN}
+	 * to view it. Everything to do with logging in <strong>must not</strong>
+	 * require being logged in. For anything else, as long as you are
+	 * authenticated we're happy. <em>Some</em> calls have additional
+	 * requirements; those are annotated with {@link PreAuthorize @PreAuthorize}
+	 * and a suitable auth expression.
+	 *
+	 * @param http Where the configuration is applied to.
+	 * @throws Exception
+	 */
+	private void defineAccessPolicy(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				// General metadata pages require ADMIN access
 				.antMatchers(urlMaker.serviceUrl("info*"),
@@ -186,9 +190,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 				// Everything else requires post-login
 				.anyRequest().authenticated();
+	}
+
+	/**
+	 * How we handle the mechanics of login with the REST API.
+	 *
+	 * @param http Where the configuration is applied to.
+	 * @throws Exception
+	 */
+	private void defineAPILoginRules(HttpSecurity http) throws Exception {
 		if (properties.isBasic()) {
 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 		}
+		if (properties.getOpenid().isEnable()) {
+			http.oauth2ResourceServer()
+					.authenticationEntryPoint(authenticationEntryPoint).jwt()
+					.jwtAuthenticationConverter(authConverter());
+		}
+	}
+
+	/**
+	 * How we handle the mechanics of login within the web UI.
+	 *
+	 * @param http Where the configuration is applied to.
+	 * @throws Exception
+	 */
+	private void defineWebUILoginRules(HttpSecurity http) throws Exception {
 		String loginUrl = urlMaker.systemUrl("login.html");
 		String rootPage = urlMaker.systemUrl("");
 		if (properties.getOpenid().isEnable()) {
@@ -205,11 +232,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true").userInfoEndpoint()
 					.userAuthoritiesMapper(userAuthoritiesMapper());
 			http.oauth2Client();
-			http.oauth2ResourceServer()
-					.authenticationEntryPoint(authenticationEntryPoint).jwt()
-					.jwtAuthenticationConverter(authConverter());
-			http.addFilterAfter(authApplicationFilter,
-					BasicAuthenticationFilter.class);
 		}
 		if (properties.isLocalForm()) {
 			http.formLogin().loginPage(loginUrl)
@@ -218,15 +240,41 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.failureUrl(loginUrl + "?error=true")
 					.failureHandler(authenticationFailureHandler);
 		}
-		/*
-		 * Logging out is common code, but pretty pointless for Basic Auth as
-		 * browsers will just log straight back in again. Still, it is
-		 * meaningful.
-		 */
+	}
+
+	/**
+	 * Logging out is common code between the UI and the API, but pretty
+	 * pointless for Basic Auth as browsers will just log straight back in
+	 * again. Still, it is meaningful (it invalidates the session).
+	 *
+	 * @param http Where the configuration is applied to.
+	 * @throws Exception
+	 */
+	private void defineLogoutRules(HttpSecurity http) throws Exception {
+		String loginUrl = urlMaker.systemUrl("login.html");
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.addLogoutHandler((req, resp, auth) -> clearToken(req))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
 				.logoutSuccessUrl(loginUrl);
+	}
+
+	/**
+	 * Define our main security controls.
+	 * @param http Used to build the filter chain.
+	 * @return The filter chain that implements the controls.
+	 * @throws Exception
+	 */
+	@Bean
+	@Role(ROLE_SUPPORT)
+	public SecurityFilterChain securityFilter(HttpSecurity http)
+			throws Exception {
+		defineAccessPolicy(http);
+		defineAPILoginRules(http);
+		defineWebUILoginRules(http);
+		defineLogoutRules(http);
+		http.addFilterAfter(authApplicationFilter,
+				BasicAuthenticationFilter.class);
+		return http.build();
 	}
 
 	/**

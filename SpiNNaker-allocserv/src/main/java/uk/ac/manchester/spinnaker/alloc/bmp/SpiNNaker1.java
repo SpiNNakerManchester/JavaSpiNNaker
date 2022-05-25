@@ -314,4 +314,10 @@ class SpiNNaker1 implements SpiNNakerControl {
 			throws ProcessException, InterruptedException, IOException {
 		txrx.powerOff(remap(boards));
 	}
+
+	@SuppressWarnings("unused")
+	private abstract static class Use {
+		Use(FirmwareLoaderException q) {
+		}
+	}
 }
