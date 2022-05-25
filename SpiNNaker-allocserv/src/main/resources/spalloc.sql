@@ -155,6 +155,35 @@ BEGIN
 	WHERE report_id = NEW.report_id;
 END;
 
+CREATE TABLE IF NOT EXISTS blacklisted_chips(
+	blacklist_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	x INTEGER NOT NULL, -- Board-relative coordinates
+	y INTEGER NOT NULL, -- Board-relative coordinates
+	notes TEXT);
+CREATE UNIQUE INDEX IF NOT EXISTS blacklisted_chips_sanity on blacklisted_chips(
+	board_id ASC, x ASC, y ASC);
+
+CREATE TABLE IF NOT EXISTS blacklisted_cores(
+	blacklist_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	x INTEGER NOT NULL, -- Board-relative coordinates
+	y INTEGER NOT NULL, -- Board-relative coordinates
+	physical_core INTEGER NOT NULL,
+	notes TEXT);
+CREATE UNIQUE INDEX IF NOT EXISTS blacklisted_cores_sanity on blacklisted_cores(
+	board_id ASC, x ASC, y ASC, physical_core ASC);
+
+CREATE TABLE IF NOT EXISTS blacklisted_links(
+	blacklist_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	x INTEGER NOT NULL,
+	y INTEGER NOT NULL,
+	direction INTEGER NOT NULL REFERENCES directions("id") ON DELETE RESTRICT,
+	notes TEXT);
+CREATE UNIQUE INDEX IF NOT EXISTS blacklisted_links_sanity on blacklisted_links(
+	board_id ASC, x ASC, y ASC, direction ASC);
+
 CREATE TABLE IF NOT EXISTS job_states(
 	"id" INTEGER PRIMARY KEY,
 	"name" TEXT UNIQUE NOT NULL
