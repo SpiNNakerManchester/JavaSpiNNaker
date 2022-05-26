@@ -20,7 +20,6 @@ import static uk.ac.manchester.spinnaker.messages.bmp.BMPInfo.SERIAL;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
@@ -44,12 +43,12 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	/** An SCP response to a request for serial data. */
 	public final class Response extends BMPRequest.BMPResponse {
 		/** The serial data. */
-		public final IntBuffer vector;
+		public final SerialVector vector;
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Read Serial Vector", CMD_BMP_INFO, buffer);
-			vector = buffer.asIntBuffer().asReadOnlyBuffer();
+			vector = new SerialVector(buffer);
 		}
 	}
 }

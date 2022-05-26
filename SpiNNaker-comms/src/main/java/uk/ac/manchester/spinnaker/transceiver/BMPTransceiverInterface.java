@@ -1223,6 +1223,41 @@ public interface BMPTransceiverInterface {
 			int length) throws IOException, ProcessException;
 
 	/**
+	 * Read the BMP serial number from a board.
+	 *
+	 * @param bmp
+	 *            Which BMP are we sending messages to directly?
+	 * @param board
+	 *            Which board's BMP (of those managed by the BMP we send the
+	 *            message to) are we getting the serial number from?
+	 * @return The LPC1768 serial number.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException;
+
+	/**
+	 * Read the BMP serial number from a board.
+	 *
+	 * @param board
+	 *            Which board's BMP are we reading the serial number of? Must
+	 *            be one controlled by the current bound BMP.
+	 * @return The LPC1768 serial number.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default String readBoardSerialNumber(BMPBoard board)
+			throws ProcessException, IOException {
+		return readBoardSerialNumber(getBoundBMP(), board);
+	}
+
+	/**
 	 * Read the CRC32 checksum of BMP serial flash memory.
 	 *
 	 * @param board

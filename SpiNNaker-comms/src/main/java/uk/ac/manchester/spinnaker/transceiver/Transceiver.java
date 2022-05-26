@@ -23,6 +23,7 @@ import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -1741,13 +1742,19 @@ public class Transceiver extends UDPTransceiver
 		}
 	}
 
-	private static final int FLASH_BUFFER_INDEX = 5;
-
 	@Override
 	public int getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		return bmpCall(bmp, new ReadSerialVector(board)).vector
-				.get(FLASH_BUFFER_INDEX);
+		return bmpCall(bmp, new ReadSerialVector(board)).vector.flashBuffer;
+	}
+
+	@Override
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		int[] serialNumber = bmpCall(bmp,
+				new ReadSerialVector(board)).vector.serialNumber;
+		return format("%08x-%08x-%08x-%08x",
+				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
 	}
 
 	@Override
