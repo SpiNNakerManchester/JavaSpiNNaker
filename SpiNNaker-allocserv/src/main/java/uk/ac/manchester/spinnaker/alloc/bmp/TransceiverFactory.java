@@ -56,6 +56,7 @@ import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
@@ -220,7 +221,7 @@ public class TransceiverFactory
 	}
 }
 
-class DummyTransceiver extends UnimplementedTransceiver {
+class DummyTransceiver extends UnimplementedBMPTransceiver {
 	private static final Logger log = getLogger(DummyTransceiver.class);
 
 	private static final int VERSION_INFO_SIZE = 32;
