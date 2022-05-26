@@ -69,7 +69,7 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
+			super("Erase Flash Memory", CMD_FLASH_ERASE, buffer);
 			address = buffer.getInt();
 		}
 	}

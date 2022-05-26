@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPReadSerialFlash;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
 import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
@@ -71,7 +71,7 @@ class BMPReadSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 			Accumulator<T> accum) throws ProcessException, IOException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			accum.add(offset, execute(new BMPReadSerialFlash(board,
+			accum.add(offset, execute(new ReadSerialFlash(board,
 					address + offset, chunk)).data);
 		}
 		return accum.finish();

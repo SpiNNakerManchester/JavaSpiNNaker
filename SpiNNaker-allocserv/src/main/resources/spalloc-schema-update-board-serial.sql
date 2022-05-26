@@ -13,8 +13,14 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ALTER TABLE boards ADD COLUMN serial_id TEXT;
+ALTER TABLE boards ADD COLUMN physical_serial_id TEXT;
+-- Note that the BMP serial ID is per board;
+-- it's not in the bmp table because not all BMPs are directly addressible.
+ALTER TABLE boards ADD COLUMN bmp_serial_id TEXT;
 
-CREATE UNIQUE INDEX IF NOT EXISTS boardSerialSanity ON boards(
-	serial_id ASC
+CREATE UNIQUE INDEX IF NOT EXISTS boardPhysicalSerialSanity ON boards(
+	physical_serial_id ASC
+);
+CREATE UNIQUE INDEX IF NOT EXISTS boardBMPSerialSanity ON boards(
+	bmp_serial_id ASC
 );

@@ -71,7 +71,7 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException, UnknownHostException {
-			super("Read ADC", CMD_BMP_INFO, buffer);
+			super("Read IP Address Data", CMD_BMP_INFO, buffer);
 			byte[] bmpChunk = getChunk(buffer);
 			byte[] spinChunk = getChunk(buffer);
 			bmpIPAddress = getIP(bmpChunk);

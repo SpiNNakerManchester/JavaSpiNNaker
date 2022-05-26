@@ -48,7 +48,7 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_BMP_INFO, buffer);
+			super("Read Serial Vector", CMD_BMP_INFO, buffer);
 			vector = buffer.asIntBuffer().asReadOnlyBuffer();
 		}
 	}
