@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,16 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 public enum BMPInfo {
 	/** Serial flash information. */
 	SERIAL(0),
+	/** Data read from EEPROM. {@code ee_data_t} contents. */
+	EE_BUF(1),
 	/** CAN status information. */
 	CAN_STATUS(2),
 	/** ADC information. */
 	ADC(3),
 	/** IP Address. */
-	IP_ADDR(4);
+	IP_ADDR(4),
+	/** Uninitialised vector. 8 words, from {@code uni_vec}. */
+	UNINIT_VEC(5);
 
 	/** The raw BMP value. */
 	public final byte value;
