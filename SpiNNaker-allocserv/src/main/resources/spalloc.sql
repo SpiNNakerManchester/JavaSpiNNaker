@@ -108,6 +108,7 @@ BEGIN
 		WHERE board_id = NEW.board_id AND OLD.board_power IS NOT 1 AND NEW.board_power IS 1;
 END;
 
+-- These are the *DIRECTLY* addressible BMPs, one per frame
 CREATE TABLE IF NOT EXISTS bmp (
 	bmp_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	machine_id INTEGER NOT NULL REFERENCES machines(machine_id) ON DELETE RESTRICT,
@@ -155,34 +156,37 @@ BEGIN
 	WHERE report_id = NEW.report_id;
 END;
 
+-- Per-chip blacklist data; may include boards not in any known machine
 CREATE TABLE IF NOT EXISTS blacklisted_chips(
 	blacklist_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	physical_serial_id TEXT NOT NULL, -- REFERENCES boards(physical_serial_id)
 	x INTEGER NOT NULL, -- Board-relative coordinates
 	y INTEGER NOT NULL, -- Board-relative coordinates
 	notes TEXT);
 CREATE UNIQUE INDEX IF NOT EXISTS blacklisted_chips_sanity on blacklisted_chips(
-	board_id ASC, x ASC, y ASC);
+	physical_serial_id ASC, x ASC, y ASC);
 
+-- Per-physical-core blacklist data; may include boards not in any known machine
 CREATE TABLE IF NOT EXISTS blacklisted_cores(
 	blacklist_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	physical_serial_id TEXT NOT NULL, -- REFERENCES boards(physical_serial_id)
 	x INTEGER NOT NULL, -- Board-relative coordinates
 	y INTEGER NOT NULL, -- Board-relative coordinates
 	physical_core INTEGER NOT NULL,
 	notes TEXT);
 CREATE UNIQUE INDEX IF NOT EXISTS blacklisted_cores_sanity on blacklisted_cores(
-	board_id ASC, x ASC, y ASC, physical_core ASC);
+	physical_serial_id ASC, x ASC, y ASC, physical_core ASC);
 
+-- Per-link blacklist data; may include boards not in any known machine
 CREATE TABLE IF NOT EXISTS blacklisted_links(
 	blacklist_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	board_id INTEGER NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	physical_serial_id TEXT NOT NULL, -- REFERENCES boards(physical_serial_id)
 	x INTEGER NOT NULL,
 	y INTEGER NOT NULL,
 	direction INTEGER NOT NULL REFERENCES directions("id") ON DELETE RESTRICT,
 	notes TEXT);
 CREATE UNIQUE INDEX IF NOT EXISTS blacklisted_links_sanity on blacklisted_links(
-	board_id ASC, x ASC, y ASC, direction ASC);
+	physical_serial_id ASC, x ASC, y ASC, direction ASC);
 
 CREATE TABLE IF NOT EXISTS job_states(
 	"id" INTEGER PRIMARY KEY,
