@@ -23,6 +23,8 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_ADDR;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_LEN;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import java.util.Collection;
 
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
@@ -1258,6 +1261,43 @@ public interface BMPTransceiverInterface {
 	}
 
 	/**
+	 * Read the blacklist from a board.
+	 *
+	 * @param bmp
+	 *            Which BMP are we sending messages to directly?
+	 * @param board
+	 *            Which board's blacklist are we reading?
+	 * @return The contents of the blacklist.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default Blacklist readBlacklist(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		return new Blacklist(
+				readSerialFlash(bmp, board, SF_BL_ADDR, SF_BL_LEN));
+	}
+
+	/**
+	 * Read the blacklist from a board.
+	 *
+	 * @param board
+	 *            Which board's blacklist are we reading? Must
+	 *            be one controlled by the current bound BMP.
+	 * @return The contents of the blacklist.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default Blacklist readBlacklist(BMPBoard board)
+			throws IOException, ProcessException {
+		return new Blacklist(
+				readSerialFlash(getBoundBMP(), board, SF_BL_ADDR, SF_BL_LEN));
+	}
+
+	/**
 	 * Read the CRC32 checksum of BMP serial flash memory.
 	 *
 	 * @param board
@@ -1599,4 +1639,12 @@ public interface BMPTransceiverInterface {
 			copyBMPFlash(bmp, board, baseAddress, size);
 		}
 	}
+}
+
+interface BMPConstants {
+	/** Location in serial flash of blacklist. */
+	int SF_BL_ADDR = 0x100;
+
+	/** Size of blacklist, in bytes. */
+	int SF_BL_LEN = 256;
 }
