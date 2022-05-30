@@ -43,6 +43,8 @@ public class SerialVector {
 	/** Cortex boot vector address. */
 	public final int cortexBootVector;
 
+	private static final int SERIAL_NUMBER_LENGTH = 4;
+
 	/**
 	 * @param buffer
 	 *            Where to deserialize the vector from.
@@ -50,7 +52,7 @@ public class SerialVector {
 	SerialVector(ByteBuffer buffer) {
 		IntBuffer b = buffer.asIntBuffer();
 		hardwareVersion = b.get();
-		serialNumber = new int[4];
+		serialNumber = new int[SERIAL_NUMBER_LENGTH];
 		b.get(serialNumber);
 		flashBuffer = b.get();
 		boardStat = b.get();

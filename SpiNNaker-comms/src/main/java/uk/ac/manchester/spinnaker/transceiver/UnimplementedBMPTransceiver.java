@@ -151,18 +151,21 @@ public abstract class UnimplementedBMPTransceiver
 	}
 
 	@Override
+	@Deprecated
 	public int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
 			int size) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
+	@Deprecated
 	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
+	@Deprecated
 	public void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
 			int size) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
