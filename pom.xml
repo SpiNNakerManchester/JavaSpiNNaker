@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<jackson.version>2.13.3</jackson.version>
 		<sqlite.version>3.36.0.3</sqlite.version>
 		<keycloak.version>18.0.0</keycloak.version>
-		<swagger.version>4.10.3</swagger.version>
+		<swagger.version>4.11.1</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.2</jython.version>
   	</properties>
