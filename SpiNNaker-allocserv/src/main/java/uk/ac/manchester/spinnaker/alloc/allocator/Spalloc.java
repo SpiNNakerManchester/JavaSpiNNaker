@@ -33,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
@@ -1178,10 +1179,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			owner = row.getString("owner");
 			if (nonNull(root)) {
 				try (Query boardRoot = conn.query(GET_ROOT_OF_BOARD)) {
-					boardRoot.call1(root).ifPresent(subrow -> {
-						chipRoot = new ChipLocation(subrow.getInt("root_x"),
-								subrow.getInt("root_y"));
-					});
+					chipRoot = boardRoot.call1(root)
+							.map(chip("root_x", "root_y")).orElse(null);
 				}
 			}
 			state = row.getEnum("job_state", JobState.class);
@@ -1630,13 +1629,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					row.getInt("z"));
 			physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
 					row.getInt("frame"), row.getInteger("board_num"));
-			chip = new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
+			chip = chip(row, "chip_x", "chip_y");
 			machineWidth = machine.getWidth();
 			machineHeight = machine.getHeight();
 			Integer boardX = row.getInteger("board_chip_x");
 			if (nonNull(boardX)) {
-				boardChip =
-						new ChipLocation(boardX, row.getInt("board_chip_y"));
+				boardChip = chip(row, "board_chip_x", "board_chip_y");
 			} else {
 				boardChip = chip;
 			}
@@ -1645,8 +1643,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (nonNull(jobId)) {
 				job = new JobImpl(epochs.getJobsEpoch(), jobId,
 						machine.getId());
-				job.chipRoot = new ChipLocation(row.getInt("job_root_chip_x"),
-						row.getInt("job_root_chip_y"));
+				job.chipRoot = chip(row, "job_root_chip_x", "job_root_chip_y");
 			}
 		}
 

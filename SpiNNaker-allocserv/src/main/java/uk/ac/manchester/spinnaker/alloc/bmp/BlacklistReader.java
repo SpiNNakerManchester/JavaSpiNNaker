@@ -23,6 +23,7 @@ import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toSet;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
 import java.io.BufferedReader;
@@ -44,7 +45,6 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
@@ -71,24 +71,19 @@ public class BlacklistReader extends DatabaseAwareBean {
 		return execute(conn -> readBlacklistFromDB(conn, serialNumber));
 	}
 
-	private static ChipLocation chip(Row row) {
-		return new ChipLocation(row.getInt("x"), row.getInt("y"));
-	}
-
 	private Optional<Blacklist> readBlacklistFromDB(Connection conn,
 			String serialNumber) {
 		try (Query blChips = conn.query(GET_BLACKLISTED_CHIPS);
 				Query blCores = conn.query(GET_BLACKLISTED_CORES);
 				Query blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
 			Set<ChipLocation> blacklistedChips = blChips.call(serialNumber)
-					.map(BlacklistReader::chip).toSet();
+					.map(chip("x", "y")).toSet();
 			Map<ChipLocation, Set<Integer>> blacklistedCores = blCores
 					.call(serialNumber).toCollectingMap(HashSet::new,
-							BlacklistReader::chip, integer("p"));
+							chip("x", "y"), integer("p"));
 			Map<ChipLocation, Set<Direction>> blacklistedLinks = blLinks
-					.call(serialNumber)
-					.toCollectingMap(() -> noneOf(Direction.class),
-							BlacklistReader::chip,
+					.call(serialNumber).toCollectingMap(
+							() -> noneOf(Direction.class), chip("x", "y"),
 							enumerate("direction", Direction.class));
 
 			if (blacklistedChips.isEmpty() && blacklistedCores.isEmpty()
