@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.connections.model;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * A receiver of SpiNNaker messages.
@@ -56,5 +57,34 @@ public interface MessageReceiver<MessageType> extends SocketHolder {
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
-	MessageType receiveMessage(Integer timeout) throws IOException;
+	default MessageType receiveMessage(Integer timeout) throws IOException {
+		if (timeout != null) {
+			return receiveMessage(convertTimeout(timeout));
+		}
+		// Want to wait forever but the underlying engine won't...
+		while (true) {
+			try {
+				return receiveMessage(convertTimeout(timeout));
+			} catch (SocketTimeoutException e) {
+				continue;
+			}
+		}
+	}
+
+	/**
+	 * Receives a SpiNNaker message from this connection. Blocks until a message
+	 * has been received, or a timeout occurs.
+	 *
+	 * @param timeout
+	 *            The time in seconds to wait for the message to arrive, or
+	 *            until the connection is closed.
+	 * @return the received message
+	 * @throws IOException
+	 *             If there is an error receiving the message
+	 * @throws SocketTimeoutException
+	 *             If there is a timeout during receiving
+	 * @throws IllegalArgumentException
+	 *             If one of the fields of the SpiNNaker message is invalid
+	 */
+	MessageType receiveMessage(int timeout) throws IOException;
 }

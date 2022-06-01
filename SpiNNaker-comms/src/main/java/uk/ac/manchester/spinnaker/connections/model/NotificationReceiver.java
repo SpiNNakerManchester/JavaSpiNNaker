@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,28 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.connections.model;
+
+import uk.ac.manchester.spinnaker.messages.notification.NotificationMessage;
 
 /**
- * Marker of something that is a memory region.
+ * A receiver of notification messages.
  */
-public abstract class MemoryRegion {
-
-	/** @return the index of the memory region. */
-	public abstract int getIndex();
-
-	/**
-	 * Get the address of the first byte in the region.
-	 *
-	 * @return The address.
-	 */
-	public abstract int getRegionBase();
-
-	/**
-	 * Set the address of the first byte in the region.
-	 *
-	 * @param baseAddress
-	 *            The address to set.
-	 */
-	protected abstract void setRegionBase(int baseAddress);
+public interface NotificationReceiver extends Connection,
+		MessageReceiver<NotificationMessage> {
 }

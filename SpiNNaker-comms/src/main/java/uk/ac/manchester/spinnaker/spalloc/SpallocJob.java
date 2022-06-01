@@ -67,15 +67,14 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
  * <p>
  * In its simplest form, a {@link SpallocJob} can be used as a context manager
  * like so:
- * <p>
  *
  * <pre>
  * try (SpallocJob j = new SpallocJob(new CreateJob(6).owner(me))) {
- * 	myApplication.boot(j.getHostname(), j.getDimensions());
- * 	myApplication.run(j.getHostname());
+ *     myApplication.boot(j.getHostname(), j.getDimensions());
+ *     myApplication.run(j.getHostname());
  * }
  * </pre>
- * <p>
+ *
  * In this example a six-board machine is requested and the
  * {@code try}-with-resources context is entered once the allocation has been
  * made and the allocated boards are fully powered on. When control leaves the

@@ -18,11 +18,11 @@ package uk.ac.manchester.spinnaker.connections;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 
 /**
  * An SCP connection that actually delegates message sending and receiving to
@@ -62,14 +62,15 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	DatagramChannel initialiseSocket(InetAddress localHost, Integer localPort,
-			InetAddress remoteHost, Integer remotePort) throws IOException {
+	DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
+			InetAddress remoteHost, Integer remotePort,
+			TrafficClass trafficClass) throws IOException {
 		// We never initialise a socket of our own.
 		return null;
 	}
 
 	@Override
-	ByteBuffer doReceive(Integer timeout)
+	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		return delegate.doReceive(timeout);
 	}
@@ -89,11 +90,6 @@ public class DelegatingSCPConnection extends SCPConnection {
 	void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		delegate.doSendTo(data, address, port);
-	}
-
-	@Override
-	boolean readyToReceive(int timeout) throws IOException {
-		return delegate.readyToReceive(timeout);
 	}
 
 	@Override

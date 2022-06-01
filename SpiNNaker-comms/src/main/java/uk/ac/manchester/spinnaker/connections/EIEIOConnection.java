@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_THROUGHPUT;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.readCommandMessage;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.readDataMessage;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
@@ -49,7 +50,7 @@ public class EIEIOConnection
 	 *             If there is an error setting up the communication channel
 	 */
 	public EIEIOConnection(InetAddress localHost) throws IOException {
-		super(localHost, null, null, null);
+		super(localHost, null, null, null, null);
 	}
 
 	/**
@@ -67,7 +68,7 @@ public class EIEIOConnection
 	 */
 	public EIEIOConnection(InetAddress localHost, Integer localPort)
 			throws IOException {
-		super(localHost, localPort, null, null);
+		super(localHost, localPort, null, null, null);
 	}
 
 	/**
@@ -94,7 +95,7 @@ public class EIEIOConnection
 	 */
 	public EIEIOConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort) throws IOException {
-		super(localHost, localPort, remoteHost, remotePort);
+		super(localHost, localPort, remoteHost, remotePort, IPTOS_THROUGHPUT);
 	}
 
 	@Override
@@ -188,7 +189,7 @@ public class EIEIOConnection
 	private static final int FLAG = 0x4000;
 
 	@Override
-	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(Integer timeout)
+	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(int timeout)
 			throws IOException {
 		ByteBuffer b = receive(timeout);
 		short header = b.getShort();

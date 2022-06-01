@@ -101,7 +101,6 @@ public class TestReverseIPTag {
         testNotEquals(tag, new ReverseIPTag(
                 createInetAddress((byte)45), 10, 20, new CoreLocation(2, 3, 4), 31));
 
-        assertFalse(tag.equals("tag"));
         ReverseIPTag nullTag = null;
         assertFalse(tag.equals(nullTag));
     }

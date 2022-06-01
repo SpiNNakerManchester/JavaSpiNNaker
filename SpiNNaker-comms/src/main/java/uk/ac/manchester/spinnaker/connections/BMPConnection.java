@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_RELIABILITY;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 
 import java.io.IOException;
@@ -57,7 +58,7 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	public BMPConnection(BMPConnectionData connectionData) throws IOException {
 		super(null, null, connectionData.ipAddress,
 				(connectionData.portNumber == null ? SCP_SCAMP_PORT
-						: connectionData.portNumber));
+						: connectionData.portNumber), IPTOS_RELIABILITY);
 		coords = new BMPCoords(connectionData.cabinet, connectionData.frame);
 		boards = connectionData.boards;
 	}
@@ -85,13 +86,12 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	}
 
 	@Override
-	public SCPResultMessage receiveSCPResponse(Integer timeout)
-			throws IOException {
+	public SCPResultMessage receiveSCPResponse(int timeout) throws IOException {
 		return new SCPResultMessage(receive(timeout));
 	}
 
 	@Override
-	public SDPMessage receiveMessage(Integer timeout) throws IOException {
+	public SDPMessage receiveMessage(int timeout) throws IOException {
 		return new SDPMessage(receive(timeout));
 	}
 

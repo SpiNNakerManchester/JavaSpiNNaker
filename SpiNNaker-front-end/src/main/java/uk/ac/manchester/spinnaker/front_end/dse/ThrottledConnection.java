@@ -57,7 +57,7 @@ class ThrottledConnection implements Closeable {
 	private static final Logger log = getLogger(ThrottledConnection.class);
 
 	/** The minimum interval between messages, in <em>nanoseconds</em>. */
-	public static final long THROTTLE_NS = 35000;
+	public static final long THROTTLE_NS = 50000;
 
 	/** The {@link #receive()} timeout, in milliseconds. */
 	private static final int TIMEOUT_MS = 2000;

@@ -170,6 +170,22 @@ public class Executor implements Closeable {
 	}
 
 	/**
+	 * Set the base address of the data and update the region addresses.
+	 *
+	 * @param startAddress The base address to set.
+	 */
+	public void setBaseAddress(int startAddress) {
+		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
+		for (MemoryRegion reg : memRegions) {
+			if (reg instanceof MemoryRegionReal) {
+				MemoryRegionReal r = (MemoryRegionReal) reg;
+				r.setRegionBase(nextOffset + startAddress);
+				nextOffset += r.getAllocatedSize();
+			}
+		}
+	}
+
+	/**
 	 * Get the header of the data added to a buffer.
 	 *
 	 * @param buffer
@@ -186,17 +202,12 @@ public class Executor implements Closeable {
 	 *
 	 * @param buffer
 	 *            The buffer to store it in
-	 * @param startAddress
-	 *            Where in memory the memory block is being written.
 	 */
-	public void addPointerTable(ByteBuffer buffer, int startAddress) {
+	public void addPointerTable(ByteBuffer buffer) {
 		assert buffer.order() == LITTLE_ENDIAN;
-		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
-		for (MemoryRegion r : memRegions) {
-			if (r != null) {
-				r.setRegionBase(nextOffset + startAddress);
-				buffer.putInt(r.getRegionBase());
-				nextOffset += r.getAllocatedSize();
+		for (MemoryRegion reg : memRegions) {
+			if (reg != null) {
+				buffer.putInt(reg.getRegionBase());
 			} else {
 				buffer.putInt(0);
 			}
@@ -205,9 +216,9 @@ public class Executor implements Closeable {
 
 	/** @return the size of the data that will be written to memory. */
 	public int getConstructedDataSize() {
-		return APP_PTR_TABLE_BYTE_SIZE
-				+ memRegions.stream().filter(r -> r != null)
-						.mapToInt(r -> r.getAllocatedSize()).sum();
+		return APP_PTR_TABLE_BYTE_SIZE + memRegions.stream()
+				.filter(r -> r instanceof MemoryRegionReal)
+				.mapToInt(r -> ((MemoryRegionReal) r).getAllocatedSize()).sum();
 	}
 
 	/**
@@ -217,5 +228,23 @@ public class Executor implements Closeable {
 	 */
 	public Collection<MemoryRegion> regions() {
 		return unmodifiableCollection(memRegions);
+	}
+
+	/**
+	 * Get the regions marked as referenceable during execution.
+	 *
+	 * @return The region IDs.
+	 */
+	public Collection<Integer> getReferenceableRegions() {
+		return unmodifiableCollection(funcs.getReferenceableRegions());
+	}
+
+	/**
+	 * Get the regions that are references to others.
+	 *
+	 * @return The region IDs.
+	 */
+	public Collection<Integer> getRegionsToFill() {
+		return unmodifiableCollection(funcs.getRegionsToFill());
 	}
 }

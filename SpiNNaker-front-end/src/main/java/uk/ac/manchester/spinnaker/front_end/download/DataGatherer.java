@@ -79,7 +79,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	protected static final Logger log = getLogger(DataGatherer.class);
 
 	/** The maximum number of times to retry. */
-	private static final int TIMEOUT_RETRY_LIMIT = 100;
+	private static final int TIMEOUT_RETRY_LIMIT = 15;
 
 	/**
 	 * The time delay between sending each message. In
@@ -381,7 +381,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			GatherDownloadConnection conn, Progress bar) throws IOException,
 			StorageException, TimeoutException, ProcessException {
 		try (BoardLocal c = new BoardLocal(conn.getChip())) {
-			log.info("processing fast downloads", conn.getChip());
+			log.info("processing fast downloads for {}", conn.getChip());
 			Downloader dl = new Downloader(conn);
 			for (WorkItems item : work) {
 				for (List<Region> regionsOnCore : item.regions) {
@@ -663,6 +663,13 @@ public abstract class DataGatherer extends BoardLocalSupport {
 				} while (!finished);
 				conn.sendClear(monitorCore.asCoreLocation(),
 						monitorCore.getTransactionId());
+			} catch (TimeoutException e) {
+				if (received) {
+					log.warn("received only some of the packets from <{}> "
+							+ "for {}; has something crashed?", monitorCore,
+							region);
+				}
+				throw e;
 			} finally {
 				if (!received) {
 					log.warn("never actually received any packets from "
@@ -698,6 +705,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			ByteBuffer p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
+				timeoutcount = 0;
 				return processData(p, transactionId);
 			}
 			log.debug("failed to receive on socket {}:{}.", conn.getLocalPort(),
@@ -771,7 +779,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 */
 		private boolean processTimeout(int transactionId)
 				throws IOException, TimeoutException {
-			if (++timeoutcount > TIMEOUT_RETRY_LIMIT && !received) {
+			if (++timeoutcount > TIMEOUT_RETRY_LIMIT) {
 				log.error(TIMEOUT_MESSAGE);
 				throw new TimeoutException();
 			}
