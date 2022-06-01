@@ -78,6 +78,9 @@ abstract class DBTestingUtils {
 	/** Not the name of anything. */
 	static final String NO_NAME = "gorp";
 
+	/** Not the serial number of any board. */
+	static final String NO_BOARD_SERIAL = "gorp";
+
 	/**
 	 * The columns needed to make a {@link SpallocAPI.Machine} implementation.
 	 */

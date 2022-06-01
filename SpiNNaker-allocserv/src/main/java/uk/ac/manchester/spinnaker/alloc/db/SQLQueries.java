@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistReader;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
@@ -1654,6 +1655,47 @@ public abstract class SQLQueries {
 	protected static final String CLEAR_STUCK_PENDING =
 			"UPDATE pending_changes SET in_progress = 0";
 
+	/**
+	 * Read the blacklisted chips for a board.
+	 *
+	 * @see BlacklistReader
+	 */
+	@Parameter("serial_number")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("notes")
+	protected static final String GET_BLACKLISTED_CHIPS =
+			"SELECT x, y, notes FROM blacklisted_chips "
+					+ "WHERE physical_serial_id = :serial_number";
+
+	/**
+	 * Read the blacklisted cores for a board.
+	 *
+	 * @see BlacklistReader
+	 */
+	@Parameter("serial_number")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("p")
+	@ResultColumn("notes")
+	protected static final String GET_BLACKLISTED_CORES =
+			"SELECT x, y, physical_core AS p, notes FROM blacklisted_cores "
+					+ "WHERE physical_serial_id = :serial_number";
+
+	/**
+	 * Read the blacklisted links for a board.
+	 *
+	 * @see BlacklistReader
+	 */
+	@Parameter("serial_number")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("direction")
+	@ResultColumn("notes")
+	protected static final String GET_BLACKLISTED_LINKS =
+			"SELECT x, y, direction, notes FROM blacklisted_links "
+					+ "WHERE physical_serial_id = :serial_number";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2015,6 +2057,6 @@ interface SQLQueriesUseImportsForCheckstyle {
 		DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
 		UserControl.class, AllocatorTask.class, QuotaManager.class,
 		Spalloc.class, BMPController.class, BoardIssueReport.class,
-		LocalAuthProviderImpl.class
+		LocalAuthProviderImpl.class, BlacklistReader.class
 	};
 }

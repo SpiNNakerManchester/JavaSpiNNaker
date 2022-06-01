@@ -20,25 +20,25 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
-import static java.util.EnumSet.noneOf;
-import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_LINKS_PER_ROUTER;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.OR;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.IntBinaryOperator;
-import java.util.stream.Collector;
+
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -52,11 +52,13 @@ import uk.ac.manchester.spinnaker.machine.Direction;
  * @author Donal Fellows
  */
 public class Blacklist {
+	private static final Logger log = getLogger(Blacklist.class);
+
 	private static final int SPINN5_CHIPS_PER_BOARD = 48;
 
 	private static final int COORD_BITS = 3;
 
-	private static final int COORD_MASK = 0x7;
+	private static final int COORD_MASK = (1 << COORD_BITS) - 1;
 
 	private static final int CORE_MASK = (1 << MAX_NUM_CORES) - 1;
 
@@ -72,8 +74,6 @@ public class Blacklist {
 	private Map<ChipLocation, Set<Integer>> cores = new HashMap<>();
 
 	private Map<ChipLocation, Set<Direction>> links = new HashMap<>();
-
-	private static final IntBinaryOperator OR = (a, b) -> a | b;
 
 	/**
 	 * Create a blacklist from raw data.
@@ -142,11 +142,6 @@ public class Blacklist {
 		return buf;
 	}
 
-	private static <E extends Enum<E>> Collector<E, ?, EnumSet<E>> toEnumSet(
-			Class<E> cls) {
-		return toCollection(() -> noneOf(cls));
-	}
-
 	private void decodeBlacklist(ByteBuffer buf) {
 		IntBuffer entries = buf.asIntBuffer();
 		int len = entries.get();
@@ -162,8 +157,7 @@ public class Blacklist {
 
 			// check for repeated coordinates
 			if (done.contains(b)) {
-				// TODO this should be a log/warning
-				System.out.println("duplicate chip " + bx + "," + by);
+				log.warn("duplicate chip in blacklist file: {},{}", bx, by);
 			}
 			done.add(b);
 

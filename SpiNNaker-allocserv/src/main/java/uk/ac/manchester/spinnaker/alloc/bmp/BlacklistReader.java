@@ -18,8 +18,12 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.stream;
+import static java.util.EnumSet.noneOf;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toSet;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,23 +32,74 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Component;
+
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
- * Read a blacklist from a definition file. Note that the code does not examine
- * the filename, which is often used to determine what board the blacklist
- * applies to; that is left as a problem for the caller to handle.
+ * Read a blacklist from a definition file or the database. Note that the code
+ * does not examine the filename, which is often used to determine what board
+ * the blacklist applies to; that is left as a problem for the caller to handle.
  *
  * @author Donal Fellows
  */
-public class BlacklistFileReader {
+@Component
+public class BlacklistReader extends DatabaseAwareBean {
+	/**
+	 * Read a blacklist from the database.
+	 *
+	 * @param serialNumber
+	 *            The physical serial number of the board.
+	 * @return The blacklist, if one is defined.
+	 * @throws DataAccessException
+	 *            If database access fails.
+	 */
+	public Optional<Blacklist> readBlacklistFromDB(String serialNumber) {
+		return execute(conn -> readBlacklistFromDB(conn, serialNumber));
+	}
+
+	private static ChipLocation chip(Row row) {
+		return new ChipLocation(row.getInt("x"), row.getInt("y"));
+	}
+
+	private Optional<Blacklist> readBlacklistFromDB(Connection conn,
+			String serialNumber) {
+		try (Query blChips = conn.query(GET_BLACKLISTED_CHIPS);
+				Query blCores = conn.query(GET_BLACKLISTED_CORES);
+				Query blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
+			Set<ChipLocation> blacklistedChips = blChips.call(serialNumber)
+					.map(BlacklistReader::chip).toSet();
+			Map<ChipLocation, Set<Integer>> blacklistedCores = blCores
+					.call(serialNumber).toCollectingMap(HashSet::new,
+							BlacklistReader::chip, integer("p"));
+			Map<ChipLocation, Set<Direction>> blacklistedLinks = blLinks
+					.call(serialNumber)
+					.toCollectingMap(() -> noneOf(Direction.class),
+							BlacklistReader::chip,
+							enumerate("direction", Direction.class));
+
+			if (blacklistedChips.isEmpty() && blacklistedCores.isEmpty()
+					&& blacklistedLinks.isEmpty()) {
+				return Optional.empty();
+			}
+			return Optional.of(new Blacklist(blacklistedChips, blacklistedCores,
+					blacklistedLinks));
+		}
+	}
+
 	/**
 	 * Read a blacklist from a file.
 	 *
@@ -87,10 +142,10 @@ public class BlacklistFileReader {
 		return stream(str.split(",")).map(Integer::parseInt).collect(toSet());
 	}
 
-	private static <T> Set<T> parseCommaSeparatedSet(String str,
-			Function<Integer, T> fun) {
+	private static <T extends Enum<T>> Set<T> parseCommaSeparatedSet(
+			String str, Function<Integer, T> fun, Class<T> cls) {
 		return stream(str.split(",")).map(Integer::parseInt).map(fun)
-				.collect(toSet());
+				.collect(toEnumSet(cls));
 	}
 
 	/**
@@ -156,7 +211,8 @@ public class BlacklistFileReader {
 		Set<Direction> links = null;
 		m = LINK_PATTERN.matcher(rest);
 		if (m.find()) {
-			links = parseCommaSeparatedSet(m.group("links"), Direction::byId);
+			links = parseCommaSeparatedSet(m.group("links"), Direction::byId,
+					Direction.class);
 			rest = deleteMatched(m);
 		}
 

@@ -30,6 +30,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.GROUP_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MEMBER_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MSC_BOARD_COORDS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD_SERIAL;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_GROUP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_JOB;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_MACHINE;
@@ -1072,6 +1073,40 @@ class DQLTest extends SQLQueries {
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(0).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getBlacklistedChips() {
+		try (Query q = c.query(GET_BLACKLISTED_CHIPS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("x", "y", "notes"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD_SERIAL).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getBlacklistedCores() {
+		try (Query q = c.query(GET_BLACKLISTED_CORES)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("x", "y", "p", "notes"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD_SERIAL).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getBlacklistedLinks() {
+		try (Query q = c.query(GET_BLACKLISTED_LINKS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("x", "y", "direction", "notes"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD_SERIAL).isPresent());
 			});
 		}
 	}

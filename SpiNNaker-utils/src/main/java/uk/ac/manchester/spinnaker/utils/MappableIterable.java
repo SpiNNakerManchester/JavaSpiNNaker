@@ -20,6 +20,7 @@ import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.utils.IteratorWrapper.wrap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -254,6 +255,93 @@ public interface MappableIterable<T> extends Iterable<T> {
 		Map<K, V> map = supplier.get();
 		for (T val : this) {
 			map.put(keyMapper.apply(val), valueMapper.apply(val));
+		}
+		return map;
+	}
+
+	/**
+	 * Convert this iterable to a map of lists. Items will be added to
+	 * the map and to the lists in the order of this iterable.
+	 *
+	 * @param <K>
+	 *            The type of keys.
+	 * @param <V>
+	 *            The type of leaf values.
+	 * @param keyMapper
+	 *            How to get a key from an element of the iterable.
+	 * @param valueMapper
+	 *            How to get a leaf value from an element of the iterable.
+	 * @return A map derived from the elements in the iterable. Note that this
+	 *         must be finite!
+	 */
+	default <K, V> Map<K, List<V>> toCollectingMap(
+			Function<T, K> keyMapper, Function<T, V> valueMapper) {
+		Map<K, List<V>> map = new LinkedHashMap<>();
+		for (T val : this) {
+			map.computeIfAbsent(keyMapper.apply(val),
+					k -> new ArrayList<>()).add(valueMapper.apply(val));
+		}
+		return map;
+	}
+
+	/**
+	 * Convert this iterable to a map of collections. Items will be added to
+	 * the map and to the collections in the order of this iterable.
+	 *
+	 * @param <K>
+	 *            The type of keys.
+	 * @param <V>
+	 *            The type of leaf values.
+	 * @param <S>
+	 *            The type of per-key collectors.
+	 * @param supplier
+	 *            How to make the value collectors.
+	 * @param keyMapper
+	 *            How to get a key from an element of the iterable.
+	 * @param valueMapper
+	 *            How to get a leaf value from an element of the iterable.
+	 * @return A map derived from the elements in the iterable. Note that this
+	 *         must be finite!
+	 */
+	default <K, V, S extends Collection<V>> Map<K, S> toCollectingMap(
+			Supplier<S> supplier, Function<T, K> keyMapper,
+			Function<T, V> valueMapper) {
+		Map<K, S> map = new LinkedHashMap<>();
+		for (T val : this) {
+			map.computeIfAbsent(keyMapper.apply(val), k -> supplier.get())
+					.add(valueMapper.apply(val));
+		}
+		return map;
+	}
+
+	/**
+	 * Convert this iterable to a map of collections. Items will be added to
+	 * the map and to the collections in the order of this iterable.
+	 *
+	 * @param <K>
+	 *            The type of keys.
+	 * @param <V>
+	 *            The type of leaf values.
+	 * @param <S>
+	 *            The type of per-key collectors.
+	 * @param mapSupplier
+	 *            How to make the map itself.
+	 * @param collectorSupplier
+	 *            How to make the value collectors.
+	 * @param keyMapper
+	 *            How to get a key from an element of the iterable.
+	 * @param valueMapper
+	 *            How to get a value from an element of the iterable.
+	 * @return A map derived from the elements in the iterable. Note that this
+	 *         must be finite!
+	 */
+	default <K, V, S extends Collection<V>> Map<K, S> toCollectingMap(
+			Supplier<Map<K, S>> mapSupplier, Supplier<S> collectorSupplier,
+			Function<T, K> keyMapper, Function<T, V> valueMapper) {
+		Map<K, S> map = mapSupplier.get();
+		for (T val : this) {
+			map.computeIfAbsent(keyMapper.apply(val),
+					k -> collectorSupplier.get()).add(valueMapper.apply(val));
 		}
 		return map;
 	}
