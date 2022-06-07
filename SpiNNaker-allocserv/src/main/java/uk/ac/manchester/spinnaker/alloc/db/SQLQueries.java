@@ -1714,9 +1714,10 @@ public abstract class SQLQueries {
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
 	protected static final String GET_BLACKLIST_WRITES =
-			"SELECT op_id, board_id, boards.bmp_serial_id, board_num, "
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
 					+ "cabinet, frame, data FROM blacklist_ops "
-					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id)"
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
+					+ "JOIN board_serial USING (board_id) "
 					+ "WHERE write AND data IS NOT NULL "
 					+ "AND boards.machine_id = :machine_id";
 
@@ -1733,9 +1734,10 @@ public abstract class SQLQueries {
 	@ResultColumn("cabinet")
 	@ResultColumn("frame")
 	protected static final String GET_BLACKLIST_READS =
-			"SELECT op_id, board_id, boards.bmp_serial_id, board_num, "
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
 					+ "cabinet, frame FROM blacklist_ops "
-					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id)"
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
+					+ "JOIN board_serial USING (board_id) "
 					+ "WHERE NOT write AND data IS NULL "
 					+ "AND boards.machine_id = :machine_id";
 

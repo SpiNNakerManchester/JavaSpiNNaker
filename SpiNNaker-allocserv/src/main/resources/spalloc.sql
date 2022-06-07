@@ -80,8 +80,6 @@ CREATE TABLE IF NOT EXISTS boards (
 	power_off_timestamp INTEGER, -- timestamp
 	power_on_timestamp INTEGER, -- timestamp
 	functioning INTEGER, -- boolean
-	bmp_serial_id TEXT,
-	physical_serial_id TEXT,
 	may_be_allocated INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
 		board_num IS NOT NULL
 		AND allocated_job IS NULL
@@ -109,6 +107,13 @@ BEGIN
 		SET power_on_timestamp = CAST(strftime('%s','now') AS INTEGER)
 		WHERE board_id = NEW.board_id AND OLD.board_power IS NOT 1 AND NEW.board_power IS 1;
 END;
+
+CREATE TABLE IF NOT EXISTS board_serial (
+	bs_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	board_id INTEGER UNIQUE NOT NULL REFERENCES boards(board_id) ON DELETE CASCADE,
+	bmp_serial_id TEXT UNIQUE,
+	physical_serial_id TEXT UNIQUE
+);
 
 -- These are the *DIRECTLY* addressible BMPs, one per frame
 CREATE TABLE IF NOT EXISTS bmp (
