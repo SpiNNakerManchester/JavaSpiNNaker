@@ -1660,41 +1660,123 @@ public abstract class SQLQueries {
 	 *
 	 * @see BlacklistReader
 	 */
-	@Parameter("serial_number")
+	@Parameter("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("notes")
 	protected static final String GET_BLACKLISTED_CHIPS =
-			"SELECT x, y, notes FROM blacklisted_chips "
-					+ "WHERE physical_serial_id = :serial_number";
+			"SELECT chip_x AS x, chip_y AS y, notes FROM blacklisted_chips "
+					+ "JOIN board_model_coords USING (coord_id) "
+					+ "WHERE board_id = :board_id";
 
 	/**
 	 * Read the blacklisted cores for a board.
 	 *
 	 * @see BlacklistReader
 	 */
-	@Parameter("serial_number")
+	@Parameter("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("p")
 	@ResultColumn("notes")
 	protected static final String GET_BLACKLISTED_CORES =
-			"SELECT x, y, physical_core AS p, notes FROM blacklisted_cores "
-					+ "WHERE physical_serial_id = :serial_number";
+			"SELECT chip_x AS x, chip_y AS y, physical_core AS p, notes "
+					+ "FROM blacklisted_cores "
+					+ "JOIN board_model_coords USING (coord_id) "
+					+ "WHERE board_id = :board_id";
 
 	/**
 	 * Read the blacklisted links for a board.
 	 *
 	 * @see BlacklistReader
 	 */
-	@Parameter("serial_number")
+	@Parameter("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("direction")
 	@ResultColumn("notes")
 	protected static final String GET_BLACKLISTED_LINKS =
-			"SELECT x, y, direction, notes FROM blacklisted_links "
-					+ "WHERE physical_serial_id = :serial_number";
+			"SELECT chip_x AS x, chip_y AS y, direction, notes "
+					+ "FROM blacklisted_links "
+					+ "JOIN board_model_coords USING (coord_id) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Get the list of writes (to the machine) of blacklist data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_BLACKLIST_WRITES =
+			"SELECT op_id, board_id, boards.bmp_serial_id, board_num, "
+					+ "cabinet, frame, data FROM blacklist_ops "
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id)"
+					+ "WHERE write AND data IS NOT NULL "
+					+ "AND boards.machine_id = :machine_id";
+
+	/**
+	 * Get the list of reads (from the machine) of blacklist data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_BLACKLIST_READS =
+			"SELECT op_id, board_id, boards.bmp_serial_id, board_num, "
+					+ "cabinet, frame FROM blacklist_ops "
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id)"
+					+ "WHERE NOT write AND data IS NULL "
+					+ "AND boards.machine_id = :machine_id";
+
+	/**
+	 * Set the BMP and physical serial IDs based on the information actually
+	 * read off the machine.
+	 *
+	 * @see BMPController
+	 */
+	// FIXME test
+	@Parameter("bmp_serial_id")
+	@Parameter("physical_serial_id")
+	@Parameter("board_id")
+	protected static final String SET_BOARD_SERIAL_IDS =
+			"UPDATE boards SET bmp_serial_id = :bmp_serial_id, "
+					+ "physical_serial_id = :physical_serial_id "
+					+ "WHERE board_id = :board_id";
+
+	// TODO get completed blacklist reads and writes
+
+	/**
+	 * Mark a read of a blacklist as completed.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("data")
+	@Parameter("op_id")
+	// FIXME test
+	protected static final String COMPLETED_BLACKLIST_READ =
+			"UPDATE blacklist_ops SET data = :data, completed = 1 "
+					+ "WHERE op_id = :op_id";
+
+	/**
+	 * Mark a write of a blacklist as completed.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("op_id")
+	// FIXME test
+	protected static final String COMPLETED_BLACKLIST_WRITE =
+			"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

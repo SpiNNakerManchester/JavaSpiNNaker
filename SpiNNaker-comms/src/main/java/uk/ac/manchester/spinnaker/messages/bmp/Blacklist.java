@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.OR;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
@@ -51,7 +52,9 @@ import uk.ac.manchester.spinnaker.machine.Direction;
  *
  * @author Donal Fellows
  */
-public class Blacklist {
+public class Blacklist implements Serializable {
+	private static final long serialVersionUID = -7759940789892168209L;
+
 	private static final Logger log = getLogger(Blacklist.class);
 
 	private static final int SPINN5_CHIPS_PER_BOARD = 48;

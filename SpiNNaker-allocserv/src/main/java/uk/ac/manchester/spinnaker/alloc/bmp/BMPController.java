@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
@@ -78,6 +79,7 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -109,9 +111,12 @@ public class BMPController extends DatabaseAwareBean {
 	@Autowired
 	private TxrxProperties props;
 
+	@Autowired
+	private PhysicalSerialMapping phySerMap;
+
 	/**
 	 * Factory for {@linkplain SpiNNakerControl controllers}. Only use via
-	 * {@link #getControllers(Request) getControllers(...)}.
+	 * {@link #getControllers(PowerRequest) getControllers(...)}.
 	 */
 	@Autowired
 	private ObjectProvider<SpiNNakerControl> controllerFactory;
@@ -263,6 +268,14 @@ public class BMPController extends DatabaseAwareBean {
 		return state.values().stream().mapToInt(s -> s.requests.size()).sum();
 	}
 
+	private abstract static class Request {
+		final Machine machine;
+
+		Request(Machine machine) {
+			this.machine = requireNonNull(machine);
+		}
+	}
+
 	/**
 	 * Describes a request to modify the power status of a collection of boards.
 	 * The boards must be on a single machine and must all be assigned to a
@@ -273,9 +286,7 @@ public class BMPController extends DatabaseAwareBean {
 	 *
 	 * @author Donal Fellows
 	 */
-	private final class Request {
-		private final Machine machine;
-
+	private final class PowerRequest extends Request {
 		private final Map<BMPCoords, List<Integer>> powerOnBoards;
 
 		private final Map<BMPCoords, List<Integer>> powerOffBoards;
@@ -327,13 +338,13 @@ public class BMPController extends DatabaseAwareBean {
 		 *            How to get the physical ID of a board from its database ID
 		 */
 		@SuppressWarnings("checkstyle:ParameterNumber")
-		Request(TakeReqsSQL sql, Machine machine,
+		PowerRequest(TakeReqsSQL sql, Machine machine,
 				Map<BMPCoords, List<Integer>> powerOn,
 				Map<BMPCoords, List<Integer>> powerOff,
 				Map<BMPCoords, List<Link>> links, Integer jobId, JobState from,
 				JobState to, List<Integer> changeIds,
 				Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard) {
-			this.machine = requireNonNull(machine);
+			super(machine);
 			powerOnBoards = isNull(powerOn) ? emptyMap() : powerOn;
 			powerOffBoards = isNull(powerOff) ? emptyMap() : powerOff;
 			linkRequests = isNull(links) ? emptyMap() : links;
@@ -501,8 +512,8 @@ public class BMPController extends DatabaseAwareBean {
 	 * Encapsulates several queries for {@link #takeRequests()}.
 	 */
 	private final class TakeReqsSQL extends AbstractSQL {
-		private final Query getJobIdsWithChanges =
-				conn.query(getJobsWithChanges);
+		private final Query getJobIdsWithChanges = conn
+				.query(getJobsWithChanges);
 
 		private final Query getPowerChangesToDo = conn.query(GET_CHANGES);
 
@@ -512,6 +523,11 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update setJobState = conn.update(SET_STATE_PENDING);
 
+		private final Query getBlacklistReads = conn.query(GET_BLACKLIST_READS);
+
+		private final Query getBlacklistWrites = conn
+				.query(GET_BLACKLIST_WRITES);
+
 		@Override
 		public void close() {
 			getJobIdsWithChanges.close();
@@ -519,7 +535,118 @@ public class BMPController extends DatabaseAwareBean {
 			setInProgress.close();
 			getBoardAddress.close();
 			setJobState.close();
+			getBlacklistReads.close();
+			getBlacklistWrites.close();
 			super.close();
+		}
+
+		List<BlacklistRequest> getBlacklistReads(Machine machine) {
+			return getBlacklistReads.call(machine.getId())
+					.map(row -> new BlacklistRequest(machine, false, row))
+					.toList();
+		}
+
+		List<BlacklistRequest> getBlacklistWrites(Machine machine) {
+			return getBlacklistWrites.call(machine.getId())
+					.map(row -> new BlacklistRequest(machine, false, row))
+					.toList();
+		}
+	}
+
+	/**
+	 * A request to read or write a blacklist.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class BlacklistRequest extends Request {
+		private final boolean write;
+
+		private final int opId;
+
+		private final int boardId;
+
+		private final BMPCoords bmp;
+
+		private final BMPBoard board;
+
+		private final String bmpSerialId;
+
+		private final Blacklist blacklist;
+
+		private BlacklistRequest(Machine machine, boolean write, Row row) {
+			super(machine);
+			this.write = write;
+			opId = row.getInt("op_id");
+			boardId = row.getInt("board_id");
+			bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
+			board = new BMPBoard(row.getInt("board_num"));
+			if (write) {
+				blacklist = row.getSerialObject("data", Blacklist.class);
+			} else {
+				blacklist = null;
+			}
+			bmpSerialId = row.getString("bmp_serial_id");
+		}
+
+		/** The serial number actually read from the board. */
+		private String readSerial;
+
+		private Blacklist readBlacklist;
+
+		void readBlacklist(SpiNNakerControl controller)
+				throws ProcessException, InterruptedException, IOException {
+			readSerial = controller.readSerial(board);
+			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+				log.warn(
+						"blacklist read mismatch: expected serial ID '{}' "
+								+ "not equal to actual serial ID '{}'",
+						bmpSerialId, readSerial);
+			}
+			readBlacklist = controller.readBlacklist(board);
+		}
+
+		void writeBlacklist(SpiNNakerControl controller)
+				throws ProcessException, InterruptedException, IOException {
+			readSerial = controller.readSerial(board);
+			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+				throw new IllegalStateException(format(
+						"aborting blacklist write: expected serial ID '%s' "
+								+ "not equal to actual serial ID '%s'",
+						bmpSerialId, readSerial));
+			}
+			controller.writeBlacklist(board, blacklist);
+		}
+
+		/**
+		 * @param sql
+		 *            How to access the DB
+		 * @return Whether we've changed anything
+		 */
+		boolean doneRead(AfterSQL sql) {
+			sql.setBoardSerialIds(boardId, readSerial,
+					phySerMap.getPhysicalId(readSerial));
+			return sql.completedBlacklistRead(opId, readBlacklist) > 0;
+		}
+
+		/**
+		 * @param sql
+		 *            How to access the DB
+		 * @return Whether we've changed anything
+		 */
+		boolean doneWrite(AfterSQL sql) {
+			return sql.completedBlacklistWrite(opId) > 0;
+		}
+
+		/**
+		 * @param sql
+		 *            How to access the DB
+		 * @param exn
+		 *            The exception that caused the failure.
+		 * @return Whether we've changed anything
+		 */
+		boolean failed(AfterSQL sql, Exception exn) {
+			// FIXME
+			return false;
 		}
 	}
 
@@ -541,6 +668,8 @@ public class BMPController extends DatabaseAwareBean {
 							.map(integer("job_id"))
 							.forEach(jobId -> takeRequestsForJob(machine, jobId,
 									sql, requestCollector));
+					requestCollector.addAll(sql.getBlacklistReads(machine));
+					requestCollector.addAll(sql.getBlacklistWrites(machine));
 				}
 				return requestCollector;
 			});
@@ -600,7 +729,7 @@ public class BMPController extends DatabaseAwareBean {
 			return;
 		}
 
-		requestCollector.add(new Request(sql, machine, boardsOn, boardsOff,
+		requestCollector.add(new PowerRequest(sql, machine, boardsOn, boardsOff,
 				linksOff, jobId, from, to, changeIds, idToBoard));
 		for (Integer changeId : changeIds) {
 			sql.setInProgress.call(true, changeId);
@@ -622,6 +751,12 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update deleteChange;
 
+		private final Update completedBlacklistRead;
+
+		private final Update completedBlacklistWrite;
+
+		private final Update setBoardSerialIds;
+
 		AfterSQL(Connection conn) {
 			super(conn);
 			setBoardState = conn.update(SET_BOARD_POWER);
@@ -629,10 +764,16 @@ public class BMPController extends DatabaseAwareBean {
 			setInProgress = conn.update(SET_IN_PROGRESS);
 			deallocateBoards = conn.update(DEALLOCATE_BOARDS_JOB);
 			deleteChange = conn.update(FINISHED_PENDING);
+			completedBlacklistRead = conn.update(COMPLETED_BLACKLIST_READ);
+			completedBlacklistWrite = conn.update(COMPLETED_BLACKLIST_WRITE);
+			setBoardSerialIds = conn.update(SET_BOARD_SERIAL_IDS);
 		}
 
 		@Override
 		public void close() {
+			setBoardSerialIds.close();
+			completedBlacklistWrite.close();
+			completedBlacklistRead.close();
 			deleteChange.close();
 			deallocateBoards.close();
 			setInProgress.close();
@@ -661,6 +802,20 @@ public class BMPController extends DatabaseAwareBean {
 
 		int deleteChange(Integer changeId) {
 			return deleteChange.call(changeId);
+		}
+
+		int completedBlacklistRead(Integer opId, Blacklist blacklist) {
+			return completedBlacklistRead.call(blacklist, opId);
+		}
+
+		int completedBlacklistWrite(Integer opId) {
+			return completedBlacklistWrite.call(opId);
+		}
+
+		int setBoardSerialIds(Integer boardId, String bmpSerialId,
+				String physicalSerialId) {
+			return setBoardSerialIds.call(bmpSerialId, physicalSerialId,
+					boardId);
 		}
 	}
 
@@ -836,7 +991,12 @@ public class BMPController extends DatabaseAwareBean {
 				 * this queue.
 				 */
 				if (!ws.requests.isEmpty()) {
-					processRequest(ws.requests.peek());
+					Request r = ws.requests.peek();
+					if (r instanceof PowerRequest) {
+						processRequest((PowerRequest) r);
+					} else {
+						processRequest((BlacklistRequest) r);
+					}
 					ws.requests.remove();
 				}
 
@@ -862,7 +1022,36 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
-	private void processRequest(Request request) throws InterruptedException {
+	private void processRequest(BlacklistRequest request)
+			throws InterruptedException {
+		SpiNNakerControl controller;
+		try {
+			controller = getControllers(request).get(request.bmp);
+		} catch (IOException | SpinnmanException e) {
+			// Shouldn't ever happen; the transceiver ought to be pre-built
+			log.error("could not get transceiver", e);
+			return;
+		}
+		try (MDCCloseable mdc = putCloseable("changes",
+				asList(request.write).toString())) {
+			for (int numTries = 0; numTries++ < props.getPowerAttempts();) {
+				boolean isLastTry = numTries == props.getPowerAttempts();
+				if (request.write) {
+					if (tryWriteBlacklist(request, controller, isLastTry)) {
+						break;
+					}
+				} else {
+					if (tryReadBlacklist(request, controller, isLastTry)) {
+						break;
+					}
+				}
+				sleep(props.getProbeInterval().toMillis());
+			}
+		}
+	}
+
+	private void processRequest(PowerRequest request)
+			throws InterruptedException {
 		Map<BMPCoords, SpiNNakerControl> controllers;
 		try {
 			controllers = getControllers(request);
@@ -903,12 +1092,12 @@ public class BMPController extends DatabaseAwareBean {
 	private Map<BMPCoords, SpiNNakerControl> getControllers(Request request)
 			throws IOException, SpinnmanException {
 		try {
-			Map<BMPCoords, SpiNNakerControl> map =
-					new HashMap<>(request.idToBoard.size());
-			for (BMPCoords bmp : request.idToBoard.keySet()) {
-				map.put(bmp, controllerFactory.getObject(request.machine, bmp));
+			if (request instanceof PowerRequest) {
+				return getControllersForPower((PowerRequest) request);
+			} else {
+				return getControllersForBlacklisting(
+						(BlacklistRequest) request);
 			}
-			return map;
 		} catch (BeanInitializationException | BeanCreationException e) {
 			// Smuggle the exception out from the @PostConstruct method
 			Throwable cause = e.getCause();
@@ -921,7 +1110,42 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
-	private boolean tryChangePowerState(Request request,
+	/**
+	 * Get the controllers for each real frame root BMP in the given request.
+	 *
+	 * @param request
+	 *            The request, containing all the BMP coordinates.
+	 * @return Map from BMP cooordinates to how to control it. These controllers
+	 *         can be safely communicated with in parallel.
+	 */
+	private Map<BMPCoords, SpiNNakerControl> getControllersForPower(
+			PowerRequest request) {
+		Map<BMPCoords, SpiNNakerControl> map = new HashMap<>(
+				request.idToBoard.size());
+		for (BMPCoords bmp : request.idToBoard.keySet()) {
+			map.put(bmp, controllerFactory.getObject(request.machine, bmp));
+		}
+		return map;
+	}
+
+	/**
+	 * Get the controller for the real frame root BMP in the given request.
+	 * Blacklist management requests only ever deal with a single BMP.
+	 *
+	 * @param request
+	 *            The request, containing the BMP coordinates.
+	 * @return Map from BMP cooordinates to how to control it. These controllers
+	 *         can be safely communicated with in parallel.
+	 */
+	private Map<BMPCoords, SpiNNakerControl> getControllersForBlacklisting(
+			BlacklistRequest request) {
+		Map<BMPCoords, SpiNNakerControl> map = new HashMap<>(1);
+		map.put(request.bmp,
+				controllerFactory.getObject(request.machine, request.bmp));
+		return map;
+	}
+
+	private boolean tryChangePowerState(PowerRequest request,
 			Map<BMPCoords, SpiNNakerControl> controllers, boolean isLastTry)
 			throws InterruptedException {
 		try {
@@ -963,6 +1187,94 @@ public class BMPController extends DatabaseAwareBean {
 			}
 			log.error("Requests failed on BMP(s) for {}", request.machine, e);
 			cleanupTasks.add(request::failed);
+			// This is (probably) a permanent failure; stop retry loop
+			return true;
+		}
+	}
+
+	private boolean tryReadBlacklist(BlacklistRequest request,
+			SpiNNakerControl controller, boolean isLastTry)
+			throws InterruptedException {
+		try {
+			request.readBlacklist(controller);
+			cleanupTasks.add(request::doneRead);
+			return true;
+		} catch (InterruptedException e) {
+			/*
+			 * We were interrupted! This happens when we're shutting down. Log
+			 * (because we're in an inconsistent state) and rethrow so that the
+			 * outside gets to clean up.
+			 */
+			log.error("Requests failed on BMP(s) for {} because of "
+					+ "interruption", request.machine, e);
+			cleanupTasks.add(s -> request.failed(s, e));
+			currentThread().interrupt();
+			throw e;
+		} catch (Exception e) {
+			/*
+			 * FIXME handle what happens when the hardware is unreachable
+			 *
+			 * When that happens, we must tell the alloc engine to pick
+			 * somewhere else, and we should mark the board as out of service
+			 * too; it's never going to work so taking it out right away is the
+			 * only sane plan.
+			 */
+			if (!isLastTry) {
+				/*
+				 * Log somewhat gently; we *might* be able to recover...
+				 */
+				log.warn("Retrying requests on BMP for {} after {}: {}",
+						request.machine, props.getProbeInterval(),
+						e.getMessage());
+				// Ask for a retry
+				return false;
+			}
+			log.error("Requests failed on BMP for {}", request.machine, e);
+			cleanupTasks.add(s -> request.failed(s, e));
+			// This is (probably) a permanent failure; stop retry loop
+			return true;
+		}
+	}
+
+	private boolean tryWriteBlacklist(BlacklistRequest request,
+			SpiNNakerControl controller, boolean isLastTry)
+			throws InterruptedException {
+		try {
+			request.writeBlacklist(controller);
+			cleanupTasks.add(request::doneWrite);
+			return true;
+		} catch (InterruptedException e) {
+			/*
+			 * We were interrupted! This happens when we're shutting down. Log
+			 * (because we're in an inconsistent state) and rethrow so that the
+			 * outside gets to clean up.
+			 */
+			log.error("Requests failed on BMP(s) for {} because of "
+					+ "interruption", request.machine, e);
+			cleanupTasks.add(s -> request.failed(s, e));
+			currentThread().interrupt();
+			throw e;
+		} catch (Exception e) {
+			/*
+			 * FIXME handle what happens when the hardware is unreachable
+			 *
+			 * When that happens, we must tell the alloc engine to pick
+			 * somewhere else, and we should mark the board as out of service
+			 * too; it's never going to work so taking it out right away is the
+			 * only sane plan.
+			 */
+			if (!isLastTry) {
+				/*
+				 * Log somewhat gently; we *might* be able to recover...
+				 */
+				log.warn("Retrying requests on BMP for {} after {}: {}",
+						request.machine, props.getProbeInterval(),
+						e.getMessage());
+				// Ask for a retry
+				return false;
+			}
+			log.error("Requests failed on BMP for {}", request.machine, e);
+			cleanupTasks.add(s -> request.failed(s, e));
 			// This is (probably) a permanent failure; stop retry loop
 			return true;
 		}

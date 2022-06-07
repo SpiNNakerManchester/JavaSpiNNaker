@@ -51,10 +51,13 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -96,7 +99,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Service;
 import org.sqlite.Function;
@@ -518,8 +520,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				wrapper.exec(r);
 				log.info("applied schema update from {}", r);
-			} catch (UncategorizedSQLException e) {
-				log.debug("failed to apply schema update from {}", r, e);
+			} catch (DataAccessException e) {
+				if (!e.getMessage().contains("duplicate column name")) {
+					log.warn("failed to apply schema update from {}", r, e);
+					throw e;
+				}
 			}
 		}
 	}
@@ -1540,9 +1545,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					arg = ((Duration) arg).getSeconds();
 				} else if (arg instanceof Enum) {
 					arg = ((Enum<?>) arg).ordinal();
+				} else if (arg != null && arg instanceof Serializable
+						&& !(arg instanceof String || arg instanceof Number
+								|| arg instanceof byte[])) {
+					arg = serialize(arg);
 				}
 				s.setObject(++idx, arg);
 			}
+		}
+
+		private byte[] serialize(Object obj) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+				oos.writeObject(obj);
+			} catch (IOException e) {
+				return null;
+			}
+			return baos.toByteArray();
 		}
 
 		/**

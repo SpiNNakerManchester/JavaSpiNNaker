@@ -17,15 +17,18 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -44,6 +47,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 class PhysicalSerialMapping {
+	private static final Logger log = getLogger(PhysicalSerialMapping.class);
+
 	@Value("classpath:blacklists/spin5-serial.txt")
 	private Resource spin5serialFile;
 
@@ -57,16 +62,33 @@ class PhysicalSerialMapping {
 				spin5serialFile.getInputStream(), UTF_8);
 				BufferedReader r = new BufferedReader(isr)) {
 			r.lines().map(s -> s.replaceFirst("#.*", "").trim())
-					.filter(String::isEmpty).forEach(this::parseOneMapping);
+					.filter(s -> !s.isEmpty()).forEach(this::parseOneMapping);
 		}
+		log.info("loaded physical/logical board ID map: {} entries",
+				physicalToLogical.size());
 	}
 
 	private void parseOneMapping(String line) {
 		String[] bits = line.split("\\s+", 2);
+		if (log.isTraceEnabled()) {
+			log.trace("parsing line: {}", Arrays.toString(bits));
+		}
+		if (bits.length < 2) {
+			log.debug("bogus line: {}", line);
+			return;
+		}
 		String physical = bits[0];
 		String logical = bits[1];
-		physicalToLogical.put(physical, logical);
-		logicalToPhysical.put(logical, physical);
+		String old = physicalToLogical.put(physical, logical);
+		if (old != null) {
+			log.warn("replaced mapping for {} (to {}) with {}", physical, old,
+					logical);
+		}
+		old = logicalToPhysical.put(logical, physical);
+		if (old != null) {
+			log.warn("replaced mapping for {} (to {}) with {}", logical, old,
+					physical);
+		}
 	}
 
 	/**

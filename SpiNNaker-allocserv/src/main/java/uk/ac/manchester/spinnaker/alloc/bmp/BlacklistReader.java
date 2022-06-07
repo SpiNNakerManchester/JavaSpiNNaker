@@ -61,28 +61,28 @@ public class BlacklistReader extends DatabaseAwareBean {
 	/**
 	 * Read a blacklist from the database.
 	 *
-	 * @param serialNumber
-	 *            The physical serial number of the board.
+	 * @param boardId
+	 *            The ID of the board.
 	 * @return The blacklist, if one is defined.
 	 * @throws DataAccessException
 	 *            If database access fails.
 	 */
-	public Optional<Blacklist> readBlacklistFromDB(String serialNumber) {
-		return execute(conn -> readBlacklistFromDB(conn, serialNumber));
+	public Optional<Blacklist> readBlacklistFromDB(int boardId) {
+		return execute(conn -> readBlacklistFromDB(conn, boardId));
 	}
 
 	private Optional<Blacklist> readBlacklistFromDB(Connection conn,
-			String serialNumber) {
+			int boardId) {
 		try (Query blChips = conn.query(GET_BLACKLISTED_CHIPS);
 				Query blCores = conn.query(GET_BLACKLISTED_CORES);
 				Query blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
-			Set<ChipLocation> blacklistedChips = blChips.call(serialNumber)
+			Set<ChipLocation> blacklistedChips = blChips.call(boardId)
 					.map(chip("x", "y")).toSet();
 			Map<ChipLocation, Set<Integer>> blacklistedCores = blCores
-					.call(serialNumber).toCollectingMap(HashSet::new,
+					.call(boardId).toCollectingMap(HashSet::new,
 							chip("x", "y"), integer("p"));
 			Map<ChipLocation, Set<Direction>> blacklistedLinks = blLinks
-					.call(serialNumber).toCollectingMap(
+					.call(boardId).toCollectingMap(
 							() -> noneOf(Direction.class), chip("x", "y"),
 							enumerate("direction", Direction.class));
 

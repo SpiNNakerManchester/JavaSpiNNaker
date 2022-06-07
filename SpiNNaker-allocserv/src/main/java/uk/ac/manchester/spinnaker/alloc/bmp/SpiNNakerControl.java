@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
 /**
@@ -96,6 +97,55 @@ public interface SpiNNakerControl {
 	 *            board.
 	 */
 	void setIdToBoardMap(Map<Integer, BMPBoard> idToBoard);
+
+	/**
+	 * Read a BMP serial number from the given board.
+	 *
+	 * @param board
+	 *            The board to read from.
+	 * @return The serial number.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
+	 * @throws IOException
+	 *             If network I/O fails or we reach the limit on retries.
+	 * @throws InterruptedException
+	 *             If we're interrupted.
+	 */
+	String readSerial(BMPBoard board)
+			throws ProcessException, InterruptedException, IOException;
+
+	/**
+	 * Read a blacklist from the given board.
+	 *
+	 * @param board
+	 *            The board to read the blacklist from.
+	 * @return The blacklist.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
+	 * @throws IOException
+	 *             If network I/O fails or we reach the limit on retries.
+	 * @throws InterruptedException
+	 *             If we're interrupted.
+	 */
+	Blacklist readBlacklist(BMPBoard board)
+			throws ProcessException, InterruptedException, IOException;
+
+	/**
+	 * Write a blacklist to the given board.
+	 *
+	 * @param board
+	 *            The board to write the blacklist to.
+	 * @param blacklist
+	 *            The blacklist to write.
+	 * @throws ProcessException
+	 *             If a BMP sends a failure message.
+	 * @throws IOException
+	 *             If network I/O fails or we reach the limit on retries.
+	 * @throws InterruptedException
+	 *             If we're interrupted.
+	 */
+	void writeBlacklist(BMPBoard board, Blacklist blacklist)
+			throws ProcessException, InterruptedException, IOException;
 
 	/**
 	 * A guide for how to make a BMP controller.

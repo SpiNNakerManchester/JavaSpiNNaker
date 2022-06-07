@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.GROUP_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MEMBER_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MSC_BOARD_COORDS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD;
-import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD_SERIAL;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_GROUP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_JOB;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_MACHINE;
@@ -1083,7 +1082,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("x", "y", "notes"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_BOARD_SERIAL).isPresent());
+				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
 		}
 	}
@@ -1094,7 +1093,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("x", "y", "p", "notes"), q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_BOARD_SERIAL).isPresent());
+				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
 		}
 	}
@@ -1106,7 +1105,33 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(set("x", "y", "direction", "notes"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1(NO_BOARD_SERIAL).isPresent());
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getBlacklistReads() {
+		try (Query q = c.query(GET_BLACKLIST_READS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("board_id", "board_num", "cabinet",
+					"frame", "op_id", "bmp_serial_id"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getBlacklistWrites() {
+		try (Query q = c.query(GET_BLACKLIST_WRITES)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("board_id", "board_num", "cabinet",
+					"frame", "op_id", "bmp_serial_id", "data"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
 		}
 	}

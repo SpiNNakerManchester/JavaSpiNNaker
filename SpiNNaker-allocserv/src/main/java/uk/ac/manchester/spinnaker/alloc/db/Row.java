@@ -19,6 +19,9 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.columnNames;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -26,6 +29,8 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
+
+import org.springframework.dao.TypeMismatchDataAccessException;
 
 /**
  * A restricted form of result set. Note that this object <em>must not</em> be
@@ -172,6 +177,30 @@ public final class Row {
 			return rs.getBytes(columnLabel);
 		} catch (SQLException e) {
 			throw mapException(e, null);
+		}
+	}
+
+	/**
+	 * Get the contents of the named column by deserialization.
+	 *
+	 * @param <T>
+	 *            The type of value expected.
+	 * @param columnLabel
+	 *            The name of the column.
+	 * @param cls
+	 *            The type of value expected.
+	 * @return A byte array, or {@code null} on {@code NULL}.
+	 * @throws TypeMismatchDataAccessException
+	 *             If the object is not of the required type.
+	 */
+	public <T> T getSerialObject(String columnLabel, Class<T> cls) {
+		ByteArrayInputStream bais = new ByteArrayInputStream(
+				getBytes(columnLabel));
+		try (ObjectInputStream ois = new ObjectInputStream(bais)) {
+			return cls.cast(ois.readObject());
+		} catch (IOException | ClassNotFoundException | ClassCastException e) {
+			throw new TypeMismatchDataAccessException(
+					"bad data in column " + columnLabel, e);
 		}
 	}
 
