@@ -1547,6 +1547,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					arg = ((Enum<?>) arg).ordinal();
 				} else if (arg != null && arg instanceof Serializable
 						&& !(arg instanceof String || arg instanceof Number
+								|| arg instanceof Boolean
 								|| arg instanceof byte[])) {
 					arg = serialize(arg);
 				}
