@@ -166,6 +166,20 @@ class AllocatorTest extends SQLQueries {
 	private static final String INSERT_REQ_BOARD =
 			"INSERT INTO job_request(job_id, board_id) VALUES (?, ?)";
 
+	@ResultColumn("cnt")
+	@SingleRowResult
+	private static final String COUNT_JOBS = "SELECT COUNT(*) AS cnt FROM jobs";
+
+	@ResultColumn("cnt")
+	@SingleRowResult
+	private static final String COUNT_REQUESTS =
+			"SELECT COUNT(*) AS cnt FROM job_request";
+
+	@ResultColumn("cnt")
+	@SingleRowResult
+	private static final String COUNT_POWER_CHANGES =
+			"SELECT COUNT(*) AS cnt FROM pending_changes";
+
 	private void makeAllocBySizeRequest(int job, int size) {
 		try (Update u = conn.update(INSERT_REQ_SIZE)) {
 			conn.transaction(() -> u.call(job, size));
@@ -192,21 +206,18 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
-	@ResultColumn("cnt")
-	@SingleRowResult
-	private static final String COUNT_REQUESTS =
-			"SELECT COUNT(*) AS cnt FROM job_request";
+	@SuppressWarnings("unused")
+	private int getJobCount() {
+		try (Query q = conn.query(COUNT_JOBS)) {
+			return conn.transaction(() -> q.call1().get().getInt("cnt"));
+		}
+	}
 
 	private int getJobRequestCount() {
 		try (Query q = conn.query(COUNT_REQUESTS)) {
 			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
-
-	@ResultColumn("cnt")
-	@SingleRowResult
-	private static final String COUNT_POWER_CHANGES =
-			"SELECT COUNT(*) AS cnt FROM pending_changes";
 
 	private int getPendingPowerChanges() {
 		try (Query q = conn.query(COUNT_POWER_CHANGES)) {

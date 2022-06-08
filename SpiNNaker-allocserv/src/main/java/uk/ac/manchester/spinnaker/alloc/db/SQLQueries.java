@@ -1743,18 +1743,21 @@ public abstract class SQLQueries {
 
 	/**
 	 * Set the BMP and physical serial IDs based on the information actually
-	 * read off the machine.
+	 * read off the machine. A bit of care is needed because we might not yet
+	 * have a row for that board.
 	 *
 	 * @see BMPController
 	 */
-	// FIXME test
+	@Parameter("board_id")
 	@Parameter("bmp_serial_id")
 	@Parameter("physical_serial_id")
-	@Parameter("board_id")
 	protected static final String SET_BOARD_SERIAL_IDS =
-			"UPDATE boards SET bmp_serial_id = :bmp_serial_id, "
-					+ "physical_serial_id = :physical_serial_id "
-					+ "WHERE board_id = :board_id";
+			"INSERT INTO board_serial("
+					+ "board_id, bmp_serial_id, physical_serial_id) "
+					+ "VALUES(:board_id, :bmp_serial_id, :physical_serial_id) "
+					+ "ON CONFLICT DO UPDATE SET "
+					+ "bmp_serial_id = excluded.bmp_serial_id, "
+					+ "physical_serial_id = excluded.physical_serial_id";
 
 	// TODO get completed blacklist reads and writes
 
@@ -1765,7 +1768,6 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("data")
 	@Parameter("op_id")
-	// FIXME test
 	protected static final String COMPLETED_BLACKLIST_READ =
 			"UPDATE blacklist_ops SET data = :data, completed = 1 "
 					+ "WHERE op_id = :op_id";
@@ -1776,7 +1778,6 @@ public abstract class SQLQueries {
 	 * @see BMPController
 	 */
 	@Parameter("op_id")
-	// FIXME test
 	protected static final String COMPLETED_BLACKLIST_WRITE =
 			"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id";
 

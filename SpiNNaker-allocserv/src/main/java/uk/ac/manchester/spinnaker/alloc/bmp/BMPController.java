@@ -814,8 +814,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		int setBoardSerialIds(Integer boardId, String bmpSerialId,
 				String physicalSerialId) {
-			return setBoardSerialIds.call(bmpSerialId, physicalSerialId,
-					boardId);
+			return setBoardSerialIds.call(boardId, bmpSerialId,
+					physicalSerialId);
 		}
 	}
 

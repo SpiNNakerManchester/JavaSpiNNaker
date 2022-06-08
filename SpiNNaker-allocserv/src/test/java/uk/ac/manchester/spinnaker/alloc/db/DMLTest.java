@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BLACKLIST_OP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BMP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_CHANGE;
@@ -34,7 +35,9 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertThrowsFK;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assumeWritable;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.set;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 
+import java.nio.ByteBuffer;
 import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
@@ -52,6 +55,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
+import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
  * Tests of inserts, updates and deletes. Ensures that the SQL and the schema
@@ -287,7 +291,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(11, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0, 0, //
+				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, UNKNOWN, UNKNOWN,
 						true, false, false, false, false, false, false));
 			});
 		}
@@ -739,6 +743,43 @@ class DMLTest extends SQLQueries {
 			assertEquals(0, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call());
+			});
+		}
+	}
+
+	@Test
+	void setBoardSerialIds() {
+		assumeWritable(c);
+		try (Update u = c.update(SET_BOARD_SERIAL_IDS)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD, "foo", "bar"));
+			});
+		}
+	}
+
+	@Test
+	void completedBlacklistRead() {
+		assumeWritable(c);
+		ByteBuffer b = ByteBuffer.allocate(4);
+		b.putInt(0);
+		b.flip();
+		Blacklist bl = new Blacklist(b);
+		try (Update u = c.update(COMPLETED_BLACKLIST_READ)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(bl, NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void completedBlacklistWrite() {
+		assumeWritable(c);
+		try (Update u = c.update(COMPLETED_BLACKLIST_WRITE)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_BLACKLIST_OP));
 			});
 		}
 	}

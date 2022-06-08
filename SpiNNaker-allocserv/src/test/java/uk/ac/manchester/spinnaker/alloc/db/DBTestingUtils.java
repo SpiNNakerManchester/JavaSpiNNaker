@@ -75,6 +75,9 @@ abstract class DBTestingUtils {
 	/** Not equal to any {@code membership_id}. */
 	static final int NO_MEMBER = -1;
 
+	/** Not equal to any {@code op_id}. */
+	static final int NO_BLACKLIST_OP = -1;
+
 	/** Not the name of anything. */
 	static final String NO_NAME = "gorp";
 
@@ -183,6 +186,13 @@ abstract class DBTestingUtils {
 		return (SQLiteException) t;
 	}
 
+	private static String generateMessage(String expected,
+			SQLiteException got) {
+		// Extract the real error message out of SQLite itself
+		return String.format("expected %s failure but got %s", expected,
+				got.getMessage().replaceFirst(".*\\((.+)\\)$", "$1"));
+	}
+
 	/**
 	 * {@linkplain org.junit.jupiter.api.Assertions Assert} that execution of
 	 * the supplied executable throws an exception due to a foreign key
@@ -194,7 +204,8 @@ abstract class DBTestingUtils {
 	static void assertThrowsFK(Executable op) {
 		DataAccessException e = assertThrows(DataAccessException.class, op);
 		SQLiteException exn = causedBySQLite(e);
-		assertEquals(SQLITE_CONSTRAINT_FOREIGNKEY, exn.getResultCode());
+		assertEquals(SQLITE_CONSTRAINT_FOREIGNKEY, exn.getResultCode(),
+				() -> generateMessage("FK", exn));
 	}
 
 	/**
@@ -208,7 +219,8 @@ abstract class DBTestingUtils {
 	static void assertThrowsCheck(Executable op) {
 		DataAccessException e = assertThrows(DataAccessException.class, op);
 		SQLiteException exn = causedBySQLite(e);
-		assertEquals(SQLITE_CONSTRAINT_CHECK, exn.getResultCode());
+		assertEquals(SQLITE_CONSTRAINT_CHECK, exn.getResultCode(),
+				() -> generateMessage("CHECK", exn));
 	}
 
 	/**
