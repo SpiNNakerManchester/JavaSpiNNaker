@@ -33,6 +33,8 @@ public class Epochs {
 
 	private long machineEpoch = 0L;
 
+	private long blacklistEpoch = 0L;
+
 	/**
 	 * Get the current jobs epoch.
 	 *
@@ -72,6 +74,28 @@ public class Epochs {
 	public synchronized void nextMachineEpoch() {
 		try {
 			machineEpoch++;
+		} finally {
+			notifyAll();
+		}
+	}
+
+	/**
+	 * Get the current blacklist epoch.
+	 *
+	 * @return Blacklist epoch handle.
+	 */
+	public Epoch getBlacklistEpoch() {
+		return new BlacklistEpoch();
+	}
+
+	/**
+	 * Advance the blacklist epoch. Will wake any thread waiting on changes to
+	 * the epoch with {@link Epoch#waitForChange(Duration) waitForChange()} on a
+	 * {@code blacklistEpoch} handle.
+	 */
+	public synchronized void nextBlacklistEpoch() {
+		try {
+			blacklistEpoch++;
 		} finally {
 			notifyAll();
 		}
@@ -152,6 +176,32 @@ public class Epochs {
 			long expiry = expiry(timeout);
 			synchronized (Epochs.this) {
 				while (machineEpoch <= epoch && waiting(expiry)) {
+					waitUntil(expiry);
+				}
+			}
+		}
+	}
+
+	/**
+	 * A waitable machine epoch checkpoint.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class BlacklistEpoch implements Epoch {
+		private final long epoch;
+
+		private BlacklistEpoch() {
+			synchronized (Epochs.this) {
+				epoch = blacklistEpoch;
+			}
+		}
+
+		@Override
+		public void waitForChange(Duration timeout)
+				throws InterruptedException {
+			long expiry = expiry(timeout);
+			synchronized (Epochs.this) {
+				while (blacklistEpoch <= epoch && waiting(expiry)) {
 					waitUntil(expiry);
 				}
 			}

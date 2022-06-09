@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +29,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
+import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
+import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
  * How to manage the state of a machine and boards in it.
@@ -44,6 +49,14 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
  */
 @Service
 public class MachineStateControl extends DatabaseAwareBean {
+	private static final int BLACKLIST_WAIT_SECS = 15;
+
+	private static final Duration BLACKLIST_WAIT =
+			Duration.ofSeconds(BLACKLIST_WAIT_SECS);
+
+	@Autowired
+	private Epochs epochs;
+
 	/**
 	 * Access to the enablement-state of a board.
 	 */
@@ -304,5 +317,125 @@ public class MachineStateControl extends DatabaseAwareBean {
 				return this; // Unimportant value
 			}
 		});
+	}
+
+	/**
+	 * Exception thrown when blacklists can't be read from or written to the
+	 * machine.
+	 *
+	 * @author Donal Fellows
+	 */
+	public static final class BlacklistException extends RuntimeException {
+		private static final long serialVersionUID = -6450838951059318431L;
+
+		private BlacklistException(String msg, Exception exn) {
+			super(msg, exn);
+		}
+	}
+
+	/**
+	 * Given a board, read its blacklist off the machine.
+	 *
+	 * @param board
+	 *            Which board to read the blacklist of.
+	 * @return The board's blacklist.
+	 * @throws BlacklistException
+	 *             If the read fails.
+	 * @throws InterruptedException
+	 *             If interrupted.
+	 */
+	public Blacklist readBlacklistFromMachine(BoardState board)
+			throws InterruptedException {
+		Epoch epoch = epochs.getBlacklistEpoch();
+		Integer opId = execute(conn -> {
+			try (Update readReq = conn.update(INSERT_BLACKLIST_READ_REQUEST)) {
+				return readReq.key(board.id).get();
+			}
+		});
+		try {
+			while (true) {
+				epoch.waitForChange(BLACKLIST_WAIT);
+				Blacklist blacklist = execute(false, conn -> {
+					try (Query getResult =
+							conn.query(GET_COMPLETED_BLACKLIST_OP);) {
+						Optional<Row> r = getResult.call1(opId);
+						if (!r.isPresent()) {
+							return null;
+						}
+						Row row = r.get();
+						if (row.getBoolean("failed")) {
+							throw new BlacklistException(
+									"failed to read blacklist",
+									row.getSerialObject("failure",
+											Exception.class));
+						}
+						return row.getSerialObject("data", Blacklist.class);
+					}
+				});
+				if (blacklist != null) {
+					return blacklist;
+				}
+			}
+		} finally {
+			execute(conn -> {
+				try (Update delReq = conn.update(DELETE_BLACKLIST_OP)) {
+					return delReq.call(opId);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Write a blacklist to a board on the machine.
+	 *
+	 * @param board
+	 *            Which board to write the blacklist of.
+	 * @param blacklist
+	 *            The blacklist to write.
+	 * @throws BlacklistException
+	 *             If the write fails.
+	 * @throws InterruptedException
+	 *             If interrupted. Note that interrupting the thread does
+	 *             <em>not</em> necessarily halt the write of the blacklist.
+	 */
+	public void writeBlacklistToMachine(BoardState board, Blacklist blacklist)
+			throws InterruptedException {
+		Epoch epoch = epochs.getBlacklistEpoch();
+		Integer opId = execute(conn -> {
+			try (Update writeReq =
+					conn.update(INSERT_BLACKLIST_WRITE_REQUEST)) {
+				return writeReq.key(board.id, blacklist).get();
+			}
+		});
+		try {
+			while (true) {
+				epoch.waitForChange(BLACKLIST_WAIT);
+				if (execute(false, conn -> {
+					try (Query getResult =
+							conn.query(GET_COMPLETED_BLACKLIST_OP);) {
+						Optional<Row> r = getResult.call1(opId);
+						if (!r.isPresent()) {
+							return false;
+						}
+						Row row = r.get();
+						if (row.getBoolean("failed")) {
+							throw new BlacklistException(
+									"failed to write blacklist",
+									row.getSerialObject("failure",
+											Exception.class));
+						}
+						return true;
+					}
+				})) {
+					return;
+				}
+			}
+		} finally {
+			execute(conn -> {
+				try (Update delReq = conn.update(DELETE_BLACKLIST_OP)) {
+					return delReq.call(opId);
+				}
+			});
+		}
 	}
 }

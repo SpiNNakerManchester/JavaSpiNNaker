@@ -29,6 +29,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.BOARD_COORDS_RE
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.GROUP_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MEMBER_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.MSC_BOARD_COORDS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BLACKLIST_OP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_GROUP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_JOB;
@@ -1132,6 +1133,19 @@ class DQLTest extends SQLQueries {
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getCompletedBlacklistOp() {
+		try (Query q = c.query(GET_COMPLETED_BLACKLIST_OP)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(
+					set("board_id", "write", "data", "failure", "failed"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BLACKLIST_OP).isPresent());
 			});
 		}
 	}

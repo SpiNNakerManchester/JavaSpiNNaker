@@ -1718,7 +1718,7 @@ public abstract class SQLQueries {
 					+ "cabinet, frame, data FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "JOIN board_serial USING (board_id) "
-					+ "WHERE write AND data IS NOT NULL "
+					+ "WHERE write AND NOT completed "
 					+ "AND boards.machine_id = :machine_id";
 
 	/**
@@ -1738,7 +1738,7 @@ public abstract class SQLQueries {
 					+ "cabinet, frame FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "JOIN board_serial USING (board_id) "
-					+ "WHERE NOT write AND data IS NULL "
+					+ "WHERE NOT write AND NOT completed "
 					+ "AND boards.machine_id = :machine_id";
 
 	/**
@@ -1751,6 +1751,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	@Parameter("bmp_serial_id")
 	@Parameter("physical_serial_id")
+	@GeneratesID
 	protected static final String SET_BOARD_SERIAL_IDS =
 			"INSERT INTO board_serial("
 					+ "board_id, bmp_serial_id, physical_serial_id) "
@@ -1758,8 +1759,6 @@ public abstract class SQLQueries {
 					+ "ON CONFLICT DO UPDATE SET "
 					+ "bmp_serial_id = excluded.bmp_serial_id, "
 					+ "physical_serial_id = excluded.physical_serial_id";
-
-	// TODO get completed blacklist reads and writes
 
 	/**
 	 * Mark a read of a blacklist as completed.
@@ -1780,6 +1779,62 @@ public abstract class SQLQueries {
 	@Parameter("op_id")
 	protected static final String COMPLETED_BLACKLIST_WRITE =
 			"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id";
+
+	/**
+	 * Mark a read or write of a blacklist as failed, noting the reason.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("failure")
+	@Parameter("op_id")
+	protected static final String FAILED_BLACKLIST_OP = "UPDATE blacklist_ops "
+			+ "SET failure = :failure, completed = 1 WHERE op_id = :op_id";
+
+	/**
+	 * Retrieve a completed request to read or write a blacklist for a board.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("write")
+	@ResultColumn("data")
+	@ResultColumn("failure")
+	protected static final String GET_COMPLETED_BLACKLIST_OP =
+			"SELECT board_id, write, data, failure, failure IS NULL AS failed "
+					+ "FROM blacklist_ops WHERE op_id = :op_id AND completed";
+
+	/**
+	 * Delete a blacklist request.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("op_id")
+	protected static final String DELETE_BLACKLIST_OP =
+			"DELETE FROM blacklist_ops WHERE op_id = :op_id";
+
+	/**
+	 * Insert a request to read a board's blacklist.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@GeneratesID
+	protected static final String INSERT_BLACKLIST_READ_REQUEST =
+			"INSERT INTO blacklist_ops(board_id, write, completed) "
+					+ "VALUES(:board_id, 0, 0)";
+
+	/**
+	 * Insert a request to write a board's blacklist.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@Parameter("blacklist")
+	@GeneratesID
+	protected static final String INSERT_BLACKLIST_WRITE_REQUEST =
+			"INSERT INTO blacklist_ops(board_id, write, completed, data) "
+					+ "VALUES(:board_id, 1, 0, :blacklist)";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

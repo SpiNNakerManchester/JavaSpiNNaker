@@ -758,13 +758,17 @@ class DMLTest extends SQLQueries {
 		}
 	}
 
-	@Test
-	void completedBlacklistRead() {
-		assumeWritable(c);
+	private Blacklist dummyBlacklist() {
 		ByteBuffer b = ByteBuffer.allocate(4);
 		b.putInt(0);
 		b.flip();
-		Blacklist bl = new Blacklist(b);
+		return new Blacklist(b);
+	}
+
+	@Test
+	void completedBlacklistRead() {
+		assumeWritable(c);
+		Blacklist bl = dummyBlacklist();
 		try (Update u = c.update(COMPLETED_BLACKLIST_READ)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
@@ -777,6 +781,51 @@ class DMLTest extends SQLQueries {
 	void completedBlacklistWrite() {
 		assumeWritable(c);
 		try (Update u = c.update(COMPLETED_BLACKLIST_WRITE)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void failedBlacklistOp() {
+		assumeWritable(c);
+		try (Update u = c.update(FAILED_BLACKLIST_OP)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(new Exception(), NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void insertBlacklistReadRequest() {
+		assumeWritable(c);
+		try (Update u = c.update(INSERT_BLACKLIST_READ_REQUEST)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void insertBlacklistWriteRequest() {
+		assumeWritable(c);
+		Blacklist bl = dummyBlacklist();
+		try (Update u = c.update(INSERT_BLACKLIST_WRITE_REQUEST)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD, bl));
+			});
+		}
+	}
+
+	@Test
+	void deleteBlacklistOp() {
+		assumeWritable(c);
+		try (Update u = c.update(DELETE_BLACKLIST_OP)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call(NO_BLACKLIST_OP));

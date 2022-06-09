@@ -207,6 +207,13 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Used to mark whether we've just cleaned up after processing a blacklist
+	 * request. If we have, there is an additional epoch to bump once the
+	 * transaction completes.
+	 */
+	private final ThreadLocal<Boolean> doneBlacklist = new ThreadLocal<>();
+
+	/**
 	 * The core of {@link #mainSchedule()}.
 	 *
 	 * @deprecated Only {@code public} for testing purposes.
@@ -220,6 +227,7 @@ public class BMPController extends DatabaseAwareBean {
 	@Deprecated
 	public void processRequests()
 			throws IOException, SpinnmanException, InterruptedException {
+		doneBlacklist.set(false);
 		if (execute(conn -> {
 			boolean changed = false;
 			for (Cleanup cleanup = cleanupTasks.poll(); nonNull(
@@ -235,6 +243,9 @@ public class BMPController extends DatabaseAwareBean {
 			// If anything changed, we bump the epochs
 			epochs.nextJobsEpoch();
 			epochs.nextMachineEpoch();
+			if (doneBlacklist.get()) {
+				epochs.nextBlacklistEpoch();
+			}
 		}
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
@@ -622,9 +633,18 @@ public class BMPController extends DatabaseAwareBean {
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
+		boolean recordSerialIds(AfterSQL sql) {
+			return sql.setBoardSerialIds(boardId, readSerial,
+					phySerMap.getPhysicalId(readSerial)) > 0;
+		}
+
+		/**
+		 * @param sql
+		 *            How to access the DB
+		 * @return Whether we've changed anything
+		 */
 		boolean doneRead(AfterSQL sql) {
-			sql.setBoardSerialIds(boardId, readSerial,
-					phySerMap.getPhysicalId(readSerial));
+			doneBlacklist.set(true);
 			return sql.completedBlacklistRead(opId, readBlacklist) > 0;
 		}
 
@@ -634,6 +654,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * @return Whether we've changed anything
 		 */
 		boolean doneWrite(AfterSQL sql) {
+			doneBlacklist.set(true);
 			return sql.completedBlacklistWrite(opId) > 0;
 		}
 
@@ -645,7 +666,17 @@ public class BMPController extends DatabaseAwareBean {
 		 * @return Whether we've changed anything
 		 */
 		boolean failed(AfterSQL sql, Exception exn) {
-			// FIXME
+			doneBlacklist.set(true);
+			return sql.failedBlacklistOp(opId, exn) > 0;
+		}
+
+		/**
+		 * @param sql
+		 *            How to access the DB
+		 * @return Whether we've changed anything
+		 */
+		boolean takeOutOfService(AfterSQL sql) {
+			// TODO mark board as disabled
 			return false;
 		}
 	}
@@ -755,6 +786,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update completedBlacklistWrite;
 
+		private final Update failedBlacklistOp;
+
 		private final Update setBoardSerialIds;
 
 		AfterSQL(Connection conn) {
@@ -766,12 +799,14 @@ public class BMPController extends DatabaseAwareBean {
 			deleteChange = conn.update(FINISHED_PENDING);
 			completedBlacklistRead = conn.update(COMPLETED_BLACKLIST_READ);
 			completedBlacklistWrite = conn.update(COMPLETED_BLACKLIST_WRITE);
+			failedBlacklistOp = conn.update(FAILED_BLACKLIST_OP);
 			setBoardSerialIds = conn.update(SET_BOARD_SERIAL_IDS);
 		}
 
 		@Override
 		public void close() {
 			setBoardSerialIds.close();
+			failedBlacklistOp.close();
 			completedBlacklistWrite.close();
 			completedBlacklistRead.close();
 			deleteChange.close();
@@ -810,6 +845,10 @@ public class BMPController extends DatabaseAwareBean {
 
 		int completedBlacklistWrite(Integer opId) {
 			return completedBlacklistWrite.call(opId);
+		}
+
+		int failedBlacklistOp(Integer opId, Exception failure) {
+			return failedBlacklistOp.call(failure, opId);
 		}
 
 		int setBoardSerialIds(Integer boardId, String bmpSerialId,
@@ -1197,6 +1236,7 @@ public class BMPController extends DatabaseAwareBean {
 			throws InterruptedException {
 		try {
 			request.readBlacklist(controller);
+			cleanupTasks.add(request::recordSerialIds);
 			cleanupTasks.add(request::doneRead);
 			return true;
 		} catch (InterruptedException e) {
@@ -1214,10 +1254,8 @@ public class BMPController extends DatabaseAwareBean {
 			/*
 			 * FIXME handle what happens when the hardware is unreachable
 			 *
-			 * When that happens, we must tell the alloc engine to pick
-			 * somewhere else, and we should mark the board as out of service
-			 * too; it's never going to work so taking it out right away is the
-			 * only sane plan.
+			 * When that happens, we must mark the board as out of service (in
+			 * addition to failing the request, see below).
 			 */
 			if (!isLastTry) {
 				/*
@@ -1230,6 +1268,7 @@ public class BMPController extends DatabaseAwareBean {
 				return false;
 			}
 			log.error("Requests failed on BMP for {}", request.machine, e);
+			cleanupTasks.add(request::takeOutOfService);
 			cleanupTasks.add(s -> request.failed(s, e));
 			// This is (probably) a permanent failure; stop retry loop
 			return true;
@@ -1258,10 +1297,8 @@ public class BMPController extends DatabaseAwareBean {
 			/*
 			 * FIXME handle what happens when the hardware is unreachable
 			 *
-			 * When that happens, we must tell the alloc engine to pick
-			 * somewhere else, and we should mark the board as out of service
-			 * too; it's never going to work so taking it out right away is the
-			 * only sane plan.
+			 * When that happens, we must mark the board as out of service (in
+			 * addition to failing the request, see below).
 			 */
 			if (!isLastTry) {
 				/*
@@ -1274,6 +1311,7 @@ public class BMPController extends DatabaseAwareBean {
 				return false;
 			}
 			log.error("Requests failed on BMP for {}", request.machine, e);
+			cleanupTasks.add(request::takeOutOfService);
 			cleanupTasks.add(s -> request.failed(s, e));
 			// This is (probably) a permanent failure; stop retry loop
 			return true;
