@@ -1801,7 +1801,8 @@ public abstract class SQLQueries {
 	@ResultColumn("data")
 	@ResultColumn("failure")
 	protected static final String GET_COMPLETED_BLACKLIST_OP =
-			"SELECT board_id, write, data, failure, failure IS NULL AS failed "
+			"SELECT board_id, write, data, failure, "
+					+ "failure IS NOT NULL AS failed "
 					+ "FROM blacklist_ops WHERE op_id = :op_id AND completed";
 
 	/**
