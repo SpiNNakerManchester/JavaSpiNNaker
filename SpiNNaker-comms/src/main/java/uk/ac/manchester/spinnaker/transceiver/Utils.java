@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.zip.CRC32;
 
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -113,5 +115,49 @@ public abstract class Utils {
 	public static ByteBuffer newMessageBuffer() {
 		// TODO How big should this buffer be? 256 or (256 + header size)?
 		return allocate(SPINNAKER_MESSAGE_BUFFER_SIZE).order(LITTLE_ENDIAN);
+	}
+
+	/**
+	 * Fill a section of a buffer with a constant value.
+	 *
+	 * @param buffer
+	 *            The buffer to fill a chunk of.
+	 * @param start
+	 *            Where in the buffer to start.
+	 * @param len
+	 *            How many bytes to write.
+	 * @param value
+	 *            The value to write.
+	 */
+	static void fill(ByteBuffer buffer, int start, int len, byte value) {
+		if (buffer.hasArray()) {
+			Arrays.fill(buffer.array(), start, start + len, value);
+		} else {
+			byte[] work = new byte[len];
+			Arrays.fill(work, value);
+			ByteBuffer buf = buffer.duplicate();
+			buf.position(start);
+			buf.put(work);
+		}
+	}
+
+	/**
+	 * Compute the CRC of a section of buffer.
+	 *
+	 * @param buffer
+	 *            The buffer.
+	 * @param start
+	 *            Where in the buffer to start.
+	 * @param len
+	 *            How many bytes to get the CRC of.
+	 * @return The CRC (as a signed integer).
+	 */
+	static int crc(ByteBuffer buffer, int start, int len) {
+		ByteBuffer crcbuf = buffer.duplicate();
+		crcbuf.position(start);
+		crcbuf.limit(start + len);
+		CRC32 crc = new CRC32();
+		crc.update(crcbuf);
+		return (int) crc.getValue();
 	}
 }

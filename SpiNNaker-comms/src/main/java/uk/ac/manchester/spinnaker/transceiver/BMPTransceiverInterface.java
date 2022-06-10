@@ -23,8 +23,15 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BLACKLIST_BLANK;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_BLACKLIST_OFFSET;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_CRC_OFFSET;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_SECTOR_ADDR;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_SECTOR_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_ADDR;
 import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_LEN;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.crc;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.fill;
 
 import java.io.File;
 import java.io.IOException;
@@ -1298,6 +1305,65 @@ public interface BMPTransceiverInterface {
 	}
 
 	/**
+	 * Write a blacklist to a board. Note that this is a non-transactional
+	 * operation!
+	 *
+	 * @param board
+	 *            Which board's BMP to write to.
+	 * @param blacklist
+	 *            The blacklist to write.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 */
+	default void writeBlacklist(BMPBoard board, Blacklist blacklist)
+			throws ProcessException, IOException {
+		writeBlacklist(getBoundBMP(), board, blacklist);
+	}
+
+	/**
+	 * Write a blacklist to a board. Note that this is a non-transactional
+	 * operation!
+	 *
+	 * @param bmp
+	 *            The BMP to send communications via.
+	 * @param board
+	 *            Which board's BMP to write to.
+	 * @param blacklist
+	 *            The blacklist to write.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 */
+	default void writeBlacklist(BMPCoords bmp, BMPBoard board,
+			Blacklist blacklist) throws ProcessException, IOException {
+		// Prepare the boot data
+		ByteBuffer data = ByteBuffer.allocate(BMP_BOOT_SECTOR_SIZE);
+		data.order(LITTLE_ENDIAN);
+		data.put(readBMPMemory(bmp, board, BMP_BOOT_SECTOR_ADDR,
+				BMP_BOOT_SECTOR_SIZE));
+		fill(data, BMP_BOOT_BLACKLIST_OFFSET, SF_BL_LEN, BLACKLIST_BLANK);
+		data.position(BMP_BOOT_BLACKLIST_OFFSET);
+		data.put(blacklist.getRawData());
+		data.putInt(BMP_BOOT_CRC_OFFSET,
+				crc(data, 0, BMP_BOOT_BLACKLIST_OFFSET));
+
+		// Prepare the serial flash update; must read part of the data first
+		byte[] sfData = new byte[SF_BL_ADDR + SF_BL_LEN];
+		readSerialFlash(bmp, board, 0, SF_BL_ADDR).get(sfData, 0, SF_BL_ADDR);
+		data.position(BMP_BOOT_BLACKLIST_OFFSET);
+		data.get(sfData, SF_BL_ADDR, SF_BL_LEN);
+
+		data.position(0); // Prep for write
+
+		// Do the actual writes here; any failure before here is unimportant
+		writeFlash(bmp, board, BMP_BOOT_SECTOR_ADDR, data, true);
+		writeSerialFlash(bmp, board, 0, ByteBuffer.wrap(sfData));
+	}
+
+	/**
 	 * Read the CRC32 checksum of BMP serial flash memory.
 	 *
 	 * @param board
@@ -1647,4 +1713,14 @@ interface BMPConstants {
 
 	/** Size of blacklist, in bytes. */
 	int SF_BL_LEN = 256;
+
+	int BMP_BOOT_BLACKLIST_OFFSET = 0xe00;
+
+	int BMP_BOOT_SECTOR_ADDR = 0x1000;
+
+	int BMP_BOOT_SECTOR_SIZE = 0x1000;
+
+	int BMP_BOOT_CRC_OFFSET = BMP_BOOT_SECTOR_SIZE - WORD_SIZE;
+
+	byte BLACKLIST_BLANK = (byte) 255;
 }

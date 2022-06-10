@@ -141,7 +141,7 @@ public class Blacklist implements Serializable {
 			}
 		}
 		buf.flip();
-		buf.putInt(0, count);
+		buf.putInt(0, count); // Fill in the size now we know it
 		return buf;
 	}
 
