@@ -367,6 +367,18 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getAllBoardIds() {
+		try (Query q = c.query(GET_ALL_BOARDS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getDeadLinks() {
 		try (Query q = c.query(getDeadLinks)) {
 			assertEquals(1, q.getNumArguments());
@@ -717,18 +729,6 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(MSC_BOARD_COORDS, q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
-			});
-		}
-	}
-
-	@Test
-	void getAllBoardIds() {
-		try (Query q = c.query(GET_ALL_BOARD_IDS)) {
-			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("board_id"), q.getRowColumnNames());
-			c.transaction(() -> {
-				// Must not throw; not worried about whether a row exists here
-				q.call1().isPresent();
 			});
 		}
 	}

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
+import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistIO;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -57,6 +58,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	@Autowired
 	private Epochs epochs;
+
+	@Autowired
+	private BlacklistIO blacklistHandler;
 
 	/**
 	 * Access to the enablement-state of a board.
@@ -334,30 +338,64 @@ public class MachineStateControl extends DatabaseAwareBean {
 		}
 	}
 
-	void updateAllBlacklists() throws InterruptedException {
-		List<Integer> boards = execute(false, this::listAllBoards);
+	/**
+	 * Retrieve the blacklist for the given board from the board and store it in
+	 * the database.
+	 *
+	 * @param boardId
+	 *            The board to get the blacklist of.
+	 * @return The blacklist that was transferred, if any.
+	 */
+	public Optional<Blacklist> pullBlacklist(int boardId) {
+		return findId(boardId).flatMap(board -> {
+			try {
+				return readBlacklistFromMachine(board).map(bl -> {
+					blacklistHandler.writeBlacklistToDB(boardId, bl);
+					return bl;
+				});
+			} catch (InterruptedException e) {
+				return Optional.empty();
+			}
+		});
+	}
+
+	/**
+	 * Take the blacklist for the given board in the database and write it to
+	 * the board.
+	 *
+	 * @param boardId
+	 *            The board to set the blacklist of.
+	 * @return The blacklist that was transferred, if any.
+	 */
+	public Optional<Blacklist> pushBlacklist(int boardId) {
+		return findId(boardId).flatMap(board -> blacklistHandler
+				.readBlacklistFromDB(boardId).map(bl -> {
+					try {
+						writeBlacklistToMachine(board, bl);
+						return bl;
+					} catch (InterruptedException e) {
+						return null;
+					}
+				}));
+	}
+
+	void updateAllBlacklists(int machineId) throws InterruptedException {
+		List<Integer> boards = execute(false, c -> listAllBoards(c, machineId));
 
 		for (Integer boardId : boards) {
 			Optional<BoardState> board = findId(boardId);
 			if (!board.isPresent()) {
 				continue;
 			}
-			Blacklist bl = readBlacklistFromMachine(board.get());
-			storeRetrievedBlacklist(boardId, bl);
+			readBlacklistFromMachine(board.get()).ifPresent(
+					bl -> blacklistHandler.writeBlacklistToDB(boardId, bl));
 		}
 	}
 
-	private List<Integer> listAllBoards(Connection conn) {
-		try (Query q = conn.query(GET_ALL_BOARD_IDS)) {
-			return q.call().map(integer("board_id")).toList();
+	private List<Integer> listAllBoards(Connection conn, int machineId) {
+		try (Query q = conn.query(GET_ALL_BOARDS)) {
+			return q.call(machineId).map(integer("board_id")).toList();
 		}
-	}
-
-	private void storeRetrievedBlacklist(Integer boardId, Blacklist bl) {
-		execute(conn -> {
-			// FIXME implement this
-			return 0;
-		});
 	}
 
 	/**
@@ -371,7 +409,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @throws InterruptedException
 	 *             If interrupted.
 	 */
-	public Blacklist readBlacklistFromMachine(BoardState board)
+	public Optional<Blacklist> readBlacklistFromMachine(BoardState board)
 			throws InterruptedException {
 		Epoch epoch = epochs.getBlacklistEpoch();
 		Integer opId = execute(conn -> {
@@ -400,7 +438,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 					}
 				});
 				if (blacklist != null) {
-					return blacklist;
+					return Optional.of(blacklist);
 				}
 			}
 		} finally {

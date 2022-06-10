@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.stream;
 import static java.util.EnumSet.noneOf;
+import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toSet;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
@@ -45,6 +46,7 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
@@ -57,7 +59,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
  * @author Donal Fellows
  */
 @Component
-public class BlacklistReader extends DatabaseAwareBean {
+public class BlacklistIO extends DatabaseAwareBean {
 	/**
 	 * Read a blacklist from the database.
 	 *
@@ -68,7 +70,7 @@ public class BlacklistReader extends DatabaseAwareBean {
 	 *            If database access fails.
 	 */
 	public Optional<Blacklist> readBlacklistFromDB(int boardId) {
-		return execute(conn -> readBlacklistFromDB(conn, boardId));
+		return execute(false, conn -> readBlacklistFromDB(conn, boardId));
 	}
 
 	private Optional<Blacklist> readBlacklistFromDB(Connection conn,
@@ -92,6 +94,59 @@ public class BlacklistReader extends DatabaseAwareBean {
 			}
 			return Optional.of(new Blacklist(blacklistedChips, blacklistedCores,
 					blacklistedLinks));
+		}
+	}
+
+	/**
+	 * Save a blacklist in the database.
+	 *
+	 * @param boardId
+	 *            What board is this a blacklist for?
+	 * @param bl
+	 *            The blacklist to save.
+	 */
+	public void writeBlacklistToDB(Integer boardId, Blacklist bl) {
+		requireNonNull(bl);
+		execute(conn -> {
+			saveBlacklistInDB(conn, boardId, bl);
+			return this; // dummy
+		});
+	}
+
+	/**
+	 * Save a blacklist in the database.
+	 *
+	 * @param conn
+	 *            Which database?
+	 * @param boardId
+	 *            What board is this a blacklist for?
+	 * @param bl
+	 *            The blacklist to save.
+	 */
+	private void saveBlacklistInDB(Connection conn, Integer boardId,
+			Blacklist bl) {
+		try (Update clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS_OF_BOARD);
+				Update clearCores =
+						conn.update(CLEAR_BLACKLISTED_CORES_OF_BOARD);
+				Update clearLinks =
+						conn.update(CLEAR_BLACKLISTED_LINKS_OF_BOARD);
+				Update addChip = conn.update(ADD_BLACKLISTED_CHIP);
+				Update addCore = conn.update(ADD_BLACKLISTED_CORE);
+				Update addLink = conn.update(ADD_BLACKLISTED_LINK)) {
+			// Remove the old information
+			clearChips.call(boardId);
+			clearCores.call(boardId);
+			clearLinks.call(boardId);
+			// Write the new information
+			bl.getChips().forEach(chip -> {
+				addChip.call(boardId, chip.getX(), chip.getY());
+			});
+			bl.getCores().forEach((chip, cores) -> cores.forEach(core -> {
+				addCore.call(boardId, chip.getX(), chip.getY(), core);
+			}));
+			bl.getLinks().forEach((chip, links) -> links.forEach(link -> {
+				addLink.call(boardId, chip.getX(), chip.getY(), link);
+			}));
 		}
 	}
 

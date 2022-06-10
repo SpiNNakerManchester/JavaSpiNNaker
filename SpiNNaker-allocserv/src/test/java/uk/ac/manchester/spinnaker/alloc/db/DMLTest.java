@@ -832,4 +832,76 @@ class DMLTest extends SQLQueries {
 			});
 		}
 	}
+
+	@Test
+	void addBlacklistedChip() {
+		assumeWritable(c);
+		try (Update u = c.update(ADD_BLACKLISTED_CHIP)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no insert
+				assertEquals(0, u.call(NO_BOARD, -1, -1));
+			});
+		}
+	}
+
+	@Test
+	void addBlacklistedCore() {
+		assumeWritable(c);
+		try (Update u = c.update(ADD_BLACKLISTED_CORE)) {
+			assertEquals(4, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no insert
+				assertEquals(0, u.call(NO_BOARD, -1, -1, -1));
+			});
+		}
+	}
+
+	@Test
+	void addBlacklistedLink() {
+		assumeWritable(c);
+		try (Update u = c.update(ADD_BLACKLISTED_LINK)) {
+			assertEquals(4, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no insert
+				assertEquals(0, u.call(NO_BOARD, -1, -1, Direction.N));
+			});
+		}
+	}
+
+	@Test
+	void clearBlacklistedChipsOfBoard() {
+		assumeWritable(c);
+		try (Update u = c.update(CLEAR_BLACKLISTED_CHIPS_OF_BOARD)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void clearBlacklistedCoresOfBoard() {
+		assumeWritable(c);
+		try (Update u = c.update(CLEAR_BLACKLISTED_CORES_OF_BOARD)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void clearBlacklistedLinksOfBoard() {
+		assumeWritable(c);
+		try (Update u = c.update(CLEAR_BLACKLISTED_LINKS_OF_BOARD)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
 }

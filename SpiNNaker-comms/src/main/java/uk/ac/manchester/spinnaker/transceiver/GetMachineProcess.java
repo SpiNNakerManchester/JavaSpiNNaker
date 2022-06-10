@@ -175,12 +175,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 
 		// Build a Machine
 		Machine machine = new Machine(size, bootChip);
-		for (Map.Entry<ChipLocation, ChipSummaryInfo> entry : chipInfo
-				.entrySet()) {
-			if (!ignoreChips.contains(entry.getKey())) {
-				machine.addChip(makeChip(size, entry.getValue()));
+		chipInfo.forEach((chip, summary) -> {
+			if (!ignoreChips.contains(chip)) {
+				machine.addChip(makeChip(size, summary));
 			}
-		}
+		});
 		return machine;
 	}
 

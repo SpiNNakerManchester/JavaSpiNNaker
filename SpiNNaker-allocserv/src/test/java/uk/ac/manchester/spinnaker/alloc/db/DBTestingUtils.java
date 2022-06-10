@@ -100,8 +100,8 @@ abstract class DBTestingUtils {
 	/**
 	 * Columns expected when building {@link BoardCoords} from a {@link Row}.
 	 */
-	static final Set<String> BOARD_COORDS_REQUIRED_COLUMNS =
-			set("x", "y", "z", "cabinet", "frame", "board_num", "address");
+	static final Set<String> BOARD_COORDS_REQUIRED_COLUMNS = set("board_id",
+			"x", "y", "z", "cabinet", "frame", "board_num", "address");
 
 	/**
 	 * Columns expected when building a {@link UserRecord} from a {@link Row}.

@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
-import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistReader;
+import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistIO;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
@@ -347,6 +347,7 @@ public abstract class SQLQueries {
 	 * Get the boards (and related info) of a machine that are in service.
 	 */
 	@Parameter("machine_id")
+	@ResultColumn("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
@@ -355,8 +356,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	protected static final String GET_LIVE_BOARDS =
-			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp USING (bmp_id) "
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND board_num IS NOT NULL "
 					+ "AND functioning IS 1 ORDER BY z ASC, x ASC, y ASC";
@@ -365,6 +366,7 @@ public abstract class SQLQueries {
 	 * Get the boards (and related info) of a machine that have been disabled.
 	 */
 	@Parameter("machine_id")
+	@ResultColumn("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
@@ -373,16 +375,36 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	protected static final String GET_DEAD_BOARDS =
-			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp USING (bmp_id) "
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND (board_num IS NULL OR functioning IS 0) "
+					+ "ORDER BY z ASC, x ASC, y ASC";
+
+	/**
+	 * Get all the boards (and related info) of a machine.
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	protected static final String GET_ALL_BOARDS =
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
+					+ "WHERE boards.machine_id = :machine_id "
+					+ "AND board_num IS NOT NULL "
 					+ "ORDER BY z ASC, x ASC, y ASC";
 
 	/**
 	 * Get the coords of boards assigned to a job.
 	 */
 	@Parameter("job_id")
+	@ResultColumn("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
@@ -391,8 +413,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	protected static final String GET_JOB_BOARD_COORDS =
-			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp USING (bmp_id) "
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.allocated_job = :job_id "
 					+ "ORDER BY z ASC, x ASC, y ASC";
 
@@ -847,14 +869,6 @@ public abstract class SQLQueries {
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE board_id = :board_id LIMIT 1";
-
-	/**
-	 * List the IDs of all boards in all machines. No other details. Expensive
-	 * if a full machine is present!
-	 */
-	@ResultColumn("board_id")
-	protected static final String GET_ALL_BOARD_IDS =
-			"SELECT board_id FROM BOARDS";
 
 	/** Get a board's ID given it's triad coordinates. */
 	@Parameter("machine_name")
@@ -1666,7 +1680,7 @@ public abstract class SQLQueries {
 	/**
 	 * Read the blacklisted chips for a board.
 	 *
-	 * @see BlacklistReader
+	 * @see BlacklistIO
 	 */
 	@Parameter("board_id")
 	@ResultColumn("x")
@@ -1680,7 +1694,7 @@ public abstract class SQLQueries {
 	/**
 	 * Read the blacklisted cores for a board.
 	 *
-	 * @see BlacklistReader
+	 * @see BlacklistIO
 	 */
 	@Parameter("board_id")
 	@ResultColumn("x")
@@ -1696,7 +1710,7 @@ public abstract class SQLQueries {
 	/**
 	 * Read the blacklisted links for a board.
 	 *
-	 * @see BlacklistReader
+	 * @see BlacklistIO
 	 */
 	@Parameter("board_id")
 	@ResultColumn("x")
@@ -1708,6 +1722,90 @@ public abstract class SQLQueries {
 					+ "FROM blacklisted_links "
 					+ "JOIN board_model_coords USING (coord_id) "
 					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Add a chip on a board to that board's blacklist. Does not cause the
+	 * blacklist to be written to anywhere. The {@code x},{@code y} are
+	 * board-local coordinates.
+	 *
+	 * @see BlacklistIO
+	 */
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
+	protected static final String ADD_BLACKLISTED_CHIP =
+			"WITH args(board_id, x, y) AS (VALUES(:board_id, :x, :y)),"
+					+ "m(model) AS (SELECT board_model FROM machines "
+					+ "JOIN boards USING (machine_id) "
+					+ "JOIN args USING (board_id)) "
+					+ "INSERT INTO blacklisted_chips(board_id, coord_id, notes)"
+					+ "SELECT args.board_id, coord_id, NULL "
+					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
+					+ "WHERE chip_x = args.x AND chip_y = args.y";
+
+	/**
+	 * Add a core on a board to that board's blacklist. Does not cause the
+	 * blacklist to be written to anywhere. The {@code x},{@code y} are
+	 * board-local coordinates.
+	 *
+	 * @see BlacklistIO
+	 */
+	protected static final String ADD_BLACKLISTED_CORE =
+			"WITH args(board_id, x, y, p) AS (VALUES(:board_id, :x, :y, :p)),"
+					+ "m(model) AS (SELECT board_model FROM machines "
+					+ "JOIN boards USING (machine_id) "
+					+ "JOIN args USING (board_id)) "
+					+ "INSERT INTO blacklisted_cores("
+					+ "board_id, coord_id, physical_core, notes)"
+					+ "SELECT args.board_id, coord_id, p, NULL "
+					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
+					+ "WHERE chip_x = args.x AND chip_y = args.y";
+
+	/**
+	 * Add a link on a board to that board's blacklist. Does not cause the
+	 * blacklist to be written to anywhere. The {@code x},{@code y} are
+	 * board-local coordinates.
+	 *
+	 * @see BlacklistIO
+	 */
+	protected static final String ADD_BLACKLISTED_LINK =
+			"WITH args(board_id, x, y, dir) AS ("
+					+ "VALUES(:board_id, :x, :y, :direction)),"
+					+ "m(model) AS (SELECT board_model FROM machines "
+					+ "JOIN boards USING (machine_id) "
+					+ "JOIN args USING (board_id)) "
+					+ "INSERT INTO blacklisted_links("
+					+ "board_id, coord_id, direction, notes)"
+					+ "SELECT args.board_id, coord_id, dir, NULL "
+					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
+					+ "WHERE chip_x = args.x AND chip_y = args.y";
+
+	/**
+	 * Delete all blacklist entries for chips on a board.
+	 *
+	 * @see BlacklistIO
+	 */
+	@Parameter("board_id")
+	protected static final String CLEAR_BLACKLISTED_CHIPS_OF_BOARD =
+			"DELETE FROM blacklisted_chips WHERE board_id = :board_id";
+
+	/**
+	 * Delete all blacklist entries for cores on a board.
+	 *
+	 * @see BlacklistIO
+	 */
+	@Parameter("board_id")
+	protected static final String CLEAR_BLACKLISTED_CORES_OF_BOARD =
+			"DELETE FROM blacklisted_cores WHERE board_id = :board_id";
+
+	/**
+	 * Delete all blacklist entries for links on a board.
+	 *
+	 * @see BlacklistIO
+	 */
+	@Parameter("board_id")
+	protected static final String CLEAR_BLACKLISTED_LINKS_OF_BOARD =
+			"DELETE FROM blacklisted_links WHERE board_id = :board_id";
 
 	/**
 	 * Get the list of writes (to the machine) of blacklist data to perform.
@@ -2206,6 +2304,6 @@ interface SQLQueriesUseImportsForCheckstyle {
 		DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
 		UserControl.class, AllocatorTask.class, QuotaManager.class,
 		Spalloc.class, BMPController.class, BoardIssueReport.class,
-		LocalAuthProviderImpl.class, BlacklistReader.class
+		LocalAuthProviderImpl.class, BlacklistIO.class
 	};
 }

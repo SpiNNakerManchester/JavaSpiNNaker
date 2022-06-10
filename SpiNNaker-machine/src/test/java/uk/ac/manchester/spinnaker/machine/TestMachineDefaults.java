@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -41,7 +40,7 @@ public class TestMachineDefaults {
     //}
 
     @Test
-    public void testFoutChipDownLinks() {
+    public void testFourChipDownLinks() {
         //Misuses of CoreLocation!
         ArrayList<CoreLocation> fromPython = new ArrayList<>();
         fromPython.add(new CoreLocation(0, 0, 3));
@@ -55,12 +54,11 @@ public class TestMachineDefaults {
 
         ArrayList<CoreLocation> fromDefaults = new ArrayList<>();
         Map<ChipLocation, Set<Direction>> map = MachineDefaults.FOUR_CHIP_DOWN_LINKS;
-        for (Entry<ChipLocation, Set<Direction>> entry: map.entrySet()) {
-            assertNotNull(entry.getKey());
-            for (Direction direction:entry.getValue()) {
-                fromDefaults.add(new CoreLocation(entry.getKey(), direction.id));
-            }
-        }
-        assertThat (fromDefaults, containsInAnyOrder(fromPython.toArray()));
+		map.forEach((chip, dirs) -> {
+			assertNotNull(chip);
+			dirs.stream().map(direction -> new CoreLocation(chip, direction.id))
+					.forEach(fromDefaults::add);
+		});
+        assertThat(fromDefaults, containsInAnyOrder(fromPython.toArray()));
     }
 }
