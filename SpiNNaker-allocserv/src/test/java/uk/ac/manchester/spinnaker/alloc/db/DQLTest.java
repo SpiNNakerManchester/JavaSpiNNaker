@@ -722,6 +722,18 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getAllBoardIds() {
+		try (Query q = c.query(GET_ALL_BOARD_IDS)) {
+			assertEquals(0, q.getNumArguments());
+			assertSetEquals(set("board_id"), q.getRowColumnNames());
+			c.transaction(() -> {
+				// Must not throw; not worried about whether a row exists here
+				q.call1().isPresent();
+			});
+		}
+	}
+
+	@Test
 	void findBoardByNameAndCFB() {
 		try (Query q = c.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 			assertEquals(4, q.getNumArguments());

@@ -848,6 +848,14 @@ public abstract class SQLQueries {
 					+ "JOIN bmp USING (bmp_id) "
 					+ "WHERE board_id = :board_id LIMIT 1";
 
+	/**
+	 * List the IDs of all boards in all machines. No other details. Expensive
+	 * if a full machine is present!
+	 */
+	@ResultColumn("board_id")
+	protected static final String GET_ALL_BOARD_IDS =
+			"SELECT board_id FROM BOARDS";
+
 	/** Get a board's ID given it's triad coordinates. */
 	@Parameter("machine_name")
 	@Parameter("x")

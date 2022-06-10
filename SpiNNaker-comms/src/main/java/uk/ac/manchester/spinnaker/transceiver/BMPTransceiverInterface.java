@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
+import static java.lang.Thread.interrupted;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.singleton;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -1139,7 +1141,7 @@ public interface BMPTransceiverInterface {
 	 */
 	default void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		ByteBuffer data = ByteBuffer.allocate(WORD_SIZE);
+		ByteBuffer data = allocate(WORD_SIZE);
 		data.order(LITTLE_ENDIAN);
 		data.putInt(dataWord);
 		data.flip();
@@ -1316,9 +1318,12 @@ public interface BMPTransceiverInterface {
 	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If interrupted. Interruption can happen <em>prior</em> to
+	 *             commencing the actual writes.
 	 */
 	default void writeBlacklist(BMPBoard board, Blacklist blacklist)
-			throws ProcessException, IOException {
+			throws ProcessException, IOException, InterruptedException {
 		writeBlacklist(getBoundBMP(), board, blacklist);
 	}
 
@@ -1336,11 +1341,18 @@ public interface BMPTransceiverInterface {
 	 *             If a BMP rejects a message.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If interrupted. Interruption can happen <em>prior</em> to
+	 *             commencing the actual writes.
 	 */
 	default void writeBlacklist(BMPCoords bmp, BMPBoard board,
-			Blacklist blacklist) throws ProcessException, IOException {
+			Blacklist blacklist)
+			throws ProcessException, IOException, InterruptedException {
+		// Clear the interrupt status
+		interrupted();
+
 		// Prepare the boot data
-		ByteBuffer data = ByteBuffer.allocate(BMP_BOOT_SECTOR_SIZE);
+		ByteBuffer data = allocate(BMP_BOOT_SECTOR_SIZE);
 		data.order(LITTLE_ENDIAN);
 		data.put(readBMPMemory(bmp, board, BMP_BOOT_SECTOR_ADDR,
 				BMP_BOOT_SECTOR_SIZE));
@@ -1350,6 +1362,11 @@ public interface BMPTransceiverInterface {
 		data.putInt(BMP_BOOT_CRC_OFFSET,
 				crc(data, 0, BMP_BOOT_BLACKLIST_OFFSET));
 
+		if (interrupted()) {
+			throw new InterruptedException(
+					"interrupted while reading boot data");
+		}
+
 		// Prepare the serial flash update; must read part of the data first
 		byte[] sfData = new byte[SF_BL_ADDR + SF_BL_LEN];
 		readSerialFlash(bmp, board, 0, SF_BL_ADDR).get(sfData, 0, SF_BL_ADDR);
@@ -1357,6 +1374,11 @@ public interface BMPTransceiverInterface {
 		data.get(sfData, SF_BL_ADDR, SF_BL_LEN);
 
 		data.position(0); // Prep for write
+
+		if (interrupted()) {
+			throw new InterruptedException(
+					"interrupted while reading serial flash");
+		}
 
 		// Do the actual writes here; any failure before here is unimportant
 		writeFlash(bmp, board, BMP_BOOT_SECTOR_ADDR, data, true);

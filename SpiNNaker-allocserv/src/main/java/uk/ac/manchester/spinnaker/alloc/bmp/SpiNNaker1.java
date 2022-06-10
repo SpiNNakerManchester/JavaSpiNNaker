@@ -324,7 +324,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
 			throws ProcessException, InterruptedException, IOException {
-		// FIXME implement this!
+		txrx.writeBlacklist(board, blacklist);
 	}
 
 	@SuppressWarnings("unused")

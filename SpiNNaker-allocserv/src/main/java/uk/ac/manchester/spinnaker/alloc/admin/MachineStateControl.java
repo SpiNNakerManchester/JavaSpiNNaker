@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
@@ -331,6 +332,32 @@ public class MachineStateControl extends DatabaseAwareBean {
 		private BlacklistException(String msg, Exception exn) {
 			super(msg, exn);
 		}
+	}
+
+	void updateAllBlacklists() throws InterruptedException {
+		List<Integer> boards = execute(false, this::listAllBoards);
+
+		for (Integer boardId : boards) {
+			Optional<BoardState> board = findId(boardId);
+			if (!board.isPresent()) {
+				continue;
+			}
+			Blacklist bl = readBlacklistFromMachine(board.get());
+			storeRetrievedBlacklist(boardId, bl);
+		}
+	}
+
+	private List<Integer> listAllBoards(Connection conn) {
+		try (Query q = conn.query(GET_ALL_BOARD_IDS)) {
+			return q.call().map(integer("board_id")).toList();
+		}
+	}
+
+	private void storeRetrievedBlacklist(Integer boardId, Blacklist bl) {
+		execute(conn -> {
+			// FIXME implement this
+			return 0;
+		});
 	}
 
 	/**
