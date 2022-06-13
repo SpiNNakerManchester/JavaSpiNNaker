@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.serialObject;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.time.Duration;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -382,6 +384,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	void updateAllBlacklists(int machineId) throws InterruptedException {
 		List<Integer> boards = execute(false, c -> listAllBoards(c, machineId));
 
+		// TODO consider order randomization and retrieving multiple at once
 		for (Integer boardId : boards) {
 			Optional<BoardState> board = findId(boardId);
 			if (!board.isPresent()) {
@@ -412,41 +415,18 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public Optional<Blacklist> readBlacklistFromMachine(BoardState board)
 			throws InterruptedException {
 		Epoch epoch = epochs.getBlacklistEpoch();
-		Integer opId = execute(conn -> {
-			try (Update readReq = conn.update(INSERT_BLACKLIST_READ_REQUEST)) {
-				return readReq.key(board.id).get();
-			}
-		});
+		Integer opId = createRequest(INSERT_BLACKLIST_READ_REQUEST, board.id);
 		try {
 			while (true) {
 				epoch.waitForChange(BLACKLIST_WAIT);
-				Blacklist blacklist = execute(false, conn -> {
-					try (Query getResult =
-							conn.query(GET_COMPLETED_BLACKLIST_OP);) {
-						Optional<Row> r = getResult.call1(opId);
-						if (!r.isPresent()) {
-							return null;
-						}
-						Row row = r.get();
-						if (row.getBoolean("failed")) {
-							throw new BlacklistException(
-									"failed to read blacklist",
-									row.getSerialObject("failure",
-											Exception.class));
-						}
-						return row.getSerialObject("data", Blacklist.class);
-					}
-				});
-				if (blacklist != null) {
-					return Optional.of(blacklist);
+				Optional<Blacklist> blg = getRequestResult(opId,
+						serialObject("data", Blacklist.class));
+				if (blg.isPresent()) {
+					return blg;
 				}
 			}
 		} finally {
-			execute(conn -> {
-				try (Update delReq = conn.update(DELETE_BLACKLIST_OP)) {
-					return delReq.call(opId);
-				}
-			});
+			deleteRequest(opId);
 		}
 	}
 
@@ -466,41 +446,52 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public void writeBlacklistToMachine(BoardState board, Blacklist blacklist)
 			throws InterruptedException {
 		Epoch epoch = epochs.getBlacklistEpoch();
-		Integer opId = execute(conn -> {
-			try (Update writeReq =
-					conn.update(INSERT_BLACKLIST_WRITE_REQUEST)) {
-				return writeReq.key(board.id, blacklist).get();
-			}
-		});
+		Integer opId = createRequest(INSERT_BLACKLIST_WRITE_REQUEST, board.id,
+				blacklist);
 		try {
 			while (true) {
 				epoch.waitForChange(BLACKLIST_WAIT);
-				if (execute(false, conn -> {
-					try (Query getResult =
-							conn.query(GET_COMPLETED_BLACKLIST_OP);) {
-						Optional<Row> r = getResult.call1(opId);
-						if (!r.isPresent()) {
-							return false;
-						}
-						Row row = r.get();
-						if (row.getBoolean("failed")) {
-							throw new BlacklistException(
-									"failed to write blacklist",
-									row.getSerialObject("failure",
-											Exception.class));
-						}
-						return true;
-					}
-				})) {
+				if (getRequestResult(opId, row -> true).isPresent()) {
 					return;
 				}
 			}
 		} finally {
-			execute(conn -> {
-				try (Update delReq = conn.update(DELETE_BLACKLIST_OP)) {
-					return delReq.call(opId);
-				}
-			});
+			deleteRequest(opId);
 		}
+	}
+
+	private Integer createRequest(String operation, Object... args) {
+		return execute(conn -> {
+			try (Update readReq = conn.update(operation)) {
+				return readReq.key(args).get();
+			}
+		});
+	}
+
+	private <T> Optional<T> getRequestResult(Integer opId,
+			Function<Row, T> retriever) {
+		return execute(false, conn -> {
+			try (Query getResult = conn.query(GET_COMPLETED_BLACKLIST_OP);) {
+				Optional<Row> r = getResult.call1(opId);
+				if (!r.isPresent()) {
+					return Optional.empty();
+				}
+				Row row = r.get();
+				if (row.getBoolean("failed")) {
+					throw new BlacklistException(
+							"failed to access hardware blacklist",
+							row.getSerialObject("failure", Exception.class));
+				}
+				return Optional.of(retriever.apply(row));
+			}
+		});
+	}
+
+	private void deleteRequest(Integer opId) {
+		execute(conn -> {
+			try (Update delReq = conn.update(DELETE_BLACKLIST_OP)) {
+				return delReq.call(opId);
+			}
+		});
 	}
 }

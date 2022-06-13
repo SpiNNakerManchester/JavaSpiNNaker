@@ -1736,13 +1736,18 @@ interface BMPConstants {
 	/** Size of blacklist, in bytes. */
 	int SF_BL_LEN = 256;
 
+	/** Offset of blacklist in boot sector of flash. */
 	int BMP_BOOT_BLACKLIST_OFFSET = 0xe00;
 
+	/** Location of boot sector of flash. */
 	int BMP_BOOT_SECTOR_ADDR = 0x1000;
 
+	/** Size of boot sector of flash. */
 	int BMP_BOOT_SECTOR_SIZE = 0x1000;
 
+	/** Offset of CRC in boot sector of flash. */
 	int BMP_BOOT_CRC_OFFSET = BMP_BOOT_SECTOR_SIZE - WORD_SIZE;
 
+	/** Byte used to blank out the space used for blacklists. */
 	byte BLACKLIST_BLANK = (byte) 255;
 }
