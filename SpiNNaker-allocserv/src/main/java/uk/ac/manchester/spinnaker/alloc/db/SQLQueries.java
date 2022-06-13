@@ -861,14 +861,18 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_ID =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
-					+ "WHERE board_id = :board_id LIMIT 1";
+					+ "LEFT JOIN board_serial USING (board_id) "
+					+ "WHERE boards.board_id = :board_id LIMIT 1";
 
 	/** Get a board's ID given it's triad coordinates. */
 	@Parameter("machine_name")
@@ -883,13 +887,18 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("board_num")
 	@ResultColumn("address")
+	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_XYZ =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND x = :x AND y = :y AND z = :z LIMIT 1";
 
@@ -906,13 +915,18 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("board_num")
 	@ResultColumn("address")
+	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_CFB =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND bmp.cabinet = :cabinet AND bmp.frame = :frame "
 					+ "AND boards.board_num IS NOT NULL "
@@ -929,13 +943,18 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("board_num")
 	@ResultColumn("address")
+	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_IP_ADDRESS =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND boards.address IS NOT NULL "
 					+ "AND boards.address = :address LIMIT 1";

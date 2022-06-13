@@ -95,7 +95,8 @@ abstract class DBTestingUtils {
 
 	/** Columns expected when building {@link BoardState} from a {@link Row}. */
 	static final Set<String> MSC_BOARD_COORDS = set("board_id", "x", "y", "z",
-			"cabinet", "frame", "board_num", "address", "machine_name");
+			"cabinet", "frame", "board_num", "address", "machine_name",
+			"bmp_serial_id", "physical_serial_id");
 
 	/**
 	 * Columns expected when building {@link BoardCoords} from a {@link Row}.

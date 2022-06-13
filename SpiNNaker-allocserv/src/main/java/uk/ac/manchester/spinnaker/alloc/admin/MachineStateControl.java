@@ -95,6 +95,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 		/** The IP address managed by the board's root chip. */
 		public final String address;
 
+		/** The BMP serial number, if known. */
+		public final String bmpSerial;
+
+		/** The physical board serial number, if known. */
+		public final String physicalSerial;
+
 		private BoardState(Row row) {
 			this.id = row.getInt("board_id");
 			this.x = row.getInt("x");
@@ -105,6 +111,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 			this.board = row.getInteger("board_num");
 			this.address = row.getString("address");
 			this.machineName = row.getString("machine_name");
+			this.bmpSerial = row.getString("bmp_serial_id");
+			this.physicalSerial = row.getString("physical_serial_id");
 		}
 
 		/**

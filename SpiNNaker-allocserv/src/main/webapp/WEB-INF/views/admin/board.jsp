@@ -35,6 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<form:options items="${ names }" />
 			</form:select>
 			<form:input type="hidden" path="machineName" />
+			<c:if test="${ not empty board.bmpSerial }">
+				<p>
+					<span class="minordetail">
+						Serial: <spring:eval expression="board.bmpSerial" />
+						<c:if test="${ not empty board.physicalSerial }">
+							(<spring:eval expression="board.physicalSerial" />)
+						</c:if>
+					</span>
+				</p>
+			</c:if>
 			<br>
 			<h3>Triad coordinates:</h3>
 			<form:label path="x">X:&nbsp;</form:label><form:input
