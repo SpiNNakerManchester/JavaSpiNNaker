@@ -218,7 +218,7 @@ public final class Row {
 	 * @throws TypeMismatchDataAccessException
 	 *             If the object is not of the required type.
 	 */
-	public <T> T getSerialObject(String columnLabel, Class<T> cls) {
+	public <T> T getSerial(String columnLabel, Class<T> cls) {
 		byte[] bytes = getBytes(columnLabel);
 		if (bytes == null) {
 			return null;
@@ -244,9 +244,9 @@ public final class Row {
 	 * @return A function to get the deserialized object from the column of a
 	 *         row.
 	 */
-	public static <T> Function<Row, T> serialObject(String columnLabel,
+	public static <T> Function<Row, T> serial(String columnLabel,
 			Class<T> cls) {
-		return r -> r.getSerialObject(columnLabel, cls);
+		return r -> r.getSerial(columnLabel, cls);
 	}
 
 	/**

@@ -800,9 +800,9 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void insertBlacklistReadRequest() {
+	void createBlacklistRead() {
 		assumeWritable(c);
-		try (Update u = c.update(INSERT_BLACKLIST_READ_REQUEST)) {
+		try (Update u = c.update(CREATE_BLACKLIST_READ)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD));
@@ -811,10 +811,10 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void insertBlacklistWriteRequest() {
+	void createBlacklistWrite() {
 		assumeWritable(c);
 		Blacklist bl = dummyBlacklist();
-		try (Update u = c.update(INSERT_BLACKLIST_WRITE_REQUEST)) {
+		try (Update u = c.update(CREATE_BLACKLIST_WRITE)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD, bl));

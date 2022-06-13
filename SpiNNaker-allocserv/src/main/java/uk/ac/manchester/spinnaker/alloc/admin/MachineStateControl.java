@@ -16,10 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.time.Duration.ofSeconds;
+import static java.time.Instant.now;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.serialObject;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.serial;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 
 import java.time.Duration;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
@@ -53,7 +56,11 @@ import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
  */
 @Service
 public class MachineStateControl extends DatabaseAwareBean {
+	// TODO how long to wait?
 	private static final int BLACKLIST_WAIT_SECS = 15;
+
+	// TODO how long to wait?
+	private static final int BLACKLIST_LONG_WAIT_SECS = 60;
 
 	private static final Duration BLACKLIST_WAIT =
 			Duration.ofSeconds(BLACKLIST_WAIT_SECS);
@@ -346,6 +353,10 @@ public class MachineStateControl extends DatabaseAwareBean {
 		private BlacklistException(String msg, Exception exn) {
 			super(msg, exn);
 		}
+
+		private BlacklistException(String msg) {
+			super(msg);
+		}
 	}
 
 	/**
@@ -415,6 +426,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param board
 	 *            Which board to read the blacklist of.
 	 * @return The board's blacklist.
+	 * @throws DataAccessException
+	 *             If access to the DB fails.
 	 * @throws BlacklistException
 	 *             If the read fails.
 	 * @throws InterruptedException
@@ -422,19 +435,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<Blacklist> readBlacklistFromMachine(BoardState board)
 			throws InterruptedException {
-		Epoch epoch = epochs.getBlacklistEpoch();
-		Integer opId = createRequest(INSERT_BLACKLIST_READ_REQUEST, board.id);
-		try {
-			while (true) {
-				epoch.waitForChange(BLACKLIST_WAIT);
-				Optional<Blacklist> blg = getRequestResult(opId,
-						serialObject("data", Blacklist.class));
-				if (blg.isPresent()) {
-					return blg;
-				}
-			}
-		} finally {
-			deleteRequest(opId);
+		try (Op op = new Op(CREATE_BLACKLIST_READ, board.id)) {
+			return op.getResult(serial("data", Blacklist.class));
 		}
 	}
 
@@ -445,6 +447,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            Which board to write the blacklist of.
 	 * @param blacklist
 	 *            The blacklist to write.
+	 * @throws DataAccessException
+	 *             If access to the DB fails.
 	 * @throws BlacklistException
 	 *             If the write fails.
 	 * @throws InterruptedException
@@ -453,53 +457,106 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public void writeBlacklistToMachine(BoardState board, Blacklist blacklist)
 			throws InterruptedException {
-		Epoch epoch = epochs.getBlacklistEpoch();
-		Integer opId = createRequest(INSERT_BLACKLIST_WRITE_REQUEST, board.id,
-				blacklist);
-		try {
-			while (true) {
-				epoch.waitForChange(BLACKLIST_WAIT);
-				if (getRequestResult(opId, row -> true).isPresent()) {
-					return;
-				}
-			}
-		} finally {
-			deleteRequest(opId);
+		try (Op op = new Op(CREATE_BLACKLIST_WRITE, board.id, blacklist)) {
+			op.getResult(row -> this); // Dummy result
 		}
 	}
 
-	private Integer createRequest(String operation, Object... args) {
-		return execute(conn -> {
-			try (Update readReq = conn.update(operation)) {
-				return readReq.key(args).get();
-			}
-		});
-	}
+	/**
+	 * Manages the transactions used to safely talk with the BMP controller.
+	 *
+	 * @author Donal Fellows
+	 */
+	private final class Op implements AutoCloseable {
+		private final int op;
 
-	private <T> Optional<T> getRequestResult(Integer opId,
-			Function<Row, T> retriever) {
-		return execute(false, conn -> {
-			try (Query getResult = conn.query(GET_COMPLETED_BLACKLIST_OP);) {
-				Optional<Row> r = getResult.call1(opId);
-				if (!r.isPresent()) {
-					return Optional.empty();
-				}
-				Row row = r.get();
-				if (row.getBoolean("failed")) {
-					throw new BlacklistException(
-							"failed to access hardware blacklist",
-							row.getSerialObject("failure", Exception.class));
-				}
-				return Optional.of(retriever.apply(row));
-			}
-		});
-	}
+		private final Epoch epoch;
 
-	private void deleteRequest(Integer opId) {
-		execute(conn -> {
-			try (Update delReq = conn.update(DELETE_BLACKLIST_OP)) {
-				return delReq.call(opId);
+		/**
+		 * @param operation
+		 *            The SQL to create the operation to carry out. Must
+		 *            generate an ID, so presumably is an {@code INSERT}.
+		 * @param args
+		 *            Values to bind to parameters in the SQL.
+		 */
+		Op(String operation, Object... args) {
+			epoch = epochs.getBlacklistEpoch();
+			op = execute(conn -> {
+				try (Update readReq = conn.update(operation)) {
+					return readReq.key(args);
+				}
+			}).orElseThrow(() -> new BlacklistException(
+					"could not create blacklist request"));
+		}
+
+		/**
+		 * Wait for the result of the request to be ready.
+		 *
+		 * @param <T>
+		 *            The type of the result value.
+		 * @param retriever
+		 *            How to convert the row containing the result into the
+		 *            actual result of the transaction.
+		 * @return The wrapped result, or empty if the operation times out.
+		 * @throws InterruptedException
+		 *             If the thread is interrupted.
+		 * @throws BlacklistException
+		 *             If the BMP throws an exception.
+		 * @throws DataAccessException
+		 *             If there is a problem accessing the database.
+		 */
+		<T> Optional<T> getResult(Function<Row, T> retriever)
+				throws InterruptedException, BlacklistException,
+				DataAccessException {
+			Instant end = now().plus(ofSeconds(BLACKLIST_LONG_WAIT_SECS));
+			while (end.isAfter(now())) {
+				epoch.waitForChange(BLACKLIST_WAIT);
+				Optional<T> result = execute(false, conn -> {
+					try (Query getResult =
+							conn.query(GET_COMPLETED_BLACKLIST_OP)) {
+						return getResult.call1(op)
+								.map(this::throwIfFailed)
+								.map(retriever);
+					}
+				});
+				if (result.isPresent()) {
+					return result;
+				}
 			}
-		});
+			return Optional.empty();
+		}
+
+		/**
+		 * If a row encodes a failure state, unpack the exception from the row
+		 * and throw it as a wrapped exception. Otherwise, just pass on the row.
+		 *
+		 * @param row
+		 *            The row to examine.
+		 * @return The row, which is now guaranteed to not be a failure.
+		 * @throws BlacklistException
+		 *             If the row encodes a failure.
+		 */
+		private Row throwIfFailed(Row row) throws BlacklistException {
+			if (row.getBoolean("failed")) {
+				throw new BlacklistException(
+						"failed to access hardware blacklist",
+						row.getSerial("failure", Exception.class));
+			}
+			return row;
+		}
+
+		/**
+		 * Deletes the temporary operation description row in the DB.
+		 * <p>
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void close() {
+			execute(conn -> {
+				try (Update delReq = conn.update(DELETE_BLACKLIST_OP)) {
+					return delReq.call(op);
+				}
+			});
+		}
 	}
 }

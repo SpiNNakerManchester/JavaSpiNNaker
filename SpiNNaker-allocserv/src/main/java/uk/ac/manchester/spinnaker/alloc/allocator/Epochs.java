@@ -183,12 +183,13 @@ public class Epochs {
 	}
 
 	/**
-	 * A waitable machine epoch checkpoint.
+	 * A waitable blacklist epoch checkpoint. Note that this is a restartable
+	 * epoch.
 	 *
 	 * @author Donal Fellows
 	 */
 	private final class BlacklistEpoch implements Epoch {
-		private final long epoch;
+		private long epoch;
 
 		private BlacklistEpoch() {
 			synchronized (Epochs.this) {
@@ -201,9 +202,11 @@ public class Epochs {
 				throws InterruptedException {
 			long expiry = expiry(timeout);
 			synchronized (Epochs.this) {
-				while (blacklistEpoch <= epoch && waiting(expiry)) {
+				long ble;
+				while ((ble = blacklistEpoch) <= epoch && waiting(expiry)) {
 					waitUntil(expiry);
 				}
+				epoch = ble;
 			}
 		}
 	}

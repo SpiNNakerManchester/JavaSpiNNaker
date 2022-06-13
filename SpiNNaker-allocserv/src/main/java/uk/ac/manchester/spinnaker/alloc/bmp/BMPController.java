@@ -592,7 +592,7 @@ public class BMPController extends DatabaseAwareBean {
 			bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
 			board = new BMPBoard(row.getInt("board_num"));
 			if (write) {
-				blacklist = row.getSerialObject("data", Blacklist.class);
+				blacklist = row.getSerial("data", Blacklist.class);
 			} else {
 				blacklist = null;
 			}
@@ -625,7 +625,7 @@ public class BMPController extends DatabaseAwareBean {
 								+ "not equal to actual serial ID '%s'",
 						bmpSerialId, readSerial));
 			}
-			controller.writeBlacklist(board, blacklist);
+			controller.writeBlacklist(board, requireNonNull(blacklist));
 		}
 
 		/**

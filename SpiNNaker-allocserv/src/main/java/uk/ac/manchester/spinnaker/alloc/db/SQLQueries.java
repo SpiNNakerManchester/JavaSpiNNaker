@@ -1925,10 +1925,12 @@ public abstract class SQLQueries {
 	@ResultColumn("write")
 	@ResultColumn("data")
 	@ResultColumn("failure")
+	@SingleRowResult
 	protected static final String GET_COMPLETED_BLACKLIST_OP =
 			"SELECT board_id, write, data, failure, "
 					+ "failure IS NOT NULL AS failed "
-					+ "FROM blacklist_ops WHERE op_id = :op_id AND completed";
+					+ "FROM blacklist_ops WHERE op_id = :op_id AND completed "
+					+ "LIMIT 1";
 
 	/**
 	 * Delete a blacklist request.
@@ -1946,7 +1948,7 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("board_id")
 	@GeneratesID
-	protected static final String INSERT_BLACKLIST_READ_REQUEST =
+	protected static final String CREATE_BLACKLIST_READ =
 			"INSERT INTO blacklist_ops(board_id, write, completed) "
 					+ "VALUES(:board_id, 0, 0)";
 
@@ -1958,7 +1960,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	@Parameter("blacklist")
 	@GeneratesID
-	protected static final String INSERT_BLACKLIST_WRITE_REQUEST =
+	protected static final String CREATE_BLACKLIST_WRITE =
 			"INSERT INTO blacklist_ops(board_id, write, completed, data) "
 					+ "VALUES(:board_id, 1, 0, :blacklist)";
 
