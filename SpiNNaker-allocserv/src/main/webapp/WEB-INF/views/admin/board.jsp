@@ -147,6 +147,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<br>
 			Note that disabling a board only means that it will not be handed
 			out in future allocations.
+			<h2>Blacklisted Hardware</h2>
+			<c:if test="${ haveBlacklist }">
+				<pre>
+					<c:forEach items="${ blacklist.chips }" var="chip">
+						chip ${ chip.x } ${ chip.y } dead
+					</c:forEach>
+					<%-- TODO: combine lines --%>
+					<c:forEach items="${ blacklist.cores }" var="cores">
+						chip ${ cores.key.x } ${ cores.key.y } cores <c:forEach
+							items="${ cores.value }" var="core" varStatus="coreloop"
+							>${ core }${!coreloop.last ? ',' : ''}</c:forEach>
+					</c:forEach>
+					<c:forEach items="${ blacklist.links }" var="links">
+						chip ${ links.key.x } ${ links.key.y } links <c:forEach
+							items="${ links.value }" var="link" varStatus="linkloop"
+							>${ link }${!linkloop.last ? ',' : ''}</c:forEach>
+					</c:forEach>
+				</pre>
+				<%-- TODO: buttons to fetch and save the actual blacklist --%>
+			</c:if>
 		</form:form>
 	</c:when>
 	<c:otherwise>

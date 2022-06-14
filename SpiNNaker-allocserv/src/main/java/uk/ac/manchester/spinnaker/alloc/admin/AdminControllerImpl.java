@@ -79,6 +79,7 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
+import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
  * Implements the logic supporting the JSP views and maps them into URL space.
@@ -166,8 +167,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private static final String GROUP_OBJ = "group";
 
-	/** State in {@link #BOARD_VIEW}. */
+	/** State in {@link #BOARD_VIEW}. {@link BoardRecord}. */
 	private static final String BOARD_OBJ = "board";
+
+	/** Blacklist state in {@link #BOARD_VIEW}. {@link Blacklist} if present. */
+	private static final String BLACKLIST_OBJ = "blacklist";
+
+	/** Blacklist-related state in {@link #BOARD_VIEW}. Boolean. */
+	private static final String HAVE_BLACKLIST = "haveBlacklist";
 
 	/** State in {@link #MACHINE_VIEW}. */
 	private static final String MACHINE_LIST_OBJ = "machineNames";
@@ -629,6 +636,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			bs.setState(board.isEnabled());
 			spalloc.purgeDownCache();
 		}
+		Optional<Blacklist> bl = machineController.readBlacklistFromDB(bs);
+		model.put(HAVE_BLACKLIST, bl.isPresent());
+		bl.ifPresent(blacklist -> model.put(BLACKLIST_OBJ, blacklist));
 		model.put(BOARD_OBJ, bs); // TODO is this right?
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);

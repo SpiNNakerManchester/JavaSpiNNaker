@@ -421,6 +421,19 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Given a board, read its blacklist from the database.
+	 *
+	 * @param board
+	 *            Which board to read the blacklist of.
+	 * @return The board's blacklist.
+	 * @throws DataAccessException
+	 *             If access to the DB fails.
+	 */
+	public Optional<Blacklist> readBlacklistFromDB(BoardState board) {
+		return blacklistHandler.readBlacklistFromDB(board.id);
+	}
+
+	/**
 	 * Given a board, read its blacklist off the machine.
 	 *
 	 * @param board
