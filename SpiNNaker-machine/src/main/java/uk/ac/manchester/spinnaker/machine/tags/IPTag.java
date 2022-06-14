@@ -178,7 +178,6 @@ public final class IPTag extends Tag {
 	 * @throws UnknownHostException
 	 *             If an IP address doesn't resolve.
 	 */
-	@SuppressWarnings("checkstyle:ParameterNumber")
 	public IPTag(
 			@JsonProperty(value = "boardAddress", required = true)
 			String boardAddress,
