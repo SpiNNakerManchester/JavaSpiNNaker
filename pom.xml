@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<junit.version>5.8.2</junit.version>
 		<checkstyle.version>9.3</checkstyle.version>
 		<javadoc.version>3.4.0</javadoc.version>
-		<testing.version>3.0.0-M6</testing.version>
+		<testing.version>3.0.0-M7</testing.version>
 
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j.version>2.17.2</log4j.version>
@@ -455,7 +455,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<groupId>com.github.blutorange</groupId>
 					<artifactId>closure-compiler-maven-plugin</artifactId>
 					<version>2.21.0</version>
-					<!-- 2.22 requires Java 11 -->
+					<!-- 2.22 and 2.23 require Java 11 -->
 				</plugin>
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
@@ -494,7 +494,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.rat</groupId>
 					<artifactId>apache-rat-plugin</artifactId>
-					<version>0.13</version>
+					<version>0.14</version>
 					<configuration>
 						<excludes>
 							<!-- Files without comment formats should be excluded -->
@@ -511,6 +511,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<!-- Fooling markdown parsers and RAT is hard -->
 							<exclude>**/*.md</exclude>
 							<exclude>**/dependency-reduced-pom.xml</exclude>
+							<exclude>.gitattributes</exclude>
 							<exclude>**/.dbeaver/**</exclude>
 							<exclude>**/*.erd</exclude>
 							<exclude>**/node_modules/**</exclude>

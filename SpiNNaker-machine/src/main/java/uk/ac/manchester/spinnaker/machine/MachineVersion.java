@@ -150,7 +150,6 @@ public enum MachineVersion {
 	 * @param isTriad
 	 *            Indicates if this board is made up of triads,
 	 */
-	@SuppressWarnings("checkstyle:ParameterNumber")
 	MachineVersion(Integer id, MachineDimensions dimensions, boolean isFourChip,
 			boolean isFourtyeightChip, boolean horizontalWrap,
 			boolean verticalWrap, boolean isTriad) {
@@ -197,7 +196,6 @@ public enum MachineVersion {
 	 * @param isTriad
 	 *            Indicates if this board is made up of triads.
 	 */
-	@SuppressWarnings("checkstyle:ParameterNumber")
 	MachineVersion(Integer id, int width, int height, boolean isFourChip,
 			boolean isFortyEightChip, boolean horizontalWrap,
 			boolean verticalWrap, boolean isTriad) {
