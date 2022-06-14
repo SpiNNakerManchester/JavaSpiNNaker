@@ -86,12 +86,10 @@ public class TestDefaultMap {
     }
 
     public class Doubler implements DefaultMap.KeyAwareFactory<Integer, Integer> {
-
         @Override
         public Integer createValue(Integer key) {
-            return new Integer(key.intValue() * 2);
+            return Integer.valueOf(key.intValue() * 2);
         }
-
     }
 
 }
