@@ -91,13 +91,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module name="UnusedImports" />
 		<module name="MethodLength" />
 		<module name="ParameterNumber">
-			<!-- We permit more arguments to constructors than methods -->
-			<property name="max" value="15" />
-			<property name="tokens" value="CTOR_DEF" />
+			<property name="tokens" value="METHOD_DEF" />
+			<property name="ignoreOverriddenMethods" value="true" />
 		</module>
 		<module name="ParameterNumber">
+			<property name="tokens" value="CTOR_DEF" />
+			<property name="max" value="15" />
 			<property name="ignoreOverriddenMethods" value="true" />
-			<property name="tokens" value="METHOD_DEF" />
 		</module>
 		<module name="EmptyForIteratorPad" />
 		<module name="GenericWhitespace" />
