@@ -93,6 +93,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</module>
 		<module name="MethodLength" />
 		<module name="ParameterNumber">
+			<property name="tokens" value="METHOD_DEF" />
+			<property name="ignoreOverriddenMethods" value="true" />
+		</module>
+		<module name="ParameterNumber">
+			<property name="tokens" value="CTOR_DEF" />
+			<property name="max" value="15" />
 			<property name="ignoreOverriddenMethods" value="true" />
 		</module>
 		<module name="EmptyForIteratorPad" />
