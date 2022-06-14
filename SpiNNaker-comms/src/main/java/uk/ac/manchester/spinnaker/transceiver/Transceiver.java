@@ -188,7 +188,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * <strong>always</strong> parallel-unsafe, other documentation in this class
  * notwithstanding.</em>
  */
-@SuppressWarnings("checkstyle:ParameterNumber")
 public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface, RetryTracker {
 	private static final Logger log = getLogger(Transceiver.class);

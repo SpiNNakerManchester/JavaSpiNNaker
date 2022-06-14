@@ -94,7 +94,6 @@ public class DiagnosticFilter {
 	 *            Increment the counter if one or more of the given packet types
 	 *            match (or empty list to match all)
 	 */
-	@SuppressWarnings("checkstyle:ParameterNumber")
 	public DiagnosticFilter(boolean enableInterruptOnCounterEvent,
 			boolean matchEmergencyRoutingStatusToIncomingPacket,
 			Collection<Destination> destinations, Collection<Source> sources,
