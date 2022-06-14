@@ -326,7 +326,6 @@ public class BMPController extends DatabaseAwareBean {
 		 * @param idToBoard
 		 *            How to get the physical ID of a board from its database ID
 		 */
-		@SuppressWarnings("checkstyle:ParameterNumber")
 		Request(TakeReqsSQL sql, Machine machine,
 				Map<BMPCoords, List<Integer>> powerOn,
 				Map<BMPCoords, List<Integer>> powerOff,
