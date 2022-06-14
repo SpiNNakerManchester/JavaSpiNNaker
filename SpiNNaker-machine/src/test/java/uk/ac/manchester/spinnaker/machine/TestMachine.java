@@ -39,7 +39,6 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  *
  * @author Christian-B
  */
-@SuppressWarnings("deprecation")
 public class TestMachine {
 
     public TestMachine() {
