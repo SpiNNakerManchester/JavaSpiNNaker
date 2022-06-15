@@ -51,7 +51,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * The main proxy class for a particular web socket session. It's bound to a
  * job, which should be running at the time that the web socket is opened. The
  * protocol that is supported is a binary protocol that has three messages:
- * <table border>
+ * <table border="1" class="protocol">
  * <tr>
  * <th>Name</th>
  * <th>Request Layout (words)</th>
@@ -60,7 +60,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <tr>
  * <td rowspan=2>
  * {@linkplain #openConnectedChannel(ByteBuffer) Open Connected Channel}</td>
- * <td><table border>
+ * <td><table border="1" class="protocolrequest">
  * <tr>
  * <td>{@link ProxyOp#OPEN 0}
  * <td>Correlation&nbsp;ID
@@ -70,7 +70,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </tr>
  * </table>
  * </td>
- * <td><table border>
+ * <td><table border="1" class="protocolresponse">
  * <tr>
  * <td>{@link ProxyOp#OPEN 0}
  * <td>Correlation&nbsp;ID
@@ -91,7 +91,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <tr>
  * <td rowspan=2>
  * {@linkplain #closeChannel(ByteBuffer) Close Channel}</td>
- * <td><table border>
+ * <td><table border="1" class="protocolrequest">
  * <tr>
  * <td>{@link ProxyOp#CLOSE 1}
  * <td>Correlation&nbsp;ID
@@ -99,7 +99,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </tr>
  * </table>
  * </td>
- * <td><table border>
+ * <td><table border="1" class="protocolresponse">
  * <tr>
  * <td>{@link ProxyOp#CLOSE 1}
  * <td>Correlation&nbsp;ID
@@ -118,7 +118,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <tr>
  * <td rowspan=2>
  * {@linkplain #sendMessage(ByteBuffer) Send Message}</td>
- * <td><table border>
+ * <td><table border="1" class="protocolrequest">
  * <tr>
  * <td>{@link ProxyOp#MESSAGE 2}
  * <td>Channel&nbsp;ID
@@ -142,14 +142,14 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <td rowspan=2>
  * {@linkplain #openUnconnectedChannel(ByteBuffer) Open Unconnected Channel}
  * </td>
- * <td><table border>
+ * <td><table border="1" class="protocolrequest">
  * <tr>
  * <td>{@link ProxyOp#OPEN_UNCONNECTED 3}
  * <td>Correlation&nbsp;ID
  * </tr>
  * </table>
  * </td>
- * <td><table border>
+ * <td><table border="1" class="protocolresponse">
  * <tr>
  * <td>{@link ProxyOp#OPEN_UNCONNECTED 3}
  * <td>Correlation&nbsp;ID
@@ -180,7 +180,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <tr>
  * <td rowspan=2>
  * {@linkplain #sendMessageTo(ByteBuffer) Send Message To}</td>
- * <td><table border>
+ * <td><table border="1" class="protocolrequest">
  * <tr>
  * <td>{@link ProxyOp#MESSAGE_TO 4}
  * <td>Channel&nbsp;ID

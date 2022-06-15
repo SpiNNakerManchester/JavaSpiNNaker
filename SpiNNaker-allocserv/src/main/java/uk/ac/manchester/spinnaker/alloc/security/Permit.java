@@ -104,6 +104,7 @@ public final class Permit {
 	 * The permit used for web socket handling.
 	 *
 	 * @param session
+	 *            The web socket in question.
 	 */
 	public Permit(WebSocketSession session) {
 		USER.getGrants().forEach(authorities::add);
