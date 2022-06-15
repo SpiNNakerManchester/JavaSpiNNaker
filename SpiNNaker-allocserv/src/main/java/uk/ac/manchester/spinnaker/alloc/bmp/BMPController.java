@@ -544,13 +544,14 @@ public class BMPController extends DatabaseAwareBean {
 	private void takeRequestsForJob(Machine machine, Integer jobId,
 			TakeReqsSQL sql, List<Request> requestCollector) {
 		var changeIds = new ArrayList<Integer>();
-		var boardsOn = new DefaultMap<BMPCoords, List<Integer>>(ArrayList::new);
-		var boardsOff = new DefaultMap<BMPCoords, List<Integer>>(
-				ArrayList::new);
-		var linksOff = new DefaultMap<BMPCoords, List<Link>>(ArrayList::new);
+		Map<BMPCoords, List<Integer>> boardsOn =
+				new DefaultMap<>(ArrayList::new);
+		Map<BMPCoords, List<Integer>> boardsOff =
+				new DefaultMap<>(ArrayList::new);
+		Map<BMPCoords, List<Link>> linksOff = new DefaultMap<>(ArrayList::new);
 		JobState from = UNKNOWN, to = UNKNOWN;
-		var idToBoard = new DefaultMap<BMPCoords, Map<Integer, BMPBoard>>(
-				HashMap::new);
+		Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard =
+				new DefaultMap<>(HashMap::new);
 
 		for (var row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
