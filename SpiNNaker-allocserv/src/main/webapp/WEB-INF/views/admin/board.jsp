@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <%--
 Copyright (c) 2021-2022 The University of Manchester
@@ -147,7 +148,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<br>
 			Note that disabling a board only means that it will not be handed
 			out in future allocations.
-			<h2>Blacklisted Hardware</h2>
+		</form:form>
+		<h2>Blacklisted Hardware</h2>
+		<form method="POST" action="${ blacklistControlUri }">
+			<sec:csrfInput />
 			<c:if test="${ haveBlacklist }">
 				<pre>
 					<c:forEach items="${ blacklist.chips }" var="chip">
@@ -165,9 +169,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							>${ link }${!linkloop.last ? ',' : ''}</c:forEach>
 					</c:forEach>
 				</pre>
-				<%-- TODO: buttons to fetch and save the actual blacklist --%>
 			</c:if>
-		</form:form>
+			<%-- TODO: buttons to fetch and save the actual blacklist --%>
+			<input type="submit" name="fetch" value="Look Up Board" />
+		</form>
 	</c:when>
 	<c:otherwise>
 		<form:form method="POST" modelAttribute="board">

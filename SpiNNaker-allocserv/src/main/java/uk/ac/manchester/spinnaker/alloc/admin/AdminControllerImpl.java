@@ -201,6 +201,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	private static final String BOARDS_URI = "boardsUri";
 
+	private static final String BLACKLIST_URI = "blacklistControlUri";
+
 	private static final String MACHINE_URI = "machineUri";
 
 	@Autowired
@@ -625,10 +627,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 		inflateBoardRecord(board, bs);
 
-		// Get or set
-		if (!board.isEnabledDefined()) {
-			board.setEnabled(bs.getState());
-		} else {
+		if (board.isEnabledDefined()) {
+			// We're doing a set
 			log.info(
 					"setting board-allocatable state for board "
 							+ "({},{},{}) to {}",
@@ -636,12 +636,53 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			bs.setState(board.isEnabled());
 			spalloc.purgeDownCache();
 		}
-		Optional<Blacklist> bl = machineController.readBlacklistFromDB(bs);
-		model.put(HAVE_BLACKLIST, bl.isPresent());
-		bl.ifPresent(blacklist -> model.put(BLACKLIST_OBJ, blacklist));
+
+		board.setEnabled(bs.getState());
+		addBlacklistData(bs, model);
 		model.put(BOARD_OBJ, bs); // TODO is this right?
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
+	}
+
+	@Override
+	@Action("processing changes to a blacklist")
+	public ModelAndView blacklistHandling(ModelMap model) {
+		ModelAndView mav = BOARD_VIEW.view(model);
+		BoardState board = readAndRememberBoardState(model);
+
+		if (model.containsAttribute("fetch")) {
+			log.info("pulling blacklist from board ({},{},{})", board.x,
+					board.y, board.z);
+			machineController.pullBlacklist(board.id);
+		} else if (model.containsAttribute("push")) {
+			log.info("pushing blacklist to board ({},{},{})", board.x, board.y,
+					board.z);
+			machineController.pushBlacklist(board.id);
+		}
+		// FIXME add in blacklist manipulators here
+		addBlacklistData(board, model);
+
+		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		return addStandardContext(mav);
+	}
+
+	private BoardState readAndRememberBoardState(ModelMap model) {
+		BoardRecord board = (BoardRecord) model.get(BOARD_OBJ);
+		BoardState bs = getBoardState(board)
+				.orElseThrow(() -> new AdminException("no such board"));
+		inflateBoardRecord(board, bs);
+		board.setEnabled(bs.getState());
+		// Replace the state in the model with the current values
+		model.put(BOARD_OBJ, bs);
+		return bs;
+	}
+
+	private void addBlacklistData(BoardState board, ModelMap model) {
+		Optional<Blacklist> bl = machineController.readBlacklistFromDB(board);
+		model.addAttribute(HAVE_BLACKLIST, bl.isPresent());
+		bl.ifPresent(blacklist -> model.addAttribute(BLACKLIST_OBJ, blacklist));
+		model.addAttribute(BLACKLIST_URI,
+				uri(admin().blacklistHandling(model)));
 	}
 
 	/**

@@ -92,6 +92,9 @@ public interface AdminController {
 	/** Path to boards operations. */
 	String BOARDS_PATH = "/boards";
 
+	/** Path to blacklist operations. */
+	String BLACKLIST_PATH = "/boards/blacklist";
+
 	/** Path to machine-instantiation operations. */
 	String MACHINE_PATH = "/machine";
 
@@ -375,6 +378,17 @@ public interface AdminController {
 	@PostMapping(BOARDS_PATH)
 	ModelAndView board(@Valid @ModelAttribute("board") BoardRecord board,
 			ModelMap model);
+
+	/**
+	 * Manipulate a blacklist.
+	 *
+	 * @param model
+	 *            Overall model
+	 * @return the model and view
+	 */
+	// TODO what arguments?
+	@PostMapping(BLACKLIST_PATH)
+	ModelAndView blacklistHandling(ModelMap model);
 
 	/**
 	 * Provide the form for uploading a machine definition.
