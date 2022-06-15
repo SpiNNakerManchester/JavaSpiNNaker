@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 /**
  * The main proxy class for a particular web socket session. It's bound to a
  * job, which should be running at the time that the web socket is opened. The
- * protocol that is supported is a binary protocol that has three messages:
+ * protocol that is supported is a binary protocol that has five messages:
  * <table border>
  * <tr>
  * <th>Name</th>
