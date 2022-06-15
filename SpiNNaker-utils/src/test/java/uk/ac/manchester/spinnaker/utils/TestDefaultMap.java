@@ -89,7 +89,7 @@ public class TestDefaultMap {
     		implements DefaultMap.KeyAwareFactory<Integer, Integer> {
         @Override
         public Integer createValue(Integer key) {
-            return key * 2;
+            return Integer.valueOf(key.intValue() * 2);
         }
     }
 
