@@ -23,6 +23,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.encodeForm;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.makeBasicAuth;
 import static uk.ac.manchester.spinnaker.tools.GetDevId.HBP_OPENID_BASE;
+import static uk.ac.manchester.spinnaker.tools.GetDevId.REALM;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -42,8 +43,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Donal Fellows
  */
 interface EBRAINSDevCredentials {
-	String OIDC_TOKEN_URL =
-			HBP_OPENID_BASE + "realms/hbp/protocol/openid-connect/token";
+	/** The content type for submitting an HTML form (or equivalent). */
+	String FORM_ENCODED = "application/x-www-form-urlencoded; charset=UTF-8";
+
+	/** URL for getting an OIDC token. */
+	String OIDC_TOKEN_URL = HBP_OPENID_BASE + "realms/" + REALM
+			+ "/protocol/openid-connect/token";
 
 	/**
 	 * @return The user that will do the registration. Must not be {@code null}.
@@ -85,8 +90,7 @@ interface EBRAINSDevCredentials {
 
 		var out = encodeForm(arguments);
 		http.setFixedLengthStreamingMode(out.length);
-		http.setRequestProperty("Content-Type",
-				"application/x-www-form-urlencoded; charset=UTF-8");
+		http.setRequestProperty("Content-Type", FORM_ENCODED);
 		try (var os = http.getOutputStream()) {
 			os.write(out);
 		}

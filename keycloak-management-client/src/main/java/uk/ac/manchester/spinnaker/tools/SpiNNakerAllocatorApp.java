@@ -80,7 +80,8 @@ public interface SpiNNakerAllocatorApp {
 	 *         "implicitFlowEnabled": true,
 	 *         "directAccessGrantsEnabled": false,
 	 *         "attributes": {
-	 *             "contacts": "first.contact@example.com; second.contact@example.com"
+	 *             "contacts":
+	 *                 "first.contact@example.com; second.contact@example.com"
 	 *         }
 	 *     }' |
 	 *
@@ -90,6 +91,7 @@ public interface SpiNNakerAllocatorApp {
 	 *
 	 * @param clientId
 	 *            The client ID
+	 * @return The proposed descriptor
 	 * @see <a href=
 	 *      "https://wiki.ebrains.eu/bin/view/Collabs/the-collaboratory/Documentation%20IAM/FAQ/OIDC%20Clients%20explained/1.%20Registering%20an%20OIDC%20client/">wiki
 	 *      page</a>
