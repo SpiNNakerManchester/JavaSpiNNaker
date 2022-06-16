@@ -154,19 +154,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<sec:csrfInput />
 			<c:if test="${ haveBlacklist }">
 				<pre>
-					<c:forEach items="${ blacklist.chips }" var="chip">
-						chip ${ chip.x } ${ chip.y } dead
-					</c:forEach>
-					<%-- TODO: combine lines --%>
-					<c:forEach items="${ blacklist.cores }" var="cores">
-						chip ${ cores.key.x } ${ cores.key.y } cores <c:forEach
-							items="${ cores.value }" var="core" varStatus="coreloop"
-							>${ core }${!coreloop.last ? ',' : ''}</c:forEach>
-					</c:forEach>
-					<c:forEach items="${ blacklist.links }" var="links">
-						chip ${ links.key.x } ${ links.key.y } links <c:forEach
-							items="${ links.value }" var="link" varStatus="linkloop"
-							>${ link }${!linkloop.last ? ',' : ''}</c:forEach>
+					<c:forEach items="${ boardChips }" var="chip">
+						<c:choose>
+							<c:when test="${
+									not empty blacklist.chips[chip]
+								}">chip ${ chip.x } ${ chip.y } dead </c:when>
+							<c:when test="${
+									(not empty blacklist.cores[chip]) || (not empty blacklist.links[chip])
+								}">chip ${ chip.x } ${ chip.y } <c:if test="${
+									not empty blacklist.cores[chip]
+								}">cores <c:forEach items="${ blacklist.cores[chip] }" var="core" varStatus="coreloop"
+										>${ core }${!coreloop.last ? ',' : ''}</c:forEach> </c:if><c:if test="${
+									not empty blacklist.links[chip]
+								}">links <c:forEach items="${ blacklist.links[chip] }" var="link" varStatus="linkloop"
+										>${ link }${!linkloop.last ? ',' : ''}</c:forEach></c:if>
+							</c:when>
+						</c:choose>
 					</c:forEach>
 				</pre>
 			</c:if>

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
@@ -36,11 +37,14 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +83,7 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
@@ -176,6 +181,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	/** Blacklist-related state in {@link #BOARD_VIEW}. Boolean. */
 	private static final String HAVE_BLACKLIST = "haveBlacklist";
 
+	/**
+	 * The chips on a board. {@link List}{@code <}{@link ChipLocation}{@code >}
+	 */
+	private static final String BOARDCHIPS_OBJ = "boardChips";
+
 	/** State in {@link #MACHINE_VIEW}. */
 	private static final String MACHINE_LIST_OBJ = "machineNames";
 
@@ -219,6 +229,19 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Autowired
 	private QuotaManager quotaManager;
+
+	private final List<ChipLocation> chipsOnBoard;
+
+	public AdminControllerImpl() {
+		List<ChipLocation> chips = new ArrayList<>();
+
+		for (int x = 0; x < SIZE_X_OF_ONE_BOARD; x++) {
+			for (int y = 0; y < SIZE_Y_OF_ONE_BOARD; y++) {
+				chips.add(new ChipLocation(x, y));
+			}
+		}
+		chipsOnBoard = unmodifiableList(chips);
+	}
 
 	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
 		try (Connection conn = getConnection();
@@ -683,6 +706,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		bl.ifPresent(blacklist -> model.addAttribute(BLACKLIST_OBJ, blacklist));
 		model.addAttribute(BLACKLIST_URI,
 				uri(admin().blacklistHandling(model)));
+		model.addAttribute(BOARDCHIPS_OBJ, chipsOnBoard);
 	}
 
 	/**
