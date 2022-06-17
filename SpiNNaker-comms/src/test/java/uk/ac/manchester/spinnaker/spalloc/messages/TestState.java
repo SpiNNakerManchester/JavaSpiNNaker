@@ -38,13 +38,13 @@ public class TestState {
 				+ "\"power\":true,"
 				+ "\"keepalive\":60.0,"
 				+ "\"reason\":null,"
-				+ "\"start_time\":1.537284307847865E9,"
+				+ "\"start_time\":1.125,"
 				+ "\"keepalivehost\":\"86.82.216.229\"}";
 		ObjectMapper mapper = SpallocClient.createMapper();
 		JobState fromJson = mapper.readValue(json, JobState.class);
 		assertEquals(State.POWER, fromJson.getState());
 		assertEquals(true, fromJson.getPower());
-		assertEquals(1537284307.847865, fromJson.getStartTime());
+		assertEquals(1.125, fromJson.getStartTime());
 		assertEquals(60, fromJson.getKeepalive());
 		assertNull(fromJson.getReason());
 		assertEquals("86.82.216.229", fromJson.getKeepalivehost());
