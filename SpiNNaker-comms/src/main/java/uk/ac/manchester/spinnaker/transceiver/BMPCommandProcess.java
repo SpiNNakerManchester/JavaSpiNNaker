@@ -22,6 +22,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
+import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.io.IOException;
@@ -140,7 +141,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 		requestPipeline.sendRequest((BMPRequest<R>) request, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
-			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
+			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
 		return (T) holder.getValue();
@@ -176,7 +177,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 				holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
-			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
+			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
 		return (T) holder.getValue();
@@ -218,7 +219,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			requestPipeline.finish();
 		}
 		if (exception != null) {
-			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
+			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
 		return (List<T>) results;
@@ -263,7 +264,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			requestPipeline.finish();
 		}
 		if (exception != null) {
-			throw new ProcessException(errorRequest.sdpHeader.getDestination(),
+			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
 		return (List<T>) results;
