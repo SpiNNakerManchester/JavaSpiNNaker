@@ -4572,6 +4572,89 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Encapsulates exceptions from processes which communicate with some core/chip.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadChecksum.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.BadChecksum</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_SUM"><code>SCPResult.RC_SUM</code></a>
+ message, indicating that the checksum was wrong.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadCommand.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.BadCommand</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_CMD"><code>SCPResult.RC_CMD</code></a>
+ message, indicating that the command was not supported by the
+ destination.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadCPUNumber.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.BadCPUNumber</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_CPU"><code>SCPResult.RC_CPU</code></a>
+ message, indicating that the destination core number was out of range.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadPacketLength.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.BadPacketLength</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_LEN"><code>SCPResult.RC_LEN</code></a>
+ message, indicating that the packet length was wrong.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadSCPPort.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.BadSCPPort</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_PORT"><code>SCPResult.RC_PORT</code></a>
+ message, indicating that the SCP port was out of range.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.DeadDestination.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.DeadDestination</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_DEAD"><code>SCPResult.RC_DEAD</code></a>
+ message, indicating that the destination core was not responding to
+ messages from SCAMP.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.InvalidArguments.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.InvalidArguments</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_ARG"><code>SCPResult.RC_ARG</code></a>
+ message, indicating that the arguments to the command are wrong.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.NoBufferAvailable.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.NoBufferAvailable</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_BUF"><code>SCPResult.RC_BUF</code></a>
+ message, indicating that SCAMP had exhausted its supply of buffers.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.NoP2PRoute.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.NoP2PRoute</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_ROUTE"><code>SCPResult.RC_ROUTE</code></a>
+ message, indicating that messages cannot be directed to that destination
+ for some reason.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PBusy.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.P2PBusy</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a
+ <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_P2P_BUSY"><code>SCPResult.RC_P2P_BUSY</code></a> message, indicating that the receiver in
+ the inter-SCAMP messaging was busy.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PNoReply.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.P2PNoReply</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a
+ <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_P2P_NOREPLY"><code>SCPResult.RC_P2P_NOREPLY</code></a> message, indicating that the inter-SCAMP
+ messaging failed because the channel open failed.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PReject.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.P2PReject</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a
+ <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_P2P_REJECT"><code>SCPResult.RC_P2P_REJECT</code></a> message, indicating that the receiver in
+ the inter-SCAMP messaging rejected the message.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PTimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.P2PTimedOut</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a
+ <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_P2P_TIMEOUT"><code>SCPResult.RC_P2P_TIMEOUT</code></a> message, indicating that the receiver in
+ the inter-SCAMP messaging did not respond.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.PacketTransmissionFailed.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.PacketTransmissionFailed</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_PKT_TX"><code>SCPResult.RC_PKT_TX</code></a>
+ message, indicating that the packet transmission failed.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.TimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">ProcessException.TimedOut</span></a> - Exception in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
+<dd>
+<div class="block">A process exception cause by the receipt of a
+ <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_TIMEOUT"><code>SCPResult.RC_TIMEOUT</code></a> message, indicating that communications
+ timed out.</div>
+</dd>
 </dl>
 <a id="I:Q">
 <!--   -->
@@ -5007,9 +5090,17 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/ResetReinjectionCounters.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">ResetReinjectionCounters(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/ResetReinjectionCounters.html" title="class in uk.ac.manchester.spinnaker.messages.scp">ResetReinjectionCounters</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html#response">response</a></span> - Variable in exception uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></dt>
+<dd>
+<div class="block">The response that cause this exception to be thrown, if known.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/spalloc/messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages"><span class="typeNameLink">Response</span></a> - Interface in <a href="uk/ac/manchester/spinnaker/spalloc/messages/package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a></dt>
 <dd>
 <div class="block">An (abstract) response from the machine manager.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html#responseCode">responseCode</a></span> - Variable in exception uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></dt>
+<dd>
+<div class="block">The response that cause this exception to be thrown, if known.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPResponse.html#result">result</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPResponse</a></dt>
 <dd>

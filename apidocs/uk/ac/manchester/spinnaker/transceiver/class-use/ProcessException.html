@@ -627,6 +627,148 @@ int&nbsp;size)</code></th>
 <h2>Uses of <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></h2>
 <div class="useSummary">
 <table>
+<caption><span>Subclasses of <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.BadChecksum.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadChecksum</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_SUM"><code>SCPResult.RC_SUM</code></a>
+ message, indicating that the checksum was wrong.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.BadCommand.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadCommand</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_CMD"><code>SCPResult.RC_CMD</code></a>
+ message, indicating that the command was not supported by the
+ destination.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.BadCPUNumber.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadCPUNumber</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_CPU"><code>SCPResult.RC_CPU</code></a>
+ message, indicating that the destination core number was out of range.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.BadPacketLength.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadPacketLength</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_LEN"><code>SCPResult.RC_LEN</code></a>
+ message, indicating that the packet length was wrong.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.BadSCPPort.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadSCPPort</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_PORT"><code>SCPResult.RC_PORT</code></a>
+ message, indicating that the SCP port was out of range.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.DeadDestination.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.DeadDestination</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_DEAD"><code>SCPResult.RC_DEAD</code></a>
+ message, indicating that the destination core was not responding to
+ messages from SCAMP.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.InvalidArguments.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.InvalidArguments</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_ARG"><code>SCPResult.RC_ARG</code></a>
+ message, indicating that the arguments to the command are wrong.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.NoBufferAvailable.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoBufferAvailable</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_BUF"><code>SCPResult.RC_BUF</code></a>
+ message, indicating that SCAMP had exhausted its supply of buffers.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.NoP2PRoute.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoP2PRoute</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_ROUTE"><code>SCPResult.RC_ROUTE</code></a>
+ message, indicating that messages cannot be directed to that destination
+ for some reason.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PBusy.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PBusy</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a
+ <a href="../../messages/scp/SCPResult.html#RC_P2P_BUSY"><code>SCPResult.RC_P2P_BUSY</code></a> message, indicating that the receiver in
+ the inter-SCAMP messaging was busy.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PNoReply.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PNoReply</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a
+ <a href="../../messages/scp/SCPResult.html#RC_P2P_NOREPLY"><code>SCPResult.RC_P2P_NOREPLY</code></a> message, indicating that the inter-SCAMP
+ messaging failed because the channel open failed.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PReject.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PReject</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a
+ <a href="../../messages/scp/SCPResult.html#RC_P2P_REJECT"><code>SCPResult.RC_P2P_REJECT</code></a> message, indicating that the receiver in
+ the inter-SCAMP messaging rejected the message.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PTimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PTimedOut</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a
+ <a href="../../messages/scp/SCPResult.html#RC_P2P_TIMEOUT"><code>SCPResult.RC_P2P_TIMEOUT</code></a> message, indicating that the receiver in
+ the inter-SCAMP messaging did not respond.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.PacketTransmissionFailed.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.PacketTransmissionFailed</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_PKT_TX"><code>SCPResult.RC_PKT_TX</code></a>
+ message, indicating that the packet transmission failed.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.TimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.TimedOut</a></span></code></th>
+<td class="colLast">
+<div class="block">A process exception cause by the receipt of a
+ <a href="../../messages/scp/SCPResult.html#RC_TIMEOUT"><code>SCPResult.RC_TIMEOUT</code></a> message, indicating that communications
+ timed out.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
 <caption><span>Methods in <a href="../package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> that throw <a href="../ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>

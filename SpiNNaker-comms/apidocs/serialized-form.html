@@ -107,6 +107,20 @@ loadScripts(document, 'script');</script>
 <dt>serialVersionUID:</dt>
 <dd>7864690081287752744L</dd>
 </dl>
+<ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h4>Serialized Fields</h4>
+<ul class="blockList">
+<li class="blockList">
+<h5>response</h5>
+<pre><a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a> response</pre>
+<div class="block">The response that cause this exception to be thrown, if known.</div>
+</li>
+</ul>
+</section>
+</li>
+</ul>
 </section>
 </li>
 </ul>
@@ -217,7 +231,7 @@ loadScripts(document, 'script');</script>
 <h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a> implements Serializable</h3>
 <dl class="nameValue">
 <dt>serialVersionUID:</dt>
-<dd>7759365416594564702L</dd>
+<dd>5198868033333540659L</dd>
 </dl>
 <ul class="blockList">
 <li class="blockList">
@@ -229,10 +243,182 @@ loadScripts(document, 'script');</script>
 <pre><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/CoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">CoreLocation</a> core</pre>
 <div class="block">Where does the code believe this exception originated?</div>
 </li>
+<li class="blockList">
+<h5>responseCode</h5>
+<pre><a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a> responseCode</pre>
+<div class="block">The response that cause this exception to be thrown, if known. Never
+ <a href="uk/ac/manchester/spinnaker/messages/scp/SCPResult.html#RC_OK"><code>RC_OK</code></a>; that doesn't cause exceptions! May be
+ <code>null</code> if the cause was not identified as an error from SpiNNaker.</div>
+</li>
 </ul>
 </section>
 </li>
 </ul>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.BadChecksum">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadChecksum.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.BadChecksum</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>-5660270018252119601L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.BadCommand">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadCommand.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.BadCommand</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>2446636059917726286L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.BadCPUNumber">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadCPUNumber.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.BadCPUNumber</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>6532417803149087690L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.BadPacketLength">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadPacketLength.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.BadPacketLength</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>4329836896716525422L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.BadSCPPort">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.BadSCPPort.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.BadSCPPort</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>-5171910962257032626L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.DeadDestination">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.DeadDestination.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.DeadDestination</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>-3842030808096451015L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.InvalidArguments">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.InvalidArguments.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.InvalidArguments</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>3907517289211998444L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.NoBufferAvailable">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.NoBufferAvailable.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.NoBufferAvailable</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>3647501054775981197L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.NoP2PRoute">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.NoP2PRoute.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.NoP2PRoute</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>-6132417061161625508L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PBusy">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PBusy.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PBusy</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>4445680981367158468L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PNoReply">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PNoReply.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PNoReply</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>2196366740196153289L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PReject">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PReject.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PReject</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>-2903670314989693747L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PTimedOut">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.P2PTimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.P2PTimedOut</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>-7686611958418374003L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.PacketTransmissionFailed">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.PacketTransmissionFailed.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.PacketTransmissionFailed</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>5119831821960433468L</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="serializedClassDetails"><a id="uk.ac.manchester.spinnaker.transceiver.ProcessException.TimedOut">
+<!--   -->
+</a>
+<h3>Class <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.TimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver.ProcessException.TimedOut</a> extends <a href="uk/ac/manchester/spinnaker/transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a> implements Serializable</h3>
+<dl class="nameValue">
+<dt>serialVersionUID:</dt>
+<dd>-298985937364034661L</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
