@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.utils.DefaultMap.KeyAwareFactory;
 
 /**
  *
@@ -85,11 +86,11 @@ public class TestDefaultMap {
         assertEquals(2, two.intValue());
     }
 
-	public static class Doubler
-			implements DefaultMap.KeyAwareFactory<Integer, Integer> {
-		@Override
-		public Integer createValue(Integer key) {
-			return key * 2;
-		}
-	}
+    public class Doubler implements KeyAwareFactory<Integer, Integer> {
+        @Override
+        public Integer createValue(Integer key) {
+            return Integer.valueOf(key.intValue() * 2);
+        }
+    }
+
 }
