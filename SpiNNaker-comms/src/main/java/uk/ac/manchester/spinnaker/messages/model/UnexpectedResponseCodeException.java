@@ -28,6 +28,13 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
 public class UnexpectedResponseCodeException extends Exception {
 	private static final long serialVersionUID = 7864690081287752744L;
 
+	private static final String MSG_TEMPLATE =
+			"Unexpected response %s while performing operation %s "
+					+ "using command %s";
+
+	/** The response that cause this exception to be thrown, if known. */
+	public final SCPResult response;
+
 	/**
 	 * @param operation
 	 *            The operation being performed
@@ -38,8 +45,8 @@ public class UnexpectedResponseCodeException extends Exception {
 	 */
 	public UnexpectedResponseCodeException(String operation, String command,
 			String response) {
-		super(format("Unexpected response %s while performing operation %s "
-				+ "using command %s", response, operation, command));
+		super(format(MSG_TEMPLATE, response, operation, command));
+		this.response = null;
 	}
 
 	/**
@@ -52,6 +59,7 @@ public class UnexpectedResponseCodeException extends Exception {
 	 */
 	public UnexpectedResponseCodeException(String operation, SCPCommand command,
 			SCPResult response) {
-		this(operation, command.name(), response.name());
+		super(format(MSG_TEMPLATE, response.name(), operation, command.name()));
+		this.response = response;
 	}
 }
