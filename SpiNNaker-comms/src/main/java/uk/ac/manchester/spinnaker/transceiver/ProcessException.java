@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResult;
@@ -37,7 +36,7 @@ public class ProcessException extends SpinnmanException {
 					+ "with message: %s";
 
 	/** Where does the code believe this exception originated? */
-	public final CoreLocation core;
+	public final HasCoreLocation core;
 
 	/**
 	 * The response that cause this exception to be thrown, if known. Never

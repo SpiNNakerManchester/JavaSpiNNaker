@@ -84,7 +84,6 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.UnroutableMessageException;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -523,11 +522,11 @@ public class BMPController extends DatabaseAwareBean {
 		 *
 		 * @param sql
 		 *            How to access the DB.
-		 * @param failureHeader
+		 * @param failureTarget
 		 *            The routing information from the failure message.
 		 * @return Whether the state of boards or jobs has changed.
 		 */
-		private boolean badBoard(AfterSQL sql, SDPHeader failureHeader) {
+		private boolean badBoard(AfterSQL sql, HasCoreLocation failureTarget) {
 			boolean changed = false;
 			// Mark job for reallocation
 			changed |= sql.setJobState(QUEUED, 0, jobId) > 0;
@@ -536,12 +535,11 @@ public class BMPController extends DatabaseAwareBean {
 			// Delete all queued BMP commands
 			sql.deleteChangesForJob(jobId);
 			// Add a report if we can
-			getBoardId(failureHeader.getSource())
-					.ifPresent(problemBoardId -> sql
-							.getUser(allocProps.getSystemReportUser())
-							.ifPresent(systemReportOwner -> sql
-									.insertBoardReport(problemBoardId, jobId,
-											REPORT_MSG, systemReportOwner)));
+			getBoardId(failureTarget).ifPresent(problemBoardId -> sql
+					.getUser(allocProps.getSystemReportUser())
+					.ifPresent(systemReportOwner -> sql.insertBoardReport(
+							problemBoardId, jobId, REPORT_MSG,
+							systemReportOwner)));
 			return changed;
 		}
 
@@ -1031,18 +1029,37 @@ public class BMPController extends DatabaseAwareBean {
 			cleanupTasks.add(request::failed);
 			currentThread().interrupt();
 			throw e;
+		} catch (ProcessException.NoP2PRoute e) {
+			log.error("BMP {} on {} is unroutable", e.core, request.machine);
+			/*
+			 * If we were switching boards on and going to READY, we should
+			 * handle failure to route by asking for reallocation.
+			 */
+			if (request.to == READY && request.powerOffBoards.isEmpty()) {
+				cleanupTasks.add(sql -> request.badBoard(sql, e.core));
+			}
+			return true;
+		} catch (ProcessException.BadCommand | ProcessException.InvalidArguments
+				| ProcessException.BadPacketLength | ProcessException.BadSCPPort
+				| ProcessException.BadCPUNumber
+				| ProcessException.DeadDestination e) {
+			// All these are permanent problems with the message; don't retry
+			log.error("Requests failed on BMP(s) for {}", request.machine, e);
+			cleanupTasks.add(request::failed);
+			return true;
 		} catch (Exception e) {
 			if (e.getCause() instanceof UnroutableMessageException) {
 				UnroutableMessageException ume = (UnroutableMessageException)
 						e.getCause();
 				log.error("BMP {} on {} is unroutable", ume.header.getSource(),
-						request.machine);
+						request.machine, e);
 				/*
 				 * If we were switching boards on and going to READY, we should
 				 * handle failure to route by asking for reallocation.
 				 */
 				if (request.to == READY && request.powerOffBoards.isEmpty()) {
-					cleanupTasks.add(sql -> request.badBoard(sql, ume.header));
+					cleanupTasks.add(sql -> request.badBoard(sql,
+							ume.header.getSource()));
 				}
 				return true;
 			}
