@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
+
 import java.io.IOException;
 import java.util.function.Consumer;
 
@@ -71,7 +73,7 @@ abstract class Process {
 			return;
 		}
 		var hdr = errorRequest.sdpHeader;
-		throw new ProcessException(hdr.getDestination(), exception);
+		throw makeInstance(hdr.getDestination(), exception);
 	}
 
 	/**
