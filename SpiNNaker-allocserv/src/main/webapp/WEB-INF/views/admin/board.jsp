@@ -153,14 +153,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<form method="POST" action="${ blacklistControlUri }">
 			<sec:csrfInput />
 			<c:if test="${ haveBlacklist }">
+				<%-- TODO: convert to a model-based scheme --%>
 				<pre>
 					<c:forEach items="${ boardChips }" var="chip">
 						<c:choose>
 							<c:when test="${
 									not empty blacklist.chips[chip]
-								}">chip ${ chip.x } ${ chip.y } dead </c:when>
+								}">chip ${ chip.x } ${ chip.y } dead
+							</c:when>
 							<c:when test="${
-									(not empty blacklist.cores[chip]) || (not empty blacklist.links[chip])
+									(not empty blacklist.cores[chip]) or (not empty blacklist.links[chip])
 								}">chip ${ chip.x } ${ chip.y } <c:if test="${
 									not empty blacklist.cores[chip]
 								}">cores <c:forEach items="${ blacklist.cores[chip] }" var="core" varStatus="coreloop"
