@@ -49,6 +49,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -81,6 +82,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException.TransientProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.Ping;
@@ -279,11 +281,80 @@ public class BMPController extends DatabaseAwareBean {
 		return state.values().stream().mapToInt(s -> s.requests.size()).sum();
 	}
 
-	private abstract static class Request {
+	/** An action that may throw any of a range of exceptions. */
+	private interface ThrowingAction {
+		void act() throws ProcessException, IOException, InterruptedException;
+	}
+
+	private abstract class Request {
 		final Machine machine;
+
+		private int numTries = 0;
 
 		Request(Machine machine) {
 			this.machine = requireNonNull(machine);
+		}
+
+		/**
+		 * Basic machinery for handling exceptions that arise while performing a
+		 * BMP action. Runs on a thread that may touch a BMP directly, but which
+		 * may not touch the database.
+		 * <p>
+		 * Only subclasses should use this!
+		 *
+		 * @param body
+		 *            What to attempt.
+		 * @param onFailure
+		 *            What to do on failure.
+		 * @param onServiceRemove
+		 *            If the exception looks serious, call this to trigger a
+		 *            board being taken out of service.
+		 * @return Whether to stop the retry loop.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 */
+		final boolean bmpAction(ThrowingAction body,
+				Consumer<Exception> onFailure, Runnable onServiceRemove)
+				throws InterruptedException {
+			boolean isLastTry = numTries++ < props.getPowerAttempts();
+			try {
+				body.act();
+				// Exit the retry loop (in caller) if the requests all worked
+				return true;
+			} catch (InterruptedException e) {
+				/*
+				 * We were interrupted! This happens when we're shutting down.
+				 * Log (because we're in an inconsistent state) and rethrow so
+				 * that the outside gets to clean up.
+				 */
+				log.error("Requests failed on BMP(s) for {} because of "
+						+ "interruption", machine, e);
+				onFailure.accept(e);
+				currentThread().interrupt();
+				throw e;
+			} catch (ProcessException e) {
+				if (e instanceof TransientProcessException && !isLastTry) {
+					/*
+					 * Log somewhat gently; we *might* be able to recover...
+					 */
+					log.warn("Retrying requests on BMP(s) for {} after {}: {}",
+							machine, props.getProbeInterval(),
+							e.getMessage());
+					// Ask for a retry
+					return false;
+				}
+				log.error("Requests failed on BMP(s) for {}", machine, e);
+				onServiceRemove.run();
+				onFailure.accept(e);
+				// This is (probably) a permanent failure; stop retry loop
+				return true;
+			} catch (Exception e) {
+				log.error("Requests failed on BMP(s) for {}", machine, e);
+				onServiceRemove.run();
+				onFailure.accept(e);
+				// This is (probably) a permanent failure; stop retry loop
+				return true;
+			}
 		}
 	}
 
@@ -507,6 +578,39 @@ public class BMPController extends DatabaseAwareBean {
 			});
 		}
 
+		/**
+		 * Process an action to power on or off a set of boards. Runs on a
+		 * thread that may touch a BMP directly, but which may not touch the
+		 * database.
+		 *
+		 * @param controllers
+		 *            How to actually reach the BMPs.
+		 * @return Whether this action has "succeeded" and shouldn't be retried.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 */
+		boolean tryChangePowerState(
+				Map<BMPCoords, SpiNNakerControl> controllers)
+				throws InterruptedException {
+			return bmpAction(() -> {
+				changeBoardPowerState(controllers);
+				// We want to ensure the lead board is alive
+				ping();
+				cleanupTasks.add(this::done);
+			}, e -> {
+				cleanupTasks.add(this::failed);
+			}, () -> {
+				/*
+				 * FIXME handle what happens when the hardware is unreachable
+				 *
+				 * When that happens, we must tell the alloc engine to pick
+				 * somewhere else, and we should mark the board as out of
+				 * service too; it's never going to work so taking it out right
+				 * away is the only sane plan.
+				 */
+			});
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder sb =
@@ -603,7 +707,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private Blacklist readBlacklist;
 
-		void readBlacklist(SpiNNakerControl controller)
+		private void readBlacklist(SpiNNakerControl controller)
 				throws ProcessException, InterruptedException, IOException {
 			readSerial = controller.readSerial(board);
 			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
@@ -615,7 +719,7 @@ public class BMPController extends DatabaseAwareBean {
 			readBlacklist = controller.readBlacklist(board);
 		}
 
-		void writeBlacklist(SpiNNakerControl controller)
+		private void writeBlacklist(SpiNNakerControl controller)
 				throws ProcessException, InterruptedException, IOException {
 			readSerial = controller.readSerial(board);
 			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
@@ -628,48 +732,66 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
+		 * Access the DB to store the serial number information that we
+		 * retrieved. Runs on a thread that may touch the database, but may not
+		 * touch any BMP.
+		 *
 		 * @param sql
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		boolean recordSerialIds(AfterSQL sql) {
+		private boolean recordSerialIds(AfterSQL sql) {
 			return sql.setBoardSerialIds(boardId, readSerial,
 					phySerMap.getPhysicalId(readSerial)) > 0;
 		}
 
 		/**
+		 * Access the DB to mark the read request as successful and store the
+		 * blacklist that was read. Runs on a thread that may touch the
+		 * database, but may not touch any BMP.
+		 *
 		 * @param sql
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		boolean doneRead(AfterSQL sql) {
+		private boolean doneRead(AfterSQL sql) {
 			doneBlacklist.set(true);
 			return sql.completedBlacklistRead(opId, readBlacklist) > 0;
 		}
 
 		/**
+		 * Access the DB to mark the write request as successful. Runs on a
+		 * thread that may touch the database, but may not touch any BMP.
+		 *
 		 * @param sql
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		boolean doneWrite(AfterSQL sql) {
+		private boolean doneWrite(AfterSQL sql) {
 			doneBlacklist.set(true);
 			return sql.completedBlacklistWrite(opId) > 0;
 		}
 
 		/**
+		 * Access the DB to mark the request as failed and store the exception.
+		 * Runs on a thread that may touch the database, but may not touch any
+		 * BMP.
+		 *
 		 * @param sql
 		 *            How to access the DB
 		 * @param exn
 		 *            The exception that caused the failure.
 		 * @return Whether we've changed anything
 		 */
-		boolean failed(AfterSQL sql, Exception exn) {
+		private boolean failed(AfterSQL sql, Exception exn) {
 			doneBlacklist.set(true);
 			return sql.failedBlacklistOp(opId, exn) > 0;
 		}
 
 		/**
+		 * Access the DB to mark a board as out of service. Runs on a thread
+		 * that may touch the database, but may not touch any BMP.
+		 *
 		 * @param sql
 		 *            How to access the DB
 		 * @return Whether we've changed anything
@@ -677,6 +799,51 @@ public class BMPController extends DatabaseAwareBean {
 		boolean takeOutOfService(AfterSQL sql) {
 			// TODO mark board as disabled
 			return false;
+		}
+
+		/**
+		 * Process an action to read a blacklist. Runs on a thread that may
+		 * touch a BMP directly, but which may not touch the database.
+		 *
+		 * @param controller
+		 *            How to actually reach the BMP.
+		 * @return Whether this action has "succeeded" and shouldn't be retried.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 */
+		boolean tryReadBlacklist(SpiNNakerControl controller)
+				throws InterruptedException {
+			return bmpAction(() -> {
+				readBlacklist(controller);
+				cleanupTasks.add(this::recordSerialIds);
+				cleanupTasks.add(this::doneRead);
+			}, e -> {
+				cleanupTasks.add(s -> failed(s, e));
+			}, () -> {
+				cleanupTasks.add(this::takeOutOfService);
+			});
+		}
+
+		/**
+		 * Process an action to write a blacklist. Runs on a thread that may
+		 * touch a BMP directly, but which may not touch the database.
+		 *
+		 * @param controller
+		 *            How to actually reach the BMP.
+		 * @return Whether this action has "succeeded" and shouldn't be retried.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 */
+		boolean tryWriteBlacklist(SpiNNakerControl controller)
+				throws InterruptedException {
+			return bmpAction(() -> {
+				writeBlacklist(controller);
+				cleanupTasks.add(this::doneWrite);
+			}, e -> {
+				cleanupTasks.add(s -> failed(s, e));
+			}, () -> {
+				cleanupTasks.add(this::takeOutOfService);
+			});
 		}
 	}
 
@@ -1071,15 +1238,14 @@ public class BMPController extends DatabaseAwareBean {
 			return;
 		}
 		try (MDCCloseable mdc = putCloseable("changes",
-				asList(request.write).toString())) {
+				asList("blacklist", request.write).toString())) {
 			for (int numTries = 0; numTries++ < props.getPowerAttempts();) {
-				boolean isLastTry = numTries == props.getPowerAttempts();
 				if (request.write) {
-					if (tryWriteBlacklist(request, controller, isLastTry)) {
+					if (request.tryWriteBlacklist(controller)) {
 						break;
 					}
 				} else {
-					if (tryReadBlacklist(request, controller, isLastTry)) {
+					if (request.tryReadBlacklist(controller)) {
 						break;
 					}
 				}
@@ -1100,12 +1266,11 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		try (MDCCloseable mdc = putCloseable("changes",
-				asList(request.powerOnBoards.size(),
+				asList("power", request.powerOnBoards.size(),
 						request.powerOffBoards.size(),
 						request.linkRequests.size()).toString())) {
 			for (int numTries = 0; numTries++ < props.getPowerAttempts();) {
-				if (tryChangePowerState(request, controllers,
-						numTries == props.getPowerAttempts())) {
+				if (request.tryChangePowerState(controllers)) {
 					break;
 				}
 				sleep(props.getProbeInterval().toMillis());
@@ -1181,140 +1346,6 @@ public class BMPController extends DatabaseAwareBean {
 		map.put(request.bmp,
 				controllerFactory.getObject(request.machine, request.bmp));
 		return map;
-	}
-
-	private boolean tryChangePowerState(PowerRequest request,
-			Map<BMPCoords, SpiNNakerControl> controllers, boolean isLastTry)
-			throws InterruptedException {
-		try {
-			request.changeBoardPowerState(controllers);
-			// We want to ensure the lead board is alive
-			request.ping();
-			cleanupTasks.add(request::done);
-			// Exit the retry loop (in caller) if the requests all worked
-			return true;
-		} catch (InterruptedException e) {
-			/*
-			 * We were interrupted! This happens when we're shutting down. Log
-			 * (because we're in an inconsistent state) and rethrow so that the
-			 * outside gets to clean up.
-			 */
-			log.error("Requests failed on BMP(s) for {} because of "
-					+ "interruption", request.machine, e);
-			cleanupTasks.add(request::failed);
-			currentThread().interrupt();
-			throw e;
-		} catch (Exception e) {
-			/*
-			 * FIXME handle what happens when the hardware is unreachable
-			 *
-			 * When that happens, we must tell the alloc engine to pick
-			 * somewhere else, and we should mark the board as out of service
-			 * too; it's never going to work so taking it out right away is the
-			 * only sane plan.
-			 */
-			if (!isLastTry) {
-				/*
-				 * Log somewhat gently; we *might* be able to recover...
-				 */
-				log.warn("Retrying requests on BMP(s) for {} after {}: {}",
-						request.machine, props.getProbeInterval(),
-						e.getMessage());
-				// Ask for a retry
-				return false;
-			}
-			log.error("Requests failed on BMP(s) for {}", request.machine, e);
-			cleanupTasks.add(request::failed);
-			// This is (probably) a permanent failure; stop retry loop
-			return true;
-		}
-	}
-
-	private boolean tryReadBlacklist(BlacklistRequest request,
-			SpiNNakerControl controller, boolean isLastTry)
-			throws InterruptedException {
-		try {
-			request.readBlacklist(controller);
-			cleanupTasks.add(request::recordSerialIds);
-			cleanupTasks.add(request::doneRead);
-			return true;
-		} catch (InterruptedException e) {
-			/*
-			 * We were interrupted! This happens when we're shutting down. Log
-			 * (because we're in an inconsistent state) and rethrow so that the
-			 * outside gets to clean up.
-			 */
-			log.error("Requests failed on BMP(s) for {} because of "
-					+ "interruption", request.machine, e);
-			cleanupTasks.add(s -> request.failed(s, e));
-			currentThread().interrupt();
-			throw e;
-		} catch (Exception e) {
-			/*
-			 * FIXME handle what happens when the hardware is unreachable
-			 *
-			 * When that happens, we must mark the board as out of service (in
-			 * addition to failing the request, see below).
-			 */
-			if (!isLastTry) {
-				/*
-				 * Log somewhat gently; we *might* be able to recover...
-				 */
-				log.warn("Retrying requests on BMP for {} after {}: {}",
-						request.machine, props.getProbeInterval(),
-						e.getMessage());
-				// Ask for a retry
-				return false;
-			}
-			log.error("Requests failed on BMP for {}", request.machine, e);
-			cleanupTasks.add(request::takeOutOfService);
-			cleanupTasks.add(s -> request.failed(s, e));
-			// This is (probably) a permanent failure; stop retry loop
-			return true;
-		}
-	}
-
-	private boolean tryWriteBlacklist(BlacklistRequest request,
-			SpiNNakerControl controller, boolean isLastTry)
-			throws InterruptedException {
-		try {
-			request.writeBlacklist(controller);
-			cleanupTasks.add(request::doneWrite);
-			return true;
-		} catch (InterruptedException e) {
-			/*
-			 * We were interrupted! This happens when we're shutting down. Log
-			 * (because we're in an inconsistent state) and rethrow so that the
-			 * outside gets to clean up.
-			 */
-			log.error("Requests failed on BMP(s) for {} because of "
-					+ "interruption", request.machine, e);
-			cleanupTasks.add(s -> request.failed(s, e));
-			currentThread().interrupt();
-			throw e;
-		} catch (Exception e) {
-			/*
-			 * FIXME handle what happens when the hardware is unreachable
-			 *
-			 * When that happens, we must mark the board as out of service (in
-			 * addition to failing the request, see below).
-			 */
-			if (!isLastTry) {
-				/*
-				 * Log somewhat gently; we *might* be able to recover...
-				 */
-				log.warn("Retrying requests on BMP for {} after {}: {}",
-						request.machine, props.getProbeInterval(),
-						e.getMessage());
-				// Ask for a retry
-				return false;
-			}
-			log.error("Requests failed on BMP for {}", request.machine, e);
-			cleanupTasks.add(request::takeOutOfService);
-			cleanupTasks.add(s -> request.failed(s, e));
-			// This is (probably) a permanent failure; stop retry loop
-			return true;
-		}
 	}
 
 	@SuppressWarnings("unused")

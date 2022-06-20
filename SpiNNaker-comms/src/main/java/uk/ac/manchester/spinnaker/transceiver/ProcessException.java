@@ -113,6 +113,17 @@ public class ProcessException extends SpinnmanException {
 		return new ProcessException(core, cause, null);
 	}
 
+	/** Marks an exception for a transient condition. */
+	public abstract static class TransientProcessException
+			extends ProcessException {
+		private static final long serialVersionUID = 1L;
+
+		private TransientProcessException(HasCoreLocation core,
+				UnexpectedResponseCodeException cause) {
+			super(core, cause);
+		}
+	}
+
 	/**
 	 * A process exception cause by the receipt of a {@link SCPResult#RC_LEN}
 	 * message, indicating that the packet length was wrong.
@@ -184,7 +195,7 @@ public class ProcessException extends SpinnmanException {
 	 * {@link SCPResult#RC_TIMEOUT} message, indicating that communications
 	 * timed out.
 	 */
-	public static final class TimedOut extends ProcessException {
+	public static final class TimedOut extends TransientProcessException {
 		private static final long serialVersionUID = -298985937364034661L;
 
 		private TimedOut(HasCoreLocation core,
@@ -238,7 +249,8 @@ public class ProcessException extends SpinnmanException {
 	 * A process exception cause by the receipt of a {@link SCPResult#RC_BUF}
 	 * message, indicating that SCAMP had exhausted its supply of buffers.
 	 */
-	public static final class NoBufferAvailable extends ProcessException {
+	public static final class NoBufferAvailable
+			extends TransientProcessException {
 		private static final long serialVersionUID = 3647501054775981197L;
 
 		private NoBufferAvailable(HasCoreLocation core,
@@ -252,7 +264,7 @@ public class ProcessException extends SpinnmanException {
 	 * {@link SCPResult#RC_P2P_NOREPLY} message, indicating that the inter-SCAMP
 	 * messaging failed because the channel open failed.
 	 */
-	public static final class P2PNoReply extends ProcessException {
+	public static final class P2PNoReply extends TransientProcessException {
 		private static final long serialVersionUID = 2196366740196153289L;
 
 		private P2PNoReply(HasCoreLocation core,
@@ -266,7 +278,7 @@ public class ProcessException extends SpinnmanException {
 	 * {@link SCPResult#RC_P2P_REJECT} message, indicating that the receiver in
 	 * the inter-SCAMP messaging rejected the message.
 	 */
-	public static final class P2PReject extends ProcessException {
+	public static final class P2PReject extends TransientProcessException {
 		private static final long serialVersionUID = -2903670314989693747L;
 
 		private P2PReject(HasCoreLocation core,
@@ -280,7 +292,7 @@ public class ProcessException extends SpinnmanException {
 	 * {@link SCPResult#RC_P2P_BUSY} message, indicating that the receiver in
 	 * the inter-SCAMP messaging was busy.
 	 */
-	public static final class P2PBusy extends ProcessException {
+	public static final class P2PBusy extends TransientProcessException {
 		private static final long serialVersionUID = 4445680981367158468L;
 
 		private P2PBusy(HasCoreLocation core,
@@ -294,7 +306,7 @@ public class ProcessException extends SpinnmanException {
 	 * {@link SCPResult#RC_P2P_TIMEOUT} message, indicating that the receiver in
 	 * the inter-SCAMP messaging did not respond.
 	 */
-	public static final class P2PTimedOut extends ProcessException {
+	public static final class P2PTimedOut extends TransientProcessException {
 		private static final long serialVersionUID = -7686611958418374003L;
 
 		private P2PTimedOut(HasCoreLocation core,
@@ -308,7 +320,7 @@ public class ProcessException extends SpinnmanException {
 	 * message, indicating that the packet transmission failed.
 	 */
 	public static final class PacketTransmissionFailed
-			extends ProcessException {
+			extends TransientProcessException {
 		private static final long serialVersionUID = 5119831821960433468L;
 
 		private PacketTransmissionFailed(HasCoreLocation core,
