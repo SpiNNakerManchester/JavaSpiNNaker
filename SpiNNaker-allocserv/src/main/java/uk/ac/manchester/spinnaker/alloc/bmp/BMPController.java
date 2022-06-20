@@ -296,6 +296,13 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
+		 * @return Whether this request may be repeated.
+		 */
+		boolean isRepeat() {
+			return numTries < props.getPowerAttempts();
+		}
+
+		/**
 		 * Basic machinery for handling exceptions that arise while performing a
 		 * BMP action. Runs on a thread that may touch a BMP directly, but which
 		 * may not touch the database.
@@ -314,12 +321,14 @@ public class BMPController extends DatabaseAwareBean {
 		 *             If interrupted.
 		 */
 		final boolean bmpAction(ThrowingAction body,
-				Consumer<Exception> onFailure, Runnable onServiceRemove)
+				Consumer<Exception> onFailure,
+				Consumer<Exception> onServiceRemove)
 				throws InterruptedException {
-			boolean isLastTry = numTries++ < props.getPowerAttempts();
+			boolean isLastTry = numTries++ >= props.getPowerAttempts();
+			Exception exn;
 			try {
 				body.act();
-				// Exit the retry loop (in caller) if the requests all worked
+				// Exit the retry loop (up the stack); the requests all worked
 				return true;
 			} catch (InterruptedException e) {
 				/*
@@ -332,29 +341,28 @@ public class BMPController extends DatabaseAwareBean {
 				onFailure.accept(e);
 				currentThread().interrupt();
 				throw e;
-			} catch (ProcessException e) {
-				if (e instanceof TransientProcessException && !isLastTry) {
-					/*
-					 * Log somewhat gently; we *might* be able to recover...
-					 */
+			} catch (TransientProcessException e) {
+				if (!isLastTry) {
+					// Log somewhat gently; we *might* be able to recover...
 					log.warn("Retrying requests on BMP(s) for {} after {}: {}",
 							machine, props.getProbeInterval(),
 							e.getMessage());
 					// Ask for a retry
 					return false;
 				}
-				log.error("Requests failed on BMP(s) for {}", machine, e);
-				onServiceRemove.run();
-				onFailure.accept(e);
-				// This is (probably) a permanent failure; stop retry loop
-				return true;
-			} catch (Exception e) {
-				log.error("Requests failed on BMP(s) for {}", machine, e);
-				onServiceRemove.run();
-				onFailure.accept(e);
-				// This is (probably) a permanent failure; stop retry loop
-				return true;
+				exn = e;
+			} catch (ProcessException | IOException | RuntimeException e) {
+				exn = e;
 			}
+			/*
+			 * Common permanent failure handling case; arrange for taking a
+			 * board out of service, mark a request as failed, and stop the
+			 * retry loop.
+			 */
+			log.error("Requests failed on BMP(s) for {}", machine, exn);
+			onServiceRemove.accept(exn);
+			onFailure.accept(exn);
+			return true;
 		}
 	}
 
@@ -599,7 +607,7 @@ public class BMPController extends DatabaseAwareBean {
 				cleanupTasks.add(this::done);
 			}, e -> {
 				cleanupTasks.add(this::failed);
-			}, () -> {
+			}, e -> {
 				/*
 				 * FIXME handle what happens when the hardware is unreachable
 				 *
@@ -613,8 +621,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		@Override
 		public String toString() {
-			StringBuilder sb =
-					new StringBuilder("Request(for=").append(machine.getName());
+			StringBuilder sb = new StringBuilder("PowerRequest(for=")
+					.append(machine.getName());
 			sb.append(";on=").append(powerOnBoards);
 			sb.append(",off=").append(powerOffBoards);
 			sb.append(",links=").append(linkRequests);
@@ -707,30 +715,6 @@ public class BMPController extends DatabaseAwareBean {
 
 		private Blacklist readBlacklist;
 
-		private void readBlacklist(SpiNNakerControl controller)
-				throws ProcessException, InterruptedException, IOException {
-			readSerial = controller.readSerial(board);
-			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
-				log.warn(
-						"blacklist read mismatch: expected serial ID '{}' "
-								+ "not equal to actual serial ID '{}'",
-						bmpSerialId, readSerial);
-			}
-			readBlacklist = controller.readBlacklist(board);
-		}
-
-		private void writeBlacklist(SpiNNakerControl controller)
-				throws ProcessException, InterruptedException, IOException {
-			readSerial = controller.readSerial(board);
-			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
-				throw new IllegalStateException(format(
-						"aborting blacklist write: expected serial ID '%s' "
-								+ "not equal to actual serial ID '%s'",
-						bmpSerialId, readSerial));
-			}
-			controller.writeBlacklist(board, requireNonNull(blacklist));
-		}
-
 		/**
 		 * Access the DB to store the serial number information that we
 		 * retrieved. Runs on a thread that may touch the database, but may not
@@ -811,15 +795,26 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws InterruptedException
 		 *             If interrupted.
 		 */
-		boolean tryReadBlacklist(SpiNNakerControl controller)
+		boolean readBlacklist(SpiNNakerControl controller)
 				throws InterruptedException {
 			return bmpAction(() -> {
-				readBlacklist(controller);
+				readSerial = controller.readSerial(board);
+				if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+					/*
+					 * Doesn't match; WARN but keep going; hardware may just be
+					 * remapped behind our back.
+					 */
+					log.warn(
+							"blacklist read mismatch: expected serial ID '{}' "
+									+ "not equal to actual serial ID '{}'",
+							bmpSerialId, readSerial);
+				}
+				readBlacklist = controller.readBlacklist(board);
 				cleanupTasks.add(this::recordSerialIds);
 				cleanupTasks.add(this::doneRead);
 			}, e -> {
 				cleanupTasks.add(s -> failed(s, e));
-			}, () -> {
+			}, e -> {
 				cleanupTasks.add(this::takeOutOfService);
 			});
 		}
@@ -834,16 +829,34 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws InterruptedException
 		 *             If interrupted.
 		 */
-		boolean tryWriteBlacklist(SpiNNakerControl controller)
+		boolean writeBlacklist(SpiNNakerControl controller)
 				throws InterruptedException {
 			return bmpAction(() -> {
-				writeBlacklist(controller);
+				readSerial = controller.readSerial(board);
+				if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+					// Doesn't match, so REALLY unsafe to keep going!
+					throw new IllegalStateException(format(
+							"aborting blacklist write: expected serial ID '%s' "
+									+ "not equal to actual serial ID '%s'",
+							bmpSerialId, readSerial));
+				}
+				controller.writeBlacklist(board, requireNonNull(blacklist));
 				cleanupTasks.add(this::doneWrite);
 			}, e -> {
 				cleanupTasks.add(s -> failed(s, e));
-			}, () -> {
+			}, e -> {
 				cleanupTasks.add(this::takeOutOfService);
 			});
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("BlacklistRequest(for=")
+					.append(machine.getName());
+			sb.append(";bmp=").append(bmp);
+			sb.append(",board=").append(boardId);
+			sb.append(",write=").append(write);
+			return sb.append(")").toString();
 		}
 	}
 
@@ -1072,7 +1085,7 @@ public class BMPController extends DatabaseAwareBean {
 	// WORKER IMPLEMENTATION
 
 	/** The state of worker threads that can be seen outside the thread. */
-	private class WorkerState {
+	private final class WorkerState {
 		/** What machine is the worker handling? */
 		private final Machine machine;
 
@@ -1111,7 +1124,7 @@ public class BMPController extends DatabaseAwareBean {
 			return new BindWorker(this);
 		}
 
-		private void unbind() {
+		void unbind() {
 			synchronized (state) {
 				workerThread = null;
 			}
@@ -1239,13 +1252,13 @@ public class BMPController extends DatabaseAwareBean {
 		}
 		try (MDCCloseable mdc = putCloseable("changes",
 				asList("blacklist", request.write).toString())) {
-			for (int numTries = 0; numTries++ < props.getPowerAttempts();) {
+			while (request.isRepeat()) {
 				if (request.write) {
-					if (request.tryWriteBlacklist(controller)) {
+					if (request.writeBlacklist(controller)) {
 						break;
 					}
 				} else {
-					if (request.tryReadBlacklist(controller)) {
+					if (request.readBlacklist(controller)) {
 						break;
 					}
 				}
@@ -1269,7 +1282,7 @@ public class BMPController extends DatabaseAwareBean {
 				asList("power", request.powerOnBoards.size(),
 						request.powerOffBoards.size(),
 						request.linkRequests.size()).toString())) {
-			for (int numTries = 0; numTries++ < props.getPowerAttempts();) {
+			while (request.isRepeat()) {
 				if (request.tryChangePowerState(controllers)) {
 					break;
 				}
