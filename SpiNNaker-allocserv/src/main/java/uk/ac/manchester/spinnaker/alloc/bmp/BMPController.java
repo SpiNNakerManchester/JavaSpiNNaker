@@ -785,12 +785,7 @@ public class BMPController extends DatabaseAwareBean {
 			throws InterruptedException {
 		synchronized (state) {
 			WorkerState ws = state.computeIfAbsent(machine, WorkerState::new);
-			if (isNull(ws.workerThread)) {
-				executor.execute(() -> backgroundThread(ws));
-				while (isNull(ws.workerThread)) {
-					state.wait();
-				}
-			}
+			ws.launchThreadIfNecessary();
 			return ws;
 		}
 	}
@@ -799,7 +794,7 @@ public class BMPController extends DatabaseAwareBean {
 	// WORKER IMPLEMENTATION
 
 	/** The state of worker threads that can be seen outside the thread. */
-	private class WorkerState {
+	private final class WorkerState {
 		/** What machine is the worker handling? */
 		private final Machine machine;
 
@@ -829,43 +824,69 @@ public class BMPController extends DatabaseAwareBean {
 			}
 		}
 
-		BindWorker bind() {
-			currentThread().setName("bmp-worker:" + machine.getName());
+		void launchThreadIfNecessary() throws InterruptedException {
+			if (isNull(workerThread)) {
+				executor.execute(this::backgroundThread);
+				while (isNull(workerThread)) {
+					state.wait();
+				}
+			}
+		}
+
+		private AutoCloseable bind(Thread t) {
+			t.setName("bmp-worker:" + machine.getName());
 			synchronized (state) {
-				workerThread = currentThread();
+				workerThread = t;
 				state.notifyAll();
 			}
-			return new BindWorker(this);
+			MDCCloseable mdc = putCloseable("machine", machine.getName());
+			return () -> {
+				synchronized (state) {
+					workerThread = null;
+				}
+				t.setName("bmp-worker:[unbound]");
+				mdc.close();
+			};
 		}
 
-		private void unbind() {
-			synchronized (state) {
-				workerThread = null;
+		/**
+		 * The background thread for interacting with the BMP.
+		 */
+		void backgroundThread() {
+			Thread t = currentThread();
+
+			try (AutoCloseable binding = bind(t)) {
+				do {
+					waitForPending(this);
+
+					/*
+					 * No lock needed; this is the only thread that removes from
+					 * this queue.
+					 */
+					if (!requests.isEmpty()) {
+						processRequest(requests.peek());
+						requests.remove();
+					}
+
+					/*
+					 * If nothing left in the queues, clear the request flag and
+					 * break out of queue-processing loop.
+					 */
+				} while (!shouldTerminate(this));
+			} catch (InterruptedException e) {
+				// Thread is being shut down
+				markAllForStop();
+				log.info("worker thread '{}' was interrupted", t.getName());
+			} catch (Exception e) {
+				/*
+				 * If the thread crashes something has gone wrong with this
+				 * program (not the machine), setting stop will cause setPower
+				 * and setLinkEnable to fail, hopefully propagating news of this
+				 * crash.
+				 */
+				markAllForStop();
+				log.error("unhandled exception for '{}'", t.getName(), e);
 			}
-			currentThread().setName("bmp-worker:[unbound]");
-		}
-	}
-
-	/**
-	 * Establishes (while active) that the current thread is a worker thread for
-	 * handling a machine's communications.
-	 *
-	 * @author Donal Fellows
-	 */
-	private final class BindWorker implements AutoCloseable {
-		private final WorkerState ws;
-
-		private final MDCCloseable mdc;
-
-		private BindWorker(WorkerState ws) {
-			this.ws = ws;
-			mdc = putCloseable("machine", ws.machine.getName());
-		}
-
-		@Override
-		public void close() {
-			ws.unbind();
-			mdc.close();
 		}
 	}
 
@@ -905,48 +926,6 @@ public class BMPController extends DatabaseAwareBean {
 	private synchronized void markAllForStop() {
 		stop = true;
 		notifyAll();
-	}
-
-	/**
-	 * The background thread for interacting with the BMP.
-	 *
-	 * @param ws
-	 *            What SpiNNaker machine is this thread servicing?
-	 */
-	void backgroundThread(WorkerState ws) {
-		try (BindWorker binding = ws.bind()) {
-			do {
-				waitForPending(ws);
-
-				/*
-				 * No lock needed; this is the only thread that removes from
-				 * this queue.
-				 */
-				if (!ws.requests.isEmpty()) {
-					processRequest(ws.requests.peek());
-					ws.requests.remove();
-				}
-
-				/*
-				 * If nothing left in the queues, clear the request flag and
-				 * break out of queue-processing loop.
-				 */
-			} while (!shouldTerminate(ws));
-		} catch (InterruptedException e) {
-			// Thread is being shut down
-			markAllForStop();
-			log.info("worker thread '{}' was interrupted",
-					currentThread().getName());
-		} catch (Exception e) {
-			/*
-			 * If the thread crashes something has gone wrong with this program
-			 * (not the machine), setting stop will cause setPower and
-			 * setLinkEnable to fail, hopefully propagating news of this crash.
-			 */
-			markAllForStop();
-			log.error("unhandled exception for '{}'", currentThread().getName(),
-					e);
-		}
 	}
 
 	private void processRequest(Request request) throws InterruptedException {
