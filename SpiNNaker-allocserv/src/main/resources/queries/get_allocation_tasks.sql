@@ -31,4 +31,5 @@ FROM
 	job_request
 	JOIN jobs USING (job_id)
 	JOIN machines USING (machine_id)
+WHERE job_state = :job_state
 ORDER BY importance DESC, req_id ASC;

@@ -63,9 +63,6 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
-import uk.ac.manchester.spinnaker.storage.Parameter;
-import uk.ac.manchester.spinnaker.storage.ResultColumn;
-import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
 @SpringBootTest
 @SpringJUnitWebConfig(AllocatorTest.Config.class)
@@ -75,7 +72,7 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB
 })
 @SuppressWarnings("deprecation") // Yes, we're allowed to poke inside here
-class AllocatorTest extends SQLQueries {
+class AllocatorTest extends SQLQueries implements SupportQueries {
 	private static final Logger log = getLogger(AllocatorTest.class);
 
 	/** The name of the database file. */
@@ -148,39 +145,21 @@ class AllocatorTest extends SQLQueries {
 				ofSeconds(time), now());
 	}
 
-	@Parameter("job_id")
-	@Parameter("num_boards")
-	private static final String INSERT_REQ_SIZE =
-			"INSERT INTO job_request(job_id, num_boards) VALUES (?, ?)";
-
-	@Parameter("job_id")
-	@Parameter("width")
-	@Parameter("height")
-	@Parameter("max_dead_boards")
-	private static final String INSERT_REQ_DIMS =
-			"INSERT INTO job_request(job_id, width, height, "
-					+ "max_dead_boards) VALUES (?, ?, ?, ?)";
-
-	@Parameter("job_id")
-	@Parameter("board_id")
-	private static final String INSERT_REQ_BOARD =
-			"INSERT INTO job_request(job_id, board_id) VALUES (?, ?)";
-
 	private void makeAllocBySizeRequest(int job, int size) {
-		try (Update u = conn.update(INSERT_REQ_SIZE)) {
+		try (Update u = conn.update(TEST_INSERT_REQ_SIZE)) {
 			conn.transaction(() -> u.call(job, size));
 		}
 	}
 
 	private void makeAllocByDimensionsRequest(int job, int width, int height,
 			int allowedDead) {
-		try (Update u = conn.update(INSERT_REQ_DIMS)) {
+		try (Update u = conn.update(TEST_INSERT_REQ_DIMS)) {
 			conn.transaction(() -> u.call(job, width, height, allowedDead));
 		}
 	}
 
 	private void makeAllocByBoardIdRequest(int job, int board) {
-		try (Update u = conn.update(INSERT_REQ_BOARD)) {
+		try (Update u = conn.update(TEST_INSERT_REQ_BOARD)) {
 			conn.transaction(() -> u.call(job, board));
 		}
 	}
@@ -192,24 +171,14 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
-	@ResultColumn("cnt")
-	@SingleRowResult
-	private static final String COUNT_REQUESTS =
-			"SELECT COUNT(*) AS cnt FROM job_request";
-
 	private int getJobRequestCount() {
-		try (Query q = conn.query(COUNT_REQUESTS)) {
-			return conn.transaction(() -> q.call1().get().getInt("cnt"));
+		try (Query q = conn.query(TEST_COUNT_REQUESTS)) {
+			return conn.transaction(() -> q.call1(QUEUED).get().getInt("cnt"));
 		}
 	}
 
-	@ResultColumn("cnt")
-	@SingleRowResult
-	private static final String COUNT_POWER_CHANGES =
-			"SELECT COUNT(*) AS cnt FROM pending_changes";
-
 	private int getPendingPowerChanges() {
-		try (Query q = conn.query(COUNT_POWER_CHANGES)) {
+		try (Query q = conn.query(TEST_COUNT_POWER_CHANGES)) {
 			return conn.transaction(() -> q.call1().get().getInt("cnt"));
 		}
 	}
@@ -492,22 +461,12 @@ class AllocatorTest extends SQLQueries {
 		}
 	}
 
-	@Parameter("state")
-	@Parameter("job")
-	private static final String SET_JOB_STATE =
-			"UPDATE jobs SET job_state = :state WHERE job_id = :job";
-
-	@Parameter("timestamp")
-	@Parameter("job")
-	private static final String SET_JOB_DEATH_TIME =
-			"UPDATE jobs SET death_timestamp = :timestamp WHERE job_id = :job";
-
 	@Test
 	public void tombstone() throws Exception {
 		doTest(() -> {
 			int job = makeQueuedJob(1);
-			conn.update(SET_JOB_STATE).call(DESTROYED, job);
-			conn.update(SET_JOB_DEATH_TIME).call(0, job);
+			conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
+			conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);
 			int preMain = countJobInTable(job, "jobs");
 			assertTrue(preMain == 1,
 					() -> "must have created a job we can tombstone");

@@ -40,6 +40,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.USER_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertCanMakeBoardLocation;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertSetEquals;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.set;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 
 import java.util.Set;
 
@@ -443,13 +444,13 @@ class DQLTest extends SQLQueries {
 	@Test
 	void getAllocationTasks() {
 		try (Query q = c.query(getAllocationTasks)) {
-			assertEquals(0, q.getNumArguments());
+			assertEquals(1, q.getNumArguments());
 			assertSetEquals(set("req_id", "job_id", "num_boards", "width",
 					"height", "board_id", "machine_id", "max_dead_boards",
 					"max_height", "max_width", "job_state", "importance"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
-				assertFalse(q.call1().isPresent());
+				assertFalse(q.call1(QUEUED).isPresent());
 			});
 		}
 	}
