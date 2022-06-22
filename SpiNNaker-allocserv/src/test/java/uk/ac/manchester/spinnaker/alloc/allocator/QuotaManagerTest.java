@@ -52,8 +52,6 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
-import uk.ac.manchester.spinnaker.storage.Parameter;
-import uk.ac.manchester.spinnaker.storage.ResultColumn;
 
 @SpringBootTest
 @SpringJUnitWebConfig(QuotaManagerTest.Config.class)
@@ -62,23 +60,12 @@ import uk.ac.manchester.spinnaker.storage.ResultColumn;
 	"spalloc.database-path=" + QuotaManagerTest.DB,
 	"spalloc.historical-data.path=" + QuotaManagerTest.HIST_DB
 })
-class QuotaManagerTest extends SQLQueries {
+class QuotaManagerTest extends SQLQueries implements SupportQueries {
 	/** The DB file. */
 	static final String DB = "target/qm_test.sqlite3";
 
 	/** The DB file. */
 	static final String HIST_DB = "target/qm_test_hist.sqlite3";
-
-	@Parameter("machine_id")
-	@Parameter("user_id")
-	@ResultColumn("quota")
-	private static final String GET_QUOTA =
-			"SELECT quota FROM quotas WHERE machine_id = ? AND user_id = ?";
-
-	@Parameter("quota")
-	@Parameter("group")
-	private static final String SET_QUOTA =
-			"UPDATE groups SET quota = :quota WHERE group_id = :group";
 
 	private static final Logger log = getLogger(QuotaManagerTest.class);
 
@@ -128,13 +115,13 @@ class QuotaManagerTest extends SQLQueries {
 	}
 
 	private Object getQuota(Connection c) {
-		try (var q = c.query(GET_QUOTA)) {
+		try (var q = c.query(TEST_GET_QUOTA)) {
 			return q.call1(MACHINE, USER).get().getObject("quota");
 		}
 	}
 
 	private void setQuota(Connection c, Integer quota) {
-		try (var u = c.update(SET_QUOTA)) {
+		try (var u = c.update(TEST_SET_QUOTA)) {
 			u.call(quota, GROUP);
 		}
 	}
