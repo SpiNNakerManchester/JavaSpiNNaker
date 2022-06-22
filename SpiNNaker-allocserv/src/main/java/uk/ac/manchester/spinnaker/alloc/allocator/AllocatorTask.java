@@ -226,7 +226,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		/** Increases the importance of a job. */
 		private final Update bumpImportance;
 
-		/** Get the list of allocation tasks. */
+		/** Get the list of allocation tasks for jobs in a given state. */
 		private final Query getTasks;
 
 		/** Delete an allocation task. */
@@ -355,7 +355,7 @@ public class AllocatorTask extends DatabaseAwareBean
 		try (AllocSQL sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
-			for (Row row : sql.getTasks.call()) {
+			for (Row row : sql.getTasks.call(QUEUED)) {
 				int id = row.getInt("req_id");
 				int importance = row.getInt("importance");
 				if (importance > maxImportance) {
@@ -365,24 +365,9 @@ public class AllocatorTask extends DatabaseAwareBean
 					// Too much of a span
 					continue;
 				}
-				JobState currentState =
-						row.getEnum("job_state", JobState.class);
-				boolean handled = true;
-				try {
-					// Non-queued jobs should not have allocations done!
-					if (currentState == QUEUED) {
-						handled = allocate(sql, row);
-					}
-					/*
-					 * NB: having an exception counts as handled; we will nuke
-					 * the task.
-					 */
-				} finally {
-					log.debug("allocate for {}: {}", id, handled);
-					if (handled) {
-						changed |= sql.delete.call(id) > 0;
-					}
-				}
+				boolean handled = allocate(sql, row);
+				changed |= handled;
+				log.debug("allocate for {}: {}", id, handled);
 			}
 			/*
 			 * Those tasks which weren't allocated get their importance bumped

@@ -2264,18 +2264,18 @@ public abstract class SQLQueries {
 	protected Resource getDeadLinks;
 
 	/** Get the list of allocation tasks. */
+	@Parameter("job_state")
 	@ResultColumn("req_id")
 	@ResultColumn("job_id")
 	@ResultColumn("num_boards")
 	@ResultColumn("width")
 	@ResultColumn("height")
-	@ResultColumn("x")
-	@ResultColumn("y")
-	@ResultColumn("z")
+	@ResultColumn("board_id")
 	@ResultColumn("machine_id")
 	@ResultColumn("max_dead_boards")
 	@ResultColumn("max_width")
 	@ResultColumn("max_height")
+	@ResultColumn("job_state")
 	@ResultColumn("importance")
 	@Value("classpath:queries/get_allocation_tasks.sql")
 	protected Resource getAllocationTasks;
