@@ -534,12 +534,15 @@ public class BMPController extends DatabaseAwareBean {
 			changed |= sql.deallocateBoards(jobId) > 0;
 			// Delete all queued BMP commands
 			sql.deleteChangesForJob(jobId);
-			// Add a report if we can
-			getBoardId(failureTarget).ifPresent(problemBoardId -> sql
-					.getUser(allocProps.getSystemReportUser())
-					.ifPresent(systemReportOwner -> sql.insertBoardReport(
-							problemBoardId, jobId, REPORT_MSG,
-							systemReportOwner)));
+			getBoardId(failureTarget).ifPresent(problemBoardId -> {
+				// Mark the board as dead right now
+				sql.markBoardAsDead(problemBoardId);
+				// Add a report if we can
+				sql.getUser(allocProps.getSystemReportUser())
+						.ifPresent(systemReportOwner -> sql.insertBoardReport(
+								problemBoardId, jobId, REPORT_MSG,
+								systemReportOwner));
+			});
 			return changed;
 		}
 
@@ -688,6 +691,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update insertBoardReport;
 
+		private final Update setBoardFunctioning;
+
 		private final Query getUser;
 
 		AfterSQL(Connection conn) {
@@ -699,12 +704,14 @@ public class BMPController extends DatabaseAwareBean {
 			deleteChange = conn.update(FINISHED_PENDING);
 			deleteChangesForJob = conn.update(KILL_JOB_PENDING);
 			insertBoardReport = conn.update(INSERT_BOARD_REPORT);
+			setBoardFunctioning = conn.update(SET_FUNCTIONING_FIELD);
 			getUser = conn.query(GET_USER_ID);
 		}
 
 		@Override
 		public void close() {
 			getUser.close();
+			setBoardFunctioning.close();
 			insertBoardReport.close();
 			deleteChangesForJob.close();
 			deleteChange.close();
@@ -744,6 +751,10 @@ public class BMPController extends DatabaseAwareBean {
 		int insertBoardReport(
 				int boardId, int jobId, String issue, int userId) {
 			return insertBoardReport.key(boardId, jobId, issue, userId).get();
+		}
+
+		int markBoardAsDead(Integer boardId) {
+			return setBoardFunctioning.call(false, boardId);
 		}
 
 		Optional<Integer> getUser(String userName) {
