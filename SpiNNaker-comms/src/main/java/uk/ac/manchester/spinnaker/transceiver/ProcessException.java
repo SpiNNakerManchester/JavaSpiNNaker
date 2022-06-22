@@ -113,17 +113,6 @@ public class ProcessException extends SpinnmanException {
 		return new ProcessException(core, cause, null);
 	}
 
-	/** Marks an exception for a transient condition. */
-	public abstract static class TransientProcessException
-			extends ProcessException {
-		private static final long serialVersionUID = 1L;
-
-		private TransientProcessException(HasCoreLocation core,
-				UnexpectedResponseCodeException cause) {
-			super(core, cause);
-		}
-	}
-
 	/**
 	 * Marks an exception for errors in the message by the caller. Suggested
 	 * recovery strategy: don't send bad messages.
