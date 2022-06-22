@@ -83,7 +83,6 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
-import uk.ac.manchester.spinnaker.messages.model.UnroutableMessageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -1019,7 +1018,7 @@ public class BMPController extends DatabaseAwareBean {
 			cleanupTasks.add(request::failed);
 			currentThread().interrupt();
 			throw e;
-		} catch (ProcessException.NoP2PRoute e) {
+		} catch (ProcessException.PermanentProcessException e) {
 			log.error("BMP {} on {} is unroutable", e.core, request.machine);
 			/*
 			 * If we were switching boards on and going to READY, we should
@@ -1029,30 +1028,11 @@ public class BMPController extends DatabaseAwareBean {
 				cleanupTasks.add(sql -> request.badBoard(sql, e.core));
 			}
 			return true;
-		} catch (ProcessException.BadCommand | ProcessException.InvalidArguments
-				| ProcessException.BadPacketLength | ProcessException.BadSCPPort
-				| ProcessException.BadCPUNumber
-				| ProcessException.DeadDestination e) {
-			// All these are permanent problems with the message; don't retry
-			log.error("Requests failed on BMP(s) for {}", request.machine, e);
-			cleanupTasks.add(request::failed);
-			return true;
-		} catch (Exception e) {
-			if (e.getCause() instanceof UnroutableMessageException) {
-				UnroutableMessageException ume = (UnroutableMessageException)
-						e.getCause();
-				log.error("BMP {} on {} is unroutable", ume.header.getSource(),
-						request.machine, e);
-				/*
-				 * If we were switching boards on and going to READY, we should
-				 * handle failure to route by asking for reallocation.
-				 */
-				if (request.to == READY && request.powerOffBoards.isEmpty()) {
-					cleanupTasks.add(sql -> request.badBoard(sql,
-							ume.header.getSource()));
-				}
-				return true;
-			}
+		} catch (ProcessException.CallerProcessException e) {
+			// This is probably a software bug
+			log.error("SW bug talking to BMP(s) for {}", request.machine, e);
+		} catch (ProcessException.TransientProcessException e) {
+			// We should retry if we can
 			if (!isLastTry) {
 				/*
 				 * Log somewhat gently; we *might* be able to recover...
@@ -1064,10 +1044,13 @@ public class BMPController extends DatabaseAwareBean {
 				return false;
 			}
 			log.error("Requests failed on BMP(s) for {}", request.machine, e);
-			cleanupTasks.add(request::failed);
-			// This is (probably) a permanent failure; stop retry loop
-			return true;
+		} catch (IOException | ProcessException e) {
+			// Something unexpected is going on
+			log.error("General failure talking to BMP(s) for {}",
+					request.machine, e);
 		}
+		cleanupTasks.add(request::failed);
+		return true;
 	}
 
 	@SuppressWarnings("unused")
