@@ -967,7 +967,7 @@ public class BMPController extends DatabaseAwareBean {
 	 *
 	 * @param request
 	 *            The request, containing all the BMP coordinates.
-	 * @return Map from BMP cooordinates to how to control it. These controllers
+	 * @return Map from BMP coordinates to how to control it. These controllers
 	 *         can be safely communicated with in parallel.
 	 * @throws IOException
 	 *             If a BMP controller fails to initialise due to network
