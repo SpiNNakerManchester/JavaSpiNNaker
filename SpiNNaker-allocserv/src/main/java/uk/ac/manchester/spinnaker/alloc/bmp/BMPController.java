@@ -781,8 +781,8 @@ public class BMPController extends DatabaseAwareBean {
 		 * @return Whether we've changed anything
 		 */
 		boolean takeOutOfService(AfterSQL sql) {
-			// TODO mark board as disabled
-			return false;
+			// TODO make a report
+			return sql.markBoardAsDead(boardId) > 0;
 		}
 
 		/**
@@ -815,7 +815,10 @@ public class BMPController extends DatabaseAwareBean {
 			}, e -> {
 				cleanupTasks.add(s -> failed(s, e));
 			}, e -> {
-				cleanupTasks.add(this::takeOutOfService);
+				// TODO handle only cases of permanent hardware problems
+				if (e instanceof ProcessException.NoP2PRoute) {
+					cleanupTasks.add(this::takeOutOfService);
+				}
 			});
 		}
 
@@ -969,6 +972,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update setBoardSerialIds;
 
+		private final Update setBoardFunctioning;
+
 		AfterSQL(Connection conn) {
 			super(conn);
 			setBoardState = conn.update(SET_BOARD_POWER);
@@ -980,10 +985,12 @@ public class BMPController extends DatabaseAwareBean {
 			completedBlacklistWrite = conn.update(COMPLETED_BLACKLIST_WRITE);
 			failedBlacklistOp = conn.update(FAILED_BLACKLIST_OP);
 			setBoardSerialIds = conn.update(SET_BOARD_SERIAL_IDS);
+			setBoardFunctioning = conn.update(SET_FUNCTIONING_FIELD);
 		}
 
 		@Override
 		public void close() {
+			setBoardFunctioning.close();
 			setBoardSerialIds.close();
 			failedBlacklistOp.close();
 			completedBlacklistWrite.close();
@@ -1034,6 +1041,10 @@ public class BMPController extends DatabaseAwareBean {
 				String physicalSerialId) {
 			return setBoardSerialIds.call(boardId, bmpSerialId,
 					physicalSerialId);
+		}
+
+		int markBoardAsDead(Integer boardId) {
+			return setBoardFunctioning.call(false, boardId);
 		}
 	}
 
