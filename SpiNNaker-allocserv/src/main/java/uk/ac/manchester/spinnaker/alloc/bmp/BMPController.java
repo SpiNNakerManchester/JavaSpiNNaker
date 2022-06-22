@@ -82,6 +82,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
+import uk.ac.manchester.spinnaker.transceiver.ProcessException.PermanentProcessException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException.TransientProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
@@ -815,8 +816,7 @@ public class BMPController extends DatabaseAwareBean {
 			}, e -> {
 				cleanupTasks.add(s -> failed(s, e));
 			}, e -> {
-				// TODO handle only cases of permanent hardware problems
-				if (e instanceof ProcessException.NoP2PRoute) {
+				if (e instanceof PermanentProcessException) {
 					cleanupTasks.add(this::takeOutOfService);
 				}
 			});
@@ -848,7 +848,9 @@ public class BMPController extends DatabaseAwareBean {
 			}, e -> {
 				cleanupTasks.add(s -> failed(s, e));
 			}, e -> {
-				cleanupTasks.add(this::takeOutOfService);
+				if (e instanceof PermanentProcessException) {
+					cleanupTasks.add(this::takeOutOfService);
+				}
 			});
 		}
 
