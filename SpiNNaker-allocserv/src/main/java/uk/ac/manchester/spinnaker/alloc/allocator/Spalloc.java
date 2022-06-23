@@ -51,9 +51,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +58,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.PriorityScale;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.ReportProperties;
+import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -113,8 +110,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Autowired
 	private QuotaManager quotaManager;
 
-	@Autowired(required = false)
-	private JavaMailSender emailSender;
+	@Autowired
+	private ReportMailSender emailSender;
 
 	@Autowired
 	private AllocatorProperties props;
@@ -656,7 +653,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				return Optional.empty();
 			});
 			// Outside the transaction!
-			email.ifPresent(this::sendBoardServiceMail);
+			email.ifPresent(emailSender::sendServiceMail);
 		} catch (ReportRollbackExn e) {
 			log.warn("failed to handle problem report", e);
 		}
@@ -700,38 +697,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			epochs.nextMachineEpoch();
 		}
 		return acted > 0 ? Optional.of(acted) : Optional.empty();
-	}
-
-	/**
-	 * Send an assembled message if the service is configured to do so.
-	 * <p>
-	 * <strong>NB:</strong> This call may take some time; do not hold a
-	 * transaction open when calling this.
-	 *
-	 * @param email
-	 *            The message contents to send.
-	 */
-	private void sendBoardServiceMail(EmailBuilder email) {
-		ReportProperties properties = props.getReportEmail();
-		if (nonNull(emailSender) && nonNull(properties.getTo())
-				&& properties.isSend()) {
-			SimpleMailMessage message = new SimpleMailMessage();
-			if (nonNull(properties.getFrom())) {
-				message.setFrom(properties.getFrom());
-			}
-			message.setTo(properties.getTo());
-			if (nonNull(properties.getSubject())) {
-				message.setSubject(properties.getSubject());
-			}
-			message.setText(email.toString());
-			try {
-				if (!properties.getTo().isEmpty()) {
-					emailSender.send(message);
-				}
-			} catch (MailException e) {
-				log.warn("problem when sending email", e);
-			}
-		}
 	}
 
 	private static DownLink makeDownLinkFromRow(Row row) {
@@ -1303,7 +1268,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				EmailBuilder email = new EmailBuilder(id);
 				String result = q.transaction(
 						() -> reportIssue(report, permit, email, q));
-				sendBoardServiceMail(email);
+				emailSender.sendServiceMail(email);
 				return result;
 			} catch (ReportRollbackExn e) {
 				return e.getMessage();

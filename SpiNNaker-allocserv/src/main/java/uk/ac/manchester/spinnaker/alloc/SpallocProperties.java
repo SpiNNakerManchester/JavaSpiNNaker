@@ -85,6 +85,9 @@ public class SpallocProperties {
 
 	private ProxyProperties proxy;
 
+	/** Properties relating to board issue reporting. */
+	private ReportProperties reportEmail;
+
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
@@ -98,6 +101,7 @@ public class SpallocProperties {
 			@DefaultValue ProxyProperties proxy,
 			@DefaultValue QuotaProperties quota,
 			@DefaultValue DBProperties sqlite,
+			@DefaultValue ReportProperties reportEmail,
 			@DefaultValue TxrxProperties transceiver) {
 		this.databasePath = databasePath;
 		this.wait = wait;
@@ -111,6 +115,7 @@ public class SpallocProperties {
 		this.proxy = proxy;
 		this.quota = quota;
 		this.sqlite = sqlite;
+		this.reportEmail = reportEmail;
 		this.transceiver = transceiver;
 	}
 
@@ -287,6 +292,17 @@ public class SpallocProperties {
 		this.sqlite = sqlite;
 	}
 
+	/** @return Properties relating to board issue reporting. */
+	@NotNull
+	@Valid
+	public ReportProperties getReportEmail() {
+		return reportEmail;
+	}
+
+	public void setReportEmail(ReportProperties reportEmail) {
+		this.reportEmail = reportEmail;
+	}
+
 	/**
 	 * @return Properties relating to the Spalloc v1 compatibility layer.
 	 */
@@ -446,9 +462,6 @@ public class SpallocProperties {
 		 */
 		private int reportActionThreshold;
 
-		/** Properties relating to board issue reporting. */
-		private ReportProperties reportEmail;
-
 		/** Name of user that system-generated reports are done by. */
 		private String systemReportUser;
 
@@ -456,13 +469,11 @@ public class SpallocProperties {
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
-				@DefaultValue ReportProperties reportEmail,
 				@DefaultValue("") String systemReportUser) {
 			this.period = period;
 			this.importanceSpan = importanceSpan;
 			this.priorityScale = priorityScale;
 			this.reportActionThreshold = reportActionThreshold;
-			this.reportEmail = reportEmail;
 			this.systemReportUser = systemReportUser;
 		}
 
@@ -522,17 +533,6 @@ public class SpallocProperties {
 
 		public void setReportActionThreshold(int threshold) {
 			reportActionThreshold = threshold;
-		}
-
-		/** @return Properties relating to board issue reporting. */
-		@NotNull
-		@Valid
-		public ReportProperties getReportEmail() {
-			return reportEmail;
-		}
-
-		public void setReportEmail(ReportProperties reportEmail) {
-			this.reportEmail = reportEmail;
 		}
 
 		/** @return Name of user that system-generated reports are done by. */

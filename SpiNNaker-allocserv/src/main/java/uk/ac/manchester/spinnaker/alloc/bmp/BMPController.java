@@ -74,6 +74,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
+import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -128,6 +129,9 @@ public class BMPController extends DatabaseAwareBean {
 	@Autowired
 	private AllocatorProperties allocProps;
 
+	@Autowired
+	private ReportMailSender emailSender;
+
 	/**
 	 * Factory for {@linkplain SpiNNakerControl controllers}. Only use via
 	 * {@link #controllerFactory}.
@@ -144,6 +148,8 @@ public class BMPController extends DatabaseAwareBean {
 
 	private Deque<Function<AfterSQL, Boolean>> cleanupTasks =
 			new ConcurrentLinkedDeque<>();
+
+	private Deque<Runnable> postCleanupTasks = new ConcurrentLinkedDeque<>();
 
 	/** We have our own pool. */
 	private ExecutorService executor = newCachedThreadPool(this::makeThread);
@@ -263,6 +269,10 @@ public class BMPController extends DatabaseAwareBean {
 				epochs.nextBlacklistEpoch();
 			}
 		}
+		for (Runnable postCleanup = postCleanupTasks.poll();
+				nonNull(postCleanup); postCleanup = postCleanupTasks.poll()) {
+			postCleanup.run();
+		}
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
@@ -301,6 +311,9 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	private abstract class Request {
+		private static final String BOARD_MARKED_DEAD_TEMPLATE =
+				"Marked board at {},{},{} of {} (serial: {}) as dead: {}";
+
 		final Machine machine;
 
 		private int numTries = 0;
@@ -404,6 +417,37 @@ public class BMPController extends DatabaseAwareBean {
 			sql.getUser(allocProps.getSystemReportUser())
 					.ifPresent(userId -> sql.insertBoardReport(boardId, jobId,
 							msg, userId));
+		}
+
+		/**
+		 * Marks a board as actually dead, and requests we send email about it.
+		 *
+		 * @param sql
+		 *            How to talk to the DB
+		 * @param boardId
+		 *            Which board has the problem
+		 * @param msg
+		 *            Information about what the problem was
+		 * @return Whether we've successfully done a change.
+		 */
+		final boolean markBoardAsDead(AfterSQL sql, int boardId, String msg) {
+			boolean result = sql.markBoardAsDead(boardId) > 0;
+			if (result) {
+				sql.findBoardById.call1(boardId).ifPresent(row -> {
+					String ser = row.getString("physical_serial_id");
+					if (ser == null) {
+						ser = "<UNKNOWN>";
+					}
+					String fullMessage = format(BOARD_MARKED_DEAD_TEMPLATE,
+							row.getString("x"), row.getString("y"),
+							row.getString("z"), row.getString("machineName"),
+							ser, msg);
+					// Postpone email sending until out of transaction
+					postCleanupTasks.add(
+							() -> emailSender.sendServiceMail(fullMessage));
+				});
+			}
+			return result;
 		}
 	}
 
@@ -694,7 +738,7 @@ public class BMPController extends DatabaseAwareBean {
 			sql.deleteChangesForJob(jobId);
 			getBoardId(failure.core).ifPresent(boardId -> {
 				// Mark the board as dead right now
-				sql.markBoardAsDead(boardId);
+				markBoardAsDead(sql, boardId, REPORT_MSG + failure);
 				// Add a report if we can
 				addBoardReport(sql, boardId, jobId, REPORT_MSG + failure);
 			});
@@ -874,7 +918,7 @@ public class BMPController extends DatabaseAwareBean {
 		 */
 		boolean takeOutOfService(Exception exn, AfterSQL sql) {
 			addBoardReport(sql, boardId, null, REPORT_MSG + exn);
-			return sql.markBoardAsDead(boardId) > 0;
+			return markBoardAsDead(sql, boardId, REPORT_MSG + exn);
 		}
 
 		/**
@@ -1069,6 +1113,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Query getUser;
 
+		private final Query findBoardById;
+
 		AfterSQL(Connection conn) {
 			super(conn);
 			setBoardState = conn.update(SET_BOARD_POWER);
@@ -1084,10 +1130,12 @@ public class BMPController extends DatabaseAwareBean {
 			insertBoardReport = conn.update(INSERT_BOARD_REPORT);
 			setBoardFunctioning = conn.update(SET_FUNCTIONING_FIELD);
 			getUser = conn.query(GET_USER_ID);
+			findBoardById = conn.query(FIND_BOARD_BY_ID);
 		}
 
 		@Override
 		public void close() {
+			findBoardById.close();
 			getUser.close();
 			setBoardFunctioning.close();
 			insertBoardReport.close();

@@ -599,7 +599,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@SingleRowResult
 	protected static final String GET_BOARD_BY_COORDS =
-			"SELECT board_id FROM boards WHERE " + "machine_id = :machine_id "
+			"SELECT board_id FROM boards WHERE machine_id = :machine_id "
 					+ "AND x = :x AND y = :y AND z = :z "
 					+ "AND may_be_allocated LIMIT 1";
 

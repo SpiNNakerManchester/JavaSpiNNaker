@@ -123,13 +123,14 @@ spalloc:
       specific-board: 65.0
     # Number of reports of board problems at which the board is taken out of service.
     report-action-threshold: 2
-    report-email:
-      # In addition to configuring the email sender, you need to turn on
-      # sending here too.
-      send: false
-      from: spalloc@localhost
-      to: SPINNAKER@listserv.manchester.ac.uk
-      subject: Spalloc Board Issue
+  # Sending of emails relating to board problems: where to, etc.
+  report-email:
+    # In addition to configuring the email sender, you need to turn on
+    # sending here too.
+    send: false
+    from: spalloc@localhost
+    to: SPINNAKER@listserv.manchester.ac.uk
+    subject: Spalloc Board Issue
   auth:
     # Support HTTP Basic Authentication (bad for browsers, OK for code, slow)
     basic: true
