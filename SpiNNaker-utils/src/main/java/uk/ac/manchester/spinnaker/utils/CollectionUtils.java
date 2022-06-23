@@ -20,6 +20,8 @@ import static java.util.EnumSet.noneOf;
 import static java.util.stream.Collectors.toCollection;
 
 import java.util.EnumSet;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collector;
 
@@ -58,4 +60,24 @@ public abstract class CollectionUtils {
 		return toCollection(() -> noneOf(cls));
 	}
 
+	/**
+	 * Binary function currier.
+	 *
+	 * @param <T>
+	 *            First argument type.
+	 * @param <U>
+	 *            Second argument type
+	 * @param <V>
+	 *            Return type.
+	 * @param fn
+	 *            Binary function.
+	 * @param arg
+	 *            First argument.
+	 * @return Unary function based on binding the first argument to the binary
+	 *         function.
+	 */
+	public static <T, U, V> Function<U, V> curry(BiFunction<T, U, V> fn,
+			T arg) {
+		return u -> fn.apply(arg, u);
+	}
 }

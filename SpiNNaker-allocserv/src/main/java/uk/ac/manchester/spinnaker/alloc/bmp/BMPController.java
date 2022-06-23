@@ -37,6 +37,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -53,6 +54,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -140,15 +142,11 @@ public class BMPController extends DatabaseAwareBean {
 
 	private final ThreadGroup group = new ThreadGroup("BMP workers");
 
-	private Deque<Cleanup> cleanupTasks = new ConcurrentLinkedDeque<>();
+	private Deque<Function<AfterSQL, Boolean>> cleanupTasks =
+			new ConcurrentLinkedDeque<>();
 
 	/** We have our own pool. */
 	private ExecutorService executor = newCachedThreadPool(this::makeThread);
-
-	@FunctionalInterface
-	private interface Cleanup {
-		boolean run(AfterSQL sql);
-	}
 
 	/**
 	 * A {@link ThreadFactory}.
@@ -248,10 +246,10 @@ public class BMPController extends DatabaseAwareBean {
 		doneBlacklist.set(false);
 		if (execute(conn -> {
 			boolean changed = false;
-			for (Cleanup cleanup = cleanupTasks.poll(); nonNull(
-					cleanup); cleanup = cleanupTasks.poll()) {
+			for (Function<AfterSQL, Boolean> cleanup = cleanupTasks.poll();
+					nonNull(cleanup); cleanup = cleanupTasks.poll()) {
 				try (AfterSQL sql = new AfterSQL(conn)) {
-					changed |= cleanup.run(sql);
+					changed |= cleanup.apply(sql);
 				} catch (DataAccessException e) {
 					log.error("problem with database", e);
 				}
@@ -387,6 +385,25 @@ public class BMPController extends DatabaseAwareBean {
 			 */
 			onFailure.accept(exn);
 			return true;
+		}
+
+		/**
+		 * Add a report to the database of a problem with a board.
+		 *
+		 * @param sql
+		 *            How to talk to the DB
+		 * @param boardId
+		 *            Which board has the problem
+		 * @param jobId
+		 *            What job was associated with the problem (if any)
+		 * @param msg
+		 *            Information about what the problem was
+		 */
+		final void addBoardReport(AfterSQL sql, int boardId, Integer jobId,
+				String msg) {
+			sql.getUser(allocProps.getSystemReportUser())
+					.ifPresent(userId -> sql.insertBoardReport(boardId, jobId,
+							msg, userId));
 		}
 	}
 
@@ -633,15 +650,11 @@ public class BMPController extends DatabaseAwareBean {
 				cleanupTasks.add(this::failed);
 			}, ppe -> {
 				/*
-				 * Handle what happens when the hardware is unreachable
-				 *
-				 * When that happens, we must tell the alloc engine to pick
-				 * somewhere else, and we should mark the board as out of
-				 * service too; it's never going to work so taking it out right
-				 * away is the only sane plan.
+				 * It's OK (not great, but OK) for things to be unreachable when
+				 * the board is being turned off at the end of a job.
 				 */
 				if (to == READY && powerOffBoards.isEmpty()) {
-					cleanupTasks.add(sql -> badBoard(sql, ppe.core));
+					cleanupTasks.add(curry(this::badBoard, ppe));
 				}
 			});
 		}
@@ -657,22 +670,21 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		private static final String REPORT_MSG =
-				"board was not reachable when trying to power it";
+				"board was not reachable when trying to power it: ";
 
 		/**
 		 * When a BMP is unroutable, we must tell the alloc engine to pick
 		 * somewhere else, and we should mark the board as out of service too;
-		 * it's never going to work so taking it out right away is the only
-		 * sane plan.
-		 * We also need to nuke the planned changes. Retrying is bad.
+		 * it's never going to work so taking it out right away is the only sane
+		 * plan. We also need to nuke the planned changes. Retrying is bad.
 		 *
 		 * @param sql
 		 *            How to access the DB.
-		 * @param failureTarget
-		 *            The routing information from the failure message.
+		 * @param failure
+		 *            The failure message.
 		 * @return Whether the state of boards or jobs has changed.
 		 */
-		private boolean badBoard(AfterSQL sql, HasCoreLocation failureTarget) {
+		private boolean badBoard(ProcessException failure, AfterSQL sql) {
 			boolean changed = false;
 			// Mark job for reallocation
 			changed |= sql.setJobState(QUEUED, 0, jobId) > 0;
@@ -680,14 +692,11 @@ public class BMPController extends DatabaseAwareBean {
 			changed |= sql.deallocateBoards(jobId) > 0;
 			// Delete all queued BMP commands
 			sql.deleteChangesForJob(jobId);
-			getBoardId(failureTarget).ifPresent(problemBoardId -> {
+			getBoardId(failure.core).ifPresent(boardId -> {
 				// Mark the board as dead right now
-				sql.markBoardAsDead(problemBoardId);
+				sql.markBoardAsDead(boardId);
 				// Add a report if we can
-				sql.getUser(allocProps.getSystemReportUser())
-						.ifPresent(systemReportOwner -> sql.insertBoardReport(
-								problemBoardId, jobId, REPORT_MSG,
-								systemReportOwner));
+				addBoardReport(sql, boardId, jobId, REPORT_MSG + failure);
 			});
 			return changed;
 		}
@@ -839,27 +848,32 @@ public class BMPController extends DatabaseAwareBean {
 		 * Runs on a thread that may touch the database, but may not touch any
 		 * BMP.
 		 *
-		 * @param sql
-		 *            How to access the DB
 		 * @param exn
 		 *            The exception that caused the failure.
+		 * @param sql
+		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		private boolean failed(AfterSQL sql, Exception exn) {
+		private boolean failed(Exception exn, AfterSQL sql) {
 			doneBlacklist.set(true);
 			return sql.failedBlacklistOp(opId, exn) > 0;
 		}
+
+		private static final String REPORT_MSG =
+				"board was not reachable when trying to access its blacklist: ";
 
 		/**
 		 * Access the DB to mark a board as out of service. Runs on a thread
 		 * that may touch the database, but may not touch any BMP.
 		 *
+		 * @param exn
+		 *            The exception that caused the failure.
 		 * @param sql
 		 *            How to access the DB
 		 * @return Whether we've changed anything
 		 */
-		boolean takeOutOfService(AfterSQL sql) {
-			// TODO make a report
+		boolean takeOutOfService(Exception exn, AfterSQL sql) {
+			addBoardReport(sql, boardId, null, REPORT_MSG + exn);
 			return sql.markBoardAsDead(boardId) > 0;
 		}
 
@@ -891,9 +905,9 @@ public class BMPController extends DatabaseAwareBean {
 				cleanupTasks.add(this::recordSerialIds);
 				cleanupTasks.add(this::doneRead);
 			}, e -> {
-				cleanupTasks.add(s -> failed(s, e));
+				cleanupTasks.add(curry(this::failed, e));
 			}, ppe -> {
-				cleanupTasks.add(this::takeOutOfService);
+				cleanupTasks.add(curry(this::takeOutOfService, ppe));
 			});
 		}
 
@@ -921,9 +935,9 @@ public class BMPController extends DatabaseAwareBean {
 				controller.writeBlacklist(board, requireNonNull(blacklist));
 				cleanupTasks.add(this::doneWrite);
 			}, e -> {
-				cleanupTasks.add(s -> failed(s, e));
+				cleanupTasks.add(curry(this::failed, e));
 			}, ppe -> {
-				cleanupTasks.add(this::takeOutOfService);
+				cleanupTasks.add(curry(this::takeOutOfService, ppe));
 			});
 		}
 
@@ -1135,7 +1149,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		int insertBoardReport(
-				int boardId, int jobId, String issue, int userId) {
+				int boardId, Integer jobId, String issue, int userId) {
 			return insertBoardReport.key(boardId, jobId, issue, userId).get();
 		}
 

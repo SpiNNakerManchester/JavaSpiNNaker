@@ -188,9 +188,9 @@ CREATE TABLE IF NOT EXISTS board_reports(
 	board_id INTEGER NOT NULL
 		CONSTRAINT "board_reports.board_id -> boards.board_id"
 		REFERENCES boards(board_id) ON DELETE CASCADE,
-	job_id INTEGER NOT NULL
+	job_id INTEGER
 		CONSTRAINT "board_reports.job_id -> jobs.job_id"
-		REFERENCES jobs(job_id) ON DELETE RESTRICT,
+		REFERENCES jobs(job_id),
 	reported_issue TEXT NOT NULL,
 	reporter INTEGER NOT NULL
 		CONSTRAINT "board_reports.reporter -> user_info.user_id"
