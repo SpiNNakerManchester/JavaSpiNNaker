@@ -1151,11 +1151,24 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void getSerialInfoReqs() {
+		try (Query q = c.query(GET_SERIAL_INFO_REQS)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("board_id", "board_num", "cabinet",
+					"frame", "op_id", "bmp_serial_id"),
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getCompletedBlacklistOp() {
 		try (Query q = c.query(GET_COMPLETED_BLACKLIST_OP)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
-					set("board_id", "write", "data", "failure", "failed"),
+					set("board_id", "op", "data", "failure", "failed"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BLACKLIST_OP).isPresent());

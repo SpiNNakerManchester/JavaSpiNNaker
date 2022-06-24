@@ -399,10 +399,8 @@ CREATE TABLE IF NOT EXISTS blacklist_ops (
 	board_id INTEGER UNIQUE NOT NULL
 		CONSTRAINT "blacklist_ops.board_id -> boards.board_id"
 		REFERENCES boards(board_id) ON DELETE RESTRICT,
-	"write" INTEGER NOT NULL	-- Whether to write the blacklist to the board
-		CONSTRAINT "blacklist_ops.write bool" CHECK ("write" IN (0, 1)),
-	--physical_serial_id TEXT,	-- Physical serial ID; only used on READ
-	--bmp_serial_id TEXT,		-- Logical serial ID; only used on READ
+	op INTEGER NOT NULL			-- What we plan to do (BlacklistOperations ID)
+		CONSTRAINT "blacklist_ops.op supported" CHECK (op IN (0, 1, 2)),
 	"data" BLOB,				-- The serialized blacklist info; JAVA format!
 	completed INTEGER NOT NULL DEFAULT (0)
 		CONSTRAINT "blacklist_ops.completed bool" CHECK (completed IN (0, 1)),

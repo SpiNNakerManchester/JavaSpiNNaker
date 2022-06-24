@@ -1843,7 +1843,7 @@ public abstract class SQLQueries {
 					+ "cabinet, frame, data FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "JOIN board_serial USING (board_id) "
-					+ "WHERE write AND NOT completed "
+					+ "WHERE op = 1 AND NOT completed "
 					+ "AND boards.machine_id = :machine_id";
 
 	/**
@@ -1863,7 +1863,27 @@ public abstract class SQLQueries {
 					+ "cabinet, frame FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
 					+ "JOIN board_serial USING (board_id) "
-					+ "WHERE NOT write AND NOT completed "
+					+ "WHERE op = 0 AND NOT completed "
+					+ "AND boards.machine_id = :machine_id";
+
+	/**
+	 * Get the list of reads (from the machine) of serial data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_SERIAL_INFO_REQS =
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
+					+ "cabinet, frame FROM blacklist_ops "
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
+					+ "JOIN board_serial USING (board_id) "
+					+ "WHERE op = 2 AND NOT completed "
 					+ "AND boards.machine_id = :machine_id";
 
 	/**
@@ -1906,6 +1926,16 @@ public abstract class SQLQueries {
 			"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id";
 
 	/**
+	 * Mark a read of serial data as completed. (Text same as
+	 * {@link #COMPLETED_BLACKLIST_WRITE} for now, but logically distinct.)
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("op_id")
+	protected static final String COMPLETED_GET_SERIAL_REQ =
+			"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id";
+
+	/**
 	 * Mark a read or write of a blacklist as failed, noting the reason.
 	 *
 	 * @see BMPController
@@ -1922,12 +1952,12 @@ public abstract class SQLQueries {
 	 */
 	@Parameter("op_id")
 	@ResultColumn("board_id")
-	@ResultColumn("write")
+	@ResultColumn("op")
 	@ResultColumn("data")
 	@ResultColumn("failure")
 	@SingleRowResult
 	protected static final String GET_COMPLETED_BLACKLIST_OP =
-			"SELECT board_id, write, data, failure, "
+			"SELECT board_id, op, data, failure, "
 					+ "failure IS NOT NULL AS failed "
 					+ "FROM blacklist_ops WHERE op_id = :op_id AND completed "
 					+ "LIMIT 1";
@@ -1949,7 +1979,7 @@ public abstract class SQLQueries {
 	@Parameter("board_id")
 	@GeneratesID
 	protected static final String CREATE_BLACKLIST_READ =
-			"INSERT INTO blacklist_ops(board_id, write, completed) "
+			"INSERT INTO blacklist_ops(board_id, op, completed) "
 					+ "VALUES(:board_id, 0, 0)";
 
 	/**
@@ -1961,8 +1991,19 @@ public abstract class SQLQueries {
 	@Parameter("blacklist")
 	@GeneratesID
 	protected static final String CREATE_BLACKLIST_WRITE =
-			"INSERT INTO blacklist_ops(board_id, write, completed, data) "
+			"INSERT INTO blacklist_ops(board_id, op, completed, data) "
 					+ "VALUES(:board_id, 1, 0, :blacklist)";
+
+	/**
+	 * Insert a request to read a board's serial information.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@GeneratesID
+	protected static final String CREATE_SERIAL_READ_REQ =
+			"INSERT INTO blacklist_ops(board_id, op, completed) "
+					+ "VALUES(:board_id, 2, 0)";
 
 	// SQL loaded from files because it is too complicated otherwise!
 

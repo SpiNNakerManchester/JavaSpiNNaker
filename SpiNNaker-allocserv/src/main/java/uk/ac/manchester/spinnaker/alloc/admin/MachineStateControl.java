@@ -476,6 +476,29 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
+	 * Read the serial number off a board.
+	 *
+	 * @param board
+	 *            Which board to get the serial number of.
+	 * @return The serial number.
+	 * @throws DataAccessException
+	 *             If access to the DB fails.
+	 * @throws BlacklistException
+	 *             If the write fails.
+	 * @throws InterruptedException
+	 *             If interrupted.
+	 */
+	public String getSerialNumber(BoardState board)
+			throws InterruptedException {
+		// TODO Add a background process to read all the serial IDs on boot
+		try (Op op = new Op(CREATE_SERIAL_READ_REQ, board.id)) {
+			op.getResult(row -> this);
+		}
+		// Can now read out of the DB normally
+		return findId(board.id).map(b -> b.bmpSerial).orElse(null);
+	}
+
+	/**
 	 * Manages the transactions used to safely talk with the BMP controller.
 	 *
 	 * @author Donal Fellows

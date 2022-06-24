@@ -789,6 +789,17 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
+	void completedGetSerialReq() {
+		assumeWritable(c);
+		try (Update u = c.update(COMPLETED_GET_SERIAL_REQ)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
 	void failedBlacklistOp() {
 		assumeWritable(c);
 		try (Update u = c.update(FAILED_BLACKLIST_OP)) {
@@ -818,6 +829,18 @@ class DMLTest extends SQLQueries {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
 				assertThrowsFK(() -> u.call(NO_BOARD, bl));
+			});
+		}
+	}
+
+	@Test
+	void createSerialReadReq() {
+		assumeWritable(c);
+		Blacklist bl = dummyBlacklist();
+		try (Update u = c.update(CREATE_SERIAL_READ_REQ)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD));
 			});
 		}
 	}

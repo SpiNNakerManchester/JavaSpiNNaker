@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.slf4j.MDC.putCloseable;
+import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.GET_SERIAL;
+import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.READ;
+import static uk.ac.manchester.spinnaker.alloc.bmp.BlacklistOperation.WRITE;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
@@ -781,6 +784,8 @@ public class BMPController extends DatabaseAwareBean {
 		private final Query getBlacklistWrites = conn
 				.query(GET_BLACKLIST_WRITES);
 
+		private final Query getSerials = conn.query(GET_SERIAL_INFO_REQS);
+
 		@Override
 		public void close() {
 			getJobIdsWithChanges.close();
@@ -790,18 +795,25 @@ public class BMPController extends DatabaseAwareBean {
 			setJobState.close();
 			getBlacklistReads.close();
 			getBlacklistWrites.close();
+			getSerials.close();
 			super.close();
 		}
 
 		List<BlacklistRequest> getBlacklistReads(Machine machine) {
 			return getBlacklistReads.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, false, row))
+					.map(row -> new BlacklistRequest(machine, READ, row))
 					.toList();
 		}
 
 		List<BlacklistRequest> getBlacklistWrites(Machine machine) {
 			return getBlacklistWrites.call(machine.getId())
-					.map(row -> new BlacklistRequest(machine, false, row))
+					.map(row -> new BlacklistRequest(machine, WRITE, row))
+					.toList();
+		}
+
+		List<BlacklistRequest> getReadSerialInfos(Machine machine) {
+			return getSerials.call(machine.getId())
+					.map(row -> new BlacklistRequest(machine, GET_SERIAL, row))
 					.toList();
 		}
 	}
@@ -812,7 +824,7 @@ public class BMPController extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	private final class BlacklistRequest extends Request {
-		private final boolean write;
+		private final BlacklistOperation op;
 
 		private final int opId;
 
@@ -826,14 +838,15 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Blacklist blacklist;
 
-		private BlacklistRequest(Machine machine, boolean write, Row row) {
+		private BlacklistRequest(Machine machine, BlacklistOperation op,
+				Row row) {
 			super(machine);
-			this.write = write;
+			this.op = op;
 			opId = row.getInt("op_id");
 			boardId = row.getInt("board_id");
 			bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
 			board = new BMPBoard(row.getInt("board_num"));
-			if (write) {
+			if (op == WRITE) {
 				blacklist = row.getSerial("data", Blacklist.class);
 			} else {
 				blacklist = null;
@@ -888,6 +901,19 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
+		 * Access the DB to mark the write request as successful. Runs on a
+		 * thread that may touch the database, but may not touch any BMP.
+		 *
+		 * @param sql
+		 *            How to access the DB
+		 * @return Whether we've changed anything
+		 */
+		private boolean doneReadSerial(AfterSQL sql) {
+			doneBlacklist.set(true);
+			return sql.completedGetSerialReq(opId) > 0;
+		}
+
+		/**
 		 * Access the DB to mark the request as failed and store the exception.
 		 * Runs on a thread that may touch the database, but may not touch any
 		 * BMP.
@@ -922,8 +948,9 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
-		 * Process an action to read a blacklist. Runs on a thread that may
-		 * touch a BMP directly, but which may not touch the database.
+		 * Process an action to work with a blacklist or serial number. Runs on
+		 * a thread that may touch a BMP directly, but which may not touch the
+		 * database.
 		 *
 		 * @param controller
 		 *            How to actually reach the BMP.
@@ -931,23 +958,22 @@ public class BMPController extends DatabaseAwareBean {
 		 * @throws InterruptedException
 		 *             If interrupted.
 		 */
-		boolean readBlacklist(SpiNNakerControl controller)
+		boolean perform(SpiNNakerControl controller)
 				throws InterruptedException {
 			return bmpAction(() -> {
-				readSerial = controller.readSerial(board);
-				if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
-					/*
-					 * Doesn't match; WARN but keep going; hardware may just be
-					 * remapped behind our back.
-					 */
-					log.warn(
-							"blacklist read mismatch: expected serial ID '{}' "
-									+ "not equal to actual serial ID '{}'",
-							bmpSerialId, readSerial);
+				switch (op) {
+				case WRITE:
+					writeBlacklist(controller);
+					break;
+				case READ:
+					readBlacklist(controller);
+					break;
+				case GET_SERIAL:
+					readSerial(controller);
+					break;
+				default:
+					throw new IllegalArgumentException();
 				}
-				readBlacklist = controller.readBlacklist(board);
-				cleanupTasks.add(this::recordSerialIds);
-				cleanupTasks.add(this::doneRead);
 			}, e -> {
 				cleanupTasks.add(curry(this::failed, e));
 			}, ppe -> {
@@ -956,33 +982,81 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
-		 * Process an action to write a blacklist. Runs on a thread that may
-		 * touch a BMP directly, but which may not touch the database.
+		 * Process an action to read a blacklist.
 		 *
 		 * @param controller
 		 *            How to actually reach the BMP.
-		 * @return Whether this action has "succeeded" and shouldn't be retried.
 		 * @throws InterruptedException
 		 *             If interrupted.
+		 * @throws IOException
+		 *             If the network is unhappy.
+		 * @throws ProcessException
+		 *             If the BMP rejects a message.
 		 */
-		boolean writeBlacklist(SpiNNakerControl controller)
-				throws InterruptedException {
-			return bmpAction(() -> {
-				readSerial = controller.readSerial(board);
-				if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
-					// Doesn't match, so REALLY unsafe to keep going!
-					throw new IllegalStateException(format(
-							"aborting blacklist write: expected serial ID '%s' "
-									+ "not equal to actual serial ID '%s'",
-							bmpSerialId, readSerial));
-				}
-				controller.writeBlacklist(board, requireNonNull(blacklist));
-				cleanupTasks.add(this::doneWrite);
-			}, e -> {
-				cleanupTasks.add(curry(this::failed, e));
-			}, ppe -> {
-				cleanupTasks.add(curry(this::takeOutOfService, ppe));
-			});
+		private void readBlacklist(SpiNNakerControl controller)
+				throws InterruptedException, ProcessException, IOException {
+			readSerial = controller.readSerial(board);
+			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+				/*
+				 * Doesn't match; WARN but keep going; hardware may just be
+				 * remapped behind our back.
+				 */
+				log.warn(
+						"blacklist read mismatch: expected serial ID '{}' "
+								+ "not equal to actual serial ID '{}'",
+						bmpSerialId, readSerial);
+			}
+			readBlacklist = controller.readBlacklist(board);
+			cleanupTasks.add(this::recordSerialIds);
+			cleanupTasks.add(this::doneRead);
+		}
+
+		/**
+		 * Process an action to write a blacklist.
+		 *
+		 * @param controller
+		 *            How to actually reach the BMP.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 * @throws IOException
+		 *             If the network is unhappy.
+		 * @throws ProcessException
+		 *             If the BMP rejects a message.
+		 * @throws IllegalStateException
+		 *             If the operation is applied to a board other than the one
+		 *             that it is expected to apply to.
+		 */
+		private void writeBlacklist(SpiNNakerControl controller)
+				throws InterruptedException, ProcessException, IOException {
+			readSerial = controller.readSerial(board);
+			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+				// Doesn't match, so REALLY unsafe to keep going!
+				throw new IllegalStateException(format(
+						"aborting blacklist write: expected serial ID '%s' "
+								+ "not equal to actual serial ID '%s'",
+						bmpSerialId, readSerial));
+			}
+			controller.writeBlacklist(board, requireNonNull(blacklist));
+			cleanupTasks.add(this::doneWrite);
+		}
+
+		/**
+		 * Process an action to read the serial number from a BMP.
+		 *
+		 * @param controller
+		 *            How to actually reach the BMP.
+		 * @throws InterruptedException
+		 *             If interrupted.
+		 * @throws IOException
+		 *             If the network is unhappy
+		 * @throws ProcessException
+		 *             If the BMP rejects a message.
+		 */
+		private void readSerial(SpiNNakerControl controller)
+				throws InterruptedException, ProcessException, IOException {
+			readSerial = controller.readSerial(board);
+			cleanupTasks.add(this::recordSerialIds);
+			cleanupTasks.add(this::doneReadSerial);
 		}
 
 		@Override
@@ -991,7 +1065,7 @@ public class BMPController extends DatabaseAwareBean {
 					.append(machine.getName());
 			sb.append(";bmp=").append(bmp);
 			sb.append(",board=").append(boardId);
-			sb.append(",write=").append(write);
+			sb.append(",op=").append(op);
 			return sb.append(")").toString();
 		}
 	}
@@ -1016,6 +1090,7 @@ public class BMPController extends DatabaseAwareBean {
 									sql, requestCollector));
 					requestCollector.addAll(sql.getBlacklistReads(machine));
 					requestCollector.addAll(sql.getBlacklistWrites(machine));
+					requestCollector.addAll(sql.getReadSerialInfos(machine));
 				}
 				return requestCollector;
 			});
@@ -1101,6 +1176,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Update completedBlacklistWrite;
 
+		private final Update completedGetSerialReq;
+
 		private final Update failedBlacklistOp;
 
 		private final Update setBoardSerialIds;
@@ -1124,6 +1201,7 @@ public class BMPController extends DatabaseAwareBean {
 			deleteChange = conn.update(FINISHED_PENDING);
 			completedBlacklistRead = conn.update(COMPLETED_BLACKLIST_READ);
 			completedBlacklistWrite = conn.update(COMPLETED_BLACKLIST_WRITE);
+			completedGetSerialReq = conn.update(COMPLETED_GET_SERIAL_REQ);
 			failedBlacklistOp = conn.update(FAILED_BLACKLIST_OP);
 			setBoardSerialIds = conn.update(SET_BOARD_SERIAL_IDS);
 			deleteChangesForJob = conn.update(KILL_JOB_PENDING);
@@ -1142,6 +1220,7 @@ public class BMPController extends DatabaseAwareBean {
 			deleteChangesForJob.close();
 			setBoardSerialIds.close();
 			failedBlacklistOp.close();
+			completedGetSerialReq.close();
 			completedBlacklistWrite.close();
 			completedBlacklistRead.close();
 			deleteChange.close();
@@ -1180,6 +1259,10 @@ public class BMPController extends DatabaseAwareBean {
 
 		int completedBlacklistWrite(Integer opId) {
 			return completedBlacklistWrite.call(opId);
+		}
+
+		int completedGetSerialReq(Integer opId) {
+			return completedGetSerialReq.call(opId);
 		}
 
 		int failedBlacklistOp(Integer opId, Exception failure) {
@@ -1402,16 +1485,10 @@ public class BMPController extends DatabaseAwareBean {
 			return;
 		}
 		try (MDCCloseable mdc = putCloseable("changes",
-				asList("blacklist", request.write).toString())) {
+				asList("blacklist", request.op).toString())) {
 			while (request.isRepeat()) {
-				if (request.write) {
-					if (request.writeBlacklist(controller)) {
-						break;
-					}
-				} else {
-					if (request.readBlacklist(controller)) {
-						break;
-					}
+				if (request.perform(controller)) {
+					return;
 				}
 				sleep(props.getProbeInterval().toMillis());
 			}
