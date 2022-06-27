@@ -56,7 +56,7 @@ jobs:
           touch $SITE_DIR/.nojekyll
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.3.3
+        uses: JamesIves/github-pages-deploy-action@v4.3.4
         with:
           branch: gh-pages
           folder: ${{ env.SITE_DIR }}
