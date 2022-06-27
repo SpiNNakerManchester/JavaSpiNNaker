@@ -383,6 +383,8 @@ public abstract class SQLQueries {
 
 	/**
 	 * Get all the boards (and related info) of a machine.
+	 *
+	 * @see MachineStateControl
 	 */
 	@Parameter("machine_id")
 	@ResultColumn("board_id")
@@ -398,6 +400,25 @@ public abstract class SQLQueries {
 					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND board_num IS NOT NULL "
+					+ "ORDER BY z ASC, x ASC, y ASC";
+
+	/**
+	 * Get all the boards (and related info) known to the service.
+	 *
+	 * @see MachineStateControl
+	 */
+	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	protected static final String GET_ALL_BOARDS_OF_ALL_MACHINES =
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
+					+ "WHERE board_num IS NOT NULL "
 					+ "ORDER BY z ASC, x ASC, y ASC";
 
 	/**

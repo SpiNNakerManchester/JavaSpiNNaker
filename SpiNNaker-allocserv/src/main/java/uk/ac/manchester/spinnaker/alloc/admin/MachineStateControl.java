@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.Thread.currentThread;
 import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
+import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
@@ -33,14 +34,20 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -75,16 +82,28 @@ public class MachineStateControl extends DatabaseAwareBean {
 			Duration.ofSeconds(BLACKLIST_WAIT_SECS);
 
 	/** Number of serial read requests to batch together. */
-	private static final int SER_BATCH = 24;
+	@Value("24")
+	private int serBatch;
 
 	/** Number of blacklist read requests to batch together. */
-	private static final int BLR_BATCH = 6;
+	@Value("6")
+	private int blrBatch;
 
 	@Autowired
 	private Epochs epochs;
 
 	@Autowired
 	private BlacklistIO blacklistHandler;
+
+	@Autowired
+	private ScheduledExecutorService executor;
+
+	@PostConstruct
+	private void launchBackground() throws InterruptedException {
+		// After a minute, start retrieving board serial numbers
+		executor.schedule((Runnable) this::readAllBoardSerialNumbers,
+				BLACKLIST_LONG_WAIT_SECS, TimeUnit.SECONDS);
+	}
 
 	/**
 	 * Access to the enablement-state of a board.
@@ -416,12 +435,21 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Ensure that the database has the actual serial numbers of all boards in a
 	 * machine.
 	 *
-	 * @param machineId
+	 * @param machineName
 	 *            Which machine to read the serial numbers of.
 	 */
-	void readAllBoardSerialNumbers(int machineId) {
-		// TODO Add a background process to read all the serial IDs on boot
-		batchReqs(machineId, "retrieving serial numbers", SER_BATCH,
+	public void readAllBoardSerialNumbers(String machineName) {
+		batchReqs(requireNonNull(machineName), "retrieving serial numbers",
+				serBatch, curry(Op::new, CREATE_SERIAL_READ_REQ),
+				Op::completed);
+	}
+
+	/**
+	 * Ensure that the database has the actual serial numbers of all known
+	 * boards.
+	 */
+	private void readAllBoardSerialNumbers() {
+		batchReqs(null, "retrieving serial numbers", serBatch,
 				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
 	}
 
@@ -438,12 +466,13 @@ public class MachineStateControl extends DatabaseAwareBean {
 	}
 
 	/**
-	 * Perform an action for all boards in a machine, batching them as
-	 * necessary. If interrupted, will complete the currently processing batch
-	 * but will not perform further batches.
+	 * Perform an action for all boards in a machine (or all known), batching
+	 * them as necessary. If interrupted, will complete the currently processing
+	 * batch but will not perform further batches.
 	 *
-	 * @param machineId
-	 *            Which machine are we talking about?
+	 * @param machineName
+	 *            Which machine are we talking about? If {@code null}, all
+	 *            boards of all machines will be processed.
 	 * @param action
 	 *            What are we doing (for log messages)?
 	 * @param batchSize
@@ -454,10 +483,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param opResultsHandler
 	 *            How to process the results of an individual operation.
 	 */
-	private void batchReqs(int machineId, String action, int batchSize,
+	private void batchReqs(String machineName, String action, int batchSize,
 			Function<Integer, Op> opGenerator,
 			InterruptableConsumer<Op> opResultsHandler) {
-		List<Integer> boards = execute(false, c -> listAllBoards(c, machineId));
+		List<Integer> boards =
+				execute(false, c -> listAllBoards(c, machineName));
 		for (Collection<Integer> batch : batch(batchSize, boards)) {
 			// TODO more efficient implementation
 			List<Op> ops = lmap(batch, opGenerator);
@@ -484,20 +514,28 @@ public class MachineStateControl extends DatabaseAwareBean {
 	/**
 	 * Retrieve all blacklists, parse them, and store them in the DB's model.
 	 *
-	 * @param machineId
+	 * @param machineName
 	 *            Which machine to get the blacklists of.
 	 */
-	void updateAllBlacklists(int machineId) {
-		batchReqs(machineId, "retrieving blacklists", BLR_BATCH,
-				curry(Op::new, CREATE_BLACKLIST_READ),
+	public void updateAllBlacklists(String machineName) {
+		batchReqs(requireNonNull(machineName), "retrieving blacklists",
+				blrBatch, curry(Op::new, CREATE_BLACKLIST_READ),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> blacklistHandler
 								.writeBlacklistToDB(op.boardId, bl)));
 	}
 
-	private List<Integer> listAllBoards(Connection conn, int machineId) {
-		try (Query q = conn.query(GET_ALL_BOARDS)) {
-			return q.call(machineId).map(integer("board_id")).toList();
+	private static List<Integer> listAllBoards(Connection conn,
+			String machineName) {
+		try (Query machines = conn.query(GET_NAMED_MACHINE);
+				Query boards = conn.query(GET_ALL_BOARDS);
+				Query all = conn.query(GET_ALL_BOARDS_OF_ALL_MACHINES)) {
+			if (machineName == null) {
+				return all.call().map(integer("board_id")).toList();
+			}
+			return machines.call1(machineName).map(integer("machine_id")).map(
+					mid -> boards.call(mid).map(integer("board_id")).toList())
+					.orElse(Collections.emptyList());
 		}
 	}
 

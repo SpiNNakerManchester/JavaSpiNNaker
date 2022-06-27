@@ -368,13 +368,26 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
-	void getAllBoardIds() {
+	void getAllBoards() {
 		try (Query q = c.query(GET_ALL_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
+			});
+		}
+	}
+
+	@Test
+	void getAllBoardsOfAllMachines() {
+		try (Query q = c.query(GET_ALL_BOARDS_OF_ALL_MACHINES)) {
+			assertEquals(0, q.getNumArguments());
+			assertSetEquals(BOARD_COORDS_REQUIRED_COLUMNS,
+					q.getRowColumnNames());
+			c.transaction(() -> {
+				// As long as this doesn't throw, the test passes
+				q.call1().isPresent();
 			});
 		}
 	}
