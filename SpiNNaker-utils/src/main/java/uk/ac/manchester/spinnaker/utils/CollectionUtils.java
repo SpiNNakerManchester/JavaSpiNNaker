@@ -16,14 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.lang.Math.min;
+import static java.util.Collections.unmodifiableCollection;
 import static java.util.EnumSet.noneOf;
 import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 /**
  * Utilities for working with collections. Things that it would be nice if they
@@ -79,5 +86,52 @@ public abstract class CollectionUtils {
 	public static <T, U, V> Function<U, V> curry(BiFunction<T, U, V> fn,
 			T arg) {
 		return u -> fn.apply(arg, u);
+	}
+
+	/**
+	 * Given a list of elements, split it into batches of elements of a given
+	 * size. The final batch might be smaller. Note that this <em>requires</em>
+	 * a list because it uses the {@link List#subList(int, int)} method.
+	 *
+	 * @param <T>
+	 *            The type of the elements of the input list.
+	 * @param batchSize
+	 *            The maximum number of elements in a batch. All but the final
+	 *            batch will have this number of elements; the final batch may
+	 *            have fewer.
+	 * @param input
+	 *            The list to be split into batches.
+	 * @return The batched list. The collections that make up each batch will be
+	 *         unmodifiable, as will the overall collection.
+	 */
+	public static <T> Collection<Collection<T>> batch(int batchSize,
+			List<T> input) {
+		return unmodifiableCollection(range(0,
+				(input.size() + batchSize - 1) / batchSize)
+				.map(i -> i * batchSize)
+				.mapToObj(idx -> unmodifiableCollection(
+						input.subList(idx, min(input.size(), idx + batchSize))))
+				.collect(toList()));
+	}
+
+	/**
+	 * Like {@link Stream#map(Function)}, but for lists/collections.
+	 *
+	 * @param <T>
+	 *            The type of elements of the input list.
+	 * @param <U>
+	 *            The type of elements of the output list.
+	 * @param list
+	 *            The input list.
+	 * @param fun
+	 *            How to map an element.
+	 * @return The output list.
+	 */
+	public static <T, U> List<U> lmap(Collection<T> list, Function<T, U> fun) {
+		return list.stream().map(fun).collect(toList());
+	}
+
+	static {
+		Stream.class.getClass();
 	}
 }

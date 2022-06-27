@@ -16,23 +16,30 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.lang.Thread.currentThread;
 import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.serial;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.batch;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -56,6 +63,8 @@ import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
  */
 @Service
 public class MachineStateControl extends DatabaseAwareBean {
+	private static final Logger log = getLogger(MachineStateControl.class);
+
 	// TODO how long to wait?
 	private static final int BLACKLIST_WAIT_SECS = 15;
 
@@ -389,8 +398,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The blacklist that was transferred, if any.
 	 */
 	public Optional<Blacklist> pushBlacklist(int boardId) {
-		return findId(boardId).flatMap(board -> blacklistHandler
-				.readBlacklistFromDB(boardId).map(bl -> {
+		return findId(boardId)
+				.flatMap(board -> readBlacklistFromDB(board).map(bl -> {
 					try {
 						writeBlacklistToMachine(board, bl);
 						return bl;
@@ -400,18 +409,86 @@ public class MachineStateControl extends DatabaseAwareBean {
 				}));
 	}
 
-	void updateAllBlacklists(int machineId) throws InterruptedException {
-		List<Integer> boards = execute(false, c -> listAllBoards(c, machineId));
+	private static final int BATCH = 24;
 
-		// TODO consider order randomization and retrieving multiple at once
-		for (Integer boardId : boards) {
-			Optional<BoardState> board = findId(boardId);
-			if (!board.isPresent()) {
-				continue;
+	/**
+	 * Ensure that the database has the actual serial numbers of all boards in a
+	 * machine.
+	 *
+	 * @param machineId
+	 *            Which machine to read the serial numbers of.
+	 */
+	void readAllBoardSerialNumbers(int machineId) {
+		// TODO Add a background process to read all the serial IDs on boot
+		batchReqs(machineId, "retrieving serial numbers",
+				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
+	}
+
+	private interface InterruptableConsumer<T> {
+		/**
+		 * Performs this operation on the given argument.
+		 *
+		 * @param t
+		 *            the input argument
+		 * @throws InterruptedException
+		 *             if interrupted
+		 */
+		void accept(T t) throws InterruptedException;
+	}
+
+	/**
+	 * Perform an action for all boards in a machine, batching them as
+	 * necessary. If interrupted, will complete the currently processing batch
+	 * but will not perform further batches.
+	 *
+	 * @param machineId
+	 *            Which machine are we talking about?
+	 * @param action
+	 *            What are we doing (for log messages)?
+	 * @param opGenerator
+	 *            How to generate an individual operation to perform.
+	 * @param opResultsHandler
+	 *            How to process the results of an individual operation.
+	 */
+	private void batchReqs(int machineId, String action,
+			Function<Integer, Op> opGenerator,
+			InterruptableConsumer<Op> opResultsHandler) {
+		List<Integer> boards = execute(false, c -> listAllBoards(c, machineId));
+		for (Collection<Integer> batch : batch(BATCH, boards)) {
+			// TODO more efficient implementation
+			List<Op> ops = lmap(batch, opGenerator);
+			boolean stop = false;
+			for (Op op : ops) {
+				try {
+					opResultsHandler.accept(op);
+				} catch (RuntimeException e) {
+					log.warn("failed while {}", action, e);
+				} catch (InterruptedException e) {
+					log.info("interrupted while {}", action, e);
+					stop = true;
+				}
 			}
-			readBlacklistFromMachine(board.get()).ifPresent(
-					bl -> blacklistHandler.writeBlacklistToDB(boardId, bl));
+			ops.forEach(Op::close);
+			if (stop) {
+				// Mark as interrupted
+				currentThread().interrupt();
+				break;
+			}
 		}
+	}
+
+	/**
+	 * Retrieve all blacklists, parse them, and store them in the DB's model.
+	 *
+	 * @param machineId
+	 *            Which machine to get the blacklists of.
+	 */
+	void updateAllBlacklists(int machineId) {
+		batchReqs(machineId, "retrieving blacklists",
+				curry(Op::new, CREATE_BLACKLIST_READ),
+				op -> op.getResult(serial("data", Blacklist.class))
+						.ifPresent(bl -> blacklistHandler
+								.writeBlacklistToDB(op.boardId, bl)));
 	}
 
 	private List<Integer> listAllBoards(Connection conn, int machineId) {
@@ -471,7 +548,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public void writeBlacklistToMachine(BoardState board, Blacklist blacklist)
 			throws InterruptedException {
 		try (Op op = new Op(CREATE_BLACKLIST_WRITE, board.id, blacklist)) {
-			op.getResult(row -> this); // Dummy result
+			op.completed();
 		}
 	}
 
@@ -490,9 +567,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public String getSerialNumber(BoardState board)
 			throws InterruptedException {
-		// TODO Add a background process to read all the serial IDs on boot
 		try (Op op = new Op(CREATE_SERIAL_READ_REQ, board.id)) {
-			op.getResult(row -> this);
+			op.completed();
 		}
 		// Can now read out of the DB normally
 		return findId(board.id).map(b -> b.bmpSerial).orElse(null);
@@ -508,6 +584,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 		private final Epoch epoch;
 
+		private final int boardId;
+
 		/**
 		 * @param operation
 		 *            The SQL to create the operation to carry out. Must
@@ -516,6 +594,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 *            Values to bind to parameters in the SQL.
 		 */
 		Op(String operation, Object... args) {
+			boardId = ((Integer) args[0]).intValue(); // TODO yuck!
 			epoch = epochs.getBlacklistEpoch();
 			op = execute(conn -> {
 				try (Update readReq = conn.update(operation)) {
@@ -546,20 +625,36 @@ public class MachineStateControl extends DatabaseAwareBean {
 				DataAccessException {
 			Instant end = now().plus(ofSeconds(BLACKLIST_LONG_WAIT_SECS));
 			while (end.isAfter(now())) {
-				epoch.waitForChange(BLACKLIST_WAIT);
 				Optional<T> result = execute(false, conn -> {
 					try (Query getResult =
 							conn.query(GET_COMPLETED_BLACKLIST_OP)) {
-						return getResult.call1(op)
-								.map(this::throwIfFailed)
+						return getResult.call1(op).map(this::throwIfFailed)
 								.map(retriever);
 					}
 				});
 				if (result.isPresent()) {
 					return result;
 				}
+				epoch.waitForChange(BLACKLIST_WAIT);
 			}
 			return Optional.empty();
+		}
+
+		/**
+		 * Wait for the result of the request to be ready, then discard that
+		 * result. Used instead of {@link #getResult(Function)} when the value
+		 * of the result is not interesting at all.
+		 *
+		 * @throws InterruptedException
+		 *             If the thread is interrupted.
+		 * @throws BlacklistException
+		 *             If the BMP throws an exception.
+		 * @throws DataAccessException
+		 *             If there is a problem accessing the database.
+		 */
+		void completed() throws DataAccessException, BlacklistException,
+				InterruptedException {
+			getResult(row -> this);
 		}
 
 		/**
