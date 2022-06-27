@@ -74,6 +74,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private static final Duration BLACKLIST_WAIT =
 			Duration.ofSeconds(BLACKLIST_WAIT_SECS);
 
+	/** Number of serial read requests to batch together. */
+	private static final int SER_BATCH = 24;
+
+	/** Number of blacklist read requests to batch together. */
+	private static final int BLR_BATCH = 6;
+
 	@Autowired
 	private Epochs epochs;
 
@@ -372,44 +378,39 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * Retrieve the blacklist for the given board from the board and store it in
 	 * the database.
 	 *
-	 * @param boardId
+	 * @param board
 	 *            The board to get the blacklist of.
 	 * @return The blacklist that was transferred, if any.
 	 */
-	public Optional<Blacklist> pullBlacklist(int boardId) {
-		return findId(boardId).flatMap(board -> {
-			try {
-				return readBlacklistFromMachine(board).map(bl -> {
-					blacklistHandler.writeBlacklistToDB(boardId, bl);
-					return bl;
-				});
-			} catch (InterruptedException e) {
-				return Optional.empty();
-			}
-		});
+	public Optional<Blacklist> pullBlacklist(BoardState board) {
+		try {
+			return readBlacklistFromMachine(board).map(bl -> {
+				blacklistHandler.writeBlacklistToDB(board.id, bl);
+				return bl;
+			});
+		} catch (InterruptedException e) {
+			return Optional.empty();
+		}
 	}
 
 	/**
 	 * Take the blacklist for the given board in the database and write it to
 	 * the board.
 	 *
-	 * @param boardId
+	 * @param board
 	 *            The board to set the blacklist of.
 	 * @return The blacklist that was transferred, if any.
 	 */
-	public Optional<Blacklist> pushBlacklist(int boardId) {
-		return findId(boardId)
-				.flatMap(board -> readBlacklistFromDB(board).map(bl -> {
-					try {
-						writeBlacklistToMachine(board, bl);
-						return bl;
-					} catch (InterruptedException e) {
-						return null;
-					}
-				}));
+	public Optional<Blacklist> pushBlacklist(BoardState board) {
+		return readBlacklistFromDB(board).map(bl -> {
+			try {
+				writeBlacklistToMachine(board, bl);
+				return bl;
+			} catch (InterruptedException e) {
+				return null;
+			}
+		});
 	}
-
-	private static final int BATCH = 24;
 
 	/**
 	 * Ensure that the database has the actual serial numbers of all boards in a
@@ -420,7 +421,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	void readAllBoardSerialNumbers(int machineId) {
 		// TODO Add a background process to read all the serial IDs on boot
-		batchReqs(machineId, "retrieving serial numbers",
+		batchReqs(machineId, "retrieving serial numbers", SER_BATCH,
 				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
 	}
 
@@ -445,16 +446,19 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            Which machine are we talking about?
 	 * @param action
 	 *            What are we doing (for log messages)?
+	 * @param batchSize
+	 *            How many requests to handle at once in a batch of requests to
+	 *            the back end engine.
 	 * @param opGenerator
 	 *            How to generate an individual operation to perform.
 	 * @param opResultsHandler
 	 *            How to process the results of an individual operation.
 	 */
-	private void batchReqs(int machineId, String action,
+	private void batchReqs(int machineId, String action, int batchSize,
 			Function<Integer, Op> opGenerator,
 			InterruptableConsumer<Op> opResultsHandler) {
 		List<Integer> boards = execute(false, c -> listAllBoards(c, machineId));
-		for (Collection<Integer> batch : batch(BATCH, boards)) {
+		for (Collection<Integer> batch : batch(batchSize, boards)) {
 			// TODO more efficient implementation
 			List<Op> ops = lmap(batch, opGenerator);
 			boolean stop = false;
@@ -484,7 +488,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *            Which machine to get the blacklists of.
 	 */
 	void updateAllBlacklists(int machineId) {
-		batchReqs(machineId, "retrieving blacklists",
+		batchReqs(machineId, "retrieving blacklists", BLR_BATCH,
 				curry(Op::new, CREATE_BLACKLIST_READ),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> blacklistHandler

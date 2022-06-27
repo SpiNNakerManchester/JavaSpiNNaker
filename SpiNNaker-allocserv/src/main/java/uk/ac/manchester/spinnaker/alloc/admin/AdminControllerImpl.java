@@ -676,11 +676,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		if (model.containsAttribute("fetch")) {
 			log.info("pulling blacklist from board ({},{},{})", board.x,
 					board.y, board.z);
-			machineController.pullBlacklist(board.id);
+			machineController.pullBlacklist(board);
 		} else if (model.containsAttribute("push")) {
 			log.info("pushing blacklist to board ({},{},{})", board.x, board.y,
 					board.z);
-			machineController.pushBlacklist(board.id);
+			machineController.pushBlacklist(board);
 		}
 		// FIXME add in blacklist manipulators here
 		addBlacklistData(board, model);
