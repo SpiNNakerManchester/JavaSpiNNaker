@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<log4j.version>2.17.2</log4j.version>
 
 		<spring.version>5.3.21</spring.version>
-		<spring.boot.version>2.7.0</spring.boot.version>
+		<spring.boot.version>2.7.1</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -53,12 +53,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		  Failure to do this leads to strange misbehaviour in tooltips when
 		  editing application.yml
 		-->
-		<spring.security.version>5.7.1</spring.security.version>
+		<spring.security.version>5.7.2</spring.security.version>
 
 		<cxf.version>3.5.2</cxf.version>
 		<jackson.version>2.13.3</jackson.version>
 		<sqlite.version>3.36.0.3</sqlite.version>
-		<keycloak.version>18.0.1</keycloak.version>
+		<keycloak.version>18.0.2</keycloak.version>
 		<swagger.version>4.11.1</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.2</jython.version>
