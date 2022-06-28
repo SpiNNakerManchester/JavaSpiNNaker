@@ -652,10 +652,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 		if (board.isEnabledDefined()) {
 			// We're doing a set
-			log.info(
-					"setting board-allocatable state for board "
-							+ "({},{},{}) to {}",
-					bs.x, bs.y, bs.z, board.isEnabled());
+			log.info("setting board-allocatable state for board {} to {}", bs,
+					board.isEnabled());
 			bs.setState(board.isEnabled());
 			spalloc.purgeDownCache();
 		}
@@ -674,12 +672,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		BoardState board = readAndRememberBoardState(model);
 
 		if (model.containsAttribute("fetch")) {
-			log.info("pulling blacklist from board ({},{},{})", board.x,
-					board.y, board.z);
+			log.info("pulling blacklist from board {}", board);
 			machineController.pullBlacklist(board);
 		} else if (model.containsAttribute("push")) {
-			log.info("pushing blacklist to board ({},{},{})", board.x, board.y,
-					board.z);
+			log.info("pushing blacklist to board {}", board);
 			machineController.pushBlacklist(board);
 		}
 		// FIXME add in blacklist manipulators here

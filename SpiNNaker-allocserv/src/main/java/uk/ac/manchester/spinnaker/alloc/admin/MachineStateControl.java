@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
+import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
@@ -218,6 +219,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 					return q.call(id).map(BoardIssueReport::new).toList();
 				}
 			});
+		}
+
+		@Override
+		public String toString() {
+			return format("(%d,%d,%d)", x, y, z);
 		}
 	}
 
