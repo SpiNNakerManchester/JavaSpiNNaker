@@ -181,7 +181,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	public Optional<Machine> getMachine(String name,
 			boolean allowOutOfService) {
-		return execute(false,
+		return executeRead(
 				conn -> getMachine(name, allowOutOfService, conn).map(m -> m));
 	}
 
@@ -283,7 +283,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public Jobs getJobs(boolean deleted, int limit, int start) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			JobCollection jc = new JobCollection(epochs.getJobsEpoch());
 			if (deleted) {
 				try (Query jobs = conn.query(GET_JOB_IDS)) {
@@ -300,7 +300,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public List<JobListEntryRecord> listJobs(Permit permit) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (Query listLiveJobs = conn.query(LIST_LIVE_JOBS);
 					Query countPoweredBoards =
 							conn.query(COUNT_POWERED_BOARDS)) {
@@ -337,7 +337,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<Job> getJob(Permit permit, int id) {
-		return execute(false, conn -> getJob(id, conn).map(j -> (Job) j));
+		return executeRead(conn -> getJob(id, conn).map(j -> (Job) j));
 	}
 
 	private Optional<JobImpl> getJob(int id, Connection conn) {
@@ -1241,8 +1241,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (isNull(root)) {
 				return Optional.empty();
 			}
-			return execute(false,
-					conn -> Optional.of(new SubMachineImpl(conn)));
+			return executeRead(conn -> Optional.of(new SubMachineImpl(conn)));
 		}
 
 		@Override

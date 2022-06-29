@@ -70,7 +70,7 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *            If database access fails.
 	 */
 	public Optional<Blacklist> readBlacklistFromDB(int boardId) {
-		return execute(false, conn -> readBlacklistFromDB(conn, boardId));
+		return executeRead(conn -> readBlacklistFromDB(conn, boardId));
 	}
 
 	private Optional<Blacklist> readBlacklistFromDB(Connection conn,

@@ -161,7 +161,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * @return The state of the board.
 		 */
 		public boolean getState() {
-			return execute(false, conn -> {
+			return executeRead(conn -> {
 				try (Query q = conn.query(GET_FUNCTIONING_FIELD)) {
 					return q.call1(id).map(bool("functioning")).orElse(false);
 				}
@@ -178,7 +178,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 		/** @return What job has been allocated to the board? */
 		public Optional<Integer> getAllocatedJob() {
-			return execute(false, conn -> {
+			return executeRead(conn -> {
 				try (Query q = conn.query(GET_BOARD_JOB)) {
 					return q.call1(id).map(integer("allocated_job"));
 				}
@@ -187,7 +187,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 		/** @return Is the board switched on? */
 		public boolean getPower() {
-			return execute(false, conn -> {
+			return executeRead(conn -> {
 				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
 					return q.call1(id).map(bool("board_power")).orElse(false);
 				}
@@ -196,7 +196,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 		/** @return When was the board last switched on? */
 		public Optional<Instant> getPowerOnTime() {
-			return execute(false, conn -> {
+			return executeRead(conn -> {
 				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
 					return q.call1(id).map(instant("power_on_timestamp"));
 				}
@@ -205,7 +205,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 		/** @return When was the board last switched off? */
 		public Optional<Instant> getPowerOffTime() {
-			return execute(false, conn -> {
+			return executeRead(conn -> {
 				try (Query q = conn.query(GET_BOARD_POWER_INFO)) {
 					return q.call1(id).map(instant("power_off_timestamp"));
 				}
@@ -214,7 +214,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 		/** @return What issues have been logged against the board? */
 		public List<BoardIssueReport> getReports() {
-			return execute(false, conn -> {
+			return executeRead(conn -> {
 				try (Query q = conn.query(GET_BOARD_REPORTS)) {
 					return q.call(id).map(BoardIssueReport::new).toList();
 				}
@@ -236,7 +236,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findId(int id) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_ID)) {
 				return q.call1(id).map(BoardState::new);
 			}
@@ -257,7 +257,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findTriad(String machine, int x, int y, int z) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_XYZ)) {
 				return q.call1(machine, x, y, z).map(BoardState::new);
 			}
@@ -279,7 +279,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<BoardState> findPhysical(String machine, int c, int f,
 			int b) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_CFB)) {
 				return q.call1(machine, c, f, b).map(BoardState::new);
 			}
@@ -296,7 +296,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return Board state manager
 	 */
 	public Optional<BoardState> findIP(String machine, String address) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (Query q = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 				return q.call1(machine, address).map(BoardState::new);
 			}
@@ -307,7 +307,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @return The mapping from machine names+IDs to tags.
 	 */
 	public List<MachineTagging> getMachineTagging() {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (Query getMachines = conn.query(GET_ALL_MACHINES);
 					Query getTags = conn.query(GET_TAGS)) {
 				List<MachineTagging> infos = new ArrayList<>();
@@ -326,7 +326,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *         in existing machines, categorised by machine.
 	 */
 	public Map<String, List<BoardIssueReport>> getMachineReports() {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (Query getMachines = conn.query(GET_ALL_MACHINES);
 					Query getMachineReports = conn.query(GET_MACHINE_REPORTS)) {
 				return getMachines.call(true).toMap(string("machine_name"),
@@ -492,8 +492,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private void batchReqs(String machineName, String action, int batchSize,
 			Function<Integer, Op> opGenerator,
 			InterruptableConsumer<Op> opResultsHandler) {
-		List<Integer> boards =
-				execute(false, c -> listAllBoards(c, machineName));
+		List<Integer> boards = executeRead(c -> listAllBoards(c, machineName));
 		for (Collection<Integer> batch : batch(batchSize, boards)) {
 			// TODO more efficient implementation
 			List<Op> ops = lmap(batch, opGenerator);
@@ -673,7 +672,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				DataAccessException {
 			Instant end = now().plus(ofSeconds(BLACKLIST_LONG_WAIT_SECS));
 			while (end.isAfter(now())) {
-				Optional<T> result = execute(false, conn -> {
+				Optional<T> result = executeRead(conn -> {
 					try (Query getResult =
 							conn.query(GET_COMPLETED_BLACKLIST_OP)) {
 						return getResult.call1(op).map(this::throwIfFailed)

@@ -54,6 +54,9 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 	 * {@code operation} completes normally (and this isn't a nested use), the
 	 * transaction commits. If an exception is thrown, the transaction is rolled
 	 * back. The connection is closed up in any case. A write lock is used.
+	 * <p>
+	 * It is the caller's responsibility to ensure that the correct transaction
+	 * type is used.
 	 *
 	 * @param <T>
 	 *            The type of the result of {@code operation}
@@ -68,26 +71,27 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 	}
 
 	/**
-	 * A connection manager and nestable transaction runner. If the
+	 * A connection manager and nestable read-only transaction runner (it is an
+	 * error to do an {@code UPDATE} using this transaction). If the
 	 * {@code operation} completes normally (and this isn't a nested use), the
 	 * transaction commits. If an exception is thrown, the transaction is rolled
-	 * back. The connection is closed up in any case.
+	 * back. The connection is closed up in any case. A read lock (i.e., shared)
+	 * is used.
+	 * <p>
+	 * It is the caller's responsibility to ensure that the correct transaction
+	 * type is used; read locks <em>may not</em> be upgraded to write locks (due
+	 * to deadlock risk).
 	 *
 	 * @param <T>
 	 *            The type of the result of {@code operation}
-	 * @param lockForWriting
-	 *            Whether to lock for writing. Multiple read locks can be held
-	 *            at once, but only one write lock. Locks <em>cannot</em> be
-	 *            upgraded (because that causes deadlocks).
 	 * @param operation
 	 *            The operation to run
 	 * @return the value returned by {@code operation}
 	 * @throws RuntimeException
 	 *             If something goes wrong with the contained code.
 	 */
-	protected <T> T execute(boolean lockForWriting,
-			ConnectedWithResult<T> operation) {
-		return db.execute(lockForWriting, operation);
+	protected <T> T executeRead(ConnectedWithResult<T> operation) {
+		return db.execute(false, operation);
 	}
 
 	/**
