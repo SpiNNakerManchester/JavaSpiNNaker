@@ -77,10 +77,16 @@ public final class Constants {
 	public static final int APP_PTR_TABLE_HEADER_SIZE = INT_SIZE * 2;
 
 	/**
+	 * The size of a Data Specification region description, in bytes
+	 */
+	public static final int APP_PTR_TABLE_REGION_SIZE = INT_SIZE * 3;
+
+	/**
 	 * The size of the Data Specification table, in bytes.
 	 */
 	public static final int APP_PTR_TABLE_BYTE_SIZE =
-			APP_PTR_TABLE_HEADER_SIZE + MAX_MEM_REGIONS * INT_SIZE * 3;
+			APP_PTR_TABLE_HEADER_SIZE
+			+ (MAX_MEM_REGIONS * APP_PTR_TABLE_REGION_SIZE);
 
 	// Constants used by DSG command encoding: payload length field
 
