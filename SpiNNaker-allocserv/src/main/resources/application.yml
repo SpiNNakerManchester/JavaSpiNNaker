@@ -232,6 +232,17 @@ spalloc:
     notify-wait-time: 1m
     # Jobs' default keepalive property duration
     default-keepalive: 1m
+  state-control:
+    # Settings relating to overall system (admin) state
+    
+    # How long to wait between polls of the BMP controller 
+    blacklist-poll: 15s
+    # How long to wait for a BMP controller operation to complete 
+    blacklist-timeout: 120s
+    # Max number of board serial numbers to read in a batch 
+    serial-read-batch-size: 24
+    # Max number of board blacklists to read in a batch 
+    blacklist-read-batch-size: 6
 
 ---
 # Only enable the OpenID Connect stuff in production. This is because of the

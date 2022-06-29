@@ -18,9 +18,9 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
-import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.instant;
@@ -31,7 +31,6 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.batch;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,17 +40,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistIO;
@@ -73,23 +72,6 @@ import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 public class MachineStateControl extends DatabaseAwareBean {
 	private static final Logger log = getLogger(MachineStateControl.class);
 
-	// TODO how long to wait?
-	private static final int BLACKLIST_WAIT_SECS = 15;
-
-	// TODO how long to wait?
-	private static final int BLACKLIST_LONG_WAIT_SECS = 60;
-
-	private static final Duration BLACKLIST_WAIT =
-			Duration.ofSeconds(BLACKLIST_WAIT_SECS);
-
-	/** Number of serial read requests to batch together. */
-	@Value("24")
-	private int serBatch;
-
-	/** Number of blacklist read requests to batch together. */
-	@Value("6")
-	private int blrBatch;
-
 	@Autowired
 	private Epochs epochs;
 
@@ -99,11 +81,18 @@ public class MachineStateControl extends DatabaseAwareBean {
 	@Autowired
 	private ScheduledExecutorService executor;
 
+	@Autowired
+	private SpallocProperties properties;
+
+	private StateControlProperties props;
+
 	@PostConstruct
 	private void launchBackground() throws InterruptedException {
+		props = properties.getStateControl();
 		// After a minute, start retrieving board serial numbers
 		executor.schedule((Runnable) this::readAllBoardSerialNumbers,
-				BLACKLIST_LONG_WAIT_SECS, TimeUnit.SECONDS);
+				props.getBlacklistTimeout().getSeconds(), SECONDS);
+		// Why can't I pass a Duration directly there?
 	}
 
 	/**
@@ -446,8 +435,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public void readAllBoardSerialNumbers(String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving serial numbers",
-				serBatch, curry(Op::new, CREATE_SERIAL_READ_REQ),
-				Op::completed);
+				props.getSerialReadBatchSize(),
+				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
 	}
 
 	/**
@@ -455,7 +444,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * boards.
 	 */
 	private void readAllBoardSerialNumbers() {
-		batchReqs(null, "retrieving serial numbers", serBatch,
+		batchReqs(null, "retrieving serial numbers",
+				props.getSerialReadBatchSize(),
 				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
 	}
 
@@ -494,7 +484,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 			InterruptableConsumer<Op> opResultsHandler) {
 		List<Integer> boards = executeRead(c -> listAllBoards(c, machineName));
 		for (Collection<Integer> batch : batch(batchSize, boards)) {
-			// TODO more efficient implementation
+			/*
+			 * Theoretically, this could be more efficiently done. Practically,
+			 * a proper multi-op scheme is really complex, even before
+			 * considering how to handle failure modes! This isn't a performance
+			 * sensitive part of the code.
+			 */
 			List<Op> ops = lmap(batch, opGenerator);
 			boolean stop = false;
 			for (Op op : ops) {
@@ -524,7 +519,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public void updateAllBlacklists(String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving blacklists",
-				blrBatch, curry(Op::new, CREATE_BLACKLIST_READ),
+				props.getBlacklistReadBatchSize(),
+				curry(Op::new, CREATE_BLACKLIST_READ),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> blacklistHandler
 								.writeBlacklistToDB(op.boardId, bl)));
@@ -670,7 +666,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		<T> Optional<T> getResult(Function<Row, T> retriever)
 				throws InterruptedException, BlacklistException,
 				DataAccessException {
-			Instant end = now().plus(ofSeconds(BLACKLIST_LONG_WAIT_SECS));
+			Instant end = now().plus(props.getBlacklistTimeout());
 			while (end.isAfter(now())) {
 				Optional<T> result = executeRead(conn -> {
 					try (Query getResult =
@@ -682,7 +678,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				if (result.isPresent()) {
 					return result;
 				}
-				epoch.waitForChange(BLACKLIST_WAIT);
+				epoch.waitForChange(props.getBlacklistPoll());
 			}
 			return Optional.empty();
 		}
