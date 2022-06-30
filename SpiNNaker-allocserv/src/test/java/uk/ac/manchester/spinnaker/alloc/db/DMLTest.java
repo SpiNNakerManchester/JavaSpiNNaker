@@ -836,7 +836,6 @@ class DMLTest extends SQLQueries {
 	@Test
 	void createSerialReadReq() {
 		assumeWritable(c);
-		Blacklist bl = dummyBlacklist();
 		try (Update u = c.update(CREATE_SERIAL_READ_REQ)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {

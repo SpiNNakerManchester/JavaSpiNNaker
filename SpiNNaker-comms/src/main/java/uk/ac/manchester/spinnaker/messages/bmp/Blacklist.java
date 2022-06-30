@@ -52,7 +52,7 @@ import uk.ac.manchester.spinnaker.machine.Direction;
  *
  * @author Donal Fellows
  */
-public class Blacklist implements Serializable {
+public final class Blacklist implements Serializable {
 	private static final long serialVersionUID = -7759940789892168209L;
 
 	private static final Logger log = getLogger(Blacklist.class);
@@ -216,5 +216,28 @@ public class Blacklist implements Serializable {
 	/** @return The raw blacklist data. Read only. */
 	public ByteBuffer getRawData() {
 		return rawData;
+	}
+
+	private static final int MAGIC = 0x600dBeef;
+
+	@Override
+	public int hashCode() {
+		return MAGIC ^ chips.hashCode() ^ cores.hashCode() ^ links.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (object != null && object instanceof Blacklist) {
+			return equals((Blacklist) object);
+		}
+		return false;
+	}
+
+	private boolean equals(Blacklist other) {
+		return chips.equals(other.chips) && cores.equals(other.cores)
+				&& links.equals(other.links);
 	}
 }

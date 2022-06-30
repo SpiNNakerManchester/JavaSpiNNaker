@@ -25,12 +25,15 @@ import static java.util.stream.Collectors.toSet;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,6 +52,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
@@ -60,6 +64,8 @@ import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
  */
 @Component
 public class BlacklistIO extends DatabaseAwareBean {
+	private static final SpiNNakerTriadGeometry GEOM = getSpinn5Geometry();
+
 	/**
 	 * Read a blacklist from the database.
 	 *
@@ -154,16 +160,34 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 * Read a blacklist from a file.
 	 *
 	 * @param file
-	 *           The file to read from.
+	 *            The file to read from.
 	 * @return The parsed blacklist.
 	 * @throws IOException
-	 *           If the file can't be read from.
+	 *             If the file can't be read from.
 	 * @throws IllegalArgumentException
-	 *           If the file is badly formatted.
+	 *             If the file is badly formatted.
 	 */
 	public Blacklist readBlacklistFile(File file) throws IOException {
 		try (FileReader r = new FileReader(file);
 				BufferedReader br = new BufferedReader(r)) {
+			return readBlacklist(br);
+		}
+	}
+
+	/**
+	 * Read a blacklist from a string.
+	 *
+	 * @param blacklistText
+	 *            The string to parse.
+	 * @return The parsed blacklist.
+	 * @throws IOException
+	 *             If the string can't be read from. (Not expected.)
+	 * @throws IllegalArgumentException
+	 *             If the string is badly formatted.
+	 */
+	public Blacklist parseBlacklist(String blacklistText) throws IOException {
+		try (BufferedReader br =
+				new BufferedReader(new StringReader(blacklistText))) {
 			return readBlacklist(br);
 		}
 	}
@@ -244,42 +268,60 @@ public class BlacklistIO extends DatabaseAwareBean {
 			Map<ChipLocation, Set<Direction>> deadLinks) {
 		Matcher m = CHIP_PATTERN.matcher(line);
 		if (!m.matches()) {
-			return;
+			throw new IllegalArgumentException("bad line: " + line);
 		}
 		int x = parseInt(m.group("x"));
 		int y = parseInt(m.group("y"));
 		ChipLocation chip = new ChipLocation(x, y);
+		if (!GEOM.singleBoard().contains(chip)) {
+			throw new IllegalArgumentException("bad chip coords: " + line);
+		}
 		String rest = m.group("rest");
 
+		ChipLocation dead = null;
 		Set<Integer> cores = null;
-		m = CORE_PATTERN.matcher(rest);
-		if (m.find()) {
-			cores = parseCommaSeparatedSet(m.group("cores"));
-			rest = deleteMatched(m);
-		}
-
 		Set<Direction> links = null;
-		m = LINK_PATTERN.matcher(rest);
-		if (m.find()) {
-			links = parseCommaSeparatedSet(m.group("links"), Direction::byId,
-					Direction.class);
-			rest = deleteMatched(m);
+
+		// Look for patterns at start of line while we can
+		while (true) {
+			m = CORE_PATTERN.matcher(rest);
+			if (m.find() && cores == null) {
+				cores = parseCommaSeparatedSet(m.group("cores"));
+				cores.forEach(c -> {
+					if (c < 0 || c >= PROCESSORS_PER_CHIP) {
+						throw new IllegalArgumentException(
+								"bad core number: " + line);
+					}
+				});
+				rest = deleteMatched(m);
+				continue;
+			}
+
+			m = LINK_PATTERN.matcher(rest);
+			if (m.find() && links == null) {
+				links = parseCommaSeparatedSet(m.group("links"),
+						Direction::byId, Direction.class);
+				rest = deleteMatched(m);
+				continue;
+			}
+
+			m = DEAD_PATTERN.matcher(rest);
+			if (m.find() && dead == null) {
+				dead = chip;
+				rest = deleteMatched(m);
+				continue;
+			}
+
+			// All done, or error
+			if (!rest.isEmpty()) {
+				// Bad line
+				throw new IllegalArgumentException("bad line: " + line);
+			}
+			break;
 		}
 
-		boolean dead = false;
-		m = DEAD_PATTERN.matcher(rest);
-		if (m.find()) {
-			dead = true;
-			rest = deleteMatched(m);
-		}
-
-		if (!rest.isEmpty()) {
-			// Bad line
-			throw new IllegalArgumentException("bad line: " + line);
-		}
-
-		if (dead) {
-			deadChips.add(chip);
+		if (dead != null) {
+			deadChips.add(dead);
 		} else {
 			if (cores != null && !cores.isEmpty()) {
 				deadCores.put(chip, cores);
