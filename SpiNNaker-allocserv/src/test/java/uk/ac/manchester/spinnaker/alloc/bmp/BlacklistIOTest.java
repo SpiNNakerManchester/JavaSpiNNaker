@@ -24,11 +24,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -39,6 +44,17 @@ class BlacklistIOTest {
 	@SafeVarargs
 	private static <T> Set<T> set(T... args) {
 		return new HashSet<>(Arrays.asList(args));
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Map<ChipLocation, Set<T>> map(Object... args) {
+		Map<ChipLocation, Set<T>> map = new HashMap<>();
+		for (int i = 0; i < args.length; i += 2) {
+			ChipLocation key = (ChipLocation) args[i];
+			Set<T> value = (Set<T>) args[i + 1];
+			map.put(key, value);
+		}
+		return map;
 	}
 
 	@Test
@@ -268,5 +284,24 @@ class BlacklistIOTest {
 			blio.parseBlacklist(blData);
 		});
 		assertEquals("Index 42 out of bounds for length 6", e.getMessage());
+	}
+
+	@Test
+	void readBlacklistFromFile() throws IOException {
+		String filename =
+				"uk/ac/manchester/spinnaker/alloc/bmp/example.blacklist";
+		File blf = new File(BlacklistIOTest.class.getClassLoader()
+				.getResource(filename).getFile());
+
+		BlacklistIO blio = new BlacklistIO();
+		Blacklist bl = blio.readBlacklistFile(blf);
+
+		assertEquals(singleton(new ChipLocation(1, 1)), bl.getChips());
+		assertEquals(map(new ChipLocation(1, 0), set(2, 3),
+				new ChipLocation(7, 7), set(10, 17)), bl.getCores());
+		assertEquals(
+				map(new ChipLocation(1, 0), set(SOUTHWEST, SOUTH),
+						new ChipLocation(7, 7), set(NORTHEAST, SOUTH)),
+				bl.getLinks());
 	}
 }
