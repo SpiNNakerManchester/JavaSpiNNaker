@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.storage.Parameter;
 @SuppressWarnings({
 	"checkstyle:MagicNumber", "checkstyle:ParameterNumber"
 })
-abstract class Cfg {
+public abstract class Cfg {
 	/** Machine ID. */
 	static final int MACHINE = 1000;
 
@@ -44,7 +44,7 @@ abstract class Cfg {
 	static final String BMP_ADDR = "1.1.1.1";
 
 	/** Board ID. */
-	static final int BOARD = 3000;
+	public static final int BOARD = 3000;
 
 	/** Board IP address. */
 	static final String BOARD_ADDR = "2.2.2.2";
@@ -163,7 +163,7 @@ abstract class Cfg {
 	 * @param c
 	 *            Database connection
 	 */
-	static void setupDB1(Connection c) {
+	public static void setupDB1(Connection c) {
 		// A simple machine
 		makeMachine(c, 1, 1, 1);
 		// Add one board to the machine

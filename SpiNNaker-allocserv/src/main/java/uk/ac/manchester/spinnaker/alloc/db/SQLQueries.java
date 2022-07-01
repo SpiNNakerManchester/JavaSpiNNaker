@@ -1790,6 +1790,10 @@ public abstract class SQLQueries {
 	 *
 	 * @see BlacklistIO
 	 */
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("p")
 	protected static final String ADD_BLACKLISTED_CORE =
 			"WITH args(board_id, x, y, p) AS (VALUES(:board_id, :x, :y, :p)),"
 					+ "m(model) AS (SELECT board_model FROM machines "
@@ -1808,6 +1812,10 @@ public abstract class SQLQueries {
 	 *
 	 * @see BlacklistIO
 	 */
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("direction")
 	protected static final String ADD_BLACKLISTED_LINK =
 			"WITH args(board_id, x, y, dir) AS ("
 					+ "VALUES(:board_id, :x, :y, :direction)),"

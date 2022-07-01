@@ -73,13 +73,24 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *            The ID of the board.
 	 * @return The blacklist, if one is defined.
 	 * @throws DataAccessException
-	 *            If database access fails.
+	 *             If database access fails.
 	 */
 	public Optional<Blacklist> readBlacklistFromDB(int boardId) {
 		return executeRead(conn -> readBlacklistFromDB(conn, boardId));
 	}
 
-	private Optional<Blacklist> readBlacklistFromDB(Connection conn,
+	/**
+	 * Read a blacklist from the database.
+	 *
+	 * @param conn
+	 *            The database connection.
+	 * @param boardId
+	 *            The ID of the board.
+	 * @return The blacklist, if one is defined.
+	 * @throws DataAccessException
+	 *             If database access fails.
+	 */
+	final Optional<Blacklist> readBlacklistFromDB(Connection conn,
 			int boardId) {
 		try (Query blChips = conn.query(GET_BLACKLISTED_CHIPS);
 				Query blCores = conn.query(GET_BLACKLISTED_CORES);

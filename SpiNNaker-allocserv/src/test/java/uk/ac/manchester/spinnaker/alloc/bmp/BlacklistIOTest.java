@@ -28,6 +28,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
@@ -61,7 +63,9 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
@@ -403,14 +407,137 @@ class BlacklistIOTest extends SQLQueries {
 			}
 		}
 
-		private Object setupDB1(Connection c) {
-			// TODO Auto-generated method stub
-			return this;
+		private void checkAndRollback(Connected act) {
+			db.executeVoid(c -> {
+				try {
+					act.act(c);
+				} finally {
+					c.rollback();
+				}
+			});
 		}
 
 		@Test
-		void readDB() {
-			// FIXME
+		void readDBNoBlacklistPresent() {
+			checkAndRollback(c -> {
+				assertFalse(blio.readBlacklistFromDB(BOARD).isPresent());
+			});
+		}
+
+		@Test
+		void readDBWithBlacklistedChipPresent() {
+			checkAndRollback(c -> {
+				try (Update u = c.update(ADD_BLACKLISTED_CHIP)) {
+					assertEquals(1, u.call(BOARD, 1, 1));
+				}
+
+				Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(new Blacklist(set(C11), emptyMap(), emptyMap()),
+						bl);
+			});
+		}
+
+		@Test
+		void readDBWithBlacklistedChipsPresent() {
+			checkAndRollback(c -> {
+				try (Update u = c.update(ADD_BLACKLISTED_CHIP)) {
+					assertEquals(1, u.call(BOARD, 1, 0));
+					assertEquals(1, u.call(BOARD, 0, 1));
+				}
+
+				Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(
+						new Blacklist(set(C01, C10), emptyMap(), emptyMap()),
+						bl);
+			});
+		}
+
+		@Test
+		void readDBWithBlacklistedCorePresent() {
+			checkAndRollback(c -> {
+				try (Update u = c.update(ADD_BLACKLISTED_CORE)) {
+					assertEquals(1, u.call(BOARD, 1, 1, 15));
+				}
+
+				Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(
+						new Blacklist(set(), map(C11, set(15)), emptyMap()),
+						bl);
+			});
+		}
+
+		@Test
+		void readDBWithBlacklistedCoresPresent() {
+			checkAndRollback(c -> {
+				try (Update u = c.update(ADD_BLACKLISTED_CORE)) {
+					assertEquals(1, u.call(BOARD, 0, 1, 16));
+					assertEquals(1, u.call(BOARD, 1, 0, 14));
+				}
+
+				Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(new Blacklist(set(),
+						map(C01, set(16), C10, set(14)), emptyMap()), bl);
+			});
+		}
+
+		@Test
+		void readDBWithBlacklistedLinkPresent() {
+			checkAndRollback(c -> {
+				try (Update u = c.update(ADD_BLACKLISTED_LINK)) {
+					assertEquals(1, u.call(BOARD, 1, 1, WEST));
+				}
+
+				Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(
+						new Blacklist(set(), emptyMap(), map(C11, set(WEST))),
+						bl);
+			});
+		}
+
+		@Test
+		void readDBWithBlacklistedLinksPresent() {
+			checkAndRollback(c -> {
+				try (Update u = c.update(ADD_BLACKLISTED_LINK)) {
+					assertEquals(1, u.call(BOARD, 0, 1, NORTH));
+					assertEquals(1, u.call(BOARD, 1, 0, SOUTH));
+				}
+
+				Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(new Blacklist(set(), emptyMap(),
+						map(C01, set(NORTH), C10, set(SOUTH))), bl);
+			});
+		}
+
+		@Test
+		void readDBWithMultipleBlacklistStuffPresent() {
+			checkAndRollback(c -> {
+				try (Update chip = c.update(ADD_BLACKLISTED_CHIP);
+						Update core = c.update(ADD_BLACKLISTED_CORE);
+						Update link = c.update(ADD_BLACKLISTED_LINK)) {
+					assertEquals(1, chip.call(BOARD, 1, 0));
+					assertEquals(1, chip.call(BOARD, 0, 1));
+					assertEquals(1, core.call(BOARD, 0, 2, 16));
+					assertEquals(1, core.call(BOARD, 2, 0, 14));
+					assertEquals(1, link.call(BOARD, 0, 3, NORTH));
+					assertEquals(1, link.call(BOARD, 3, 0, SOUTH));
+				}
+
+				Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(
+						new Blacklist(set(C10, C01),
+								map(new ChipLocation(0, 2), set(16),
+										new ChipLocation(2, 0), set(14)),
+								map(new ChipLocation(0, 3), set(NORTH),
+										new ChipLocation(3, 0), set(SOUTH))),
+						bl);
+			});
 		}
 	}
 }
