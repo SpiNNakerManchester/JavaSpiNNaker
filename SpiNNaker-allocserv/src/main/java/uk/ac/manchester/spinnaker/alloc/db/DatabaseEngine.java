@@ -61,6 +61,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -325,6 +326,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param properties
 	 *            The application configuration.
+	 * @throws IllegalStateException
+	 *             If the database and the tombstone database are the same file.
+	 *             This is thrown hard here because otherwise you get the
+	 *             <em>weirdest</em> and most misleading error out of SQLite.
+	 *             The system won't work, so might as well make it very clear
+	 *             immediately.
 	 */
 	@Autowired
 	public DatabaseEngine(SpallocProperties properties) {
@@ -332,6 +339,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				"a database file must be given").getAbsoluteFile().toPath();
 		tombstoneFile = requireNonNull(properties.getHistoricalData().getPath(),
 				"an historical database file must be given").getAbsolutePath();
+		if (dbPath.equals(Paths.get(tombstoneFile))) {
+			throw new IllegalStateException(
+					"tombstone DB is same as main DB (" + dbPath + ")");
+		}
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
 		props = properties.getSqlite();
 		log.info("will manage database at {}", dbPath);

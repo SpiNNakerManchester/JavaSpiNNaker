@@ -16,11 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
+import static java.nio.file.Files.delete;
+import static java.nio.file.Files.exists;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
@@ -32,18 +36,71 @@ import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
-class BlacklistIOTest {
+@SpringBootTest
+@SpringJUnitWebConfig(BlacklistIOTest.Config.class)
+@ActiveProfiles("unittest")
+@TestPropertySource(properties = {
+	"spalloc.database-path=" + BlacklistIOTest.DB,
+	"spalloc.historical-data.path=" + BlacklistIOTest.HIST_DB
+})
+class BlacklistIOTest extends SQLQueries {
+	/** The DB file. */
+	static final String DB = "target/blio_test.sqlite3";
+
+	/** The DB file. */
+	static final String HIST_DB = "target/blio_test_hist.sqlite3";
+
+	private static final Logger log = getLogger(BlacklistIOTest.class);
+
+	@Configuration
+	@ComponentScan(basePackageClasses = SpallocProperties.class)
+	static class Config {
+	}
+
+	@Autowired
+	private DatabaseEngine db;
+
+	@Autowired
+	private BlacklistIO blio;
+
+	@BeforeAll
+	static void clearDB() throws IOException {
+		Path dbp = Paths.get(DB);
+		if (exists(dbp)) {
+			log.info("deleting old database: {}", dbp);
+			delete(dbp);
+		}
+	}
+
 	@SafeVarargs
 	private static <T> Set<T> set(T... args) {
 		return new HashSet<>(Arrays.asList(args));
@@ -60,264 +117,300 @@ class BlacklistIOTest {
 		return map;
 	}
 
-	@Test
-	void readEmptyBlacklistFromString() throws IOException {
-		String blData = "";
+	private static final ChipLocation C00 = new ChipLocation(0, 0);
 
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
+	private static final ChipLocation C01 = new ChipLocation(0, 1);
 
-		assertEquals(emptySet(), bl.getChips());
-		assertEquals(emptyMap(), bl.getCores());
-		assertEquals(emptyMap(), bl.getLinks());
+	private static final ChipLocation C10 = new ChipLocation(1, 0);
+
+	private static final ChipLocation C11 = new ChipLocation(1, 1);
+
+	private static final ChipLocation C77 = new ChipLocation(7, 7);
+
+	@Nested
+	class UnderlyingClasses {
+		@Test
+		void serializeDeserialize() throws IOException, ClassNotFoundException {
+			Blacklist blIn = new Blacklist(set(C11), map(C00, set(3)),
+					map(C00, set(WEST)));
+
+			byte[] serialForm = serialize(blIn);
+
+			Blacklist blOut = deserialize(serialForm, Blacklist.class);
+
+			assertEquals(blIn, blOut);
+		}
+
+		@Test
+		void binaryForm() {
+			Blacklist blIn = new Blacklist(set(C11), map(C00, set(3)),
+					map(C00, set(WEST)));
+
+			ByteBuffer raw = blIn.getRawData();
+			Blacklist blOut = new Blacklist(raw);
+
+			assertEquals(blIn, blOut);
+			assertEquals(set(C11), blOut.getChips());
+			assertEquals(map(C00, set(3)), blOut.getCores());
+			assertEquals(map(C00, set(WEST)), blOut.getLinks());
+		}
 	}
 
-	@Test
-	void readBlacklistChipFromString() throws IOException {
-		String blData = "chip 0 0 dead";
+	@Nested
+	class WithStrings {
+		@Test
+		void parseEmptyBlacklist() throws IOException {
+			String blData = "";
 
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
+			BlacklistIO blio = new BlacklistIO();
+			Blacklist bl = blio.parseBlacklist(blData);
 
-		assertEquals(singleton(new ChipLocation(0, 0)), bl.getChips());
-		assertEquals(emptyMap(), bl.getCores());
-		assertEquals(emptyMap(), bl.getLinks());
+			assertEquals(emptySet(), bl.getChips());
+			assertEquals(emptyMap(), bl.getCores());
+			assertEquals(emptyMap(), bl.getLinks());
+		}
+
+		@Test
+		void parseOneWholeDeadChip() throws IOException {
+			String blData = "chip 0 0 dead";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(singleton(C00), bl.getChips());
+			assertEquals(emptyMap(), bl.getCores());
+			assertEquals(emptyMap(), bl.getLinks());
+		}
+
+		@Test
+		void parseOneChipDeadCoreAndLink() throws IOException {
+			String blData = "chip 0 0 core 2 link 3";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(emptySet(), bl.getChips());
+			assertEquals(singletonMap(C00, singleton(2)), bl.getCores());
+			assertEquals(singletonMap(C00, singleton(WEST)), bl.getLinks());
+		}
+
+		@Test
+		void parseOneChipDeadCores() throws IOException {
+			String blData = "chip 0 0 core 2,16";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(emptySet(), bl.getChips());
+			assertEquals(singletonMap(C00, set(16, 2)), bl.getCores());
+			assertEquals(emptyMap(), bl.getLinks());
+		}
+
+		@Test
+		void parseOneChipDeadLinks() throws IOException {
+			String blData = "chip 0 0 link 0,3,5,2";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(emptySet(), bl.getChips());
+			assertEquals(emptyMap(), bl.getCores());
+			assertEquals(singletonMap(C00, set(NORTH, SOUTH, EAST, WEST)),
+					bl.getLinks());
+		}
+
+		@Test
+		void parseOneChipDeadCoresAndLinks() throws IOException {
+			String blData = "chip 0 0 core 2,3 link 3,0";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(emptySet(), bl.getChips());
+			assertEquals(singletonMap(C00, set(3, 2)), bl.getCores());
+			assertEquals(singletonMap(C00, set(EAST, WEST)), bl.getLinks());
+		}
+
+		@Test
+		void parseOneChipAllParts() throws IOException {
+			String blData = "chip 0 0 core 2 link 3 dead";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(singleton(C00), bl.getChips());
+			assertEquals(emptyMap(), bl.getCores());
+			assertEquals(emptyMap(), bl.getLinks());
+		}
+
+		@Test
+		void parseOneChipAllPartsAlternateOrdering() throws IOException {
+			String blData = "chip 0 0 dead link 3 core 2";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(singleton(C00), bl.getChips());
+			assertEquals(emptyMap(), bl.getCores());
+			assertEquals(emptyMap(), bl.getLinks());
+		}
+
+		@Test
+		void parseSeveralChips() throws IOException {
+			String blData = "chip 0 0 core 2\nchip 0 1 link 0\nchip 1 0 dead";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(singleton(C10), bl.getChips());
+			assertEquals(singletonMap(C00, singleton(2)), bl.getCores());
+			assertEquals(singletonMap(C01, singleton(EAST)), bl.getLinks());
+		}
+
+		@Test
+		void parseOneChipDeadCoresAndLinksTwoLines() throws IOException {
+			String blData = "chip 0 0 core 2,3\nchip 0 0 link 3,0";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(emptySet(), bl.getChips());
+			assertEquals(singletonMap(C00, set(3, 2)), bl.getCores());
+			assertEquals(singletonMap(C00, set(EAST, WEST)), bl.getLinks());
+		}
+
+		@Test
+		void parseWhitespaceCommentStrip() throws IOException {
+			String blData =
+					"#comment\n\n  \n   chip    0    0    dead   \n# comment";
+
+			Blacklist bl = blio.parseBlacklist(blData);
+
+			assertEquals(singleton(C00), bl.getChips());
+			assertEquals(emptyMap(), bl.getCores());
+			assertEquals(emptyMap(), bl.getLinks());
+		}
+
+		@Test
+		void parseJunkLine() throws IOException {
+			String blData = "garbage\nchip 0 0 dead";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad line: garbage", e.getMessage());
+		}
+
+		@Test
+		void parseJunkPrefix() throws IOException {
+			String blData = "garbage chip 0 0 dead";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad line: garbage chip 0 0 dead", e.getMessage());
+		}
+
+		@Test
+		void parseJunkSuffix() throws IOException {
+			String blData = "chip 0 0 dead junk";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad line: chip 0 0 dead junk", e.getMessage());
+		}
+
+		@Test
+		void parseDoubleDead() throws IOException {
+			String blData = "chip 0 0 dead dead";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad line: chip 0 0 dead dead", e.getMessage());
+		}
+
+		@Test
+		void parseDoubleCore() throws IOException {
+			String blData = "chip 0 0 core 1 core 2";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad line: chip 0 0 core 1 core 2", e.getMessage());
+		}
+
+		@Test
+		void parseDoubleLink() throws IOException {
+			String blData = "chip 0 0 link 1 link 2";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad line: chip 0 0 link 1 link 2", e.getMessage());
+		}
+
+		@Test
+		void parseBadChipCoords() throws IOException {
+			String blData = "chip 0 7 dead";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad chip coords: chip 0 7 dead", e.getMessage());
+		}
+
+		@Test
+		void parseBadCoreNumber() throws IOException {
+			String blData = "chip 0 0 core 42";
+
+			Exception e = assertThrows(IllegalArgumentException.class, () -> {
+				blio.parseBlacklist(blData);
+			});
+			assertEquals("bad core number: chip 0 0 core 42", e.getMessage());
+		}
+
+		@Test
+		void parseBadLinkNumber() throws IOException {
+			String blData = "chip 0 0 link 42";
+
+			Exception e =
+					assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+						blio.parseBlacklist(blData);
+					});
+			assertEquals("Index 42 out of bounds for length 6", e.getMessage());
+		}
 	}
 
-	@Test
-	void readBlacklistCoreLinkFromString() throws IOException {
-		String blData = "chip 0 0 core 2 link 3";
+	@Nested
+	class WithFiles {
+		@Test
+		void readFile() throws IOException {
+			String filename =
+					"uk/ac/manchester/spinnaker/alloc/bmp/example.blacklist";
+			File blf = new File(BlacklistIOTest.class.getClassLoader()
+					.getResource(filename).getFile());
 
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = blio.readBlacklistFile(blf);
 
-		assertEquals(emptySet(), bl.getChips());
-		assertEquals(singletonMap(new ChipLocation(0, 0), singleton(2)),
-				bl.getCores());
-		assertEquals(singletonMap(new ChipLocation(0, 0), singleton(WEST)),
-				bl.getLinks());
+			assertEquals(singleton(C11), bl.getChips());
+			assertEquals(map(C10, set(2, 3), C77, set(10, 17)), bl.getCores());
+			assertEquals(
+					map(C10, set(SOUTHWEST, SOUTH), C77, set(NORTHEAST, SOUTH)),
+					bl.getLinks());
+		}
 	}
 
-	@Test
-	void readBlacklistMultiCoreFromString() throws IOException {
-		String blData = "chip 0 0 core 2,16";
+	@Nested
+	class WithDB {
+		@BeforeEach
+		void checkSetup() {
+			assumeTrue(db != null, "spring-configured DB engine absent");
+			try (Connection c = db.getConnection()) {
+				c.transaction(() -> setupDB1(c));
+			}
+		}
 
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
+		private Object setupDB1(Connection c) {
+			// TODO Auto-generated method stub
+			return this;
+		}
 
-		assertEquals(emptySet(), bl.getChips());
-		assertEquals(singletonMap(new ChipLocation(0, 0), set(16, 2)),
-				bl.getCores());
-		assertEquals(emptyMap(), bl.getLinks());
-	}
-
-	@Test
-	void readBlacklistMultiLinkFromString() throws IOException {
-		String blData = "chip 0 0 link 0,3,5,2";
-
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
-
-		assertEquals(emptySet(), bl.getChips());
-		assertEquals(emptyMap(), bl.getCores());
-		assertEquals(singletonMap(new ChipLocation(0, 0),
-				set(NORTH, SOUTH, EAST, WEST)), bl.getLinks());
-	}
-
-	@Test
-	void readBlacklistMultiCoreLinkFromString() throws IOException {
-		String blData = "chip 0 0 core 2,3 link 3,0";
-
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
-
-		assertEquals(emptySet(), bl.getChips());
-		assertEquals(singletonMap(new ChipLocation(0, 0), set(3, 2)),
-				bl.getCores());
-		assertEquals(singletonMap(new ChipLocation(0, 0), set(EAST, WEST)),
-				bl.getLinks());
-	}
-
-	@Test
-	void readBlacklistChipCoreLinkFromString() throws IOException {
-		String blData = "chip 0 0 core 2 link 3 dead";
-
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
-
-		assertEquals(singleton(new ChipLocation(0, 0)), bl.getChips());
-		assertEquals(emptyMap(), bl.getCores());
-		assertEquals(emptyMap(), bl.getLinks());
-	}
-
-	@Test
-	void readBlacklistChipCoreLinkNonStandardOrderFromString()
-			throws IOException {
-		String blData = "chip 0 0 dead link 3 core 2";
-
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
-
-		assertEquals(singleton(new ChipLocation(0, 0)), bl.getChips());
-		assertEquals(emptyMap(), bl.getCores());
-		assertEquals(emptyMap(), bl.getLinks());
-	}
-
-	@Test
-	void readBlacklistMultipleChipCoreLinkFromString() throws IOException {
-		String blData = "chip 0 0 core 2\nchip 0 1 link 0\nchip 1 0 dead";
-
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
-
-		assertEquals(singleton(new ChipLocation(1, 0)), bl.getChips());
-		assertEquals(singletonMap(new ChipLocation(0, 0), singleton(2)),
-				bl.getCores());
-		assertEquals(singletonMap(new ChipLocation(0, 1), singleton(EAST)),
-				bl.getLinks());
-	}
-
-	@Test
-	void readBlacklistWhitespaceCommentFromString() throws IOException {
-		String blData =
-				"#comment\n\n  \n   chip    0    0    dead   \n# comment";
-
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.parseBlacklist(blData);
-
-		assertEquals(singleton(new ChipLocation(0, 0)), bl.getChips());
-		assertEquals(emptyMap(), bl.getCores());
-		assertEquals(emptyMap(), bl.getLinks());
-	}
-
-	@Test
-	void readBlacklistGarbageFromString() throws IOException {
-		String blData = "garbage\nchip 0 0 dead";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad line: garbage", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistLeadingGarbageFromString() throws IOException {
-		String blData = "garbage chip 0 0 dead";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad line: garbage chip 0 0 dead", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistTrailingGarbageFromString() throws IOException {
-		String blData = "chip 0 0 dead junk";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad line: chip 0 0 dead junk", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistDoubleDeadFromString() throws IOException {
-		String blData = "chip 0 0 dead dead";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad line: chip 0 0 dead dead", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistDoubleCoreFromString() throws IOException {
-		String blData = "chip 0 0 core 1 core 2";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad line: chip 0 0 core 1 core 2", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistDoubleLinkFromString() throws IOException {
-		String blData = "chip 0 0 link 1 link 2";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad line: chip 0 0 link 1 link 2", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistBadChipLocFromString() throws IOException {
-		String blData = "chip 0 7 dead";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad chip coords: chip 0 7 dead", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistBadCoreNumFromString() throws IOException {
-		String blData = "chip 0 0 core 42";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(IllegalArgumentException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("bad core number: chip 0 0 core 42", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistBadLinkNumFromString() throws IOException {
-		String blData = "chip 0 0 link 42";
-
-		BlacklistIO blio = new BlacklistIO();
-		Exception e = assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
-			blio.parseBlacklist(blData);
-		});
-		assertEquals("Index 42 out of bounds for length 6", e.getMessage());
-	}
-
-	@Test
-	void readBlacklistFromFile() throws IOException {
-		String filename =
-				"uk/ac/manchester/spinnaker/alloc/bmp/example.blacklist";
-		File blf = new File(BlacklistIOTest.class.getClassLoader()
-				.getResource(filename).getFile());
-
-		BlacklistIO blio = new BlacklistIO();
-		Blacklist bl = blio.readBlacklistFile(blf);
-
-		assertEquals(singleton(new ChipLocation(1, 1)), bl.getChips());
-		assertEquals(map(new ChipLocation(1, 0), set(2, 3),
-				new ChipLocation(7, 7), set(10, 17)), bl.getCores());
-		assertEquals(
-				map(new ChipLocation(1, 0), set(SOUTHWEST, SOUTH),
-						new ChipLocation(7, 7), set(NORTHEAST, SOUTH)),
-				bl.getLinks());
-	}
-
-	@Test
-	void serializeDeserialize() throws IOException, ClassNotFoundException {
-		Blacklist blIn = new Blacklist(set(new ChipLocation(1, 1)),
-				map(new ChipLocation(0, 0), set(3)),
-				map(new ChipLocation(0, 0), set(WEST)));
-
-		byte[] serialForm = serialize(blIn);
-
-		Blacklist blOut = deserialize(serialForm, Blacklist.class);
-
-		assertEquals(blIn, blOut);
+		@Test
+		void readDB() {
+			// FIXME
+		}
 	}
 }
