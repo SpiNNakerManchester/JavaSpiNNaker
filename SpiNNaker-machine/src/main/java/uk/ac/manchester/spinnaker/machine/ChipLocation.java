@@ -25,6 +25,8 @@ import static java.lang.Integer.compare;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -42,7 +44,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties({"scamp-core", "scamp_core", "scampCore"})
 public final class ChipLocation
-		implements HasChipLocation, Comparable<ChipLocation> {
+		implements HasChipLocation, Comparable<ChipLocation>, Serializable {
+	private static final long serialVersionUID = -2343484354316378507L;
+
 	private final int x;
 
 	private final int y;

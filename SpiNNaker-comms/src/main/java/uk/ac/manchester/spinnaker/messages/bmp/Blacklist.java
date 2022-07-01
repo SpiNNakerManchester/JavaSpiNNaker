@@ -31,7 +31,11 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.OR;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
@@ -67,10 +71,17 @@ public final class Blacklist implements Serializable {
 
 	private static final int LINK_MASK = (1 << MAX_LINKS_PER_ROUTER) - 1;
 
-	private static final int PAYLOAD_BITS = MAX_NUM_CORES
-			+ MAX_LINKS_PER_ROUTER;
+	private static final int PAYLOAD_BITS =
+			MAX_NUM_CORES + MAX_LINKS_PER_ROUTER;
 
-	private ByteBuffer rawData;
+	/**
+	 * Bytes that represent the blacklist. <strong>Writability undefined.
+	 * Endianness undefined.</strong> Position will be at the start of the
+	 * blacklist data, which will be expected to run to the limit of the buffer
+	 * (i.e., there are {@link Buffer#remaining()} bytes left). Access to this
+	 * variable must be careful!
+	 */
+	private transient ByteBuffer rawData;
 
 	private Set<ChipLocation> chips = new HashSet<>();
 
@@ -82,12 +93,11 @@ public final class Blacklist implements Serializable {
 	 * Create a blacklist from raw data.
 	 *
 	 * @param buffer
-	 *           The raw data to parse.
+	 *            The raw data to parse.
 	 */
 	public Blacklist(ByteBuffer buffer) {
-		ByteBuffer buf = buffer.duplicate();
-		buf.order(LITTLE_ENDIAN);
-		rawData = buf.asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		ByteBuffer buf = buffer.duplicate().order(LITTLE_ENDIAN);
+		rawData = buf.duplicate();
 		decodeBlacklist(buf);
 	}
 
@@ -95,11 +105,11 @@ public final class Blacklist implements Serializable {
 	 * Create a blacklist from parsed data.
 	 *
 	 * @param deadChips
-	 *           The set of chips that are dead.
+	 *            The set of chips that are dead.
 	 * @param deadCores
-	 *           The set of physical core IDs that are dead on live chips.
+	 *            The set of physical core IDs that are dead on live chips.
 	 * @param deadLinks
-	 *           The set of link directions that are dead on live chips.
+	 *            The set of link directions that are dead on live chips.
 	 */
 	public Blacklist(Set<ChipLocation> deadChips,
 			Map<ChipLocation, Set<Integer>> deadCores,
@@ -107,12 +117,12 @@ public final class Blacklist implements Serializable {
 		chips = deadChips;
 		cores = deadCores;
 		links = deadLinks;
-		rawData = encodeBlacklist().asReadOnlyBuffer().order(LITTLE_ENDIAN);
+		rawData = encodeBlacklist();
 	}
 
 	private ByteBuffer encodeBlacklist() {
-		ByteBuffer buf = allocate((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE);
-		buf.order(LITTLE_ENDIAN);
+		ByteBuffer buf = allocate((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE)
+				.order(LITTLE_ENDIAN);
 		buf.putInt(0); // Size; filled in later
 		int count = 0;
 		for (int x = 0; x < SIZE_X_OF_ONE_BOARD; x++) {
@@ -180,10 +190,11 @@ public final class Blacklist implements Serializable {
 				// check for blacklisted links
 				int mll = (entry >> MAX_NUM_CORES) & LINK_MASK;
 				if (mll != 0) {
-					links.put(b, range(0, MAX_LINKS_PER_ROUTER)
-							.filter(c -> (mll & (1 << c)) != 0)
-							.mapToObj(Direction::byId)
-							.collect(toEnumSet(Direction.class)));
+					links.put(b,
+							range(0, MAX_LINKS_PER_ROUTER)
+									.filter(c -> (mll & (1 << c)) != 0)
+									.mapToObj(Direction::byId)
+									.collect(toEnumSet(Direction.class)));
 				}
 			}
 		}
@@ -215,7 +226,7 @@ public final class Blacklist implements Serializable {
 
 	/** @return The raw blacklist data. Read only. */
 	public ByteBuffer getRawData() {
-		return rawData;
+		return rawData.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 
 	private static final int MAGIC = 0x600dBeef;
@@ -239,5 +250,30 @@ public final class Blacklist implements Serializable {
 	private boolean equals(Blacklist other) {
 		return chips.equals(other.chips) && cores.equals(other.cores)
 				&& links.equals(other.links);
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		out.writeInt(rawData.remaining());
+		if (rawData.hasArray()) {
+			out.write(rawData.array(), rawData.position(), rawData.remaining());
+		} else {
+			byte[] buf = new byte[rawData.remaining()];
+			rawData.duplicate().get(buf);
+			out.write(buf);
+		}
+	}
+
+	private void readObject(ObjectInputStream in)
+			throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		int len = in.readInt();
+		byte[] buf = new byte[len];
+		in.read(buf);
+		rawData = ByteBuffer.wrap(buf);
+	}
+
+	static {
+		Buffer.class.getClass();
 	}
 }

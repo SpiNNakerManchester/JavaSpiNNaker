@@ -22,6 +22,8 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
@@ -37,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
@@ -303,5 +306,18 @@ class BlacklistIOTest {
 				map(new ChipLocation(1, 0), set(SOUTHWEST, SOUTH),
 						new ChipLocation(7, 7), set(NORTHEAST, SOUTH)),
 				bl.getLinks());
+	}
+
+	@Test
+	void serializeDeserialize() throws IOException, ClassNotFoundException {
+		Blacklist blIn = new Blacklist(set(new ChipLocation(1, 1)),
+				map(new ChipLocation(0, 0), set(3)),
+				map(new ChipLocation(0, 0), set(WEST)));
+
+		byte[] serialForm = serialize(blIn);
+
+		Blacklist blOut = deserialize(serialForm, Blacklist.class);
+
+		assertEquals(blIn, blOut);
 	}
 }

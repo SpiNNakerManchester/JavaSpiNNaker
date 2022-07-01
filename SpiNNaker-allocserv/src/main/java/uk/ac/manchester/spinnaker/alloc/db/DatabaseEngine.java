@@ -42,6 +42,7 @@ import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_MS;
 import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_US;
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
@@ -51,12 +52,10 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -1549,20 +1548,14 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 						&& !(arg instanceof String || arg instanceof Number
 								|| arg instanceof Boolean
 								|| arg instanceof byte[])) {
-					arg = serialize(arg);
+					try {
+						arg = serialize(arg);
+					} catch (IOException e) {
+						arg = null;
+					}
 				}
 				s.setObject(++idx, arg);
 			}
-		}
-
-		private byte[] serialize(Object obj) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-				oos.writeObject(obj);
-			} catch (IOException e) {
-				return null;
-			}
-			return baos.toByteArray();
 		}
 
 		/**

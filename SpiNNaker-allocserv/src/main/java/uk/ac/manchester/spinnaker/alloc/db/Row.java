@@ -16,12 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.columnNames;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -223,9 +222,8 @@ public final class Row {
 		if (bytes == null) {
 			return null;
 		}
-		try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-				ObjectInputStream ois = new ObjectInputStream(bais)) {
-			return cls.cast(ois.readObject());
+		try {
+			return deserialize(bytes, cls);
 		} catch (IOException | ClassNotFoundException | ClassCastException e) {
 			throw new TypeMismatchDataAccessException(
 					"bad data in column " + columnLabel, e);
