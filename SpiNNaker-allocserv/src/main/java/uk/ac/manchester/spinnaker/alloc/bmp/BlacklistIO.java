@@ -89,7 +89,10 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 * @return The blacklist, if one is defined.
 	 * @throws DataAccessException
 	 *             If database access fails.
+	 * @deprecated Call via {@link #readBlacklistFromDB(int)} if not in test
+	 *             code.
 	 */
+	@Deprecated
 	final Optional<Blacklist> readBlacklistFromDB(Connection conn,
 			int boardId) {
 		try (Query blChips = conn.query(GET_BLACKLISTED_CHIPS);
@@ -139,9 +142,11 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *            What board is this a blacklist for?
 	 * @param bl
 	 *            The blacklist to save.
+	 * @deprecated Call via {@link #writeBlacklistToDB(Integer, Blacklist)} if
+	 *             not in test code.
 	 */
-	private void saveBlacklistInDB(Connection conn, Integer boardId,
-			Blacklist bl) {
+	@Deprecated
+	void saveBlacklistInDB(Connection conn, Integer boardId, Blacklist bl) {
 		try (Update clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS_OF_BOARD);
 				Update clearCores =
 						conn.update(CLEAR_BLACKLISTED_CORES_OF_BOARD);

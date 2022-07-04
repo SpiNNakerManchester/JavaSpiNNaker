@@ -30,6 +30,8 @@ import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
@@ -38,7 +40,10 @@ import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -65,8 +70,11 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 @SpringBootTest
@@ -148,15 +156,27 @@ class BlacklistIOTest extends SQLQueries {
 		@Test
 		void binaryForm() {
 			Blacklist blIn = new Blacklist(set(C11), map(C00, set(3)),
-					map(C00, set(WEST)));
+					map(C00, set(SOUTHWEST)));
 
 			ByteBuffer raw = blIn.getRawData();
+
+			// Test that we know what's in the raw data
+			assertEquals(ByteOrder.LITTLE_ENDIAN, raw.order());
+			assertEquals(12, raw.remaining());
+			IntBuffer words = raw.asIntBuffer();
+			assertEquals(2, words.get());
+			assertEquals(0x0400008, words.get()); // chip 0,0 core 3 link 4
+			assertEquals(0x903ffff, words.get()); // chip 1,1 dead
+			// No data after that
+			assertThrows(BufferUnderflowException.class, words::get);
+
+			// Parse
 			Blacklist blOut = new Blacklist(raw);
 
 			assertEquals(blIn, blOut);
 			assertEquals(set(C11), blOut.getChips());
 			assertEquals(map(C00, set(3)), blOut.getCores());
-			assertEquals(map(C00, set(WEST)), blOut.getLinks());
+			assertEquals(map(C00, set(SOUTHWEST)), blOut.getLinks());
 		}
 	}
 
@@ -397,7 +417,12 @@ class BlacklistIOTest extends SQLQueries {
 		}
 	}
 
+	private static ChipLocation coords(Row r) {
+		return new ChipLocation(r.getInt("x"), r.getInt("y"));
+	}
+
 	@Nested
+	@SuppressWarnings("deprecation") // Calling internal API
 	class WithDB {
 		@BeforeEach
 		void checkSetup() {
@@ -537,6 +562,112 @@ class BlacklistIOTest extends SQLQueries {
 								map(new ChipLocation(0, 3), set(NORTH),
 										new ChipLocation(3, 0), set(SOUTH))),
 						bl);
+			});
+		}
+
+		@Test
+		void writeDB() {
+			checkAndRollback(c -> {
+				Blacklist bl =
+						new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
+								map(C77, set(NORTH, SOUTH, EAST, WEST)));
+
+				// Bypass the transactional wrapper
+				blio.saveBlacklistInDB(c, BOARD, bl);
+
+				// Check the results by looking in the DB ourselves
+				try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
+						Query cores = c.query(GET_BLACKLISTED_CORES);
+						Query links = c.query(GET_BLACKLISTED_LINKS)) {
+					assertEquals(set(C11, C01), chips.call(BOARD)
+							.map(BlacklistIOTest::coords).toSet());
+					assertEquals(map(C10, set(3, 2, 1)),
+							cores.call(BOARD).toCollectingMap(HashMap::new,
+									HashSet::new, BlacklistIOTest::coords,
+									integer("p")));
+					assertEquals(map(C77, set(NORTH, SOUTH, EAST, WEST)),
+							links.call(BOARD).toCollectingMap(HashMap::new,
+									HashSet::new, BlacklistIOTest::coords,
+									enumerate("direction", Direction.class)));
+				}
+			});
+		}
+
+		@Test
+		void rewriteDB() {
+			checkAndRollback(c -> {
+				Blacklist bl1 =
+						new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
+								map(C77, set(NORTH, SOUTH, EAST, WEST)));
+				Blacklist bl2 =
+						new Blacklist(set(C10, C77), map(C01, set(4, 5, 6)),
+								map(C11, set(NORTHEAST, SOUTHWEST)));
+
+				// Bypass the transactional wrapper
+				blio.saveBlacklistInDB(c, BOARD, bl1);
+				blio.saveBlacklistInDB(c, BOARD, bl2);
+
+				// Check the results by looking in the DB ourselves
+				try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
+						Query cores = c.query(GET_BLACKLISTED_CORES);
+						Query links = c.query(GET_BLACKLISTED_LINKS)) {
+					assertEquals(set(C77, C10), chips.call(BOARD)
+							.map(BlacklistIOTest::coords).toSet());
+					assertEquals(map(C01, set(6, 4, 5)),
+							cores.call(BOARD).toCollectingMap(HashMap::new,
+									HashSet::new, BlacklistIOTest::coords,
+									integer("p")));
+					assertEquals(map(C11, set(SOUTHWEST, NORTHEAST)),
+							links.call(BOARD).toCollectingMap(HashMap::new,
+									HashSet::new, BlacklistIOTest::coords,
+									enumerate("direction", Direction.class)));
+				}
+			});
+		}
+
+		@Test
+		void rewriteToEmptyDB() {
+			checkAndRollback(c -> {
+				Blacklist bl1 =
+						new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
+								map(C77, set(NORTH, SOUTH, EAST, WEST)));
+				Blacklist bl2 =
+						new Blacklist(emptySet(), emptyMap(), emptyMap());
+
+				// Bypass the transactional wrapper
+				blio.saveBlacklistInDB(c, BOARD, bl1);
+				blio.saveBlacklistInDB(c, BOARD, bl2);
+
+				// Check the results by looking in the DB ourselves
+				try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
+						Query cores = c.query(GET_BLACKLISTED_CORES);
+						Query links = c.query(GET_BLACKLISTED_LINKS)) {
+					assertEquals(emptySet(), chips.call(BOARD)
+							.map(BlacklistIOTest::coords).toSet());
+					assertEquals(emptyMap(),
+							cores.call(BOARD).toCollectingMap(HashMap::new,
+									HashSet::new, BlacklistIOTest::coords,
+									integer("p")));
+					assertEquals(emptyMap(),
+							links.call(BOARD).toCollectingMap(HashMap::new,
+									HashSet::new, BlacklistIOTest::coords,
+									enumerate("direction", Direction.class)));
+				}
+			});
+		}
+
+		@Test
+		void writeAndReadBack() {
+			checkAndRollback(c -> {
+				Blacklist blIn =
+						new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
+								map(C77, set(NORTH, SOUTH, EAST, WEST)));
+
+				// Bypass the transactional wrapper
+				blio.saveBlacklistInDB(c, BOARD, blIn);
+				Blacklist blOut = blio.readBlacklistFromDB(c, BOARD).get();
+
+				assertEquals(blIn, blOut);
 			});
 		}
 	}
