@@ -20,6 +20,8 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.EnumSet.copyOf;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -41,7 +43,9 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 
@@ -108,15 +112,22 @@ public final class Blacklist implements Serializable {
 	 *            The set of chips that are dead.
 	 * @param deadCores
 	 *            The set of physical core IDs that are dead on live chips.
+	 *            <em>Should not contain any empty sets of physical core
+	 *            IDs;</em> caller should ensure.
 	 * @param deadLinks
 	 *            The set of link directions that are dead on live chips.
+	 *            <em>Should not contain any empty sets of directions;</em>
+	 *            caller should ensure.
 	 */
 	public Blacklist(Set<ChipLocation> deadChips,
 			Map<ChipLocation, Set<Integer>> deadCores,
 			Map<ChipLocation, Set<Direction>> deadLinks) {
 		chips = deadChips;
-		cores = deadCores;
-		links = deadLinks;
+		// Sort the elements in each sub-collection
+		cores = deadCores.entrySet().stream().collect(
+				toMap(Entry::getKey, e -> new TreeSet<>(e.getValue())));
+		links = deadLinks.entrySet().stream()
+				.collect(toMap(Entry::getKey, e -> copyOf(e.getValue())));
 		rawData = encodeBlacklist();
 	}
 
@@ -222,6 +233,11 @@ public final class Blacklist implements Serializable {
 	 */
 	public Map<ChipLocation, Set<Direction>> getLinks() {
 		return unmodifiableMap(links);
+	}
+
+	public boolean isChipMentioned(ChipLocation chip) {
+		return chips.contains(chip) || cores.containsKey(chip)
+				|| links.containsKey(chip);
 	}
 
 	/** @return The raw blacklist data. Read only. */

@@ -396,6 +396,36 @@ class BlacklistIOTest extends SQLQueries {
 					});
 			assertEquals("direction ID 42 not in range 0 to 5", e.getMessage());
 		}
+
+		@Test
+		void printSimpleToString() {
+			Blacklist bl = new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
+					map(C77, set(NORTH, SOUTH, EAST, WEST)));
+
+			String s = blio.toString(bl);
+
+			assertEquals("chip 0 1 dead\nchip 1 0 core 1,2,3\n"
+					+ "chip 1 1 dead\nchip 7 7 link 0,2,3,5\n", s);
+		}
+
+		@Test
+		void printMessyToString() {
+			Blacklist bl = new Blacklist(set(C01, C11), map(C01, set(1, 2, 3)),
+					map(C11, set(NORTH, SOUTH, EAST, WEST)));
+
+			String s = blio.toString(bl);
+
+			assertEquals("chip 0 1 dead\nchip 1 1 dead\n", s);
+		}
+
+		@Test
+		void printEmptyToString() {
+			Blacklist bl = new Blacklist(set(), map(), map());
+
+			String s = blio.toString(bl);
+
+			assertEquals("", s);
+		}
 	}
 
 	@Nested

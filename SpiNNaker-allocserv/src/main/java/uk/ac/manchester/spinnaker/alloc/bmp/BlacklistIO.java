@@ -30,10 +30,13 @@ import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -122,13 +125,13 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *
 	 * @param boardId
 	 *            What board is this a blacklist for?
-	 * @param bl
+	 * @param blacklist
 	 *            The blacklist to save.
 	 */
-	public void writeBlacklistToDB(Integer boardId, Blacklist bl) {
-		requireNonNull(bl);
+	public void writeBlacklistToDB(Integer boardId, Blacklist blacklist) {
+		requireNonNull(blacklist);
 		execute(conn -> {
-			writeBlacklistToDB(conn, boardId, bl);
+			writeBlacklistToDB(conn, boardId, blacklist);
 			return this; // dummy
 		});
 	}
@@ -140,13 +143,14 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *            Which database?
 	 * @param boardId
 	 *            What board is this a blacklist for?
-	 * @param bl
+	 * @param blacklist
 	 *            The blacklist to save.
 	 * @deprecated Call via {@link #writeBlacklistToDB(Integer, Blacklist)} if
 	 *             not in test code.
 	 */
 	@Deprecated
-	void writeBlacklistToDB(Connection conn, Integer boardId, Blacklist bl) {
+	void writeBlacklistToDB(Connection conn, Integer boardId,
+			Blacklist blacklist) {
 		try (Update clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS);
 				Update clearCores = conn.update(CLEAR_BLACKLISTED_CORES);
 				Update clearLinks = conn.update(CLEAR_BLACKLISTED_LINKS);
@@ -159,14 +163,14 @@ public class BlacklistIO extends DatabaseAwareBean {
 			clearCores.call(boardId);
 			clearLinks.call(boardId);
 			// Write the new information
-			bl.getChips().forEach(chip -> {
+			blacklist.getChips().forEach(chip -> {
 				addChip.call(boardId, chip.getX(), chip.getY());
 			});
-			bl.getCores().forEach((chip, cores) -> cores.forEach(core -> {
-				addCore.call(boardId, chip.getX(), chip.getY(), core);
+			blacklist.getCores().forEach((chip, cores) -> cores.forEach(c -> {
+				addCore.call(boardId, chip.getX(), chip.getY(), c);
 			}));
-			bl.getLinks().forEach((chip, links) -> links.forEach(link -> {
-				addLink.call(boardId, chip.getX(), chip.getY(), link);
+			blacklist.getLinks().forEach((chip, links) -> links.forEach(l -> {
+				addLink.call(boardId, chip.getX(), chip.getY(), l);
 			}));
 		}
 	}
@@ -183,6 +187,7 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *             If the file is badly formatted.
 	 */
 	public Blacklist readBlacklistFile(File file) throws IOException {
+		requireNonNull(file);
 		try (FileReader r = new FileReader(file);
 				BufferedReader br = new BufferedReader(r)) {
 			return readBlacklist(br);
@@ -201,6 +206,7 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *             If the string is badly formatted.
 	 */
 	public Blacklist parseBlacklist(String blacklistText) throws IOException {
+		requireNonNull(blacklistText);
 		try (BufferedReader br =
 				new BufferedReader(new StringReader(blacklistText))) {
 			return readBlacklist(br);
@@ -344,6 +350,86 @@ public class BlacklistIO extends DatabaseAwareBean {
 			if (links != null && !links.isEmpty()) {
 				deadLinks.put(chip, links);
 			}
+		}
+	}
+
+	/**
+	 * Write a blacklist to a stream in a human-readable format. This is the
+	 * format understood by {@link #readBlacklist(BufferedReader)}.
+	 * <p>
+	 * Note that the result may omit information in the original blacklist, but
+	 * only if that would also be ignored by the reader side.
+	 *
+	 * @param blacklist
+	 *            The blacklist to write
+	 * @param w
+	 *            Where to write the blacklist
+	 * @throws IOException
+	 *             If the blacklist couldn't be written.
+	 */
+	public void writeBlacklist(Blacklist blacklist, BufferedWriter w)
+			throws IOException {
+		requireNonNull(blacklist);
+		Set<ChipLocation> chips = blacklist.getChips();
+		Map<ChipLocation, Set<Integer>> cores = blacklist.getCores();
+		Map<ChipLocation, Set<Direction>> links = blacklist.getLinks();
+		try (PrintWriter out = new PrintWriter(w)) {
+			// Don't use println(); not exactly portable on Windows
+			for (ChipLocation chip : GEOM.singleBoard()) {
+				if (!blacklist.isChipMentioned(chip)) {
+					continue;
+				}
+				out.format("chip %d %d", chip.getX(), chip.getY());
+				if (chips.contains(chip)) {
+					out.print(" dead\n");
+				} else {
+					if (cores.containsKey(chip)) {
+						out.print(" core ");
+						String sep = "";
+						for (Integer id : cores.get(chip)) {
+							out.append(sep).append(id.toString());
+							sep = ",";
+						}
+					}
+					if (links.containsKey(chip)) {
+						out.print(" link ");
+						String sep = "";
+						for (Direction d : links.get(chip)) {
+							out.append(sep).append(Integer.toString(d.id));
+							sep = ",";
+						}
+					}
+					out.print("\n");
+				}
+			}
+			if (out.checkError()) {
+				throw new IOException("failed to write blacklist");
+			}
+		}
+	}
+
+	/**
+	 * Convert a blacklist to a string in a human-readable format. This is the
+	 * format understood by {@link #parseBlacklist(String)}.
+	 * <p>
+	 * Note that the result may omit information in the original blacklist, but
+	 * only if that would also be ignored by the string parser.
+	 *
+	 * @param blacklist
+	 *            The blacklist to convert
+	 * @return The string form of the blacklist.
+	 * @throws RuntimeException If something goes wrong. Not expected!
+	 */
+	public String toString(Blacklist blacklist) {
+		requireNonNull(blacklist);
+		try (StringWriter sw = new StringWriter();
+				BufferedWriter bw = new BufferedWriter(sw)) {
+			writeBlacklist(blacklist, bw);
+			return sw.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(
+					"unexpected exception while writing blacklist to string",
+					e);
 		}
 	}
 }
