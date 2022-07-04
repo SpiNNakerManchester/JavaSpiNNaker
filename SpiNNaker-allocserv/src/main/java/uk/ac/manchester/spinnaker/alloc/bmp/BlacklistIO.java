@@ -128,7 +128,7 @@ public class BlacklistIO extends DatabaseAwareBean {
 	public void writeBlacklistToDB(Integer boardId, Blacklist bl) {
 		requireNonNull(bl);
 		execute(conn -> {
-			saveBlacklistInDB(conn, boardId, bl);
+			writeBlacklistToDB(conn, boardId, bl);
 			return this; // dummy
 		});
 	}
@@ -146,15 +146,14 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *             not in test code.
 	 */
 	@Deprecated
-	void saveBlacklistInDB(Connection conn, Integer boardId, Blacklist bl) {
-		try (Update clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS_OF_BOARD);
-				Update clearCores =
-						conn.update(CLEAR_BLACKLISTED_CORES_OF_BOARD);
-				Update clearLinks =
-						conn.update(CLEAR_BLACKLISTED_LINKS_OF_BOARD);
+	void writeBlacklistToDB(Connection conn, Integer boardId, Blacklist bl) {
+		try (Update clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS);
+				Update clearCores = conn.update(CLEAR_BLACKLISTED_CORES);
+				Update clearLinks = conn.update(CLEAR_BLACKLISTED_LINKS);
 				Update addChip = conn.update(ADD_BLACKLISTED_CHIP);
 				Update addCore = conn.update(ADD_BLACKLISTED_CORE);
 				Update addLink = conn.update(ADD_BLACKLISTED_LINK)) {
+			// TODO Keep the old blacklist data where it is the same as before
 			// Remove the old information
 			clearChips.call(boardId);
 			clearCores.call(boardId);

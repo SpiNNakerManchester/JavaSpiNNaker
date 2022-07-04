@@ -892,9 +892,9 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void clearBlacklistedChipsOfBoard() {
+	void clearBlacklistedChips() {
 		assumeWritable(c);
-		try (Update u = c.update(CLEAR_BLACKLISTED_CHIPS_OF_BOARD)) {
+		try (Update u = c.update(CLEAR_BLACKLISTED_CHIPS)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
@@ -904,9 +904,9 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void clearBlacklistedCoresOfBoard() {
+	void clearBlacklistedCores() {
 		assumeWritable(c);
-		try (Update u = c.update(CLEAR_BLACKLISTED_CORES_OF_BOARD)) {
+		try (Update u = c.update(CLEAR_BLACKLISTED_CORES)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete
@@ -916,9 +916,9 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void clearBlacklistedLinksOfBoard() {
+	void clearBlacklistedLinks() {
 		assumeWritable(c);
-		try (Update u = c.update(CLEAR_BLACKLISTED_LINKS_OF_BOARD)) {
+		try (Update u = c.update(CLEAR_BLACKLISTED_LINKS)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete

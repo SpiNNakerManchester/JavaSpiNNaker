@@ -1834,7 +1834,7 @@ public abstract class SQLQueries {
 	 * @see BlacklistIO
 	 */
 	@Parameter("board_id")
-	protected static final String CLEAR_BLACKLISTED_CHIPS_OF_BOARD =
+	protected static final String CLEAR_BLACKLISTED_CHIPS =
 			"DELETE FROM blacklisted_chips WHERE board_id = :board_id";
 
 	/**
@@ -1843,7 +1843,7 @@ public abstract class SQLQueries {
 	 * @see BlacklistIO
 	 */
 	@Parameter("board_id")
-	protected static final String CLEAR_BLACKLISTED_CORES_OF_BOARD =
+	protected static final String CLEAR_BLACKLISTED_CORES =
 			"DELETE FROM blacklisted_cores WHERE board_id = :board_id";
 
 	/**
@@ -1852,7 +1852,7 @@ public abstract class SQLQueries {
 	 * @see BlacklistIO
 	 */
 	@Parameter("board_id")
-	protected static final String CLEAR_BLACKLISTED_LINKS_OF_BOARD =
+	protected static final String CLEAR_BLACKLISTED_LINKS =
 			"DELETE FROM blacklisted_links WHERE board_id = :board_id";
 
 	/**

@@ -573,7 +573,7 @@ class BlacklistIOTest extends SQLQueries {
 								map(C77, set(NORTH, SOUTH, EAST, WEST)));
 
 				// Bypass the transactional wrapper
-				blio.saveBlacklistInDB(c, BOARD, bl);
+				blio.writeBlacklistToDB(c, BOARD, bl);
 
 				// Check the results by looking in the DB ourselves
 				try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -604,8 +604,8 @@ class BlacklistIOTest extends SQLQueries {
 								map(C11, set(NORTHEAST, SOUTHWEST)));
 
 				// Bypass the transactional wrapper
-				blio.saveBlacklistInDB(c, BOARD, bl1);
-				blio.saveBlacklistInDB(c, BOARD, bl2);
+				blio.writeBlacklistToDB(c, BOARD, bl1);
+				blio.writeBlacklistToDB(c, BOARD, bl2);
 
 				// Check the results by looking in the DB ourselves
 				try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -635,8 +635,8 @@ class BlacklistIOTest extends SQLQueries {
 						new Blacklist(emptySet(), emptyMap(), emptyMap());
 
 				// Bypass the transactional wrapper
-				blio.saveBlacklistInDB(c, BOARD, bl1);
-				blio.saveBlacklistInDB(c, BOARD, bl2);
+				blio.writeBlacklistToDB(c, BOARD, bl1);
+				blio.writeBlacklistToDB(c, BOARD, bl2);
 
 				// Check the results by looking in the DB ourselves
 				try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -664,7 +664,7 @@ class BlacklistIOTest extends SQLQueries {
 								map(C77, set(NORTH, SOUTH, EAST, WEST)));
 
 				// Bypass the transactional wrapper
-				blio.saveBlacklistInDB(c, BOARD, blIn);
+				blio.writeBlacklistToDB(c, BOARD, blIn);
 				Blacklist blOut = blio.readBlacklistFromDB(c, BOARD).get();
 
 				assertEquals(blIn, blOut);
