@@ -394,7 +394,7 @@ class BlacklistIOTest extends SQLQueries {
 					assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
 						blio.parseBlacklist(blData);
 					});
-			assertEquals("Index 42 out of bounds for length 6", e.getMessage());
+			assertEquals("direction ID 42 not in range 0 to 5", e.getMessage());
 		}
 	}
 
