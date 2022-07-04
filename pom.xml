@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<testing.version>3.0.0-M7</testing.version>
 
 		<slf4j.version>1.7.36</slf4j.version>
-		<log4j.version>2.17.2</log4j.version>
+		<log4j.version>2.18.0</log4j.version>
 
 		<spring.version>5.3.21</spring.version>
 		<spring.boot.version>2.7.1</spring.boot.version>
