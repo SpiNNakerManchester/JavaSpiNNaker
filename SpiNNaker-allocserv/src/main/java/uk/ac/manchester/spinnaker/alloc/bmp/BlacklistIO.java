@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,9 +60,10 @@ import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
- * Read a blacklist from a definition file or the database. Note that the code
- * does not examine the filename, which is often used to determine what board
- * the blacklist applies to; that is left as a problem for the caller to handle.
+ * Read a blacklist from a string, a definition file or the database. Note that
+ * the code does not examine the filename, which is often used to determine what
+ * board the blacklist applies to; that is left as a problem for the caller to
+ * handle. That information <em>is</em> required when talking to the DB.
  *
  * @author Donal Fellows
  */
@@ -255,21 +257,23 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *           If the reader's content is badly formatted.
 	 */
 	public Blacklist readBlacklist(BufferedReader r) throws IOException {
-		Map<ChipLocation, Set<Integer>> deadCores = new HashMap<>();
-		Map<ChipLocation, Set<Direction>> deadLinks = new HashMap<>();
-		Set<ChipLocation> deadChips = new HashSet<>();
+		try {
+			Map<ChipLocation, Set<Integer>> deadCores = new HashMap<>();
+			Map<ChipLocation, Set<Direction>> deadLinks = new HashMap<>();
+			Set<ChipLocation> deadChips = new HashSet<>();
 
-		String line;
-		while ((line = r.readLine()) != null) {
-			line = line.trim();
-			if (line.isEmpty() || line.startsWith("#")) {
-				// Skip blanks and comments
-				continue;
-			}
-			parseLine(line, deadChips, deadCores, deadLinks);
+			r.lines().map(String::trim)
+					// Remove blank and comment lines
+					.filter(s -> !s.isEmpty() && !s.startsWith("#"))
+					// Parse the remaining lines
+					.forEach(line -> parseLine(line, deadChips, deadCores,
+							deadLinks));
+
+			return new Blacklist(deadChips, deadCores, deadLinks);
+		} catch (UncheckedIOException e) {
+			// Unhide the exception (see the doc for BufferedReader.lines())
+			throw e.getCause();
 		}
-
-		return new Blacklist(deadChips, deadCores, deadLinks);
 	}
 
 	/**
