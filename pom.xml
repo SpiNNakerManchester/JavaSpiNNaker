@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spring.boot.version>2.7.1</spring.boot.version>
 		<spring.security.version>5.7.2</spring.security.version>
 
-		<cxf.version>3.5.2</cxf.version>
+		<cxf.version>3.5.3</cxf.version>
 		<jackson.version>2.13.3</jackson.version>
 		<sqlite.version>3.36.0.3</sqlite.version>
 		<keycloak.version>18.0.2</keycloak.version>
