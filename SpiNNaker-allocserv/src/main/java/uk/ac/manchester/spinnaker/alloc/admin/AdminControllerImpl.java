@@ -71,9 +71,11 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
+import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistIO;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
+import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
@@ -94,126 +96,11 @@ import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 @Controller("mvc.adminUI")
 @PreAuthorize(IS_ADMIN)
 public class AdminControllerImpl extends DatabaseAwareBean
-		implements AdminController {
+		implements AdminController, AdminControllerConstants {
 	private static final Logger log = getLogger(AdminControllerImpl.class);
 
 	/** One board-hour in board-seconds. */
 	private static final int BOARD_HOUR = 3600;
-
-	// These are paths below src/main/webapp/WEB-INF/views
-	/** View: {@code admin/index.jsp}. */
-	private static final ViewFactory MAIN_VIEW = new ViewFactory("admin/index");
-
-	/** View: {@code admin/listusers.jsp}. */
-	private static final ViewFactory USER_LIST_VIEW =
-			new ViewFactory("admin/listusers");
-
-	/** View: {@code admin/userdetails.jsp}. */
-	private static final ViewFactory USER_DETAILS_VIEW =
-			new ViewFactory("admin/userdetails");
-
-	/** View: {@code admin/createuser.jsp}. */
-	private static final ViewFactory CREATE_USER_VIEW =
-			new ViewFactory("admin/createuser");
-
-	/** View: {@code admin/listgroups.jsp}. */
-	private static final ViewFactory GROUP_LIST_VIEW =
-			new ViewFactory("admin/listgroups");
-
-	/** View: {@code admin/groupdetails.jsp}. */
-	private static final ViewFactory GROUP_DETAILS_VIEW =
-			new ViewFactory("admin/groupdetails");
-
-	/** View: {@code admin/creategroup.jsp}. */
-	private static final ViewFactory CREATE_GROUP_VIEW =
-			new ViewFactory("admin/creategroup");
-
-	/** View: {@code admin/board.jsp}. */
-	private static final ViewFactory BOARD_VIEW =
-			new ViewFactory("admin/board");
-
-	/** View: {@code admin/machine.jsp}. */
-	private static final ViewFactory MACHINE_VIEW =
-			new ViewFactory("admin/machine");
-
-	/** User list in {@link #USER_LIST_VIEW}. All users. */
-	private static final String USER_LIST_OBJ = "userlist";
-
-	/** User list in {@link #USER_LIST_VIEW}. Local users only. */
-	private static final String LOCAL_USER_LIST_OBJ = "localusers";
-
-	/** User list in {@link #USER_LIST_VIEW}. OpenID users only. */
-	private static final String OPENID_USER_LIST_OBJ = "openidusers";
-
-	/** User details in {@link #USER_DETAILS_VIEW}. */
-	private static final String USER_OBJ = "user";
-
-	/**
-	 * Group list (type: {@link GroupType#INTERNAL}) in
-	 * {@link #GROUP_LIST_VIEW}.
-	 */
-	private static final String LOCAL_GROUP_LIST_OBJ = "localgroups";
-
-	/**
-	 * Group list (type: {@link GroupType#ORGANISATION}) in
-	 * {@link #GROUP_LIST_VIEW}.
-	 */
-	private static final String ORG_GROUP_LIST_OBJ = "orggroups";
-
-	/**
-	 * Group list (type: {@link GroupType#COLLABRATORY}) in
-	 * {@link #GROUP_LIST_VIEW}.
-	 */
-	private static final String COLLAB_GROUP_LIST_OBJ = "collabgroups";
-
-	/**
-	 * Group details in {@link #GROUP_DETAILS_VIEW}. Group creation info in
-	 * {@link #CREATE_GROUP_VIEW}.
-	 */
-	private static final String GROUP_OBJ = "group";
-
-	/** State in {@link #BOARD_VIEW}. {@link BoardRecord}. */
-	private static final String BOARD_OBJ = "board";
-
-	/** Blacklist state in {@link #BOARD_VIEW}. {@link Blacklist} if present. */
-	private static final String BLACKLIST_OBJ = "blacklist";
-
-	/** Blacklist-related state in {@link #BOARD_VIEW}. Boolean. */
-	private static final String HAVE_BLACKLIST = "haveBlacklist";
-
-	/**
-	 * The chips on a board. {@link List}{@code <}{@link ChipLocation}{@code >}
-	 */
-	private static final String BOARDCHIPS_OBJ = "boardChips";
-
-	/** State in {@link #MACHINE_VIEW}. */
-	private static final String MACHINE_LIST_OBJ = "machineNames";
-
-	private static final String DEFINED_MACHINES_OBJ = "definedMachines";
-
-	private static final String MACHINE_TAGGING_OBJ = "machineTagging";
-
-	private static final String DEFAULT_TAGGING_COUNT = "defaultCount";
-
-	private static final String MACHINE_REPORTS_OBJ = "machineReports";
-
-	private static final String BASE_URI = "baseuri";
-
-	private static final String TRUST_LEVELS = "trustLevels";
-
-	private static final String USERS_URI = "usersUri";
-
-	private static final String CREATE_USER_URI = "createUserUri";
-
-	private static final String GROUPS_URI = "groupsUri";
-
-	private static final String CREATE_GROUP_URI = "createGroupUri";
-
-	private static final String BOARDS_URI = "boardsUri";
-
-	private static final String BLACKLIST_URI = "blacklistControlUri";
-
-	private static final String MACHINE_URI = "machineUri";
 
 	@Autowired
 	private UserControl userManager;
@@ -229,6 +116,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Autowired
 	private QuotaManager quotaManager;
+
+	@Autowired
+	private BlacklistIO blio;
 
 	private final List<ChipLocation> chipsOnBoard;
 
@@ -699,7 +589,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	private void addBlacklistData(BoardState board, ModelMap model) {
 		Optional<Blacklist> bl = machineController.readBlacklistFromDB(board);
 		model.addAttribute(HAVE_BLACKLIST, bl.isPresent());
-		bl.ifPresent(blacklist -> model.addAttribute(BLACKLIST_OBJ, blacklist));
+		bl.ifPresent(blacklist -> model.addAttribute(BLACKLIST_OBJ,
+				blio.toString(blacklist)));
 		model.addAttribute(BLACKLIST_URI,
 				uri(admin().blacklistHandling(model)));
 		model.addAttribute(BOARDCHIPS_OBJ, chipsOnBoard);
@@ -810,7 +701,162 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@SuppressWarnings("unused")
 	private abstract static class Use {
-		Use(GroupType t) {
+		Use(GroupType t, BoardIssueReport b) {
 		}
 	}
+}
+
+interface AdminControllerConstants {
+	// These are paths below src/main/webapp/WEB-INF/views
+	/** View: {@code admin/index.jsp}. */
+	ViewFactory MAIN_VIEW = new ViewFactory("admin/index");
+
+	/** View: {@code admin/listusers.jsp}. */
+	ViewFactory USER_LIST_VIEW = new ViewFactory("admin/listusers");
+
+	/** View: {@code admin/userdetails.jsp}. */
+	ViewFactory USER_DETAILS_VIEW = new ViewFactory("admin/userdetails");
+
+	/** View: {@code admin/createuser.jsp}. */
+	ViewFactory CREATE_USER_VIEW = new ViewFactory("admin/createuser");
+
+	/** View: {@code admin/listgroups.jsp}. */
+	ViewFactory GROUP_LIST_VIEW = new ViewFactory("admin/listgroups");
+
+	/** View: {@code admin/groupdetails.jsp}. */
+	ViewFactory GROUP_DETAILS_VIEW = new ViewFactory("admin/groupdetails");
+
+	/** View: {@code admin/creategroup.jsp}. */
+	ViewFactory CREATE_GROUP_VIEW = new ViewFactory("admin/creategroup");
+
+	/** View: {@code admin/board.jsp}. */
+	ViewFactory BOARD_VIEW = new ViewFactory("admin/board");
+
+	/** View: {@code admin/machine.jsp}. */
+	ViewFactory MACHINE_VIEW = new ViewFactory("admin/machine");
+
+	/** User list in {@link #USER_LIST_VIEW}. All users. */
+	String USER_LIST_OBJ = "userlist";
+
+	/** User list in {@link #USER_LIST_VIEW}. Local users only. */
+	String LOCAL_USER_LIST_OBJ = "localusers";
+
+	/** User list in {@link #USER_LIST_VIEW}. OpenID users only. */
+	String OPENID_USER_LIST_OBJ = "openidusers";
+
+	/** User details in {@link #USER_DETAILS_VIEW}. */
+	String USER_OBJ = "user";
+
+	/**
+	 * Group list (type: {@link GroupType#INTERNAL}) in
+	 * {@link #GROUP_LIST_VIEW}.
+	 */
+	String LOCAL_GROUP_LIST_OBJ = "localgroups";
+
+	/**
+	 * Group list (type: {@link GroupType#ORGANISATION}) in
+	 * {@link #GROUP_LIST_VIEW}.
+	 */
+	String ORG_GROUP_LIST_OBJ = "orggroups";
+
+	/**
+	 * Group list (type: {@link GroupType#COLLABRATORY}) in
+	 * {@link #GROUP_LIST_VIEW}.
+	 */
+	String COLLAB_GROUP_LIST_OBJ = "collabgroups";
+
+	/**
+	 * Group details in {@link #GROUP_DETAILS_VIEW}. Group creation info in
+	 * {@link #CREATE_GROUP_VIEW}.
+	 */
+	String GROUP_OBJ = "group";
+
+	/** State in {@link #BOARD_VIEW}. {@link BoardRecord}. */
+	String BOARD_OBJ = "board";
+
+	/**
+	 * Blacklist contents in {@link #BOARD_VIEW}. String serialization of
+	 * {@link Blacklist}, if present.
+	 */
+	String BLACKLIST_OBJ = "blacklist";
+
+	/** Blacklist-related state in {@link #BOARD_VIEW}. Boolean. */
+	String HAVE_BLACKLIST = "haveBlacklist";
+
+	/**
+	 * The chips on a board. {@link List}{@code <}{@link ChipLocation}{@code >}
+	 */
+	String BOARDCHIPS_OBJ = "boardChips";
+
+	/**
+	 * Mapping from machine names to whether they're in service, in
+	 * {@link #MACHINE_VIEW}.
+	 * {@link Map}{@code <}{@link String}{@code ,}{@link Boolean}{@code >}
+	 */
+	String MACHINE_LIST_OBJ = "machineNames";
+
+	/**
+	 * Machines that have been defined, in {@link #MACHINE_VIEW}.
+	 *
+	 * @see Machine
+	 */
+	String DEFINED_MACHINES_OBJ = "definedMachines";
+
+	/**
+	 * Result of {@link MachineStateControl#getMachineTagging()}, in
+	 * {@link #MACHINE_VIEW}.
+	 *
+	 * @see MachineTagging
+	 */
+	String MACHINE_TAGGING_OBJ = "machineTagging";
+
+	/**
+	 * Number of {@code default} tags in {@link #MACHINE_TAGGING_OBJ}, in
+	 * {@link #MACHINE_VIEW}.
+	 */
+	String DEFAULT_TAGGING_COUNT = "defaultCount";
+
+	/**
+	 * Result of {@link MachineStateControl#getMachineReports()}, in
+	 * {@link #MACHINE_VIEW}.
+	 *
+	 * @see BoardIssueReport
+	 */
+	String MACHINE_REPORTS_OBJ = "machineReports";
+
+	/** The base URI for the current request. In all views. */
+	String BASE_URI = "baseuri";
+
+	/** The members of {@link TrustLevel}. In all views. */
+	String TRUST_LEVELS = "trustLevels";
+
+	/** How to call {@link AdminController#listUsers()}. In all views. */
+	String USERS_URI = "usersUri";
+
+	/**
+	 * How to call {@link AdminController#getUserCreationForm()}. In all views.
+	 */
+	String CREATE_USER_URI = "createUserUri";
+
+	/** How to call {@link AdminController#listGroups()}. In all views. */
+	String GROUPS_URI = "groupsUri";
+
+	/**
+	 * How to call {@link AdminController#getGroupCreationForm()}. In all views.
+	 */
+	String CREATE_GROUP_URI = "createGroupUri";
+
+	/** How to call {@link AdminController#boards()}. In all views. */
+	String BOARDS_URI = "boardsUri";
+
+	/**
+	 * How to call {@link AdminController#blacklistHandling()}. In
+	 * {@link #BOARD_VIEW}.
+	 */
+	String BLACKLIST_URI = "blacklistControlUri";
+
+	/**
+	 * How to call {@link AdminController#machineManagement()}. In all views.
+	 */
+	String MACHINE_URI = "machineUri";
 }

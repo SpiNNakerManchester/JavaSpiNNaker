@@ -287,6 +287,10 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *            Where to accumulate dead cores.
 	 * @param deadLinks
 	 *            Where to accumulate dead links.
+	 * @throws IllegalArgumentException
+	 *             On most parse errors.
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             On a bad direction.
 	 */
 	private void parseLine(String line, Set<ChipLocation> deadChips,
 			Map<ChipLocation, Set<Integer>> deadCores,
