@@ -150,17 +150,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			out in future allocations.
 		</form:form>
 		<h2>Blacklisted Hardware</h2>
-		<form method="POST" action="${ blacklistControlUri }">
-			<sec:csrfInput />
-			<c:if test="${ haveBlacklist }">
-				<pre>
-					${ blacklist }
-				</pre>
-				<%-- TODO: convert to a model-based scheme --%>
+		<form:form method="POST" modelAttribute="bldata" action="${ blacklistControlUri }">
+			<form:hidden path="id" />
+			<c:if test="${ bldata.present }">
+				<form:textarea path="blacklist" />
 			</c:if>
 			<%-- TODO: buttons to fetch and save the actual blacklist --%>
 			<input type="submit" name="fetch" value="Look Up Board" />
-		</form>
+		</form:form>
 	</c:when>
 	<c:otherwise>
 		<form:form method="POST" modelAttribute="board">

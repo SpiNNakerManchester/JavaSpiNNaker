@@ -21,7 +21,6 @@ import static java.util.Arrays.stream;
 import static java.util.EnumSet.noneOf;
 import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
-import static java.util.stream.Collectors.toSet;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
@@ -58,12 +57,16 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
+import uk.ac.manchester.spinnaker.utils.CollectionUtils;
 
 /**
  * Read a blacklist from a string, a definition file or the database. Note that
  * the code does not examine the filename, which is often used to determine what
  * board the blacklist applies to; that is left as a problem for the caller to
  * handle. That information <em>is</em> required when talking to the DB.
+ * <p>
+ * Arguably everything in here really ought to be in {@link Blacklist} itself,
+ * but that's necessarily in code that can't see into the database.
  *
  * @author Donal Fellows
  */
@@ -236,7 +239,7 @@ public class BlacklistIO extends DatabaseAwareBean {
 	}
 
 	private static Set<Integer> parseCommaSeparatedSet(String str) {
-		return stream(str.split(",")).map(Integer::parseInt).collect(toSet());
+		return CollectionUtils.parseCommaSeparatedSet(str, Integer::parseInt);
 	}
 
 	private static <T extends Enum<T>> Set<T> parseCommaSeparatedSet(

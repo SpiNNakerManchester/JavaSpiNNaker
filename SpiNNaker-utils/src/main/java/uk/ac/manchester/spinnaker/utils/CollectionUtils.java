@@ -17,15 +17,18 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import static java.lang.Math.min;
+import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.EnumSet.noneOf;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
 
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
@@ -41,6 +44,7 @@ import java.util.stream.Stream;
  */
 public abstract class CollectionUtils {
 	private CollectionUtils() {
+		Stream.class.getClass();
 	}
 
 	/**
@@ -131,7 +135,19 @@ public abstract class CollectionUtils {
 		return list.stream().map(fun).collect(toList());
 	}
 
-	static {
-		Stream.class.getClass();
+	/**
+	 * Parse a comma-separated string into an <em>unordered</em> set of items.
+	 *
+	 * @param <T>
+	 *            The type of elements of the set.
+	 * @param str
+	 *            The string to parse.
+	 * @param mapper
+	 *            How to get an element from a piece of string.
+	 * @return The set of items. The set is unordered.
+	 */
+	public static <T> Set<T> parseCommaSeparatedSet(String str,
+			Function<String, T> mapper) {
+		return stream(str.split(",")).map(mapper).collect(toSet());
 	}
 }

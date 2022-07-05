@@ -19,9 +19,9 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.nonNull;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
@@ -37,19 +37,17 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.error;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 import static uk.ac.manchester.spinnaker.alloc.web.SystemController.USER_MAY_CHANGE_PASSWORD;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
-import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -67,6 +65,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
@@ -85,7 +84,6 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
@@ -119,19 +117,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Autowired
 	private BlacklistIO blio;
-
-	private final List<ChipLocation> chipsOnBoard;
-
-	public AdminControllerImpl() {
-		List<ChipLocation> chips = new ArrayList<>();
-
-		for (int x = 0; x < SIZE_X_OF_ONE_BOARD; x++) {
-			for (int y = 0; y < SIZE_Y_OF_ONE_BOARD; y++) {
-				chips.add(new ChipLocation(x, y));
-			}
-		}
-		chipsOnBoard = unmodifiableList(chips);
-	}
 
 	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
 		try (Connection conn = getConnection();
@@ -557,22 +542,46 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Override
 	@Action("processing changes to a blacklist")
-	public ModelAndView blacklistHandling(ModelMap model) {
+	public ModelAndView blacklistHandling(BlacklistData bldata,
+			ModelMap model) {
 		ModelAndView mav = BOARD_VIEW.view(model);
 		BoardState board = readAndRememberBoardState(model);
 
-		if (model.containsAttribute("fetch")) {
-			log.info("pulling blacklist from board {}", board);
-			machineController.pullBlacklist(board);
-		} else if (model.containsAttribute("push")) {
-			log.info("pushing blacklist to board {}", board);
-			machineController.pushBlacklist(board);
-		}
 		// FIXME add in blacklist manipulators here
 		addBlacklistData(board, model);
 
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
+	}
+
+	@Override
+	@Action("fetching a live blacklist from the machine")
+	public CompletableFuture<ModelAndView> blacklistFetch(BlacklistData bldata,
+			ModelMap model) {
+		ModelAndView mav = BOARD_VIEW.view(model);
+		BoardState board = readAndRememberBoardState(model);
+
+		log.info("pulling blacklist from board {}", board);
+		machineController.pullBlacklist(board);
+		addBlacklistData(board, model);
+
+		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		return completedFuture(addStandardContext(mav));
+	}
+
+	@Override
+	@Action("pushing a blacklist to the machine")
+	public CompletableFuture<ModelAndView> blacklistPush(BlacklistData bldata,
+			ModelMap model) {
+		ModelAndView mav = BOARD_VIEW.view(model);
+		BoardState board = readAndRememberBoardState(model);
+
+		log.info("pushing blacklist to board {}", board);
+		machineController.pushBlacklist(board);
+		addBlacklistData(board, model);
+
+		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		return completedFuture(addStandardContext(mav));
 	}
 
 	private BoardState readAndRememberBoardState(ModelMap model) {
@@ -587,13 +596,15 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private void addBlacklistData(BoardState board, ModelMap model) {
+		BlacklistData bldata = new BlacklistData();
+		bldata.setId(board.id);
 		Optional<Blacklist> bl = machineController.readBlacklistFromDB(board);
-		model.addAttribute(HAVE_BLACKLIST, bl.isPresent());
-		bl.ifPresent(blacklist -> model.addAttribute(BLACKLIST_OBJ,
-				blio.toString(blacklist)));
+		bldata.setPresent(bl.isPresent());
+		bl.map(blio::toString).ifPresent(bldata::setBlacklist);
+
 		model.addAttribute(BLACKLIST_URI,
-				uri(admin().blacklistHandling(model)));
-		model.addAttribute(BOARDCHIPS_OBJ, chipsOnBoard);
+				uri(admin().blacklistHandling(null, model)));
+		model.addAttribute(BLACKLIST_DATA_OBJ, bldata);
 	}
 
 	/**
@@ -775,6 +786,11 @@ interface AdminControllerConstants {
 	String BOARD_OBJ = "board";
 
 	/**
+	 * Blacklist data in {@link #BOARD_VIEW}. {@link BlacklistData}.
+	 */
+	String BLACKLIST_DATA_OBJ = "bldata";
+
+	/**
 	 * Blacklist contents in {@link #BOARD_VIEW}. String serialization of
 	 * {@link Blacklist}, if present.
 	 */
@@ -782,11 +798,6 @@ interface AdminControllerConstants {
 
 	/** Blacklist-related state in {@link #BOARD_VIEW}. Boolean. */
 	String HAVE_BLACKLIST = "haveBlacklist";
-
-	/**
-	 * The chips on a board. {@link List}{@code <}{@link ChipLocation}{@code >}
-	 */
-	String BOARDCHIPS_OBJ = "boardChips";
 
 	/**
 	 * Mapping from machine names to whether they're in service, in

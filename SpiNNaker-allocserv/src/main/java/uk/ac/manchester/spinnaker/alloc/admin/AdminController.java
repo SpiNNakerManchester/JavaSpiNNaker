@@ -20,13 +20,16 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.security.Principal;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -382,13 +385,47 @@ public interface AdminController {
 	/**
 	 * Manipulate a blacklist.
 	 *
+	 * @param bldata
+	 *            The blacklist data.
 	 * @param model
 	 *            Overall model
 	 * @return the model and view
 	 */
 	// TODO what arguments?
 	@PostMapping(BLACKLIST_PATH)
-	ModelAndView blacklistHandling(ModelMap model);
+	ModelAndView blacklistHandling(
+			@Valid @ModelAttribute("bldata") BlacklistData bldata,
+			ModelMap model);
+
+	/**
+	 * Fetch the blacklist for a board from the machine.
+	 *
+	 * @param bldata
+	 *            The blacklist data.
+	 * @param model
+	 *            Overall model
+	 * @return the model and view in a future
+	 */
+	@Async
+	@PostMapping(value = BLACKLIST_PATH, params = "fetch")
+	CompletableFuture<ModelAndView> blacklistFetch(
+			@Valid @ModelAttribute("bldata") BlacklistData bldata,
+			ModelMap model);
+
+	/**
+	 * Push the blacklist for a board to the machine.
+	 *
+	 * @param bldata
+	 *            The blacklist data.
+	 * @param model
+	 *            Overall model
+	 * @return the model and view in a future
+	 */
+	@Async
+	@PostMapping(value = BLACKLIST_PATH, params = "push")
+	CompletableFuture<ModelAndView> blacklistPush(
+			@Valid @ModelAttribute("bldata") BlacklistData bldata,
+			ModelMap model);
 
 	/**
 	 * Provide the form for uploading a machine definition.
@@ -446,4 +483,40 @@ public interface AdminController {
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_FILE_PARAM)
 	ModelAndView defineMachine(
 			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
+
+	class BlacklistData {
+		private int id;
+
+		private String blacklist;
+
+		private boolean present;
+
+		/** @return The board ID. */
+		@Positive
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		/** @return The text of the blacklist, if present. */
+		public String getBlacklist() {
+			return blacklist;
+		}
+
+		public void setBlacklist(String blacklist) {
+			this.blacklist = blacklist;
+		}
+
+		/** @return Whether there is blacklist data present. */
+		public boolean isPresent() {
+			return present;
+		}
+
+		public void setPresent(boolean present) {
+			this.present = present;
+		}
+	}
 }
