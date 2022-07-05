@@ -258,6 +258,30 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 	}
 
+	private static final class NoUser extends AdminException {
+		private static final long serialVersionUID = 6430674580385445089L;
+
+		private NoUser() {
+			super("no such user");
+		}
+	}
+
+	private static final class NoGroup extends AdminException {
+		private static final long serialVersionUID = -4593707687103047377L;
+
+		private NoGroup() {
+			super("no such group");
+		}
+	}
+
+	private static final class NoBoard extends AdminException {
+		private static final long serialVersionUID = -4017368969526085002L;
+
+		private NoBoard() {
+			super("no such board");
+		}
+	}
+
 	/**
 	 * Convert thrown admin issues to views so the rest of the code doesn't have
 	 * to.
@@ -326,7 +350,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		ModelAndView mav = USER_DETAILS_VIEW.view();
 		UserRecord user = userManager
 				.getUser(id, m -> uri(admin().showGroupInfo(m.getGroupId())))
-				.orElseThrow(() -> new AdminException("no such user"));
+				.orElseThrow(NoUser::new);
 		mav.addObject(USER_OBJ, user.sanitise());
 		assert mav.getModel().get(USER_OBJ) instanceof UserRecord;
 		mav.addObject("deleteUri", uri(admin().deleteUser(id, null, null)));
@@ -343,7 +367,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		UserRecord updatedUser = userManager
 				.updateUser(id, user, adminUser,
 						m -> uri(admin().showGroupInfo(m.getGroupId())))
-				.orElseThrow(() -> new AdminException("no such user"));
+				.orElseThrow(NoUser::new);
 		ModelAndView mav = USER_DETAILS_VIEW.view(model);
 		mav.addObject(USER_OBJ, updatedUser.sanitise());
 		return addStandardContext(mav);
@@ -390,7 +414,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			userLocations.put(m.getUserName(),
 					uri(admin().showUserForm(m.getUserId())));
 			return uri(admin().removeUserFromGroup(id, m.getUserId(), null));
-		}).orElseThrow(() -> new AdminException("no such group")));
+		}).orElseThrow(NoGroup::new));
 		assert mav.getModel().get(GROUP_OBJ) instanceof GroupRecord;
 		mav.addObject(USER_LIST_OBJ, userLocations);
 		mav.addObject("deleteUri", uri(admin().deleteGroup(id, null)));
@@ -425,10 +449,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("adding a user to a group")
 	public ModelAndView addUserToGroup(int id, String user,
 			RedirectAttributes attrs) {
-		GroupRecord g = userManager.getGroup(id, null)
-				.orElseThrow(() -> new AdminException("no such group"));
-		UserRecord u = userManager.getUser(user, null)
-				.orElseThrow(() -> new AdminException("no such user"));
+		GroupRecord g =
+				userManager.getGroup(id, null).orElseThrow(NoGroup::new);
+		UserRecord u = userManager.getUser(user, null).orElseThrow(NoUser::new);
 		String notice;
 		if (userManager.addUserToGroup(u, g).isPresent()) {
 			log.info("added user {} to group {}", u.getUserName(),
@@ -447,10 +470,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("removing a user from a group")
 	public ModelAndView removeUserFromGroup(int id, int userid,
 			RedirectAttributes attrs) {
-		GroupRecord g = userManager.getGroup(id, null)
-				.orElseThrow(() -> new AdminException("no such group"));
-		UserRecord u = userManager.getUser(userid, null)
-				.orElseThrow(() -> new AdminException("no such user"));
+		GroupRecord g =
+				userManager.getGroup(id, null).orElseThrow(NoGroup::new);
+		UserRecord u =
+				userManager.getUser(userid, null).orElseThrow(NoUser::new);
 		String notice;
 		if (userManager.removeUserFromGroup(u, g)) {
 			log.info("removed user {} from group {}", u.getUserName(),
@@ -481,7 +504,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("deleting a group")
 	public ModelAndView deleteGroup(int id, RedirectAttributes attrs) {
 		String deletedGroupName = userManager.deleteGroup(id)
-				.orElseThrow(() -> new AdminException("no such group"));
+				.orElseThrow(NoGroup::new);
 		log.info("deleted group ID={} groupname={}", id, deletedGroupName);
 		ModelAndView mav = redirectTo(uri(admin().listGroups()), attrs);
 		attrs.addFlashAttribute("notice", "deleted " + deletedGroupName);
@@ -520,8 +543,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("processing changes to a board's configuration")
 	public ModelAndView board(BoardRecord board, ModelMap model) {
 		ModelAndView mav = BOARD_VIEW.view(model);
-		BoardState bs = getBoardState(board)
-				.orElseThrow(() -> new AdminException("no such board"));
+		BoardState bs = getBoardState(board).orElseThrow(NoBoard::new);
 
 		inflateBoardRecord(board, bs);
 
@@ -545,10 +567,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView blacklistHandling(BlacklistData bldata,
 			ModelMap model) {
 		ModelAndView mav = BOARD_VIEW.view(model);
-		BoardState board = readAndRememberBoardState(model);
+		BoardState bs = readAndRememberBoardState(model);
 
 		// FIXME add in blacklist manipulators here
-		addBlacklistData(board, model);
+		addBlacklistData(bs, model);
 
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return addStandardContext(mav);
@@ -559,11 +581,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public CompletableFuture<ModelAndView> blacklistFetch(BlacklistData bldata,
 			ModelMap model) {
 		ModelAndView mav = BOARD_VIEW.view(model);
-		BoardState board = readAndRememberBoardState(model);
+		BoardState bs = readAndRememberBoardState(model);
 
-		log.info("pulling blacklist from board {}", board);
-		machineController.pullBlacklist(board);
-		addBlacklistData(board, model);
+		log.info("pulling blacklist from board {}", bs);
+		machineController.pullBlacklist(bs);
+		addBlacklistData(bs, model);
 
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return completedFuture(addStandardContext(mav));
@@ -574,11 +596,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public CompletableFuture<ModelAndView> blacklistPush(BlacklistData bldata,
 			ModelMap model) {
 		ModelAndView mav = BOARD_VIEW.view(model);
-		BoardState board = readAndRememberBoardState(model);
+		BoardState bs = readAndRememberBoardState(model);
 
-		log.info("pushing blacklist to board {}", board);
-		machineController.pushBlacklist(board);
-		addBlacklistData(board, model);
+		log.info("pushing blacklist to board {}", bs);
+		machineController.pushBlacklist(bs);
+		addBlacklistData(bs, model);
 
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
 		return completedFuture(addStandardContext(mav));
@@ -586,8 +608,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	private BoardState readAndRememberBoardState(ModelMap model) {
 		BoardRecord board = (BoardRecord) model.get(BOARD_OBJ);
-		BoardState bs = getBoardState(board)
-				.orElseThrow(() -> new AdminException("no such board"));
+		BoardState bs = getBoardState(board).orElseThrow(NoBoard::new);
 		inflateBoardRecord(board, bs);
 		board.setEnabled(bs.getState());
 		// Replace the state in the model with the current values
@@ -610,33 +631,30 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	/**
 	 * Copy settings from the record out of the DB.
 	 *
-	 * @param recordToInflate
+	 * @param board
 	 *            Where the values are copied to. A partial state.
-	 * @param stateFromDB
+	 * @param bs
 	 *            Where the values are copied from. A complete state from the
 	 *            DB.
 	 */
-	private void inflateBoardRecord(BoardRecord recordToInflate,
-			BoardState stateFromDB) {
+	private void inflateBoardRecord(BoardRecord board, BoardState bs) {
 		// Inflate the coordinates
-		recordToInflate.setId(stateFromDB.id);
-		recordToInflate.setX(stateFromDB.x);
-		recordToInflate.setY(stateFromDB.y);
-		recordToInflate.setZ(stateFromDB.z);
-		recordToInflate.setCabinet(stateFromDB.cabinet);
-		recordToInflate.setFrame(stateFromDB.frame);
-		recordToInflate.setBoard(stateFromDB.board);
-		recordToInflate.setIpAddress(stateFromDB.address);
-		recordToInflate.setMachineName(stateFromDB.machineName);
+		board.setId(bs.id);
+		board.setX(bs.x);
+		board.setY(bs.y);
+		board.setZ(bs.z);
+		board.setCabinet(bs.cabinet);
+		board.setFrame(bs.frame);
+		board.setBoard(bs.board);
+		board.setIpAddress(bs.address);
+		board.setMachineName(bs.machineName);
 
 		// Inflate the other properties
-		recordToInflate.setPowered(stateFromDB.getPower());
-		recordToInflate
-				.setLastPowerOff(stateFromDB.getPowerOffTime().orElse(null));
-		recordToInflate
-				.setLastPowerOn(stateFromDB.getPowerOnTime().orElse(null));
-		recordToInflate.setJobId(stateFromDB.getAllocatedJob().orElse(null));
-		recordToInflate.setReports(stateFromDB.getReports());
+		board.setPowered(bs.getPower());
+		board.setLastPowerOff(bs.getPowerOffTime().orElse(null));
+		board.setLastPowerOn(bs.getPowerOnTime().orElse(null));
+		board.setJobId(bs.getAllocatedJob().orElse(null));
+		board.setReports(bs.getReports());
 	}
 
 	/**
