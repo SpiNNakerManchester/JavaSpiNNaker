@@ -39,10 +39,8 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
- * Read a blacklist from a string, a definition file or the database. Note that
- * the code does not examine the filename, which is often used to determine what
- * board the blacklist applies to; that is left as a problem for the caller to
- * handle. That information <em>is</em> required when talking to the DB.
+ * Read a blacklist from the database or write it to the database. This works
+ * with blacklists as a collection of records, not a serialised BLOB.
  * <p>
  * Arguably everything in here really ought to be in {@link Blacklist} itself,
  * but that's necessarily in code that can't see into the database.
