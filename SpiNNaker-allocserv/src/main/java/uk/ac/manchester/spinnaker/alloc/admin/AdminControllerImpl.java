@@ -70,7 +70,6 @@ import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistIO;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -114,13 +113,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	@Autowired
 	private QuotaManager quotaManager;
-
-	/**
-	 * Do <strong>not</strong> access the DB directly through this! Use for
-	 * string I/O instead.
-	 */
-	@Autowired
-	private BlacklistIO blio;
 
 	private Map<String, Boolean> getMachineNames(boolean allowOutOfService) {
 		try (Connection conn = getConnection();
@@ -625,7 +617,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		bldata.setId(board.id);
 		Optional<Blacklist> bl = machineController.readBlacklistFromDB(board);
 		bldata.setPresent(bl.isPresent());
-		bl.map(blio::toString).ifPresent(bldata::setBlacklist);
+		bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
 		bldata.setSynched(machineController.isBlacklistSynched(board));
 
 		model.addAttribute(BLACKLIST_URI,

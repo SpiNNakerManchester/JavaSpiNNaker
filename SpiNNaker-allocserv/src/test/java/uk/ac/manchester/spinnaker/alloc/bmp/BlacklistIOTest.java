@@ -140,9 +140,9 @@ class BlacklistIOTest extends SQLQueries {
 	private static final ChipLocation C77 = new ChipLocation(7, 7);
 
 	@Nested
-	class UnderlyingClasses {
+	class MechanicalSerialization {
 		@Test
-		void serializeDeserialize() throws IOException, ClassNotFoundException {
+		void javaForm() throws IOException, ClassNotFoundException {
 			Blacklist blIn = new Blacklist(set(C11), map(C00, set(3)),
 					map(C00, set(WEST)));
 
@@ -154,7 +154,7 @@ class BlacklistIOTest extends SQLQueries {
 		}
 
 		@Test
-		void binaryForm() {
+		void spinnakerForm() {
 			Blacklist blIn = new Blacklist(set(C11), map(C00, set(3)),
 					map(C00, set(SOUTHWEST)));
 
@@ -186,8 +186,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseEmptyBlacklist() throws IOException {
 			String blData = "";
 
-			BlacklistIO blio = new BlacklistIO();
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(emptySet(), bl.getChips());
 			assertEquals(emptyMap(), bl.getCores());
@@ -198,7 +197,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneWholeDeadChip() throws IOException {
 			String blData = "chip 0 0 dead";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(singleton(C00), bl.getChips());
 			assertEquals(emptyMap(), bl.getCores());
@@ -209,7 +208,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneChipDeadCoreAndLink() throws IOException {
 			String blData = "chip 0 0 core 2 link 3";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(emptySet(), bl.getChips());
 			assertEquals(singletonMap(C00, singleton(2)), bl.getCores());
@@ -220,7 +219,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneChipDeadCores() throws IOException {
 			String blData = "chip 0 0 core 2,16";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(emptySet(), bl.getChips());
 			assertEquals(singletonMap(C00, set(16, 2)), bl.getCores());
@@ -231,7 +230,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneChipDeadLinks() throws IOException {
 			String blData = "chip 0 0 link 0,3,5,2";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(emptySet(), bl.getChips());
 			assertEquals(emptyMap(), bl.getCores());
@@ -243,7 +242,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneChipDeadCoresAndLinks() throws IOException {
 			String blData = "chip 0 0 core 2,3 link 3,0";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(emptySet(), bl.getChips());
 			assertEquals(singletonMap(C00, set(3, 2)), bl.getCores());
@@ -254,7 +253,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneChipAllParts() throws IOException {
 			String blData = "chip 0 0 core 2 link 3 dead";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(singleton(C00), bl.getChips());
 			assertEquals(emptyMap(), bl.getCores());
@@ -265,7 +264,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneChipAllPartsAlternateOrdering() throws IOException {
 			String blData = "chip 0 0 dead link 3 core 2";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(singleton(C00), bl.getChips());
 			assertEquals(emptyMap(), bl.getCores());
@@ -276,7 +275,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseSeveralChips() throws IOException {
 			String blData = "chip 0 0 core 2\nchip 0 1 link 0\nchip 1 0 dead";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(singleton(C10), bl.getChips());
 			assertEquals(singletonMap(C00, singleton(2)), bl.getCores());
@@ -287,7 +286,7 @@ class BlacklistIOTest extends SQLQueries {
 		void parseOneChipDeadCoresAndLinksTwoLines() throws IOException {
 			String blData = "chip 0 0 core 2,3\nchip 0 0 link 3,0";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(emptySet(), bl.getChips());
 			assertEquals(singletonMap(C00, set(3, 2)), bl.getCores());
@@ -299,7 +298,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData =
 					"#comment\n\n  \n   chip    0    0    dead   \n# comment";
 
-			Blacklist bl = blio.parseBlacklist(blData);
+			Blacklist bl = new Blacklist(blData);
 
 			assertEquals(singleton(C00), bl.getChips());
 			assertEquals(emptyMap(), bl.getCores());
@@ -311,7 +310,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "garbage\nchip 0 0 dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad line: garbage", e.getMessage());
 		}
@@ -321,7 +320,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "garbage chip 0 0 dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad line: garbage chip 0 0 dead", e.getMessage());
 		}
@@ -331,7 +330,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "chip 0 0 dead junk";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad line: chip 0 0 dead junk", e.getMessage());
 		}
@@ -341,7 +340,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "chip 0 0 dead dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad line: chip 0 0 dead dead", e.getMessage());
 		}
@@ -351,7 +350,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "chip 0 0 core 1 core 2";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad line: chip 0 0 core 1 core 2", e.getMessage());
 		}
@@ -361,7 +360,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "chip 0 0 link 1 link 2";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad line: chip 0 0 link 1 link 2", e.getMessage());
 		}
@@ -371,7 +370,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "chip 0 7 dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad chip coords: chip 0 7 dead", e.getMessage());
 		}
@@ -381,7 +380,7 @@ class BlacklistIOTest extends SQLQueries {
 			String blData = "chip 0 0 core 42";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
-				blio.parseBlacklist(blData);
+				new Blacklist(blData);
 			});
 			assertEquals("bad core number: chip 0 0 core 42", e.getMessage());
 		}
@@ -392,7 +391,7 @@ class BlacklistIOTest extends SQLQueries {
 
 			Exception e =
 					assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
-						blio.parseBlacklist(blData);
+						new Blacklist(blData);
 					});
 			assertEquals("direction ID 42 not in range 0 to 5", e.getMessage());
 		}
@@ -402,7 +401,7 @@ class BlacklistIOTest extends SQLQueries {
 			Blacklist bl = new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
 					map(C77, set(NORTH, SOUTH, EAST, WEST)));
 
-			String s = blio.toString(bl);
+			String s = bl.render();
 
 			assertEquals("chip 0 1 dead\nchip 1 0 core 1,2,3\n"
 					+ "chip 1 1 dead\nchip 7 7 link 0,2,3,5\n", s);
@@ -413,7 +412,7 @@ class BlacklistIOTest extends SQLQueries {
 			Blacklist bl = new Blacklist(set(C01, C11), map(C01, set(1, 2, 3)),
 					map(C11, set(NORTH, SOUTH, EAST, WEST)));
 
-			String s = blio.toString(bl);
+			String s = bl.render();
 
 			assertEquals("chip 0 1 dead\nchip 1 1 dead\n", s);
 		}
@@ -422,7 +421,7 @@ class BlacklistIOTest extends SQLQueries {
 		void printEmptyToString() {
 			Blacklist bl = new Blacklist(set(), map(), map());
 
-			String s = blio.toString(bl);
+			String s = bl.render();
 
 			assertEquals("", s);
 		}
@@ -437,7 +436,7 @@ class BlacklistIOTest extends SQLQueries {
 			File blf = new File(BlacklistIOTest.class.getClassLoader()
 					.getResource(filename).getFile());
 
-			Blacklist bl = blio.readBlacklistFile(blf);
+			Blacklist bl = new Blacklist(blf);
 
 			assertEquals(singleton(C11), bl.getChips());
 			assertEquals(map(C10, set(2, 3), C77, set(10, 17)), bl.getCores());

@@ -16,27 +16,41 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static java.lang.Integer.parseInt;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.EnumSet.copyOf;
+import static java.util.EnumSet.noneOf;
+import static java.util.Objects.requireNonNull;
+import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_LINKS_PER_ROUTER;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.OR;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -44,6 +58,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -51,6 +68,8 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
+import uk.ac.manchester.spinnaker.utils.CollectionUtils;
 
 /**
  * A blacklist read off a board. Note that all chip coordinates are
@@ -64,6 +83,8 @@ public final class Blacklist implements Serializable {
 	private static final long serialVersionUID = -7759940789892168209L;
 
 	private static final Logger log = getLogger(Blacklist.class);
+
+	private static final SpiNNakerTriadGeometry GEOM = getSpinn5Geometry();
 
 	private static final int SPINN5_CHIPS_PER_BOARD = 48;
 
@@ -207,6 +228,233 @@ public final class Blacklist implements Serializable {
 									.mapToObj(Direction::byId)
 									.collect(toEnumSet(Direction.class)));
 				}
+			}
+		}
+	}
+
+	/**
+	 * Create a blacklist from a string.
+	 *
+	 * @param blacklistText
+	 *            The string to parse.
+	 * @throws IOException
+	 *             If the string can't be read from. (Not expected.)
+	 * @throws IllegalArgumentException
+	 *             If the string is badly formatted.
+	 */
+	public Blacklist(String blacklistText) throws IOException {
+		try (BufferedReader br = new BufferedReader(
+				new StringReader(requireNonNull(blacklistText)))) {
+			parse(br);
+		}
+	}
+
+	/**
+	 * Create a blacklist from a text file.
+	 *
+	 * @param blacklistFile
+	 *            The file to parse.
+	 * @throws IOException
+	 *             If the file can't be read from.
+	 * @throws IllegalArgumentException
+	 *             If the string is badly formatted.
+	 */
+	public Blacklist(File blacklistFile) throws IOException {
+		try (FileReader r = new FileReader(requireNonNull(blacklistFile));
+				BufferedReader br = new BufferedReader(r)) {
+			parse(br);
+		}
+	}
+
+	/**
+	 * Create a blacklist from a reader.
+	 *
+	 * @param blacklistReader
+	 *            The reader to parse.
+	 * @throws IOException
+	 *             If the reader can't be read from.
+	 * @throws IllegalArgumentException
+	 *             If the string is badly formatted.
+	 */
+	public Blacklist(BufferedReader blacklistReader) {
+		parse(requireNonNull(blacklistReader));
+	}
+
+	private void parse(BufferedReader br) {
+		br.lines().map(String::trim)
+				// Remove blank and comment lines
+				.filter(s -> !s.isEmpty() && !s.startsWith("#"))
+				// Parse the remaining lines
+				.forEach(this::parseLine);
+	}
+
+	// REs from Perl code to read blacklist files
+
+	private static final Pattern CHIP_PATTERN = compile(
+			"chip\\s+(?<x>[0-7])\\s+(?<y>[0-7])\\s+(?<rest>.+)$");
+
+	private static final Pattern CORE_PATTERN = compile(
+			"core\\s+(?<cores>\\S+)\\s*");
+
+	private static final Pattern LINK_PATTERN = compile(
+			"link\\s+(?<links>\\S+)\\s*");
+
+	private static final Pattern DEAD_PATTERN = compile("dead\\s*");
+
+	private static String deleteMatched(Matcher m) {
+		// Java 8 uses StringBuffer for this; WHYWHYWHY?!
+		StringBuffer sb = new StringBuffer();
+		m.appendReplacement(sb, "").appendTail(sb);
+		return sb.toString();
+	}
+
+	private static Set<Integer> parseCommaSeparatedSet(String str) {
+		return CollectionUtils.parseCommaSeparatedSet(str, Integer::parseInt);
+	}
+
+	private static <T extends Enum<T>> Set<T> parseCommaSeparatedSet(
+			String str, Function<Integer, T> fun, Class<T> cls) {
+		return stream(str.split(",")).map(Integer::parseInt).map(fun)
+				.collect(toEnumSet(cls));
+	}
+
+	/**
+	 * Parse one non-empty non-comment line of a blacklist file.
+	 *
+	 * @param line
+	 *            The line's contents.
+	 * @throws IllegalArgumentException
+	 *             On most parse errors.
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             On a bad direction.
+	 */
+	private void parseLine(String line) {
+		Matcher m = CHIP_PATTERN.matcher(line);
+		if (!m.matches()) {
+			throw new IllegalArgumentException("bad line: " + line);
+		}
+		int x = parseInt(m.group("x"));
+		int y = parseInt(m.group("y"));
+		ChipLocation chip = new ChipLocation(x, y);
+		if (!GEOM.singleBoard().contains(chip)) {
+			throw new IllegalArgumentException("bad chip coords: " + line);
+		}
+		String rest = m.group("rest");
+
+		ChipLocation dead = null;
+		Set<Integer> deadCores = null;
+		Set<Direction> deadLinks = null;
+
+		// Look for patterns at start of line while we can
+		while (true) {
+			m = CORE_PATTERN.matcher(rest);
+			if (m.find() && deadCores == null) {
+				deadCores = parseCommaSeparatedSet(m.group("cores"));
+				deadCores.forEach(c -> {
+					if (c < 0 || c >= PROCESSORS_PER_CHIP) {
+						throw new IllegalArgumentException(
+								"bad core number: " + line);
+					}
+				});
+				rest = deleteMatched(m);
+				continue;
+			}
+
+			m = LINK_PATTERN.matcher(rest);
+			if (m.find() && deadLinks == null) {
+				deadLinks = parseCommaSeparatedSet(m.group("links"),
+						Direction::byId, Direction.class);
+				rest = deleteMatched(m);
+				continue;
+			}
+
+			m = DEAD_PATTERN.matcher(rest);
+			if (m.find() && dead == null) {
+				dead = chip;
+				rest = deleteMatched(m);
+				continue;
+			}
+
+			// All done, or error
+			if (!rest.isEmpty()) {
+				// Bad line
+				throw new IllegalArgumentException("bad line: " + line);
+			}
+			break;
+		}
+
+		if (dead != null) {
+			chips.add(dead);
+			// Mask any info from lines defined above this one
+			cores.remove(dead);
+			links.remove(dead);
+		} else if (!chips.contains(chip)) {
+			if (deadCores != null && !deadCores.isEmpty()) {
+				cores.computeIfAbsent(chip, k -> new HashSet<>())
+						.addAll(deadCores);
+			}
+			if (deadLinks != null && !deadLinks.isEmpty()) {
+				links.computeIfAbsent(chip, k -> noneOf(Direction.class))
+						.addAll(deadLinks);
+			}
+		}
+	}
+
+	/**
+	 * Convert the blacklist to a string in a human-readable format. This is the
+	 * format understood by {@link #Blacklist(String)}.
+	 * <p>
+	 * Note that the result may omit information in the original blacklist, but
+	 * only if that would also be ignored by the string parser.
+	 *
+	 * @return The string form of the blacklist.
+	 * @throws RuntimeException
+	 *             If something goes wrong. Not expected!
+	 */
+	public String render() {
+		try (StringWriter sw = new StringWriter();
+				BufferedWriter bw = new BufferedWriter(sw);
+				PrintWriter pw = new PrintWriter(bw)) {
+			render(pw);
+			if (pw.checkError()) {
+				// Annoying that HOW things failed gets swallowed...
+				throw new RuntimeException("failed to write blacklist");
+			}
+			return sw.toString();
+		} catch (IOException e) {
+			throw new RuntimeException(
+					"unexpected exception while writing blacklist to string",
+					e);
+		}
+	}
+
+	private void render(PrintWriter out) {
+		// Don't use println(); not exactly portable on Windows
+		for (ChipLocation chip : GEOM.singleBoard()) {
+			if (!isChipMentioned(chip)) {
+				continue;
+			}
+			out.format("chip %d %d", chip.getX(), chip.getY());
+			if (chips.contains(chip)) {
+				out.print(" dead\n");
+			} else {
+				if (cores.containsKey(chip)) {
+					out.print(" core ");
+					String sep = "";
+					for (Integer id : cores.get(chip)) {
+						out.append(sep).append(id.toString());
+						sep = ",";
+					}
+				}
+				if (links.containsKey(chip)) {
+					out.print(" link ");
+					String sep = "";
+					for (Direction d : links.get(chip)) {
+						out.append(sep).append(Integer.toString(d.id));
+						sep = ",";
+					}
+				}
+				out.print("\n");
 			}
 		}
 	}
