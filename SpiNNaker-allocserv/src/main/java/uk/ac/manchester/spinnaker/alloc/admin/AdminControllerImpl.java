@@ -115,6 +115,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Autowired
 	private QuotaManager quotaManager;
 
+	/**
+	 * Do <strong>not</strong> access the DB directly through this! Use for
+	 * string I/O instead.
+	 */
 	@Autowired
 	private BlacklistIO blio;
 
@@ -607,10 +611,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private BoardState readAndRememberBoardState(ModelMap model) {
-		BoardRecord board = (BoardRecord) model.get(BOARD_OBJ);
-		BoardState bs = getBoardState(board).orElseThrow(NoBoard::new);
-		inflateBoardRecord(board, bs);
-		board.setEnabled(bs.getState());
+		BoardRecord br = (BoardRecord) model.get(BOARD_OBJ);
+		BoardState bs = getBoardState(br).orElseThrow(NoBoard::new);
+		inflateBoardRecord(br, bs);
+		br.setEnabled(bs.getState());
 		// Replace the state in the model with the current values
 		model.put(BOARD_OBJ, bs);
 		return bs;
@@ -622,6 +626,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		Optional<Blacklist> bl = machineController.readBlacklistFromDB(board);
 		bldata.setPresent(bl.isPresent());
 		bl.map(blio::toString).ifPresent(bldata::setBlacklist);
+		bldata.setSynched(machineController.isBlacklistSynched(board));
 
 		model.addAttribute(BLACKLIST_URI,
 				uri(admin().blacklistHandling(null, model)));
@@ -631,30 +636,30 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	/**
 	 * Copy settings from the record out of the DB.
 	 *
-	 * @param board
+	 * @param br
 	 *            Where the values are copied to. A partial state.
 	 * @param bs
 	 *            Where the values are copied from. A complete state from the
 	 *            DB.
 	 */
-	private void inflateBoardRecord(BoardRecord board, BoardState bs) {
+	private void inflateBoardRecord(BoardRecord br, BoardState bs) {
 		// Inflate the coordinates
-		board.setId(bs.id);
-		board.setX(bs.x);
-		board.setY(bs.y);
-		board.setZ(bs.z);
-		board.setCabinet(bs.cabinet);
-		board.setFrame(bs.frame);
-		board.setBoard(bs.board);
-		board.setIpAddress(bs.address);
-		board.setMachineName(bs.machineName);
+		br.setId(bs.id);
+		br.setX(bs.x);
+		br.setY(bs.y);
+		br.setZ(bs.z);
+		br.setCabinet(bs.cabinet);
+		br.setFrame(bs.frame);
+		br.setBoard(bs.board);
+		br.setIpAddress(bs.address);
+		br.setMachineName(bs.machineName);
 
 		// Inflate the other properties
-		board.setPowered(bs.getPower());
-		board.setLastPowerOff(bs.getPowerOffTime().orElse(null));
-		board.setLastPowerOn(bs.getPowerOnTime().orElse(null));
-		board.setJobId(bs.getAllocatedJob().orElse(null));
-		board.setReports(bs.getReports());
+		br.setPowered(bs.getPower());
+		br.setLastPowerOff(bs.getPowerOffTime().orElse(null));
+		br.setLastPowerOn(bs.getPowerOnTime().orElse(null));
+		br.setJobId(bs.getAllocatedJob().orElse(null));
+		br.setReports(bs.getReports());
 	}
 
 	/**

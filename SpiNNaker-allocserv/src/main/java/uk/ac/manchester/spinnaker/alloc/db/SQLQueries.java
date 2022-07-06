@@ -1764,6 +1764,42 @@ public abstract class SQLQueries {
 					+ "WHERE board_id = :board_id";
 
 	/**
+	 * Mark a board as having had its blacklist modified.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	protected static final String MARK_BOARD_BLACKLIST_CHANGED =
+			"UPDATE boards SET blacklist_set_timestamp = "
+					+ "CAST(strftime('%s','now') AS INTEGER) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Mark a board as having had its blacklist synchronised with the hardware.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	protected static final String MARK_BOARD_BLACKLIST_SYNCHED =
+			"UPDATE boards SET blacklist_sync_timestamp = "
+					+ "CAST(strftime('%s','now') AS INTEGER) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Asks whether the blacklist model for a board is believed to be
+	 * synchronised to the hardware.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@ResultColumn("current")
+	@SingleRowResult
+	protected static final String IS_BOARD_BLACKLIST_CURRENT =
+			"SELECT blacklist_sync_timestamp >= blacklist_set_timestamp "
+					+ "AS current FROM boards WHERE board_id = :board_id "
+					+ "LIMIT 1";
+
+	/**
 	 * Add a chip on a board to that board's blacklist. Does not cause the
 	 * blacklist to be written to anywhere. The {@code x},{@code y} are
 	 * board-local coordinates.

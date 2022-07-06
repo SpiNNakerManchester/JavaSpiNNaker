@@ -70,6 +70,7 @@ import uk.ac.manchester.spinnaker.utils.CollectionUtils;
  *
  * @author Donal Fellows
  */
+// TODO move the string/file parsing to the Blacklist class
 @Component
 public class BlacklistIO extends DatabaseAwareBean {
 	private static final SpiNNakerTriadGeometry GEOM = getSpinn5Geometry();

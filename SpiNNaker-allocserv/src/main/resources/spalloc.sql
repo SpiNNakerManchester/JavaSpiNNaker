@@ -104,6 +104,8 @@ CREATE TABLE IF NOT EXISTS boards (
 	power_off_timestamp INTEGER, -- timestamp
 	power_on_timestamp INTEGER, -- timestamp
 	functioning INTEGER, -- boolean
+	blacklist_set_timestamp INTEGER DEFAULT (0), -- timestamp
+	blacklist_sync_timestamp INTEGER DEFAULT (0), -- timestamp
 	may_be_allocated INTEGER GENERATED ALWAYS AS ( -- generated COLUMN
 		board_num IS NOT NULL
 		AND allocated_job IS NULL

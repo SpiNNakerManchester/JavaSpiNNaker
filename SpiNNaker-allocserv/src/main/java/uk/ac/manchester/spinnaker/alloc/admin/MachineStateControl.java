@@ -400,6 +400,12 @@ public class MachineStateControl extends DatabaseAwareBean {
 		try {
 			return readBlacklistFromMachine(board).map(bl -> {
 				blacklistHandler.writeBlacklistToDB(board.id, bl);
+				execute(c -> {
+					// These must be done in ONE transaction
+					changed(c, board.id);
+					synched(c, board.id);
+					return this; // Unimportant result
+				});
 				return bl;
 			});
 		} catch (InterruptedException e) {
@@ -419,11 +425,24 @@ public class MachineStateControl extends DatabaseAwareBean {
 		return readBlacklistFromDB(board).map(bl -> {
 			try {
 				writeBlacklistToMachine(board, bl);
+				execute(c -> synched(c, board.id)); // Unimportant result
 				return bl;
 			} catch (InterruptedException e) {
 				return null;
 			}
 		});
+	}
+
+	private boolean changed(Connection conn, int boardId) {
+		try (Update synched = conn.update(MARK_BOARD_BLACKLIST_CHANGED)) {
+			return synched.call(boardId) > 0;
+		}
+	}
+
+	private boolean synched(Connection conn, int boardId) {
+		try (Update synched = conn.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
+			return synched.call(boardId) > 0;
+		}
 	}
 
 	/**
@@ -522,8 +541,15 @@ public class MachineStateControl extends DatabaseAwareBean {
 				props.getBlacklistReadBatchSize(),
 				curry(Op::new, CREATE_BLACKLIST_READ),
 				op -> op.getResult(serial("data", Blacklist.class))
-						.ifPresent(bl -> blacklistHandler
-								.writeBlacklistToDB(op.boardId, bl)));
+						.ifPresent(bl -> {
+							blacklistHandler.writeBlacklistToDB(op.boardId, bl);
+							execute(c -> {
+								// These must be done in ONE transaction
+								changed(c, op.boardId);
+								synched(c, op.boardId);
+								return this; // Unimportant result
+							});
+						}));
 	}
 
 	private static List<Integer> listAllBoards(Connection conn,
@@ -551,6 +577,22 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 */
 	public Optional<Blacklist> readBlacklistFromDB(BoardState board) {
 		return blacklistHandler.readBlacklistFromDB(board.id);
+	}
+
+	/**
+	 * Given a board, write a blacklist for it to the database. Does
+	 * <em>not</em> push the blacklist to the board.
+	 *
+	 * @param board
+	 *            Which board to write the blacklist of.
+	 * @param blacklist
+	 *            The blacklist to write.
+	 * @throws DataAccessException
+	 *             If access to the DB fails.
+	 */
+	public void writeBlacklistToDB(BoardState board, Blacklist blacklist) {
+		blacklistHandler.writeBlacklistToDB(board.id, blacklist);
+		execute(c -> changed(c, board.id)); // Unimportant result
 	}
 
 	/**
@@ -615,6 +657,24 @@ public class MachineStateControl extends DatabaseAwareBean {
 		}
 		// Can now read out of the DB normally
 		return findId(board.id).map(b -> b.bmpSerial).orElse(null);
+	}
+
+	/**
+	 * Test whether a board's blacklist is believed to be synchronised to the
+	 * hardware.
+	 *
+	 * @param board
+	 *            Which board?
+	 * @return True if the synch has happened, i.e., the time the blacklist data
+	 *         was changed is no later than the last time the synch happened.
+	 */
+	public boolean isBlacklistSynched(BoardState board) {
+		return executeRead(conn -> {
+			try (Query isCurrent = conn.query(IS_BOARD_BLACKLIST_CURRENT)) {
+				return isCurrent.call1(board.id).map(bool("current"))
+						.orElse(false);
+			}
+		});
 	}
 
 	/**

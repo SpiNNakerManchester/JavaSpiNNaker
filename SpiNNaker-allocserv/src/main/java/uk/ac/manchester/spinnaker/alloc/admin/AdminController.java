@@ -491,6 +491,8 @@ public interface AdminController {
 
 		private boolean present;
 
+		private boolean synched;
+
 		/** @return The board ID. */
 		@Positive
 		public int getId() {
@@ -517,6 +519,18 @@ public interface AdminController {
 
 		public void setPresent(boolean present) {
 			this.present = present;
+		}
+
+		/**
+		 * @return Whether the blacklist data is believed to be the same as the
+		 *         data on the board.
+		 */
+		public boolean isSynched() {
+			return synched;
+		}
+
+		public void setSynched(boolean synched) {
+			this.synched = synched;
 		}
 	}
 }

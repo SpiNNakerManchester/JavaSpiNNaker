@@ -916,9 +916,21 @@ class DMLTest extends SQLQueries {
 	}
 
 	@Test
-	void clearBlacklistedLinks() {
+	void markBoardBlacklistChanged() {
 		assumeWritable(c);
-		try (Update u = c.update(CLEAR_BLACKLISTED_LINKS)) {
+		try (Update u = c.update(MARK_BOARD_BLACKLIST_CHANGED)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void markBoardBlacklistSynched() {
+		assumeWritable(c);
+		try (Update u = c.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
 			assertEquals(1, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no delete

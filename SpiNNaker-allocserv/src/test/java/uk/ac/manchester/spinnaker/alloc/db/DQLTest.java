@@ -1104,6 +1104,17 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
+	void isBoardBlacklistCurrent() {
+		try (Query q = c.query(IS_BOARD_BLACKLIST_CURRENT)) {
+			assertEquals(1, q.getNumArguments());
+			assertSetEquals(set("current"), q.getRowColumnNames());
+			c.transaction(() -> {
+				assertFalse(q.call1(NO_BOARD).isPresent());
+			});
+		}
+	}
+
+	@Test
 	void getBlacklistedChips() {
 		try (Query q = c.query(GET_BLACKLISTED_CHIPS)) {
 			assertEquals(1, q.getNumArguments());
