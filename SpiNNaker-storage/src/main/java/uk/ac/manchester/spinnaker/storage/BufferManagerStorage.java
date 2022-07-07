@@ -192,6 +192,11 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		public final boolean isNonEmpty() {
 			return size > 0;
 		}
+
+		@Override
+		public String toString() {
+			return "Region " + regionIndex + " on " + core.toString();
+		}
 	}
 
 	/**

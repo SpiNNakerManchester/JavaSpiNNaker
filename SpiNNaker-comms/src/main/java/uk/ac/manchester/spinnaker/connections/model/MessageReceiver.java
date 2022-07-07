@@ -40,35 +40,7 @@ public interface MessageReceiver<MessageType> extends SocketHolder {
 	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
 	default MessageType receiveMessage() throws IOException {
-		return receiveMessage(null);
-	}
-
-	/**
-	 * Receives a SpiNNaker message from this connection. Blocks until a message
-	 * has been received, or a timeout occurs.
-	 *
-	 * @param timeout
-	 *            The time in seconds to wait for the message to arrive; if
-	 *            {@code null}, will wait forever, or until the connection is
-	 *            closed.
-	 * @return the received message
-	 * @throws IOException
-	 *             If there is an error receiving the message
-	 * @throws IllegalArgumentException
-	 *             If one of the fields of the SpiNNaker message is invalid
-	 */
-	default MessageType receiveMessage(Integer timeout) throws IOException {
-		if (timeout != null) {
-			return receiveMessage(convertTimeout(timeout));
-		}
-		// Want to wait forever but the underlying engine won't...
-		while (true) {
-			try {
-				return receiveMessage(convertTimeout(timeout));
-			} catch (SocketTimeoutException e) {
-				continue;
-			}
-		}
+		return receiveMessage(0);
 	}
 
 	/**
@@ -87,4 +59,14 @@ public interface MessageReceiver<MessageType> extends SocketHolder {
 	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
 	MessageType receiveMessage(int timeout) throws IOException;
+}
+
+/**
+ * Class just to satisfy Javadoc <em>and</em> Checkstyle in
+ * {@link MessageReceiver}.
+ */
+abstract class MessageReceiverUseClasses {
+	private MessageReceiverUseClasses(SocketTimeoutException e) {
+		// no instances
+	}
 }

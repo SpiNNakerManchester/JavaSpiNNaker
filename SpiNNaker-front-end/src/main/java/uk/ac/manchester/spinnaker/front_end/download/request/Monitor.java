@@ -134,4 +134,9 @@ public class Monitor implements HasCoreLocation {
 	public List<Placement> getPlacements() {
 		return unmodifiableList(placements);
 	}
+
+	@Override
+	public String toString() {
+		return "Monitor: " + asCoreLocation().toString();
+	}
 }

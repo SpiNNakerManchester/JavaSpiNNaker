@@ -40,6 +40,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
@@ -161,5 +162,9 @@ class ThrottledConnection implements Closeable {
 				log.warn("failed to close connection", e);
 			}
 		}, 1, SECONDS);
+	}
+
+	public UDPPacket receiveWithAddress() throws IOException {
+		return connection.receiveWithAddress(TIMEOUT_MS);
 	}
 }
