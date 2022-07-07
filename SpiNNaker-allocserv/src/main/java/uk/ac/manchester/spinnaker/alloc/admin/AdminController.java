@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -47,6 +48,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
+import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
  * The API for the controller for the admin user interface.
@@ -391,9 +393,8 @@ public interface AdminController {
 	 *            Overall model
 	 * @return the model and view
 	 */
-	// TODO what arguments?
 	@PostMapping(BLACKLIST_PATH)
-	ModelAndView blacklistHandling(
+	ModelAndView blacklistSave(
 			@Valid @ModelAttribute("bldata") BlacklistData bldata,
 			ModelMap model);
 
@@ -512,6 +513,17 @@ public interface AdminController {
 			this.blacklist = blacklist;
 		}
 
+		/**
+		 * @return The parsed blacklist.
+		 * @throws NullPointerException
+		 *             If no blacklist data is present.
+		 * @throws IllegalArgumentException
+		 *             If the string is invalid.
+		 */
+		public Blacklist getParsedBlacklist() {
+			return new Blacklist(blacklist);
+		}
+
 		/** @return Whether there is blacklist data present. */
 		public boolean isPresent() {
 			return present;
@@ -531,6 +543,18 @@ public interface AdminController {
 
 		public void setSynched(boolean synched) {
 			this.synched = synched;
+		}
+
+		@AssertTrue(message = "blacklist must be validly formatted")
+		private boolean isValidBlacklist() {
+			if (present) {
+				try {
+					new Blacklist(blacklist);
+				} catch (Exception e) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }

@@ -49,7 +49,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -237,16 +236,15 @@ public final class Blacklist implements Serializable {
 	 *
 	 * @param blacklistText
 	 *            The string to parse.
-	 * @throws IOException
-	 *             If the string can't be read from. (Not expected.)
 	 * @throws IllegalArgumentException
 	 *             If the string is badly formatted.
 	 */
-	public Blacklist(String blacklistText) throws IOException {
-		try (BufferedReader br = new BufferedReader(
-				new StringReader(requireNonNull(blacklistText)))) {
-			parse(br);
-		}
+	public Blacklist(String blacklistText) {
+		stream(blacklistText.split("\\R+")).map(String::trim)
+				// Remove blank and comment lines
+				.filter(Blacklist::isRelevantLine)
+				// Parse the remaining lines
+				.forEach(this::parseLine);
 	}
 
 	/**
@@ -262,30 +260,16 @@ public final class Blacklist implements Serializable {
 	public Blacklist(File blacklistFile) throws IOException {
 		try (FileReader r = new FileReader(requireNonNull(blacklistFile));
 				BufferedReader br = new BufferedReader(r)) {
-			parse(br);
+			br.lines().map(String::trim)
+					// Remove blank and comment lines
+					.filter(Blacklist::isRelevantLine)
+					// Parse the remaining lines
+					.forEach(this::parseLine);
 		}
 	}
 
-	/**
-	 * Create a blacklist from a reader.
-	 *
-	 * @param blacklistReader
-	 *            The reader to parse.
-	 * @throws IOException
-	 *             If the reader can't be read from.
-	 * @throws IllegalArgumentException
-	 *             If the string is badly formatted.
-	 */
-	public Blacklist(BufferedReader blacklistReader) {
-		parse(requireNonNull(blacklistReader));
-	}
-
-	private void parse(BufferedReader br) {
-		br.lines().map(String::trim)
-				// Remove blank and comment lines
-				.filter(s -> !s.isEmpty() && !s.startsWith("#"))
-				// Parse the remaining lines
-				.forEach(this::parseLine);
+	private static boolean isRelevantLine(String s) {
+		return !s.isEmpty() && !s.startsWith("#");
 	}
 
 	// REs from Perl code to read blacklist files

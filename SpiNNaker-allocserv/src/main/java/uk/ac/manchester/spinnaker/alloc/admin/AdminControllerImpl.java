@@ -53,6 +53,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -139,6 +140,33 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	/**
 	 * All models should contain a common set of attributes that describe where
 	 * the view is rendering and where other parts of the admin interface are.
+	 * Only call from
+	 * {@link #addStandardContext(ModelAndView, RedirectAttributes)}.
+	 *
+	 * @param model
+	 *            The base model to add to. This may be the real model or the
+	 *            flash attributes.
+	 */
+	private static void addStandardContextAttrs(Map<String, Object> model) {
+		Authentication auth = getContext().getAuthentication();
+		boolean mayChangePassword =
+				auth instanceof UsernamePasswordAuthenticationToken;
+
+		model.put(BASE_URI, fromCurrentRequestUri().toUriString());
+		model.put(TRUST_LEVELS, TrustLevel.values());
+		model.put(USERS_URI, uri(admin().listUsers()));
+		model.put(CREATE_USER_URI, uri(admin().getUserCreationForm()));
+		model.put(CREATE_GROUP_URI,
+				uri(admin().getGroupCreationForm()));
+		model.put(GROUPS_URI, uri(admin().listGroups()));
+		model.put(BOARDS_URI, uri(admin().boards()));
+		model.put(MACHINE_URI, uri(admin().machineManagement()));
+		model.put(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
+	}
+
+	/**
+	 * All models should contain a common set of attributes that describe where
+	 * the view is rendering and where other parts of the admin interface are.
 	 *
 	 * @param mav
 	 *            The model-and-view.
@@ -149,24 +177,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 */
 	private static ModelAndView addStandardContext(ModelAndView mav,
 			RedirectAttributes attrs) {
-		Authentication auth = getContext().getAuthentication();
-		boolean mayChangePassword =
-				auth instanceof UsernamePasswordAuthenticationToken;
-
-		// Real implementation of these is always a ModelMap
-		ModelMap model = (ModelMap) (nonNull(attrs) ? attrs.getFlashAttributes()
+		addStandardContextAttrs(nonNull(attrs)
+				// Real implementation of flash attrs is always a ModelMap
+				? (ModelMap) attrs.getFlashAttributes()
 				: mav.getModel());
-
-		model.addAttribute(BASE_URI, fromCurrentRequestUri().toUriString());
-		model.addAttribute(TRUST_LEVELS, TrustLevel.values());
-		model.addAttribute(USERS_URI, uri(admin().listUsers()));
-		model.addAttribute(CREATE_USER_URI, uri(admin().getUserCreationForm()));
-		model.addAttribute(CREATE_GROUP_URI,
-				uri(admin().getGroupCreationForm()));
-		model.addAttribute(GROUPS_URI, uri(admin().listGroups()));
-		model.addAttribute(BOARDS_URI, uri(admin().boards()));
-		model.addAttribute(MACHINE_URI, uri(admin().machineManagement()));
-		model.addAttribute(USER_MAY_CHANGE_PASSWORD, mayChangePassword);
 		return mav;
 	}
 
@@ -538,7 +552,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("processing changes to a board's configuration")
 	public ModelAndView board(BoardRecord board, ModelMap model) {
-		ModelAndView mav = BOARD_VIEW.view(model);
 		BoardState bs = getBoardState(board).orElseThrow(NoBoard::new);
 
 		inflateBoardRecord(board, bs);
@@ -555,28 +568,29 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		addBlacklistData(bs, model);
 		model.put(BOARD_OBJ, bs); // TODO is this right?
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
-		return addStandardContext(mav);
+		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
 	@Override
-	@Action("processing changes to a blacklist")
-	public ModelAndView blacklistHandling(BlacklistData bldata,
-			ModelMap model) {
-		ModelAndView mav = BOARD_VIEW.view(model);
+	@Action("saving changes to a board blacklist")
+	public ModelAndView blacklistSave(BlacklistData bldata, ModelMap model) {
 		BoardState bs = readAndRememberBoardState(model);
 
-		// FIXME add in blacklist manipulators here
+		if (bldata.isPresent()) {
+			machineController.writeBlacklistToDB(bs,
+					bldata.getParsedBlacklist());
+		}
 		addBlacklistData(bs, model);
 
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
-		return addStandardContext(mav);
+		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
 	@Override
-	@Action("fetching a live blacklist from the machine")
+	@Async
+	@Action("fetching a live board blacklist from the machine")
 	public CompletableFuture<ModelAndView> blacklistFetch(BlacklistData bldata,
 			ModelMap model) {
-		ModelAndView mav = BOARD_VIEW.view(model);
 		BoardState bs = readAndRememberBoardState(model);
 
 		log.info("pulling blacklist from board {}", bs);
@@ -584,14 +598,14 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		addBlacklistData(bs, model);
 
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
-		return completedFuture(addStandardContext(mav));
+		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
 	}
 
 	@Override
-	@Action("pushing a blacklist to the machine")
+	@Async
+	@Action("pushing a board blacklist to the machine")
 	public CompletableFuture<ModelAndView> blacklistPush(BlacklistData bldata,
 			ModelMap model) {
-		ModelAndView mav = BOARD_VIEW.view(model);
 		BoardState bs = readAndRememberBoardState(model);
 
 		log.info("pushing blacklist to board {}", bs);
@@ -599,7 +613,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		addBlacklistData(bs, model);
 
 		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
-		return completedFuture(addStandardContext(mav));
+		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
 	}
 
 	private BoardState readAndRememberBoardState(ModelMap model) {
@@ -621,7 +635,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		bldata.setSynched(machineController.isBlacklistSynched(board));
 
 		model.addAttribute(BLACKLIST_URI,
-				uri(admin().blacklistHandling(null, model)));
+				uri(admin().blacklistSave(null, model)));
 		model.addAttribute(BLACKLIST_DATA_OBJ, bldata);
 	}
 
@@ -804,15 +818,6 @@ interface AdminControllerConstants {
 	 * Blacklist data in {@link #BOARD_VIEW}. {@link BlacklistData}.
 	 */
 	String BLACKLIST_DATA_OBJ = "bldata";
-
-	/**
-	 * Blacklist contents in {@link #BOARD_VIEW}. String serialization of
-	 * {@link Blacklist}, if present.
-	 */
-	String BLACKLIST_OBJ = "blacklist";
-
-	/** Blacklist-related state in {@link #BOARD_VIEW}. Boolean. */
-	String HAVE_BLACKLIST = "haveBlacklist";
 
 	/**
 	 * Mapping from machine names to whether they're in service, in

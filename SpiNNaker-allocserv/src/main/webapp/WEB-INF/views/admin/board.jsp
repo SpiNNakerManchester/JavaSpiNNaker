@@ -154,9 +154,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<form:hidden path="id" />
 			<c:if test="${ bldata.present }">
 				<form:textarea path="blacklist" />
+				<input type="submit" name="save" value="Save blacklist" />
 			</c:if>
-			<%-- TODO: buttons to fetch and save the actual blacklist --%>
-			<input type="submit" name="fetch" value="Look Up Board" />
+			<input type="submit" name="fetch" value="Refresh blacklist from board" />
+			<input type="submit" name="push" value="Push saved blacklist to board"
+				class="warningbutton" ${ bldata.synched ? 'disabled="disabled"' : '' } />
 		</form:form>
 	</c:when>
 	<c:otherwise>
