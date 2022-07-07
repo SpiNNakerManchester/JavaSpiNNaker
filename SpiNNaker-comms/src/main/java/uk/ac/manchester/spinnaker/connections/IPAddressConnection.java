@@ -19,8 +19,8 @@ package uk.ac.manchester.spinnaker.connections;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 
@@ -62,9 +62,10 @@ public class IPAddressConnection extends UDPConnection<InetAddress>
 	@Override
 	public InetAddress receiveMessage(int timeout) {
 		try {
-			DatagramPacket packet = receiveWithAddress(timeout);
-			if (packet.getPort() == BOOTROM_SPINN_PORT) {
-				return packet.getAddress();
+			UDPPacket packet = receiveWithAddress(timeout);
+			InetSocketAddress addr = packet.getAddress();
+			if (addr.getPort() == BOOTROM_SPINN_PORT) {
+				return addr.getAddress();
 			}
 		} catch (IOException e) {
 			// Do nothing

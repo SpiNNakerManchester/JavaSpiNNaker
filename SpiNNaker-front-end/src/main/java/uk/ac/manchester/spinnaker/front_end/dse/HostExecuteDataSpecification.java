@@ -21,7 +21,7 @@ import static java.lang.Long.toHexString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
-import static uk.ac.manchester.spinnaker.front_end.dse.ExecutionContext.TOTAL_HEADER_SIZE;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -301,7 +301,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 				log.info("loading data onto {} ({} bytes at 0x{})",
 						ctl.core.asChipLocation(), toUnsignedLong(size),
 						toHexString(toUnsignedLong(start)));
-				int written = TOTAL_HEADER_SIZE;
+				int written = APP_PTR_TABLE_BYTE_SIZE;
 
 				for (MemoryRegion reg : executor.regions()) {
 					MemoryRegionReal r = getRealRegionOrNull(reg);

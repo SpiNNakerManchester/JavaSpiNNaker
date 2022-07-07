@@ -18,9 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_HEADER_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -43,12 +41,6 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  * cross-references.
  */
 class ExecutionContext implements AutoCloseable {
-	/** The size of the region table. **/
-	private static final int REGION_TABLE_SIZE = MAX_MEM_REGIONS * WORD_SIZE;
-
-	/** The size of everything before the first region starts. */
-	static final int TOTAL_HEADER_SIZE =
-			APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE;
 
 	private final Transceiver txrx;
 
@@ -127,7 +119,7 @@ class ExecutionContext implements AutoCloseable {
 
 	private void writeHeader(HasCoreLocation core, Executor executor,
 			int startAddress) throws IOException, ProcessException {
-		ByteBuffer b = allocate(APP_PTR_TABLE_HEADER_SIZE + REGION_TABLE_SIZE)
+		ByteBuffer b = allocate(APP_PTR_TABLE_BYTE_SIZE)
 				.order(LITTLE_ENDIAN);
 
 		executor.addHeader(b);
@@ -138,18 +130,42 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() throws DataSpecificationException, ProcessException,
+			IOException {
+		// Check for missing
+		List<String> errors = new ArrayList<>();
 		for (CoreToFill toFill : regionsToFill) {
 			for (MemoryRegionReference ref : toFill.refs) {
 				int reference = ref.getReference();
 				if (!regionsToRef.containsKey(reference)) {
-					throw new DataSpecificationException("Reference "
-							+ reference + " from " + toFill + " not found");
+					String potentialRefs = "";
+					for (int r : regionsToRef.keySet()) {
+						RegionToRef reg = regionsToRef.get(r);
+						if (reg.core.onSameChipAs(toFill.core)) {
+							potentialRefs += ref
+									+ "(from core " + reg.core + "); ";
+						}
+					}
+					errors.add("Reference " + reference + " from " + toFill
+							+ " not found from " + potentialRefs);
 				}
 				RegionToRef reg = regionsToRef.get(reference);
 				if (!reg.core.onSameChipAs(toFill.core)) {
-					throw new DanglingReferenceException(ref, reg, toFill);
+					errors.add("Region " + ref + " on " + reg + " cannot be"
+							+ " referenced from " + toFill);
 				}
+			}
+		}
+
+		if (!errors.isEmpty()) {
+			throw new DataSpecificationException(errors.toString());
+		}
+
+		// Finish filling things in and write header
+		for (CoreToFill toFill : regionsToFill) {
+			for (MemoryRegionReference ref : toFill.refs) {
+				int reference = ref.getReference();
+				RegionToRef reg = regionsToRef.get(reference);
 				ref.setRegionBase(reg.pointer);
 			}
 			writeHeader(toFill.core, toFill.executor, toFill.start);

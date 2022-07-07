@@ -86,14 +86,14 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            The maximum number of threads to use to do the listening.
 	 * @param timeout
 	 *            How long to wait in the OS for a message to arrive; if
-	 *            {@code null}, wait indefinitely.
+	 *            0, wait indefinitely.
 	 */
 	public ConnectionListener(MessageReceiver<MessageType> connection,
-			int numProcesses, Integer timeout) {
+			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);
 		setDaemon(true);
 		this.connection = connection;
-		this.timeout = timeout == null ? TIMEOUT : timeout;
+		this.timeout = timeout;
 		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;

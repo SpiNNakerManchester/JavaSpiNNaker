@@ -61,4 +61,10 @@ public final class MemoryRegionReference extends MemoryRegion {
 	public int getRegionBase() {
 		return baseAddress;
 	}
+
+	@Override
+	public String toString() {
+		return "MemoryRegionReference(index:" + index + ", reference:"
+			+ reference + ", Region Base:" + baseAddress + ")";
+	}
 }
