@@ -94,14 +94,14 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">	 *            The maximum number of threads to use to do the listening.</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">	 * @param timeout</em>
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">	 *            How long to wait in the OS for a message to arrive; if</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">	 *            {@code null}, wait indefinitely.</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">	 *            0, wait indefinitely.</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  	<strong class="jxr_keyword">public</strong> <a name="ConnectionListener" href="../../../../../uk/ac/manchester/spinnaker/connections/ConnectionListener.html#ConnectionListener">ConnectionListener</a>(MessageReceiver&lt;MessageType&gt; connection,
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  			<strong class="jxr_keyword">int</strong> numProcesses, Integer timeout) {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  			<strong class="jxr_keyword">int</strong> numProcesses, <strong class="jxr_keyword">int</strong> timeout) {
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  		<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Connection listener for connection "</span> + connection);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  		setDaemon(<strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  		<strong class="jxr_keyword">this</strong>.connection = connection;
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  		<strong class="jxr_keyword">this</strong>.timeout = timeout == <strong class="jxr_keyword">null</strong> ? TIMEOUT : timeout;
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  		<strong class="jxr_keyword">this</strong>.timeout = timeout;
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  		callbackPool = <strong class="jxr_keyword">new</strong> ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  				MILLISECONDS, <strong class="jxr_keyword">new</strong> LinkedBlockingQueue&lt;&gt;());
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  		done = false;

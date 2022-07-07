@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":18,"i1":6,"i2":18};
+<script type="text/javascript">var data = {"i0":18,"i1":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],16:["t5","Default Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -149,13 +149,6 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <div class="block">Receives a SpiNNaker message from this connection.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
-<td class="colFirst"><code>default <a href="MessageReceiver.html" title="type parameter in MessageReceiver">MessageType</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#receiveMessage(java.lang.Integer)">receiveMessage</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
-<td class="colLast">
-<div class="block">Receives a SpiNNaker message from this connection.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -191,26 +184,6 @@ extends <a href="SocketHolder.html" title="interface in uk.ac.manchester.spinnak
 <div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
  has been received.</div>
 <dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the received message</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error receiving the message</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If one of the fields of the SpiNNaker message is invalid</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="receiveMessage(java.lang.Integer)">receiveMessage</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="MessageReceiver.html" title="type parameter in MessageReceiver">MessageType</a></span>&nbsp;<span class="memberName">receiveMessage</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
-                            throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
- has been received, or a timeout occurs.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>timeout</code> - The time in seconds to wait for the message to arrive; if
-            <code>null</code>, will wait forever, or until the connection is
-            closed.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the received message</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>

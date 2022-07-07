@@ -189,9 +189,9 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,java.lang.Integer)">ConnectionListener</a></span>&#8203;(<a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,int)">ConnectionListener</a></span>&#8203;(<a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
 int&nbsp;numProcesses,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+int&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Create a connection listener.</div>
 </td>
@@ -315,17 +315,17 @@ int&nbsp;numProcesses,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,java.lang.Integer)">ConnectionListener</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,int)">ConnectionListener</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
 int&nbsp;numProcesses,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span></div>
+int&nbsp;timeout)</span></div>
 <div class="block">Create a connection listener.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>connection</code> - The connection to listen to.</dd>
 <dd><code>numProcesses</code> - The maximum number of threads to use to do the listening.</dd>
 <dd><code>timeout</code> - How long to wait in the OS for a message to arrive; if
-            <code>null</code>, wait indefinitely.</dd>
+            0, wait indefinitely.</dd>
 </dl>
 </section>
 </li>

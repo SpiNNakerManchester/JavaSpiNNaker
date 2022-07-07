@@ -333,6 +333,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The size of the Data Specification table header, in bytes.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/data_spec/Constants.html#APP_PTR_TABLE_REGION_SIZE">APP_PTR_TABLE_REGION_SIZE</a></span> - Static variable in class uk.ac.manchester.spinnaker.data_spec.<a href="uk/ac/manchester/spinnaker/data_spec/Constants.html" title="class in uk.ac.manchester.spinnaker.data_spec">Constants</a></dt>
+<dd>
+<div class="block">The size of a Data Specification region description, in bytes.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/data_spec/Constants.html#APPDATA_MAGIC_NUM">APPDATA_MAGIC_NUM</a></span> - Static variable in class uk.ac.manchester.spinnaker.data_spec.<a href="uk/ac/manchester/spinnaker/data_spec/Constants.html" title="class in uk.ac.manchester.spinnaker.data_spec">Constants</a></dt>
 <dd>
 <div class="block">Application data magic number.</div>
@@ -1391,7 +1395,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Create a connection listener with the default number of listening threads
  and the default OS-level timeout.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/ConnectionListener.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,java.lang.Integer)">ConnectionListener(MessageReceiver&lt;MessageType&gt;, int, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/ConnectionListener.html" title="class in uk.ac.manchester.spinnaker.connections">ConnectionListener</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/ConnectionListener.html#%3Cinit%3E(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,int)">ConnectionListener(MessageReceiver&lt;MessageType&gt;, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/ConnectionListener.html" title="class in uk.ac.manchester.spinnaker.connections">ConnectionListener</a></dt>
 <dd>
 <div class="block">Create a connection listener.</div>
 </dd>
@@ -3102,6 +3106,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Copy current write address to a register.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html#getAddress()">getAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></dt>
+<dd>
+<div class="block">Get the address.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/io/AbstractIO.html#getAddress()">getAddress()</a></span> - Method in interface uk.ac.manchester.spinnaker.io.<a href="uk/ac/manchester/spinnaker/io/AbstractIO.html" title="interface in uk.ac.manchester.spinnaker.io">AbstractIO</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ExecutableTargets.html#getAllCoreSubsets()">getAllCoreSubsets()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ExecutableTargets.html" title="class in uk.ac.manchester.spinnaker.messages.model">ExecutableTargets</a></dt>
@@ -3223,6 +3231,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/InetFactory.html#getByName(java.lang.String)">getByName(String)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/InetFactory.html" title="class in uk.ac.manchester.spinnaker.utils">InetFactory</a></dt>
 <dd>
 <div class="block">Creates a IPv4 address from a host name.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html#getByteBuffer()">getByteBuffer()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></dt>
+<dd>
+<div class="block">Get the buffer.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/eieio/EIEIOPrefix.html#getByValue(int)">getByValue(int)</a></span> - Static method in enum uk.ac.manchester.spinnaker.messages.eieio.<a href="uk/ac/manchester/spinnaker/messages/eieio/EIEIOPrefix.html" title="enum in uk.ac.manchester.spinnaker.messages.eieio">EIEIOPrefix</a></dt>
 <dd>
@@ -7434,10 +7446,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SDPConnection.html#receiveMessage(int)">receiveMessage(int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/model/MessageReceiver.html#receiveMessage(java.lang.Integer)">receiveMessage(Integer)</a></span> - Method in interface uk.ac.manchester.spinnaker.connections.model.<a href="uk/ac/manchester/spinnaker/connections/model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a></dt>
-<dd>
-<div class="block">Receives a SpiNNaker message from this connection.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocConnection.html#receiveResponse(java.lang.Integer)">receiveResponse(Integer)</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocConnection.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocConnection</a></dt>
 <dd>
 <div class="block">Receive a line from the server with a response.</div>
@@ -7455,11 +7463,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Receives an SCP response from this connection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#receiveWithAddress(int)">receiveWithAddress(int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
-<dd>
-<div class="block">Receive data from the connection along with the address where the data
- was received from.</div>
-</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#receiveWithAddress(java.lang.Integer)">receiveWithAddress(Integer)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
 <dd>
 <div class="block">Receive data from the connection along with the address where the data
  was received from.</div>
@@ -9666,7 +9669,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionReference.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.data_spec.<a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionReference.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegionReference</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegion.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegion.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegion</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Monitor.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Monitor.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Monitor</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipBean.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipBean</a></dt>
 <dd>&nbsp;</dd>
@@ -9735,6 +9742,8 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.messages.<a href="uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">WhereIs</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocConnection.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocConnection.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocConnection</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/Slice.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/Slice.html" title="class in uk.ac.manchester.spinnaker.utils">Slice</a></dt>
 <dd>&nbsp;</dd>
@@ -9925,6 +9934,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.TrafficClass.html" title="enum in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">UDPConnection.TrafficClass</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
 <dd>
 <div class="block">The type of traffic being sent on a socket.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">UDPPacket</span></a> - Class in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
+<dd>
+<div class="block">A packet with an address.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html#%3Cinit%3E(java.nio.ByteBuffer,java.net.SocketAddress)">UDPPacket(ByteBuffer, SocketAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></dt>
+<dd>
+<div class="block">Create a buffer with an address.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">UDPTransceiver</span></a> - Class in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
 <dd>
