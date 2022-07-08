@@ -73,14 +73,24 @@ public final class Constants {
 
 	/**
 	 * The size of the Data Specification table header, in bytes.
+	 * Note that the header consists of 2 uint32_t variables
+	 * (magic number, version).
 	 */
 	public static final int APP_PTR_TABLE_HEADER_SIZE = INT_SIZE * 2;
+
+	/**
+	 * The size of a Data Specification region description, in bytes.
+	 * Note that each description consists of a pointer and 2 uint32_t variables
+	 * (pointer, checksum, n_words).
+	 */
+	public static final int APP_PTR_TABLE_REGION_SIZE = INT_SIZE * 3;
 
 	/**
 	 * The size of the Data Specification table, in bytes.
 	 */
 	public static final int APP_PTR_TABLE_BYTE_SIZE =
-			APP_PTR_TABLE_HEADER_SIZE + MAX_MEM_REGIONS * INT_SIZE;
+			APP_PTR_TABLE_HEADER_SIZE
+			+ (MAX_MEM_REGIONS * APP_PTR_TABLE_REGION_SIZE);
 
 	// Constants used by DSG command encoding: payload length field
 

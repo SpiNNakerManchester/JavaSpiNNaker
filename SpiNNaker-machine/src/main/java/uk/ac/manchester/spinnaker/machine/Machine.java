@@ -1004,12 +1004,23 @@ public class Machine implements Iterable<Chip> {
 			return "bootEthernetAddress " + bootEthernetAddress + " != "
 					+ other.bootEthernetAddress;
 		}
-		for (var loc : chips.keySet()) {
+		for (ChipLocation loc : chips.keySet()) {
 			var c1 = chips.get(loc);
 			var c2 = other.chips.get(loc);
-			if (!c1.equals(c2)) {
-				return c1 + " != " + c2;
+			if (c1.equals(c2)) {
+				return null;
 			}
+			var diff = c1.difference(c2);
+			if (diff != "userProcessors") {
+				return c1 + " != " + c2 + "(diff = " + diff + ")";
+			}
+			if (c1.userProcessors().size() == c2.userProcessors().size() + 1) {
+				return null;
+			}
+			if (c1.userProcessors().size() == c2.userProcessors().size() - 1) {
+				return null;
+			}
+			return c1 + " != " + c2 + "(diff = userProcessors)";
 		}
 		if (!ethernetConnectedChips.equals(other.ethernetConnectedChips)) {
 			return "ethernetConnectedChips " + ethernetConnectedChips + " != "

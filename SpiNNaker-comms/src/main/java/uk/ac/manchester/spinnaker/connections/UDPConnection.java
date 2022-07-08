@@ -388,36 +388,6 @@ public abstract class UDPConnection<T>
 	 * was received from.
 	 *
 	 * @param timeout
-	 *            The timeout in milliseconds, or {@code null} to wait forever
-	 * @return The datagram packet received; caller is responsible for only
-	 *         accessing the valid part of the buffer.
-	 * @throws SocketTimeoutException
-	 *             If a timeout occurs before any data is received
-	 * @throws EOFException
-	 *             If the connection is closed
-	 * @throws IOException
-	 *             If an error occurs receiving the data
-	 */
-	public final DatagramPacket receiveWithAddress(Integer timeout)
-			throws SocketTimeoutException, IOException {
-		if (timeout != null) {
-			return receiveWithAddress(convertTimeout(timeout));
-		}
-		// Want to wait forever but the underlying engine won't...
-		while (true) {
-			try {
-				return receiveWithAddress(convertTimeout(timeout));
-			} catch (SocketTimeoutException e) {
-				continue;
-			}
-		}
-	}
-
-	/**
-	 * Receive data from the connection along with the address where the data
-	 * was received from.
-	 *
-	 * @param timeout
 	 *            The timeout in milliseconds
 	 * @return The datagram packet received; caller is responsible for only
 	 *         accessing the valid part of the buffer.
@@ -428,7 +398,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	public final DatagramPacket receiveWithAddress(int timeout)
+	public final UDPPacket receiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		if (isClosed()) {
 			throw new EOFException();
@@ -451,7 +421,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	DatagramPacket doReceiveWithAddress(int timeout)
+	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
 		ByteBuffer buffer = allocate(receivePacketSize);
@@ -459,8 +429,9 @@ public abstract class UDPConnection<T>
 				buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength());
+		buffer.flip();
 		logRecv(buffer, pkt.getSocketAddress());
-		return pkt;
+		return new UDPPacket(buffer.order(LITTLE_ENDIAN), remoteAddress);
 	}
 
 	/**

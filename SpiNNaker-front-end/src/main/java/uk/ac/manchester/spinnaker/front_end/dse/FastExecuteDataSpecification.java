@@ -21,6 +21,7 @@ import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Long.toHexString;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -29,6 +30,7 @@ import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -218,10 +220,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		var storage = connection.getStorageInterface();
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
-		try (var bar = new Progress(opsToRun, LOADING_MSG);
-				var context = new ExecutionContext(txrx)) {
+		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
 			executor.submitTasks(ethernets.stream().map(
-					board -> () -> loadBoard(board, storage, bar, context)))
+					board -> () -> loadBoard(board, storage, bar)))
 					.awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
@@ -231,8 +232,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar,
-			ExecutionContext execContext) throws IOException, ProcessException,
+	private void loadBoard(Ethernet board, DSEStorage storage, Progress bar)
+			throws IOException, ProcessException,
 			DataSpecificationException, StorageException {
 		var cores = storage.listCoresToLoad(board, false);
 		if (cores.isEmpty()) {
@@ -240,7 +241,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			return;
 		}
 		log.info("loading data onto {} cores on board", cores.size());
-		try (var worker = new BoardWorker(board, storage, bar, execContext)) {
+		try (var worker = new BoardWorker(board, storage, bar)) {
 			var addresses = new HashMap<CoreToLoad, Integer>();
 			for (var ctl : cores) {
 				int start = malloc(ctl, ctl.sizeToWrite);
@@ -425,20 +426,21 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private ExecutionContext execContext;
 
-		BoardWorker(Ethernet board, DSEStorage storage, Progress bar,
-				ExecutionContext execContext)
+		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException, ProcessException {
 			this.board = board;
 			this.logContext = new BoardLocal(board.location);
 			this.storage = storage;
 			this.bar = bar;
-			this.execContext = execContext;
+			this.execContext = new ExecutionContext(txrx);
 			connection = new ThrottledConnection(txrx, board,
 					gathererForChip.get(board.location).getIptag());
 		}
 
 		@Override
-		public void close() throws IOException {
+		public void close() throws IOException, ProcessException,
+				DataSpecificationException {
+			execContext.close();
 			logContext.close();
 			connection.close();
 		}
@@ -508,7 +510,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								+ "starting at 0x{}",
 						size, ctl.core, toHexString(toUnsignedLong(start)));
 			}
-			int written = ExecutionContext.TOTAL_HEADER_SIZE;
+			int written = APP_PTR_TABLE_BYTE_SIZE;
 			int writeCount = 1;
 
 			for (var reg : executor.regions()) {
@@ -689,60 +691,68 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				// Wait for confirmation and do required retransmits
 				innerLoop: while (true) {
 					try {
-						var received = connection.receive();
+						var packet = connection.receiveWithAddress();
+						var buf = packet.getByteBuffer();
+						var received = buf.order(LITTLE_ENDIAN).asIntBuffer();
 						timeoutCount = 0; // Reset the timeout counter
+						int command = received.get();
+						try {
+							// read transaction id
+							var commandCode =
+									FastDataInCommandID.forValue(command);
+							int thisTransactionId = received.get();
 
-						// read transaction id
-						var commandCode =
-								FastDataInCommandID.forValue(received.get());
-						int thisTransactionId = received.get();
+							// if wrong transaction id, ignore packet
+							if (thisTransactionId != transactionId) {
+								continue innerLoop;
+							}
 
-						// if wrong transaction id, ignore packet
-						if (thisTransactionId != transactionId) {
-							continue innerLoop;
-						}
+							// Decide what to do with the packet
+							switch (commandCode) {
+							case RECEIVE_FINISHED_DATA_IN:
+								// We're done!
+								break outerLoop;
 
-						// Decide what to do with the packet
-						switch (commandCode) {
-						case RECEIVE_FINISHED_DATA_IN:
-							// We're done!
-							break outerLoop;
-
-						case RECEIVE_MISSING_SEQ_DATA_IN:
-							if (!received.hasRemaining()) {
+							case RECEIVE_MISSING_SEQ_DATA_IN:
+								if (!received.hasRemaining()) {
+									throw new BadDataInMessageException(
+											received.get(0), received);
+								}
+								log.debug(
+										"another packet (#{}) of missing "
+												+ "sequence numbers;",
+										received.get(1));
+								break;
+							default:
 								throw new BadDataInMessageException(
 										received.get(0), received);
 							}
-							log.debug(
-									"another packet (#{}) of missing "
-											+ "sequence numbers;",
-									received.get(1));
-							break;
-						default:
-							throw new BadDataInMessageException(received.get(0),
-									received);
-						}
 
-						/*
-						 * The currently received packet has missing sequence
-						 * numbers. Accumulate and dispatch transactionId when
-						 * we've got them all.
-						 */
-						if (missing == null) {
-							missing =
-									missingSequenceNumbers.issueNew(numPackets);
-						}
-						var flags =
-								addMissedSeqNums(received, missing, numPackets);
+							/*
+							 * The currently received packet has missing
+							 * sequence numbers. Accumulate and dispatch
+							 * transactionId when we've got them all.
+							 */
+							if (missing == null) {
+								missing = missingSequenceNumbers.issueNew(
+										numPackets);
+							}
+							var flags = addMissedSeqNums(
+									received, missing, numPackets);
 
-						/*
-						 * Check that you've seen something that implies ready
-						 * to retransmit.
-						 */
-						if (flags.seenAll || flags.seenEnd) {
-							retransmitMissingPackets(protocol, data, missing,
-									transactionId, baseAddress, numPackets);
-							missing.clear();
+							/*
+							 * Check that you've seen something that implies
+							 * ready to retransmit.
+							 */
+							if (flags.seenAll || flags.seenEnd) {
+								retransmitMissingPackets(protocol, data,
+										missing, transactionId, baseAddress,
+										numPackets);
+								missing.clear();
+							}
+						} catch (IllegalArgumentException e) {
+							log.error("Unexpected command code " + command
+									+ " received from " + packet.getAddress());
 						}
 					} catch (SocketTimeoutException e) {
 						if (timeoutCount++ > TIMEOUT_RETRY_LIMIT) {

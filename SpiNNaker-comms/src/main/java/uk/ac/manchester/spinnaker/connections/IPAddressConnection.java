@@ -20,6 +20,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 
@@ -62,8 +63,12 @@ public class IPAddressConnection extends UDPConnection<InetAddress>
 	public InetAddress receiveMessage(int timeout) {
 		try {
 			var packet = receiveWithAddress(timeout);
-			if (packet.getPort() == BOOTROM_SPINN_PORT) {
-				return packet.getAddress();
+			var addr = packet.getAddress();
+			if (addr instanceof InetSocketAddress) {
+				var inetAddr = (InetSocketAddress) addr;
+				if (inetAddr.getPort() == BOOTROM_SPINN_PORT) {
+					return inetAddr.getAddress();
+				}
 			}
 		} catch (IOException e) {
 			// Do nothing
