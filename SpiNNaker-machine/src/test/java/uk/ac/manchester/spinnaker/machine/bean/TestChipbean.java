@@ -26,17 +26,15 @@ import org.junit.jupiter.api.Test;
  * @author Christian
  */
 public class TestChipbean {
-
-    @Test
-    public void testFromJson() throws IOException {
-        String json = "[1, 2, {\"cores\": 17, \"ethernet\": [2, 3]}, {"
-                + "\"sdram\": 123469692, "
-                + "\"routerEntries\": 1013, \"monitors\": 2, "
-                + "\"virtual\": true}]";
-        ObjectMapper mapper = MapperFactory.createMapper();
-        ChipBean fromJson = mapper.readValue(json, ChipBean.class);
-        assertNotNull(fromJson);
-        System.out.println(fromJson);
-    }
-
+	@Test
+	public void testFromJson() throws IOException {
+		String json = "[1, 2, {\"cores\": 17, \"ethernet\": [2, 3]}, {"
+				+ "\"sdram\": 123469692, "
+				+ "\"routerEntries\": 1013, \"monitors\": 2, "
+				+ "\"virtual\": true}]";
+		ObjectMapper mapper = MapperFactory.createMapper();
+		ChipBean fromJson = mapper.readValue(json, ChipBean.class);
+		assertNotNull(fromJson);
+		System.out.println(fromJson);
+	}
 }

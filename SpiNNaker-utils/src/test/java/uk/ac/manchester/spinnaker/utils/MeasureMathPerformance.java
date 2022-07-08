@@ -19,8 +19,11 @@ package uk.ac.manchester.spinnaker.utils;
 import java.util.Arrays;
 import java.util.function.IntBinaryOperator;
 
-public class MeasureMathPerformance {
-	static final long ITER = 100000000;
+public final class MeasureMathPerformance {
+	private MeasureMathPerformance() {
+	}
+
+	private static final long ITER = 100000000;
 
 	public static int ceildiv1(int numerator, int denominator) {
 		return (int) Math.ceil((float) numerator / (float) denominator);
@@ -50,8 +53,9 @@ public class MeasureMathPerformance {
 			total2 += doNothing(a, b);
 		}
 		long end = System.nanoTime();
-		if (total != total2)
+		if (total != total2) {
 			throw new RuntimeException(total + ", " + total2);
+		}
 		return end - start;
 	}
 
@@ -66,8 +70,9 @@ public class MeasureMathPerformance {
 			total2 += ceildiv1(a, b);
 		}
 		long end = System.nanoTime();
-		if (total != total2)
+		if (total != total2) {
 			throw new RuntimeException(total + ", " + total2);
+		}
 		return end - start;
 	}
 
@@ -82,8 +87,9 @@ public class MeasureMathPerformance {
 			total2 += ceildiv2(a, b);
 		}
 		long end = System.nanoTime();
-		if (total != total2)
+		if (total != total2) {
 			throw new RuntimeException(total + ", " + total2);
+		}
 		return end - start;
 	}
 
@@ -98,8 +104,9 @@ public class MeasureMathPerformance {
 			total2 += ceildiv3(a, b);
 		}
 		long end = System.nanoTime();
-		if (total != total2)
+		if (total != total2) {
 			throw new RuntimeException(total + ", " + total2);
+		}
 		return end - start;
 	}
 
@@ -114,14 +121,19 @@ public class MeasureMathPerformance {
 			total2 += f.applyAsInt(a, b);
 		}
 		long end = System.nanoTime();
-		if (total != total2)
+		if (total != total2) {
 			throw new RuntimeException(total + ", " + total2);
+		}
 		return end - start;
 	}
 
+	private static final int A = 456;
+
+	private static final int B = 123;
+
 	private static void runtest(IntBinaryOperator op) {
-		int a = 456;
-		int b = 123;
+		int a = A;
+		int b = B;
 		for (long i = 0; i < ITER; i++) {
 			test4(op, a, b, 1);
 		}
@@ -129,8 +141,8 @@ public class MeasureMathPerformance {
 	}
 
 	public static void main(String... strings) {
-		int a = 456;
-		int b = 123;
+		int a = A;
+		int b = B;
 
 		System.out.println("test #0: overhead estimation");
 		for (long i = 0; i < ITER; i++) {
@@ -172,9 +184,11 @@ public class MeasureMathPerformance {
 		runtest(ops[2]);
 
 		System.out.println("test #4.3: add-div");
-		runtest(ops[3]);
+		runtest(ops[THREE]);
 		System.out.println(
 				"this is just to force retention of references; ignore please!"
 						+ Arrays.toString(ops));
 	}
+
+	private static final int THREE = 3;
 }

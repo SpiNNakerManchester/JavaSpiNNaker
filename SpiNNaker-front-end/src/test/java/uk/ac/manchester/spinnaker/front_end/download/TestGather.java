@@ -33,13 +33,14 @@ import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
  */
 public class TestGather {
 
-    @Test
-    public void testSimpleJson() throws IOException {
-        URL url = TestGather.class.getResource("/gather.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        List<Gather> fromJson = mapper.readValue(
-                url, new TypeReference<List<Gather>>() { });
-        assertEquals(1, fromJson.size());
-    }
+	@Test
+	public void testSimpleJson() throws IOException {
+		URL url = TestGather.class.getResource("/gather.json");
+		ObjectMapper mapper = MapperFactory.createMapper();
+		List<Gather> fromJson =
+				mapper.readValue(url, new TypeReference<List<Gather>>() {
+				});
+		assertEquals(1, fromJson.size());
+	}
 
 }

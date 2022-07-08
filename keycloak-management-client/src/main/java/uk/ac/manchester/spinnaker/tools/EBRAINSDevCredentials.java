@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Donal Fellows
  */
 interface EBRAINSDevCredentials {
+	/** Where to get the developer access token from. This is non-standard. */
 	String OIDC_TOKEN_URL =
 			HBP_OPENID_BASE + "realms/hbp/protocol/openid-connect/token";
 

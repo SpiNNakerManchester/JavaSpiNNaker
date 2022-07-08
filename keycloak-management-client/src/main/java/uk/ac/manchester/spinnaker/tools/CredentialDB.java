@@ -147,7 +147,7 @@ public class CredentialDB implements AutoCloseable {
 	}
 
 	/**
-	 * Save the registration access token for a client
+	 * Save the registration access token for a client.
 	 *
 	 * @param clientId
 	 *            The client to save the token of.

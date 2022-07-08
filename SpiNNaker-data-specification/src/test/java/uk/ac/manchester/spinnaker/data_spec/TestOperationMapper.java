@@ -27,10 +27,11 @@ import java.nio.channels.AcceptPendingException;
 import org.junit.jupiter.api.Test;
 
 class TestOperationMapper {
-	static final int KEY = PRINT_STRUCT.value << COMMAND.offset;
-	static final int BAD_CMD = 0xEE << COMMAND.offset;
+	private static final int KEY = PRINT_STRUCT.value << COMMAND.offset;
 
-	static class MockFunctions implements FunctionAPI {
+	private static final int BAD_CMD = 0xEE << COMMAND.offset;
+
+	private static class MockFunctions implements FunctionAPI {
 		int cmd;
 
 		@Override
@@ -138,6 +139,7 @@ class TestOperationMapper {
 				act = 123454321;
 			}
 		}
+
 		MockFunctions7 mock = new MockFunctions7();
 		Callable op = mock.getOperation(KEY, 0);
 		assertEquals(0, mock.cmd);
