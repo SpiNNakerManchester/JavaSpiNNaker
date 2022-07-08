@@ -16,24 +16,28 @@
  */
 package uk.ac.manchester.spinnaker.py2json;
 
-import java.util.ArrayList;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toCollection;
+import static org.python.core.Py.newString;
+
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.python.core.PyObject;
-import org.python.core.PyString;
 
 /**
  * Wrappers around {@link PyObject} to make it less awful.
  *
  * @author Donal Fellows
  */
-public final class PythonUtils {
+final class PythonUtils {
 	private PythonUtils() {
 	}
 
@@ -47,7 +51,7 @@ public final class PythonUtils {
 	 * @return The value of the attribute.
 	 */
 	public static PyObject getattr(PyObject object, String name) {
-		return object.__getattr__(new PyString(name));
+		return object.__getattr__(newString(name));
 	}
 
 	/**
@@ -108,6 +112,17 @@ public final class PythonUtils {
 	}
 
 	/**
+	 * Convert an iterable object into a stream.
+	 *
+	 * @param iterable
+	 *            The iterable object.
+	 * @return The stream view.
+	 */
+	private static Stream<PyObject> stream(PyObject iterable) {
+		return StreamSupport.stream(iterable.asIterable().spliterator(), false);
+	}
+
+	/**
 	 * Convert a collection of values into a map of collections.
 	 *
 	 * @param <S>
@@ -129,13 +144,9 @@ public final class PythonUtils {
 	 */
 	public static <S extends Collection<U>, T, U> Map<T, S> toCollectingMap(
 			PyObject mapObject, Depythonizer<T> makeKey,
-			Function<T, S> makeCollector, Depythonizer<U> makeValue) {
-		var result = new HashMap<T, S>();
-		for (var value : mapObject.asIterable()) {
-			result.computeIfAbsent(makeKey.act(value), makeCollector)
-					.add(makeValue.act(value));
-		}
-		return result;
+			Supplier<S> makeCollector, Depythonizer<U> makeValue) {
+		return stream(mapObject).collect(groupingBy(makeKey::act,
+				mapping(makeValue::act, toCollection(makeCollector))));
 	}
 
 	/**
@@ -155,11 +166,8 @@ public final class PythonUtils {
 	 */
 	public static <T, U> Map<T, U> toMap(PyObject dictObject,
 			Depythonizer<T> makeKey, Depythonizer<U> makeValue) {
-		var result = new HashMap<T, U>();
-		for (var key : dictObject.asIterable()) {
-			result.put(makeKey.act(key), makeValue.act(item(dictObject, key)));
-		}
-		return result;
+		return stream(dictObject).collect(Collectors.toMap(makeKey::act,
+				key -> makeValue.act(item(dictObject, key))));
 	}
 
 	/**
@@ -175,11 +183,8 @@ public final class PythonUtils {
 	 */
 	public static <T> List<T> toList(PyObject listObject,
 			Depythonizer<T> makeValue) {
-		var result = new ArrayList<T>();
-		for (var value : listObject.asIterable()) {
-			result.add(makeValue.act(value));
-		}
-		return result;
+		return stream(listObject).map(makeValue::act)
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -195,10 +200,7 @@ public final class PythonUtils {
 	 */
 	public static <T> Set<T> toSet(PyObject listObject,
 			Depythonizer<T> makeValue) {
-		var result = new HashSet<T>();
-		for (var value : listObject.asIterable()) {
-			result.add(makeValue.act(value));
-		}
-		return result;
+		return stream(listObject).map(makeValue::act)
+				.collect(Collectors.toSet());
 	}
 }

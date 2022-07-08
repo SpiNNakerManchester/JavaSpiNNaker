@@ -27,8 +27,6 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.Configuration;
-
 class TestConvert {
 	private static final int BUFFER_SIZE = 1024;
 

@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.END_SPEC_EXECUTOR;
+import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 
 import java.io.Closeable;
@@ -47,6 +48,8 @@ import org.slf4j.Logger;
  */
 public class Executor implements Closeable {
 	private static final Logger log = getLogger(Executor.class);
+
+	private static final long UNSIGNED_INT = 0xFFFFFFFFL;
 
 	private InputStream inputStream;
 
@@ -203,10 +206,33 @@ public class Executor implements Closeable {
 	 */
 	public void addPointerTable(ByteBuffer buffer) {
 		assert buffer.order() == LITTLE_ENDIAN;
-		for (MemoryRegion reg : memRegions) {
+		for (var reg : memRegions) {
 			if (reg != null) {
 				buffer.putInt(reg.getRegionBase());
+				if (reg instanceof MemoryRegionReal) {
+					// Work out the checksum
+					var regReal = (MemoryRegionReal) reg;
+					int nWords = (int) Math.ceil(regReal.getMaxWritePointer()
+							/ INT_SIZE);
+					var bytebuf = (ByteBuffer) regReal.getRegionData()
+							.duplicate().order(LITTLE_ENDIAN).rewind();
+					var buf = bytebuf.asIntBuffer();
+					long sum = 0;
+					for (int i = 0; i < nWords; i++) {
+						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
+					}
+					// Write the checksum and number of words
+					buffer.putInt((int) (sum & UNSIGNED_INT));
+					buffer.putInt(nWords);
+				} else {
+					// Don't checksum references
+					buffer.putInt(0);
+					buffer.putInt(0);
+				}
 			} else {
+				// There is no data for non-regions
+				buffer.putInt(0);
+				buffer.putInt(0);
 				buffer.putInt(0);
 			}
 		}

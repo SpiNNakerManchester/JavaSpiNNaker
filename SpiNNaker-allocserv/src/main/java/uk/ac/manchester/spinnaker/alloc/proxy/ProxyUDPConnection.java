@@ -18,13 +18,11 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.lang.Thread.currentThread;
 import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_THROUGHPUT;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
@@ -36,6 +34,7 @@ import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 
 /**
  * The low-level handler for proxy connections.
@@ -240,7 +239,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	 */
 	private void mainLoop(Set<InetAddress> recvFrom) throws IOException {
 		while (!isClosed()) {
-			DatagramPacket packet;
+			UDPPacket packet;
 			try {
 				packet = receiveWithAddress(TIMEOUT);
 			} catch (SocketTimeoutException e) {
@@ -251,13 +250,11 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 				continue;
 			}
 			// SECURITY: drop any packet not from an allocated board
-			if (!recvFrom.contains(packet.getAddress())) {
+			if (!recvFrom.contains(packet.getAddress().getAddress())) {
 				log.debug("dropped packet from {}", packet.getAddress());
 				continue;
 			}
-			var msg = wrap(packet.getData(), 0, packet.getLength())
-					.order(LITTLE_ENDIAN);
-			handleReceivedMessage(msg);
+			handleReceivedMessage(packet.getByteBuffer());
 		}
 	}
 }
