@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RTR;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 
 /** A request to initialise the router on a chip. */
@@ -37,23 +38,26 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 	 * @param numEntries
 	 *            The number of entries in the table (more than 0)
 	 * @param tableAddress
-	 *            The allocated table address
-	 * @param baseAddress
-	 *            The base address containing the entries
+	 *            The allocated address containing the data to init the router
+	 *            from.
+	 * @param baseIndex
+	 *            The base index in the router table where the entries are to be
+	 *            placed.
 	 * @param appID
 	 *            The ID of the application with which to associate the routes.
 	 * @throws IllegalArgumentException
 	 *             If a bad address or entry count is given
 	 */
-	public RouterInit(HasChipLocation chip, int numEntries, int tableAddress,
-			int baseAddress, AppID appID) {
+	public RouterInit(HasChipLocation chip, int numEntries,
+			MemoryLocation tableAddress, int baseIndex,
+			AppID appID) {
 		super(chip.getScampCore(), CMD_RTR, argument1(numEntries, appID),
-				tableAddress, baseAddress);
-		if (baseAddress < 0) {
+				tableAddress.address, baseIndex);
+		if (baseIndex < 0) {
 			throw new IllegalArgumentException(
 					"baseAddress must not be negative");
 		}
-		if (tableAddress < 0) {
+		if (tableAddress.address < 0) {
 			throw new IllegalArgumentException(
 					"tableAddress must not be negative");
 		}

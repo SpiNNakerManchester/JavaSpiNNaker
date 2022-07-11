@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * A request to write to serial flash on a BMP.
  */
@@ -37,9 +39,10 @@ public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            The data to transfer; up to {@link #FLASH_CHUNK_SIZE} bytes.
 	 *            This does <em>not</em> update the buffer position.
 	 */
-	public WriteSerialFlash(BMPBoard board, int baseAddress, ByteBuffer data) {
-		super(board, CMD_BMP_SF, baseAddress, FLASH_CHUNK_SIZE, WRITE.value,
-				condition(data));
+	public WriteSerialFlash(BMPBoard board, MemoryLocation baseAddress,
+			ByteBuffer data) {
+		super(board, CMD_BMP_SF, baseAddress.address, FLASH_CHUNK_SIZE,
+				WRITE.value, condition(data));
 	}
 
 	private static ByteBuffer condition(ByteBuffer data) {

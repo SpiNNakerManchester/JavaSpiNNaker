@@ -20,8 +20,11 @@ import static java.lang.Math.max;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.nio.ByteBuffer;
+
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * A memory region storage object.
@@ -47,7 +50,7 @@ public final class MemoryRegionReal extends MemoryRegion {
 	private boolean unfilled;
 
 	/** The base address of the region. Set after the fact. */
-	private int regionBaseAddress;
+	private MemoryLocation regionBaseAddress;
 
 	/** The index of the memory region. */
 	private final int index;
@@ -71,7 +74,7 @@ public final class MemoryRegionReal extends MemoryRegion {
 		this.index = index;
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
-		regionBaseAddress = 0;
+		regionBaseAddress = NULL;
 		this.unfilled = unfilled;
 		reference = null;
 		buffer = allocate(size).order(LITTLE_ENDIAN);
@@ -96,7 +99,7 @@ public final class MemoryRegionReal extends MemoryRegion {
 		this.index = index;
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
-		regionBaseAddress = 0;
+		regionBaseAddress = NULL;
 		this.unfilled = unfilled;
 		this.reference = reference;
 		buffer = allocate(size).order(LITTLE_ENDIAN);
@@ -160,12 +163,12 @@ public final class MemoryRegionReal extends MemoryRegion {
 	}
 
 	@Override
-	public int getRegionBase() {
+	public MemoryLocation getRegionBase() {
 		return regionBaseAddress;
 	}
 
 	@Override
-	protected void setRegionBase(int address) {
+	protected void setRegionBase(MemoryLocation address) {
 		regionBaseAddress = address;
 	}
 

@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPReadMemory;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
@@ -66,12 +67,12 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private <T> T read(BMPBoard board, int address, int size,
+	private <T> T read(BMPBoard board, MemoryLocation address, int size,
 			Accumulator<T> accum) throws ProcessException, IOException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			accum.add(offset, execute(
-					new BMPReadMemory(board, address + offset, chunk)).data);
+					new BMPReadMemory(board, address.add(offset), chunk)).data);
 		}
 		return accum.finish();
 	}
@@ -91,8 +92,8 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void read(BMPBoard board, int baseAddress, ByteBuffer receivingBuffer)
-			throws IOException, ProcessException {
+	void read(BMPBoard board, MemoryLocation baseAddress,
+			ByteBuffer receivingBuffer) throws IOException, ProcessException {
 		read(board, baseAddress, receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
 		// Ignore the result; caller already knows it
@@ -113,7 +114,7 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	ByteBuffer read(BMPBoard board, int baseAddress, int size)
+	ByteBuffer read(BMPBoard board, MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException {
 		return read(board, baseAddress, size, new BufferAccumulator(size));
 	}
@@ -136,7 +137,7 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void read(BMPBoard board, int baseAddress, int size,
+	void read(BMPBoard board, MemoryLocation baseAddress, int size,
 			RandomAccessFile dataFile) throws IOException, ProcessException {
 		read(board, baseAddress, size, new FileAccumulator(dataFile));
 	}
@@ -158,8 +159,8 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void read(BMPBoard board, int baseAddress, int size, File dataFile)
-			throws IOException, ProcessException {
+	void read(BMPBoard board, MemoryLocation baseAddress, int size,
+			File dataFile) throws IOException, ProcessException {
 		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
 			read(board, baseAddress, size, new FileAccumulator(s));
 		}

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * A reference to another region.
  */
@@ -27,7 +29,7 @@ public final class MemoryRegionReference extends MemoryRegion {
 	private final int reference;
 
 	/** The base address of the actual region referenced. */
-	private int baseAddress;
+	private MemoryLocation baseAddress;
 
 	/**
 	 * Create a reference to another region.
@@ -53,12 +55,12 @@ public final class MemoryRegionReference extends MemoryRegion {
 	}
 
 	@Override
-	public void setRegionBase(int baseAddress) {
+	public void setRegionBase(MemoryLocation baseAddress) {
 		this.baseAddress = baseAddress;
 	}
 
 	@Override
-	public int getRegionBase() {
+	public MemoryLocation getRegionBase() {
 		return baseAddress;
 	}
 

@@ -47,6 +47,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Link;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.Router;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
@@ -119,6 +120,9 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		this.chipInfo = new HashMap<>();
 	}
 
+	private static final MemoryLocation ROUTER_P2P =
+			new MemoryLocation(ROUTER_REGISTER_P2P_ADDRESS);
+
 	/**
 	 * Get a full, booted machine, populated with information directly from the
 	 * physical hardware.
@@ -138,16 +142,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		List<ByteBuffer> p2pColumnData = new ArrayList<>();
 		for (int column = 0; column < size.width; column++) {
-			sendRequest(
-					new ReadMemory(bootChip,
-							ROUTER_REGISTER_P2P_ADDRESS
-									+ getColumnOffset(column),
-							getNumColumnBytes(size.height)),
-					response -> p2pColumnData.add(response.data));
-			// TODO work out why multiple calls is a problem
-			finish();
+			p2pColumnData.add(synchronousCall(new ReadMemory(bootChip,
+					ROUTER_P2P.add(getColumnOffset(column)),
+					getNumColumnBytes(size.height))).data);
+			// TODO work out why multiple calls at once is a problem
 		}
-		checkForError();
 		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
 
 		// Get the chip information for each chip
@@ -175,12 +174,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 
 		// Build a Machine
 		Machine machine = new Machine(size, bootChip);
-		for (Map.Entry<ChipLocation, ChipSummaryInfo> entry : chipInfo
-				.entrySet()) {
-			if (!ignoreChips.contains(entry.getKey())) {
-				machine.addChip(makeChip(size, entry.getValue()));
+		chipInfo.forEach((chip, data) -> {
+			if (!ignoreChips.contains(chip)) {
+				machine.addChip(makeChip(size, data));
 			}
-		}
+		});
 		return machine;
 	}
 

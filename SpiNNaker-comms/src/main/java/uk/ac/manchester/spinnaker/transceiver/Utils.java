@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 
 /**
@@ -38,6 +39,9 @@ public abstract class Utils {
 	 * The size of buffer to allocate for SpiNNaker messages.
 	 */
 	private static final int SPINNAKER_MESSAGE_BUFFER_SIZE = 300;
+
+	private static final MemoryLocation CPU_INFO =
+			new MemoryLocation(CPU_INFO_OFFSET);
 
 	private Utils() {
 	}
@@ -69,8 +73,8 @@ public abstract class Utils {
 	 *            The core number
 	 * @return the address
 	 */
-	public static int getVcpuAddress(int p) {
-		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * p);
+	public static MemoryLocation getVcpuAddress(int p) {
+		return CPU_INFO.add(CPU_INFO_BYTES * p);
 	}
 
 	/**
@@ -80,8 +84,8 @@ public abstract class Utils {
 	 *            The core
 	 * @return the address
 	 */
-	public static int getVcpuAddress(HasCoreLocation core) {
-		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * core.getP());
+	public static MemoryLocation getVcpuAddress(HasCoreLocation core) {
+		return CPU_INFO.add(CPU_INFO_BYTES * core.getP());
 	}
 
 	/**

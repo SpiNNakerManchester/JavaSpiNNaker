@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
@@ -66,7 +67,9 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 */
 	private static final int MAX_ROUTER_ENTRIES = 1023;
 
-	private static final int ROUTING_TABLE_ADDRESS = 0x67800000;
+	/** Location of routing table data. Reserved by SCAMP. */
+	private static final MemoryLocation ROUTING_TABLE_DATA =
+			new MemoryLocation(0x67800000);
 
 	/**
 	 * @param connectionSelector
@@ -154,19 +157,15 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 		ByteBuffer routingData = serializeRoutingData(routes);
 
 		// Upload the data
-		writeMemory(chip.getScampCore(), ROUTING_TABLE_ADDRESS, routingData);
+		writeMemory(chip.getScampCore(), ROUTING_TABLE_DATA, routingData);
 
 		// Allocate space in the router table
-		int baseAddress = synchronousCall(
-				new RouterAlloc(chip, appID, routes.size())).baseAddress;
-		if (baseAddress == 0) {
-			throw new RuntimeException("Not enough space to allocate "
-					+ routes.size() + " entries");
-		}
+		int baseIndex = synchronousCall(
+				new RouterAlloc(chip, appID, routes.size())).baseIndex;
 
 		// Load the entries
 		synchronousCall(new RouterInit(chip, routes.size(),
-				ROUTING_TABLE_ADDRESS, baseAddress, appID));
+				ROUTING_TABLE_DATA, baseIndex, appID));
 	}
 
 	/**
@@ -185,13 +184,15 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	List<MulticastRoutingEntry> getRoutes(HasChipLocation chip, int baseAddress,
-			AppID appID) throws IOException, ProcessException {
+	List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
+			MemoryLocation baseAddress, AppID appID)
+			throws IOException, ProcessException {
 		Map<Integer, MulticastRoutingEntry> routes = new TreeMap<>();
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;
 			sendRequest(
-					new ReadMemory(chip, baseAddress + offset * BYTES_PER_ENTRY,
+					new ReadMemory(chip,
+							baseAddress.add(offset * BYTES_PER_ENTRY),
 							UDP_MESSAGE_MAX_SIZE),
 					response -> addRoutes(response.data, offset, routes,
 							appID));

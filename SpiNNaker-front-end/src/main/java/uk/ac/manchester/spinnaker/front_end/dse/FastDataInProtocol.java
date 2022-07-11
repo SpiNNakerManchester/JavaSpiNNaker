@@ -36,6 +36,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
@@ -119,13 +120,13 @@ class FastDataInProtocol {
 	 *            The transaction id of this stream.
 	 * @return The message indicating the start of the data.
 	 */
-	SDPMessage dataToLocation(int baseAddress, int numPackets,
+	SDPMessage dataToLocation(MemoryLocation baseAddress, int numPackets,
 			int transactionId) {
 		ByteBuffer payload =
 				allocate(BYTES_FOR_LOCATION_PACKET).order(LITTLE_ENDIAN);
 		payload.putInt(SEND_DATA_TO_LOCATION.value);
 		payload.putInt(transactionId);
-		payload.putInt(baseAddress);
+		payload.putInt(baseAddress.address);
 		payload.putShort((short) boardLocalDestination.getY());
 		payload.putShort((short) boardLocalDestination.getX());
 		payload.putInt(numPackets - 1);

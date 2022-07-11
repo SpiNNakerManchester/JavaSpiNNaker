@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FLASH_ERASE
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** A request to erase flash memory on a BMP. */
@@ -39,20 +40,21 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	 * @throws IllegalArgumentException
 	 *             If the baseAddress or size make no sense
 	 */
-	public EraseFlash(BMPBoard board, int baseAddress, int size) {
-		super(board, CMD_FLASH_ERASE, baseAddress, baseAddress + size);
+	public EraseFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
+		super(board, CMD_FLASH_ERASE, baseAddress.address,
+				baseAddress.address + size);
 		// Check that we've been actually asked to do something sane!
 		if (size <= 0) {
 			throw new IllegalArgumentException("no data");
 		}
-		if (baseAddress < 0 || baseAddress + size > MEMORY_LIMIT
-				|| baseAddress + size < 0) {
+		int addr = baseAddress.address;
+		if (addr < 0 || addr + size > MEMORY_LIMIT || addr + size < 0) {
 			throw new IllegalArgumentException("address not in flash");
 		}
-		if ((baseAddress % FLASH_CHUNK_SIZE) != 0) {
+		if ((addr % FLASH_CHUNK_SIZE) != 0) {
 			throw new IllegalArgumentException("not on 4kB boundary");
 		}
-		if (baseAddress < LOW_BOUNDARY && baseAddress + size > LOW_BOUNDARY) {
+		if (addr < LOW_BOUNDARY && addr + size > LOW_BOUNDARY) {
 			throw new IllegalArgumentException("crosses flash 4k/32k boundary");
 		}
 	}
@@ -65,12 +67,12 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	/** The response from a request to erase flash. */
 	public final class Response extends BMPRequest.BMPResponse {
 		/** Where the buffer is located. */
-		public final int address;
+		public final MemoryLocation address;
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
 			super("Erase flash memory", CMD_FLASH_ERASE, buffer);
-			address = buffer.getInt();
+			address = new MemoryLocation(buffer.getInt());
 		}
 	}
 }

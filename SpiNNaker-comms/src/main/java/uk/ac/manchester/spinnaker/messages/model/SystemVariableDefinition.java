@@ -20,6 +20,7 @@ import static java.lang.Integer.compare;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.messages.model.DataType.ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE_ARRAY;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.INT;
@@ -125,9 +126,9 @@ public enum SystemVariableDefinition {
 	@Deprecated
 	padding_2(INT, 0x44),
 	/** The base address of the system SDRAM heap. */
-	system_ram_heap_address(INT, 0x48, 1024),
+	system_ram_heap_address(ADDRESS, 0x48, 1024),
 	/** The base address of the user SDRAM heap. */
-	sdram_heap_address(INT, 0x4c, 0),
+	sdram_heap_address(ADDRESS, 0x4c, 0),
 	/** The size of the iobuf buffer in bytes. */
 	iobuf_size(INT, 0x50, 16384),
 	/** The size of the system SDRAM in bytes. */
@@ -137,7 +138,7 @@ public enum SystemVariableDefinition {
 	/** The boot signature. */
 	boot_signature(INT, 0x5c),
 	/** The memory pointer for nearest neighbour global operations. */
-	nearest_neighbour_memory_pointer(INT, 0x60),
+	nearest_neighbour_memory_pointer(ADDRESS, 0x60),
 	/** The lock. */
 	lock(BYTE, 0x64),
 	/** Bit mask (6 bits) of links enabled. */
@@ -147,7 +148,7 @@ public enum SystemVariableDefinition {
 	/** Board testing flags. */
 	board_test_flags(BYTE, 0x67),
 	/** Pointer to the first free shared message buffer. */
-	shared_message_first_free_address(INT, 0x68),
+	shared_message_first_free_address(ADDRESS, 0x68),
 	/** The number of shared message buffers in use. */
 	shared_message_count_in_use(SHORT, 0x6c),
 	/** The maximum number of shared message buffers used. */
@@ -174,29 +175,29 @@ public enum SystemVariableDefinition {
 	@Deprecated
 	padding_3(SHORT, 0xbe),
 	/** The base address of SDRAM. */
-	sdram_base_address(INT, 0xc0),
+	sdram_base_address(ADDRESS, 0xc0),
 	/** The base address of System RAM. */
-	system_ram_base_address(INT, 0xc4),
+	system_ram_base_address(ADDRESS, 0xc4),
 	/** The base address of System SDRAM. */
-	system_sdram_base_address(INT, 0xc8),
+	system_sdram_base_address(ADDRESS, 0xc8),
 	/** The base address of the CPU information blocks. */
-	cpu_information_base_address(INT, 0xcc),
+	cpu_information_base_address(ADDRESS, 0xcc),
 	/** The base address of the system SDRAM heap. */
-	system_sdram_heap_address(INT, 0xd0),
+	system_sdram_heap_address(ADDRESS, 0xd0),
 	/** The address of the copy of the routing tables. */
-	router_table_copy_address(INT, 0xd4),
+	router_table_copy_address(ADDRESS, 0xd4),
 	/** The address of the peer-to-peer hop tables. */
-	peer_to_peer_hop_table_address(INT, 0xd8),
+	peer_to_peer_hop_table_address(ADDRESS, 0xd8),
 	/** The address of the allocated tag table. */
-	allocated_tag_table_address(INT, 0xdc),
+	allocated_tag_table_address(ADDRESS, 0xdc),
 	/** The ID of the first free router entry. */
 	first_free_router_entry(SHORT, 0xe0),
 	/** The number of active peer-to-peer addresses. */
 	n_active_peer_to_peer_addresses(SHORT, 0xe2),
 	/** The address of the application data table. */
-	app_data_table_address(INT, 0xe4),
+	app_data_table_address(ADDRESS, 0xe4),
 	/** The address of the shared message buffers. */
-	shared_message_buffer_address(INT, 0xe8),
+	shared_message_buffer_address(ADDRESS, 0xe8),
 	/** The monitor incoming mailbox flags. */
 	monitor_mailbox_flags(INT, 0xec),
 	/** The IP address of the chip. */

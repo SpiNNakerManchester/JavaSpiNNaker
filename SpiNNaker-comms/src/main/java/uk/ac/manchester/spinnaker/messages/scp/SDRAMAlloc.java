@@ -26,6 +26,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
@@ -86,12 +87,12 @@ public class SDRAMAlloc extends SCPRequest<SDRAMAlloc.Response> {
 	/** An SCP response to a request to allocate space in SDRAM. */
 	public static class Response extends CheckOKResponse {
 		/** The base address allocated. */
-		public final int baseAddress;
+		public final MemoryLocation baseAddress;
 
 		Response(int size, ByteBuffer buffer) throws Exception {
 			super("SDRAM Allocation", CMD_ALLOC, buffer);
-			baseAddress = buffer.getInt();
-			if (baseAddress == 0) {
+			baseAddress = new MemoryLocation(buffer.getInt());
+			if (baseAddress.isNull()) {
 				throw new MemoryAllocationFailedException(
 						format("Could not allocate %d bytes of SDRAM", size));
 			}

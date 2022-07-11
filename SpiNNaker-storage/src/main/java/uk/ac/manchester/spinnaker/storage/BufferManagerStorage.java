@@ -21,6 +21,7 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * The interface supported by the storage system.
@@ -129,7 +130,7 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		 * Where should the data be downloaded from? <em>This is not necessarily
 		 * the start of the region.</em>
 		 */
-		public final int startAddress;
+		public final MemoryLocation startAddress;
 
 		/**
 		 * How much data should be downloaded? <em>This is not necessarily the
@@ -163,22 +164,21 @@ public interface BufferManagerStorage extends DatabaseAPI {
 		 * @param regionIndex
 		 *            What was the index of the region in the table of regions
 		 *            for the core?
-		 * @param startAddress
+		 * @param startLocation
 		 *            Where should the data be downloaded from? <em>This is not
 		 *            necessarily the start of the region.</em>
 		 * @param size
 		 *            How much data should be downloaded? <em>This is not
 		 *            necessarily the size of the region.</em>
 		 */
-		public Region(HasCoreLocation core, int regionIndex, int startAddress,
-				int size) {
+		public Region(HasCoreLocation core, int regionIndex,
+				MemoryLocation startLocation, int size) {
 			this.core = core.asCoreLocation();
 			this.regionIndex = regionIndex;
 			this.realSize = size;
-			this.initialIgnore = startAddress % INT_SIZE;
-			startAddress -= initialIgnore;
+			this.initialIgnore = startLocation.address % INT_SIZE;
 			size += initialIgnore;
-			this.startAddress = startAddress;
+			this.startAddress = startLocation.add(-initialIgnore);
 			// Looks weird, but works
 			this.finalIgnore = (INT_SIZE - (size % INT_SIZE)) % INT_SIZE;
 			size += finalIgnore;

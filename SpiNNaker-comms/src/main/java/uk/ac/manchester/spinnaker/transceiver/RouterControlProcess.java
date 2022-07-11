@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.scp.ClearReinjectionQueue;
@@ -428,6 +429,15 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		return unmodifiableMap(status);
 	}
 
+	private static final MemoryLocation CONTROL =
+			new MemoryLocation(ROUTER_CONTROL_REGISTER);
+
+	private static final MemoryLocation ERROR =
+			new MemoryLocation(ROUTER_ERROR_STATUS);
+
+	private static final MemoryLocation REGISTER_BANK =
+			new MemoryLocation(ROUTER_REGISTERS);
+
 	/**
 	 * Get a chip's router's diagnostics.
 	 *
@@ -445,13 +455,14 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		ValueHolder<Integer> es = new ValueHolder<>();
 		int[] reg = new int[NUM_REGISTERS];
 
-		sendRequest(new ReadMemory(chip, ROUTER_CONTROL_REGISTER, REGISTER),
+		sendRequest(
+				new ReadMemory(chip, CONTROL, REGISTER),
 				response -> cr.setValue(response.data.getInt()));
-		sendRequest(new ReadMemory(chip, ROUTER_ERROR_STATUS, REGISTER),
+		sendRequest(
+				new ReadMemory(chip, ERROR, REGISTER),
 				response -> es.setValue(response.data.getInt()));
 		sendRequest(
-				new ReadMemory(chip, ROUTER_REGISTERS,
-						NUM_REGISTERS * REGISTER),
+				new ReadMemory(chip, REGISTER_BANK, NUM_REGISTERS * REGISTER),
 				response -> response.data.asIntBuffer().get(reg));
 
 		finish();

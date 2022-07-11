@@ -73,6 +73,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
@@ -189,7 +190,7 @@ public class TransceiverITCase {
 	private static final ChipLocation SCAMP = ZERO_ZERO;
 
 	/** Where we like to read and write when testing. */
-	private static final int MEM = 0x70000000;
+	private static final MemoryLocation MEM = new MemoryLocation(0x70000000);
 
 	private void boardReady(Transceiver txrx) throws Exception {
 		VersionInfo versionInfo = txrx.ensureBoardIsReady();

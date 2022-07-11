@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * Marker of something that is a memory region.
  */
@@ -29,7 +31,7 @@ public abstract class MemoryRegion {
 	 *
 	 * @return The address.
 	 */
-	public abstract int getRegionBase();
+	public abstract MemoryLocation getRegionBase();
 
 	/**
 	 * Set the address of the first byte in the region.
@@ -37,5 +39,5 @@ public abstract class MemoryRegion {
 	 * @param baseAddress
 	 *            The address to set.
 	 */
-	protected abstract void setRegionBase(int baseAddress);
+	protected abstract void setRegionBase(MemoryLocation baseAddress);
 }

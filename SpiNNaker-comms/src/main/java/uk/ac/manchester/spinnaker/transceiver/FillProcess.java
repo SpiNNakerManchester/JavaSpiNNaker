@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FillRequest;
 import uk.ac.manchester.spinnaker.messages.scp.WriteMemory;
 
@@ -76,8 +77,9 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws IllegalArgumentException
 	 *             If the size doesn't match the alignment of the data type.
 	 */
-	void fillMemory(HasChipLocation chip, int baseAddress, int data, int size,
-			FillDataType dataType) throws ProcessException, IOException {
+	void fillMemory(HasChipLocation chip, MemoryLocation baseAddress, int data,
+			int size, FillDataType dataType)
+			throws ProcessException, IOException {
 		// Don't do anything if there is nothing to do!
 		if (size == 0) {
 			return;
@@ -90,7 +92,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 							+ "size of the data of %d bytes",
 					size, dataType.size));
 		}
-		if (baseAddress % ALIGNMENT != 0) {
+		if (baseAddress.address % ALIGNMENT != 0) {
 			log.warn("Unaligned fill starting at {}; please use aligned fills",
 					baseAddress);
 		}
@@ -112,15 +114,16 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		checkForError();
 	}
 
-	private void generateWriteMessages(HasChipLocation chip, int base, int size,
-			ByteBuffer buffer) throws IOException {
+	private void generateWriteMessages(HasChipLocation chip,
+			MemoryLocation base, int size, ByteBuffer buffer)
+			throws IOException {
 		int toWrite = size;
-		int address = base;
+		MemoryLocation address = base;
 
 		/*
 		 * Send the pre-data to make the memory aligned, up to the first word.
 		 */
-		int extraBytes = (ALIGNMENT - base % ALIGNMENT) % ALIGNMENT;
+		int extraBytes = (ALIGNMENT - base.address % ALIGNMENT) % ALIGNMENT;
 		if (extraBytes != 0) {
 			ByteBuffer preBytes = buffer.duplicate();
 			preBytes.limit(extraBytes);
@@ -129,7 +132,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 				sendRequest(new WriteMemory(chip, base, preBytes));
 			}
 			toWrite -= extraBytes;
-			address += extraBytes;
+			address = address.add(extraBytes);
 		}
 
 		// Fill as much as possible using the bulk operation, FillRequest
@@ -138,7 +141,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new FillRequest(chip, address,
 					buffer.getInt(extraBytes), bulkBytes));
 			toWrite -= bulkBytes;
-			address += bulkBytes;
+			address.add(bulkBytes);
 		}
 
 		/*
@@ -146,7 +149,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		 * aligned word; send them if required. This uses a WriteMemory
 		 */
 		if (toWrite != 0) {
-			buffer.position(buffer.limit() - base % ALIGNMENT);
+			buffer.position(buffer.limit() - base.address % ALIGNMENT);
 			buffer.limit(buffer.position() + toWrite);
 			if (buffer.hasRemaining()) {
 				sendRequest(new WriteMemory(chip, address, buffer));

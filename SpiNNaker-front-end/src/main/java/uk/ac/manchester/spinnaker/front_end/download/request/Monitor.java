@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
@@ -124,7 +125,7 @@ public class Monitor implements HasCoreLocation {
 	 */
 	public void updateTransactionIdFromMachine(Transceiver txrx)
 			throws IOException, ProcessException {
-		int address = txrx.getUser1RegisterAddress(this);
+		MemoryLocation address = txrx.getUser1RegisterAddress(this);
 		transactionId = txrx.readMemory(this, address, WORD_SIZE).getInt();
 	}
 

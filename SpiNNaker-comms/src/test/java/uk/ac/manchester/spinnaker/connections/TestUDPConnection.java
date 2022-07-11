@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import testconfig.BoardTestConfiguration;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion;
 import uk.ac.manchester.spinnaker.messages.scp.GetVersion.Response;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
@@ -74,7 +76,7 @@ public class TestUDPConnection {
 		assertEquals(scpResponse.result, RC_OK);
 	}
 
-	private static final int ADDR = 0x70000000;
+	private static final MemoryLocation ADDR = new MemoryLocation(0x70000000);
 
 	private static final int LINK_SIZE = 250;
 
@@ -123,7 +125,7 @@ public class TestUDPConnection {
 			try (SCPConnection connection =
 					new SCPConnection(boardConfig.remotehost)) {
 				ReadMemory scp =
-						new ReadMemory(ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
+						new ReadMemory(ZERO_CHIP, NULL, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(emptySet());
 				connection.send(scp);
 				connection.receiveSCPResponse(2);

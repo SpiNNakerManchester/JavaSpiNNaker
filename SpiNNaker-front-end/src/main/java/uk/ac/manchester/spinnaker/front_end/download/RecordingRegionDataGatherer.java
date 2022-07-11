@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Long.toHexString;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -124,7 +122,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 				index, region);
 		List<Region> regionPieces = new ArrayList<>(1);
 		if (region.size > 0) {
-			regionPieces.add(new Region(placement, index, (int) region.data,
+			regionPieces.add(new Region(placement, index, region.data,
 					(int) region.size));
 		}
 		return regionPieces;
@@ -132,15 +130,14 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data) {
-		String addr = toHexString(toUnsignedLong(r.startAddress));
 		if (data == null) {
-			log.warn("failed to download data for {} R:{} from 0x{}:{}", r.core,
-					r.regionIndex, addr, r.size);
+			log.warn("failed to download data for {} R:{} from {}:{}", r.core,
+					r.regionIndex, r.startAddress, r.size);
 			return;
 		}
 		dbWorker.execute(() -> {
-			log.info("storing region data for {} R:{} from 0x{} as {} bytes",
-					r.core, r.regionIndex, addr, data.remaining());
+			log.info("storing region data for {} R:{} from {} as {} bytes",
+					r.core, r.regionIndex, r.startAddress, data.remaining());
 			try {
 				database.appendRecordingContents(r, data);
 				numWrites++;

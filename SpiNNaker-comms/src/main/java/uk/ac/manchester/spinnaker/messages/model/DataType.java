@@ -29,7 +29,9 @@ public enum DataType {
 	/** The value is eight bytes long. */
 	LONG(8),
 	/** The value is an array of bytes. */
-	BYTE_ARRAY(16);
+	BYTE_ARRAY(16),
+	/** The value is four bytes, representing a memory location. */
+	ADDRESS(4);
 
 	/** The SCAMP data type descriptor code. */
 	public final int value;

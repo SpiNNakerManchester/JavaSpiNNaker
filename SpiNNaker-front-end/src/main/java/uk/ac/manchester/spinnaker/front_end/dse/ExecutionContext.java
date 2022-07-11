@@ -33,6 +33,7 @@ import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReference;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
@@ -71,7 +72,7 @@ class ExecutionContext implements AutoCloseable {
 	 * @throws IOException
 	 *             If there's a problem with I/O.
 	 */
-	void execute(Executor executor, CoreLocation core, int start)
+	void execute(Executor executor, CoreLocation core, MemoryLocation start)
 			throws DataSpecificationException, ProcessException, IOException {
 		executor.execute();
 		executor.setBaseAddress(start);
@@ -85,7 +86,8 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	private CoreToFill linkRegionReferences(Executor executor,
-			CoreLocation core, int start) throws DataSpecificationException {
+			CoreLocation core, MemoryLocation start)
+			throws DataSpecificationException {
 		for (int region : executor.getReferenceableRegions()) {
 			MemoryRegionReal r = (MemoryRegionReal) executor.getRegion(region);
 			int ref = r.getReference();
@@ -118,7 +120,7 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	private void writeHeader(HasCoreLocation core, Executor executor,
-			int startAddress) throws IOException, ProcessException {
+			MemoryLocation startAddress) throws IOException, ProcessException {
 		ByteBuffer b = allocate(APP_PTR_TABLE_BYTE_SIZE)
 				.order(LITTLE_ENDIAN);
 
@@ -193,9 +195,9 @@ class ExecutionContext implements AutoCloseable {
 	private static class RegionToRef {
 		final CoreLocation core;
 
-		final int pointer;
+		final MemoryLocation pointer;
 
-		RegionToRef(CoreLocation core, int pointer) {
+		RegionToRef(CoreLocation core, MemoryLocation pointer) {
 			this.core = core;
 			this.pointer = pointer;
 		}
@@ -210,13 +212,13 @@ class ExecutionContext implements AutoCloseable {
 	private static class CoreToFill {
 		final Executor executor;
 
-		final int start;
+		final MemoryLocation start;
 
 		final CoreLocation core;
 
 		final List<MemoryRegionReference> refs = new ArrayList<>();
 
-		CoreToFill(Executor executor, int start, CoreLocation core) {
+		CoreToFill(Executor executor, MemoryLocation start, CoreLocation core) {
 			this.executor = executor;
 			this.start = start;
 			this.core = core;

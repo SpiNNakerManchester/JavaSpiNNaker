@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTran
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of memory from a BMP. */
@@ -43,8 +44,8 @@ public class BMPReadMemory extends BMPRequest<BMPReadMemory.Response> {
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public BMPReadMemory(BMPBoard board, int address, int size) {
-		super(board, CMD_READ, address, validate(size),
+	public BMPReadMemory(BMPBoard board, MemoryLocation address, int size) {
+		super(board, CMD_READ, address.address, validate(size),
 				efficientTransferUnit(address, size).value);
 	}
 

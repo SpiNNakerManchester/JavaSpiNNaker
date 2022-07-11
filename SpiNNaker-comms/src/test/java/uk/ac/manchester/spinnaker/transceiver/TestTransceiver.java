@@ -57,6 +57,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.VirtualMachine;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
@@ -222,8 +223,8 @@ class TestTransceiver {
 							txrx.writtenMemory.get(writeItem++);
 					assertEquals(chip.getScampCore(), write.core);
 					assertEquals(
-							SYSTEM_VARIABLE_BASE_ADDRESS
-									+ software_watchdog_count.offset,
+							new MemoryLocation(SYSTEM_VARIABLE_BASE_ADDRESS
+									+ software_watchdog_count.offset),
 							write.address);
 					assertArrayEquals(expectedData, write.data);
 				}
@@ -266,13 +267,14 @@ class MockWriteTransceiver extends Transceiver {
 
 		final byte[] data;
 
-		final int address;
+		final MemoryLocation address;
 
 		final int offset;
 
 		final int numBytes;
 
-		Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {
+		Write(HasCoreLocation core, MemoryLocation baseAddress,
+				ByteBuffer data) {
 			this.core = core.asCoreLocation();
 			this.address = baseAddress;
 			this.data = data.array().clone();
@@ -308,7 +310,7 @@ class MockWriteTransceiver extends Transceiver {
 	}
 
 	@Override
-	public void writeMemory(HasCoreLocation core, int baseAddress,
+	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) {
 		writtenMemory.add(new Write(core, baseAddress, data));
 	}

@@ -32,6 +32,7 @@ import java.util.WeakHashMap;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -50,7 +51,8 @@ final class ChipMemoryIO {
 	 * done. Using Buffered writing means that the write may or may not have
 	 * happened at the time of the response. </blockquote>
 	 */
-	private static final int UNBUFFERED_SDRAM_START = 0x60000000;
+	private static final MemoryLocation UNBUFFERED_SDRAM_START =
+			new MemoryLocation(0x60000000);
 
 	/**
 	 * A set of ChipMemoryIO objects that have been created, indexed by
@@ -90,10 +92,10 @@ final class ChipMemoryIO {
 	private final CoreLocation core;
 
 	/** The current pointer where read and writes are taking place. */
-	private int currentAddress;
+	private MemoryLocation currentAddress;
 
 	/** The current pointer where the next buffered write will occur. */
-	private int writeAddress;
+	private MemoryLocation writeAddress;
 
 	/** The write buffer. */
 	private final ByteBuffer writeBuffer;
@@ -109,7 +111,7 @@ final class ChipMemoryIO {
 	 *            The size of the write buffer to improve efficiency
 	 */
 	private ChipMemoryIO(Transceiver transceiver, HasChipLocation chip,
-			int baseAddress, int bufferSize) {
+			MemoryLocation baseAddress, int bufferSize) {
 		this.transceiver = new WeakReference<>(transceiver);
 		core = chip.getScampCore().asCoreLocation();
 		currentAddress = baseAddress;
@@ -142,7 +144,7 @@ final class ChipMemoryIO {
 			ByteBuffer b = writeBuffer.duplicate();
 			b.flip();
 			t.writeMemory(core, writeAddress, b);
-			writeAddress += writeBuffer.position();
+			writeAddress = writeAddress.add(writeBuffer.position());
 			writeBuffer.position(0);
 		}
 		hold = null;
@@ -158,7 +160,8 @@ final class ChipMemoryIO {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void setCurrentAddress(int address) throws IOException, ProcessException {
+	void setCurrentAddress(MemoryLocation address)
+			throws IOException, ProcessException {
 		flushWriteBuffer();
 		currentAddress = address;
 		writeAddress = address;
@@ -182,7 +185,7 @@ final class ChipMemoryIO {
 
 		flushWriteBuffer();
 		ByteBuffer data = txrx().readMemory(core, currentAddress, numBytes);
-		currentAddress += numBytes;
+		currentAddress = currentAddress.add(numBytes);
 		writeAddress = currentAddress;
 		if (data.position() == 0 && data.hasArray()) {
 			return data.array();
@@ -209,13 +212,13 @@ final class ChipMemoryIO {
 		if (numBytes >= writeBuffer.limit()) {
 			flushWriteBuffer();
 			t.writeMemory(core, currentAddress, data);
-			currentAddress += numBytes;
+			currentAddress = currentAddress.add(numBytes);
 			writeAddress = currentAddress;
 		} else {
 			hold = t;
 			int chunkSize = min(numBytes, writeBuffer.remaining());
 			writeBuffer.put(data, 0, chunkSize);
-			currentAddress += chunkSize;
+			currentAddress = currentAddress.add(chunkSize);
 			numBytes -= chunkSize;
 			if (!writeBuffer.hasRemaining()) {
 				flushWriteBuffer();
@@ -223,7 +226,7 @@ final class ChipMemoryIO {
 			if (numBytes > 0) {
 				writeBuffer.clear();
 				writeBuffer.put(data, chunkSize, numBytes);
-				currentAddress += numBytes;
+				currentAddress = currentAddress.add(numBytes);
 			}
 		}
 	}
@@ -247,6 +250,6 @@ final class ChipMemoryIO {
 		Transceiver t = txrx();
 		flushWriteBuffer();
 		t.fillMemory(core, currentAddress, value, size, type);
-		currentAddress += size;
+		currentAddress = currentAddress.add(size);
 	}
 }
