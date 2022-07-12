@@ -302,6 +302,7 @@ public class ProxyCore implements AutoCloseable {
 	 * @param message
 	 *            The content of the message.
 	 * @throws IOException
+	 *             Not expected; implementations don't actually throw
 	 */
 	public final void handleClientMessage(ByteBuffer message)
 			throws IOException {

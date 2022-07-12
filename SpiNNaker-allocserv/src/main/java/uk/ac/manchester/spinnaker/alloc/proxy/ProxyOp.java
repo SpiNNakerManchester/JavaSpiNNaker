@@ -50,7 +50,7 @@ public enum ProxyOp {
 	OPEN_UNCONNECTED,
 	/**
 	 * A message going to a board on a channel which does not have a SpiNNaker
-	 * board target address set up already ({@link #OPEN_UNBOUND}).
+	 * board target address set up already ({@link #OPEN_UNCONNECTED}).
 	 */
 	MESSAGE_TO
 }
