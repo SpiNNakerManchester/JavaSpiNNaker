@@ -882,6 +882,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<modules>
 				<module>keycloak-management-client</module>
 			</modules>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>${javadoc.version}</version>
+							<configuration>
+								<source>1.11</source>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
 		</profile>
 		<profile>
 			<id>JDK8</id>
