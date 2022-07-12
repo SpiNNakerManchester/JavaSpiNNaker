@@ -31,6 +31,7 @@ public class TestIterable {
 
 	private static final String PERCENTS =
 			"|0%                          50%                         100%|";
+
 	private static final String DASHES =
 			" ------------------------------------------------------------";
 
@@ -63,7 +64,7 @@ public class TestIterable {
 			sum += i;
 		}
 		assertEquals(1 + 2 + 3 + 4 + 5 + 6 + 7, sum);
-		String lines[] = baos.toString().split("\\r?\\n");
+		String[] lines = baos.toString().split("\\r?\\n");
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);
@@ -84,7 +85,7 @@ public class TestIterable {
 				}
 			}
 		}
-		String lines[] = baos.toString().split("\\r?\\n");
+		String[] lines = baos.toString().split("\\r?\\n");
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);
@@ -101,7 +102,7 @@ public class TestIterable {
 		Counter sum = new Counter();
 		pb.forEach(sum::add);
 		assertEquals(1 + 2 + 3 + 4 + 5, sum.get());
-		String lines[] = baos.toString().split("\\r?\\n");
+		String[] lines = baos.toString().split("\\r?\\n");
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);

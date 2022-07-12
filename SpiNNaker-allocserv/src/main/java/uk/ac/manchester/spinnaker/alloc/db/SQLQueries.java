@@ -830,7 +830,7 @@ public abstract class SQLQueries {
 	 * Insert a tag.
 	 *
 	 * @see MachineDefinitionLoader
-	 * @see MachineStateController
+	 * @see MachineStateControl
 	 */
 	@Parameter("machine_id")
 	@Parameter("tag")
@@ -841,7 +841,7 @@ public abstract class SQLQueries {
 	/**
 	 * Delete all tags for a machine.
 	 *
-	 * @see MachineStateController
+	 * @see MachineStateControl
 	 */
 	@Parameter("machine_id")
 	protected static final String DELETE_MACHINE_TAGS =
@@ -850,7 +850,7 @@ public abstract class SQLQueries {
 	/**
 	 * Set the in-service flag for a machine.
 	 *
-	 * @see MachineStateController
+	 * @see MachineStateControl
 	 */
 	@Parameter("in_service")
 	@Parameter("machine_name")

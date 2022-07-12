@@ -106,23 +106,28 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * core is ready for operational use. In milliseconds.
 	 */
 	int LAUNCH_DELAY = 500;
+
 	/**
 	 * A marker to indicate that no timeout applies.
 	 */
 	Integer TIMEOUT_DISABLED = null;
+
 	/**
 	 * How often to poll by default.
 	 */
 	int DEFAULT_POLL_INTERVAL = 100;
+
 	/**
 	 * The set of states that indicate a core in a failure state.
 	 */
 	Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
 			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
+
 	/**
 	 * What proportion of checks are to be expensive full checks.
 	 */
 	int DEFAULT_CHECK_INTERVAL = 100;
+
 	/** How many times to try booting a board. */
 	int BOARD_BOOT_RETRIES = 5;
 

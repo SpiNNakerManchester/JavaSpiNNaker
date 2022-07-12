@@ -34,7 +34,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 class TestSQLiteStorage {
-	File db;
+	private File db;
 
 	@BeforeEach
 	void makeDB() {
@@ -62,7 +62,8 @@ class TestSQLiteStorage {
 
 		assertEquals(emptyList(), storage.getCoresWithStorage());
 
-		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 0, 0, 100);
+		BufferManagerStorage.Region rr =
+				new BufferManagerStorage.Region(core, 0, 0, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
@@ -78,7 +79,8 @@ class TestSQLiteStorage {
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		// append creates
-		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
+		BufferManagerStorage.Region rr =
+				new BufferManagerStorage.Region(core, 1, 0, 100);
 		storage.appendRecordingContents(rr, bytes("ab"));
 		storage.appendRecordingContents(rr, bytes("cd"));
 		storage.appendRecordingContents(rr, bytes("ef"));

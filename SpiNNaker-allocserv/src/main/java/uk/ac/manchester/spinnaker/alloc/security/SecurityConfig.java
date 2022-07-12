@@ -173,8 +173,10 @@ public class SecurityConfig {
 	 * requirements; those are annotated with {@link PreAuthorize @PreAuthorize}
 	 * and a suitable auth expression.
 	 *
-	 * @param http Where the configuration is applied to.
+	 * @param http
+	 *            Where the configuration is applied to.
 	 * @throws Exception
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineAccessPolicy(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
@@ -195,8 +197,10 @@ public class SecurityConfig {
 	/**
 	 * How we handle the mechanics of login with the REST API.
 	 *
-	 * @param http Where the configuration is applied to.
+	 * @param http
+	 *            Where the configuration is applied to.
 	 * @throws Exception
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineAPILoginRules(HttpSecurity http) throws Exception {
 		if (properties.isBasic()) {
@@ -212,8 +216,10 @@ public class SecurityConfig {
 	/**
 	 * How we handle the mechanics of login within the web UI.
 	 *
-	 * @param http Where the configuration is applied to.
+	 * @param http
+	 *            Where the configuration is applied to.
 	 * @throws Exception
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineWebUILoginRules(HttpSecurity http) throws Exception {
 		String loginUrl = urlMaker.systemUrl("login.html");
@@ -247,8 +253,10 @@ public class SecurityConfig {
 	 * pointless for Basic Auth as browsers will just log straight back in
 	 * again. Still, it is meaningful (it invalidates the session).
 	 *
-	 * @param http Where the configuration is applied to.
+	 * @param http
+	 *            Where the configuration is applied to.
 	 * @throws Exception
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineLogoutRules(HttpSecurity http) throws Exception {
 		String loginUrl = urlMaker.systemUrl("login.html");
@@ -260,9 +268,12 @@ public class SecurityConfig {
 
 	/**
 	 * Define our main security controls.
-	 * @param http Used to build the filter chain.
+	 *
+	 * @param http
+	 *            Used to build the filter chain.
 	 * @return The filter chain that implements the controls.
 	 * @throws Exception
+	 *             If anything goes wrong with setting up.
 	 */
 	@Bean
 	@Role(ROLE_SUPPORT)

@@ -34,28 +34,30 @@ import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
  */
 public class TestPlacements {
 
-    @Test
-    public void testVertexJson() throws IOException {
-        URL url = TestPlacements.class.getResource("/vertex.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        Vertex fromJson = mapper.readValue(url, Vertex.class);
-        assertEquals(1612972372, fromJson.getBaseAddress());
-    }
+	@Test
+	public void testVertexJson() throws IOException {
+		URL url = TestPlacements.class.getResource("/vertex.json");
+		ObjectMapper mapper = MapperFactory.createMapper();
+		Vertex fromJson = mapper.readValue(url, Vertex.class);
+		assertEquals(1612972372, fromJson.getBaseAddress());
+	}
 
-    @Test
-    public void testPlacementJson() throws IOException {
-        URL url = TestPlacements.class.getResource("/placement.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        Placement fromJson = mapper.readValue(url, Placement.class);
-        assertEquals(2, fromJson.getY());
-    }
+	@Test
+	public void testPlacementJson() throws IOException {
+		URL url = TestPlacements.class.getResource("/placement.json");
+		ObjectMapper mapper = MapperFactory.createMapper();
+		Placement fromJson = mapper.readValue(url, Placement.class);
+		assertEquals(2, fromJson.getY());
+	}
 
-    @Test
-    public void testSimpleJson() throws IOException {
-        URL url = TestPlacements.class.getResource("/simple.json");
-        ObjectMapper mapper = MapperFactory.createMapper();
-        List<Placement> fromJson = mapper.readValue(url, new TypeReference<List<Placement>>(){});
-        assertEquals(2, fromJson.size());
-    }
+	@Test
+	public void testSimpleJson() throws IOException {
+		URL url = TestPlacements.class.getResource("/simple.json");
+		ObjectMapper mapper = MapperFactory.createMapper();
+		List<Placement> fromJson =
+				mapper.readValue(url, new TypeReference<List<Placement>>() {
+				});
+		assertEquals(2, fromJson.size());
+	}
 
 }

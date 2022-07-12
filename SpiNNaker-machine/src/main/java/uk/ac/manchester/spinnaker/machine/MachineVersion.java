@@ -110,6 +110,7 @@ public enum MachineVersion {
 	 * Indicates if this machine is expected to have wrap-arounds on the X axis.
 	 */
 	public final boolean horizontalWrap;
+
 	/**
 	 * Indicates if this machine is expected to have wrap-arounds on the Y axis.
 	 */

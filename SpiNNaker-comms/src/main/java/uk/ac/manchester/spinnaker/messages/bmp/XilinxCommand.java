@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import static uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
+
 /** Commands to send to the Xilinx FPGA handler. */
 public enum XilinxCommand {
 	/** Load block of data. */
@@ -31,6 +33,10 @@ public enum XilinxCommand {
 
 	/** The command code to use in the message. */
 	public final int code;
+
+	static {
+		FPGAResetType.class.getClass();
+	}
 
 	XilinxCommand(int code) {
 		this.code = code;
