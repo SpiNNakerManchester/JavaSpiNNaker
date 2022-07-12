@@ -20,6 +20,7 @@ import static java.lang.Integer.compare;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE_ARRAY;
@@ -227,30 +228,49 @@ public enum SystemVariableDefinition {
 	 */
 	private final Object def;
 
+	private final boolean hasDefinedDefault;
+
 	SystemVariableDefinition(DataType type, int offset) {
 		this.type = type;
 		this.offset = offset;
-		this.def = 0;
+		hasDefinedDefault = false;
+		if (type == ADDRESS) {
+			this.def = NULL;
+		} else {
+			this.def = 0;
+		}
 	}
 
 	SystemVariableDefinition(DataType type, int offset, Object def) {
 		this.type = type;
 		this.offset = offset;
-		this.def = def;
+		hasDefinedDefault = true;
+		if (type == ADDRESS) {
+			this.def = new MemoryLocation(((Number) def).intValue());
+		} else {
+			this.def = def;
+		}
 	}
 
 	/**
 	 * The default value assigned to the variable if not overridden; this can be
-	 * an integer or a byte array.
+	 * an integer, a byte array or a memory location.
 	 *
 	 * @return The default value, or a copy of it if the type of the value is an
 	 *         array.
 	 */
 	public Object getDefault() {
-		if (type == BYTE_ARRAY) {
+		switch (type) {
+		case BYTE_ARRAY:
 			return ((byte[]) def).clone();
+		default:
+			return def;
 		}
-		return def;
+	}
+
+	/** @return Whether this is a variable with a usefully-defined default. */
+	public boolean isDefaultSpecified() {
+		return hasDefinedDefault;
 	}
 
 	/**
