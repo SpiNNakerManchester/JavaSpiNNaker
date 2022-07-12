@@ -201,6 +201,10 @@ public class Executor implements Closeable {
 		buffer.putInt(DSE_VERSION);
 	}
 
+	private static void putAddress(MemoryLocation loc, ByteBuffer buf) {
+		buf.putInt(loc == null ? 0 : loc.address);
+	}
+
 	/**
 	 * Get the pointer table stored in a buffer.
 	 *
@@ -211,7 +215,7 @@ public class Executor implements Closeable {
 		assert buffer.order() == LITTLE_ENDIAN;
 		for (MemoryRegion reg : memRegions) {
 			if (reg != null) {
-				buffer.putInt(reg.getRegionBase().address);
+				putAddress(reg.getRegionBase(), buffer);
 				if (reg instanceof MemoryRegionReal) {
 					// Work out the checksum
 					MemoryRegionReal regReal = (MemoryRegionReal) reg;
