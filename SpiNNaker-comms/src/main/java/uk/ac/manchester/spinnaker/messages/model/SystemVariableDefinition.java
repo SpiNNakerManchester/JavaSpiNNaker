@@ -32,6 +32,8 @@ import static uk.ac.manchester.spinnaker.messages.model.SVDConstants.PER_CORE_WI
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /** Defines the system variables available. */
 public enum SystemVariableDefinition {
 	/** The y-coordinate of the chip. */
@@ -205,7 +207,7 @@ public enum SystemVariableDefinition {
 	/** A (virtual) copy of the router FR register. */
 	fixed_route_copy(INT, 0xf4),
 	/** A pointer to the board information structure. */
-	board_info(INT, 0xf8),
+	board_info(ADDRESS, 0xf8),
 	/** A word of padding. */
 	@Deprecated
 	padding_4(INT, 0xfc);
@@ -266,7 +268,30 @@ public enum SystemVariableDefinition {
 	 *            The buffer to write into.
 	 */
 	public void addToBuffer(Object value, ByteBuffer buffer) {
-		type.addToBuffer(value, buffer);
+		switch (type) {
+		case BYTE:
+			buffer.put(((Number) value).byteValue());
+			return;
+		case SHORT:
+			buffer.putShort(((Number) value).shortValue());
+			return;
+		case INT:
+			buffer.putInt(((Number) value).intValue());
+			return;
+		case LONG:
+			buffer.putLong(((Number) value).longValue());
+			return;
+		case BYTE_ARRAY:
+			buffer.put((byte[]) value);
+			return;
+		case ADDRESS:
+			buffer.putInt(((MemoryLocation) value).address);
+			return;
+		default:
+			// CHECKSTYLE:OFF
+			throw new Error("unreachable?");
+			// CHECKSTYLE:ON
+		}
 	}
 
 	/**

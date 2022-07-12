@@ -16,21 +16,28 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-import java.nio.ByteBuffer;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
-/** Enum for data types of system variables. */
+/**
+ * Enum for data types of system variables.
+ *
+ * @see SystemVariableDefinition
+ */
 public enum DataType {
-	/** The value is one byte long. */
+	/** The value is one byte long, a {@code byte}. */
 	BYTE(1),
-	/** The value is two bytes long. */
+	/** The value is two bytes long, a {@code short}. */
 	SHORT(2),
-	/** The value is four bytes long. */
+	/** The value is four bytes long, an {@code int}. */
 	INT(4),
-	/** The value is eight bytes long. */
+	/** The value is eight bytes long, a {@code long}. */
 	LONG(8),
-	/** The value is an array of bytes. */
+	/** The value is an array of bytes, a {@code byte[]}. */
 	BYTE_ARRAY(16),
-	/** The value is four bytes, representing a memory location. */
+	/**
+	 * The value is four bytes, representing a {@linkplain MemoryLocation memory
+	 * location}.
+	 */
 	ADDRESS(4);
 
 	/** The SCAMP data type descriptor code. */
@@ -40,41 +47,7 @@ public enum DataType {
 		this.value = value;
 	}
 
-	/**
-	 * Writes an object described by this data type into the given buffer at the
-	 * <i>position</i> as a contiguous range of bytes. This assumes that the
-	 * buffer has been configured to be
-	 * {@linkplain java.nio.ByteOrder#LITTLE_ENDIAN little-endian} and that its
-	 * <i>position</i> is at the point where this method should begin writing.
-	 * Once it has finished, the <i>position</i> should be immediately after the
-	 * last byte written by this method.
-	 *
-	 * @param value
-	 *            The value to write.
-	 * @param buffer
-	 *            The buffer to write into.
-	 */
-	void addToBuffer(Object value, ByteBuffer buffer) {
-		switch (this) {
-		case BYTE:
-			buffer.put(((Number) value).byteValue());
-			return;
-		case SHORT:
-			buffer.putShort(((Number) value).shortValue());
-			return;
-		case INT:
-			buffer.putInt(((Number) value).intValue());
-			return;
-		case LONG:
-			buffer.putLong(((Number) value).longValue());
-			return;
-		case BYTE_ARRAY:
-			buffer.put((byte[]) value);
-			return;
-		default:
-			// CHECKSTYLE:OFF
-			throw new Error("unreachable?");
-			// CHECKSTYLE:ON
-		}
+	static {
+		MemoryLocation.class.getClass();
 	}
 }
