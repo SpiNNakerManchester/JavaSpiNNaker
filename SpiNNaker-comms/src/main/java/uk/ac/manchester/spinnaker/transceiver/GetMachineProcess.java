@@ -23,10 +23,10 @@ import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_P2P;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -47,7 +47,6 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Link;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.Router;
 import uk.ac.manchester.spinnaker.messages.model.ChipSummaryInfo;
@@ -119,9 +118,6 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		this.maxSDRAMSize = maxSDRAMSize;
 		this.chipInfo = new HashMap<>();
 	}
-
-	private static final MemoryLocation ROUTER_P2P =
-			new MemoryLocation(ROUTER_REGISTER_P2P_ADDRESS);
 
 	/**
 	 * Get a full, booted machine, populated with information directly from the

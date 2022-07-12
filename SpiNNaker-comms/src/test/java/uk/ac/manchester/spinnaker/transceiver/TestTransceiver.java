@@ -28,8 +28,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
-import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
@@ -222,9 +222,7 @@ class TestTransceiver {
 					MockWriteTransceiver.Write write =
 							txrx.writtenMemory.get(writeItem++);
 					assertEquals(chip.getScampCore(), write.core);
-					assertEquals(
-							new MemoryLocation(SYSTEM_VARIABLE_BASE_ADDRESS
-									+ software_watchdog_count.offset),
+					assertEquals(SYS_VARS.add(software_watchdog_count.offset),
 							write.address);
 					assertArrayEquals(expectedData, write.data);
 				}

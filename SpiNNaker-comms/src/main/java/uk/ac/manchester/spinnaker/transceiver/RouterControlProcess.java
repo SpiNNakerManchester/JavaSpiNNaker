@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.util.Collections.unmodifiableMap;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_CONTROL;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_DIAGNOSTICS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_ERROR;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +30,6 @@ import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.scp.ClearReinjectionQueue;
@@ -50,12 +52,6 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int REGISTER = 4;
 
 	private static final int NUM_REGISTERS = 16;
-
-	private static final int ROUTER_CONTROL_REGISTER = 0xe1000000;
-
-	private static final int ROUTER_ERROR_STATUS = 0xe1000014;
-
-	private static final int ROUTER_REGISTERS = 0xe1000300;
 
 	/**
 	 * @param connectionSelector
@@ -429,15 +425,6 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		return unmodifiableMap(status);
 	}
 
-	private static final MemoryLocation CONTROL =
-			new MemoryLocation(ROUTER_CONTROL_REGISTER);
-
-	private static final MemoryLocation ERROR =
-			new MemoryLocation(ROUTER_ERROR_STATUS);
-
-	private static final MemoryLocation REGISTER_BANK =
-			new MemoryLocation(ROUTER_REGISTERS);
-
 	/**
 	 * Get a chip's router's diagnostics.
 	 *
@@ -456,13 +443,14 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		int[] reg = new int[NUM_REGISTERS];
 
 		sendRequest(
-				new ReadMemory(chip, CONTROL, REGISTER),
+				new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
 				response -> cr.setValue(response.data.getInt()));
 		sendRequest(
-				new ReadMemory(chip, ERROR, REGISTER),
+				new ReadMemory(chip, ROUTER_ERROR, REGISTER),
 				response -> es.setValue(response.data.getInt()));
 		sendRequest(
-				new ReadMemory(chip, REGISTER_BANK, NUM_REGISTERS * REGISTER),
+				new ReadMemory(chip, ROUTER_DIAGNOSTICS,
+						NUM_REGISTERS * REGISTER),
 				response -> response.data.asIntBuffer().get(reg));
 
 		finish();

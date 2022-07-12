@@ -39,10 +39,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DEFAULT_FILTERS_MAX_POSITION;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FILTER_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_FILTER_CONTROLS_OFFSET;
-import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
@@ -55,6 +52,10 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
 import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRIES;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.EXECUTABLE_ADDRESS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_DIAGNOSTIC_COUNTER;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_FILTERS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
@@ -223,27 +224,6 @@ public class Transceiver extends UDPTransceiver
 	private static final int POST_POWER_ON_DELAY = 2000;
 
 	private static final int ENABLE_SHIFT = 16;
-
-	/**
-	 * Where to read router diagnostic counters from.
-	 */
-	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
-
-	/** Where executables are written to prior to launching them. */
-	private static final MemoryLocation EXECUTABLE_ADDRESS =
-			new MemoryLocation(0x67800000);
-
-	/** Where the system variables are located. */
-	private static final MemoryLocation SYS_VARS =
-			new MemoryLocation(SYSTEM_VARIABLE_BASE_ADDRESS);
-
-	/** Where the router's registers are located. */
-	private static final MemoryLocation ROUTER_BASE =
-			new MemoryLocation(ROUTER_REGISTER_BASE_ADDRESS);
-
-	/** Where to read router diagnostic counters from. */
-	private static final MemoryLocation ROUTER_DIAGNOSTICS =
-			new MemoryLocation(ROUTER_DIAGNOSTIC_COUNTER_ADDR);
 
 	/**
 	 * How much data to pile into SCAMP before reducing the number of messages
@@ -2309,8 +2289,8 @@ public class Transceiver extends UDPTransceiver
 					+ "the end user knows what they are doing.");
 		}
 
-		MemoryLocation address = ROUTER_BASE.add(ROUTER_FILTER_CONTROLS_OFFSET
-				+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
+		MemoryLocation address =
+				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
 		writeMemory(chip, address, diagnosticFilter.getFilterWord());
 	}
 
@@ -2323,8 +2303,8 @@ public class Transceiver extends UDPTransceiver
 					"router filter positions must be between 0 and "
 							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
-		MemoryLocation address = ROUTER_BASE.add(ROUTER_FILTER_CONTROLS_OFFSET
-				+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
+		MemoryLocation address =
+				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
 		Response response = simpleProcess()
 				.execute(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
@@ -2348,7 +2328,7 @@ public class Transceiver extends UDPTransceiver
 				clearData |= 1 << counterID + ENABLE_SHIFT;
 			}
 		}
-		writeMemory(chip, ROUTER_DIAGNOSTICS, clearData);
+		writeMemory(chip, ROUTER_DIAGNOSTIC_COUNTER, clearData);
 	}
 
 	@Override

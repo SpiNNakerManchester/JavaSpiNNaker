@@ -47,6 +47,7 @@ import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.PacketT
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.EXT_PP;
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.LOC_PP;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.STOP;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFERED_SDRAM_START;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -190,7 +191,7 @@ public class TransceiverITCase {
 	private static final ChipLocation SCAMP = ZERO_ZERO;
 
 	/** Where we like to read and write when testing. */
-	private static final MemoryLocation MEM = new MemoryLocation(0x70000000);
+	private static final MemoryLocation MEM = BUFFERED_SDRAM_START;
 
 	private void boardReady(Transceiver txrx) throws Exception {
 		VersionInfo versionInfo = txrx.ensureBoardIsReady();

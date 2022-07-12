@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
-import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_OFFSET;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.CPU_INFO;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -39,9 +39,6 @@ public abstract class Utils {
 	 * The size of buffer to allocate for SpiNNaker messages.
 	 */
 	private static final int SPINNAKER_MESSAGE_BUFFER_SIZE = 300;
-
-	private static final MemoryLocation CPU_INFO =
-			new MemoryLocation(CPU_INFO_OFFSET);
 
 	private Utils() {
 	}

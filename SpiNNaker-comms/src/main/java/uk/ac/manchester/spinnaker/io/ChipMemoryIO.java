@@ -20,6 +20,7 @@ import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.UNBUFFERED_SDRAM_START;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -39,21 +40,6 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
 /** A file-like object for the memory of a chip. */
 final class ChipMemoryIO {
-	/**
-	 * Start of unbuffered access to SDRAM. Writes will block until they have
-	 * completed.
-	 * <p>
-	 * <blockquote> Buffered SDRAM means that writes go through a write buffer.
-	 * Unbuffered means that they go directly to SDRAM. Reads are unaffected in
-	 * general. If you are writing lots of data, it is unlikely to matter much
-	 * since the write buffer is limited in size. Here you probably want to use
-	 * Unbuffered anyway, as it will then block until the write is definitely
-	 * done. Using Buffered writing means that the write may or may not have
-	 * happened at the time of the response. </blockquote>
-	 */
-	private static final MemoryLocation UNBUFFERED_SDRAM_START =
-			new MemoryLocation(0x60000000);
-
 	/**
 	 * A set of ChipMemoryIO objects that have been created, indexed by
 	 * transceiver, x and y (thus two transceivers might not see the same

@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.util.Collections.unmodifiableList;
-import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -145,11 +145,9 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
 		MemoryLocation heapBase = new MemoryLocation(readFromAddress(chip,
-				new MemoryLocation(SYSTEM_VARIABLE_BASE_ADDRESS + heap.offset),
-				heap.type.value).get());
-		HeapHeader header = new HeapHeader(
+				SYS_VARS.add(heap.offset), heap.type.value).get());
+		return new HeapHeader(
 				readFromAddress(chip, heapBase, HEAP_HEADER_SIZE));
-		return header;
 	}
 
 	private BlockHeader getBlockHeader(HasChipLocation chip,

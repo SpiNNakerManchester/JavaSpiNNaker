@@ -22,6 +22,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTING_TABLE_DATA;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -66,10 +67,6 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	 * for SpiNNaker 1 chips.
 	 */
 	private static final int MAX_ROUTER_ENTRIES = 1023;
-
-	/** Location of routing table data. Reserved by SCAMP. */
-	private static final MemoryLocation ROUTING_TABLE_DATA =
-			new MemoryLocation(0x67800000);
 
 	/**
 	 * @param connectionSelector
