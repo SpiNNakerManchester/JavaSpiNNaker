@@ -20,11 +20,8 @@ import static java.lang.Math.max;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNull;
-import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.nio.ByteBuffer;
-
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * A memory region storage object.
@@ -33,10 +30,6 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
  * of their fundamental object identity.
  */
 public final class MemoryRegionReal extends MemoryRegion {
-
-	/** The write pointer position, saying where the start of the block is. */
-	private int memPointer;
-
 	/** The maximum point where writes have happened up to within the region. */
 	private int maxWritePointer;
 
@@ -49,32 +42,25 @@ public final class MemoryRegionReal extends MemoryRegion {
 	 */
 	private boolean unfilled;
 
-	/** The base address of the region. Set after the fact. */
-	private MemoryLocation regionBaseAddress;
-
 	/** The index of the memory region. */
 	private final int index;
 
 	/** A reference for the region, {@code null} if none. */
-	private final Integer reference;
+	private final Reference reference;
 
 	/**
 	 * Create a memory region.
 	 *
 	 * @param index
 	 *            the index of the memory region
-	 * @param memoryPointer
-	 *            where the start of the block is
 	 * @param unfilled
 	 *            whether this is an unfilled region
 	 * @param size
 	 *            the allocated size of the memory region
 	 */
-	MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size) {
+	MemoryRegionReal(int index, boolean unfilled, int size) {
 		this.index = index;
-		memPointer = memoryPointer;
 		maxWritePointer = 0;
-		regionBaseAddress = NULL;
 		this.unfilled = unfilled;
 		reference = null;
 		buffer = allocate(size).order(LITTLE_ENDIAN);
@@ -85,8 +71,6 @@ public final class MemoryRegionReal extends MemoryRegion {
 	 *
 	 * @param index
 	 *            the index of the memory region
-	 * @param memoryPointer
-	 *            where the start of the block is
 	 * @param unfilled
 	 *            whether this is an unfilled region
 	 * @param size
@@ -94,19 +78,13 @@ public final class MemoryRegionReal extends MemoryRegion {
 	 * @param reference
 	 *            the reference of the memory region
 	 */
-	MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size,
-			int reference) {
+	MemoryRegionReal(int index, boolean unfilled, int size,
+			Reference reference) {
 		this.index = index;
-		memPointer = memoryPointer;
 		maxWritePointer = 0;
-		regionBaseAddress = NULL;
 		this.unfilled = unfilled;
-		this.reference = reference;
+		this.reference = requireNonNull(reference);
 		buffer = allocate(size).order(LITTLE_ENDIAN);
-	}
-
-	public int getMemoryPointer() {
-		return memPointer;
 	}
 
 	public int getAllocatedSize() {
@@ -162,16 +140,6 @@ public final class MemoryRegionReal extends MemoryRegion {
 		maxWritePointer = max(maxWritePointer, address);
 	}
 
-	@Override
-	public MemoryLocation getRegionBase() {
-		return regionBaseAddress;
-	}
-
-	@Override
-	protected void setRegionBase(MemoryLocation address) {
-		regionBaseAddress = address;
-	}
-
 	/**
 	 * Get the reference of the region.
 	 *
@@ -179,7 +147,7 @@ public final class MemoryRegionReal extends MemoryRegion {
 	 * @throws NullPointerException
 	 *             if there is no reference.
 	 */
-	public int getReference() {
-		return requireNonNull(reference, "no such reference").intValue();
+	public Reference getReference() {
+		return requireNonNull(reference, "no such reference");
 	}
 }

@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A reference to another region.
@@ -26,10 +26,7 @@ public final class MemoryRegionReference extends MemoryRegion {
 	private final int index;
 
 	/** The reference of the region. */
-	private final int reference;
-
-	/** The base address of the actual region referenced. */
-	private MemoryLocation baseAddress;
+	private final Reference reference;
 
 	/**
 	 * Create a reference to another region.
@@ -39,9 +36,9 @@ public final class MemoryRegionReference extends MemoryRegion {
 	 * @param reference
 	 *            The reference to make.
 	 */
-	MemoryRegionReference(int index, int reference) {
+	MemoryRegionReference(int index, Reference reference) {
 		this.index = index;
-		this.reference = reference;
+		this.reference = requireNonNull(reference);
 	}
 
 	@Override
@@ -50,23 +47,13 @@ public final class MemoryRegionReference extends MemoryRegion {
 	}
 
 	/** @return The reference of the region. */
-	public int getReference() {
+	public Reference getReference() {
 		return reference;
-	}
-
-	@Override
-	public void setRegionBase(MemoryLocation baseAddress) {
-		this.baseAddress = baseAddress;
-	}
-
-	@Override
-	public MemoryLocation getRegionBase() {
-		return baseAddress;
 	}
 
 	@Override
 	public String toString() {
 		return "MemoryRegionReference(index:" + index + ", reference:"
-			+ reference + ", Region Base:" + baseAddress + ")";
+			+ reference + ", Region Base:" + getRegionBase() + ")";
 	}
 }

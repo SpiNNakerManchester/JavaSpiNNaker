@@ -16,12 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
+import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
+
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
- * Marker of something that is a memory region.
+ * Marker of something that is a memory region. All memory regions have an
+ * address in memory where they start (which is only chosen late in the region
+ * creation process) and an index in the process's table of regions.
  */
 public abstract class MemoryRegion {
+	/** The base address of the region. Set after the fact. */
+	private MemoryLocation baseAddress = NULL;
 
 	/** @return the index of the memory region. */
 	public abstract int getIndex();
@@ -29,15 +36,21 @@ public abstract class MemoryRegion {
 	/**
 	 * Get the address of the first byte in the region.
 	 *
-	 * @return The address.
+	 * @return The address. Never {@code null}, but may be
+	 *         {@link MemoryLocation#NULL NULL} if not yet otherwise set.
 	 */
-	public abstract MemoryLocation getRegionBase();
+	public final MemoryLocation getRegionBase() {
+		return baseAddress;
+	}
 
 	/**
 	 * Set the address of the first byte in the region.
 	 *
 	 * @param baseAddress
-	 *            The address to set.
+	 *            The address to set. Must not be {@code null}.
 	 */
-	protected abstract void setRegionBase(MemoryLocation baseAddress);
+	public final void setRegionBase(MemoryLocation baseAddress) {
+		this.baseAddress =
+				requireNonNull(baseAddress, "base address must not be null");
+	}
 }

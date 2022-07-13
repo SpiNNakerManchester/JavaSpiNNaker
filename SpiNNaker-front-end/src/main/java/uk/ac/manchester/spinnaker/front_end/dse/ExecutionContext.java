@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReference;
+import uk.ac.manchester.spinnaker.data_spec.Reference;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -45,7 +46,7 @@ class ExecutionContext implements AutoCloseable {
 
 	private final Transceiver txrx;
 
-	private final Map<Integer, RegionToRef> regionsToRef = new HashMap<>();
+	private final Map<Reference, RegionToRef> regionsToRef = new HashMap<>();
 
 	private final List<CoreToFill> regionsToFill = new ArrayList<>();
 
@@ -90,7 +91,7 @@ class ExecutionContext implements AutoCloseable {
 			throws DataSpecificationException {
 		for (int region : executor.getReferenceableRegions()) {
 			MemoryRegionReal r = (MemoryRegionReal) executor.getRegion(region);
-			int ref = r.getReference();
+			Reference ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
 				RegionToRef reg = regionsToRef.get(ref);
 				throw new DataSpecificationException(
@@ -104,7 +105,7 @@ class ExecutionContext implements AutoCloseable {
 		for (int region : executor.getRegionsToFill()) {
 			MemoryRegionReference r =
 					(MemoryRegionReference) executor.getRegion(region);
-			int ref = r.getReference();
+			Reference ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
 				RegionToRef reg = regionsToRef.get(ref);
 				if (!reg.core.onSameChipAs(core)) {
@@ -138,23 +139,24 @@ class ExecutionContext implements AutoCloseable {
 		List<String> errors = new ArrayList<>();
 		for (CoreToFill toFill : regionsToFill) {
 			for (MemoryRegionReference ref : toFill.refs) {
-				int reference = ref.getReference();
+				Reference reference = ref.getReference();
 				if (!regionsToRef.containsKey(reference)) {
-					String potentialRefs = "";
-					for (int r : regionsToRef.keySet()) {
-						RegionToRef reg = regionsToRef.get(r);
+					StringBuilder potentialRefs =
+							new StringBuilder("Reference ").append(reference)
+									.append(" from ").append(toFill)
+									.append(" not found from ");
+					regionsToRef.forEach((r, reg) -> {
 						if (reg.core.onSameChipAs(toFill.core)) {
-							potentialRefs += ref
-									+ "(from core " + reg.core + "); ";
+							potentialRefs.append(ref).append(" (from core ")
+									.append(reg.core).append("); ");
 						}
-					}
-					errors.add("Reference " + reference + " from " + toFill
-							+ " not found from " + potentialRefs);
+					});
+					errors.add(potentialRefs.toString());
 				}
 				RegionToRef reg = regionsToRef.get(reference);
 				if (!reg.core.onSameChipAs(toFill.core)) {
-					errors.add("Region " + ref + " on " + reg + " cannot be"
-							+ " referenced from " + toFill);
+					errors.add("Region " + ref + " on " + reg
+							+ " cannot be referenced from " + toFill);
 				}
 			}
 		}
@@ -166,8 +168,7 @@ class ExecutionContext implements AutoCloseable {
 		// Finish filling things in and write header
 		for (CoreToFill toFill : regionsToFill) {
 			for (MemoryRegionReference ref : toFill.refs) {
-				int reference = ref.getReference();
-				RegionToRef reg = regionsToRef.get(reference);
+				RegionToRef reg = regionsToRef.get(ref.getReference());
 				ref.setRegionBase(reg.pointer);
 			}
 			writeHeader(toFill.core, toFill.executor, toFill.start);
@@ -176,10 +177,10 @@ class ExecutionContext implements AutoCloseable {
 
 	static class DanglingReferenceException
 			extends DataSpecificationException {
-		private static final long serialVersionUID = 3954605254603357775L;
+		private static final long serialVersionUID = -5070252348099737363L;
 
-		DanglingReferenceException(int ref, RegionToRef reg, CoreLocation core,
-				int region) {
+		DanglingReferenceException(Reference ref, RegionToRef reg,
+				CoreLocation core, int region) {
 			super("Region " + ref + " on " + reg + " cannot be"
 					+ " referenced from " + core + ", " + region);
 		}
