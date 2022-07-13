@@ -116,7 +116,7 @@ public class TestDataSpecExecutor {
 		MemoryRegion reg4 = executor.getRegion(4);
 		assertTrue(reg4 instanceof MemoryRegionReference);
 		MemoryRegionReference region4 = (MemoryRegionReference) reg4;
-		assertEquals(region4.getReference(), 2);
+		assertEquals(region4.getReference(), new Reference(2));
 
 		// Test referencing
 		assertArrayEquals(executor.getReferenceableRegions().toArray(),
