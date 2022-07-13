@@ -299,7 +299,7 @@ public class FirmwareLoader {
 	public static class RegisterSet {
 		private final FPGA fpga;
 
-		private final int address;
+		private final MemoryLocation address;
 
 		private final int value;
 
@@ -502,7 +502,7 @@ public class FirmwareLoader {
 			throws ProcessException, IOException {
 		List<Integer> data = new ArrayList<>();
 		for (RegisterSet r : settings) {
-			data.add(r.address | r.fpga.value);
+			data.add(r.address.address | r.fpga.value);
 			data.add(r.value);
 		}
 		FlashDataSector sector =

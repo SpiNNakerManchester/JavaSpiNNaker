@@ -1674,15 +1674,16 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException {
+	public int readFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
 		return bmpCall(bmp,
 				new ReadFPGARegister(fpga, register, board)).fpgaRegister;
 	}
 
 	@Override
 	@ParallelUnsafe
-	public void writeFPGARegister(FPGA fpga, int register, int value,
+	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		bmpCall(bmp, new WriteFPGARegister(fpga, register, value, board));

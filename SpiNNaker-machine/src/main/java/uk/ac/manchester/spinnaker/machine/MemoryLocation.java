@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import static java.lang.Integer.compareUnsigned;
+import static java.lang.String.format;
 
 /**
  * A location in SpiNNaker or BMP memory. Does not say which address space this
@@ -101,7 +102,8 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 
 	@Override
 	public String toString() {
-		return "0x" + Integer.toHexString(address);
+		// Leading '0x' then exactly 8 hexadecimal characters; 10 chars total
+		return format("%#010x", address);
 	}
 
 	/** Maximum legal SpiNNaker address. It's a 32-bit machine. */

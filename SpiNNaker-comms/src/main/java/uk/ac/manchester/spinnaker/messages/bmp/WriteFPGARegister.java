@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_WRITE;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 
 /**
@@ -50,10 +51,10 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	 * @throws IllegalArgumentException
 	 *             If {@link FPGA#FPGA_ALL} is used.
 	 */
-	public WriteFPGARegister(FPGA fpga, int register, int value,
+	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPBoard board) {
-		super(board, CMD_LINK_WRITE, register & ~MASK, WORD_SIZE, fpga.value,
-				data(value));
+		super(board, CMD_LINK_WRITE, register.address & ~MASK, WORD_SIZE,
+				fpga.value, data(value));
 		if (!fpga.isSingleFPGA()) {
 			throw new IllegalArgumentException(
 					"cannot write multiple FPGAs at once with this message");

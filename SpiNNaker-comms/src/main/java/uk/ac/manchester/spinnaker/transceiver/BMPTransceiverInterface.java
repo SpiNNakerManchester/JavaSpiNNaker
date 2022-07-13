@@ -512,8 +512,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGARegister(FPGA fpga, int register, BMPBoard board)
-			throws IOException, ProcessException {
+	default int readFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
 	}
 
@@ -537,8 +537,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	int readFPGARegister(FPGA fpga, int register, BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException;
+	int readFPGARegister(FPGA fpga, MemoryLocation register, BMPCoords bmp,
+			BMPBoard board) throws IOException, ProcessException;
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
@@ -664,8 +664,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(FPGA fpga, int register, int value,
-			BMPBoard board) throws IOException, ProcessException {
+	default void writeFPGARegister(FPGA fpga, MemoryLocation register,
+			int value, BMPBoard board) throws IOException, ProcessException {
 		writeFPGARegister(fpga, register, value, getBoundBMP(), board);
 	}
 
@@ -690,8 +690,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void writeFPGARegister(FPGA fpga, int register, int value, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException;
+	void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
+			BMPCoords bmp, BMPBoard board) throws IOException, ProcessException;
 
 	/**
 	 * Read the ADC data.

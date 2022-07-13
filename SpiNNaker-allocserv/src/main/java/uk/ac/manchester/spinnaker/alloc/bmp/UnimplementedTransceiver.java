@@ -74,13 +74,14 @@ class UnimplementedTransceiver implements BMPTransceiverInterface {
 	}
 
 	@Override
-	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException {
+	public int readFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeFPGARegister(FPGA fpga, int register, int value,
+	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();

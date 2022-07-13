@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_LINK_READ;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
@@ -41,8 +42,10 @@ public class ReadFPGARegister extends BMPRequest<ReadFPGARegister.Response> {
 	 * @throws IllegalArgumentException
 	 *             If {@link FPGA#FPGA_ALL} is used.
 	 */
-	public ReadFPGARegister(FPGA fpga, int register, BMPBoard board) {
-		super(board, CMD_LINK_READ, register & ~MASK, WORD_SIZE, fpga.value);
+	public ReadFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPBoard board) {
+		super(board, CMD_LINK_READ, register.address & ~MASK, WORD_SIZE,
+				fpga.value);
 		if (!fpga.isSingleFPGA()) {
 			throw new IllegalArgumentException(
 					"cannot read multiple FPGAs at once with this message");
