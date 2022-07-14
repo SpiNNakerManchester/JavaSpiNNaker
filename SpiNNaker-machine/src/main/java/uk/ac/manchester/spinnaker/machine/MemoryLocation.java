@@ -26,6 +26,9 @@ import static java.lang.String.format;
  * @author Donal Fellows
  */
 public final class MemoryLocation implements Comparable<MemoryLocation> {
+	/** Number of bytes in a SpiNNaker (ARM) word. */
+	private static final int WORD_SIZE = 4;
+
 	/** The zero memory location. Often means "no actual address". */
 	public static final MemoryLocation NULL = new MemoryLocation(0);
 
@@ -57,6 +60,20 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 
 	public boolean isNull() {
 		return address == 0;
+	}
+
+	/**
+	 * How many bytes is this location's address above a word-aligned address?
+	 *
+	 * @return The number of bytes offset.
+	 */
+	public int subWordAlignment() {
+		return address % WORD_SIZE;
+	}
+
+	/** @return Whether this is a word-aligned location. */
+	public boolean isAligned() {
+		return subWordAlignment() == 0;
 	}
 
 	@Override

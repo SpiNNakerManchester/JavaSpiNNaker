@@ -175,12 +175,12 @@ public interface BufferManagerStorage extends DatabaseAPI {
 				MemoryLocation startLocation, int size) {
 			this.core = core.asCoreLocation();
 			this.regionIndex = regionIndex;
-			this.realSize = size;
-			this.initialIgnore = startLocation.address % INT_SIZE;
+			realSize = size;
+			initialIgnore = startLocation.subWordAlignment();
 			size += initialIgnore;
-			this.startAddress = startLocation.add(-initialIgnore);
+			startAddress = startLocation.add(-initialIgnore);
 			// Looks weird, but works
-			this.finalIgnore = (INT_SIZE - (size % INT_SIZE)) % INT_SIZE;
+			finalIgnore = (INT_SIZE - (size % INT_SIZE)) % INT_SIZE;
 			size += finalIgnore;
 			this.size = size;
 		}

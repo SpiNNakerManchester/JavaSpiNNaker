@@ -55,11 +55,7 @@ public class RouterInit extends SCPRequest<CheckOKResponse> {
 				tableAddress.address, baseIndex);
 		if (baseIndex < 0) {
 			throw new IllegalArgumentException(
-					"baseAddress must not be negative");
-		}
-		if (tableAddress.address < 0) {
-			throw new IllegalArgumentException(
-					"tableAddress must not be negative");
+					"baseIndex must not be negative");
 		}
 	}
 

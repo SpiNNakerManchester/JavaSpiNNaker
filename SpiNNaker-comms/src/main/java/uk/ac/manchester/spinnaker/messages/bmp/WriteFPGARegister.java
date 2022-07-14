@@ -36,25 +36,27 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  *      on GitHub</a>
  */
 public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
-	private static final int MASK = 0b00000011;
-
 	/**
 	 * @param fpga
 	 *            FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.
 	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
+	 *            Register address to read to. Must be aligned.
 	 * @param value
 	 *            A 32-bit value to write to the register.
 	 * @param board
 	 *            which board to write the ADC register on
 	 * @throws IllegalArgumentException
-	 *             If {@link FPGA#FPGA_ALL} is used.
+	 *             If {@link FPGA#FPGA_ALL} is used or the register address is
+	 *             not aligned.
 	 */
 	public WriteFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPBoard board) {
-		super(board, CMD_LINK_WRITE, register.address & ~MASK, WORD_SIZE,
-				fpga.value, data(value));
+		super(board, CMD_LINK_WRITE, register.address, WORD_SIZE, fpga.value,
+				data(value));
+		if (!register.isAligned()) {
+			throw new IllegalArgumentException(
+					"FPGA register addresses must be aligned");
+		}
 		if (!fpga.isSingleFPGA()) {
 			throw new IllegalArgumentException(
 					"cannot write multiple FPGAs at once with this message");

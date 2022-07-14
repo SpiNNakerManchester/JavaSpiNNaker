@@ -61,7 +61,7 @@ public enum TransferUnit {
 	 */
 	public static TransferUnit efficientTransferUnit(MemoryLocation address,
 			int size) {
-		if (address.address % WORD_SIZE == 0 && size % WORD_SIZE == 0) {
+		if (address.isAligned() && size % WORD_SIZE == 0) {
 			return WORD;
 		} else if (odd(address.address) || odd(size)) {
 			return BYTE;

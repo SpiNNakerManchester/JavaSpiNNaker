@@ -51,7 +51,7 @@ abstract class BaseIO implements AbstractIO {
 
 	@Override
 	public int size() {
-		return end.address - start.address;
+		return end.diff(start);
 	}
 
 	@Override
@@ -123,8 +123,8 @@ abstract class BaseIO implements AbstractIO {
 			throws IOException, ProcessException;
 
 	private void inRange(int delta) throws EOFException {
-		int newAddr = current.address + delta;
-		if (newAddr > end.address) {
+		MemoryLocation newAddr = current.add(delta);
+		if (!newAddr.lessThan(end)) {
 			throw new EOFException();
 		}
 	}
@@ -134,8 +134,7 @@ abstract class BaseIO implements AbstractIO {
 		if (numBytes != null && numBytes == 0) {
 			return new byte[0];
 		}
-		int n = (numBytes == null || numBytes < 0)
-				? (end.address - current.address)
+		int n = (numBytes == null || numBytes < 0) ? end.diff(current)
 				: numBytes;
 		inRange(n);
 		byte[] data = doRead(n);
@@ -155,7 +154,7 @@ abstract class BaseIO implements AbstractIO {
 	@Override
 	public void fill(int value, Integer size, FillDataType type)
 			throws IOException, ProcessException {
-		int len = (size == null) ? (end.address - current.address) : size;
+		int len = (size == null) ? end.diff(current) : size;
 		inRange(len);
 		if (len < 0 || len % type.size != 0) {
 			throw new IllegalArgumentException(

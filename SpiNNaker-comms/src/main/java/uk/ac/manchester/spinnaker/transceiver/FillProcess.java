@@ -92,7 +92,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 							+ "size of the data of %d bytes",
 					size, dataType.size));
 		}
-		if (baseAddress.address % ALIGNMENT != 0) {
+		if (!baseAddress.isAligned()) {
 			log.warn("Unaligned fill starting at {}; please use aligned fills",
 					baseAddress);
 		}
@@ -120,10 +120,8 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		int toWrite = size;
 		MemoryLocation address = base;
 
-		/*
-		 * Send the pre-data to make the memory aligned, up to the first word.
-		 */
-		int extraBytes = (ALIGNMENT - base.address % ALIGNMENT) % ALIGNMENT;
+		// Send the pre-data to make the memory aligned, up to the first word.
+		int extraBytes = (ALIGNMENT - base.subWordAlignment()) % ALIGNMENT;
 		if (extraBytes != 0) {
 			ByteBuffer preBytes = buffer.duplicate();
 			preBytes.limit(extraBytes);
@@ -149,7 +147,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		 * aligned word; send them if required. This uses a WriteMemory
 		 */
 		if (toWrite != 0) {
-			buffer.position(buffer.limit() - base.address % ALIGNMENT);
+			buffer.position(buffer.limit() - base.subWordAlignment());
 			buffer.limit(buffer.position() + toWrite);
 			if (buffer.hasRemaining()) {
 				sendRequest(new WriteMemory(chip, address, buffer));
