@@ -249,8 +249,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 					new HashMap<CoreToLoad, MemoryLocation>();
 			for (CoreToLoad ctl : cores) {
 				MemoryLocation start = malloc(ctl, ctl.sizeToWrite);
-				MemoryLocation user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core.getScampCore(), user0, start.address);
+				txrx.writeUser0(ctl.core, start.address);
 				addresses.put(ctl, start);
 			}
 

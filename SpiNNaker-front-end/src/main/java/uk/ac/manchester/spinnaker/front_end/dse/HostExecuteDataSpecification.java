@@ -309,8 +309,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 					}
 				}
 
-				MemoryLocation user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core.getScampCore(), user0, start.address);
+				txrx.writeUser0(ctl.core, start.address);
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {

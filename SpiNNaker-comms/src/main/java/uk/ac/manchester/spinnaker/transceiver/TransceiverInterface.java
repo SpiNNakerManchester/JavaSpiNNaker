@@ -554,7 +554,9 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *
 	 * @param p
 	 *            the processor ID to get the user<sub>1</sub> address for
-	 * @return The address for user<sub>1</sub> register for this processor
+	 * @return The address for user<sub>1</sub> register for this processor;
+	 *         this will be in System RAM and be accessible from any core of the
+	 *         chip.
 	 */
 	@ParallelSafe
 	default MemoryLocation getUser1RegisterAddress(int p) {
@@ -567,7 +569,9 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *
 	 * @param processor
 	 *            the processor to get the user<sub>1</sub> address for
-	 * @return The address for user<sub>1</sub> register for this processor
+	 * @return The address for user<sub>1</sub> register for this processor;
+	 *         this will be in System RAM and be accessible from any core of the
+	 *         chip.
 	 */
 	@ParallelSafe
 	default MemoryLocation getUser1RegisterAddress(Processor processor) {
@@ -582,7 +586,9 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>2</sub>
 	 *            address for
-	 * @return The address for user<sub>2</sub> register for this processor
+	 * @return The address for user<sub>2</sub> register for this processor;
+	 *         this will be in System RAM and be accessible from any core of the
+	 *         chip.
 	 */
 	@ParallelSafe
 	default MemoryLocation getUser2RegisterAddress(HasCoreLocation core) {
@@ -1579,7 +1585,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	}
 
 	/**
-	 * Write to the SDRAM on the board.
+	 * Write to the SDRAM (or System RAM) on the board.
 	 *
 	 * @param core
 	 *            The coordinates of the core where the memory is that is to be
@@ -1670,7 +1676,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	}
 
 	/**
-	 * Write to the SDRAM on the board.
+	 * Write to the SDRAM (or System RAM) on the board.
 	 *
 	 * @param core
 	 *            The coordinates of the core where the memory is that is to be
@@ -1689,6 +1695,60 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) throws IOException, ProcessException;
+
+	/**
+	 * Write to the user<sub>0</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose register is to be
+	 *            written to
+	 * @param value
+	 *            The word of data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void writeUser0(HasCoreLocation core, int value)
+			throws ProcessException, IOException {
+		writeMemory(core.getScampCore(), getUser0RegisterAddress(core), value);
+	}
+
+	/**
+	 * Write to the user<sub>1</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose register is to be
+	 *            written to
+	 * @param value
+	 *            The word of data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void writeUser1(HasCoreLocation core, int value)
+			throws ProcessException, IOException {
+		writeMemory(core.getScampCore(), getUser1RegisterAddress(core), value);
+	}
+
+	/**
+	 * Write to the user<sub>2</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose register is to be
+	 *            written to
+	 * @param value
+	 *            The word of data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void writeUser2(HasCoreLocation core, int value)
+			throws ProcessException, IOException {
+		writeMemory(core.getScampCore(), getUser2RegisterAddress(core), value);
+	}
 
 	/**
 	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
@@ -2154,7 +2214,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	}
 
 	/**
-	 * Read some areas of SDRAM from the board.
+	 * Read some areas of SDRAM (or System RAM) from the board.
 	 *
 	 * @param core
 	 *            The coordinates of the core where the memory is to be read
@@ -2222,6 +2282,57 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	void readRegion(BufferManagerStorage.Region region,
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException;
+
+	/**
+	 * Read the user<sub>0</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core to read the register of
+	 * @return The contents of the register
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default int readUser0(HasCoreLocation core)
+			throws ProcessException, IOException {
+		MemoryLocation user0 = getUser0RegisterAddress(core);
+		return readMemory(core.getScampCore(), user0, WORD_SIZE).getInt();
+	}
+
+	/**
+	 * Read the user<sub>1</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core to read the register of
+	 * @return The contents of the register
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default int readUser1(HasCoreLocation core)
+			throws ProcessException, IOException {
+		MemoryLocation user1 = getUser1RegisterAddress(core);
+		return readMemory(core.getScampCore(), user1, WORD_SIZE).getInt();
+	}
+
+	/**
+	 * Read the user<sub>2</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core to read the register of
+	 * @return The contents of the register
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default int readUser2(HasCoreLocation core)
+			throws ProcessException, IOException {
+		MemoryLocation user2 = getUser2RegisterAddress(core);
+		return readMemory(core.getScampCore(), user2, WORD_SIZE).getInt();
+	}
 
 	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP

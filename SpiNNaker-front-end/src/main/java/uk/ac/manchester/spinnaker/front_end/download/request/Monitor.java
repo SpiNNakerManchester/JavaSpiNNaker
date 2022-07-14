@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +27,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 
@@ -125,8 +123,7 @@ public class Monitor implements HasCoreLocation {
 	 */
 	public void updateTransactionIdFromMachine(Transceiver txrx)
 			throws IOException, ProcessException {
-		MemoryLocation address = txrx.getUser1RegisterAddress(this);
-		transactionId = txrx.readMemory(this, address, WORD_SIZE).getInt();
+		transactionId = txrx.readUser1(this);
 	}
 
 	/**
