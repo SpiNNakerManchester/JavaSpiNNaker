@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
@@ -70,7 +71,7 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void write(BMPBoard board, int baseAddress, ByteBuffer data)
+	void write(BMPBoard board, MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		execute(new BMPWriteSFIterator(board, baseAddress, data.remaining()) {
 			private int offset = data.position();
@@ -102,7 +103,7 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void write(BMPBoard board, int baseAddress, InputStream data,
+	void write(BMPBoard board, MemoryLocation baseAddress, InputStream data,
 			int bytesToWrite) throws IOException, ProcessException {
 		ValueHolder<IOException> exn = new ValueHolder<IOException>();
 		execute(new BMPWriteSFIterator(board, baseAddress, bytesToWrite) {
@@ -148,7 +149,7 @@ abstract class BMPWriteSFIterator
 
 	private int sizeRemaining;
 
-	private int address;
+	private MemoryLocation address;
 
 	private ByteBuffer sendBuffer;
 
@@ -160,7 +161,7 @@ abstract class BMPWriteSFIterator
 	 * @param size
 	 *            What size of memory will be written.
 	 */
-	BMPWriteSFIterator(BMPBoard board, int address, int size) {
+	BMPWriteSFIterator(BMPBoard board, MemoryLocation address, int size) {
 		this.board = board;
 		this.address = address;
 		this.sizeRemaining = size;
@@ -194,7 +195,7 @@ abstract class BMPWriteSFIterator
 		try {
 			return new WriteSerialFlash(board, address, sendBuffer);
 		} finally {
-			address += chunkSize;
+			address = address.add(chunkSize);
 			sizeRemaining -= chunkSize;
 		}
 	}

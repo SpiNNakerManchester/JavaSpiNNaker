@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of memory via a link on a chip. */
@@ -47,9 +48,10 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadLink(HasCoreLocation core, Direction link, int baseAddress,
-			int size) {
-		super(core, CMD_LINK_READ, baseAddress, validate(size), link.id);
+	public ReadLink(HasCoreLocation core, Direction link,
+			MemoryLocation baseAddress, int size) {
+		super(core, CMD_LINK_READ, baseAddress.address, validate(size),
+				link.id);
 	}
 
 	/**
@@ -62,10 +64,10 @@ public class ReadLink extends SCPRequest<ReadLink.Response> {
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadLink(HasChipLocation chip, Direction link, int baseAddress,
-			int size) {
-		super(chip.getScampCore(), CMD_LINK_READ, baseAddress, validate(size),
-				link.id);
+	public ReadLink(HasChipLocation chip, Direction link,
+			MemoryLocation baseAddress, int size) {
+		super(chip.getScampCore(), CMD_LINK_READ, baseAddress.address,
+				validate(size), link.id);
 	}
 
 	@Override

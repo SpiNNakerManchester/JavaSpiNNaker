@@ -21,6 +21,7 @@ import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.messages.model.DataType.ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE_ARRAY;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.LONG;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.allocated_tag_table_address;
@@ -112,6 +113,7 @@ import java.util.List;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * Represents the system variables for a chip, received from the chip SDRAM.
@@ -194,6 +196,7 @@ public class ChipInfo implements HasChipLocation {
 			return systemData.getShort(systemData.position() + var.offset);
 		case BYTE_ARRAY:
 		case LONG:
+		case ADDRESS:
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -215,6 +218,14 @@ public class ChipInfo implements HasChipLocation {
 		byte[] bytes = (byte[]) var.getDefault();
 		b.get(bytes);
 		return bytes;
+	}
+
+	private MemoryLocation readPtr(SystemVariableDefinition var) {
+		if (var.type != ADDRESS) {
+			throw new IllegalArgumentException();
+		}
+		return new MemoryLocation(
+				systemData.getInt(systemData.position() + var.offset));
 	}
 
 	@Override
@@ -382,13 +393,13 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/** @return The base address of the system SDRAM heap. */
-	public int getSystemRAMHeapAddress() {
-		return read(system_ram_heap_address);
+	public MemoryLocation getSystemRAMHeapAddress() {
+		return readPtr(system_ram_heap_address);
 	}
 
 	/** @return The base address of the user SDRAM heap. */
-	public int getSDRAMHeapAddress() {
-		return read(sdram_heap_address);
+	public MemoryLocation getSDRAMHeapAddress() {
+		return readPtr(sdram_heap_address);
 	}
 
 	/** @return The size of the iobuf buffer in bytes. */
@@ -412,8 +423,8 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/** @return The memory pointer for nearest neighbour global operations. */
-	public int getNearestNeighbourMemoryAddress() {
-		return read(nearest_neighbour_memory_pointer);
+	public MemoryLocation getNearestNeighbourMemoryAddress() {
+		return readPtr(nearest_neighbour_memory_pointer);
 	}
 
 	/** @return The lock. (??) */
@@ -437,8 +448,8 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/** @return Pointer to the first free shared message buffer. */
-	public int getSharedMessageFirstFreeAddress() {
-		return read(shared_message_first_free_address);
+	public MemoryLocation getSharedMessageFirstFreeAddress() {
+		return readPtr(shared_message_first_free_address);
 	}
 
 	/** @return The number of shared message buffers in use. */
@@ -508,43 +519,43 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/** @return The base address of SDRAM. */
-	public int getSDRAMBaseAddress() {
-		return read(sdram_base_address);
+	public MemoryLocation getSDRAMBaseAddress() {
+		return readPtr(sdram_base_address);
 	}
 
 	/** @return The base address of System RAM. */
-	public int getSystemRAMBaseAddress() {
-		return read(system_ram_base_address);
+	public MemoryLocation getSystemRAMBaseAddress() {
+		return readPtr(system_ram_base_address);
 	}
 
 	/** @return The base address of System SDRAM. */
-	public int getSystemSDRAMBaseAddress() {
-		return read(system_sdram_base_address);
+	public MemoryLocation getSystemSDRAMBaseAddress() {
+		return readPtr(system_sdram_base_address);
 	}
 
 	/** @return The base address of the CPU information blocks. */
-	public int getCPUInformationBaseAddress() {
-		return read(cpu_information_base_address);
+	public MemoryLocation getCPUInformationBaseAddress() {
+		return readPtr(cpu_information_base_address);
 	}
 
 	/** @return The base address of the system SDRAM heap. */
-	public int getSystemSDRAMHeapAddress() {
-		return read(system_sdram_heap_address);
+	public MemoryLocation getSystemSDRAMHeapAddress() {
+		return readPtr(system_sdram_heap_address);
 	}
 
 	/** @return The address of the copy of the routing tables. */
-	public int getRouterTableCopyAddress() {
-		return read(router_table_copy_address);
+	public MemoryLocation getRouterTableCopyAddress() {
+		return readPtr(router_table_copy_address);
 	}
 
 	/** @return The address of the peer-to-peer hop tables. */
-	public int getP2PHopTableAddress() {
-		return read(peer_to_peer_hop_table_address);
+	public MemoryLocation getP2PHopTableAddress() {
+		return readPtr(peer_to_peer_hop_table_address);
 	}
 
 	/** @return The address of the allocated tag table. */
-	public int getAllocatedTagTableAddress() {
-		return read(allocated_tag_table_address);
+	public MemoryLocation getAllocatedTagTableAddress() {
+		return readPtr(allocated_tag_table_address);
 	}
 
 	/** @return The ID of the first free router entry. */
@@ -558,13 +569,13 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/** @return The address of the application data table. */
-	public int getAppDataTableAddress() {
-		return read(app_data_table_address);
+	public MemoryLocation getAppDataTableAddress() {
+		return readPtr(app_data_table_address);
 	}
 
 	/** @return The address of the shared message buffers. */
-	public int getSharedMessageBufferAddress() {
-		return read(shared_message_buffer_address);
+	public MemoryLocation getSharedMessageBufferAddress() {
+		return readPtr(shared_message_buffer_address);
 	}
 
 	/** @return The monitor incoming mailbox flags. */
@@ -583,7 +594,7 @@ public class ChipInfo implements HasChipLocation {
 	}
 
 	/** @return A pointer to the board information structure. */
-	public int getBoardInfoAddress() {
-		return read(board_info);
+	public MemoryLocation getBoardInfoAddress() {
+		return readPtr(board_info);
 	}
 }

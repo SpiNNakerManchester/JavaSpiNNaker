@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.messages.scp;
 
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /** What to move data in units of. */
 public enum TransferUnit {
 	/** A byte. */
@@ -57,10 +59,11 @@ public enum TransferUnit {
 	 *            The data size.
 	 * @return The preferred transfer unit.
 	 */
-	public static TransferUnit efficientTransferUnit(int address, int size) {
-		if (address % WORD_SIZE == 0 && size % WORD_SIZE == 0) {
+	public static TransferUnit efficientTransferUnit(MemoryLocation address,
+			int size) {
+		if (address.isAligned() && size % WORD_SIZE == 0) {
 			return WORD;
-		} else if (odd(address) || odd(size)) {
+		} else if (odd(address.address) || odd(size)) {
 			return BYTE;
 		} else {
 			return HALF_WORD;

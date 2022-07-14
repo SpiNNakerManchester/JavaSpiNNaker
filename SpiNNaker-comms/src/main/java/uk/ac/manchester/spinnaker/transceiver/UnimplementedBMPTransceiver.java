@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
@@ -72,13 +73,14 @@ public abstract class UnimplementedBMPTransceiver
 	}
 
 	@Override
-	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException {
+	public int readFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeFPGARegister(FPGA fpga, int register, int value,
+	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
@@ -110,82 +112,92 @@ public abstract class UnimplementedBMPTransceiver
 
 	@Override
 	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
-			int baseAddress, int length) throws IOException, ProcessException {
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			File file) throws IOException, ProcessException {
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, File file)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
-			int baseAddress, int length) throws IOException, ProcessException {
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
-			int baseAddress, int length) throws IOException, ProcessException {
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			File file) throws ProcessException, IOException {
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, File file)
+			throws ProcessException, IOException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			ByteBuffer data) throws ProcessException, IOException {
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data)
+			throws ProcessException, IOException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	@Deprecated
-	public int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int size) throws IOException, ProcessException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	@Deprecated
-	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	@Deprecated
-	public void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int size) throws IOException, ProcessException {
+	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation address) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+	@Deprecated
+	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int size, InputStream stream) throws ProcessException, IOException {
+	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress)
-			throws IOException, ProcessException {
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size, InputStream stream)
+			throws ProcessException, IOException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * Main FPGA registers.
  *
@@ -118,7 +120,8 @@ public enum FPGAMainRegisters {
 	/**
 	 * Base address of the main registers. Fixed.
 	 */
-	public static final int BASE_ADDRESS = 0x00040000;
+	public static final MemoryLocation BASE_ADDRESS =
+			new MemoryLocation(0x00040000);
 
 	/** The offset of the register within the bank of registers. */
 	public final int offset;
@@ -142,7 +145,7 @@ public enum FPGAMainRegisters {
 	/**
 	 * @return The address of the register in the FPGA's address space.
 	 */
-	public int getAddress() {
-		return BASE_ADDRESS + offset;
+	public MemoryLocation getAddress() {
+		return BASE_ADDRESS.add(offset);
 	}
 }

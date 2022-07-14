@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of serial flash from a BMP. */
@@ -42,8 +43,8 @@ public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadSerialFlash(BMPBoard board, int address, int size) {
-		super(board, CMD_BMP_SF, address, validate(size), 0);
+	public ReadSerialFlash(BMPBoard board, MemoryLocation address, int size) {
+		super(board, CMD_BMP_SF, address.address, validate(size), 0);
 	}
 
 	@Override

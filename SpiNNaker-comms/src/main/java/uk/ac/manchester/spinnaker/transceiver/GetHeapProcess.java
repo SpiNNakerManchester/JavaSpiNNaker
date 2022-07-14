@@ -16,9 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.Integer.toUnsignedLong;
 import static java.util.Collections.unmodifiableList;
-import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -28,6 +27,7 @@ import java.util.List;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.SARKField;
 import uk.ac.manchester.spinnaker.messages.model.SARKStruct;
@@ -72,16 +72,17 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
 		HeapHeader header = getHeapHeader(chip, heap);
-		long nextBlock = header.first;
+		MemoryLocation nextBlock = header.first;
 
 		List<HeapElement> blocks = new ArrayList<>();
 
-		while (nextBlock != 0) {
+		while (!nextBlock.isNull()) {
 			BlockHeader block = getBlockHeader(chip, nextBlock);
-			if (block.next != 0) {
-				blocks.add(new HeapElement(nextBlock, block.next, block.free));
+			if (!block.next.isNull()) {
+				blocks.add(new HeapElement(nextBlock, block.next,
+						block.free.address));
 			}
-			nextBlock = toUnsignedLong(block.next);
+			nextBlock = block.next;
 		}
 
 		return unmodifiableList(blocks);
@@ -90,7 +91,7 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	/**
 	 * Get the free heap block descriptors.
 	 * <p>
-	 * <em>WARNING: This is untested code!</em>
+	 * <em><strong>WARNING:</strong> This is untested code!</em>
 	 *
 	 * @param chip
 	 *            The chip to ask.
@@ -106,16 +107,17 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
 		HeapHeader header = getHeapHeader(chip, heap);
-		long nextBlock = header.free;
+		MemoryLocation nextBlock = header.free;
 
 		List<HeapElement> blocks = new ArrayList<>();
 
-		while (nextBlock != 0 && nextBlock != header.last) {
+		while (!nextBlock.isNull() && !nextBlock.equals(header.last)) {
 			BlockHeader block = getBlockHeader(chip, nextBlock);
-			if (block.next != 0) {
-				blocks.add(new HeapElement(nextBlock, block.next, block.free));
+			if (!block.next.isNull()) {
+				blocks.add(new HeapElement(nextBlock, block.next,
+						block.free.address));
 			}
-			nextBlock = toUnsignedLong(block.free);
+			nextBlock = block.free;
 		}
 
 		return unmodifiableList(blocks);
@@ -142,46 +144,45 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	private HeapHeader getHeapHeader(HasChipLocation chip,
 			SystemVariableDefinition heap)
 			throws IOException, ProcessException {
-		int heapBase = readFromAddress(chip,
-				SYSTEM_VARIABLE_BASE_ADDRESS + heap.offset, heap.type.value)
-						.get();
-		HeapHeader header = new HeapHeader(
+		MemoryLocation heapBase = new MemoryLocation(readFromAddress(chip,
+				SYS_VARS.add(heap.offset), heap.type.value).get());
+		return new HeapHeader(
 				readFromAddress(chip, heapBase, HEAP_HEADER_SIZE));
-		return header;
 	}
 
-	private BlockHeader getBlockHeader(HasChipLocation chip, long address)
-			throws IOException, ProcessException {
+	private BlockHeader getBlockHeader(HasChipLocation chip,
+			MemoryLocation address) throws IOException, ProcessException {
 		return new BlockHeader(
 				readFromAddress(chip, address, HEAP_BLOCK_HEADER_SIZE));
 	}
 
 	// NB: assumes that size is small
-	private IntBuffer readFromAddress(HasChipLocation chip, long address,
-			long size) throws IOException, ProcessException {
+	private IntBuffer readFromAddress(HasChipLocation chip,
+			MemoryLocation address, long size)
+			throws IOException, ProcessException {
 		return synchronousCall(
-				new ReadMemory(chip, (int) address, (int) size)).data
+				new ReadMemory(chip, address, (int) size)).data
 						.asIntBuffer();
 	}
 
 	@SARKStruct("heap_t")
 	private static class HeapHeader {
 		@SARKField("free")
-		final long free;
+		final MemoryLocation free;
 
 		@SARKField("first")
-		final long first;
+		final MemoryLocation first;
 
 		@SARKField("last")
-		final long last;
+		final MemoryLocation last;
 
 		@SARKField("free_bytes")
 		final int freeBytes;
 
 		HeapHeader(IntBuffer data) {
-			free = toUnsignedLong(data.get());
-			first = toUnsignedLong(data.get());
-			last = toUnsignedLong(data.get());
+			free = new MemoryLocation(data.get());
+			first = new MemoryLocation(data.get());
+			last = new MemoryLocation(data.get());
 			freeBytes = data.get();
 			// Note that we don't read or look at the 'buffer' field
 		}
@@ -190,14 +191,14 @@ class GetHeapProcess extends MultiConnectionProcess<SCPConnection> {
 	@SARKStruct("block_t")
 	private static class BlockHeader {
 		@SARKField("next")
-		final int next;
+		final MemoryLocation next;
 
 		@SARKField("free")
-		final int free;
+		final MemoryLocation free;
 
 		BlockHeader(IntBuffer data) {
-			next = data.get();
-			free = data.get();
+			next = new MemoryLocation(data.get());
+			free = new MemoryLocation(data.get());
 		}
 	}
 }

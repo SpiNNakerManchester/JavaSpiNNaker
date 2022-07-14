@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to get the CRC of serial flash memory from a BMP. */
@@ -30,13 +31,14 @@ public class ReadSerialFlashCRC
 	/**
 	 * @param board
 	 *            which board's BMP's serial flash should be checked
-	 * @param address
+	 * @param baseAddress
 	 *            The positive base address to start the check from
 	 * @param size
 	 *            The number of bytes to check
 	 */
-	public ReadSerialFlashCRC(BMPBoard board, int address, int size) {
-		super(board, CMD_BMP_SF, address, size, CRC.value);
+	public ReadSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
+			int size) {
+		super(board, CMD_BMP_SF, baseAddress.address, size, CRC.value);
 	}
 
 	@Override

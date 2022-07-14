@@ -19,7 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
-import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_OFFSET;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.CPU_INFO;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -30,6 +30,7 @@ import java.util.zip.CRC32;
 
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 
 /**
@@ -71,8 +72,8 @@ public abstract class Utils {
 	 *            The core number
 	 * @return the address
 	 */
-	public static int getVcpuAddress(int p) {
-		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * p);
+	public static MemoryLocation getVcpuAddress(int p) {
+		return CPU_INFO.add(CPU_INFO_BYTES * p);
 	}
 
 	/**
@@ -82,8 +83,8 @@ public abstract class Utils {
 	 *            The core
 	 * @return the address
 	 */
-	public static int getVcpuAddress(HasCoreLocation core) {
-		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * core.getP());
+	public static MemoryLocation getVcpuAddress(HasCoreLocation core) {
+		return CPU_INFO.add(CPU_INFO_BYTES * core.getP());
 	}
 
 	/**

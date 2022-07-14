@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * FPGA registers within a register bank.
  *
@@ -106,11 +108,12 @@ public enum FPGALinkRegisters {
 	 * @throws IllegalArgumentException
 	 *             If a bad register bank is given.
 	 */
-	public int address(int registerBank) {
+	public MemoryLocation address(int registerBank) {
 		if (registerBank < 0 || registerBank > 2) {
 			throw new IllegalArgumentException(
 					"registerBank must be 0, 1, or 2");
 		}
-		return BANK_OFFSET_MULTIPLIER * registerBank + offset;
+		return new MemoryLocation(
+				BANK_OFFSET_MULTIPLIER * registerBank + offset);
 	}
 }

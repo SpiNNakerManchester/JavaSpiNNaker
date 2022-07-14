@@ -16,15 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /** An element of one of the heaps on SpiNNaker. */
 @SARKStruct("block")
 public class HeapElement {
 	/** The address of the block. */
-	public final int blockAddress;
+	public final MemoryLocation blockAddress;
 
 	/** A pointer to the next block, or 0 if none. */
 	@SARKField("next")
-	public final int nextAddress;
+	public final MemoryLocation nextAddress;
 
 	/** The usable size of this block (not including the header). */
 	public final int size;
@@ -62,7 +64,8 @@ public class HeapElement {
 	 * @param free
 	 *            The "free" element of the block as read from the heap
 	 */
-	public HeapElement(int blockAddress, int nextAddress, int free) {
+	public HeapElement(MemoryLocation blockAddress, MemoryLocation nextAddress,
+			int free) {
 		this.blockAddress = blockAddress;
 		this.nextAddress = nextAddress;
 		this.isFree = (free & FREE_MASK) != FREE_MASK;
@@ -73,29 +76,7 @@ public class HeapElement {
 			tag = free & BYTE_MASK;
 			appID = new AppID((free >>> BYTE1_SHIFT) & BYTE_MASK);
 		}
-		size = nextAddress - blockAddress - BLOCK_HEADER_SIZE;
-	}
-
-	/**
-	 * @param blockAddress
-	 *            The address of this element on the heap
-	 * @param nextAddress
-	 *            The address of the next element on the heap
-	 * @param free
-	 *            The "free" element of the block as read from the heap
-	 */
-	public HeapElement(long blockAddress, int nextAddress, int free) {
-		this.blockAddress = (int) blockAddress;
-		this.nextAddress = nextAddress;
-		this.isFree = (free & FREE_MASK) != FREE_MASK;
-		if (isFree) {
-			tag = null;
-			appID = null;
-		} else {
-			tag = free & BYTE_MASK;
-			appID = new AppID((free >>> BYTE1_SHIFT) & BYTE_MASK);
-		}
-		size = (int) (nextAddress - blockAddress) - BLOCK_HEADER_SIZE;
+		size = nextAddress.diff(blockAddress) - BLOCK_HEADER_SIZE;
 	}
 
 	/**
@@ -104,7 +85,7 @@ public class HeapElement {
 	 * @return The address of the data ({@link #size} bytes long) that
 	 *         immediately follows the heap element header.
 	 */
-	public final int getDataAddress() {
-		return blockAddress + BLOCK_HEADER_SIZE;
+	public final MemoryLocation getDataAddress() {
+		return blockAddress.add(BLOCK_HEADER_SIZE);
 	}
 }

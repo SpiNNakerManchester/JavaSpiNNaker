@@ -20,6 +20,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FLASH_COPY;
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * A request to update flash memory on a BMP. Must have already been prepared
  * with {@link EraseFlash} and {@link WriteFlashBuffer}.
@@ -35,8 +37,9 @@ public final class UpdateFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	 * @param size
 	 *            The number of bytes to copy
 	 */
-	public UpdateFlash(BMPBoard board, int baseAddress, int size) {
-		super(board, CMD_FLASH_COPY, REAL_FLASH_ADDRESS, baseAddress, size);
+	public UpdateFlash(BMPBoard board, MemoryLocation baseAddress, int size) {
+		super(board, CMD_FLASH_COPY, REAL_FLASH_ADDRESS, baseAddress.address,
+				size);
 	}
 
 	@Override
