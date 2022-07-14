@@ -21,6 +21,7 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * The interface supported by the DSE part of the storage system.
@@ -97,7 +98,7 @@ public interface DSEStorage extends DatabaseAPI {
 	 * @throws StorageException
 	 *             If the database access fails.
 	 */
-	void saveLoadingMetadata(CoreToLoad coreToLoad, int startAddress,
+	void saveLoadingMetadata(CoreToLoad coreToLoad, MemoryLocation startAddress,
 			int memoryUsed, int memoryWritten) throws StorageException;
 
 	/**

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /** Basic information about firmware. */
 public enum FirmwareDescriptors {
 	/** The main firmware copy. */
@@ -26,7 +28,7 @@ public enum FirmwareDescriptors {
 	Boot(0, 32, 6, 5);
 
 	/** The location of the firmware descriptor in BMP memory. */
-	public final int address;
+	public final MemoryLocation address;
 
 	/**
 	 * The amount of data to read to understand the firmware. The size of the
@@ -42,7 +44,7 @@ public enum FirmwareDescriptors {
 
 	FirmwareDescriptors(int address, int blockSize, int versionIndex,
 			int timestampIndex) {
-		this.address = address;
+		this.address = new MemoryLocation(address);
 		this.blockSize = blockSize;
 		this.versionIndex = versionIndex;
 		this.timestampIndex = timestampIndex;

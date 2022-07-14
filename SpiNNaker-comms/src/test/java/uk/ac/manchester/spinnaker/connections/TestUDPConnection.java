@@ -21,8 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFERED_SDRAM_START;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -74,14 +76,13 @@ public class TestUDPConnection {
 		assertEquals(scpResponse.result, RC_OK);
 	}
 
-	private static final int ADDR = 0x70000000;
-
 	private static final int LINK_SIZE = 250;
 
 	@Test
 	public void testSCPReadLinkWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		ReadLink scpReq = new ReadLink(ZERO_CHIP, EAST, ADDR, LINK_SIZE);
+		ReadLink scpReq =
+				new ReadLink(ZERO_CHIP, EAST, BUFFERED_SDRAM_START, LINK_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
 		try (SCPConnection connection =
@@ -100,7 +101,8 @@ public class TestUDPConnection {
 	public void testSCPReadMemoryWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
 		ReadMemory scpReq =
-				new ReadMemory(ZERO_CHIP, ADDR, UDP_MESSAGE_MAX_SIZE);
+				new ReadMemory(ZERO_CHIP, BUFFERED_SDRAM_START,
+						UDP_MESSAGE_MAX_SIZE);
 		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
 		SCPResultMessage result;
 		try (SCPConnection connection =
@@ -123,7 +125,7 @@ public class TestUDPConnection {
 			try (SCPConnection connection =
 					new SCPConnection(boardConfig.remotehost)) {
 				ReadMemory scp =
-						new ReadMemory(ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
+						new ReadMemory(ZERO_CHIP, NULL, UDP_MESSAGE_MAX_SIZE);
 				scp.scpRequestHeader.issueSequenceNumber(emptySet());
 				connection.send(scp);
 				connection.receiveSCPResponse(2);

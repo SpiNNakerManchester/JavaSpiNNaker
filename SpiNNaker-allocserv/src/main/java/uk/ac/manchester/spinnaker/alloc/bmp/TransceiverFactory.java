@@ -45,6 +45,7 @@ import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
@@ -271,14 +272,14 @@ class DummyTransceiver extends UnimplementedTransceiver {
 	}
 
 	@Override
-	public int readFPGARegister(FPGA fpga, int register, BMPCoords bmp,
-			BMPBoard board) {
+	public int readFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPCoords bmp, BMPBoard board) {
 		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
 		return fpga.value;
 	}
 
 	@Override
-	public void writeFPGARegister(FPGA fpga, int register, int value,
+	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
 			BMPCoords bmp, BMPBoard board) {
 		log.info("writeFPGARegister({},{},{},{},{})", fpga, register, value,
 				bmp, board);

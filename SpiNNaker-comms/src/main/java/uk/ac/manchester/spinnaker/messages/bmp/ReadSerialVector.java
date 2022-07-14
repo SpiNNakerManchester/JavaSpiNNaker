@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**
@@ -44,12 +45,63 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	/** An SCP response to a request for serial data. */
 	public final class Response extends BMPRequest.BMPResponse {
 		/** The serial data. */
-		public final IntBuffer vector;
+		public final SerialVector vector;
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_BMP_INFO, buffer);
-			vector = buffer.asIntBuffer().asReadOnlyBuffer();
+			super("Read serial data vector", CMD_BMP_INFO, buffer);
+			vector = new SerialVector(buffer.asIntBuffer());
+		}
+	}
+
+	/** The data read from the serial vector. */
+	public static final class SerialVector {
+		private static final int HW_VERSION_INDEX = 0;
+
+		private static final int SERIAL_INDEX = 1;
+
+		private static final int SERIAL_LENGTH = 4;
+
+		private static final int FLASH_BUFFER_INDEX = 5;
+
+		private static final int BOARD_STATUS_INDEX = 6;
+
+		private static final int CORTEX_VECTOR_INDEX = 7;
+
+		private final IntBuffer buffer;
+
+		private SerialVector(IntBuffer buffer) {
+			this.buffer = buffer;
+		}
+
+		/** @return The hardware version. */
+		public int getHardwareVersion() {
+			return buffer.get(HW_VERSION_INDEX);
+		}
+
+		/** @return The serial number data, as a read-only buffer. */
+		public IntBuffer getSerialNumber() {
+			// TODO use slice(int,int) once base Java version recent enough
+			IntBuffer b = buffer.asReadOnlyBuffer();
+			b.position(SERIAL_INDEX);
+			b.limit(SERIAL_INDEX + SERIAL_LENGTH);
+			return b.slice();
+		}
+
+		/** @return The location of the flash buffer. */
+		public MemoryLocation getFlashBuffer() {
+			return new MemoryLocation(buffer.get(FLASH_BUFFER_INDEX));
+		}
+
+		/** @return The board status bit vector. */
+		public int getBoardStatus() {
+			// TODO what's the right return type?
+			return buffer.get(BOARD_STATUS_INDEX);
+		}
+
+		/** @return The location of the cortex vector. */
+		public MemoryLocation getCortexVector() {
+			return new MemoryLocation(buffer.get(CORTEX_VECTOR_INDEX));
 		}
 	}
 }

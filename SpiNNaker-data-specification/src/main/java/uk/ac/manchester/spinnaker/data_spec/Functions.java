@@ -237,11 +237,11 @@ class Functions implements FunctionAPI {
 							+ " (inclusive)");
 		}
 		if (!referenceable) {
-			memRegions.set(new MemoryRegionReal(region, 0, unfilled, size));
+			memRegions.set(new MemoryRegionReal(region, unfilled, size));
 		} else {
-			int reference = spec.getInt();
+			Reference reference = new Reference(spec.getInt());
 			memRegions.set(
-					new MemoryRegionReal(region, 0, unfilled, size, reference));
+					new MemoryRegionReal(region, unfilled, size, reference));
 			referenceableRegions.add(region);
 		}
 		spaceAllocated += size;
@@ -260,7 +260,7 @@ class Functions implements FunctionAPI {
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
 		}
-		int reference = spec.getInt();
+		Reference reference = new Reference(spec.getInt());
 		memRegions.set(new MemoryRegionReference(region, reference));
 		regionsToFill.add(region);
 	}

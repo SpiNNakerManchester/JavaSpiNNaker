@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Long.toHexString;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
@@ -38,6 +37,7 @@ import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
@@ -293,14 +293,13 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 								+ board.ethernetAddress + ")",
 						e);
 			}
-			int start = malloc(ctl, ctl.sizeToWrite);
+			MemoryLocation start = malloc(ctl, ctl.sizeToWrite);
 			try (Executor executor =
 					new Executor(ds, machine.getChipAt(ctl.core).sdram)) {
 				context.execute(executor, ctl.core, start);
 				int size = executor.getConstructedDataSize();
-				log.info("loading data onto {} ({} bytes at 0x{})",
-						ctl.core.asChipLocation(), toUnsignedLong(size),
-						toHexString(toUnsignedLong(start)));
+				log.info("loading data onto {} ({} bytes at {})",
+						ctl.core.asChipLocation(), toUnsignedLong(size), start);
 				int written = APP_PTR_TABLE_BYTE_SIZE;
 
 				for (MemoryRegion reg : executor.regions()) {
@@ -310,8 +309,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 					}
 				}
 
-				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core.getScampCore(), user0, start);
+				txrx.writeUser0(ctl.core, start.address);
 				bar.update();
 				storage.saveLoadingMetadata(ctl, start, size, written);
 			} catch (DataSpecificationException e) {
@@ -323,7 +321,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 			}
 		}
 
-		private int malloc(CoreToLoad ctl, int bytesUsed)
+		private MemoryLocation malloc(CoreToLoad ctl, int bytesUsed)
 				throws IOException, ProcessException {
 			return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
 					new AppID(ctl.appID),
@@ -347,7 +345,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeRegion(HasCoreLocation core, MemoryRegionReal region,
-				int baseAddress) throws IOException, ProcessException {
+				MemoryLocation baseAddress)
+				throws IOException, ProcessException {
 			ByteBuffer data = region.getRegionData().duplicate();
 
 			data.flip();

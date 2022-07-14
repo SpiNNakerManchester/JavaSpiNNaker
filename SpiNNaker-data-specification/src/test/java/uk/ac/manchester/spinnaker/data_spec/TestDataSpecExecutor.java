@@ -19,12 +19,18 @@ package uk.ac.manchester.spinnaker.data_spec;
 import static java.io.File.createTempFile;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
 import static uk.ac.manchester.spinnaker.data_spec.Generator.makeSpec;
 import static uk.ac.manchester.spinnaker.data_spec.Generator.makeSpecStream;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -36,7 +42,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class TestDataSpecExecutor {
-
 	@Test
 	void testSimpleSpec() throws IOException, DataSpecificationException {
 		ByteBuffer spec = makeSpec(s -> {
@@ -111,7 +116,7 @@ public class TestDataSpecExecutor {
 		MemoryRegion reg4 = executor.getRegion(4);
 		assertTrue(reg4 instanceof MemoryRegionReference);
 		MemoryRegionReference region4 = (MemoryRegionReference) reg4;
-		assertEquals(region4.getReference(), 2);
+		assertEquals(region4.getReference(), new Reference(2));
 
 		// Test referencing
 		assertArrayEquals(executor.getReferenceableRegions().toArray(),
@@ -124,7 +129,7 @@ public class TestDataSpecExecutor {
 
 		// Test the pointer table
 		ByteBuffer buffer = ByteBuffer.allocate(4096).order(LITTLE_ENDIAN);
-		executor.setBaseAddress(0);
+		executor.setBaseAddress(NULL);
 		executor.addPointerTable(buffer);
 		IntBuffer table = ((ByteBuffer) buffer.flip()).asIntBuffer();
 		assertEquals(MAX_MEM_REGIONS * 3, table.limit());

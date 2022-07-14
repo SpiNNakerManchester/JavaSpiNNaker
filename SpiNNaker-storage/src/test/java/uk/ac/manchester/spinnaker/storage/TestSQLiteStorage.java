@@ -22,6 +22,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -63,7 +64,7 @@ class TestSQLiteStorage {
 		assertEquals(emptyList(), storage.getCoresWithStorage());
 
 		BufferManagerStorage.Region rr =
-				new BufferManagerStorage.Region(core, 0, 0, 100);
+				new BufferManagerStorage.Region(core, 0, NULL, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
@@ -80,7 +81,7 @@ class TestSQLiteStorage {
 
 		// append creates
 		BufferManagerStorage.Region rr =
-				new BufferManagerStorage.Region(core, 1, 0, 100);
+				new BufferManagerStorage.Region(core, 1, NULL, 100);
 		storage.appendRecordingContents(rr, bytes("ab"));
 		storage.appendRecordingContents(rr, bytes("cd"));
 		storage.appendRecordingContents(rr, bytes("ef"));

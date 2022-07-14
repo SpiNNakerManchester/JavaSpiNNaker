@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.TransferUnit.efficientTran
 
 import java.nio.ByteBuffer;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /** A request to write memory on a BMP. */
 public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	/**
@@ -33,8 +35,9 @@ public class BMPWriteMemory extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            buffer must be the point where the data starts, and the data
 	 *            must extend up to the <i>limit</i>.
 	 */
-	public BMPWriteMemory(BMPBoard board, int baseAddress, ByteBuffer data) {
-		super(board, CMD_WRITE, baseAddress, data.remaining(),
+	public BMPWriteMemory(BMPBoard board, MemoryLocation baseAddress,
+			ByteBuffer data) {
+		super(board, CMD_WRITE, baseAddress.address, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}

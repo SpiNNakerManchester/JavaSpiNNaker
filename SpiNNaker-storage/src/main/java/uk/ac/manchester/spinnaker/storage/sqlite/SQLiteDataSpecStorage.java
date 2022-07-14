@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.storage.DSEDatabaseEngine;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -205,19 +206,19 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 	}
 
 	@Override
-	public void saveLoadingMetadata(CoreToLoad core, int startAddress,
+	public void saveLoadingMetadata(CoreToLoad core, MemoryLocation start,
 			int memoryUsed, int memoryWritten) throws StorageException {
 		callV(conn -> saveLoadingMetadata(conn, sanitise(core, "save metadata"),
-				startAddress, memoryUsed, memoryWritten),
+				start, memoryUsed, memoryWritten),
 				"saving data loading metadata");
 	}
 
 	private static void saveLoadingMetadata(Connection conn,
-			CoreToLoadImpl core, int startAddress, int memoryUsed,
+			CoreToLoadImpl core, MemoryLocation start, int memoryUsed,
 			int memoryWritten) throws SQLException {
 		try (PreparedStatement s =
 				conn.prepareStatement(ADD_LOADING_METADATA)) {
-			s.setInt(FIRST, startAddress);
+			s.setInt(FIRST, start.address);
 			s.setInt(SECOND, memoryUsed);
 			s.setInt(THIRD, memoryWritten);
 			s.setInt(FOURTH, core.id);
