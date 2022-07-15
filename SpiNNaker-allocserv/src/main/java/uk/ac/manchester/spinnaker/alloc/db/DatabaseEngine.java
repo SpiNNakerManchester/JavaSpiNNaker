@@ -266,21 +266,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@PreDestroy
 	private void logStatementExecutionTimes() {
 		warnOnLongTransactions = false;
-		if (props.isPerformanceLog()) {
+		if (props.isPerformanceLog() && log.isInfoEnabled()) {
 			statementLengths.entrySet().stream()
 					.filter(e -> e.getValue().getMax() >= props
 							.getPerformanceThreshold())
-					.forEach(DatabaseEngine::logStatementExecutionTime);
-		}
-	}
-
-	private static void
-			logStatementExecutionTime(Entry<String, SummaryStatistics> e) {
-		if (log.isInfoEnabled()) {
-			log.info("statement execution time " + "{}us (max: {}us) for: {}",
-					e.getValue().getMean() / NS_PER_US,
-					e.getValue().getMax() / NS_PER_US,
-					trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
+					.forEach(e -> log.info(
+							"statement execution time "
+									+ "{}us (max: {}us) for: {}",
+							e.getValue().getMean() / NS_PER_US,
+							e.getValue().getMax() / NS_PER_US,
+							trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH)));
 		}
 	}
 
