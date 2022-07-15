@@ -861,33 +861,46 @@ interface AdminControllerConstants {
 	/** The members of {@link TrustLevel}. In all views. */
 	String TRUST_LEVELS = "trustLevels";
 
-	/** How to call {@link AdminController#listUsers()}. In all views. */
+	/**
+	 * How to call {@link AdminController#listUsers() listUsers()}. In all
+	 * views.
+	 */
 	String USERS_URI = "usersUri";
 
 	/**
-	 * How to call {@link AdminController#getUserCreationForm()}. In all views.
+	 * How to call {@link AdminController#getUserCreationForm()
+	 * getUserCreationForm()}. In all views.
 	 */
 	String CREATE_USER_URI = "createUserUri";
 
-	/** How to call {@link AdminController#listGroups()}. In all views. */
+	/**
+	 * How to call {@link AdminController#listGroups() listGroups()}. In all
+	 * views.
+	 */
 	String GROUPS_URI = "groupsUri";
 
 	/**
-	 * How to call {@link AdminController#getGroupCreationForm()}. In all views.
+	 * How to call {@link AdminController#getGroupCreationForm()
+	 * getGroupCreationForm()}. In all views.
 	 */
 	String CREATE_GROUP_URI = "createGroupUri";
 
-	/** How to call {@link AdminController#boards()}. In all views. */
+	/** How to call {@link AdminController#boards() boards()}. In all views. */
 	String BOARDS_URI = "boardsUri";
 
 	/**
-	 * How to call {@link AdminController#blacklistHandling()}. In
-	 * {@link #BOARD_VIEW}.
+	 * How to call {@link AdminController#blacklistSave(BlacklistData,ModelMap)
+	 * blacklistSave()},
+	 * {@link AdminController#blacklistPush(BlacklistData, ModelMap)
+	 * blacklistPush()}, and
+	 * {@link AdminController#blacklistFetch(BlacklistData,ModelMap)
+	 * blacklistFetch()}. In {@link #BOARD_VIEW}.
 	 */
 	String BLACKLIST_URI = "blacklistControlUri";
 
 	/**
-	 * How to call {@link AdminController#machineManagement()}. In all views.
+	 * How to call {@link AdminController#machineManagement()
+	 * machineManagement()}. In all views.
 	 */
 	String MACHINE_URI = "machineUri";
 }

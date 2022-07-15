@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.TypeMismatchDataAccessException;
 
 /**
@@ -414,5 +415,9 @@ public final class Row {
 	 */
 	public static Function<Row, Long> int64(String columnLabel) {
 		return r -> r.getLong(columnLabel);
+	}
+
+	static {
+		DataAccessException.class.getClass();
 	}
 }
