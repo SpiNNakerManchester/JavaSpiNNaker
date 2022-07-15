@@ -55,7 +55,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
-import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * Tests of inserts, updates and deletes. Ensures that the SQL and the schema

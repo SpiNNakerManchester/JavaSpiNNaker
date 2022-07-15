@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.messages.bmp;
+package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Integer.parseInt;
 import static java.nio.ByteBuffer.allocate;

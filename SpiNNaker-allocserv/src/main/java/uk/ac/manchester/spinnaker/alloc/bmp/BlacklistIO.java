@@ -36,7 +36,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
-import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * Read a blacklist from the database or write it to the database. This works

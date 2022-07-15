@@ -83,8 +83,8 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
-import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
 
 /**
  * Implements the logic supporting the JSP views and maps them into URL space.

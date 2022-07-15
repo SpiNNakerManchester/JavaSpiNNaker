@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
-import uk.ac.manchester.spinnaker.messages.bmp.Blacklist;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * The API for the controller for the admin user interface.
