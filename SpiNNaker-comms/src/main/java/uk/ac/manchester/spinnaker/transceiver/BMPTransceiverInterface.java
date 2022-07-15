@@ -1718,8 +1718,9 @@ public interface BMPTransceiverInterface {
 			MemoryLocation baseAddress, ByteBuffer data, boolean update)
 			throws ProcessException, IOException {
 		int size = data.remaining();
-		MemoryLocation bufferBase =
+		MemoryLocation workingBuffer =
 				eraseBMPFlash(bmp, board, baseAddress, size);
+		MemoryLocation addr = baseAddress;
 		int offset = 0;
 
 		while (true) {
@@ -1731,16 +1732,15 @@ public interface BMPTransceiverInterface {
 				break;
 			}
 
-			writeBMPMemory(bmp, board, bufferBase, buf);
-			chunkBMPFlash(bmp, board, baseAddress);
+			writeBMPMemory(bmp, board, workingBuffer, buf);
+			chunkBMPFlash(bmp, board, addr);
 			if (length < FLASH_CHUNK_SIZE) {
 				break;
 			}
-			baseAddress = baseAddress.add(FLASH_CHUNK_SIZE);
+			addr = addr.add(FLASH_CHUNK_SIZE);
 			offset += FLASH_CHUNK_SIZE;
 		}
 		if (update) {
-			// FIXME should this be the original address?
 			copyBMPFlash(bmp, board, baseAddress, size);
 		}
 	}
