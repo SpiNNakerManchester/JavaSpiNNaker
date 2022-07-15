@@ -30,11 +30,11 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
  */
 public class TestGather {
 
-    @Test
-    public void testSimpleJson() throws IOException {
-        var url = TestGather.class.getResource("/gather.json");
-        var fromJson = createMapper().readValue(url, Gather.LIST);
-        assertEquals(1, fromJson.size());
-    }
+	@Test
+	public void testSimpleJson() throws IOException {
+		var url = TestGather.class.getResource("/gather.json");
+		var fromJson = createMapper().readValue(url, Gather.LIST);
+		assertEquals(1, fromJson.size());
+	}
 
 }

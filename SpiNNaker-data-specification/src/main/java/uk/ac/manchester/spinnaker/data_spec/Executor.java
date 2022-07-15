@@ -40,6 +40,8 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * Used to execute a SpiNNaker data specification language file to produce a
  * memory image.
@@ -175,12 +177,12 @@ public class Executor implements Closeable {
 	 *
 	 * @param startAddress The base address to set.
 	 */
-	public void setBaseAddress(int startAddress) {
+	public void setBaseAddress(MemoryLocation startAddress) {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
 		for (var reg : memRegions) {
 			if (reg instanceof MemoryRegionReal) {
 				var r = (MemoryRegionReal) reg;
-				r.setRegionBase(nextOffset + startAddress);
+				r.setRegionBase(startAddress.add(nextOffset));
 				nextOffset += r.getAllocatedSize();
 			}
 		}
@@ -208,7 +210,7 @@ public class Executor implements Closeable {
 		assert buffer.order() == LITTLE_ENDIAN;
 		for (var reg : memRegions) {
 			if (reg != null) {
-				buffer.putInt(reg.getRegionBase());
+				buffer.putInt(reg.getRegionBase().address);
 				if (reg instanceof MemoryRegionReal) {
 					// Work out the checksum
 					var regReal = (MemoryRegionReal) reg;

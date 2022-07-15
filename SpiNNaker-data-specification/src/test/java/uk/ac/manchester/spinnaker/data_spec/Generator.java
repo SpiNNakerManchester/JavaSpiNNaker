@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /** Severely cut down version of the DSG, for testing only. */
-public class Generator {
+public final class Generator {
 	private ByteBuffer buffer;
 
 	public static ByteBuffer makeSpec(SpecGen specGen) {
@@ -76,8 +76,10 @@ public class Generator {
 		void generate(Generator generator);
 	}
 
+	private static final int BUFFER_SIZE = 32 * 1024;
+
 	private Generator() {
-		buffer = allocate(32 * 1024).order(LITTLE_ENDIAN);
+		buffer = allocate(BUFFER_SIZE).order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -108,6 +110,7 @@ public class Generator {
 		/** immediate value field. */
 		IMMEDIATE(0);
 
+		/** Offset of field in command. */
 		final int offset;
 
 		Field(int offset) {
@@ -115,10 +118,20 @@ public class Generator {
 		}
 	}
 
+	/** Types of values to write. */
 	public enum DataType {
-		INT8(1, LEN2), INT16(2, LEN2), INT32(4, LEN2), INT64(8, LEN3);
+		/** 8-bit integer. */
+		INT8(1, LEN2),
+		/** 16-bit integer. */
+		INT16(2, LEN2),
+		/** 32-bit integer. */
+		INT32(4, LEN2),
+		/** 64-bit integer. */
+		INT64(8, LEN3);
 
-		final int size, writeLength;
+		private final int size;
+
+		private final int writeLength;
 
 		DataType(int size, int writeLength) {
 			this.size = size;
@@ -139,6 +152,8 @@ public class Generator {
 			case INT64:
 				buffer.putLong(n.longValue());
 				break;
+			default:
+				throw new UnsupportedOperationException();
 			}
 		}
 
@@ -162,6 +177,8 @@ public class Generator {
 			case INT64:
 				buffer.putLong(n.longValue());
 				break;
+			default:
+				throw new UnsupportedOperationException();
 			}
 		}
 	}

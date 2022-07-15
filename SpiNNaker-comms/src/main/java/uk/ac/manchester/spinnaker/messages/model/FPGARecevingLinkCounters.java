@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+
 /**
  * FPGA link receive counters. Counters are always read-only.
  *
@@ -35,7 +37,8 @@ public enum FPGARecevingLinkCounters {
 	/** Glitches detected on link. */
 	GLTE(48);
 
-	private static final int BASE_ADDRESS = 0x00060000;
+	private static final MemoryLocation BASE_ADDRESS =
+			new MemoryLocation(0x00060000);
 
 	private static final int COUNTER_SIZE = 4;
 
@@ -54,10 +57,10 @@ public enum FPGARecevingLinkCounters {
 	 * @throws IllegalArgumentException
 	 *             if a bad link number is given.
 	 */
-	public int address(int linkNumber) {
+	public MemoryLocation address(int linkNumber) {
 		if (linkNumber < 0 || linkNumber > 2) {
 			throw new IllegalArgumentException("linkNumber must be 0, 1, or 2");
 		}
-		return BASE_ADDRESS + offset + linkNumber * COUNTER_SIZE;
+		return BASE_ADDRESS.add(offset + linkNumber * COUNTER_SIZE);
 	}
 }

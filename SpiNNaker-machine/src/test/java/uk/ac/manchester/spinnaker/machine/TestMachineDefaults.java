@@ -22,42 +22,42 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-
 /**
  *
  * @author Christian-B
  */
 public class TestMachineDefaults {
 
-    public TestMachineDefaults() {
-    }
+	public TestMachineDefaults() {
+	}
 
-    //_4_chip_down_links = {
-    //    (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
-    //    (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
-    //}
+	// _4_chip_down_links = {
+	//     (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
+	//     (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
+	// }
 
-    @Test
-    public void testFoutChipDownLinks() {
-        //Misuses of CoreLocation!
-        var fromPython = new ArrayList<CoreLocation>();
-        fromPython.add(new CoreLocation(0, 0, 3));
-        fromPython.add(new CoreLocation(0, 0, 4));
-        fromPython.add(new CoreLocation(0, 1, 3));
-        fromPython.add(new CoreLocation(0, 1, 4));
-        fromPython.add(new CoreLocation(1, 0, 0));
-        fromPython.add(new CoreLocation(1, 0, 1));
-        fromPython.add(new CoreLocation(1, 1, 0));
-        fromPython.add(new CoreLocation(1, 1, 1));
+	@Test
+	public void testFoutChipDownLinks() {
+		// Misuses of CoreLocation!
+		var fromPython = new ArrayList<CoreLocation>();
+		fromPython.add(new CoreLocation(0, 0, 3));
+		fromPython.add(new CoreLocation(0, 0, 4));
+		fromPython.add(new CoreLocation(0, 1, 3));
+		fromPython.add(new CoreLocation(0, 1, 4));
+		fromPython.add(new CoreLocation(1, 0, 0));
+		fromPython.add(new CoreLocation(1, 0, 1));
+		fromPython.add(new CoreLocation(1, 1, 0));
+		fromPython.add(new CoreLocation(1, 1, 1));
 
-        var fromDefaults = new ArrayList<CoreLocation>();
-        var map = MachineDefaults.FOUR_CHIP_DOWN_LINKS;
-        for (var entry: map.entrySet()) {
-            assertNotNull(entry.getKey());
-            for (var direction: entry.getValue()) {
-                fromDefaults.add(new CoreLocation(entry.getKey(), direction.id));
-            }
-        }
-        assertThat(fromDefaults, containsInAnyOrder(fromPython.toArray()));
-    }
+		var fromDefaults = new ArrayList<CoreLocation>();
+		var map = MachineDefaults.FOUR_CHIP_DOWN_LINKS;
+		for (var entry : map.entrySet()) {
+			assertNotNull(entry.getKey());
+			for (var direction : entry.getValue()) {
+				fromDefaults
+						.add(new CoreLocation(entry.getKey(), direction.id));
+			}
+		}
+		assertThat(fromDefaults, containsInAnyOrder(fromPython.toArray()));
+	}
 }

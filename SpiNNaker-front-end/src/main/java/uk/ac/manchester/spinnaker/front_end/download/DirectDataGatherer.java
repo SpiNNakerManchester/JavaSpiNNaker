@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -60,7 +61,8 @@ public class DirectDataGatherer extends DataGatherer {
 
 	private final BufferManagerStorage database;
 
-	private final Map<CoreLocation, Map<Long, ByteBuffer>> coreTableCache;
+	private final Map<CoreLocation,
+			Map<MemoryLocation, ByteBuffer>> coreTableCache;
 
 	/**
 	 * Create a data gatherer.
@@ -102,18 +104,14 @@ public class DirectDataGatherer extends DataGatherer {
 	private IntBuffer getCoreRegionTable(CoreLocation core, Vertex vertex)
 			throws IOException, ProcessException {
 		// TODO get this info from the database, if the DB knows it
-		Map<Long, ByteBuffer> map;
+		Map<MemoryLocation, ByteBuffer> map;
 		synchronized (coreTableCache) {
-			map = coreTableCache.get(core);
-			if (map == null) {
-				map = new HashMap<>();
-				coreTableCache.put(core, map);
-			}
+			map = coreTableCache.computeIfAbsent(core, k -> new HashMap<>());
 		}
 		// Individual cores are only ever handled from one thread
-		var buffer = map.get(vertex.getBaseAddress());
+		var buffer = map.get(vertex.getBase());
 		if (buffer == null) {
-			buffer = txrx.readMemory(core, vertex.getBaseAddress(),
+			buffer = txrx.readMemory(core, vertex.getBase(),
 					WORD_SIZE * (MAX_MEM_REGIONS + 2));
 			int word = buffer.getInt();
 			if (word != APPDATA_MAGIC_NUM) {
@@ -125,7 +123,7 @@ public class DirectDataGatherer extends DataGatherer {
 				throw new IllegalStateException(
 						format("unexpected DSE version: %08x", word));
 			}
-			map.put(vertex.getBaseAddress(), buffer);
+			map.put(vertex.getBase(), buffer);
 		}
 		return buffer.asIntBuffer();
 	}
@@ -137,8 +135,8 @@ public class DirectDataGatherer extends DataGatherer {
 				placement.getVertex());
 		// TODO This is probably wrong!
 		int size = b.get(regionID + 1) - b.get(regionID);
-		return singletonList(
-				new Region(placement, regionID, b.get(regionID), size));
+		return singletonList(new Region(placement, regionID,
+				new MemoryLocation(b.get(regionID)), size));
 	}
 
 	@Override

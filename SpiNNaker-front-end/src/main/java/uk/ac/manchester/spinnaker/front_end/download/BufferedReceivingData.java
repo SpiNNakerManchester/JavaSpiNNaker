@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -147,7 +148,7 @@ class BufferedReceivingData {
 					location.asCoreLocation());
 		}
 		storage.appendRecordingContents(
-				new Region(location, location.region, 0, 0), data);
+				new Region(location, location.region, NULL, 0), data);
 	}
 
 	/**

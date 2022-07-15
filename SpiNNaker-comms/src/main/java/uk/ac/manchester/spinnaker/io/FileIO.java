@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.utils.Slice;
 
@@ -41,8 +42,8 @@ public class FileIO extends BaseIO {
 	 * @throws IOException
 	 *             If anything goes wrong opening the file.
 	 */
-	public FileIO(File file, int startOffset, int endOffset)
-			throws IOException {
+	public FileIO(File file, MemoryLocation startOffset,
+			MemoryLocation endOffset) throws IOException {
 		this(new RandomAccessFile(file, "rw"), startOffset, endOffset);
 	}
 
@@ -54,7 +55,8 @@ public class FileIO extends BaseIO {
 	 * @param endOffset
 	 *            The end offset from the start of the file
 	 */
-	private FileIO(RandomAccessFile file, int startOffset, int endOffset) {
+	private FileIO(RandomAccessFile file, MemoryLocation startOffset,
+			MemoryLocation endOffset) {
 		super(startOffset, endOffset);
 		this.file = file;
 	}
@@ -69,7 +71,7 @@ public class FileIO extends BaseIO {
 		if (slice < 0 || slice >= size()) {
 			throw new ArrayIndexOutOfBoundsException(slice);
 		}
-		return new FileIO(file, start + slice, start + slice + 1);
+		return new FileIO(file, start.add(slice), start.add(slice + 1));
 	}
 
 	@Override
@@ -91,7 +93,7 @@ public class FileIO extends BaseIO {
 	byte[] doRead(int numBytes) throws IOException {
 		var data = new byte[numBytes];
 		synchronized (file) {
-			file.seek(current);
+			file.seek(current.address);
 			file.readFully(data, 0, numBytes);
 		}
 		return data;
@@ -100,7 +102,7 @@ public class FileIO extends BaseIO {
 	@Override
 	void doWrite(byte[] data, int from, int len) throws IOException {
 		synchronized (file) {
-			file.seek(current);
+			file.seek(current.address);
 			file.write(data, from, len);
 		}
 	}

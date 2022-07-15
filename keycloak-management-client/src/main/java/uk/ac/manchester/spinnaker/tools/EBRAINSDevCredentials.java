@@ -46,7 +46,7 @@ interface EBRAINSDevCredentials {
 	/** The content type for submitting an HTML form (or equivalent). */
 	String FORM_ENCODED = "application/x-www-form-urlencoded; charset=UTF-8";
 
-	/** URL for getting an OIDC token. */
+	/** Where to get the developer access token from. This is non-standard. */
 	String OIDC_TOKEN_URL = HBP_OPENID_BASE + "realms/" + REALM
 			+ "/protocol/openid-connect/token";
 

@@ -35,6 +35,7 @@ import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -184,17 +185,17 @@ public class DataReceiver extends BoardLocalSupport {
 		return value >= 0 && value <= MAX_UINT;
 	}
 
-	private void readSomeData(RegionLocation location, long address,
+	private void readSomeData(RegionLocation location, MemoryLocation address,
 			long length)
 			throws IOException, StorageException, ProcessException {
-		if (!is32bit(address) || !is32bit(length)) {
+		if (!is32bit(length)) {
 			throw new IllegalArgumentException("non-32-bit argument");
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("< Reading {} bytes from {} at {}", length, location,
 					address);
 		}
-		var data = requestData(location, (int) address, (int) length);
+		var data = requestData(location, address, (int) length);
 		receivedData.flushingDataFromRegion(location, data);
 	}
 
@@ -211,8 +212,9 @@ public class DataReceiver extends BoardLocalSupport {
 	 * @throws IOException
 	 *             if communications fail
 	 */
-	private ByteBuffer requestData(HasCoreLocation location, long address,
-			int length) throws IOException, ProcessException {
+	private ByteBuffer requestData(HasCoreLocation location,
+			MemoryLocation address, int length)
+			throws IOException, ProcessException {
 		if (length < 1) {
 			// Crazy negative lengths get an exception
 			return allocate(length);

@@ -55,6 +55,8 @@ public interface SpiNNakerAllocatorApp {
 	/** Scopes we can ask for: "team", "group", "email". */
 	List<String> SPALLOC_OPTIONAL_SCOPES = asList("team", "group", "email");
 
+	// Some unavoidable long lines here, so we do:
+	// CHECKSTYLE:OFF
 	/**
 	 * Create a proposed description of the service. From the wiki:
 	 *
@@ -91,14 +93,13 @@ public interface SpiNNakerAllocatorApp {
 	 *
 	 * @param clientId
 	 *            The client ID
-	 * @return The proposed descriptor
-	 * @see <a href=
-	 *      "https://wiki.ebrains.eu/bin/view/Collabs/the-collaboratory/Documentation%20IAM/FAQ/OIDC%20Clients%20explained/1.%20Registering%20an%20OIDC%20client/">wiki
-	 *      page</a>
-	 * @see <a href=
-	 *      "https://www.keycloak.org/docs-api/11.0/javadocs/org/keycloak/representations/idm/ClientRepresentation.html">Keycloak
-	 *      documentation</a>
+	 * @return The client description.
+	 * @see <a href="https://wiki.ebrains.eu/bin/view/Collabs/the-collaboratory/Documentation%20IAM/FAQ/OIDC%20Clients%20explained/1.%20Registering%20an%20OIDC%20client/"
+	 *      >wiki page</a>
+	 * @see <a href="https://www.keycloak.org/docs-api/11.0/javadocs/org/keycloak/representations/idm/ClientRepresentation.html"
+	 *      >Keycloak documentation</a>
 	 */
+	// CHECKSTYLE:ON
 	static ClientRepresentation makeSpallocDescriptor(String clientId) {
 		var client = new ClientRepresentation();
 		client.setClientId(clientId);

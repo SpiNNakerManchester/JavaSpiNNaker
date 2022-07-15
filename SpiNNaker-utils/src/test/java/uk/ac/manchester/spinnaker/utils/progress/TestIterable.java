@@ -16,13 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.utils.progress;
 
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import org.junit.jupiter.api.Test;
 
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.*;
 import uk.ac.manchester.spinnaker.utils.Counter;
 
 /**
@@ -33,8 +32,11 @@ public class TestIterable {
 
 	private static final String PERCENTS =
 			"|0%                          50%                         100%|";
+
 	private static final String DASHES =
 			" ------------------------------------------------------------";
+
+	private static final String NEWLINE = "\\r?\\n";
 
 	public TestIterable() {
 	}
@@ -42,9 +44,8 @@ public class TestIterable {
 	@Test
 	public void testBasic() {
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(
-				asList(1, 2, 3, 4, 5), description,
-				new PrintStream(new ByteArrayOutputStream()));
+		var pb = new ProgressIterable<>(asList(1, 2, 3, 4, 5),
+				description, new PrintStream(new ByteArrayOutputStream()));
 		int sum = 0;
 		for (int i : pb) {
 			sum += i;
@@ -64,7 +65,7 @@ public class TestIterable {
 			sum += i;
 		}
 		assertEquals(1 + 2 + 3 + 4 + 5 + 6 + 7, sum);
-		var lines = baos.toString().split("\\r?\\n");
+		var lines = baos.toString().split(NEWLINE);
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);
@@ -76,7 +77,7 @@ public class TestIterable {
 	public void testStopEarly() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Early";
-		try (var bar = new ProgressIterable<Integer>(
+		try (var bar = new ProgressIterable<>(
 				asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), description,
 				new PrintStream(baos))) {
 			for (int i : bar) {
@@ -85,7 +86,7 @@ public class TestIterable {
 				}
 			}
 		}
-		var lines = baos.toString().split("\\r?\\n");
+		var lines = baos.toString().split(NEWLINE);
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);
@@ -101,7 +102,7 @@ public class TestIterable {
 		var sum = new Counter();
 		pb.forEach(sum::add);
 		assertEquals(1 + 2 + 3 + 4 + 5, sum.get());
-		var lines = baos.toString().split("\\r?\\n");
+		var lines = baos.toString().split(NEWLINE);
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);

@@ -31,25 +31,25 @@ class TestVersionInfo {
 	private ByteBuffer packVersionData(int arg1, int arg2, int arg3,
 			byte[] data) {
 		var buffer = allocate(25).order(LITTLE_ENDIAN);
-        buffer.putInt(arg1).putInt(arg2).putInt(arg3).put(data).flip();
+		buffer.putInt(arg1).putInt(arg2).putInt(arg3).put(data).flip();
 		return buffer;
 	}
 
 	@Test
 	void testRetrievingBitsFromVersionData()
 			throws UnsupportedEncodingException {
-        int p2pAddr = 0xf0a1;
-        int physCPU = 0xff;
-        int virtCPU = 0x0b;
-        int verNumber = 0xff;
-        int arg1 = (p2pAddr << 16) | (physCPU << 8) | virtCPU;
-        int bufferSize = 0x10;
-        int arg2 = (verNumber << 16) | bufferSize;
-        int buildDate = 0x1000;
-        int arg3 = buildDate;
-        var data = "my/spinnaker".getBytes("ASCII");
+		int p2pAddr = 0xf0a1;
+		int physCPU = 0xff;
+		int virtCPU = 0x0b;
+		int verNumber = 0xff;
+		int arg1 = (p2pAddr << 16) | (physCPU << 8) | virtCPU;
+		int bufferSize = 0x10;
+		int arg2 = (verNumber << 16) | bufferSize;
+		int buildDate = 0x1000;
+		int arg3 = buildDate;
+		var data = "my/spinnaker".getBytes("ASCII");
 
-        var versionData = packVersionData(arg1, arg2, arg3, data);
+		var versionData = packVersionData(arg1, arg2, arg3, data);
 
 		var vi = new VersionInfo(versionData, false);
 		assertEquals("my", vi.name);
@@ -91,11 +91,11 @@ class TestVersionInfo {
 		int arg2 = ((verNumber << 16) | bufferSize);
 		// int build_date = 0x1000;
 		// int arg3 = build_date;
-        var data = "my/spinnaker".getBytes("ASCII");
+		var data = "my/spinnaker".getBytes("ASCII");
 
-        // Oh arg3, where art thou?
-        var versionData = allocate(21).order(LITTLE_ENDIAN);
-        versionData.putInt(arg1).putInt(arg2)/*.putInt(arg3)*/.put(data).flip();
+		// Oh arg3, where art thou?
+		var versionData = allocate(21).order(LITTLE_ENDIAN);
+		versionData.putInt(arg1).putInt(arg2)/*.putInt(arg3)*/.put(data).flip();
 
 		assertThrows(IllegalArgumentException.class, () -> {
 			new VersionInfo(versionData, false);

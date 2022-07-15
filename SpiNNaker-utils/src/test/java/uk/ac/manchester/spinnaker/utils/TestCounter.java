@@ -25,27 +25,27 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestCounter {
 
-    public TestCounter() {
-    }
+	public TestCounter() {
+	}
 
-    /**
-     * Test of increment and get methods, of class Counter.
-     */
-    @Test
-    public void testIncrement() {
-        var counter = new Counter();
-        assertEquals(0, counter.get());
-        counter.increment();
-        counter.increment();
-        assertEquals(2, counter.get());
-    }
+	/**
+	 * Test of increment and get methods, of class Counter.
+	 */
+	@Test
+	public void testIncrement() {
+		var counter = new Counter();
+		assertEquals(0, counter.get());
+		counter.increment();
+		counter.increment();
+		assertEquals(2, counter.get());
+	}
 
-    @Test
-    public void testAdd() {
-        var counter = new Counter();
-        assertEquals(0, counter.get());
-        counter.add(4);
-        counter.add(-2);
-        assertEquals(2, counter.get());
-    }
+	@Test
+	public void testAdd() {
+		var counter = new Counter();
+		assertEquals(0, counter.get());
+		counter.add(4);
+		counter.add(-2);
+		assertEquals(2, counter.get());
+	}
 }

@@ -28,35 +28,34 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public class TestChipLocationBean {
 
-    @Test
-    public void testFromJson() throws IOException {
-        String json = "[2, 4]";
-        var mapper = MapperFactory.createMapper();
-        var fromJson = mapper.readValue(json, ChipLocation.class);
-        assertEquals(2, fromJson.getX());
-        assertEquals(4, fromJson.getY());
+	@Test
+	public void testFromJson() throws IOException {
+		var json = "[2, 4]";
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(json, ChipLocation.class);
+		assertEquals(2, fromJson.getX());
+		assertEquals(4, fromJson.getY());
 
-        ChipLocation direct = new ChipLocation(2, 4);
-        assertEquals(direct, fromJson);
-        assertEquals(direct.hashCode(), fromJson.hashCode());
-        assertEquals(direct.toString(), fromJson.toString());
-    }
+		var direct = new ChipLocation(2, 4);
+		assertEquals(direct, fromJson);
+		assertEquals(direct.hashCode(), fromJson.hashCode());
+		assertEquals(direct.toString(), fromJson.toString());
+	}
 
-    @Test
-    public void testNullJson() throws IOException {
-        String json = "null";
-        var mapper = MapperFactory.createMapper();
-        var fromJson = mapper.readValue(json, ChipLocation.class);
-        assertNull(fromJson);
-    }
+	@Test
+	public void testNullJson() throws IOException {
+		var json = "null";
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(json, ChipLocation.class);
+		assertNull(fromJson);
+	}
 
-    @Test
-    public void testOneNullJson() throws IOException {
-        String json = "[2]";
-        var mapper = MapperFactory.createMapper();
-        assertThrows(MismatchedInputException.class, () -> {
-            mapper.readValue(json, ChipLocation.class);
-        });
-    }
-
+	@Test
+	public void testOneNullJson() throws IOException {
+		var json = "[2]";
+		var mapper = MapperFactory.createMapper();
+		assertThrows(MismatchedInputException.class, () -> {
+			mapper.readValue(json, ChipLocation.class);
+		});
+	}
 }

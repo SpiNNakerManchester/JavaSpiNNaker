@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,27 +16,37 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
-import static org.junit.jupiter.api.Assertions.*;
+/**
+ * A reference handle to another region.
+ */
+public final class Reference {
+	/** The reference of the region. */
+	private final int ref;
 
-import org.junit.jupiter.api.Test;
+	/**
+	 * Create a reference to another region.
+	 *
+	 * @param index
+	 *            The index of this region.
+	 * @param reference
+	 *            The reference to make.
+	 */
+	Reference(int reference) {
+		ref = reference;
+	}
 
-class TestMemoryRegion {
+	@Override
+	public String toString() {
+		return Integer.toString(ref);
+	}
 
-	@Test
-	void test() {
-		var r = new MemoryRegionReal(77, false, 5);
-		assertEquals(77, r.getIndex());
-		assertEquals(5, r.getAllocatedSize());
-		assertFalse(r.isUnfilled());
-		assertEquals(5, r.getRemainingSpace());
-		assertEquals(0, r.getWritePointer());
-		r.writeIntoRegionData(new byte[] {
-			1, 2, 3, 4
-		});
-		assertEquals(77, r.getIndex());
-		assertEquals(5, r.getAllocatedSize());
-		assertFalse(r.isUnfilled());
-		assertEquals(1, r.getRemainingSpace());
-		assertEquals(4, r.getWritePointer());
+	@Override
+	public int hashCode() {
+		return ref;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		return (other instanceof Reference) && ((Reference) other).ref == ref;
 	}
 }

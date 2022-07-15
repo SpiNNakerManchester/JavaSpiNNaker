@@ -40,20 +40,20 @@ public class TestCoreLocation {
 		assertEquals(l1.toString(), l2.toString());
 		assertTrue(l2.onSameCoreAs(l1));
 
-        var l3 = new CoreLocation(0, 1, 0);
+		var l3 = new CoreLocation(0, 1, 0);
 		assertEquals(0, l3.getX());
 		assertEquals(1, l3.getY());
 		assertEquals(0, l3.getP());
 		assertNotEquals(l1, l3);
 		assertNotEquals(l1.toString(), l3.toString());
 
-        var l4 = new CoreLocation(ChipLocation.ONE_ZERO, 0);
+		var l4 = new CoreLocation(ChipLocation.ONE_ZERO, 0);
 		assertEquals(1, l4.getX());
 		assertEquals(0, l4.getY());
 		assertEquals(0, l4.getP());
 		assertNotEquals(l1, l4);
 
-        var l5 = new CoreLocation(0, 0, 1);
+		var l5 = new CoreLocation(0, 0, 1);
 		assertEquals(0, l5.getX());
 		assertEquals(0, l5.getY());
 		assertEquals(1, l5.getP());
@@ -65,7 +65,7 @@ public class TestCoreLocation {
 		m.put(l1, 123);
 		assertEquals(123, (int) m.get(l2));
 
-        assertEquals(l1, l1.asCoreLocation());
+		assertEquals(l1, l1.asCoreLocation());
 
 	}
 
@@ -111,49 +111,50 @@ public class TestCoreLocation {
 		});
 	}
 
-    private class MockCoreLocation implements HasCoreLocation{
-        @Override
-        public int getX() {
-            return 1;
-        }
+	private class MockCoreLocation implements HasCoreLocation {
 
-        @Override
-        public int getY() {
-            return 2;
-        }
+		@Override
+		public int getX() {
+			return 1;
+		}
 
-        @Override
-        public int getP() {
-            return 3;
-        }
+		@Override
+		public int getY() {
+			return 2;
+		}
 
-    }
+		@Override
+		public int getP() {
+			return 3;
+		}
 
-    @Test
-    public void testAsCoreLocation() {
-        assertEquals(new CoreLocation(1, 2, 3),
-                new MockCoreLocation().asCoreLocation());
-    }
+	}
 
-    @Test
-    public void testCompare() {
-        var core001 = new CoreLocation(0, 0, 1);
-        var core001a = new CoreLocation(0, 0, 1);
-        var core002 = new CoreLocation(0, 0, 2);
-        var core102 = new CoreLocation(1, 0, 2);
-        var core013 = new CoreLocation(0, 1, 3);
-        var core114 = new CoreLocation(1, 1, 4);
-        assertThat("114 > 001", core114, greaterThan(core001));
-        assertThat("114 > 013", core114, greaterThan(core013));
-        assertThat("114 > 102", core114, greaterThan(core102));
-        assertThat("102 > 114", core102, lessThan(core114));
-        assertThat("102 < 013", core102, greaterThan(core013));
-        assertThat("013 > 102", core013, lessThan(core102));
-        assertThat("114 < 102", core114, greaterThan(core102));
-        assertThat("001 < 002", core001, lessThan(core002));
-        assertThat("002 < 001", core002, greaterThan(core001));
-        assertEquals(0, core001.compareTo(core001a));
-        assertEquals(0, core001.compareTo(core001));
-    }
+	@Test
+	public void testAsCoreLocation() {
+		assertEquals(new CoreLocation(1, 2, 3),
+				new MockCoreLocation().asCoreLocation());
+	}
+
+	@Test
+	public void testCompare() {
+		var core001 = new CoreLocation(0, 0, 1);
+		var core001a = new CoreLocation(0, 0, 1);
+		var core002 = new CoreLocation(0, 0, 2);
+		var core102 = new CoreLocation(1, 0, 2);
+		var core013 = new CoreLocation(0, 1, 3);
+		var core114 = new CoreLocation(1, 1, 4);
+		assertThat("114 > 001", core114, greaterThan(core001));
+		assertThat("114 > 013", core114, greaterThan(core013));
+		assertThat("114 > 102", core114, greaterThan(core102));
+		assertThat("102 > 114", core102, lessThan(core114));
+		assertThat("102 < 013", core102, greaterThan(core013));
+		assertThat("013 > 102", core013, lessThan(core102));
+		assertThat("114 < 102", core114, greaterThan(core102));
+		assertThat("001 < 002", core001, lessThan(core002));
+		assertThat("002 < 001", core002, greaterThan(core001));
+		assertEquals(0, core001.compareTo(core001a));
+		assertEquals(0, core001.compareTo(core001));
+	}
 
 }

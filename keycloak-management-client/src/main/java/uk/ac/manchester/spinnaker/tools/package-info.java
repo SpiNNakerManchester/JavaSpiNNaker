@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * A (partial) tool for managing the spalloc server registration with the
+ * Support tools that are rarely needed. Particularly {@link GetDevId},
+ * a (partial!) tool for managing the spalloc server registration with the
  * keycloak service operated by HBP/EBRAINS.
  */
 package uk.ac.manchester.spinnaker.tools;

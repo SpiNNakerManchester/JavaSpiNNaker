@@ -17,29 +17,23 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
 public class TestMappableIterable {
-	final List<Integer> values = asList(1, 2, 3, 4, 5);
+	private final List<Integer> values = asList(1, 2, 3, 4, 5);
 
-	final List<Integer> values2 = asList(1, 2, 3, 2, 1);
+	private final List<Integer> values2 = asList(1, 2, 3, 2, 1);
 
-	final List<Integer> values3 = asList(5, 6, 7, 8, 9);
+	private final List<Integer> values3 = asList(5, 6, 7, 8, 9);
 
-	final List<Integer> empty = asList();
+	private final List<Integer> empty = asList();
 
 	private static void assertUnreachable() {
 		assertTrue(false, "unreachable code reached");

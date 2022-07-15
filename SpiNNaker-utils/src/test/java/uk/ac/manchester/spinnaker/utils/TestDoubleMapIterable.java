@@ -27,33 +27,32 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestDoubleMapIterable {
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	@Test
-    public void testMultiple() {
-        Map<Double, Map<String, Integer>> aMap = new HashMap<>();
+	public void testMultiple() {
+		var aMap = new HashMap<Double, Map<String, Integer>>();
 
-        Map<String, Integer> inner = new HashMap<>();
-        inner.put("One", 1);
-        inner.put("Two", 2);
-        inner.put("Three", 3);
-        aMap.put(23.2, inner);
+		var inner = new HashMap<String, Integer>();
+		inner.put("One", 1);
+		inner.put("Two", 2);
+		inner.put("Three", 3);
+		aMap.put(23.2, inner);
 
-        Map<String, Integer> inner2 = new HashMap<>();
-        inner2.put("Ten", 10);
-        inner2.put("Eleven", 11);
-        inner2.put("Twelve", 12);
-        aMap.put(43.6, inner2);
+		var inner2 = new HashMap<String, Integer>();
+		inner2.put("Ten", 10);
+		inner2.put("Eleven", 11);
+		inner2.put("Twelve", 12);
+		aMap.put(43.6, inner2);
 
-        DoubleMapIterable<Integer> instance;
-        instance = new DoubleMapIterable<>(aMap);
-        int count = 0;
-        for (var value: instance) {
-            count += 1;
-        }
-        assertEquals(6, count);
-        for (var value: instance) {
-            count += 1;
-        }
-        assertEquals(12, count);
-    }
+		var instance = new DoubleMapIterable<Integer>(aMap);
+		int count = 0;
+		for (var value : instance) {
+			count += 1;
+		}
+		assertEquals(6, count);
+		for (var value : instance) {
+			count += 1;
+		}
+		assertEquals(12, count);
+	}
 }

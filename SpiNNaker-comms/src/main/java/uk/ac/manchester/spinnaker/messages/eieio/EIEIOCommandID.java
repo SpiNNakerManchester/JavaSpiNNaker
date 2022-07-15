@@ -41,8 +41,11 @@ public enum EIEIOCommandID implements EIEIOCommand {
 	HOST_DATA_READ(9),
 	/** Host confirming request to read data received. */
 	HOST_DATA_READ_ACK(12);
+
 	private final int value;
+
 	private static final Map<Integer, EIEIOCommandID> MAP = new HashMap<>();
+
 	static {
 		for (EIEIOCommandID commmand : values()) {
 			MAP.put(commmand.value, commmand);

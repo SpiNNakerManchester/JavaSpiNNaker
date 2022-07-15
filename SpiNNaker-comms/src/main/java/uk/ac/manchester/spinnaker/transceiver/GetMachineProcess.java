@@ -23,10 +23,10 @@ import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
-import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_P2P_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.IDLE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getColumnOffset;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTable.getNumColumnBytes;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_P2P;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -138,16 +138,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
 		var p2pColumnData = new ArrayList<ByteBuffer>();
 		for (int column = 0; column < size.width; column++) {
-			sendRequest(
-					new ReadMemory(bootChip,
-							ROUTER_REGISTER_P2P_ADDRESS
-									+ getColumnOffset(column),
-							getNumColumnBytes(size.height)),
-					response -> p2pColumnData.add(response.data));
-			// TODO work out why multiple calls is a problem
-			finish();
+			p2pColumnData.add(synchronousCall(new ReadMemory(bootChip,
+					ROUTER_P2P.add(getColumnOffset(column)),
+					getNumColumnBytes(size.height))).data);
+			// TODO work out why multiple calls at once is a problem
 		}
-		checkForError();
 		var p2pTable = new P2PTable(size, p2pColumnData);
 
 		// Get the chip information for each chip
@@ -175,11 +170,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 
 		// Build a Machine
 		var machine = new Machine(size, bootChip);
-		for (var entry : chipInfo.entrySet()) {
-			if (!ignoreChips.contains(entry.getKey())) {
-				machine.addChip(makeChip(size, entry.getValue()));
+		chipInfo.forEach((chip, data) -> {
+			if (!ignoreChips.contains(chip)) {
+				machine.addChip(makeChip(size, data));
 			}
-		}
+		});
 		return machine;
 	}
 

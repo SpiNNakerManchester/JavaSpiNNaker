@@ -60,6 +60,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
@@ -85,9 +86,11 @@ public class FirmwareLoader {
 
 	private static final long CRC_MASK = 0xffffffffL;
 
-	private static final int FLASH_DATA_ADDRESS = 0x1000;
+	private static final MemoryLocation FLASH_DATA_ADDRESS =
+			new MemoryLocation(0x1000);
 
-	private static final int BITFILE_BASE = 0x200000;
+	private static final MemoryLocation BITFILE_BASE =
+			new MemoryLocation(0x200000);
 
 	private static final int BITFILE_MAX_SIZE = 0x180000;
 
@@ -227,7 +230,8 @@ public class FirmwareLoader {
 		}
 
 		static FlashDataSector bitfile(String name, int mtime, int crc,
-				FPGA chip, int timestamp, int baseAddress, int length) {
+				FPGA chip, int timestamp, MemoryLocation baseAddress,
+				int length) {
 			var fds = new FlashDataSector();
 			fds.bitfileHeader(mtime, crc, chip, timestamp, baseAddress, length);
 			fds.bitfileName(name);
@@ -259,14 +263,14 @@ public class FirmwareLoader {
 		}
 
 		private void bitfileHeader(int mtime, int crc, FPGA chip, int timestamp,
-				int baseAddress, int length) {
+				MemoryLocation baseAddress, int length) {
 			buf.put(BITFILE.value);
 
 			buf.put((byte) 0);
 			buf.putShort((short) (BITFILE_ENABLED_FLAG + chip.bits));
 			buf.putInt(timestamp);
 			buf.putInt(crc);
-			buf.putInt(baseAddress);
+			buf.putInt(baseAddress.address);
 			buf.putInt(length);
 			buf.putInt(mtime);
 
@@ -294,7 +298,7 @@ public class FirmwareLoader {
 	public static class RegisterSet {
 		private final FPGA fpga;
 
-		private final int address;
+		private final MemoryLocation address;
 
 		private final int value;
 
@@ -378,7 +382,7 @@ public class FirmwareLoader {
 			throws ProcessException, IOException {
 		data.putInt(CRC_OFFSET, (int) ~crc(data, 0, CRC_OFFSET));
 		data.position(0);
-		int fb = txrx.getSerialFlashBuffer(board);
+		var fb = txrx.getSerialFlashBuffer(board);
 		txrx.writeBMPMemory(board, fb, data);
 		txrx.writeBMPFlash(board, FLASH_DATA_ADDRESS);
 		var newData = readFlashData();
@@ -497,7 +501,7 @@ public class FirmwareLoader {
 			throws ProcessException, IOException {
 		var data = new ArrayList<Integer>();
 		for (var r : settings) {
-			data.add(r.address | r.fpga.value);
+			data.add(r.address.address | r.fpga.value);
 			data.add(r.value);
 		}
 		var sector = FlashDataSector.registers(settings.length, data);
@@ -541,7 +545,7 @@ public class FirmwareLoader {
 			throw new TooLargeException(size);
 		}
 
-		int base = BITFILE_BASE + slot * BITFILE_MAX_SIZE;
+		var base = BITFILE_BASE.add(slot * BITFILE_MAX_SIZE);
 		try (var s = new BufferedInputStream(resource.getInputStream())) {
 			txrx.writeSerialFlash(board, base, size, s);
 		}

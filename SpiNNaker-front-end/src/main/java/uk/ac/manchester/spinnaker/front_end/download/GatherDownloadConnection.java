@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 
@@ -88,8 +89,8 @@ final class GatherDownloadConnection extends SDPConnection {
 	 * @throws IOException
 	 *             If message sending fails.
 	 */
-	void sendStart(CoreLocation extraMonitorCore, int address, int length,
-			int transactionId) throws IOException {
+	void sendStart(CoreLocation extraMonitorCore, MemoryLocation address,
+			int length, int transactionId) throws IOException {
 		sendMsg(StartSendingMessage.create(extraMonitorCore, address, length,
 				transactionId));
 	}

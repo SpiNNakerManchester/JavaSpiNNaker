@@ -38,7 +38,8 @@ public class TestJobMachineInfo {
 				+ "[[8,16],\"10.2.225.121\"],[[4,20],\"10.2.225.153\"],"
 				+ "[[8,4],\"10.2.225.113\"]],"
 				+ "\"width\":16,\"machine_name\":\"Spin24b-001\","
-				+ "\"boards\":[[2,1,1],[2,1,0],[2,1,2],[2,0,2],[2,0,1],[2,0,0]],"
+				+ "\"boards\":"
+				+ "[[2,1,1],[2,1,0],[2,1,2],[2,0,2],[2,0,1],[2,0,0]],"
 				+ "\"height\":24}";
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, JobMachineInfo.class);

@@ -45,33 +45,33 @@ class ReliabilityITCase {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-        var url = ReliabilityITCase.class.getResource("/spinn4.json");
-        var mapper = MapperFactory.createMapper();
-        var fromJson = mapper.readValue(url, MachineBean.class);
-        jsonMachine = new Machine(fromJson);
+		var url = ReliabilityITCase.class.getResource("/spinn4.json");
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(url, MachineBean.class);
+		jsonMachine = new Machine(fromJson);
 	}
 
 	private static final int REPETITIONS = 8;
 
 	@Test
 	void testReliableMachine() throws Exception {
-        var host = getByName("spinn-4.cs.man.ac.uk");
-        assumeTrue(ping(host) == 0);
+		var host = getByName("spinn-4.cs.man.ac.uk");
+		assumeTrue(ping(host) == 0);
 
-        for (int i = 0; i < REPETITIONS; i++) {
-        	try (var txrx = new Transceiver(host, FIVE)) {
-        		txrx.ensureBoardIsReady();
-        		txrx.getMachineDimensions();
-        		txrx.getScampVersion();
+		for (int i = 0; i < REPETITIONS; i++) {
+			try (var txrx = new Transceiver(host, FIVE)) {
+				txrx.ensureBoardIsReady();
+				txrx.getMachineDimensions();
+				txrx.getScampVersion();
 				var machine = txrx.getMachineDetails();
-                assertNull(jsonMachine.difference(machine));
-            } catch (ProcessException e) {
-            	if (e.getCause() instanceof SocketTimeoutException) {
-            		log.info("ignoring timeout from " + e.getCause());
-            	} else {
-            		throw e;
-            	}
-            }
+				assertNull(jsonMachine.difference(machine));
+			} catch (ProcessException e) {
+				if (e.getCause() instanceof SocketTimeoutException) {
+					log.info("ignoring timeout from " + e.getCause());
+				} else {
+					throw e;
+				}
+			}
 		}
 	}
 }

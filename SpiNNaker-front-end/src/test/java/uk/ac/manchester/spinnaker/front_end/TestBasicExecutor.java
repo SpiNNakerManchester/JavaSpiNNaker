@@ -30,9 +30,13 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 public class TestBasicExecutor {
 	private static final int SHORT = 50;
+
 	private static final int LONG = 500;
+
 	private static final String TOKEN = "arbitrary";
+
 	private static final String EXN_MSG_1 = "hiya";
+
 	private static final String EXN_MSG_2 = "boo";
 
 	@Test
@@ -105,9 +109,10 @@ public class TestBasicExecutor {
 		assertEquals(false, val2.getValue());
 	}
 
+	private static final int SCALE = 10;
+
 	@Test
 	public void testRunTenParallel() throws Exception {
-		final int SCALE = 10;
 		var sum = new AtomicInteger(0);
 		long before, after;
 

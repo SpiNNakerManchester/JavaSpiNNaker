@@ -24,6 +24,7 @@ public enum EIEIOPrefix {
 	UPPER_HALF_WORD(1, 16);
 
 	private final int value;
+
 	/** How much to shift things by. */
 	final int shift;
 

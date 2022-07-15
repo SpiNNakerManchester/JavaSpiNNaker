@@ -174,7 +174,7 @@ public class SecurityConfig {
 	 * @param http
 	 *            Where the configuration is applied to.
 	 * @throws Exception
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineAccessPolicy(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
@@ -198,7 +198,7 @@ public class SecurityConfig {
 	 * @param http
 	 *            Where the configuration is applied to.
 	 * @throws Exception
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineAPILoginRules(HttpSecurity http) throws Exception {
 		if (properties.isBasic()) {
@@ -217,7 +217,7 @@ public class SecurityConfig {
 	 * @param http
 	 *            Where the configuration is applied to.
 	 * @throws Exception
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineWebUILoginRules(HttpSecurity http) throws Exception {
 		var loginUrl = urlMaker.systemUrl("login.html");
@@ -254,7 +254,7 @@ public class SecurityConfig {
 	 * @param http
 	 *            Where the configuration is applied to.
 	 * @throws Exception
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with setting up.
 	 */
 	private void defineLogoutRules(HttpSecurity http) throws Exception {
 		var loginUrl = urlMaker.systemUrl("login.html");
@@ -271,7 +271,7 @@ public class SecurityConfig {
 	 *            Used to build the filter chain.
 	 * @return The filter chain that implements the controls.
 	 * @throws Exception
-	 *             If anything goes wrong.
+	 *             If anything goes wrong with setting up.
 	 */
 	@Bean
 	@Role(ROLE_SUPPORT)

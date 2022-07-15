@@ -18,10 +18,8 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,158 +31,165 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings("unused")
 public class TestReaderLineIterable {
 
-    public TestReaderLineIterable() {
-    }
-
-    @Test
-    public void testSimple() {
-        var reader = new StringReader("First\nSecond\nThird");
-        var iterable = new ReaderLineIterable(reader);
-        int count = 0;
-        for (var line: iterable) {
-            count += 1;
-        }
-        assertEquals(3, count);
-        assertThrows(IllegalStateException.class, () -> {
-            for (var line: iterable) {
-            }
-        });
-        assertEquals(3, count);
-        try {
-            iterable.close();
-        } catch (IOException ex) {
-            assertTrue(false, "Unexpected Exception");
-        }
-    }
+	public TestReaderLineIterable() {
+	}
 
 	@Test
-    public void testStream() {
-        var inputStream = new ByteArrayInputStream("First\nSecond\nThird".getBytes());
-        var iterable = new ReaderLineIterable(inputStream);
-        int count = 0;
-        for (var line: iterable) {
-            count += 1;
-        }
-        assertEquals(3, count);
-        assertThrows(IllegalStateException.class, () -> {
-            for (var line: iterable) {
-            }
-        });
-        assertEquals(3, count);
-        try {
-            iterable.close();
-        } catch (IOException ex) {
-            assertTrue(false, "Unexpected Exception");
-        }
-    }
+	public void testSimple() {
+		var reader = new StringReader("First\nSecond\nThird");
+		var iterable = new ReaderLineIterable(reader);
+		int count = 0;
+		for (var line : iterable) {
+			count += 1;
+		}
+		assertEquals(3, count);
+		assertThrows(IllegalStateException.class, () -> {
+			for (var line : iterable) {
+				continue;
+			}
+		});
+		assertEquals(3, count);
+		try {
+			iterable.close();
+		} catch (IOException ex) {
+			assertTrue(false, "Unexpected Exception");
+		}
+	}
 
-    @Test
-    public void testEarlyClose() {
-        var reader = new StringReader("First\nSecond\nThird");
-        var iterable = new ReaderLineIterable(reader);
-        try {
-            iterable.close();
-        } catch (IOException ex) {
-            assertTrue(false, "Unexpected Exception");
-        }
-        assertThrows(IllegalStateException.class, () -> {
-            for (var line: iterable) {
-            }
-        });
-    }
+	@Test
+	public void testStream() {
+		var inputStream =
+				new ByteArrayInputStream("First\nSecond\nThird".getBytes());
+		var iterable = new ReaderLineIterable(inputStream);
+		int count = 0;
+		for (var line : iterable) {
+			count += 1;
+		}
+		assertEquals(3, count);
+		assertThrows(IllegalStateException.class, () -> {
+			for (var line : iterable) {
+				continue;
+			}
+		});
+		assertEquals(3, count);
+		try {
+			iterable.close();
+		} catch (IOException ex) {
+			assertTrue(false, "Unexpected Exception");
+		}
+	}
 
-    /**
-     * test that close method is called if used in a try
-     */
-    @Test
-    public void testClose() {
-        var reader = new CloseError();
-        var ex = assertThrows(IOException.class, ()-> {
-        	try (var iterable = new ReaderLineIterable(reader)) {
-        		for (var line: iterable) {
-        		}
-        	}
-        });
-        assertEquals("Close marker", ex.getMessage());
-    }
+	@Test
+	public void testEarlyClose() {
+		var reader = new StringReader("First\nSecond\nThird");
+		var iterable = new ReaderLineIterable(reader);
+		try {
+			iterable.close();
+		} catch (IOException ex) {
+			assertTrue(false, "Unexpected Exception");
+		}
+		assertThrows(IllegalStateException.class, () -> {
+			for (var line : iterable) {
+				continue;
+			}
+		});
+	}
 
-    /**
-     * test that close method is not called if used simply
-     */
+	/**
+	 * test that close method is called if used in a try.
+	 */
+	@Test
+	public void testClose() {
+		var reader = new CloseError();
+		try (var iterable = new ReaderLineIterable(reader)) {
+			for (var line : iterable) {
+				continue;
+			}
+		} catch (IOException ex) {
+			assertEquals("Close marker", ex.getMessage());
+			return;
+		}
+		assertFalse(true, "Exception not thrown");
+	}
+
+	/**
+	 * test that close method is not called if used simply.
+	 */
 	@Test
 	@SuppressWarnings("resource")
-    public void testNoClose() {
-        var reader = new CloseError();
-        for (var line: new ReaderLineIterable(reader)) {
-        }
-    }
+	public void testNoClose() {
+		var reader = new CloseError();
+		for (var line : new ReaderLineIterable(reader)) {
+			continue;
+		}
+	}
 
-    /**
-     * Checks that an Exception at hasNext/ next time is thrown on close.
-     */
-    @Test
-    public void testDelayedException() {
-        var iterable = new ReaderLineIterable(new WeirdReader());
-        int count = 0;
-        for (var line: iterable) {
-            count += 1;
-        }
-        assertEquals(0, count);
-        try {
-            iterable.close();
-            assertTrue(false, "Expected Exception");
-        } catch (IOException ex) {
-            assertEquals("Weird marker", ex.getMessage());
-        }
-    }
+	/**
+	 * Checks that an Exception at hasNext/ next time is thrown on close.
+	 */
+	@Test
+	public void testDelayedException() {
+		var iterable = new ReaderLineIterable(new WeirdReader());
+		int count = 0;
+		for (var line : iterable) {
+			count += 1;
+		}
+		assertEquals(0, count);
+		try {
+			iterable.close();
+			assertTrue(false, "Expected Exception");
+		} catch (IOException ex) {
+			assertEquals("Weird marker", ex.getMessage());
+		}
+	}
 
-    @Test
-    public void testHasNext() {
-        var reader = new StringReader("First\nSecond\nThird");
-        var iterable = new ReaderLineIterable(reader);
-        var iterator = iterable.iterator();
-        assertEquals("First", iterator.next());
-        iterator.hasNext();
-        iterator.hasNext();
-        iterator.hasNext();
-        assertEquals("Second", iterator.next());
-        assertEquals("Third", iterator.next());
-        assertThrows(NoSuchElementException.class, () -> {
-            iterator.next();
-        });
-        iterator.hasNext();
-        try {
-            iterable.close();
-        } catch (IOException ex) {
-            assertTrue(false, "Unexpected Exception");
-        }
-    }
+	@Test
+	public void testHasNext() {
+		var reader = new StringReader("First\nSecond\nThird");
+		var iterable = new ReaderLineIterable(reader);
+		var iterator = iterable.iterator();
+		assertEquals("First", iterator.next());
+		iterator.hasNext();
+		iterator.hasNext();
+		iterator.hasNext();
+		assertEquals("Second", iterator.next());
+		assertEquals("Third", iterator.next());
+		assertThrows(NoSuchElementException.class, () -> {
+			iterator.next();
+		});
+		iterator.hasNext();
+		try {
+			iterable.close();
+		} catch (IOException ex) {
+			assertTrue(false, "Unexpected Exception");
+		}
+	}
 
-    private class CloseError extends Reader {
+	private class CloseError extends Reader {
 
-        @Override
-        public int read(char[] cbuf, int off, int len) throws IOException {
-            return -1;
-        }
+		@Override
+		public int read(char[] cbuf, int off, int len) throws IOException {
+			return -1;
+		}
 
-        @Override
-        public void close() throws IOException {
-            throw new IOException("Close marker");
-        }
+		@Override
+		public void close() throws IOException {
+			throw new IOException("Close marker");
+		}
 
-    }
+	}
 
-    private class WeirdReader extends Reader {
+	private class WeirdReader extends Reader {
 
-        @Override
-        public int read(char[] cbuf, int off, int len) throws IOException {
-            throw new IOException("Weird marker");
-        }
+		@Override
+		public int read(char[] cbuf, int off, int len) throws IOException {
+			throw new IOException("Weird marker");
+		}
 
-        @Override
-        public void close() throws IOException {
-        }
+		@Override
+		public void close() throws IOException {
+		}
 
-    }
+	}
 
 }

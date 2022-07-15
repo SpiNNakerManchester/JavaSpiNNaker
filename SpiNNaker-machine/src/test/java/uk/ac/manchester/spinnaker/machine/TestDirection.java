@@ -26,63 +26,63 @@ import org.junit.jupiter.api.Test;
  */
 public class TestDirection {
 
-    public TestDirection() {
-    }
+	public TestDirection() {
+	}
 
-    /**
-     * Test of values method, of class Direction.
-     */
-    @Test
-    public void testValues() {
-        var result = Direction.values();
-        assertEquals(6, result.length);
-    }
+	/**
+	 * Test of values method, of class Direction.
+	 */
+	@Test
+	public void testValues() {
+		var result = Direction.values();
+		assertEquals(6, result.length);
+	}
 
-    /**
-     * Test of valueOf method, of class Direction.
-     */
-    @Test
-    public void testValueOf() {
-        var name = "NORTH";
-        var expResult = Direction.NORTH;
-        var result = Direction.valueOf(name);
-        assertEquals(expResult, result);
-    }
+	/**
+	 * Test of valueOf method, of class Direction.
+	 */
+	@Test
+	public void testValueOf() {
+		var name = "NORTH";
+		var expResult = Direction.NORTH;
+		var result = Direction.valueOf(name);
+		assertEquals(expResult, result);
+	}
 
-    /**
-     * Test of byId method, of class Direction.
-     */
-    @Test
-    public void testById() {
-        int id = 2;
-        var expResult = Direction.NORTH;
-        var result = Direction.byId(id);
-        assertEquals(expResult, result);
-    }
+	/**
+	 * Test of byId method, of class Direction.
+	 */
+	@Test
+	public void testById() {
+		int id = 2;
+		var expResult = Direction.NORTH;
+		var result = Direction.byId(id);
+		assertEquals(expResult, result);
+	}
 
-    /**
-     * Test the inverse and that they all return unique values.
-     *
-     * This makes sure two values do not use the same default.
-     */
-    @Test
-    public void testInverse() {
-        var inverses = new HashSet<Direction>();
-        for (var direction: Direction.values()) {
-            inverses.add(direction.inverse());
-        }
-        assertEquals(Direction.values().length, inverses.size());
-    }
+	/**
+	 * Test the inverse and that they all return unique values.
+	 *
+	 * This makes sure two values do not use the same default.
+	 */
+	@Test
+	public void testInverse() {
+		var inverses = new HashSet<Direction>();
+		for (var direction : Direction.values()) {
+			inverses.add(direction.inverse());
+		}
+		assertEquals(Direction.values().length, inverses.size());
+	}
 
-    /**
-     * Test that json labels can be converted to direction
-     */
-    @Test
-    public void testByLabel() {
-        assertEquals(Direction.NORTHEAST, Direction.byLabel("north_east"));
-        assertEquals(Direction.WEST, Direction.byLabel("west"));
-        assertThrows(Exception.class, () -> {
-            Direction.byLabel("foo");
-        });
-    }
+	/**
+	 * Test that json labels can be converted to direction.
+	 */
+	@Test
+	public void testByLabel() {
+		assertEquals(Direction.NORTHEAST, Direction.byLabel("north_east"));
+		assertEquals(Direction.WEST, Direction.byLabel("west"));
+		assertThrows(Exception.class, () -> {
+			Direction.byLabel("foo");
+		});
+	}
 }

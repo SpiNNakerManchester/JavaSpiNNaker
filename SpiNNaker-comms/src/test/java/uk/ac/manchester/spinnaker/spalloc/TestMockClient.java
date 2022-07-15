@@ -21,8 +21,6 @@ import static java.lang.Thread.sleep;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,19 +32,12 @@ import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
-import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
  * Tests the Spalloc Client ideally using an actual connection but with a backup

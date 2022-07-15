@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
@@ -147,7 +148,7 @@ public interface AbstractIO extends AutoCloseable {
 	int tell() throws IOException, ProcessException;
 
 	/** @return the current absolute address within the region. */
-	int getAddress();
+	MemoryLocation getAddress();
 
 	/**
 	 * Read the rest of the data.

@@ -101,10 +101,12 @@ public final class Permit {
 	}
 
 	/**
-	 * The permit used for web socket handling.
+	 * The permit used for web socket handling. Note that websockets never have
+	 * access to admin facilities (and shouldn't ever need them), even if their
+	 * creating user does.
 	 *
 	 * @param session
-	 *            The web socket in question.
+	 *            The originating websocket context.
 	 */
 	public Permit(WebSocketSession session) {
 		USER.getGrants().forEach(authorities::add);

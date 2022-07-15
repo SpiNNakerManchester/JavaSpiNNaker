@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
@@ -511,8 +512,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int readFPGARegister(FPGA fpga, int register, BMPBoard board)
-			throws IOException, ProcessException {
+	default int readFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
 	}
 
@@ -536,8 +537,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	int readFPGARegister(FPGA fpga, int register, BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException;
+	int readFPGARegister(FPGA fpga, MemoryLocation register, BMPCoords bmp,
+			BMPBoard board) throws IOException, ProcessException;
 
 	/**
 	 * Write a register on a FPGA of a board, assuming the standard FPGA
@@ -663,8 +664,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeFPGARegister(FPGA fpga, int register, int value,
-			BMPBoard board) throws IOException, ProcessException {
+	default void writeFPGARegister(FPGA fpga, MemoryLocation register,
+			int value, BMPBoard board) throws IOException, ProcessException {
 		writeFPGARegister(fpga, register, value, getBoundBMP(), board);
 	}
 
@@ -689,8 +690,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void writeFPGARegister(FPGA fpga, int register, int value, BMPCoords bmp,
-			BMPBoard board) throws IOException, ProcessException;
+	void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
+			BMPCoords bmp, BMPBoard board) throws IOException, ProcessException;
 
 	/**
 	 * Read the ADC data.
@@ -888,7 +889,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default int getSerialFlashBuffer(BMPBoard board)
+	default MemoryLocation getSerialFlashBuffer(BMPBoard board)
 			throws IOException, ProcessException {
 		return getSerialFlashBuffer(getBoundBMP(), board);
 	}
@@ -907,7 +908,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	int getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+	MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
 	/** The type of reset to perform. */
@@ -975,7 +976,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default ByteBuffer readBMPMemory(BMPBoard board, int baseAddress,
+	default ByteBuffer readBMPMemory(BMPBoard board, MemoryLocation baseAddress,
 			int length) throws IOException, ProcessException {
 		return readBMPMemory(getBoundBMP(), board, baseAddress, length);
 	}
@@ -1000,8 +1001,9 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int length) throws IOException, ProcessException;
+	ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException;
 
 	/**
 	 * Read BMP memory.
@@ -1018,7 +1020,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default int readBMPMemoryWord(BMPBoard board, int address)
+	default int readBMPMemoryWord(BMPBoard board, MemoryLocation address)
 			throws IOException, ProcessException {
 		return readBMPMemoryWord(getBoundBMP(), board, address);
 	}
@@ -1040,8 +1042,8 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default int readBMPMemoryWord(BMPCoords bmp, BMPBoard board, int address)
-			throws IOException, ProcessException {
+	default int readBMPMemoryWord(BMPCoords bmp, BMPBoard board,
+			MemoryLocation address) throws IOException, ProcessException {
 		var b = readBMPMemory(bmp, board, address, WORD_SIZE);
 		return b.getInt(0);
 	}
@@ -1063,7 +1065,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPBoard board, int baseAddress,
+	default void writeBMPMemory(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, data);
 	}
@@ -1087,8 +1089,9 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			ByteBuffer data) throws IOException, ProcessException;
+	void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write BMP memory.
@@ -1105,8 +1108,8 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPBoard board, int baseAddress, int dataWord)
-			throws IOException, ProcessException {
+	default void writeBMPMemory(BMPBoard board, MemoryLocation baseAddress,
+			int dataWord) throws IOException, ProcessException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, dataWord);
 	}
 
@@ -1127,8 +1130,9 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int dataWord) throws IOException, ProcessException {
+	default void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int dataWord)
+			throws IOException, ProcessException {
 		var data = ByteBuffer.allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		data.putInt(dataWord);
 		data.flip();
@@ -1150,7 +1154,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPMemory(BMPBoard board, int baseAddress,
+	default void writeBMPMemory(BMPBoard board, MemoryLocation baseAddress,
 			File file) throws IOException, ProcessException {
 		writeBMPMemory(getBoundBMP(), board, baseAddress, file);
 	}
@@ -1172,8 +1176,9 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeBMPMemory(BMPCoords bmp, BMPBoard board, int baseAddress,
-			File file) throws IOException, ProcessException;
+	void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, File file)
+			throws IOException, ProcessException;
 
 	/**
 	 * Read BMP serial flash memory.
@@ -1193,8 +1198,9 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default ByteBuffer readSerialFlash(BMPBoard board, int baseAddress,
-			int length) throws IOException, ProcessException {
+	default ByteBuffer readSerialFlash(BMPBoard board,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		return readSerialFlash(getBoundBMP(), board, baseAddress, length);
 	}
 
@@ -1218,8 +1224,9 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int length) throws IOException, ProcessException;
+	ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException;
 
 	/**
 	 * Read the CRC32 checksum of BMP serial flash memory.
@@ -1238,7 +1245,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default int readSerialFlashCRC(BMPBoard board, int baseAddress,
+	default int readSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
 			int length) throws IOException, ProcessException {
 		return readSerialFlashCRC(getBoundBMP(), board, baseAddress, length);
 	}
@@ -1262,8 +1269,9 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	int readSerialFlashCRC(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int length) throws IOException, ProcessException;
+	int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException;
 
 	/**
 	 * Write BMP serial flash memory from a file.
@@ -1280,7 +1288,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeSerialFlash(BMPBoard board, int baseAddress,
+	default void writeSerialFlash(BMPBoard board, MemoryLocation baseAddress,
 			File file) throws ProcessException, IOException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, file);
 	}
@@ -1302,8 +1310,9 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			File file) throws ProcessException, IOException;
+	void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, File file)
+			throws ProcessException, IOException;
 
 	/**
 	 * Write BMP serial flash memory from a stream.
@@ -1322,8 +1331,8 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeSerialFlash(BMPBoard board, int baseAddress, int size,
-			InputStream stream) throws ProcessException, IOException {
+	default void writeSerialFlash(BMPBoard board, MemoryLocation baseAddress,
+			int size, InputStream stream) throws ProcessException, IOException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, size, stream);
 	}
 
@@ -1346,8 +1355,9 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			int size, InputStream stream) throws ProcessException, IOException;
+	void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size, InputStream stream)
+			throws ProcessException, IOException;
 
 	/**
 	 * Write BMP serial flash memory.
@@ -1364,7 +1374,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeSerialFlash(BMPBoard board, int baseAddress,
+	default void writeSerialFlash(BMPBoard board, MemoryLocation baseAddress,
 			ByteBuffer data) throws ProcessException, IOException {
 		writeSerialFlash(getBoundBMP(), board, baseAddress, data);
 	}
@@ -1386,8 +1396,9 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeSerialFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			ByteBuffer data) throws ProcessException, IOException;
+	void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data)
+			throws ProcessException, IOException;
 
 	/**
 	 * Prepare a transfer area for writing to the flash memory of a BMP.
@@ -1402,14 +1413,15 @@ public interface BMPTransceiverInterface {
 	 *            How much data will we write.
 	 * @return The location of the working buffer on the BMP
 	 * @deprecated This operation should not be used directly.
-	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	@Deprecated
-	int eraseBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress, int size)
+	MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException;
 
 	/**
@@ -1423,15 +1435,15 @@ public interface BMPTransceiverInterface {
 	 * @param address
 	 *            Where in the working buffer will we copy to?
 	 * @deprecated This operation should not be used directly.
-	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
-	 * @see #eraseBMPFlash(BMPCoords,BMPBoard,int,int)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
+	 * @see #eraseBMPFlash(BMPCoords,BMPBoard,MemoryLocation,int)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	@Deprecated
-	void chunkBMPFlash(BMPCoords bmp, BMPBoard board, int address)
+	void chunkBMPFlash(BMPCoords bmp, BMPBoard board, MemoryLocation address)
 			throws IOException, ProcessException;
 
 	/**
@@ -1446,15 +1458,15 @@ public interface BMPTransceiverInterface {
 	 * @param size
 	 *            How much data will we write.
 	 * @deprecated This operation should not be used directly.
-	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
 	@Deprecated
-	void copyBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress, int size)
-			throws IOException, ProcessException;
+	void copyBMPFlash(BMPCoords bmp, BMPBoard board, MemoryLocation baseAddress,
+			int size) throws IOException, ProcessException;
 
 	/**
 	 * Write a {@linkplain WriteFlashBuffer#FLASH_CHUNK_SIZE fixed size} chunk
@@ -1465,13 +1477,13 @@ public interface BMPTransceiverInterface {
 	 *            Which board's BMP are we writing to?
 	 * @param baseAddress
 	 *            Where in flash will we write?
-	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeBMPFlash(BMPBoard board, int baseAddress)
+	default void writeBMPFlash(BMPBoard board, MemoryLocation baseAddress)
 			throws IOException, ProcessException {
 		writeBMPFlash(getBoundBMP(), board, baseAddress);
 	}
@@ -1487,14 +1499,14 @@ public interface BMPTransceiverInterface {
 	 *            Which board's BMP are we writing to?
 	 * @param baseAddress
 	 *            Where in flash will we write?
-	 * @see #writeFlash(BMPCoords,BMPBoard,int,ByteBuffer,boolean)
+	 * @see #writeFlash(BMPCoords,BMPBoard,MemoryLocation,ByteBuffer,boolean)
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeBMPFlash(BMPCoords bmp, BMPBoard board, int baseAddress)
-			throws IOException, ProcessException;
+	void writeBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress) throws IOException, ProcessException;
 
 	/**
 	 * Write a buffer to flash memory on the BMP. This is a composite operation.
@@ -1512,8 +1524,9 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeFlash(BMPBoard board, int baseAddress, ByteBuffer data,
-			boolean update) throws ProcessException, IOException {
+	default void writeFlash(BMPBoard board, MemoryLocation baseAddress,
+			ByteBuffer data, boolean update)
+			throws ProcessException, IOException {
 		writeFlash(getBoundBMP(), board, baseAddress, data, update);
 	}
 
@@ -1535,11 +1548,11 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	default void writeFlash(BMPCoords bmp, BMPBoard board, int baseAddress,
-			ByteBuffer data, boolean update)
+	default void writeFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data, boolean update)
 			throws ProcessException, IOException {
 		int size = data.remaining();
-		int bufferBase = eraseBMPFlash(bmp, board, baseAddress, size);
+		var bufferBase = eraseBMPFlash(bmp, board, baseAddress, size);
 		int offset = 0;
 
 		while (true) {
@@ -1556,10 +1569,11 @@ public interface BMPTransceiverInterface {
 			if (length < FLASH_CHUNK_SIZE) {
 				break;
 			}
-			baseAddress += FLASH_CHUNK_SIZE;
+			baseAddress = baseAddress.add(FLASH_CHUNK_SIZE);
 			offset += FLASH_CHUNK_SIZE;
 		}
 		if (update) {
+			// FIXME should this be the original address?
 			copyBMPFlash(bmp, board, baseAddress, size);
 		}
 	}

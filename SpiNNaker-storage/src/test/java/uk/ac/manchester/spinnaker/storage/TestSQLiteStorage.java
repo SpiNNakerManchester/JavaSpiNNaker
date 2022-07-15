@@ -22,6 +22,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -33,7 +34,7 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 
 class TestSQLiteStorage {
-	File db;
+	private File db;
 
 	@BeforeEach
 	void makeDB() {
@@ -60,7 +61,7 @@ class TestSQLiteStorage {
 
 		assertEquals(emptyList(), storage.getCoresWithStorage());
 
-		var rr = new BufferManagerStorage.Region(core, 0, 0, 100);
+		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
@@ -75,7 +76,7 @@ class TestSQLiteStorage {
 		var core = new CoreLocation(0, 0, 0);
 
 		// append creates
-		var rr = new BufferManagerStorage.Region(core, 1, 0, 100);
+		var rr = new BufferManagerStorage.Region(core, 1, NULL, 100);
 		storage.appendRecordingContents(rr, bytes("ab"));
 		storage.appendRecordingContents(rr, bytes("cd"));
 		storage.appendRecordingContents(rr, bytes("ef"));

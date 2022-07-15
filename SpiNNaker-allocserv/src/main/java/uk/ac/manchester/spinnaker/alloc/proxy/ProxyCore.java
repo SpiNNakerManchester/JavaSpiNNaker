@@ -83,13 +83,12 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </td>
  * </tr>
  * <tr>
- * <td colspan=2>
- * Establish a UDP socket that will talk to the given Ethernet chip within
- * the allocation. Returns an ID that can be used to refer to that channel.
- * Note that opening a socket declares that you are prepared to receive messages
- * from SpiNNaker on it, but does not mean that SpiNNaker will send any messages
- * that way. The correlation ID is caller-nominated, and just passed back
- * uninterpreted in the response message.</td>
+ * <td colspan=2>Establish a UDP socket that will talk to the given Ethernet
+ * chip within the allocation. Returns an ID that can be used to refer to that
+ * channel. Note that opening a socket declares that you are prepared to receive
+ * messages from SpiNNaker on it, but does not mean that SpiNNaker will send any
+ * messages that way. The correlation ID is caller-nominated, and just passed
+ * back uninterpreted in the response message.</td>
  * </tr>
  * <tr>
  * <td rowspan=2>
@@ -114,11 +113,11 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </td>
  * </tr>
  * <tr>
- * <td colspan=2>
- * Close an established UDP socket, given its ID. Returns the ID on success,
- * and zero on failure (e.g., because the socket is already closed). The
- * correlation ID is caller-nominated, and just passed back uninterpreted in the
- * response message.</td>
+ * <td colspan=2>Close an established UDP socket, given its ID. Returns the ID
+ * on success, and zero on failure (e.g., because the socket is already closed).
+ * The correlation ID is caller-nominated, and just passed back uninterpreted in
+ * the response message. The channel may have been opened with either <em>Open
+ * Connected Channel</em> or <em>Open Unconnected Channel</em>.</td>
  * </tr>
  * <tr>
  * <td rowspan=2>
@@ -135,8 +134,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <td>N/A</td>
  * </tr>
  * <tr>
- * <td colspan=2>
- * Send a message to SpiNNaker on a particular established UDP
+ * <td colspan=2>Send a message to SpiNNaker on a particular established UDP
  * configuration. This is technically one-way, but messages come back in the
  * same format (i.e., a 4 byte prefix to say that it is a message, and another 4
  * bytes to say what socket this is talking about). The raw message bytes
@@ -169,21 +167,19 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </td>
  * </tr>
  * <tr>
- * <td colspan=2>
- * Establish a UDP socket that will receive from
- * the allocation. Returns an ID that can be used to refer to that channel.
- * Note that opening a socket declares that you are prepared to receive messages
- * from SpiNNaker on it, but does not mean that SpiNNaker will send any messages
- * that way. The correlation ID is caller-nominated, and just passed back
- * uninterpreted in the response message.
- * Also included in the response message is the IPv4 address (big-endian binary
- * encoding; one word) and server UDP port for the connection, allowing the
- * client to instruct SpiNNaker to send messages to the socket on the server
- * side of the channel (which is not necessarily accessible from anything other
- * than SpiNNaker). No
- * guarantee is made about whether any message from anything other than a board
- * in the job will be passed on. Sending on the channel will only be possible
- * with the <em>Send Message To</em> operation.</td>
+ * <td colspan=2>Establish a UDP socket that will receive from the allocation.
+ * Returns an ID that can be used to refer to that channel. Note that opening a
+ * socket declares that you are prepared to receive messages from SpiNNaker on
+ * it, but does not mean that SpiNNaker will send any messages that way. The
+ * correlation ID is caller-nominated, and just passed back uninterpreted in the
+ * response message. Also included in the response message is the IPv4 address
+ * (big-endian binary encoding; one word) and server UDP port for the
+ * connection, allowing the client to instruct SpiNNaker to send messages to the
+ * socket on the server side of the channel (which is not necessarily accessible
+ * from anything other than SpiNNaker). No guarantee is made about whether any
+ * message from anything other than a board in the job will be passed on.
+ * Sending on the channel will only be possible with the <em>Send Message
+ * To</em> operation.</td>
  * </tr>
  * <tr>
  * <td rowspan=2>
@@ -203,13 +199,12 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * <td>N/A</td>
  * </tr>
  * <tr>
- * <td colspan=2>
- * Send a message to a SpiNNaker board (identified by coordinates of its
- * ethernet chip) to a given UDP port. This is one-way. The raw message bytes
- * (<em>including</em> the half-word of ethernet frame padding) follow the
+ * <td colspan=2>Send a message to a SpiNNaker board (identified by coordinates
+ * of its ethernet chip) to a given UDP port. This is one-way. The raw message
+ * bytes (<em>including</em> the half-word of ethernet frame padding) follow the
  * header. The channel must have been opened with <em>Open Unconnected
- * Channel</em>. Any responses come back as standard messages; if doing
- * calls with this, it is advised to only have one in flight at a time.</td>
+ * Channel</em>. Any responses come back as standard messages; if doing calls
+ * with this, it is advised to only have one in flight at a time.</td>
  * </tr>
  * </table>
  *
@@ -305,6 +300,7 @@ public class ProxyCore implements AutoCloseable {
 	 * @param message
 	 *            The content of the message.
 	 * @throws IOException
+	 *             Not expected; implementations don't actually throw
 	 */
 	public final void handleClientMessage(ByteBuffer message)
 			throws IOException {

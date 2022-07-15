@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import static java.util.Collections.unmodifiableList;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
 import java.util.List;
@@ -135,8 +134,7 @@ public class Gather implements HasCoreLocation {
 	 */
 	public void updateTransactionIdFromMachine(Transceiver txrx)
 			throws IOException, ProcessException {
-		int address = txrx.getUser1RegisterAddress(this);
-		transactionId = txrx.readMemory(this, address, WORD_SIZE).getInt();
+		transactionId = txrx.readUser1(this);
 	}
 
 	/**

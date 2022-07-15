@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
@@ -69,12 +70,12 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	private <T> T readMemory(HasChipLocation chip, int baseAddress, int size,
-			Accumulator<T> a) throws IOException, ProcessException {
+	private <T> T readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			int size, Accumulator<T> a) throws IOException, ProcessException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			final int thisOffset = offset;
-			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
+			sendRequest(new ReadMemory(chip, baseAddress.add(offset), chunk),
 					response -> a.add(thisOffset, response.data));
 		}
 		finish();
@@ -104,13 +105,13 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	private <T> T readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, int size, Accumulator<T> a)
+			MemoryLocation baseAddress, int size, Accumulator<T> a)
 			throws IOException, ProcessException {
 		for (int offset = 0, chunk; offset < size; offset += chunk) {
 			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
 			int thisOffset = offset;
 			sendRequest(
-					new ReadLink(chip, linkDirection, baseAddress + offset,
+					new ReadLink(chip, linkDirection, baseAddress.add(offset),
 							chunk),
 					response -> a.add(thisOffset, response.data));
 		}
@@ -137,7 +138,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, ByteBuffer receivingBuffer)
+			MemoryLocation baseAddress, ByteBuffer receivingBuffer)
 			throws IOException, ProcessException {
 		readLink(chip, linkDirection, baseAddress, receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
@@ -158,7 +159,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void readMemory(HasChipLocation chip, int baseAddress,
+	void readMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, ProcessException {
 		readMemory(chip, baseAddress, receivingBuffer.remaining(),
 				new BufferAccumulator(receivingBuffer));
@@ -182,7 +183,8 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, int size) throws IOException, ProcessException {
+			MemoryLocation baseAddress, int size)
+			throws IOException, ProcessException {
 		return readLink(chip, linkDirection, baseAddress, size,
 				new BufferAccumulator(size));
 	}
@@ -202,8 +204,8 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	ByteBuffer readMemory(HasChipLocation chip, int baseAddress, int size)
-			throws IOException, ProcessException {
+	ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			int size) throws IOException, ProcessException {
 		return readMemory(chip, baseAddress, size, new BufferAccumulator(size));
 	}
 
@@ -228,7 +230,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, int size, RandomAccessFile dataFile)
+			MemoryLocation baseAddress, int size, RandomAccessFile dataFile)
 			throws IOException, ProcessException {
 		readLink(chip, linkDirection, baseAddress, size,
 				new FileAccumulator(dataFile));
@@ -252,7 +254,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void readMemory(HasChipLocation chip, int baseAddress, int size,
+	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
 			RandomAccessFile dataFile) throws IOException, ProcessException {
 		readMemory(chip, baseAddress, size, new FileAccumulator(dataFile));
 	}
@@ -277,7 +279,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, int size, File dataFile)
+			MemoryLocation baseAddress, int size, File dataFile)
 			throws IOException, ProcessException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readLink(chip, linkDirection, baseAddress, size,
@@ -302,7 +304,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void readMemory(HasChipLocation chip, int baseAddress, int size,
+	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
 			File dataFile) throws IOException, ProcessException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readMemory(chip, baseAddress, size, s);
