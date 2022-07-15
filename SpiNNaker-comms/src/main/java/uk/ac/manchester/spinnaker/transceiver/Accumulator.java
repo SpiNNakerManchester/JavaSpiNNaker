@@ -145,7 +145,15 @@ interface Accumulator<T> {
 					pos = newPos;
 				}
 				pos += data.remaining();
-				file.write(data.array(), data.position(), data.remaining());
+				if (data.hasArray()) {
+					file.write(data.array(),
+							data.arrayOffset() + data.position(),
+							data.remaining());
+				} else {
+					byte[] buf = new byte[data.remaining()];
+					data.get(buf);
+					file.write(buf);
+				}
 			} catch (IOException e) {
 				if (exception == null) {
 					exception = e;

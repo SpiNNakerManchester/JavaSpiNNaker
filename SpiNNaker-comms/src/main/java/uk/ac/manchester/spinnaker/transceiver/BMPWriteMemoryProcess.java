@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.util.Optional.empty;
+import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,14 +107,13 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 			InputStream data, int bytesToWrite)
 			throws IOException, ProcessException {
 		ValueHolder<IOException> exn = new ValueHolder<IOException>();
-		execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
-			private ByteBuffer workingBuffer =
-					allocate(Constants.UDP_MESSAGE_MAX_SIZE);
+		ByteBuffer workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 
+		execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
 				try {
-					ByteBuffer buffer = workingBuffer.slice();
+					ByteBuffer buffer = workingBuffer.duplicate();
 					// After this, chunkSize is REAL chunk size or -1
 					chunkSize = data.read(buffer.array(), 0, chunkSize);
 					if (chunkSize < 1) {

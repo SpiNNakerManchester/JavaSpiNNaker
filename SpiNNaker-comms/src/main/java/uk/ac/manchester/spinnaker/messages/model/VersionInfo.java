@@ -76,6 +76,18 @@ public final class VersionInfo {
 				m.group("revision"));
 	}
 
+	private static String decodeFromBuffer(ByteBuffer buffer) {
+		if (buffer.hasArray()) {
+			return new String(buffer.array(),
+					buffer.arrayOffset() + buffer.position(),
+					buffer.remaining(), UTF_8);
+		} else {
+			byte[] tmp = new byte[buffer.remaining()];
+			buffer.get(tmp);
+			return new String(tmp, UTF_8);
+		}
+	}
+
 	/**
 	 * @param buffer
 	 *            buffer holding an SCP packet containing version information
@@ -99,8 +111,7 @@ public final class VersionInfo {
 		int vn = toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
 
-		String decoded = new String(buffer.array(), buffer.position(),
-				buffer.remaining(), UTF_8);
+		String decoded = decodeFromBuffer(buffer);
 		String original = decoded;
 		if (vn < MAGIC_VERSION) {
 			versionString = decoded;
