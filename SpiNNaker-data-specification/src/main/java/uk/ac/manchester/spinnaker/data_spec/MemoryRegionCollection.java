@@ -24,7 +24,7 @@ import static java.util.stream.IntStream.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
@@ -156,12 +156,19 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 
 	@Override
 	public boolean contains(Object o) {
-		return stream().anyMatch(r -> r.equals(o));
+		for (var r : regions) {
+			// Careful! May be nulls
+			if (Objects.equals(r, o)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public Iterator<MemoryRegion> iterator() {
-		return List.of(regions).iterator();
+		// Need to handle null elements
+		return Arrays.asList(regions).iterator();
 	}
 
 	@Override
@@ -197,7 +204,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return stream().allMatch(c::contains);
+		return c.stream().allMatch(this::contains);
 	}
 
 	/**
@@ -279,8 +286,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 			a = ((MemoryRegionCollection) o).regions;
 		} else if (o instanceof Collection) {
 			a = ((Collection<?>) o).toArray();
-		} else if (o instanceof MemoryRegionReal[]) {
-			a = (MemoryRegionReal[]) o;
+		} else if (o instanceof MemoryRegion[]) {
+			a = (MemoryRegion[]) o;
 		} else {
 			return false;
 		}
