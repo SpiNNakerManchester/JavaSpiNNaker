@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<slf4j.version>1.7.36</slf4j.version>
 		<log4j.version>2.18.0</log4j.version>
 
-		<spring.version>5.3.21</spring.version>
+		<spring.version>5.3.22</spring.version>
 		<spring.boot.version>2.7.1</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
@@ -434,7 +434,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -761,7 +761,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.0</version>
 				<reportSets>
 					<reportSet>
 						<reports><!-- select reports -->
