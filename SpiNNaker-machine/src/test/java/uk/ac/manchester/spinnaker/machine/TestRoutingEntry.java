@@ -16,10 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
+
+import java.util.List;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,8 +38,8 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testBasic() {
-		var directions = asList(Direction.NORTH, Direction.SOUTH);
-		var ids = asList(4, 6, 8);
+		var directions = List.of(NORTH, SOUTH);
+		var ids = List.of(4, 6, 8);
 		var instance = new RoutingEntry(ids, directions);
 
 		int code = instance.encode();
@@ -48,8 +51,8 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testSingleId() {
-		var directions = asList(Direction.NORTH, Direction.SOUTH);
-		var ids = asList(4);
+		var directions = List.of(NORTH, SOUTH);
+		var ids = List.of(4);
 		var instance = new RoutingEntry(ids, directions);
 		int code = instance.encode();
 
@@ -60,8 +63,8 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testEmptyId() {
-		var directions = asList(Direction.NORTH, Direction.SOUTH);
-		var instance = new RoutingEntry(emptyList(), directions);
+		var directions = List.of(NORTH, SOUTH);
+		var instance = new RoutingEntry(List.of(), directions);
 		int code = instance.encode();
 
 		var decode = new RoutingEntry(code);
@@ -71,8 +74,8 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testNegative() {
-		var directions = asList(Direction.NORTH, Direction.SOUTH);
-		var ids = asList(4, -66, 8);
+		var directions = List.of(NORTH, SOUTH);
+		var ids = List.of(4, -66, 8);
 		assertThrows(Exception.class, () -> {
 			@SuppressWarnings("unused")
 			var instance = new RoutingEntry(ids, directions);
@@ -81,8 +84,8 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testTooHighId() {
-		var directions = asList(Direction.NORTH, Direction.SOUTH);
-		var ids = asList(4, 60, 8);
+		var directions = List.of(NORTH, SOUTH);
+		var ids = List.of(4, 60, 8);
 		assertThrows(Exception.class, () -> {
 			@SuppressWarnings("unused")
 			var instance = new RoutingEntry(ids, directions);
@@ -91,20 +94,20 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testOneDirection() {
-		var directions = asList(Direction.SOUTH);
-		var ids = asList(4, 6, 8);
+		var directions = List.of(SOUTH);
+		var ids = List.of(4, 6, 8);
 		var instance = new RoutingEntry(ids, directions);
 		int code = instance.encode();
 
 		var decode = new RoutingEntry(code);
-		assertThat(decode.getLinkIDs(), contains(Direction.SOUTH));
+		assertThat(decode.getLinkIDs(), contains(SOUTH));
 		assertThat(decode.getProcessorIDs(), contains(ids.toArray()));
 	}
 
 	@Test
 	public void testEmptyDirection() {
-		var ids = asList(4, 6, 8);
-		var instance = new RoutingEntry(ids, emptySet());
+		var ids = List.of(4, 6, 8);
+		var instance = new RoutingEntry(ids, Set.of());
 		int code = instance.encode();
 
 		var decode = new RoutingEntry(code);
@@ -114,7 +117,7 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testDoubleEmpty() {
-		var instance = new RoutingEntry(emptySet(), emptyList());
+		var instance = new RoutingEntry(Set.of(), List.of());
 		int code = instance.encode();
 
 		var decode = new RoutingEntry(code);
@@ -124,11 +127,10 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testDouble() {
-		var directions = asList(Direction.NORTH, Direction.SOUTH);
-		var ids = asList(4, 6, 8);
-		var directions2 =
-				asList(Direction.NORTH, Direction.SOUTH, Direction.SOUTH);
-		var ids2 = asList(4, 6, 8, 4);
+		var directions = List.of(NORTH, SOUTH);
+		var ids = List.of(4, 6, 8);
+		var directions2 = List.of(NORTH, SOUTH, SOUTH);
+		var ids2 = List.of(4, 6, 8, 4);
 		var instance = new RoutingEntry(ids2, directions2);
 
 		int code = instance.encode();
@@ -140,10 +142,10 @@ public class TestRoutingEntry {
 
 	@Test
 	public void testUnordered() {
-		var directions = asList(Direction.NORTH, Direction.SOUTH);
-		var ids = asList(4, 6, 8);
-		var directions2 = asList(Direction.SOUTH, Direction.NORTH);
-		var ids2 = asList(6, 4, 8);
+		var directions = List.of(NORTH, SOUTH);
+		var ids = List.of(4, 6, 8);
+		var directions2 = List.of(SOUTH, NORTH);
+		var ids2 = List.of(6, 4, 8);
 		var instance = new RoutingEntry(ids2, directions2);
 
 		int code = instance.encode();

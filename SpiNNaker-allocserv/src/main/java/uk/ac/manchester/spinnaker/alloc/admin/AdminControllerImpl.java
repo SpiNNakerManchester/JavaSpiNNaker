@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
@@ -214,7 +213,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 							.toMap(string("machine_name"), bool("in_service")));
 		} catch (DataAccessException e) {
 			log.warn("problem when listing machines", e);
-			return emptyMap();
+			return Map.of();
 		}
 	}
 

@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -76,7 +76,7 @@ public class TestCoreSubsets {
 			instance.addCore(new CoreLocation(0, 0, 2));
 		});
 		assertThrows(IllegalStateException.class, () -> {
-			instance.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
+			instance.addCores(new ChipLocation(0, 0), List.of(1, 2, 3));
 		});
 		assertThrows(IllegalStateException.class, () -> {
 			instance.addCore(new ChipLocation(0, 0), 2);
@@ -84,26 +84,17 @@ public class TestCoreSubsets {
 	}
 
 	public void testMultiple() {
-		var locations = new ArrayList<CoreLocation>();
-		locations.add(new CoreLocation(0, 0, 1));
-		locations.add(new CoreLocation(0, 0, 2));
-		locations.add(new CoreLocation(0, 0, 3));
-		locations.add(new CoreLocation(0, 1, 1));
-		locations.add(new CoreLocation(0, 1, 2));
-		locations.add(new CoreLocation(0, 1, 3));
-		locations.add(new CoreLocation(0, 0, 1));
-		locations.add(new CoreLocation(0, 0, 2));
-		locations.add(new CoreLocation(0, 0, 3));
-		locations.add(new CoreLocation(0, 0, 1));
-		locations.add(new CoreLocation(0, 0, 2));
-		locations.add(new CoreLocation(0, 0, 3));
-		locations.add(new CoreLocation(0, 0, 4));
+		var locations = List.of(new CoreLocation(0, 0, 1),
+				new CoreLocation(0, 0, 2), new CoreLocation(0, 0, 3),
+				new CoreLocation(0, 1, 1), new CoreLocation(0, 1, 2),
+				new CoreLocation(0, 1, 3), new CoreLocation(0, 0, 1),
+				new CoreLocation(0, 0, 2), new CoreLocation(0, 0, 3),
+				new CoreLocation(0, 0, 1), new CoreLocation(0, 0, 2),
+				new CoreLocation(0, 0, 3), new CoreLocation(0, 0, 4));
 		var css = new CoreSubsets(locations);
 
-		var locations2 = new ArrayList<CoreLocation>();
-		locations2.add(new CoreLocation(0, 0, 4));
-		locations2.add(new CoreLocation(0, 0, 5));
-		locations2.add(new CoreLocation(0, 0, 6));
+		var locations2 = List.of(new CoreLocation(0, 0, 4),
+				new CoreLocation(0, 0, 5), new CoreLocation(0, 0, 6));
 		css.addCores(locations2);
 
 		assertTrue(css.isChip(new ChipLocation(0, 1)));
@@ -129,17 +120,17 @@ public class TestCoreSubsets {
 
 	public void testInterest() {
 		var css1 = new CoreSubsets();
-		css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-		css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 0), List.of(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 1), List.of(1, 2, 3));
 		css1.addCore(new ChipLocation(1, 1), 1);
 		css1.addCore(new ChipLocation(2, 2), 1);
 		assertEquals(8, css1.size());
 		assertFalse(css1.isEmpty());
 
 		var css2 = new CoreSubsets();
-		css2.addCores(new ChipLocation(0, 0), Arrays.asList(2, 3, 5));
-		css2.addCores(new ChipLocation(1, 0), Arrays.asList(1, 2, 3));
-		css2.addCores(new ChipLocation(1, 1), Arrays.asList(9, 7, 1, 5));
+		css2.addCores(new ChipLocation(0, 0), List.of(2, 3, 5));
+		css2.addCores(new ChipLocation(1, 0), List.of(1, 2, 3));
+		css2.addCores(new ChipLocation(1, 1), List.of(9, 7, 1, 5));
 		css2.addCore(new ChipLocation(2, 2), 2);
 		assertEquals(11, css2.size());
 		assertFalse(css2.isEmpty());
@@ -154,12 +145,12 @@ public class TestCoreSubsets {
 
 	public void testEquals() {
 		var css1 = new CoreSubsets();
-		css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-		css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 0), List.of(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 1), List.of(1, 2, 3));
 
 		var css2 = new CoreSubsets();
-		css2.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-		css2.addCores(new ChipLocation(0, 1), Arrays.asList(1, 3));
+		css2.addCores(new ChipLocation(0, 0), List.of(1, 2, 3));
+		css2.addCores(new ChipLocation(0, 1), List.of(1, 3));
 
 		assertNotEquals(css1, css2);
 		assertNotEquals(css1.toString(), css2.toString());
@@ -175,8 +166,8 @@ public class TestCoreSubsets {
 
 	public void testIterator() {
 		var css1 = new CoreSubsets();
-		css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-		css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 0), List.of(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 1), List.of(1, 2, 3));
 		int count = 0;
 		for (var coreLocation : css1) {
 			count += 1;
@@ -188,8 +179,8 @@ public class TestCoreSubsets {
 
 	public void testByChip() {
 		var css1 = new CoreSubsets();
-		css1.addCores(new ChipLocation(0, 0), Arrays.asList(1, 2, 3));
-		css1.addCores(new ChipLocation(0, 1), Arrays.asList(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 0), List.of(1, 2, 3));
+		css1.addCores(new ChipLocation(0, 1), List.of(1, 2, 3));
 		int count = 0;
 		for (var chip : css1.getChips()) {
 			for (var core : css1.coreByChip(chip)) {

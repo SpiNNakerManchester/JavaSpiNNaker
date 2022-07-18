@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
-import static java.util.Arrays.asList;
-
 import java.time.Duration;
 import java.util.List;
 
@@ -182,7 +180,7 @@ public final class CreateJob {
 	 */
 	public CreateJob() {
 		numBoards = 1;
-		tags = asList("default");
+		tags = List.of("default");
 	}
 
 	/**
@@ -202,7 +200,7 @@ public final class CreateJob {
 					"number of boards must be positive");
 		}
 		this.numBoards = numBoards;
-		tags = asList("default");
+		tags = List.of("default");
 	}
 
 	/**
@@ -224,7 +222,7 @@ public final class CreateJob {
 					"dimensions must be positive");
 		}
 		dimensions = new Dimensions(width, height);
-		tags = asList("default");
+		tags = List.of("default");
 	}
 
 	/**

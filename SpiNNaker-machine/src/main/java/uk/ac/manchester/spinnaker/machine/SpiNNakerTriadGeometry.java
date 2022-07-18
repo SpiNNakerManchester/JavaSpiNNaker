@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
@@ -32,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -311,7 +311,7 @@ public final class SpiNNakerTriadGeometry {
 	 */
 	public static SpiNNakerTriadGeometry getSpinn5Geometry() {
 		if (spinn5TriadGeometry == null) {
-			var roots = asList(
+			var roots = List.of(
 					new ChipLocation(0, 0),
 					new ChipLocation(HALF_SIZE, SIZE_Y_OF_ONE_BOARD),
 					new ChipLocation(SIZE_X_OF_ONE_BOARD, HALF_SIZE));

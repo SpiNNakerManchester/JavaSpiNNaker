@@ -17,11 +17,11 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.lang.System.currentTimeMillis;
-import static java.util.Arrays.asList;
 import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class TestBasicExecutor {
 		var val = new ValueHolder<>();
 
 		try (var exe = new BasicExecutor(1)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				val.setValue(true);
 			}));
 			t.awaitAndCombineExceptions();
@@ -59,7 +59,7 @@ public class TestBasicExecutor {
 		var val2 = new ValueHolder<>();
 
 		try (var exe = new BasicExecutor(1)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				val1.setValue(true);
 			}, () -> {
 				val2.setValue(false);
@@ -79,7 +79,7 @@ public class TestBasicExecutor {
 
 		try (var exe = new BasicExecutor(1)) {
 			val3.setValue(TOKEN);
-			var t = exe.submitTasks(asList(val1, val2, val3).parallelStream()
+			var t = exe.submitTasks(List.of(val1, val2, val3).parallelStream()
 					.map(val -> () -> val.setValue(val == val1)));
 			t.awaitAndCombineExceptions();
 		}
@@ -95,7 +95,7 @@ public class TestBasicExecutor {
 		var val2 = new ValueHolder<>();
 
 		try (var exe = new BasicExecutor(2)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				Thread.sleep(SHORT);
 				val1.setValue(TOKEN);
 			}, () -> {
@@ -139,7 +139,7 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(1)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				throw new IOException(EXN_MSG_1);
 			}));
 			e = assertThrows(IOException.class,
@@ -154,7 +154,7 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(1)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
 				throw new RuntimeException(EXN_MSG_2);
@@ -172,7 +172,7 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(2)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
@@ -191,7 +191,7 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(5)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
@@ -211,7 +211,7 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(2)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
@@ -220,7 +220,7 @@ public class TestBasicExecutor {
 			e = assertThrows(IOException.class,
 					() -> t.awaitAndCombineExceptions());
 
-			var t2 = exe.submitTasks(asList(() -> {
+			var t2 = exe.submitTasks(List.of(() -> {
 				val.setValue(TOKEN);
 			}));
 			t2.awaitAndCombineExceptions();
@@ -237,13 +237,13 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(2)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
 				throw new RuntimeException(EXN_MSG_2);
 			}));
-			var t2 = exe.submitTasks(asList(() -> {
+			var t2 = exe.submitTasks(List.of(() -> {
 				Thread.sleep(SHORT);
 				val.setValue(TOKEN);
 			}));
@@ -264,13 +264,13 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(2)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {
 				throw new RuntimeException(EXN_MSG_2);
 			}));
-			var t2 = exe.submitTasks(asList(() -> {
+			var t2 = exe.submitTasks(List.of(() -> {
 				Thread.sleep(SHORT);
 				val.setValue(TOKEN);
 			}));
@@ -291,7 +291,7 @@ public class TestBasicExecutor {
 		Exception e;
 
 		try (var exe = new BasicExecutor(5)) {
-			var t = exe.submitTasks(asList(() -> {
+			var t = exe.submitTasks(List.of(() -> {
 				Thread.sleep(LONG);
 				throw new IOException(EXN_MSG_1);
 			}, () -> {

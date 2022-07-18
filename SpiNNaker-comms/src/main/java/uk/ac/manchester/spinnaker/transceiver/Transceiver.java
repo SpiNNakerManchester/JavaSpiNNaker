@@ -22,11 +22,6 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -193,8 +188,7 @@ public class Transceiver extends UDPTransceiver
 
 	private static final String BMP_NAME = "BC&MP";
 
-	private static final Set<Integer> BMP_MAJOR_VERSIONS =
-			unmodifiableSet(new HashSet<>(asList(1, 2)));
+	private static final Set<Integer> BMP_MAJOR_VERSIONS = Set.of(1, 2);
 
 	/**
 	 * How many times do we try to find SCAMP?
@@ -416,7 +410,7 @@ public class Transceiver extends UDPTransceiver
 		if (version != null && !version.isFourChip && autodetectBMP
 				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
 			bmpConnectionData =
-					singletonList(defaultBMPforMachine(host, numberOfBoards));
+					List.of(defaultBMPforMachine(host, numberOfBoards));
 		}
 
 		// handle BMP connections
@@ -432,7 +426,7 @@ public class Transceiver extends UDPTransceiver
 
 		// handle the SpiNNaker connection
 		if (scampConnections == null) {
-			scampConnections = emptyList();
+			scampConnections = List.of();
 		}
 		if (scampConnections.isEmpty()) {
 			connections.add(new SCPConnection(host));
@@ -487,8 +481,8 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(InetAddress hostname, MachineVersion version)
 			throws IOException, SpinnmanException {
-		this(hostname, version, null, 0, emptySet(), emptyMap(), emptyMap(),
-				false, null, null, null);
+		this(hostname, version, null, 0, Set.of(), Map.of(), Map.of(), false,
+				null, null, null);
 	}
 
 	/**
@@ -568,7 +562,9 @@ public class Transceiver extends UDPTransceiver
 	 *            be assumed to be always already booted.
 	 * @param connections
 	 *            The connections to use in the transceiver. Note that the
-	 *            transceiver may make additional connections.
+	 *            transceiver may make additional connections. <em>This should
+	 *            be modifiable (or {@code null}) if {@code scampConnections}
+	 *            supplied and not empty.</em>
 	 * @param ignoredChips
 	 *            Blacklisted chips.
 	 * @param ignoredCores
@@ -604,7 +600,8 @@ public class Transceiver extends UDPTransceiver
 		this.maxSDRAMSize = maxSDRAMSize;
 
 		if (connections == null) {
-			connections = emptyList();
+			// Needs to be modifiable
+			connections = new ArrayList<>();
 		}
 		originalConnections.addAll(connections);
 		allConnections.addAll(connections);
@@ -696,9 +693,9 @@ public class Transceiver extends UDPTransceiver
 		}
 		var connection = locateSpinnakerConnection(boardAddress);
 		if (connection == null) {
-			return emptyList();
+			return List.of();
 		}
-		return singletonList(connection);
+		return List.of(connection);
 	}
 
 	/**
@@ -714,7 +711,7 @@ public class Transceiver extends UDPTransceiver
 		if (connection == null) {
 			return scpConnections;
 		}
-		return singletonList(connection);
+		return List.of(connection);
 	}
 
 	private Object getSystemVariable(HasChipLocation chip,
@@ -950,7 +947,7 @@ public class Transceiver extends UDPTransceiver
 		 * that supports SCP - this is done via the machine
 		 */
 		if (scpConnections.isEmpty()) {
-			return emptyList();
+			return List.of();
 		}
 
 		// Get the machine dimensions

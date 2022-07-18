@@ -17,9 +17,13 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static org.hamcrest.Matchers.*;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.Test;
@@ -36,30 +40,24 @@ public class TestRouter {
 
 	private static final ChipLocation CHIP10 = new ChipLocation(1, 0);
 
-	private static final Link LINK00_01 =
-			new Link(CHIP00, Direction.NORTH, CHIP01);
+	private static final Link LINK00_01 = new Link(CHIP00, NORTH, CHIP01);
 
-	private static final Link LINK00_01A =
-			new Link(CHIP00, Direction.NORTH, CHIP01);
+	private static final Link LINK00_01A = new Link(CHIP00, NORTH, CHIP01);
 
-	private static final Link LINK00_10 =
-			new Link(CHIP00, Direction.WEST, CHIP10);
+	private static final Link LINK00_10 = new Link(CHIP00, WEST, CHIP10);
 
-	private static final Link LINK01_01 =
-			new Link(CHIP01, Direction.SOUTH, CHIP01);
+	private static final Link LINK01_01 = new Link(CHIP01, SOUTH, CHIP01);
 
 	@Test
 	public void testRouterBasicUse() {
-		var links = new ArrayList<Link>();
-		links.add(LINK00_01);
+		var links = List.of(LINK00_01);
 		@SuppressWarnings("unused")
 		var router = new Router(links);
 	}
 
 	@Test
 	public void testLinks() {
-		var links = new ArrayList<Link>();
-		links.add(LINK00_01);
+		var links = List.of(LINK00_01);
 		var router = new Router(links);
 		final var values = router.links();
 		assertEquals(1, values.size());
@@ -72,9 +70,7 @@ public class TestRouter {
 
 	@Test
 	public void testgetNeighbouringChipsCoords() throws UnknownHostException {
-		var links = new ArrayList<Link>();
-		links.add(LINK00_10);
-		links.add(LINK00_01);
+		var links = List.of(LINK00_10, LINK00_01);
 		assertThat(CHIP01, is(oneOf(CHIP01, CHIP10)));
 		var router = new Router(links);
 		var neighbours = router.streamNeighbouringChipsCoords();
@@ -101,9 +97,7 @@ public class TestRouter {
 
 	@Test
 	public void testRouterStream() {
-		var links = new ArrayList<Link>();
-		links.add(LINK00_01);
-		links.add(LINK01_01);
+		var links = List.of(LINK00_01, LINK01_01);
 		var router = new Router(links.stream());
 		assertTrue(router.hasLink(Direction.NORTH));
 		assertEquals(LINK00_01, router.getLink(Direction.NORTH));
@@ -112,9 +106,7 @@ public class TestRouter {
 
 	@Test
 	public void testRouterRepeat() {
-		var links = new ArrayList<Link>();
-		links.add(LINK00_01);
-		links.add(LINK00_01A);
+		var links = List.of(LINK00_01, LINK00_01A);
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
 			var router = new Router(links);
@@ -131,9 +123,7 @@ public class TestRouter {
 
 	@Test
 	public void testDefaults2() {
-		var links = new ArrayList<Link>();
-		links.add(LINK00_01);
-		links.add(LINK00_10);
+		var links = List.of(LINK00_01, LINK00_10);
 		var router = new Router(links);
 		assertThat(router.links(), containsInAnyOrder(links.toArray()));
 		assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES,
@@ -142,9 +132,7 @@ public class TestRouter {
 
 	@Test
 	public void testDefaults3() {
-		var links = new ArrayList<Link>();
-		links.add(LINK00_01);
-		links.add(LINK00_10);
+		var links = List.of(LINK00_01, LINK00_10);
 		var router =
 				new Router(links, MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1);
 		assertThat(router.links(), containsInAnyOrder(links.toArray()));

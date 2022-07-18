@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.FOUR_CHIP_DOWN_LINKS;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
@@ -58,14 +56,15 @@ public class VirtualMachine extends Machine {
 	 *            A set of chips to ignore in the machine. Requests for a
 	 *            "machine" will have these chips excluded, as if they never
 	 *            existed. The processor IDs of the specified chips are ignored.
+	 *            May be {@code null}.
 	 * @param ignoreCores
 	 *            A map of cores to ignore in the machine. Requests for a
 	 *            "machine" will have these cores excluded, as if they never
-	 *            existed.
+	 *            existed. May be {@code null}.
 	 * @param ignoreLinks
 	 *            A set of links to ignore in the machine. Requests for a
 	 *            "machine" will have these links excluded, as if they never
-	 *            existed.
+	 *            existed. May be {@code null}.
 	 */
 	public VirtualMachine(MachineDimensions machineDimensions,
 			Set<ChipLocation> ignoreChips,
@@ -74,10 +73,10 @@ public class VirtualMachine extends Machine {
 		super(machineDimensions, ZERO_ZERO);
 
 		if (ignoreChips == null) {
-			ignoreChips = emptySet();
+			ignoreChips = Set.of();
 		}
 		if (ignoreCores == null) {
-			ignoreCores = emptyMap();
+			ignoreCores = Map.of();
 		}
 		if (ignoreLinks == null) {
 			ignoreLinks = new HashMap<>();

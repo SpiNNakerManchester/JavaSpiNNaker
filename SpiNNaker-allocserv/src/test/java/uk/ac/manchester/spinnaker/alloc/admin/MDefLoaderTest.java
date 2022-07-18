@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -104,11 +102,6 @@ class MDefLoaderTest {
 		c.close();
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> Set<T> set(T... members) {
-		return unmodifiableSet(new HashSet<>(asList(members)));
-	}
-
 	@Test
 	void readSingleBoardExample() throws IOException {
 		var machines = loader.readMachineDefinitions(singleBoard.getFile());
@@ -117,12 +110,12 @@ class MDefLoaderTest {
 		assertEquals(1, machines.size());
 		var m = machines.get(0);
 		assertEquals("my-board", m.getName());
-		assertSetEquals(set(new TriadCoords(0, 0, 0)),
+		assertSetEquals(Set.of(new TriadCoords(0, 0, 0)),
 				m.getBoardLocations().keySet());
-		assertSetEquals(set(new TriadCoords(0, 0, 0)),
+		assertSetEquals(Set.of(new TriadCoords(0, 0, 0)),
 				m.getSpinnakerIPs().keySet());
-		assertSetEquals(set(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
-		assertSetEquals(set(new BoardPhysicalCoords(0, 0, 0)),
+		assertSetEquals(Set.of(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
+		assertSetEquals(Set.of(new BoardPhysicalCoords(0, 0, 0)),
 				new HashSet<>(m.getBoardLocations().values()));
 	}
 

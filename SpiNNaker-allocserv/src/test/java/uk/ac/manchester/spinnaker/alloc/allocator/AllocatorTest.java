@@ -22,7 +22,6 @@ import static java.nio.file.Files.exists;
 import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
 import static java.time.Instant.ofEpochMilli;
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -36,6 +35,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -179,16 +179,16 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	private void assertState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		var expected = asList(state, "req", requestCount, "power", powerCount);
-		var got = asList(getJobState(jobId), "req", getJobRequestCount(),
+		var expected = List.of(state, "req", requestCount, "power", powerCount);
+		var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assertEquals(expected, got);
 	}
 
 	private void assumeState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		var expected = asList(state, "req", requestCount, "power", powerCount);
-		var got = asList(getJobState(jobId), "req", getJobRequestCount(),
+		var expected = List.of(state, "req", requestCount, "power", powerCount);
+		var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assumeTrue(expected.equals(got),
 				() -> format("expected %s but got %s", expected, got));

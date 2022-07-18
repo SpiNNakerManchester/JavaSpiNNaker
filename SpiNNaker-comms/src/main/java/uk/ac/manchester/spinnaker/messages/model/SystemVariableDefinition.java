@@ -17,9 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Integer.compare;
-import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
-import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE;
@@ -322,7 +320,7 @@ public enum SystemVariableDefinition {
 	public static List<SystemVariableDefinition> variables() {
 		var vals = values().clone();
 		sort(vals, (a, b) -> compare(a.offset, b.offset));
-		return unmodifiableList(asList(vals));
+		return List.of(vals);
 	}
 }
 

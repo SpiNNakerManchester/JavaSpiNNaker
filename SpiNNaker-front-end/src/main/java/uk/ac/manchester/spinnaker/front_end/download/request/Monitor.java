@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
@@ -79,7 +78,7 @@ public class Monitor implements HasCoreLocation {
 		this.y = y;
 		this.p = p;
 		if (placements == null) {
-			this.placements = emptyList();
+			this.placements = List.of();
 		} else {
 			this.placements = placements;
 		}

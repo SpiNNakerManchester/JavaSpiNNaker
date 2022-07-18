@@ -17,8 +17,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
@@ -70,11 +68,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private final Integer maxSDRAMSize;
 
 	private static <T> Set<T> def(Set<T> c) {
-		return c == null ? emptySet() : c;
+		return c == null ? Set.of() : c;
 	}
 
 	private static <K, V> Map<K, V> def(Map<K, V> m) {
-		return m == null ? emptyMap() : m;
+		return m == null ? Map.of() : m;
 	}
 
 	private static int clamp(int value, Integer limit) {
@@ -191,7 +189,7 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		// Create the processor list
 		var processors = new ArrayList<Processor>();
 		var location = chipInfo.chip.asChipLocation();
-		var ignoreCores = ignoreCoresMap.getOrDefault(location, emptySet());
+		var ignoreCores = ignoreCoresMap.getOrDefault(location, Set.of());
 		for (int id = 0; id < chipInfo.numCores; id++) {
 			// Add the core provided it is not to be ignored
 			if (ignoreCores != null && !ignoreCores.contains(id)) {

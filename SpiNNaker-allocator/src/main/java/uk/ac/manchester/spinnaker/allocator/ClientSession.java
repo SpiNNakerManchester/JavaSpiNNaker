@@ -18,8 +18,6 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.asDir;
@@ -302,9 +300,9 @@ final class ClientSession {
 	/** Helper for digging CSRF token info out of HTML. */
 	private Stream<String> getCSRF(String line) {
 		var m = CSRF_ID_RE.matcher(line);
-		Set<String> s = emptySet();
+		Set<String> s = Set.of();
 		if (m.find()) {
-			s = singleton(m.group(1));
+			s = Set.of(m.group(1));
 		}
 		return s.stream();
 	}

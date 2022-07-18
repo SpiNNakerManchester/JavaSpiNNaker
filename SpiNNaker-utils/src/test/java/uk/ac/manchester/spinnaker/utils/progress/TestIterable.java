@@ -18,9 +18,10 @@ package uk.ac.manchester.spinnaker.utils.progress;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+
 import org.junit.jupiter.api.Test;
 
-import static java.util.Arrays.asList;
+import static java.util.List.of;
 import static org.junit.jupiter.api.Assertions.*;
 import uk.ac.manchester.spinnaker.utils.Counter;
 
@@ -44,8 +45,8 @@ public class TestIterable {
 	@Test
 	public void testBasic() {
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(asList(1, 2, 3, 4, 5),
-				description, new PrintStream(new ByteArrayOutputStream()));
+		var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5), description,
+				new PrintStream(new ByteArrayOutputStream()));
 		int sum = 0;
 		for (int i : pb) {
 			sum += i;
@@ -58,8 +59,8 @@ public class TestIterable {
 	public void testSimple() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(asList(1, 2, 3, 4, 5, 6, 7),
-				description, new PrintStream(baos));
+		var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5, 6, 7), description,
+				new PrintStream(baos));
 		int sum = 0;
 		for (int i : pb) {
 			sum += i;
@@ -77,9 +78,8 @@ public class TestIterable {
 	public void testStopEarly() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Early";
-		try (var bar = new ProgressIterable<>(
-				asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), description,
-				new PrintStream(baos))) {
+		try (var bar = new ProgressIterable<>(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+				description, new PrintStream(baos))) {
 			for (int i : bar) {
 				if (i == 3) {
 					break;
@@ -97,8 +97,8 @@ public class TestIterable {
 	public void testForEachRemaining() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(asList(1, 2, 3, 4, 5),
-				description, new PrintStream(baos));
+		var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5), description,
+				new PrintStream(baos));
 		var sum = new Counter();
 		pb.forEach(sum::add);
 		assertEquals(1 + 2 + 3 + 4 + 5, sum.get());

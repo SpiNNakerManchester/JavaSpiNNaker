@@ -16,16 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
-import static java.util.Collections.unmodifiableSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.function.Executable;
@@ -78,30 +75,30 @@ abstract class DBTestingUtils {
 	/**
 	 * The columns needed to make a {@link SpallocAPI.Machine} implementation.
 	 */
-	static final Set<String> BASIC_MACHINE_INFO =
-			set("in_service", "machine_id", "machine_name", "width", "height");
+	static final Set<String> BASIC_MACHINE_INFO = Set.of("in_service",
+			"machine_id", "machine_name", "width", "height");
 
 	/** The columns the {@link BoardLocation} constructor expects to find. */
-	static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS =
-			set("machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_id", "job_root_chip_x", "job_root_chip_y");
+	static final Set<String> BOARD_LOCATION_REQUIRED_COLUMNS = Set.of(
+			"machine_name", "x", "y", "z", "cabinet", "frame", "board_num",
+			"chip_x", "chip_y", "board_chip_x", "board_chip_y", "job_id",
+			"job_root_chip_x", "job_root_chip_y");
 
 	/** Columns expected when building {@link BoardState} from a {@link Row}. */
-	static final Set<String> MSC_BOARD_COORDS = set("board_id", "x", "y", "z",
-			"cabinet", "frame", "board_num", "address", "machine_name");
+	static final Set<String> MSC_BOARD_COORDS = Set.of("board_id", "x", "y",
+			"z", "cabinet", "frame", "board_num", "address", "machine_name");
 
 	/**
 	 * Columns expected when building {@link BoardCoords} from a {@link Row}.
 	 */
 	static final Set<String> BOARD_COORDS_REQUIRED_COLUMNS =
-			set("x", "y", "z", "cabinet", "frame", "board_num", "address");
+			Set.of("x", "y", "z", "cabinet", "frame", "board_num", "address");
 
 	/**
 	 * Columns expected when building a {@link UserRecord} from a {@link Row}.
 	 */
 	static final Set<String> USER_COLUMNS =
-			set("disabled", "has_password", "last_fail_timestamp",
+			Set.of("disabled", "has_password", "last_fail_timestamp",
 					"last_successful_login_timestamp", "locked", "trust_level",
 					"user_id", "user_name", "openid_subject", "is_internal");
 
@@ -109,12 +106,12 @@ abstract class DBTestingUtils {
 	 * Columns expected when building a {@link GroupRecord} from a {@link Row}.
 	 */
 	static final Set<String> GROUP_COLUMNS =
-			set("group_id", "group_name", "group_type", "quota");
+			Set.of("group_id", "group_name", "group_type", "quota");
 
 	/**
 	 * Columns expected when building a {@link MemberRecord} from a {@link Row}.
 	 */
-	static final Set<String> MEMBER_COLUMNS = set("group_id", "group_name",
+	static final Set<String> MEMBER_COLUMNS = Set.of("group_id", "group_name",
 			"user_id", "user_name", "membership_id");
 
 	/** Classes used in Javadoc. Technically not needed, but... */
@@ -124,17 +121,6 @@ abstract class DBTestingUtils {
 	};
 
 	private DBTestingUtils() {
-	}
-
-	/**
-	 * Easy set builder.
-	 *
-	 * @param strings
-	 *            The values in the set.
-	 * @return An unmodifiable set.
-	 */
-	static Set<String> set(String... strings) {
-		return unmodifiableSet(new HashSet<>(asList(strings)));
 	}
 
 	/**

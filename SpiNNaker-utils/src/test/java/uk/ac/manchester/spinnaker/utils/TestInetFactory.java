@@ -26,6 +26,8 @@ import uk.ac.manchester.spinnaker.utils.InetFactory.Inet6NotSupportedException;
  * @author Christian-B
  */
 public class TestInetFactory {
+	/** Name of a host that isn't going away soon because we control it. */
+	private static final String WELL_KNOWN_NAME = "apt.cs.manchester.ac.uk";
 
 	public TestInetFactory() {
 	}
@@ -37,7 +39,7 @@ public class TestInetFactory {
 	}
 
 	public void testByName() throws UnknownHostException {
-		InetFactory.getByName("apt.cs.manchester.ac.uk");
+		InetFactory.getByName(WELL_KNOWN_NAME);
 	}
 
 	@Test

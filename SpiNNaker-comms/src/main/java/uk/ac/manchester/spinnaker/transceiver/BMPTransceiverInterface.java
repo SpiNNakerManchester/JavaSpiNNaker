@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Collections.singleton;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
@@ -29,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.Set;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
@@ -159,7 +159,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default void powerOn(BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, getBoundBMP(), singleton(board));
+		power(POWER_ON, getBoundBMP(), Set.of(board));
 	}
 
 	/**
@@ -218,7 +218,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default void powerOff(BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, getBoundBMP(), singleton(board));
+		power(POWER_OFF, getBoundBMP(), Set.of(board));
 	}
 
 	/**
@@ -284,7 +284,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action,
 			BMPBoard board) throws IOException, ProcessException {
-		setLED(leds, action, getBoundBMP(), singleton(board));
+		setLED(leds, action, getBoundBMP(), Set.of(board));
 	}
 
 	/**

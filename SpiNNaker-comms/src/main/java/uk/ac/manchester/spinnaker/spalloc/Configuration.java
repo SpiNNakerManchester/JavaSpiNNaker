@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.HOSTNAME_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
@@ -43,6 +42,7 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration2.INIConfiguration;
@@ -88,7 +88,7 @@ public class Configuration {
 			 */
 			var params = new Parameters().ini()
 					.setLocationStrategy(new CombinedLocationStrategy(
-							asList(new ProvidedURLLocationStrategy(),
+							List.of(new ProvidedURLLocationStrategy(),
 									new HomeDirectoryLocationStrategy(),
 									new ClasspathLocationStrategy())))
 					.setListDelimiterHandler(

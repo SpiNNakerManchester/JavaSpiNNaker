@@ -21,15 +21,10 @@ import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.slf4j.LoggerFactory.getLogger;
 import static testconfig.Utils.printEnumCollection;
 import static testconfig.Utils.printWordAsBinary;
@@ -114,7 +109,7 @@ public class TransceiverITCase {
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
 
 		downCores = new HashMap<>();
-		downCores.put(new ChipLocation(0, 0), singleton(5));
+		downCores.put(new ChipLocation(0, 0), Set.of(5));
 
 		downChips = new HashSet<>();
 		downChips.add(new ChipLocation(0, 1));
@@ -289,10 +284,9 @@ public class TransceiverITCase {
 	}
 
 	private void routes(Transceiver txrx, AppID appID) throws Exception {
-		var routes = singletonList(
-				new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
-						asList(1, 2, 3, 4, 5), asList(EAST, NORTHEAST, NORTH),
-						false));
+		var routes = List.of(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
+				List.of(1, 2, 3, 4, 5), List.of(EAST, NORTHEAST, NORTH),
+				false));
 		txrx.loadMulticastRoutes(SCAMP, routes, appID);
 
 		routes = txrx.getMulticastRoutes(SCAMP, appID);
@@ -313,17 +307,17 @@ public class TransceiverITCase {
 
 	private void diagnostics(Transceiver txrx) throws Exception {
 		// Set Router Diagnostic Filter
-		var destinations = asList(LINK_0, LINK_1, LINK_2, LINK_5);
+		var destinations = List.of(LINK_0, LINK_1, LINK_2, LINK_5);
 		for (int i = 0; i < destinations.size(); i++) {
 			var filter = new DiagnosticFilter(false, true,
-					singletonList(destinations.get(i)), null, null, emptyList(),
-					emptyList(), singletonList(POINT_TO_POINT));
+					List.of(destinations.get(i)), null, null, List.of(),
+					List.of(), List.of(POINT_TO_POINT));
 			txrx.setRouterDiagnosticFilter(SCAMP, i + 12, filter);
 		}
 
 		// Clear Router Diagnostics
 		txrx.clearRouterDiagnosticCounters(SCAMP,
-				asList(LOC_PP.ordinal(), EXT_PP.ordinal()));
+				List.of(LOC_PP.ordinal(), EXT_PP.ordinal()));
 		var diagnostics = txrx.getRouterDiagnostics(SCAMP);
 		for (var register : RouterRegister.values()) {
 			System.out.printf("%s: %x\n", register.name(),

@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.tools;
 
-import static java.util.Arrays.asList;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,10 +48,10 @@ public interface SpiNNakerAllocatorApp {
 	String SPALLOC_CONTACTS = "donal.k.fellows@manchester.ac.uk";
 
 	/** Scopes we require: "openid", "profile", "roles". */
-	List<String> SPALLOC_DEFAULT_SCOPES = asList("openid", "profile", "roles");
+	List<String> SPALLOC_DEFAULT_SCOPES = List.of("openid", "profile", "roles");
 
 	/** Scopes we can ask for: "team", "group", "email". */
-	List<String> SPALLOC_OPTIONAL_SCOPES = asList("team", "group", "email");
+	List<String> SPALLOC_OPTIONAL_SCOPES = List.of("team", "group", "email");
 
 	// Some unavoidable long lines here, so we do:
 	// CHECKSTYLE:OFF
@@ -109,8 +107,8 @@ public interface SpiNNakerAllocatorApp {
 
 		client.setRootUrl(SPALLOC_APP_BASE);
 		client.setBaseUrl(SPALLOC_APP_BASE);
-		client.setRedirectUris(asList(SPALLOC_APP_BASE + "*"));
-		client.setWebOrigins(asList(SPALLOC_APP_BASE, "+"));
+		client.setRedirectUris(List.of(SPALLOC_APP_BASE + "*"));
+		client.setWebOrigins(List.of(SPALLOC_APP_BASE, "+"));
 
 		client.setBearerOnly(false);
 		client.setConsentRequired(true);

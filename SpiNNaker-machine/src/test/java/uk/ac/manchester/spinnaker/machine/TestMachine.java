@@ -19,14 +19,19 @@ package uk.ac.manchester.spinnaker.machine;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -63,7 +68,7 @@ public class TestMachine {
 			new Link(CHIP10, Direction.WEST, CHIP01);
 
 	private static final List<Link> LINKS =
-			Arrays.asList(LINK00_01, LINK01_11, LINK11_20, LINK10_30);
+			List.of(LINK00_01, LINK01_11, LINK11_20, LINK10_30);
 
 	private static final Router ROUTER = new Router(LINKS);
 
@@ -81,7 +86,7 @@ public class TestMachine {
 
 	private static final byte[] BYTES48 = {127, 0, 4, 8};
 
-	private ArrayList<Processor> createProcessors() {
+	private List<Processor> createProcessors() {
 		var processors = new ArrayList<Processor>();
 		processors.add(Processor.factory(0));
 		processors.add(Processor.factory(1));
@@ -93,7 +98,7 @@ public class TestMachine {
 		return processors;
 	}
 
-	private ArrayList<Chip> createdChips(ArrayList<Processor> processors)
+	private List<Chip> createdChips(List<Processor> processors)
 			throws UnknownHostException {
 		var address = InetAddress.getByAddress(BYTES);
 		var chips = new ArrayList<Chip>();
@@ -203,9 +208,8 @@ public class TestMachine {
 	@Test
 	public void testAddChip() throws UnknownHostException {
 		var processors = createProcessors();
-		var chips = new ArrayList<Chip>();
-		var instance =
-				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
+		var instance = new Machine(new MachineDimensions(8, 8), List.of(),
+				BOOT_CHIP);
 		var chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
 				SDRAM, null, BOOT_CHIP);
 		instance.addChip(chip00);
@@ -231,13 +235,12 @@ public class TestMachine {
 	@Test
 	public void testLinks() {
 		var processors = createProcessors();
-		var chips = new ArrayList<Chip>();
-		var instance =
-				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
+		var instance = new Machine(new MachineDimensions(8, 8), List.of(),
+				BOOT_CHIP);
 		var link01 = new Link(CHIP00, Direction.NORTH, CHIP01);
 		var link10 = new Link(CHIP00, Direction.EAST, CHIP10);
 
-		var router = new Router(Arrays.asList(link01, link10));
+		var router = new Router(List.of(link01, link10));
 		var chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, router,
 				SDRAM, null, BOOT_CHIP);
 		// Chip created but not added
@@ -293,7 +296,7 @@ public class TestMachine {
 		var chip01 = new Chip(new ChipLocation(0, 1), processors, null, SDRAM,
 				null, BOOT_CHIP);
 		chips.add(chip01);
-		var chip02 = new Chip(new ChipLocation(0, 2), Collections.emptySet(),
+		var chip02 = new Chip(new ChipLocation(0, 2), Set.of(),
 				null, SDRAM, null, BOOT_CHIP);
 		chips.add(chip02);
 		var instance =
@@ -334,11 +337,11 @@ public class TestMachine {
 
 	@Test
 	public void testGetChipOverLink() {
-		var instance = new Machine(new MachineDimensions(24, 24),
-				new ArrayList<>(), BOOT_CHIP);
+		var instance = new Machine(new MachineDimensions(24, 24), List.of(),
+				BOOT_CHIP);
 		var processors = createProcessors();
-		var chip = new Chip(new ChipLocation(23, 23), processors, ROUTER,
-				SDRAM, null, BOOT_CHIP);
+		var chip = new Chip(new ChipLocation(23, 23), processors, ROUTER, SDRAM,
+				null, BOOT_CHIP);
 		instance.addChip(chip);
 		assertEquals(chip,
 				instance.getChipOverLink(CHIP00, Direction.SOUTHWEST));
@@ -346,8 +349,8 @@ public class TestMachine {
 
 	@Test
 	public void testNormalizeWithWrapAround() {
-		var instance = new Machine(new MachineDimensions(48, 24),
-				new ArrayList<>(), ChipLocation.ZERO_ZERO);
+		var instance = new Machine(new MachineDimensions(48, 24), List.of(),
+				ChipLocation.ZERO_ZERO);
 		assertEquals(new ChipLocation(24, 0),
 				instance.normalizedLocation(24, 24));
 		assertEquals(new ChipLocation(24, 1),
@@ -358,8 +361,8 @@ public class TestMachine {
 
 	@Test
 	public void testNormalizeWithWrapVertical() {
-		var instance = new Machine(new MachineDimensions(40, 24),
-				new ArrayList<>(), ChipLocation.ZERO_ZERO);
+		var instance = new Machine(new MachineDimensions(40, 24), List.of(),
+				ChipLocation.ZERO_ZERO);
 		assertEquals(MachineVersion.TRIAD_WITH_VERTICAL_WRAP, instance.version);
 		assertEquals(new ChipLocation(24, 0),
 				instance.normalizedLocation(24, 24));
@@ -369,8 +372,8 @@ public class TestMachine {
 
 	@Test
 	public void testNormalizeWithWrapHorizontal() {
-		var instance = new Machine(new MachineDimensions(48, 16),
-				new ArrayList<>(), ChipLocation.ZERO_ZERO);
+		var instance = new Machine(new MachineDimensions(48, 16), List.of(),
+				ChipLocation.ZERO_ZERO);
 		assertEquals(MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP,
 				instance.version);
 		assertEquals(new ChipLocation(4, 14),
@@ -379,8 +382,8 @@ public class TestMachine {
 
 	@Test
 	public void testNormalizeWithOutWrapAround() {
-		var instance = new Machine(new MachineDimensions(52, 28),
-				new ArrayList<>(), ChipLocation.ZERO_ZERO);
+		var instance = new Machine(new MachineDimensions(52, 28), List.of(),
+				ChipLocation.ZERO_ZERO);
 		assertEquals(new ChipLocation(24, 24),
 				instance.normalizedLocation(24, 24));
 		assertEquals(new ChipLocation(24, 24),
@@ -501,12 +504,12 @@ public class TestMachine {
 	@Test
 	public void testUnreachableIncomingChips() {
 		var ignoreLinks =
-				Map.of(new ChipLocation(2, 2), Set.of(Direction.NORTHEAST),
-						new ChipLocation(2, 3), Set.of(Direction.EAST),
-						new ChipLocation(3, 4), Set.of(Direction.SOUTH),
-						new ChipLocation(4, 4), Set.of(Direction.SOUTHWEST),
-						new ChipLocation(4, 3), Set.of(Direction.WEST),
-						new ChipLocation(3, 2), Set.of(Direction.NORTH));
+				Map.of(new ChipLocation(2, 2), Set.of(NORTHEAST),
+						new ChipLocation(2, 3), Set.of(EAST),
+						new ChipLocation(3, 4), Set.of(SOUTH),
+						new ChipLocation(4, 4), Set.of(SOUTHWEST),
+						new ChipLocation(4, 3), Set.of(WEST),
+						new ChipLocation(3, 2), Set.of(NORTH));
 
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, null, ignoreLinks);

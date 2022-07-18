@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.allocator;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
-import static java.util.Arrays.asList;
 
 import java.util.List;
 
@@ -53,6 +52,6 @@ public class DeadLink {
 	private DeadLink.End end2;
 
 	public List<DeadLink.End> getEnds() {
-		return asList(end1, end2);
+		return List.of(end1, end2);
 	}
 }

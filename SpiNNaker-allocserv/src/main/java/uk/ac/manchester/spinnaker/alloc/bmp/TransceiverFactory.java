@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
@@ -31,6 +30,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -194,7 +194,7 @@ public class TransceiverFactory
 		int count = 0;
 		while (true) {
 			try {
-				return new Transceiver(null, asList(new BMPConnection(data)),
+				return new Transceiver(null, List.of(new BMPConnection(data)),
 						null, null, null, null, null);
 			} catch (ProcessException e) {
 				if (e.getCause() instanceof BMPSendTimedOutException

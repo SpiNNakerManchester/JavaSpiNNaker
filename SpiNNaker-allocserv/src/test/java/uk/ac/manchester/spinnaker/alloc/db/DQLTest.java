@@ -35,8 +35,9 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_USER;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.USER_COLUMNS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertCanMakeBoardLocation;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertSetEquals;
-import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.set;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
+
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -99,7 +100,7 @@ class DQLTest extends SQLQueries {
 	void listMachineNames() {
 		try (var q = c.query(LIST_MACHINE_NAMES)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("machine_name", "in_service"),
+			assertSetEquals(Set.of("machine_name", "in_service"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(false).isPresent());
@@ -133,7 +134,8 @@ class DQLTest extends SQLQueries {
 	void getMachineJobs() {
 		try (var q = c.query(GET_MACHINE_JOBS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("job_id", "owner_name"), q.getRowColumnNames());
+			assertSetEquals(Set.of("job_id", "owner_name"),
+					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -145,7 +147,7 @@ class DQLTest extends SQLQueries {
 		try (var q = c.query(GET_MACHINE_REPORTS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
-					set("board_id", "report_id", "report_timestamp",
+					Set.of("board_id", "report_id", "report_timestamp",
 							"reported_issue", "reporter_name"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
@@ -158,7 +160,7 @@ class DQLTest extends SQLQueries {
 	void getJobIds() {
 		try (var q = c.query(GET_JOB_IDS)) {
 			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("job_id", "machine_id", "job_state",
+			assertSetEquals(Set.of("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(0, 0).isPresent());
@@ -170,7 +172,7 @@ class DQLTest extends SQLQueries {
 	void getLiveJobIds() {
 		try (var q = c.query(GET_LIVE_JOB_IDS)) {
 			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("job_id", "machine_id", "job_state",
+			assertSetEquals(Set.of("job_id", "machine_id", "job_state",
 					"keepalive_timestamp"), q.getRowColumnNames());
 			c.transaction(() -> {
 				q.call(0, 0);
@@ -183,8 +185,8 @@ class DQLTest extends SQLQueries {
 	void getJob() {
 		try (var q = c.query(GET_JOB)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("job_id", "machine_id", "machine_name", "width",
-					"height", "depth", "root_id", "job_state",
+			assertSetEquals(Set.of("job_id", "machine_id", "machine_name",
+					"width", "height", "depth", "root_id", "job_state",
 					"keepalive_timestamp", "keepalive_host",
 					"keepalive_interval", "create_timestamp", "death_reason",
 					"death_timestamp", "original_request", "owner"),
@@ -199,7 +201,7 @@ class DQLTest extends SQLQueries {
 	void getJobBoards() {
 		try (var q = c.query(GET_JOB_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("board_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_JOB).isPresent());
 			});
@@ -222,7 +224,7 @@ class DQLTest extends SQLQueries {
 	void getJobChipDimensions() {
 		try (var q = c.query(GET_JOB_CHIP_DIMENSIONS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("width", "height"), q.getRowColumnNames());
+			assertSetEquals(Set.of("width", "height"), q.getRowColumnNames());
 			c.transaction(() -> {
 				Row row = q.call1(NO_JOB).get();
 				// These two are actually NULL when there's no job
@@ -236,7 +238,7 @@ class DQLTest extends SQLQueries {
 	void getRootOfBoard() {
 		try (var q = c.query(GET_ROOT_OF_BOARD)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("root_x", "root_y"), q.getRowColumnNames());
+			assertSetEquals(Set.of("root_x", "root_y"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
@@ -247,7 +249,7 @@ class DQLTest extends SQLQueries {
 	void getRootBMPAddress() {
 		try (var q = c.query(GET_ROOT_BMP_ADDRESS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("address"), q.getRowColumnNames());
+			assertSetEquals(Set.of("address"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -258,7 +260,7 @@ class DQLTest extends SQLQueries {
 	void getBMPAddress() {
 		try (var q = c.query(GET_BMP_ADDRESS)) {
 			assertEquals(3, q.getNumArguments());
-			assertSetEquals(set("address"), q.getRowColumnNames());
+			assertSetEquals(Set.of("address"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
 			});
@@ -269,7 +271,7 @@ class DQLTest extends SQLQueries {
 	void getBoardAddress() {
 		try (var q = c.query(GET_BOARD_ADDRESS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("address"), q.getRowColumnNames());
+			assertSetEquals(Set.of("address"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
@@ -280,7 +282,7 @@ class DQLTest extends SQLQueries {
 	void getBoardPowerInfo() {
 		try (var q = c.query(GET_BOARD_POWER_INFO)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_power", "power_off_timestamp",
+			assertSetEquals(Set.of("board_power", "power_off_timestamp",
 					"power_on_timestamp"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
@@ -292,7 +294,7 @@ class DQLTest extends SQLQueries {
 	void getBoardJob() {
 		try (var q = c.query(GET_BOARD_JOB)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("allocated_job"), q.getRowColumnNames());
+			assertSetEquals(Set.of("allocated_job"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
@@ -304,7 +306,7 @@ class DQLTest extends SQLQueries {
 		try (var q = c.query(GET_BOARD_REPORTS)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
-					set("board_id", "report_id", "report_timestamp",
+					Set.of("board_id", "report_id", "report_timestamp",
 							"reported_issue", "reporter_name"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
@@ -317,7 +319,7 @@ class DQLTest extends SQLQueries {
 	void getBoardNumbers() {
 		try (var q = c.query(GET_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_num"), q.getRowColumnNames());
+			assertSetEquals(Set.of("board_num"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -328,7 +330,7 @@ class DQLTest extends SQLQueries {
 	void getBmpBoardNumbers() {
 		try (var q = c.query(GET_BMP_BOARD_NUMBERS)) {
 			assertEquals(3, q.getNumArguments());
-			assertSetEquals(set("board_num"), q.getRowColumnNames());
+			assertSetEquals(Set.of("board_num"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE, 0, 0).isPresent());
 			});
@@ -364,7 +366,7 @@ class DQLTest extends SQLQueries {
 		try (var q = c.query(getDeadLinks)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
-					set("board_1_x", "board_1_y", "board_1_z", "board_1_c",
+					Set.of("board_1_x", "board_1_y", "board_1_z", "board_1_c",
 							"board_1_f", "board_1_b", "board_1_addr", "dir_1",
 							"board_2_x", "board_2_y", "board_2_z", "board_2_c",
 							"board_2_f", "board_2_b", "board_2_addr", "dir_2"),
@@ -379,7 +381,7 @@ class DQLTest extends SQLQueries {
 	void getAvailableBoardNumbers() {
 		try (var q = c.query(GET_AVAILABLE_BOARD_NUMBERS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_num"), q.getRowColumnNames());
+			assertSetEquals(Set.of("board_num"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -390,7 +392,7 @@ class DQLTest extends SQLQueries {
 	void getTags() {
 		try (var q = c.query(GET_TAGS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("tag"), q.getRowColumnNames());
+			assertSetEquals(Set.of("tag"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -402,7 +404,7 @@ class DQLTest extends SQLQueries {
 		// This query always produces one row
 		try (var q = c.query(GET_SUM_BOARDS_POWERED)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("total_on"), q.getRowColumnNames());
+			assertSetEquals(Set.of("total_on"), q.getRowColumnNames());
 			c.transaction(() -> {
 				Row row = q.call1(NO_JOB).get();
 				assertEquals(0, row.getInt("total_on"));
@@ -414,8 +416,8 @@ class DQLTest extends SQLQueries {
 	void getBoardConnectInfo() {
 		try (var q = c.query(GET_BOARD_CONNECT_INFO)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "x", "y", "z", "root_x",
-					"root_y"), q.getRowColumnNames());
+			assertSetEquals(Set.of("board_id", "address", "x", "y", "z",
+					"root_x", "root_y"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_JOB).isPresent());
 			});
@@ -426,7 +428,7 @@ class DQLTest extends SQLQueries {
 	void getRootCoords() {
 		try (var q = c.query(GET_ROOT_COORDS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("x", "y", "z", "root_x", "root_y"),
+			assertSetEquals(Set.of("x", "y", "z", "root_x", "root_y"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
@@ -438,7 +440,7 @@ class DQLTest extends SQLQueries {
 	void getAllocationTasks() {
 		try (var q = c.query(getAllocationTasks)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("req_id", "job_id", "num_boards", "width",
+			assertSetEquals(Set.of("req_id", "job_id", "num_boards", "width",
 					"height", "board_id", "machine_id", "max_dead_boards",
 					"max_height", "max_width", "job_state", "importance"),
 					q.getRowColumnNames());
@@ -452,7 +454,7 @@ class DQLTest extends SQLQueries {
 	void findFreeBoard() {
 		try (var q = c.query(FIND_FREE_BOARD)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
+			assertSetEquals(Set.of("x", "y", "z"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -463,7 +465,7 @@ class DQLTest extends SQLQueries {
 	void getBoardByCoords() {
 		try (var q = c.query(GET_BOARD_BY_COORDS)) {
 			assertEquals(4, q.getNumArguments());
-			assertSetEquals(set("board_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("board_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE, -1, -1, -1).isPresent());
 			});
@@ -474,7 +476,7 @@ class DQLTest extends SQLQueries {
 	void findExpiredJobs() {
 		try (var q = c.query(FIND_EXPIRED_JOBS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("job_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1().isPresent());
 			});
@@ -485,7 +487,7 @@ class DQLTest extends SQLQueries {
 	void loadDirInfo() {
 		try (var q = c.query(LOAD_DIR_INFO)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("z", "direction", "dx", "dy", "dz"),
+			assertSetEquals(Set.of("z", "direction", "dx", "dy", "dz"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				q.call();
@@ -499,7 +501,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			var colNames = q.getRowColumnNames();
 			assertSetEquals(
-					set("change_id", "job_id", "board_id", "power", "fpga_n",
+					Set.of("change_id", "job_id", "board_id", "power", "fpga_n",
 							"fpga_s", "fpga_e", "fpga_w", "fpga_nw", "fpga_se",
 							"in_progress", "from_state", "to_state",
 							"board_num", "cabinet", "frame", "bmp_id"),
@@ -520,7 +522,7 @@ class DQLTest extends SQLQueries {
 	void findRectangle() {
 		try (var q = c.query(findRectangle)) {
 			assertEquals(4, q.getNumArguments());
-			assertSetEquals(set("id", "x", "y", "z", "available"),
+			assertSetEquals(Set.of("id", "x", "y", "z", "available"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(-1, -1, NO_MACHINE, 0).isPresent());
@@ -532,7 +534,7 @@ class DQLTest extends SQLQueries {
 	void findRectangleAt() {
 		try (var q = c.query(findRectangleAt)) {
 			assertEquals(5, q.getNumArguments());
-			assertSetEquals(set("id", "x", "y", "z", "available"),
+			assertSetEquals(Set.of("id", "x", "y", "z", "available"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(
@@ -545,7 +547,7 @@ class DQLTest extends SQLQueries {
 	void findLocation() {
 		try (var q = c.query(findLocation)) {
 			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("x", "y", "z"), q.getRowColumnNames());
+			assertSetEquals(Set.of("x", "y", "z"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE, NO_BOARD).isPresent());
 			});
@@ -556,7 +558,7 @@ class DQLTest extends SQLQueries {
 	void countConnected() {
 		try (var q = c.query(countConnected)) {
 			assertEquals(5, q.getNumArguments());
-			assertSetEquals(set("connected_size"), q.getRowColumnNames());
+			assertSetEquals(Set.of("connected_size"), q.getRowColumnNames());
 			c.transaction(() -> {
 				Row row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
 				assertEquals(0, row.getInt("connected_size"));
@@ -568,7 +570,7 @@ class DQLTest extends SQLQueries {
 	void countPendingChanges() {
 		try (var q = c.query(COUNT_PENDING_CHANGES)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("c"), q.getRowColumnNames());
+			assertSetEquals(Set.of("c"), q.getRowColumnNames());
 			c.transaction(() -> {
 				Row row = q.call1().get();
 				assertEquals(0, row.getInt("c"));
@@ -580,7 +582,7 @@ class DQLTest extends SQLQueries {
 	void getPerimeterLinks() {
 		try (var q = c.query(getPerimeterLinks)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_id", "direction"),
+			assertSetEquals(Set.of("board_id", "direction"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_JOB).isPresent());
@@ -592,10 +594,10 @@ class DQLTest extends SQLQueries {
 	void findBoardByGlobalChip() {
 		try (var q = c.query(findBoardByGlobalChip)) {
 			assertEquals(3, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
-					"job_id", "machine_name", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_root_chip_x", "job_root_chip_y"),
+			assertSetEquals(Set.of("board_id", "address", "bmp_id", "x", "y",
+					"z", "job_id", "machine_name", "cabinet", "frame",
+					"board_num", "chip_x", "chip_y", "board_chip_x",
+					"board_chip_y", "job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			c.transaction(() -> {
@@ -609,7 +611,7 @@ class DQLTest extends SQLQueries {
 		try (var q = c.query(findBoardByJobChip)) {
 			assertEquals(4, q.getNumArguments());
 			assertSetEquals(
-					set("board_id", "address", "x", "y", "z", "job_id",
+					Set.of("board_id", "address", "x", "y", "z", "job_id",
 							"machine_name", "cabinet", "frame", "board_num",
 							"chip_x", "chip_y", "board_chip_x", "board_chip_y",
 							"job_root_chip_x", "job_root_chip_y"),
@@ -625,10 +627,10 @@ class DQLTest extends SQLQueries {
 	void findBoardByLogicalCoords() {
 		try (var q = c.query(findBoardByLogicalCoords)) {
 			assertEquals(4, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
-					"job_id", "machine_name", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_root_chip_x", "job_root_chip_y"),
+			assertSetEquals(Set.of("board_id", "address", "bmp_id", "x", "y",
+					"z", "job_id", "machine_name", "cabinet", "frame",
+					"board_num", "chip_x", "chip_y", "board_chip_x",
+					"board_chip_y", "job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			c.transaction(() -> {
@@ -641,10 +643,10 @@ class DQLTest extends SQLQueries {
 	void findBoardByPhysicalCoords() {
 		try (var q = c.query(findBoardByPhysicalCoords)) {
 			assertEquals(4, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
-					"job_id", "machine_name", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_root_chip_x", "job_root_chip_y"),
+			assertSetEquals(Set.of("board_id", "address", "bmp_id", "x", "y",
+					"z", "job_id", "machine_name", "cabinet", "frame",
+					"board_num", "chip_x", "chip_y", "board_chip_x",
+					"board_chip_y", "job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			c.transaction(() -> {
@@ -657,10 +659,10 @@ class DQLTest extends SQLQueries {
 	void findBoardByIPAddress() {
 		try (var q = c.query(findBoardByIPAddress)) {
 			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("board_id", "address", "bmp_id", "x", "y", "z",
-					"job_id", "machine_name", "cabinet", "frame", "board_num",
-					"chip_x", "chip_y", "board_chip_x", "board_chip_y",
-					"job_root_chip_x", "job_root_chip_y"),
+			assertSetEquals(Set.of("board_id", "address", "bmp_id", "x", "y",
+					"z", "job_id", "machine_name", "cabinet", "frame",
+					"board_num", "chip_x", "chip_y", "board_chip_x",
+					"board_chip_y", "job_root_chip_x", "job_root_chip_y"),
 					q.getRowColumnNames());
 			assertCanMakeBoardLocation(q);
 			c.transaction(() -> {
@@ -673,7 +675,7 @@ class DQLTest extends SQLQueries {
 	void getJobsWithChanges() {
 		try (var q = c.query(getJobsWithChanges)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("job_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE).isPresent());
 			});
@@ -684,7 +686,7 @@ class DQLTest extends SQLQueries {
 	void getConnectedBoards() {
 		try (var q = c.query(getConnectedBoards)) {
 			assertEquals(7, q.getNumArguments());
-			assertSetEquals(set("board_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("board_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_MACHINE, -1, -1, -1, -1, -1, -1)
 						.isPresent());
@@ -740,7 +742,7 @@ class DQLTest extends SQLQueries {
 	void getFunctioningField() {
 		try (var q = c.query(GET_FUNCTIONING_FIELD)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("functioning"), q.getRowColumnNames());
+			assertSetEquals(Set.of("functioning"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_BOARD).isPresent());
 			});
@@ -751,7 +753,7 @@ class DQLTest extends SQLQueries {
 	void getGroupQuota() {
 		try (var q = c.query(GET_GROUP_QUOTA)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("quota"), q.getRowColumnNames());
+			assertSetEquals(Set.of("quota"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_GROUP).isPresent());
 			});
@@ -841,7 +843,7 @@ class DQLTest extends SQLQueries {
 	void getUserQuota() {
 		try (var q = c.query(GET_USER_QUOTA)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("quota_total", "user_id"),
+			assertSetEquals(Set.of("quota_total", "user_id"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_NAME).isPresent());
@@ -853,7 +855,7 @@ class DQLTest extends SQLQueries {
 	void getCurrentUsage() {
 		try (var q = c.query(GET_CURRENT_USAGE)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("current_usage"), q.getRowColumnNames());
+			assertSetEquals(Set.of("current_usage"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertNull(q.call1(NO_GROUP).get().getObject("current_usage"));
 			});
@@ -864,7 +866,7 @@ class DQLTest extends SQLQueries {
 	void getJobUsageAndQuota() {
 		try (var q = c.query(GET_JOB_USAGE_AND_QUOTA)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("quota", "usage"), q.getRowColumnNames());
+			assertSetEquals(Set.of("quota", "usage"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_JOB).isPresent());
 			});
@@ -875,7 +877,7 @@ class DQLTest extends SQLQueries {
 	void getConsolidationTargets() {
 		try (var q = c.query(GET_CONSOLIDATION_TARGETS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("job_id", "group_id", "usage"),
+			assertSetEquals(Set.of("job_id", "group_id", "usage"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Empty DB has no consolidation targets
@@ -888,7 +890,7 @@ class DQLTest extends SQLQueries {
 	void isUserLocked() {
 		try (var q = c.query(IS_USER_LOCKED)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("disabled", "locked", "user_id"),
+			assertSetEquals(Set.of("disabled", "locked", "user_id"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Empty DB has no consolidation targets
@@ -901,9 +903,8 @@ class DQLTest extends SQLQueries {
 	void getUserAuthorities() {
 		try (var q = c.query(GET_USER_AUTHORITIES)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(
-					set("trust_level", "encrypted_password", "openid_subject"),
-					q.getRowColumnNames());
+			assertSetEquals(Set.of("trust_level", "encrypted_password",
+					"openid_subject"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_USER).isPresent());
 			});
@@ -914,7 +915,7 @@ class DQLTest extends SQLQueries {
 	void listAllUsers() {
 		try (var q = c.query(LIST_ALL_USERS)) {
 			assertEquals(0, q.getNumArguments());
-			assertSetEquals(set("user_id", "user_name", "openid_subject"),
+			assertSetEquals(Set.of("user_id", "user_name", "openid_subject"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Testing DB has no users by default
@@ -927,7 +928,7 @@ class DQLTest extends SQLQueries {
 	void listAllUsersOfType() {
 		try (var q = c.query(LIST_ALL_USERS_OF_TYPE)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("user_id", "user_name", "openid_subject"),
+			assertSetEquals(Set.of("user_id", "user_name", "openid_subject"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				// Testing DB has no users by default
@@ -940,7 +941,7 @@ class DQLTest extends SQLQueries {
 	void getUserId() {
 		try (var q = c.query(GET_USER_ID)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("user_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("user_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				// Testing DB has no users by default
 				assertFalse(q.call1(NO_NAME).isPresent());
@@ -985,7 +986,7 @@ class DQLTest extends SQLQueries {
 	void getGroupByNameAndMember() {
 		try (var q = c.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
 			assertEquals(2, q.getNumArguments());
-			assertSetEquals(set("group_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("group_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_NAME, NO_NAME).isPresent());
 			});
@@ -996,7 +997,7 @@ class DQLTest extends SQLQueries {
 	void getGroupsOfUser() {
 		try (var q = c.query(GET_GROUPS_OF_USER)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("group_id"), q.getRowColumnNames());
+			assertSetEquals(Set.of("group_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_NAME).isPresent());
 			});
@@ -1007,7 +1008,7 @@ class DQLTest extends SQLQueries {
 	void countMachineThings() {
 		try (var q = c.query(COUNT_MACHINE_THINGS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("board_count", "in_use", "num_jobs"),
+			assertSetEquals(Set.of("board_count", "in_use", "num_jobs"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				Row r = q.call1(NO_MACHINE).get();
@@ -1022,7 +1023,7 @@ class DQLTest extends SQLQueries {
 	void countPoweredBoards() {
 		try (var q = c.query(COUNT_POWERED_BOARDS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("c"), q.getRowColumnNames());
+			assertSetEquals(Set.of("c"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertEquals(0, q.call1(NO_JOB).get().getInt("c"));
 			});
@@ -1034,7 +1035,7 @@ class DQLTest extends SQLQueries {
 		try (var q = c.query(LIST_LIVE_JOBS)) {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(
-					set("allocation_size", "create_timestamp", "job_id",
+					Set.of("allocation_size", "create_timestamp", "job_id",
 							"job_state", "keepalive_host", "keepalive_interval",
 							"machine_id", "machine_name", "user_name"),
 					q.getRowColumnNames());
@@ -1049,7 +1050,8 @@ class DQLTest extends SQLQueries {
 	void getLocalUserDetails() {
 		try (var q = c.query(GET_LOCAL_USER_DETAILS)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("user_id", "user_name", "encrypted_password"),
+			assertSetEquals(
+					Set.of("user_id", "user_name", "encrypted_password"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_USER).isPresent());
@@ -1062,7 +1064,7 @@ class DQLTest extends SQLQueries {
 		try (var q = c.query(getReportedBoards)) {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(
-					set("board_id", "num_reports", "x", "y", "z", "address"),
+					Set.of("board_id", "num_reports", "x", "y", "z", "address"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(0).isPresent());

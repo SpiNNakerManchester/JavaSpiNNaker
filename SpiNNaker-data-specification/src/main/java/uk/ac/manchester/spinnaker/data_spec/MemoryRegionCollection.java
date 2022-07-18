@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.System.arraycopy;
-import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOf;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.range;
@@ -25,6 +24,7 @@ import static java.util.stream.IntStream.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
@@ -161,7 +161,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 
 	@Override
 	public Iterator<MemoryRegion> iterator() {
-		return asList(regions).iterator();
+		return List.of(regions).iterator();
 	}
 
 	@Override

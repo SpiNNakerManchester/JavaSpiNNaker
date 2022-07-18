@@ -21,7 +21,6 @@ import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -39,6 +38,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -459,7 +459,7 @@ public class SCPRequestPipeline {
 		finish();
 
 		// Update the packet with a (non-valuable) sequence number
-		request.scpRequestHeader.issueSequenceNumber(emptySet());
+		request.scpRequestHeader.issueSequenceNumber(Set.of());
 		// Send the request
 		new Request<>(request, null, null).send();
 	}

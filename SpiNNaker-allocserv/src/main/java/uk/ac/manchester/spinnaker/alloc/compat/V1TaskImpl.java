@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
@@ -228,7 +226,7 @@ class V1TaskImpl extends V1CompatTask {
 			vals.add((String) src);
 		}
 		if (vals.isEmpty() && mayForceDefault) {
-			return asList("default");
+			return List.of("default");
 		}
 		return vals;
 	}
@@ -401,7 +399,7 @@ class V1TaskImpl extends V1CompatTask {
 				return spalloc.getJobs(false, LOTS, 0).ids();
 			});
 			if (nonNull(jobId)) {
-				actual.retainAll(singleton(jobId));
+				actual.retainAll(List.of(jobId));
 			}
 			writeJobNotification(actual);
 		});
@@ -420,7 +418,7 @@ class V1TaskImpl extends V1CompatTask {
 			var actual = new ArrayList<>(permit
 					.authorize(() -> spalloc.getMachines(false)).keySet());
 			if (nonNull(machine)) {
-				actual.retainAll(singleton(machine));
+				actual.retainAll(List.of(machine));
 			}
 			writeMachineNotification(actual);
 		});

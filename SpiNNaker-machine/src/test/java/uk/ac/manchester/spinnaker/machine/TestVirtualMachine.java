@@ -19,20 +19,25 @@ package uk.ac.manchester.spinnaker.machine;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.hamcrest.collection.IsEmptyCollection;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.BOTTOM;
+import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.TOP_RIGHT;
+
 import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
-import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 
 /**
  *
@@ -102,13 +107,13 @@ public class TestVirtualMachine {
 				instance.coresAndLinkOutputString());
 
 		instance.addFpgaLinks();
-		var link = instance.getFpgaLink(FpgaId.BOTTOM, 3, address);
+		var link = instance.getFpgaLink(BOTTOM, 3, address);
 		assertEquals(address, link.boardAddress);
-		assertEquals(Direction.SOUTH, link.direction);
-		assertEquals(FpgaId.BOTTOM, link.fpgaId);
+		assertEquals(SOUTH, link.direction);
+		assertEquals(BOTTOM, link.fpgaId);
 		assertEquals(3, link.fpgaLinkId);
 
-		ArrayList<FPGALinkData> links = new ArrayList<>();
+		var links = new ArrayList<FPGALinkData>();
 		instance.getFpgaLinks().forEach(links::add);
 		assertEquals(3 * 16, links.size());
 	}
@@ -137,17 +142,13 @@ public class TestVirtualMachine {
 
 	@Test
 	public void testSpinnakerLinks() {
-		var ignoreLinks = new HashMap<ChipLocation, Set<Direction>>();
-		ignoreLinks.put(new ChipLocation(0, 0),
-				Collections.singleton(Direction.SOUTHWEST));
-		ignoreLinks.put(new ChipLocation(8, 4),
-				Collections.singleton(Direction.SOUTHWEST));
-		ignoreLinks.put(new ChipLocation(4, 8),
-				Collections.singleton(Direction.SOUTHWEST));
+		var ignoreLinks = Map.of(//
+				new ChipLocation(0, 0), Set.of(SOUTHWEST),
+				new ChipLocation(8, 4), Set.of(SOUTHWEST),
+				new ChipLocation(4, 8), Set.of(SOUTHWEST));
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, null, ignoreLinks);
-		assertFalse(instance.hasLinkAt(new ChipLocation(0, 0),
-				Direction.SOUTHWEST));
+		assertFalse(instance.hasLinkAt(new ChipLocation(0, 0), SOUTHWEST));
 		assertEquals(3 * 48, instance.chips().size());
 		assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
 		// Only ignored in one direction so 1.5 less
@@ -159,7 +160,7 @@ public class TestVirtualMachine {
 		var links = instance.spinnakerLinks();
 		assertEquals(3, links.size());
 		for (var link : links) {
-			assertEquals(Direction.SOUTHWEST, link.direction);
+			assertEquals(SOUTHWEST, link.direction);
 			assertEquals(0, link.spinnakerLinkId);
 			assertNotNull(link.boardAddress);
 		}
@@ -180,26 +181,21 @@ public class TestVirtualMachine {
 
 	@Test
 	public void test3BoardWrappedWithFPGALinks() {
-		var ignoreLinks = new HashMap<ChipLocation, Set<Direction>>();
 		// Make room for fpga links with two none fpga ignores as well
 		// South is a fpg NE is not
-		ignoreLinks.put(new ChipLocation(0, 0), new HashSet<>(
-				Arrays.asList(Direction.SOUTH, Direction.NORTHEAST)));
-		ignoreLinks.put(new ChipLocation(0, 3),
-				Collections.singleton(Direction.WEST));
-		ignoreLinks.put(new ChipLocation(7, 2),
-				Collections.singleton(Direction.NORTH));
-		// Middle of board so never fpga
-		ignoreLinks.put(new ChipLocation(1, 1),
-				Collections.singleton(Direction.NORTH));
+		var ignoreLinks = Map.of(//
+				new ChipLocation(0, 0), Set.of(SOUTH, NORTHEAST),
+				new ChipLocation(0, 3), Set.of(WEST),
+				new ChipLocation(7, 2), Set.of(NORTH),
+				// Middle of board so never fpga
+				new ChipLocation(1, 1), Set.of(NORTH));
 
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, null, ignoreLinks);
 		// Only ignored in one direction so 2.5 less
 		assertEquals("2592 cores and 429.5 links",
 				instance.coresAndLinkOutputString());
-		assertFalse(
-				instance.hasLinkAt(new ChipLocation(7, 2), Direction.NORTH));
+		assertFalse(instance.hasLinkAt(new ChipLocation(7, 2), NORTH));
 		instance.addFpgaLinks();
 		var links = new ArrayList<FPGALinkData>();
 		instance.getFpgaLinks().forEach(links::add);
@@ -209,10 +205,8 @@ public class TestVirtualMachine {
 
 	@Test
 	public void test3BoardNoWrap() throws UnknownHostException {
-		var ignoreLinks = new HashMap<ChipLocation, Set<Direction>>();
-
 		var instance = new VirtualMachine(new MachineDimensions(16, 16),
-				null, null, ignoreLinks);
+				null, null, Map.of());
 		assertEquals(3 * 48, instance.chips().size());
 
 		instance.addFpgaLinks();
@@ -225,13 +219,13 @@ public class TestVirtualMachine {
 
 		// Never fpga at the bbc internter address
 		var bbc = InetAddress.getByName("151.101.128.81");
-		assertNull(instance.getFpgaLink(FpgaId.BOTTOM, 0, bbc));
+		assertNull(instance.getFpgaLink(BOTTOM, 0, bbc));
 		assertFalse(instance.getFpgaLinks(bbc).iterator().hasNext());
 
 		var bootAddress = instance.bootChip().ipAddress;
 
 		// Never any addresses on the top right of the boot board
-		assertNull(instance.getFpgaLink(FpgaId.TOP_RIGHT, 0, bootAddress));
+		assertNull(instance.getFpgaLink(TOP_RIGHT, 0, bootAddress));
 
 		var iterator = instance.getFpgaLinks(bootAddress).iterator();
 		int count = 0;
@@ -244,8 +238,7 @@ public class TestVirtualMachine {
 
 	@Test
 	public void testIgnoreCores() {
-		var ignoreCores = new HashMap<ChipLocation, Set<Integer>>();
-		ignoreCores.put(new ChipLocation(7, 7), new HashSet<>(asList(3, 5, 7)));
+		var ignoreCores = Map.of(new ChipLocation(7, 7), Set.of(3, 5, 7));
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, ignoreCores, null);
 		assertEquals(3 * 48, instance.chips().size());
@@ -256,9 +249,8 @@ public class TestVirtualMachine {
 
 	@Test
 	public void testIgnoreChips() {
-		var ignoreChips = new HashSet<ChipLocation>();
-		ignoreChips.add(new ChipLocation(4, 4));
-		ignoreChips.add(new ChipLocation(9, 10));
+		var ignoreChips =
+				Set.of(new ChipLocation(4, 4), new ChipLocation(9, 10));
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				ignoreChips, null, null);
 		assertEquals(3 * 48 - 2, instance.chips().size());

@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static java.util.Arrays.asList;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_ADMIN;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_READER;
 import static uk.ac.manchester.spinnaker.alloc.security.Grants.GRANT_USER;
@@ -55,7 +54,7 @@ public enum TrustLevel {
 	private List<String> grants;
 
 	TrustLevel(String... grants) {
-		this.grants = asList(grants);
+		this.grants = List.of(grants);
 	}
 
 	/**

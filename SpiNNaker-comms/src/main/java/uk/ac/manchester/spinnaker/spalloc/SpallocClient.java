@@ -20,8 +20,6 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGL
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE;
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
@@ -101,16 +99,12 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	/** The default communication timeout. (This is no timeout at all.) */
 	private static final Integer DEFAULT_TIMEOUT = null;
 
-	private static final Set<String> ALLOWED_KWARGS = new HashSet<>();
+	private static final Set<String> ALLOWED_KWARGS =
+			Set.of(USER_PROPERTY, KEEPALIVE_PROPERTY, MACHINE_PROPERTY,
+					TAGS_PROPERTY, MIN_RATIO_PROPERTY, MAX_DEAD_BOARDS_PROPERTY,
+					MAX_DEAD_LINKS_PROPERTY, REQUIRE_TORUS_PROPERTY);
 
 	private static final ObjectMapper MAPPER = createMapper();
-
-	static {
-		ALLOWED_KWARGS.addAll(asList(USER_PROPERTY, KEEPALIVE_PROPERTY,
-				MACHINE_PROPERTY, TAGS_PROPERTY, MIN_RATIO_PROPERTY,
-				MAX_DEAD_BOARDS_PROPERTY, MAX_DEAD_LINKS_PROPERTY,
-				REQUIRE_TORUS_PROPERTY));
-	}
 
 	/**
 	 * Define a new connection using the default spalloc port. <b>NB:</b> Does
@@ -358,17 +352,6 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		}
 	}
 
-	/**
-	 * Wrap an array into a read-only list.
-	 *
-	 * @param array
-	 *            The array to be wrapped.
-	 * @return An unmodifiable list that uses the array for its storage.
-	 */
-	private static <T> List<T> rolist(T[] array) {
-		return unmodifiableList(asList(array));
-	}
-
 	@Override
 	public List<JobDescription> listJobs(Integer timeout)
 			throws IOException, SpallocServerException {
@@ -376,7 +359,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		if (log.isDebugEnabled()) {
 			log.debug("list-jobs result: {}", json);
 		}
-		return rolist(MAPPER.readValue(json, JobDescription[].class));
+		return List.of(MAPPER.readValue(json, JobDescription[].class));
 	}
 
 	@Override
@@ -386,7 +369,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		if (log.isDebugEnabled()) {
 			log.debug("list-machines result: {}", json);
 		}
-		return rolist(MAPPER.readValue(json, Machine[].class));
+		return List.of(MAPPER.readValue(json, Machine[].class));
 	}
 
 	@Override

@@ -16,14 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableSet;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -238,7 +236,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return True if and only if there is a none empty Subset for this Chip.
 	 */
 	public boolean isChip(ChipLocation chip) {
-		return !locations.getOrDefault(chip, emptyMap()).isEmpty();
+		return !locations.getOrDefault(chip, Map.of()).isEmpty();
 	}
 
 	/**
@@ -250,7 +248,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return True if and only if there is a core with these coordinates
 	 */
 	public boolean isCore(CoreLocation core) {
-		return locations.getOrDefault(core.asChipLocation(), emptyMap())
+		return locations.getOrDefault(core.asChipLocation(), Map.of())
 				.containsValue(core);
 	}
 
@@ -366,7 +364,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 		if (locations.containsKey(chip)) {
 			return unmodifiableCollection(locations.get(chip).values());
 		} else {
-			return emptyList();
+			return List.of();
 		}
 	}
 
@@ -384,7 +382,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 		if (locations.containsKey(chip)) {
 			return unmodifiableSet(locations.get(chip).keySet());
 		} else {
-			return emptySet();
+			return Set.of();
 		}
 	}
 }

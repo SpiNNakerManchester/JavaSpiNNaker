@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -535,7 +533,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private OpenIDDerivedAuthenticationToken(String who,
 				OriginatingCredential credential) {
-			super(asList(new SimpleGrantedAuthority(GRANT_READER),
+			super(List.of(new SimpleGrantedAuthority(GRANT_READER),
 					new SimpleGrantedAuthority(GRANT_USER)));
 			this.who = who;
 			this.credential = credential;
@@ -891,7 +889,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		} catch (ClassCastException e) {
 			log.debug("failed to convert claim", e);
 		}
-		return emptyList();
+		return List.of();
 	}
 
 	private void mapAuthorities(String source, ClaimAccessor claimSet,

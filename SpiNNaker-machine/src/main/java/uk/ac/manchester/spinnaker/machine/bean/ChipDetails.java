@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.machine.bean;
 
 import static java.net.InetAddress.getByName;
-import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 import java.net.InetAddress;
@@ -87,7 +86,7 @@ public class ChipDetails {
 			deadDirections = deadLinks.stream().map(Direction::byId)
 					.collect(toUnmodifiableSet());
 		} else {
-			deadDirections = emptySet();
+			deadDirections = Set.of();
 		}
 	}
 

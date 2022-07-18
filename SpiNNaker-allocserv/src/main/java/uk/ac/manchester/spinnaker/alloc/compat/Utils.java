@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.interrupted;
 import static java.lang.reflect.Array.newInstance;
-import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_S;
@@ -258,7 +257,7 @@ abstract class Utils {
 		bl2.setZ(downLink.end2.board.getZ());
 		bl2.setLink(downLink.end2.direction.ordinal());
 
-		return asList(bl1, bl2).stream();
+		return List.of(bl1, bl2).stream();
 	}
 
 	/**

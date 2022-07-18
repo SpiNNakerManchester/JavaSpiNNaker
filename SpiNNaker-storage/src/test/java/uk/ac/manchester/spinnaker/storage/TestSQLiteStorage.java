@@ -18,14 +18,13 @@ package uk.ac.manchester.spinnaker.storage;
 
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,15 +58,15 @@ class TestSQLiteStorage {
 		var storage = new BufferManagerDatabaseEngine(db).getStorageInterface();
 		var core = new CoreLocation(0, 0, 0);
 
-		assertEquals(emptyList(), storage.getCoresWithStorage());
+		assertEquals(List.of(), storage.getCoresWithStorage());
 
 		var rr = new BufferManagerStorage.Region(core, 0, NULL, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
 
-		assertEquals(asList(core), storage.getCoresWithStorage());
-		assertEquals(asList(0), storage.getRegionsWithStorage(core));
+		assertEquals(List.of(core), storage.getCoresWithStorage());
+		assertEquals(List.of(0), storage.getRegionsWithStorage(core));
 	}
 
 	@Test

@@ -16,15 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.front_end.iobuf;
 
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.bean.MapperFactory.createMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -48,16 +45,14 @@ public class TestIobufRequest {
 		var f1 = (new File("/some/path/abc.aplx")).getAbsoluteFile();
 		var f2 = (new File("/some/path/def.aplx")).getAbsoluteFile();
 		var f3 = (new File("/some/path/ghi.aplx")).getAbsoluteFile();
-		assertEquals(new HashSet<>(asList(f1, f2, f3)), details.keySet());
-		assertEquals(new HashSet<>(asList(new ChipLocation(0, 0))),
+		assertEquals(Set.of(f1, f2, f3), details.keySet());
+		assertEquals(Set.of(new ChipLocation(0, 0)),
 				details.get(f1).getChips());
-		assertEquals(new HashSet<>(asList(1, 2, 3)),
+		assertEquals(Set.of(1, 2, 3),
 				details.get(f1).pByChip(new ChipLocation(0, 0)));
-		assertEquals(new HashSet<>(asList(new ChipLocation(0, 1))),
+		assertEquals(Set.of(new ChipLocation(0, 1)),
 				details.get(f2).getChips());
-		assertEquals(
-				new HashSet<>(
-						asList(new ChipLocation(0, 0), new ChipLocation(1, 0))),
+		assertEquals(Set.of(new ChipLocation(0, 0), new ChipLocation(1, 0)),
 				details.get(f3).getChips());
 	}
 

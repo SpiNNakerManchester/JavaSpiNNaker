@@ -30,39 +30,13 @@ public class TestTripleMapIterable {
 
 	@Test
 	public void testMultiple() {
-		var bigMap = new HashMap<Float, Map<Double, Map<String, Integer>>>();
-
-		var aMap = new HashMap<Double, Map<String, Integer>>();
-
-		var inner = new HashMap<String, Integer>();
-		inner.put("One", 1);
-		inner.put("Two", 2);
-		inner.put("Three", 3);
-		aMap.put(23.2, inner);
-
-		var inner2 = new HashMap<String, Integer>();
-		inner2.put("Ten", 10);
-		inner2.put("Eleven", 11);
-		inner2.put("Twelve", 12);
-		aMap.put(43.6, inner2);
-
-		bigMap.put(0.5f, aMap);
-
-		var aMap2 = new HashMap<Double, Map<String, Integer>>();
-
-		var inner11 = new HashMap<String, Integer>();
-		inner.put("Un", -1);
-		inner.put("Duex", -2);
-		inner.put("Trois", -3);
-		aMap2.put(423.2, inner11);
-
-		var inner12 = new HashMap<String, Integer>();
-		inner2.put("Dix", -10);
-		inner2.put("Onze", -11);
-		inner2.put("Douze", -12);
-		aMap2.put(4.6, inner12);
-
-		bigMap.put(2.5f, aMap2);
+		var bigMap = Map.of(//
+				0.5f, Map.of(//
+						23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+						43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12)),
+				2.5f, Map.of(//
+						423.2, Map.of("Un", -1, "Duex", -2, "Trois", -3), //
+						4.6, Map.of("Dix", -10, "Onze", -11, "Douze", -12)));
 
 		var instance = new TripleMapIterable<>(bigMap);
 		int count = 0;

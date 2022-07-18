@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
@@ -595,22 +593,22 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		static class Builder {
 			private String name;
 
-			private Set<String> tags = emptySet();
+			private Set<String> tags = Set.of();
 
 			private int width;
 
 			private int height;
 
-			private Set<TriadCoords> deadBoards = emptySet();
+			private Set<TriadCoords> deadBoards = Set.of();
 
-			private Map<TriadCoords, EnumSet<Link>> deadLinks = emptyMap();
+			private Map<TriadCoords, EnumSet<Link>> deadLinks = Map.of();
 
 			private Map<TriadCoords, BoardPhysicalCoords> boardLocations =
-					emptyMap();
+					Map.of();
 
-			private Map<BMPCoords, String> bmpIps = emptyMap();
+			private Map<BMPCoords, String> bmpIps = Map.of();
 
-			private Map<TriadCoords, String> spinnakerIps = emptyMap();
+			private Map<TriadCoords, String> spinnakerIps = Map.of();
 
 			public Builder withName(String name) {
 				this.name = name;

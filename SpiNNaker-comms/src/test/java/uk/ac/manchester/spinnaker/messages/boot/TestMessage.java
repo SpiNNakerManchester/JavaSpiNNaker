@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.messages.boot;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 
@@ -70,7 +69,7 @@ class TestMessage {
 		assertArrayEquals(expected, got);
 	}
 
-	private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 690);
+	private static final List<Integer> EXPECTED_SIZES = List.of(18, 1042, 690);
 
 	@Test
 	void testBootMessagesSerialize() {

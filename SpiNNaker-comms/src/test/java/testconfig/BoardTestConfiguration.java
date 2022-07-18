@@ -16,7 +16,6 @@
  */
 package testconfig;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
@@ -112,8 +111,8 @@ public class BoardTestConfiguration {
 			bmpNames = null;
 		} else {
 			var bmpHost = InetFactory.getByName(names);
-			bmpNames = asList(
-					new BMPConnectionData(0, 0, bmpHost, asList(0), null));
+			bmpNames = List.of(
+					new BMPConnectionData(0, 0, bmpHost, List.of(0), null));
 		}
 		autoDetectBMP = config.getBoolean(MCSEC, "auto_detect_bmp");
 		localport = PORT;

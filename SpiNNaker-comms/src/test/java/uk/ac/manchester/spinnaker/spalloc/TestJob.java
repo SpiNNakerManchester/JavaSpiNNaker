@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Thread.sleep;
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.OWNER;
 import static uk.ac.manchester.spinnaker.spalloc.MockServer.STOP;
@@ -104,7 +103,7 @@ class TestJob {
 			sleep(1200);
 
 			assertEquals(123, id);
-			assertEquals(asList(new BoardCoordinates(4, 5, 6),
+			assertEquals(List.of(new BoardCoordinates(4, 5, 6),
 					new BoardCoordinates(7, 8, 9)), boards);
 			assertEquals(READY, state);
 			assertEquals(true, power);

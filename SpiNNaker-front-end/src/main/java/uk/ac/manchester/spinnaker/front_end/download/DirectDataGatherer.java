@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.String.format;
-import static java.util.Collections.singletonList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
@@ -135,7 +134,7 @@ public class DirectDataGatherer extends DataGatherer {
 				placement.getVertex());
 		// TODO This is probably wrong!
 		int size = b.get(regionID + 1) - b.get(regionID);
-		return singletonList(new Region(placement, regionID,
+		return List.of(new Region(placement, regionID,
 				new MemoryLocation(b.get(regionID)), size));
 	}
 

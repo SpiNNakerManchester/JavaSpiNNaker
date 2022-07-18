@@ -18,9 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -345,14 +342,14 @@ public class BMPController extends DatabaseAwareBean {
 				JobState to, List<Integer> changeIds,
 				Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard) {
 			this.machine = requireNonNull(machine);
-			powerOnBoards = isNull(powerOn) ? emptyMap() : powerOn;
-			powerOffBoards = isNull(powerOff) ? emptyMap() : powerOff;
-			linkRequests = isNull(links) ? emptyMap() : links;
+			powerOnBoards = isNull(powerOn) ? Map.of() : powerOn;
+			powerOffBoards = isNull(powerOff) ? Map.of() : powerOff;
+			linkRequests = isNull(links) ? Map.of() : links;
 			this.jobId = jobId;
 			this.from = from;
 			this.to = to;
 			this.changeIds = changeIds;
-			this.idToBoard = isNull(idToBoard) ? emptyMap() : idToBoard;
+			this.idToBoard = isNull(idToBoard) ? Map.of() : idToBoard;
 			/*
 			 * Map this now so we keep the DB out of the way of the BMP. This
 			 * mapping is not expected to change during the request's lifetime.
@@ -385,21 +382,20 @@ public class BMPController extends DatabaseAwareBean {
 				controller.setIdToBoardMap(bmp.getValue());
 
 				// Send any power on commands
-				var on = powerOnBoards.getOrDefault(bmp.getKey(), emptyList());
+				var on = powerOnBoards.getOrDefault(bmp.getKey(), List.of());
 				if (!on.isEmpty()) {
 					controller.powerOnAndCheck(on);
 				}
 
 				// Process perimeter link requests next
 				for (var linkReq : linkRequests.getOrDefault(bmp.getKey(),
-						emptyList())) {
+						List.of())) {
 					// Set the link state, as required
 					controller.setLinkOff(linkReq);
 				}
 
 				// Finally send any power off commands
-				var off = powerOffBoards.getOrDefault(bmp.getKey(),
-						emptyList());
+				var off = powerOffBoards.getOrDefault(bmp.getKey(), List.of());
 				if (!off.isEmpty()) {
 					controller.powerOff(off);
 				}
@@ -637,7 +633,7 @@ public class BMPController extends DatabaseAwareBean {
 				 * Decode a collection of boolean columns to say which links to
 				 * switch back off
 				 */
-				asList(Direction.values()).stream()
+				List.of(Direction.values()).stream()
 						.filter(link -> !row.getBoolean(link.columnName))
 						.forEach(link -> linksOff.get(bmp)
 								.add(new Link(board, link)));
@@ -943,7 +939,7 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		try (var mdc = putCloseable("changes",
-				asList(request.powerOnBoards.size(),
+				List.of(request.powerOnBoards.size(),
 						request.powerOffBoards.size(),
 						request.linkRequests.size()).toString())) {
 			for (int numTries = 0; numTries++ < props.getPowerAttempts();) {

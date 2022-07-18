@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,9 +30,6 @@ import org.junit.jupiter.api.Test;
  */
 public class TestMachineDefaults {
 
-	public TestMachineDefaults() {
-	}
-
 	// _4_chip_down_links = {
 	//     (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
 	//     (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
@@ -39,15 +38,11 @@ public class TestMachineDefaults {
 	@Test
 	public void testFoutChipDownLinks() {
 		// Misuses of CoreLocation!
-		var fromPython = new ArrayList<CoreLocation>();
-		fromPython.add(new CoreLocation(0, 0, 3));
-		fromPython.add(new CoreLocation(0, 0, 4));
-		fromPython.add(new CoreLocation(0, 1, 3));
-		fromPython.add(new CoreLocation(0, 1, 4));
-		fromPython.add(new CoreLocation(1, 0, 0));
-		fromPython.add(new CoreLocation(1, 0, 1));
-		fromPython.add(new CoreLocation(1, 1, 0));
-		fromPython.add(new CoreLocation(1, 1, 1));
+		var fromPython = List.of(//
+				new CoreLocation(0, 0, 3), new CoreLocation(0, 0, 4),
+				new CoreLocation(0, 1, 3), new CoreLocation(0, 1, 4),
+				new CoreLocation(1, 0, 0), new CoreLocation(1, 0, 1),
+				new CoreLocation(1, 1, 0), new CoreLocation(1, 1, 1));
 
 		var fromDefaults = new ArrayList<CoreLocation>();
 		var map = MachineDefaults.FOUR_CHIP_DOWN_LINKS;

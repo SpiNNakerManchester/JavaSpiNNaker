@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
@@ -159,11 +158,11 @@ class TestClient {
 			assertEquals("bar", ((ExceptionResponse) c.receiveResponse(null))
 					.getException());
 			s.send("{\"machines_changed\": [\"foo\",\"bar\"]}");
-			assertEquals(asList("foo", "bar"),
+			assertEquals(List.of("foo", "bar"),
 					((MachinesChangedNotification) c.receiveResponse(null))
 							.getMachinesChanged());
 			s.send("{\"jobs_changed\": [1, 2]}");
-			assertEquals(asList(1, 2),
+			assertEquals(List.of(1, 2),
 					((JobsChangedNotification) c.receiveResponse(null))
 							.getJobsChanged());
 
@@ -295,7 +294,7 @@ class TestClient {
 			Map<String, Object> kwargs = new HashMap<>();
 			kwargs.put("bar", 2);
 			kwargs.put("owner", "dummy");
-			assertEquals(123, c.createJob(asList(1), kwargs));
+			assertEquals(123, c.createJob(List.of(1), kwargs));
 			JSONAssert.assertEquals(
 					"{\"command\": \"create_job\", \"args\": [1], "
 							+ "\"kwargs\": {\"owner\": \"dummy\"}}",

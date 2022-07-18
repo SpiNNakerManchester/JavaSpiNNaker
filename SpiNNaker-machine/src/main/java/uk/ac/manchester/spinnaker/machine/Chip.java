@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
@@ -80,7 +78,7 @@ public class Chip implements HasChipLocation {
 			Processor> DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
 
 	private static final List<Integer> DEFAULT_ETHERNET_TAG_IDS =
-			asList(1, 2, 3, 4, 5, 6, 7);
+			List.of(1, 2, 3, 4, 5, 6, 7);
 
 	// Note: emergency_routing_enabled not implemented as not used
 	// TODO convert_routing_table_entry_to_spinnaker_route
@@ -136,7 +134,7 @@ public class Chip implements HasChipLocation {
 		this.virtual = virtual;
 		if (tagIds == null) {
 			if (ipAddress == null) {
-				this.tagIds = emptyList();
+				this.tagIds = List.of();
 			} else {
 				this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
 			}
@@ -239,7 +237,7 @@ public class Chip implements HasChipLocation {
 
 		virtual = false;
 		if (ipAddress == null) {
-			tagIds = emptyList();
+			tagIds = List.of();
 		} else {
 			tagIds = DEFAULT_ETHERNET_TAG_IDS;
 		}

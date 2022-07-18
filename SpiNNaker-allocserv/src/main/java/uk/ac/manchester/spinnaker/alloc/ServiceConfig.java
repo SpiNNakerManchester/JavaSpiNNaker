@@ -19,9 +19,6 @@ package uk.ac.manchester.spinnaker.alloc;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.System.setProperty;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
@@ -192,9 +189,9 @@ public class ServiceConfig extends Application {
 		factory.setBus(bus);
 		factory.setProviders(new ArrayList<>(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
-		factory.setFeatures(asList(new OpenApiFeature()));
-		factory.setInInterceptors(asList(new JAXRSBeanValidationInInterceptor(),
-				protocolCorrector));
+		factory.setFeatures(List.of(new OpenApiFeature()));
+		factory.setInInterceptors(List
+				.of(new JAXRSBeanValidationInInterceptor(), protocolCorrector));
 		return factory;
 	}
 
@@ -224,13 +221,13 @@ public class ServiceConfig extends Application {
 		private Map<String, List<String>> getHeaders(Message message) {
 			// If we've got one of these in the message, it's of this type
 			return (Map<String, List<String>>) message
-					.getOrDefault(PROTOCOL_HEADERS, emptyMap());
+					.getOrDefault(PROTOCOL_HEADERS, Map.of());
 		}
 
 		@Override
 		public void handleMessage(Message message) throws Fault {
 			var headers = getHeaders(message);
-			if (headers.getOrDefault(FORWARDED_PROTOCOL, emptyList())
+			if (headers.getOrDefault(FORWARDED_PROTOCOL, List.of())
 					.contains("https")) {
 				upgradeEndpointProtocol(
 						(ServletRequest) message.get(HTTP_REQUEST));
@@ -280,7 +277,7 @@ public class ServiceConfig extends Application {
 	@DependsOn("JSONProvider")
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
 			Executor executor, JAXRSServerFactoryBean factory) {
-		factory.setServiceBeans(asList(service, adminService));
+		factory.setServiceBeans(List.of(service, adminService));
 		var s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
@@ -411,7 +408,7 @@ public class ServiceConfig extends Application {
 	private void logBeans() {
 		if (log.isDebugEnabled()) {
 			log.debug("beans defined: {}",
-					asList(ctx.getBeanDefinitionNames()));
+					List.of(ctx.getBeanDefinitionNames()));
 		}
 	}
 

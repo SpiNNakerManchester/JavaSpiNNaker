@@ -20,9 +20,6 @@ import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -48,7 +45,6 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,8 +116,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	/**
 	 * The set of states that indicate a core in a failure state.
 	 */
-	Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
-			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
+	Set<CPUState> DEFAULT_ERROR_STATES = Set.of(RUN_TIME_EXCEPTION, WATCHDOG);
 
 	/**
 	 * What proportion of checks are to be expensive full checks.
@@ -825,7 +820,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, numBytes, appID);
+		execute(core, Set.of(core.getP()), executable, numBytes, appID);
 	}
 
 	/**
@@ -883,7 +878,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, numBytes, appID,
+		execute(core, Set.of(core.getP()), executable, numBytes, appID,
 				wait);
 	}
 
@@ -937,7 +932,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void execute(HasCoreLocation core, File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, false);
+		execute(core, Set.of(core.getP()), executable, appID, false);
 	}
 
 	/**
@@ -991,7 +986,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, wait);
+		execute(core, Set.of(core.getP()), executable, appID, wait);
 	}
 
 	/**
@@ -1042,7 +1037,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, false);
+		execute(core, Set.of(core.getP()), executable, appID, false);
 	}
 
 	/**
@@ -1094,7 +1089,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, wait);
+		execute(core, Set.of(core.getP()), executable, appID, wait);
 	}
 
 	/**
@@ -2505,7 +2500,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			CPUState state) throws IOException, ProcessException {
-		return getCoresInState(allCoreSubsets, singleton(state));
+		return getCoresInState(allCoreSubsets, Set.of(state));
 	}
 
 	/**
@@ -2554,7 +2549,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
 			throws IOException, ProcessException {
-		return getCoresNotInState(allCoreSubsets, singleton(state));
+		return getCoresNotInState(allCoreSubsets, Set.of(state));
 	}
 
 	/**
