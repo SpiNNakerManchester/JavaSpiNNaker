@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.utils.DefaultMap.KeyAwareFactory;
@@ -44,12 +46,21 @@ public class TestDefaultMap {
 
 	@Test
 	public void testTyped() {
+		// Explicit to work around weird issue in Java 14 compiler
+		Supplier<List<Integer>> valueFactory = ArrayList::new;
 		DefaultMap<String, List<Integer>> instance =
-				new DefaultMap<String, List<Integer>>(ArrayList::new);
+				new DefaultMap<String, List<Integer>>(valueFactory);
 		var foo = instance.get("foo");
 		assertTrue(foo instanceof ArrayList);
 		// foo.add("a");
 		foo.add(1);
+		var bar = instance.get("bar");
+		assertNotEquals(foo, bar);
+		assertEquals(1, foo.size());
+		assertEquals(0, bar.size());
+		var bar2 = instance.get("bar");
+		bar2.add(123);
+		assertEquals(bar, bar2);
 	}
 
 	/**
