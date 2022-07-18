@@ -22,15 +22,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  *
@@ -502,13 +501,12 @@ public class TestMachine {
 	@Test
 	public void testUnreachableIncomingChips() {
 		var ignoreLinks =
-				new DefaultMap<ChipLocation, Set<Direction>>(HashSet::new);
-		ignoreLinks.get(new ChipLocation(2, 2)).add(Direction.NORTHEAST);
-		ignoreLinks.get(new ChipLocation(2, 3)).add(Direction.EAST);
-		ignoreLinks.get(new ChipLocation(3, 4)).add(Direction.SOUTH);
-		ignoreLinks.get(new ChipLocation(4, 4)).add(Direction.SOUTHWEST);
-		ignoreLinks.get(new ChipLocation(4, 3)).add(Direction.WEST);
-		ignoreLinks.get(new ChipLocation(3, 2)).add(Direction.NORTH);
+				Map.of(new ChipLocation(2, 2), Set.of(Direction.NORTHEAST),
+						new ChipLocation(2, 3), Set.of(Direction.EAST),
+						new ChipLocation(3, 4), Set.of(Direction.SOUTH),
+						new ChipLocation(4, 4), Set.of(Direction.SOUTHWEST),
+						new ChipLocation(4, 3), Set.of(Direction.WEST),
+						new ChipLocation(3, 2), Set.of(Direction.NORTH));
 
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				null, null, ignoreLinks);
