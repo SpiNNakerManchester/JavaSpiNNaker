@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,7 +124,7 @@ public class TestChip {
 
 	@Test
 	public void testRepeatMonitor() throws UnknownHostException {
-		var processors = getProcessors();
+		var processors = new ArrayList<>(getProcessors());
 		processors.add(Processor.factory(2, false));
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
@@ -134,7 +135,7 @@ public class TestChip {
 
 	@Test
 	public void testRepeatUser() throws UnknownHostException {
-		var processors = getProcessors();
+		var processors = new ArrayList<>(getProcessors());
 		processors.add(Processor.factory(4, true));
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
