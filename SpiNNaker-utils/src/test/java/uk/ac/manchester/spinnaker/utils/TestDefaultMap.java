@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,8 +46,8 @@ public class TestDefaultMap {
 	@Test
 	public void testTyped() {
 		// Explicit to work around weird issue in Java 14 compiler
-		DefaultMap<String, List<Integer>> instance =
-				new DefaultMap<>((Supplier<List<Integer>>) ArrayList::new);
+		var instance =
+				new DefaultMap<String, List<Integer>>(ArrayList<Integer>::new);
 		var foo = instance.get("foo");
 		assertTrue(foo instanceof ArrayList);
 		// foo.add("a");
