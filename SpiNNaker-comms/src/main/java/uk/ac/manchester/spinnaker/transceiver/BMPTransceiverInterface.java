@@ -1552,7 +1552,8 @@ public interface BMPTransceiverInterface {
 			MemoryLocation baseAddress, ByteBuffer data, boolean update)
 			throws ProcessException, IOException {
 		int size = data.remaining();
-		var bufferBase = eraseBMPFlash(bmp, board, baseAddress, size);
+		var workingBuffer = eraseBMPFlash(bmp, board, baseAddress, size);
+		var targetAddr = baseAddress;
 		int offset = 0;
 
 		while (true) {
@@ -1564,16 +1565,15 @@ public interface BMPTransceiverInterface {
 				break;
 			}
 
-			writeBMPMemory(bmp, board, bufferBase, buf);
-			chunkBMPFlash(bmp, board, baseAddress);
+			writeBMPMemory(bmp, board, workingBuffer, buf);
+			chunkBMPFlash(bmp, board, targetAddr);
 			if (length < FLASH_CHUNK_SIZE) {
 				break;
 			}
-			baseAddress = baseAddress.add(FLASH_CHUNK_SIZE);
+			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
 			offset += FLASH_CHUNK_SIZE;
 		}
 		if (update) {
-			// FIXME should this be the original address?
 			copyBMPFlash(bmp, board, baseAddress, size);
 		}
 	}

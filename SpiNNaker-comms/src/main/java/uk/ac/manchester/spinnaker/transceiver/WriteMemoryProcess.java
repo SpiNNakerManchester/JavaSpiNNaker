@@ -308,7 +308,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		while (bytesToWrite > 0) {
 			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-			var tmp = workingBuffer.slice();
+			var tmp = workingBuffer.duplicate();
 			bytesToSend = data.read(tmp.array(), 0, bytesToSend);
 			if (bytesToSend <= 0) {
 				break;

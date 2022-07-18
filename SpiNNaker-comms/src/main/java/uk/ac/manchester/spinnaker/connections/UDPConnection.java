@@ -376,8 +376,7 @@ public abstract class UDPConnection<T>
 		var buffer = allocate(receivePacketSize);
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
-		buffer.position(pkt.getLength());
-		buffer.flip();
+		buffer.position(pkt.getLength()).flip();
 		logRecv(buffer, pkt.getSocketAddress());
 		return buffer.order(LITTLE_ENDIAN);
 	}
@@ -426,8 +425,7 @@ public abstract class UDPConnection<T>
 		var buffer = allocate(receivePacketSize);
 		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
-		buffer.position(pkt.getLength());
-		buffer.flip();
+		buffer.position(pkt.getLength()).flip();
 		logRecv(buffer, pkt.getSocketAddress());
 		return new UDPPacket(buffer.order(LITTLE_ENDIAN),
 				(InetSocketAddress) pkt.getSocketAddress());
@@ -444,7 +442,7 @@ public abstract class UDPConnection<T>
 	 */
 	private static DatagramPacket formSendPacket(
 			ByteBuffer data, InetSocketAddress remoteAddress) {
-		if (data.isReadOnly() || !data.hasArray()) {
+		if (!data.hasArray()) {
 			// Yuck; must copy because can't touch the backing array
 			var buffer = new byte[data.remaining()];
 			data.duplicate().get(buffer);

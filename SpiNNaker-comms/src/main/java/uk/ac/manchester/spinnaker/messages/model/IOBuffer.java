@@ -71,7 +71,15 @@ public class IOBuffer implements HasCoreLocation {
 		this.core = core;
 		var baos = new ByteArrayOutputStream();
 		for (var b : contents) {
-			baos.write(b.array(), 0, b.limit()); // FIXME
+			if (b.hasArray()) {
+				baos.write(b.array(), b.arrayOffset() + b.position(),
+						b.remaining());
+			} else {
+				// Must copy
+				var temp = new byte[b.remaining()];
+				b.get(temp);
+				baos.write(temp, 0, temp.length);
+			}
 		}
 		iobuf = baos.toByteArray();
 	}

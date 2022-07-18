@@ -106,14 +106,13 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 */
 	void write(BMPBoard board, MemoryLocation baseAddress, InputStream data,
 			int bytesToWrite) throws IOException, ProcessException {
-		ValueHolder<IOException> exn = new ValueHolder<IOException>();
+		var exn = new ValueHolder<IOException>();
+		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		execute(new BMPWriteSFIterator(board, baseAddress, bytesToWrite) {
-			private ByteBuffer workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
-
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
 				try {
-					var buffer = workingBuffer.slice();
+					var buffer = workingBuffer.duplicate();
 					// After this, chunkSize is REAL chunk size or -1
 					chunkSize = data.read(buffer.array(), 0, chunkSize);
 					if (chunkSize < 1) {

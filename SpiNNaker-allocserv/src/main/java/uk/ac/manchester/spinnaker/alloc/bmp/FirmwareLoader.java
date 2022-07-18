@@ -321,7 +321,7 @@ public class FirmwareLoader {
 		// Dupe so we can freely manipulate the position
 		var slice = target.duplicate();
 		slice.position(offset);
-		slice.put(source.array(), source.arrayOffset(), source.remaining());
+		slice.put(source);
 	}
 
 	/**
