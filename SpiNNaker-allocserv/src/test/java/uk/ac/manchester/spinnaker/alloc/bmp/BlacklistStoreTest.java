@@ -68,20 +68,20 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 @SpringBootTest
-@SpringJUnitWebConfig(BlacklistIOTest.Config.class)
+@SpringJUnitWebConfig(BlacklistStoreTest.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
-	"spalloc.database-path=" + BlacklistIOTest.DB,
-	"spalloc.historical-data.path=" + BlacklistIOTest.HIST_DB
+	"spalloc.database-path=" + BlacklistStoreTest.DB,
+	"spalloc.historical-data.path=" + BlacklistStoreTest.HIST_DB
 })
-class BlacklistIOTest extends SQLQueries {
+class BlacklistStoreTest extends SQLQueries {
 	/** The DB file. */
 	static final String DB = "target/blio_test.sqlite3";
 
 	/** The DB file. */
 	static final String HIST_DB = "target/blio_test_hist.sqlite3";
 
-	private static final Logger log = getLogger(BlacklistIOTest.class);
+	private static final Logger log = getLogger(BlacklistStoreTest.class);
 
 	@Configuration
 	@ComponentScan(basePackageClasses = SpallocProperties.class)
@@ -92,9 +92,9 @@ class BlacklistIOTest extends SQLQueries {
 	private DatabaseEngine db;
 
 	@Autowired
-	private BlacklistIO blio;
+	private BlacklistStore blio;
 
-	private BlacklistIO.InternalAPI internal;
+	private BlacklistStore.InternalAPI internal;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
@@ -288,14 +288,14 @@ class BlacklistIOTest extends SQLQueries {
 					Query cores = c.query(GET_BLACKLISTED_CORES);
 					Query links = c.query(GET_BLACKLISTED_LINKS)) {
 				assertEquals(set(C11, C01),
-						chips.call(BOARD).map(BlacklistIOTest::coords).toSet());
+						chips.call(BOARD).map(BlacklistStoreTest::coords).toSet());
 				assertEquals(map(C10, set(3, 2, 1)),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistIOTest::coords,
+								HashSet::new, BlacklistStoreTest::coords,
 								integer("p")));
 				assertEquals(map(C77, set(NORTH, SOUTH, EAST, WEST)),
 						links.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistIOTest::coords,
+								HashSet::new, BlacklistStoreTest::coords,
 								enumerate("direction", Direction.class)));
 			}
 		});
@@ -317,14 +317,14 @@ class BlacklistIOTest extends SQLQueries {
 					Query cores = c.query(GET_BLACKLISTED_CORES);
 					Query links = c.query(GET_BLACKLISTED_LINKS)) {
 				assertEquals(set(C77, C10),
-						chips.call(BOARD).map(BlacklistIOTest::coords).toSet());
+						chips.call(BOARD).map(BlacklistStoreTest::coords).toSet());
 				assertEquals(map(C01, set(6, 4, 5)),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistIOTest::coords,
+								HashSet::new, BlacklistStoreTest::coords,
 								integer("p")));
 				assertEquals(map(C11, set(SOUTHWEST, NORTHEAST)),
 						links.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistIOTest::coords,
+								HashSet::new, BlacklistStoreTest::coords,
 								enumerate("direction", Direction.class)));
 			}
 		});
@@ -345,14 +345,14 @@ class BlacklistIOTest extends SQLQueries {
 					Query cores = c.query(GET_BLACKLISTED_CORES);
 					Query links = c.query(GET_BLACKLISTED_LINKS)) {
 				assertEquals(emptySet(),
-						chips.call(BOARD).map(BlacklistIOTest::coords).toSet());
+						chips.call(BOARD).map(BlacklistStoreTest::coords).toSet());
 				assertEquals(emptyMap(),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistIOTest::coords,
+								HashSet::new, BlacklistStoreTest::coords,
 								integer("p")));
 				assertEquals(emptyMap(),
 						links.call(BOARD).toCollectingMap(HashMap::new,
-								HashSet::new, BlacklistIOTest::coords,
+								HashSet::new, BlacklistStoreTest::coords,
 								enumerate("direction", Direction.class)));
 			}
 		});

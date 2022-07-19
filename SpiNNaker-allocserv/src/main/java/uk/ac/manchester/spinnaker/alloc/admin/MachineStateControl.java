@@ -53,7 +53,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
-import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistIO;
+import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistStore;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -76,7 +76,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private Epochs epochs;
 
 	@Autowired
-	private BlacklistIO blacklistHandler;
+	private BlacklistStore blacklistStore;
 
 	@Autowired
 	private ScheduledExecutorService executor;
@@ -399,7 +399,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public Optional<Blacklist> pullBlacklist(BoardState board) {
 		try {
 			return readBlacklistFromMachine(board).map(bl -> {
-				blacklistHandler.writeBlacklist(board.id, bl);
+				blacklistStore.writeBlacklist(board.id, bl);
 				execute(c -> {
 					// These must be done in ONE transaction
 					changed(c, board.id);
@@ -542,7 +542,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				curry(Op::new, CREATE_BLACKLIST_READ),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> {
-							blacklistHandler.writeBlacklist(op.boardId, bl);
+							blacklistStore.writeBlacklist(op.boardId, bl);
 							execute(c -> {
 								// These must be done in ONE transaction
 								changed(c, op.boardId);
@@ -576,7 +576,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *             If access to the DB fails.
 	 */
 	public Optional<Blacklist> readBlacklistFromDB(BoardState board) {
-		return blacklistHandler.readBlacklist(board.id);
+		return blacklistStore.readBlacklist(board.id);
 	}
 
 	/**
@@ -591,7 +591,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *             If access to the DB fails.
 	 */
 	public void writeBlacklistToDB(BoardState board, Blacklist blacklist) {
-		blacklistHandler.writeBlacklist(board.id, blacklist);
+		blacklistStore.writeBlacklist(board.id, blacklist);
 		execute(c -> changed(c, board.id)); // Unimportant result
 	}
 

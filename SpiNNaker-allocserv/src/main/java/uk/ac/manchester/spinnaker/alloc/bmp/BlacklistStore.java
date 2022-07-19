@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
  * @author Donal Fellows
  */
 @Component
-public class BlacklistIO extends DatabaseAwareBean {
+public class BlacklistStore extends DatabaseAwareBean {
 	/**
 	 * Read a blacklist from the database.
 	 *
@@ -188,13 +188,13 @@ public class BlacklistIO extends DatabaseAwareBean {
 			@Override
 			public Optional<Blacklist> readBlacklist(Connection conn,
 					int boardId) {
-				return BlacklistIO.this.readBlacklist(conn, boardId);
+				return BlacklistStore.this.readBlacklist(conn, boardId);
 			}
 
 			@Override
 			public void writeBlacklist(Connection conn, int boardId,
 					Blacklist blacklist) {
-				BlacklistIO.this.writeBlacklist(conn, boardId, blacklist);
+				BlacklistStore.this.writeBlacklist(conn, boardId, blacklist);
 			}
 		};
 	}

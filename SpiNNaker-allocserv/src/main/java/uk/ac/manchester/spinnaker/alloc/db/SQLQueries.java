@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
-import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistIO;
+import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistStore;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
@@ -1720,7 +1720,7 @@ public abstract class SQLQueries {
 	/**
 	 * Read the blacklisted chips for a board.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	@ResultColumn("x")
@@ -1734,7 +1734,7 @@ public abstract class SQLQueries {
 	/**
 	 * Read the blacklisted cores for a board.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	@ResultColumn("x")
@@ -1750,7 +1750,7 @@ public abstract class SQLQueries {
 	/**
 	 * Read the blacklisted links for a board.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	@ResultColumn("x")
@@ -1804,7 +1804,7 @@ public abstract class SQLQueries {
 	 * blacklist to be written to anywhere. The {@code x},{@code y} are
 	 * board-local coordinates.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	@Parameter("x")
@@ -1824,7 +1824,7 @@ public abstract class SQLQueries {
 	 * blacklist to be written to anywhere. The {@code x},{@code y} are
 	 * board-local coordinates.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	@Parameter("x")
@@ -1846,7 +1846,7 @@ public abstract class SQLQueries {
 	 * blacklist to be written to anywhere. The {@code x},{@code y} are
 	 * board-local coordinates.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	@Parameter("x")
@@ -1867,7 +1867,7 @@ public abstract class SQLQueries {
 	/**
 	 * Delete all blacklist entries for chips on a board.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	protected static final String CLEAR_BLACKLISTED_CHIPS =
@@ -1876,7 +1876,7 @@ public abstract class SQLQueries {
 	/**
 	 * Delete all blacklist entries for cores on a board.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	protected static final String CLEAR_BLACKLISTED_CORES =
@@ -1885,7 +1885,7 @@ public abstract class SQLQueries {
 	/**
 	 * Delete all blacklist entries for links on a board.
 	 *
-	 * @see BlacklistIO
+	 * @see BlacklistStore
 	 */
 	@Parameter("board_id")
 	protected static final String CLEAR_BLACKLISTED_LINKS =
@@ -2431,6 +2431,6 @@ interface SQLQueriesUseImportsForCheckstyle {
 		DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
 		UserControl.class, AllocatorTask.class, QuotaManager.class,
 		Spalloc.class, BMPController.class, BoardIssueReport.class,
-		LocalAuthProviderImpl.class, BlacklistIO.class
+		LocalAuthProviderImpl.class, BlacklistStore.class
 	};
 }
