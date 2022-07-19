@@ -58,8 +58,8 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 * @throws DataAccessException
 	 *             If database access fails.
 	 */
-	public Optional<Blacklist> readBlacklistFromDB(int boardId) {
-		return executeRead(conn -> readBlacklistFromDB(conn, boardId));
+	public Optional<Blacklist> readBlacklist(int boardId) {
+		return executeRead(conn -> readBlacklist(conn, boardId));
 	}
 
 	/**
@@ -72,12 +72,8 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 * @return The blacklist, if one is defined.
 	 * @throws DataAccessException
 	 *             If database access fails.
-	 * @deprecated Call via {@link #readBlacklistFromDB(int)} if not in test
-	 *             code.
 	 */
-	@Deprecated
-	final Optional<Blacklist> readBlacklistFromDB(Connection conn,
-			int boardId) {
+	private Optional<Blacklist> readBlacklist(Connection conn, int boardId) {
 		try (Query blChips = conn.query(GET_BLACKLISTED_CHIPS);
 				Query blCores = conn.query(GET_BLACKLISTED_CORES);
 				Query blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
@@ -108,10 +104,10 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 * @param blacklist
 	 *            The blacklist to save.
 	 */
-	public void writeBlacklistToDB(Integer boardId, Blacklist blacklist) {
+	public void writeBlacklist(int boardId, Blacklist blacklist) {
 		requireNonNull(blacklist);
 		execute(conn -> {
-			writeBlacklistToDB(conn, boardId, blacklist);
+			writeBlacklist(conn, boardId, blacklist);
 			return this; // dummy
 		});
 	}
@@ -125,11 +121,8 @@ public class BlacklistIO extends DatabaseAwareBean {
 	 *            What board is this a blacklist for?
 	 * @param blacklist
 	 *            The blacklist to save.
-	 * @deprecated Call via {@link #writeBlacklistToDB(Integer, Blacklist)} if
-	 *             not in test code.
 	 */
-	@Deprecated
-	void writeBlacklistToDB(Connection conn, Integer boardId,
+	private void writeBlacklist(Connection conn, int boardId,
 			Blacklist blacklist) {
 		try (Update clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS);
 				Update clearCores = conn.update(CLEAR_BLACKLISTED_CORES);
@@ -153,5 +146,56 @@ public class BlacklistIO extends DatabaseAwareBean {
 				addLink.call(boardId, chip.getX(), chip.getY(), l);
 			}));
 		}
+	}
+
+	/**
+	 * API only exposed for testing purposes.
+	 */
+	interface InternalAPI {
+		/**
+		 * Read a blacklist from the database.
+		 *
+		 * @param conn
+		 *            The database connection.
+		 * @param boardId
+		 *            The ID of the board.
+		 * @return The blacklist, if one is defined.
+		 * @throws DataAccessException
+		 *             If database access fails.
+		 */
+		Optional<Blacklist> readBlacklist(Connection conn, int boardId);
+
+		/**
+		 * Save a blacklist in the database.
+		 *
+		 * @param conn
+		 *            Which database?
+		 * @param boardId
+		 *            What board is this a blacklist for?
+		 * @param blacklist
+		 *            The blacklist to save.
+		 */
+		void writeBlacklist(Connection conn, int boardId, Blacklist blacklist);
+	}
+
+	/**
+	 * @return The internal API only used for testing.
+	 * @deprecated Only use for testing, as circumvents transaction management.
+	 */
+	@Deprecated
+	InternalAPI getInternalAPI() {
+		return new InternalAPI() {
+			@Override
+			public Optional<Blacklist> readBlacklist(Connection conn,
+					int boardId) {
+				return BlacklistIO.this.readBlacklist(conn, boardId);
+			}
+
+			@Override
+			public void writeBlacklist(Connection conn, int boardId,
+					Blacklist blacklist) {
+				BlacklistIO.this.writeBlacklist(conn, boardId, blacklist);
+			}
+		};
 	}
 }

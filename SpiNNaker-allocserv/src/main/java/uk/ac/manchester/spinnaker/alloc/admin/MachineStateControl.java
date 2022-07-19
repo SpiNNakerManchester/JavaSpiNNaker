@@ -399,7 +399,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	public Optional<Blacklist> pullBlacklist(BoardState board) {
 		try {
 			return readBlacklistFromMachine(board).map(bl -> {
-				blacklistHandler.writeBlacklistToDB(board.id, bl);
+				blacklistHandler.writeBlacklist(board.id, bl);
 				execute(c -> {
 					// These must be done in ONE transaction
 					changed(c, board.id);
@@ -542,7 +542,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 				curry(Op::new, CREATE_BLACKLIST_READ),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> {
-							blacklistHandler.writeBlacklistToDB(op.boardId, bl);
+							blacklistHandler.writeBlacklist(op.boardId, bl);
 							execute(c -> {
 								// These must be done in ONE transaction
 								changed(c, op.boardId);
@@ -576,7 +576,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *             If access to the DB fails.
 	 */
 	public Optional<Blacklist> readBlacklistFromDB(BoardState board) {
-		return blacklistHandler.readBlacklistFromDB(board.id);
+		return blacklistHandler.readBlacklist(board.id);
 	}
 
 	/**
@@ -591,7 +591,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 *             If access to the DB fails.
 	 */
 	public void writeBlacklistToDB(BoardState board, Blacklist blacklist) {
-		blacklistHandler.writeBlacklistToDB(board.id, blacklist);
+		blacklistHandler.writeBlacklist(board.id, blacklist);
 		execute(c -> changed(c, board.id)); // Unimportant result
 	}
 

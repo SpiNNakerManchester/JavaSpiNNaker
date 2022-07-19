@@ -74,7 +74,6 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 	"spalloc.database-path=" + BlacklistIOTest.DB,
 	"spalloc.historical-data.path=" + BlacklistIOTest.HIST_DB
 })
-@SuppressWarnings("deprecation") // Calling internal API
 class BlacklistIOTest extends SQLQueries {
 	/** The DB file. */
 	static final String DB = "target/blio_test.sqlite3";
@@ -95,6 +94,8 @@ class BlacklistIOTest extends SQLQueries {
 	@Autowired
 	private BlacklistIO blio;
 
+	private BlacklistIO.InternalAPI internal;
+
 	@BeforeAll
 	static void clearDB() throws IOException {
 		Path dbp = Paths.get(DB);
@@ -106,11 +107,13 @@ class BlacklistIOTest extends SQLQueries {
 
 	@SafeVarargs
 	private static <T> Set<T> set(T... args) {
+		// TODO replace with Set.of() in Java 11 onwards
 		return new HashSet<>(Arrays.asList(args));
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <T> Map<ChipLocation, Set<T>> map(Object... args) {
+		// TODO replace with Map.of() in Java 11 onwards
 		Map<ChipLocation, Set<T>> map = new HashMap<>();
 		for (int i = 0; i < args.length; i += 2) {
 			ChipLocation key = (ChipLocation) args[i];
@@ -133,11 +136,14 @@ class BlacklistIOTest extends SQLQueries {
 	}
 
 	@BeforeEach
+	@SuppressWarnings("deprecation") // Calling internal API
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
+		// Get at the internal API so we can control transaction boundaries
+		internal = blio.getInternalAPI();
 	}
 
 	private void checkAndRollback(Connected act) {
@@ -153,7 +159,7 @@ class BlacklistIOTest extends SQLQueries {
 	@Test
 	void readDBNoBlacklistPresent() {
 		checkAndRollback(c -> {
-			assertFalse(blio.readBlacklistFromDB(BOARD).isPresent());
+			assertFalse(internal.readBlacklist(c, BOARD).isPresent());
 		});
 	}
 
@@ -164,7 +170,8 @@ class BlacklistIOTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 1));
 			}
 
-			Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+			Blacklist bl =
+					internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(C11), emptyMap(), emptyMap()), bl);
 		});
@@ -178,7 +185,7 @@ class BlacklistIOTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 0, 1));
 			}
 
-			Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+			Blacklist bl = internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(C01, C10), emptyMap(), emptyMap()),
 					bl);
@@ -192,7 +199,7 @@ class BlacklistIOTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 1, 15));
 			}
 
-			Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+			Blacklist bl = internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), map(C11, set(15)), emptyMap()),
 					bl);
@@ -207,7 +214,7 @@ class BlacklistIOTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 0, 14));
 			}
 
-			Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+			Blacklist bl = internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), map(C01, set(16), C10, set(14)),
 					emptyMap()), bl);
@@ -221,7 +228,7 @@ class BlacklistIOTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 1, WEST));
 			}
 
-			Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+			Blacklist bl = internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), emptyMap(), map(C11, set(WEST))),
 					bl);
@@ -236,7 +243,7 @@ class BlacklistIOTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 0, SOUTH));
 			}
 
-			Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+			Blacklist bl = internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), emptyMap(),
 					map(C01, set(NORTH), C10, set(SOUTH))), bl);
@@ -257,7 +264,7 @@ class BlacklistIOTest extends SQLQueries {
 				assertEquals(1, link.call(BOARD, 3, 0, SOUTH));
 			}
 
-			Blacklist bl = blio.readBlacklistFromDB(c, BOARD).get();
+			Blacklist bl = internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(C10, C01),
 					map(new ChipLocation(0, 2), set(16), new ChipLocation(2, 0),
@@ -274,8 +281,7 @@ class BlacklistIOTest extends SQLQueries {
 			Blacklist bl = new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
 					map(C77, set(NORTH, SOUTH, EAST, WEST)));
 
-			// Bypass the transactional wrapper
-			blio.writeBlacklistToDB(c, BOARD, bl);
+			internal.writeBlacklist(c, BOARD, bl);
 
 			// Check the results by looking in the DB ourselves
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -303,9 +309,8 @@ class BlacklistIOTest extends SQLQueries {
 			Blacklist bl2 = new Blacklist(set(C10, C77), map(C01, set(4, 5, 6)),
 					map(C11, set(NORTHEAST, SOUTHWEST)));
 
-			// Bypass the transactional wrapper
-			blio.writeBlacklistToDB(c, BOARD, bl1);
-			blio.writeBlacklistToDB(c, BOARD, bl2);
+			internal.writeBlacklist(c, BOARD, bl1);
+			internal.writeBlacklist(c, BOARD, bl2);
 
 			// Check the results by looking in the DB ourselves
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -332,9 +337,8 @@ class BlacklistIOTest extends SQLQueries {
 					map(C77, set(NORTH, SOUTH, EAST, WEST)));
 			Blacklist bl2 = new Blacklist(emptySet(), emptyMap(), emptyMap());
 
-			// Bypass the transactional wrapper
-			blio.writeBlacklistToDB(c, BOARD, bl1);
-			blio.writeBlacklistToDB(c, BOARD, bl2);
+			internal.writeBlacklist(c, BOARD, bl1);
+			internal.writeBlacklist(c, BOARD, bl2);
 
 			// Check the results by looking in the DB ourselves
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -361,9 +365,8 @@ class BlacklistIOTest extends SQLQueries {
 					new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
 							map(C77, set(NORTH, SOUTH, EAST, WEST)));
 
-			// Bypass the transactional wrapper
-			blio.writeBlacklistToDB(c, BOARD, blIn);
-			Blacklist blOut = blio.readBlacklistFromDB(c, BOARD).get();
+			internal.writeBlacklist(c, BOARD, blIn);
+			Blacklist blOut = internal.readBlacklist(c, BOARD).get();
 
 			assertEquals(blIn, blOut);
 		});
