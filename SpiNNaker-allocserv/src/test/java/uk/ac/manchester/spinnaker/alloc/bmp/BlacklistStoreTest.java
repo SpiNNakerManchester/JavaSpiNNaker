@@ -287,8 +287,8 @@ class BlacklistStoreTest extends SQLQueries {
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
 					Query cores = c.query(GET_BLACKLISTED_CORES);
 					Query links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(set(C11, C01),
-						chips.call(BOARD).map(BlacklistStoreTest::coords).toSet());
+				assertEquals(set(C11, C01), chips.call(BOARD)
+						.map(BlacklistStoreTest::coords).toSet());
 				assertEquals(map(C10, set(3, 2, 1)),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
@@ -316,8 +316,8 @@ class BlacklistStoreTest extends SQLQueries {
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
 					Query cores = c.query(GET_BLACKLISTED_CORES);
 					Query links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(set(C77, C10),
-						chips.call(BOARD).map(BlacklistStoreTest::coords).toSet());
+				assertEquals(set(C77, C10), chips.call(BOARD)
+						.map(BlacklistStoreTest::coords).toSet());
 				assertEquals(map(C01, set(6, 4, 5)),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
@@ -344,8 +344,8 @@ class BlacklistStoreTest extends SQLQueries {
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
 					Query cores = c.query(GET_BLACKLISTED_CORES);
 					Query links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(emptySet(),
-						chips.call(BOARD).map(BlacklistStoreTest::coords).toSet());
+				assertEquals(emptySet(), chips.call(BOARD)
+						.map(BlacklistStoreTest::coords).toSet());
 				assertEquals(emptyMap(),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
