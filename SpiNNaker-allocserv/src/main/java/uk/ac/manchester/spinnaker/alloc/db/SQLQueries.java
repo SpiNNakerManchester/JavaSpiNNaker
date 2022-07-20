@@ -1907,7 +1907,7 @@ public abstract class SQLQueries {
 			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
 					+ "cabinet, frame, data FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
-					+ "JOIN board_serial USING (board_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 1 AND NOT completed "
 					+ "AND boards.machine_id = :machine_id";
 
@@ -1927,7 +1927,7 @@ public abstract class SQLQueries {
 			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
 					+ "cabinet, frame FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
-					+ "JOIN board_serial USING (board_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 0 AND NOT completed "
 					+ "AND boards.machine_id = :machine_id";
 
@@ -1947,7 +1947,7 @@ public abstract class SQLQueries {
 			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
 					+ "cabinet, frame FROM blacklist_ops "
 					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
-					+ "JOIN board_serial USING (board_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE op = 2 AND NOT completed "
 					+ "AND boards.machine_id = :machine_id";
 

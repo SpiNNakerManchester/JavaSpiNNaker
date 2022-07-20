@@ -241,7 +241,6 @@ public class BMPController extends DatabaseAwareBean {
 	/**
 	 * The core of {@link #mainSchedule()}.
 	 *
-	 * @deprecated Only {@code public} for testing purposes.
 	 * @throws IOException
 	 *             If talking to the network fails
 	 * @throws SpinnmanException
@@ -249,9 +248,9 @@ public class BMPController extends DatabaseAwareBean {
 	 * @throws InterruptedException
 	 *             If the wait for workers to spawn fails.
 	 */
-	@Deprecated
-	public void processRequests()
+	private void processRequests()
 			throws IOException, SpinnmanException, InterruptedException {
+		log.info("handling background request cleanup");
 		doneBlacklist.set(false);
 		if (execute(conn -> {
 			boolean changed = false;
@@ -276,6 +275,7 @@ public class BMPController extends DatabaseAwareBean {
 				nonNull(postCleanup); postCleanup = postCleanupTasks.poll()) {
 			postCleanup.run();
 		}
+		log.info("looking for requests");
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
@@ -1593,5 +1593,43 @@ public class BMPController extends DatabaseAwareBean {
 	private abstract static class Use {
 		Use(ThreadFactory q1, UncaughtExceptionHandler q2) {
 		}
+	}
+
+	/**
+	 * The testing interface.
+	 */
+	public interface TestAPI {
+		/**
+		 * The core of the scheduler.
+		 *
+		 * @param millis
+		 *            How many milliseconds to sleep before doing a rerun of the
+		 *            scheduler. If zero (or less), only one run will be done.
+		 * @throws IOException
+		 *             If talking to the network fails
+		 * @throws SpinnmanException
+		 *             If a BMP sends an error back
+		 * @throws InterruptedException
+		 *             If the wait for workers to spawn fails.
+		 */
+		void processRequests(long millis)
+				throws IOException, SpinnmanException, InterruptedException;
+	}
+
+	/**
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@Deprecated
+	public TestAPI getTestAPI() {
+		return new TestAPI() {
+			@Override
+			public void processRequests(long millis) throws IOException,
+					SpinnmanException, InterruptedException {
+				BMPController.this.processRequests();
+				Thread.sleep(millis);
+				BMPController.this.processRequests();
+			}
+		};
 	}
 }

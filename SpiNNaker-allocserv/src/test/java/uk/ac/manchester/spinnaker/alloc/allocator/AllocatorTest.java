@@ -222,9 +222,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	}
 
 	private void processBMPRequests() throws Exception {
-		bmpCtrl.processRequests();
-		snooze();
-		bmpCtrl.processRequests();
+		bmpCtrl.getTestAPI().processRequests(2000);
 	}
 
 	private int countJobInTable(int job, String table) {

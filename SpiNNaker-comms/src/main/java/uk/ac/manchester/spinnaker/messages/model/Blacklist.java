@@ -245,6 +245,7 @@ public final class Blacklist implements Serializable {
 				.filter(Blacklist::isRelevantLine)
 				// Parse the remaining lines
 				.forEach(this::parseLine);
+		rawData = encodeBlacklist();
 	}
 
 	/**
@@ -265,6 +266,7 @@ public final class Blacklist implements Serializable {
 					.filter(Blacklist::isRelevantLine)
 					// Parse the remaining lines
 					.forEach(this::parseLine);
+			rawData = encodeBlacklist();
 		}
 	}
 

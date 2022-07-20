@@ -49,6 +49,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
@@ -289,5 +290,17 @@ class DummyTransceiver extends UnimplementedBMPTransceiver {
 	@Override
 	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board) {
 		return version;
+	}
+
+	@Override
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		// Not a real serial number at all! Just for testing purposes
+		return "gorp";
+	}
+
+	@Override
+	public Blacklist readBlacklist(BMPBoard board) {
+		return new Blacklist("chip 5 5 core 5");
 	}
 }
