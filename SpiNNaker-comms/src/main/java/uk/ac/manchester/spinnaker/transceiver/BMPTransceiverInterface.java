@@ -1310,8 +1310,7 @@ public interface BMPTransceiverInterface {
 	 */
 	default Blacklist readBlacklist(BMPBoard board)
 			throws IOException, ProcessException {
-		return new Blacklist(
-				readSerialFlash(getBoundBMP(), board, SF_BL_ADDR, SF_BL_LEN));
+		return readBlacklist(getBoundBMP(), board);
 	}
 
 	/**

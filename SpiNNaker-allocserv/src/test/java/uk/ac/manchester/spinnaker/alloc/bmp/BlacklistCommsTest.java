@@ -47,6 +47,7 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
+import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -83,6 +84,9 @@ class BlacklistCommsTest extends SQLQueries {
 	@Autowired
 	private BMPController bmpCtrl;
 
+	@Autowired
+	private TransceiverFactory txrxFactory;
+
 	@BeforeAll
 	static void clearDB() throws IOException {
 		Path dbp = Paths.get(DB);
@@ -100,25 +104,79 @@ class BlacklistCommsTest extends SQLQueries {
 		}
 	}
 
+	private static final int TEST_DELAY = 750;
+
+	/**
+	 * A faked up running of the BMP worker thread because the main schedule is
+	 * disabled.
+	 *
+	 * @param exec
+	 *            The executor used by the test.
+	 * @return The future to wait for as part of shutting down. The value is
+	 *         meaningless, but the exceptions potentially thrown are not.
+	 */
+	@SuppressWarnings("deprecation") // Calling internal API
+	private Future<String> bmpWorker(ExecutorService exec) {
+		OneShotEvent ready = new OneShotEvent();
+		return exec.submit(() -> {
+			ready.fire();
+			// Time to allow main thread to submit the work we'll carry out
+			Thread.sleep(TEST_DELAY);
+			bmpCtrl.getTestAPI().processRequests(TEST_DELAY);
+			return "BMP done";
+		});
+	}
+
 	@Test
 	@Timeout(15)
-	@SuppressWarnings("deprecation") // Calling internal API
+	public void readSerialNumberFromSystem() throws Exception {
+		// This is messy; can't have a transaction open and roll it back
+		BoardState bs = stateCtrl.findId(BOARD).get();
+		ExecutorService exec = newSingleThreadExecutor();
+		try {
+			Future<?> future = bmpWorker(exec);
+			String serialNumber = stateCtrl.getSerialNumber(bs);
+			assertEquals("BMP done", future.get());
+			assertEquals("gorp", serialNumber); // Magic value in dummy!
+		} finally {
+			exec.shutdown();
+		}
+	}
+
+	@Test
+	@Timeout(15)
 	public void readBlacklistFromSystem() throws Exception {
 		// This is messy; can't have a transaction open and roll it back
 		BoardState bs = stateCtrl.findId(BOARD).get();
 		ExecutorService exec = newSingleThreadExecutor();
-		OneShotEvent ready = new OneShotEvent();
 		try {
-			Future<?> future = exec.submit(() -> {
-				ready.fire();
-				Thread.sleep(1000);
-				bmpCtrl.getTestAPI().processRequests(2000);
-				return "BMP done";
-			});
-			ready.await();
-			Blacklist bl = stateCtrl.pullBlacklist(bs).get();
+			Future<?> future = bmpWorker(exec);
+			Blacklist bl = stateCtrl.readBlacklistFromMachine(bs).get();
 			assertEquals("BMP done", future.get());
 			assertEquals(new Blacklist("chip 5 5 core 5"), bl);
+		} finally {
+			exec.shutdown();
+		}
+	}
+
+	private static final Blacklist WRITE_BASELINE =
+			new Blacklist("chip 4 4 core 6,4");
+
+	@Test
+	@Timeout(15)
+	@SuppressWarnings("deprecation") // Calling internal API
+	public void writeBlacklistToSystem() throws Exception {
+		// This is messy; can't have a transaction open and roll it back
+		BoardState bs = stateCtrl.findId(BOARD).get();
+		ExecutorService exec = newSingleThreadExecutor();
+		try {
+			Future<?> future = bmpWorker(exec);
+			TestAPI testAPI = txrxFactory.getTestAPI();
+			assertNotEquals(WRITE_BASELINE, testAPI.getCurrentBlacklist());
+			stateCtrl.writeBlacklistToMachine(bs,
+					new Blacklist("chip 4 4 core 4,6"));
+			assertEquals("BMP done", future.get());
+			assertEquals(WRITE_BASELINE, testAPI.getCurrentBlacklist());
 		} finally {
 			exec.shutdown();
 		}

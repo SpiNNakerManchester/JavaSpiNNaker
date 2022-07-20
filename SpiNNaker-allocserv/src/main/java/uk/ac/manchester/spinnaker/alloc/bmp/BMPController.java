@@ -250,7 +250,6 @@ public class BMPController extends DatabaseAwareBean {
 	 */
 	private void processRequests()
 			throws IOException, SpinnmanException, InterruptedException {
-		log.info("handling background request cleanup");
 		doneBlacklist.set(false);
 		if (execute(conn -> {
 			boolean changed = false;
@@ -275,7 +274,6 @@ public class BMPController extends DatabaseAwareBean {
 				nonNull(postCleanup); postCleanup = postCleanupTasks.poll()) {
 			postCleanup.run();
 		}
-		log.info("looking for requests");
 		for (Request req : takeRequests()) {
 			addRequestToBMPQueue(req);
 		}
@@ -1621,11 +1619,15 @@ public class BMPController extends DatabaseAwareBean {
 	 * @deprecated This interface is just for testing.
 	 */
 	@Deprecated
-	public TestAPI getTestAPI() {
+	public final TestAPI getTestAPI() {
 		return new TestAPI() {
 			@Override
 			public void processRequests(long millis) throws IOException,
 					SpinnmanException, InterruptedException {
+				/*
+				 * Runs twice because it takes two cycles to fully process a
+				 * request.
+				 */
 				BMPController.this.processRequests();
 				Thread.sleep(millis);
 				BMPController.this.processRequests();

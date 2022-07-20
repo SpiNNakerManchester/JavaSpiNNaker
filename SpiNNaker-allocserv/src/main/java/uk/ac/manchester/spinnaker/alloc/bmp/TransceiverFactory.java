@@ -59,6 +59,7 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
@@ -149,6 +150,12 @@ public class TransceiverFactory
 		}
 	}
 
+	private short dummyVersion = DummyTransceiver.VERSION;
+
+	private String dummyBlacklist = DummyTransceiver.BLACKLIST;
+
+	private final ValueHolder<Blacklist> setBlacklist = new ValueHolder<>();
+
 	private BMPTransceiverInterface makeTransceiver(Machine machineDescription,
 			BMPCoords bmp) {
 		BMPConnectionData connData =
@@ -156,7 +163,7 @@ public class TransceiverFactory
 		try {
 			if (control.isUseDummyBMP()) {
 				return new DummyTransceiver(machineDescription.getName(),
-						connData);
+						connData, dummyVersion, dummyBlacklist, setBlacklist);
 			} else {
 				return makeTransceiver(connData);
 			}
@@ -221,31 +228,80 @@ public class TransceiverFactory
 			}
 		}
 	}
+
+	/** Operations for testing only. */
+	public interface TestAPI {
+		void setVersion(short version);
+
+		void setBlacklistData(String blacklistData);
+
+		Blacklist getCurrentBlacklist();
+	}
+
+	/**
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@Deprecated
+	public final TestAPI getTestAPI() {
+		return new TestAPI() {
+			@Override
+			public void setVersion(short version) {
+				dummyVersion = version;
+			}
+
+			@Override
+			public void setBlacklistData(String blacklistData) {
+				dummyBlacklist = blacklistData;
+			}
+
+			@Override
+			public Blacklist getCurrentBlacklist() {
+				synchronized (setBlacklist) {
+					return setBlacklist.getValue();
+				}
+			}
+		};
+	}
 }
 
 class DummyTransceiver extends UnimplementedBMPTransceiver {
 	private static final Logger log = getLogger(DummyTransceiver.class);
 
+	/** Not a real serial number at all! Just for testing purposes. */
+	private static final String SERIAL_NUMBER = "gorp";
+
 	private static final int VERSION_INFO_SIZE = 32;
 
-	private static final short VERSION = 0x202;
+	/** Dummy version code. */
+	static final short VERSION = 0x202;
+
+	/** Initial dummy blacklist data. */
+	static final String BLACKLIST = "chip 5 5 core 5";
+
+	private String blacklistData;
 
 	private final VersionInfo version;
 
 	private Map<Integer, Boolean> status;
 
-	DummyTransceiver(String machineName, BMPConnectionData data) {
+	private final ValueHolder<Blacklist> setBlacklist;
+
+	DummyTransceiver(String machineName, BMPConnectionData data, short version,
+			String blacklist, ValueHolder<Blacklist> setBlacklist) {
 		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
 				data.ipAddress, data.boards);
-		version = new VersionInfo(syntheticVersionData(), true);
+		this.version = new VersionInfo(syntheticVersionData(version), true);
 		status = new HashMap<>();
+		this.blacklistData = blacklist;
+		this.setBlacklist = setBlacklist;
 	}
 
 	/**
 	 * @return The bytes of a response, correct in the places which Spalloc
 	 *         checks, and arbitrary (zero) elsewhere.
 	 */
-	private static ByteBuffer syntheticVersionData() {
+	private static ByteBuffer syntheticVersionData(short versionCode) {
 		ByteBuffer b = allocate(VERSION_INFO_SIZE);
 		b.order(LITTLE_ENDIAN);
 		b.putInt(0);
@@ -253,7 +309,7 @@ class DummyTransceiver extends UnimplementedBMPTransceiver {
 		b.putInt(0);
 		b.putInt(0);
 		b.putShort((short) 0);
-		b.putShort(VERSION);
+		b.putShort(versionCode);
 		b.putInt(0);
 		b.put("abc/def".getBytes(UTF_8));
 		b.flip();
@@ -295,12 +351,24 @@ class DummyTransceiver extends UnimplementedBMPTransceiver {
 	@Override
 	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
-		// Not a real serial number at all! Just for testing purposes
-		return "gorp";
+		log.info("readBoardSerialNumber({},{})", bmp, board);
+		return SERIAL_NUMBER;
+	}
+
+	public Blacklist readBlacklist(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		log.info("readBlacklist({},{})", bmp, board);
+		return new Blacklist(blacklistData);
 	}
 
 	@Override
-	public Blacklist readBlacklist(BMPBoard board) {
-		return new Blacklist("chip 5 5 core 5");
+	public void writeBlacklist(BMPCoords bmp, BMPBoard board,
+			Blacklist blacklist)
+			throws ProcessException, IOException, InterruptedException {
+		log.info("writeBlacklist({},{},{})", bmp, board, blacklist);
+		blacklistData = blacklist.render();
+		synchronized (setBlacklist) {
+			setBlacklist.setValue(blacklist);
+		}
 	}
 }
