@@ -94,7 +94,7 @@ class BlacklistStoreTest extends SQLQueries {
 	@Autowired
 	private BlacklistStore blio;
 
-	private BlacklistStore.InternalAPI internal;
+	private BlacklistStore.TestAPI testAPI;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
@@ -143,7 +143,7 @@ class BlacklistStoreTest extends SQLQueries {
 			c.transaction(() -> setupDB1(c));
 		}
 		// Get at the internal API so we can control transaction boundaries
-		internal = blio.getInternalAPI();
+		testAPI = blio.getTestAPI();
 	}
 
 	private void checkAndRollback(Connected act) {
@@ -159,7 +159,7 @@ class BlacklistStoreTest extends SQLQueries {
 	@Test
 	void readDBNoBlacklistPresent() {
 		checkAndRollback(c -> {
-			assertFalse(internal.readBlacklist(c, BOARD).isPresent());
+			assertFalse(testAPI.readBlacklist(c, BOARD).isPresent());
 		});
 	}
 
@@ -170,8 +170,7 @@ class BlacklistStoreTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 1));
 			}
 
-			Blacklist bl =
-					internal.readBlacklist(c, BOARD).get();
+			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(C11), emptyMap(), emptyMap()), bl);
 		});
@@ -185,7 +184,7 @@ class BlacklistStoreTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 0, 1));
 			}
 
-			Blacklist bl = internal.readBlacklist(c, BOARD).get();
+			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(C01, C10), emptyMap(), emptyMap()),
 					bl);
@@ -199,7 +198,7 @@ class BlacklistStoreTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 1, 15));
 			}
 
-			Blacklist bl = internal.readBlacklist(c, BOARD).get();
+			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), map(C11, set(15)), emptyMap()),
 					bl);
@@ -214,7 +213,7 @@ class BlacklistStoreTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 0, 14));
 			}
 
-			Blacklist bl = internal.readBlacklist(c, BOARD).get();
+			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), map(C01, set(16), C10, set(14)),
 					emptyMap()), bl);
@@ -228,7 +227,7 @@ class BlacklistStoreTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 1, WEST));
 			}
 
-			Blacklist bl = internal.readBlacklist(c, BOARD).get();
+			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), emptyMap(), map(C11, set(WEST))),
 					bl);
@@ -243,7 +242,7 @@ class BlacklistStoreTest extends SQLQueries {
 				assertEquals(1, u.call(BOARD, 1, 0, SOUTH));
 			}
 
-			Blacklist bl = internal.readBlacklist(c, BOARD).get();
+			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(), emptyMap(),
 					map(C01, set(NORTH), C10, set(SOUTH))), bl);
@@ -264,7 +263,7 @@ class BlacklistStoreTest extends SQLQueries {
 				assertEquals(1, link.call(BOARD, 3, 0, SOUTH));
 			}
 
-			Blacklist bl = internal.readBlacklist(c, BOARD).get();
+			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(new Blacklist(set(C10, C01),
 					map(new ChipLocation(0, 2), set(16), new ChipLocation(2, 0),
@@ -281,7 +280,7 @@ class BlacklistStoreTest extends SQLQueries {
 			Blacklist bl = new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
 					map(C77, set(NORTH, SOUTH, EAST, WEST)));
 
-			internal.writeBlacklist(c, BOARD, bl);
+			testAPI.writeBlacklist(c, BOARD, bl);
 
 			// Check the results by looking in the DB ourselves
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -309,8 +308,8 @@ class BlacklistStoreTest extends SQLQueries {
 			Blacklist bl2 = new Blacklist(set(C10, C77), map(C01, set(4, 5, 6)),
 					map(C11, set(NORTHEAST, SOUTHWEST)));
 
-			internal.writeBlacklist(c, BOARD, bl1);
-			internal.writeBlacklist(c, BOARD, bl2);
+			testAPI.writeBlacklist(c, BOARD, bl1);
+			testAPI.writeBlacklist(c, BOARD, bl2);
 
 			// Check the results by looking in the DB ourselves
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -337,8 +336,8 @@ class BlacklistStoreTest extends SQLQueries {
 					map(C77, set(NORTH, SOUTH, EAST, WEST)));
 			Blacklist bl2 = new Blacklist(emptySet(), emptyMap(), emptyMap());
 
-			internal.writeBlacklist(c, BOARD, bl1);
-			internal.writeBlacklist(c, BOARD, bl2);
+			testAPI.writeBlacklist(c, BOARD, bl1);
+			testAPI.writeBlacklist(c, BOARD, bl2);
 
 			// Check the results by looking in the DB ourselves
 			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
@@ -365,8 +364,8 @@ class BlacklistStoreTest extends SQLQueries {
 					new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
 							map(C77, set(NORTH, SOUTH, EAST, WEST)));
 
-			internal.writeBlacklist(c, BOARD, blIn);
-			Blacklist blOut = internal.readBlacklist(c, BOARD).get();
+			testAPI.writeBlacklist(c, BOARD, blIn);
+			Blacklist blOut = testAPI.readBlacklist(c, BOARD).get();
 
 			assertEquals(blIn, blOut);
 		});

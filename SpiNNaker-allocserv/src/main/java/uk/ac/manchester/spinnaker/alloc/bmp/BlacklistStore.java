@@ -30,6 +30,7 @@ import java.util.Set;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -151,7 +152,8 @@ public class BlacklistStore extends DatabaseAwareBean {
 	/**
 	 * API only exposed for testing purposes.
 	 */
-	interface InternalAPI {
+	@ForTestingOnly
+	interface TestAPI {
 		/**
 		 * Read a blacklist from the database.
 		 *
@@ -183,8 +185,9 @@ public class BlacklistStore extends DatabaseAwareBean {
 	 * @deprecated Only use for testing, as circumvents transaction management.
 	 */
 	@Deprecated
-	InternalAPI getInternalAPI() {
-		return new InternalAPI() {
+	@ForTestingOnly
+	TestAPI getTestAPI() {
+		return new TestAPI() {
 			@Override
 			public Optional<Blacklist> readBlacklist(Connection conn,
 					int boardId) {
