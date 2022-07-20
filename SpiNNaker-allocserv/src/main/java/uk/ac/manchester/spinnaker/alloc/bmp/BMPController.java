@@ -74,6 +74,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
@@ -1596,6 +1597,7 @@ public class BMPController extends DatabaseAwareBean {
 	/**
 	 * The testing interface.
 	 */
+	@ForTestingOnly
 	public interface TestAPI {
 		/**
 		 * The core of the scheduler.
@@ -1618,6 +1620,7 @@ public class BMPController extends DatabaseAwareBean {
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 */
+	@ForTestingOnly
 	@Deprecated
 	public final TestAPI getTestAPI() {
 		return new TestAPI() {

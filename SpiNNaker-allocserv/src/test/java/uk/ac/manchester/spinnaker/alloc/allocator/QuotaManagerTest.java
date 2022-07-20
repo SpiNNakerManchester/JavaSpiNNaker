@@ -142,27 +142,29 @@ class QuotaManagerTest extends SQLQueries implements SupportQueries {
 
 	/** Does a job get consolidated once and only once. */
 	@Test
+	@SuppressWarnings("deprecation")
 	public void consolidate() {
 		checkAndRollback(c -> {
 			int used = 100;
 			makeFinishedJob(c, 1, used);
 			assertEquals(INITIAL_QUOTA, getQuota(c));
-			qm.doConsolidate(c);
+			qm.getTestAPI().doConsolidate(c);
 			assertEquals(INITIAL_QUOTA - used, getQuota(c));
-			qm.doConsolidate(c);
+			qm.getTestAPI().doConsolidate(c);
 			assertEquals(INITIAL_QUOTA - used, getQuota(c));
 		});
 	}
 
 	/** Does a job <em>not</em> get consolidated if there's no quota. */
 	@Test
+	@SuppressWarnings("deprecation")
 	public void noConsolidate() {
 		checkAndRollback(c -> {
 			// Delete the quota
 			setQuota(c, null);
 			makeFinishedJob(c, 1, 100);
 			assertNull(getQuota(c));
-			qm.doConsolidate(c);
+			qm.getTestAPI().doConsolidate(c);
 			assertNull(getQuota(c));
 		});
 	}

@@ -55,6 +55,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -71,7 +72,6 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 	"spalloc.database-path=" + AllocatorTest.DB,
 	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB
 })
-@SuppressWarnings("deprecation") // Yes, we're allowed to poke inside here
 class AllocatorTest extends SQLQueries implements SupportQueries {
 	private static final Logger log = getLogger(AllocatorTest.class);
 
@@ -221,8 +221,14 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void processBMPRequests() throws Exception {
 		bmpCtrl.getTestAPI().processRequests(2000);
+	}
+
+	@SuppressWarnings("deprecation")
+	private TestAPI getAllocTester() {
+		return alloc.getTestAPI(conn);
 	}
 
 	private int countJobInTable(int job, String table) {
@@ -238,7 +244,8 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	public void allocateBySize1board() {
 		doTest(() -> {
 			int job = makeQueuedJob(100);
-			alloc.allocate(conn);
+
+			getAllocTester().allocate();
 
 			assertState(job, QUEUED, 0, 0);
 
@@ -246,15 +253,15 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(alloc.allocate(conn));
+			assertTrue(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(alloc.allocate(conn));
+			assertFalse(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 1);
 
-			alloc.destroyJob(conn, job, "test");
+			getAllocTester().destroyJob(job, "test");
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -264,7 +271,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	public void allocateBySize3boards() {
 		doTest(() -> {
 			int job = makeQueuedJob(100);
-			alloc.allocate(conn);
+			getAllocTester().allocate();
 
 			assertState(job, QUEUED, 0, 0);
 
@@ -272,15 +279,15 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(alloc.allocate(conn));
+			assertTrue(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 3);
 
-			assertFalse(alloc.allocate(conn));
+			assertFalse(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 3);
 
-			alloc.destroyJob(conn, job, "test");
+			getAllocTester().destroyJob(job, "test");
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -290,7 +297,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	public void allocateByDimensions1x1() {
 		doTest(() -> {
 			int job = makeQueuedJob(100);
-			alloc.allocate(conn);
+			getAllocTester().allocate();
 
 			assertState(job, QUEUED, 0, 0);
 
@@ -298,15 +305,15 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(alloc.allocate(conn));
+			assertTrue(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(alloc.allocate(conn));
+			assertFalse(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 1);
 
-			alloc.destroyJob(conn, job, "test");
+			getAllocTester().destroyJob(job, "test");
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -316,7 +323,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	public void allocateByDimensions1x2() {
 		doTest(() -> {
 			int job = makeQueuedJob(100);
-			alloc.allocate(conn);
+			getAllocTester().allocate();
 
 			assertState(job, QUEUED, 0, 0);
 
@@ -324,16 +331,16 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(alloc.allocate(conn));
+			assertTrue(getAllocTester().allocate());
 
 			// Allocates a whole triad
 			assertState(job, POWER, 0, 3);
 
-			assertFalse(alloc.allocate(conn));
+			assertFalse(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 3);
 
-			alloc.destroyJob(conn, job, "test");
+			getAllocTester().destroyJob(job, "test");
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -343,7 +350,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	public void allocateByBoardId() {
 		doTest(() -> {
 			int job = makeQueuedJob(100);
-			alloc.allocate(conn);
+			getAllocTester().allocate();
 
 			assertState(job, QUEUED, 0, 0);
 
@@ -351,15 +358,15 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 			assertState(job, QUEUED, 1, 0);
 
-			assertTrue(alloc.allocate(conn));
+			assertTrue(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 1);
 
-			assertFalse(alloc.allocate(conn));
+			assertFalse(getAllocTester().allocate());
 
 			assertState(job, POWER, 0, 1);
 
-			alloc.destroyJob(conn, job, "test");
+			getAllocTester().destroyJob(job, "test");
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -373,7 +380,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 			assumeState(job, QUEUED, 0, 0);
 
-			alloc.expireJobs(conn);
+			getAllocTester().expireJobs();
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -383,12 +390,12 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	public void expireQueued1() {
 		doTest(() -> {
 			int job = makeQueuedJob(1);
-			alloc.allocate(conn);
+			getAllocTester().allocate();
 			snooze();
 
 			assumeState(job, QUEUED, 0, 0);
 
-			alloc.expireJobs(conn);
+			getAllocTester().expireJobs();
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -398,13 +405,13 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	public void expireQueued2() {
 		doTest(() -> {
 			int job = makeQueuedJob(1);
-			alloc.allocate(conn);
+			getAllocTester().allocate();
 			makeAllocBySizeRequest(job, 1);
 			snooze();
 
 			assumeState(job, QUEUED, 1, 0);
 
-			alloc.expireJobs(conn);
+			getAllocTester().expireJobs();
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -415,12 +422,12 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 		doTest(() -> {
 			int job = makeQueuedJob(1);
 			makeAllocBySizeRequest(job, 1);
-			alloc.allocate(conn);
+			getAllocTester().allocate();
 			snooze();
 
 			assumeState(job, POWER, 0, 1);
 
-			alloc.expireJobs(conn);
+			getAllocTester().expireJobs();
 
 			assertState(job, DESTROYED, 0, 0);
 		});
@@ -438,7 +445,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> {
-					alloc.allocate(c);
+					getAllocTester().allocate();
 				});
 				snooze();
 				processBMPRequests();
@@ -446,7 +453,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 				assumeState(job, READY, 0, 0);
 
 				c.transaction(() -> {
-					alloc.expireJobs(c);
+					getAllocTester().expireJobs();
 				});
 
 				assertState(job, DESTROYED, 0, 1);
@@ -458,7 +465,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 				assertState(job, DESTROYED, 0, 0);
 			} finally {
 				c.transaction(() -> {
-					alloc.destroyJob(c, job, "test");
+					getAllocTester().destroyJob(job, "test");
 					c.update("DELETE FROM job_request").call();
 					c.update("DELETE FROM pending_changes").call();
 				});
@@ -476,7 +483,9 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 			assertTrue(preMain == 1,
 					() -> "must have created a job we can tombstone");
 			int preTomb = countJobInTable(job, "tombstone.jobs");
-			AllocatorTask.Copied moved = alloc.tombstone(conn);
+
+			AllocatorTask.Copied moved = getAllocTester().tombstone();
+
 			assertEquals(1, moved.numJobs());
 			// No resources were ever allocated, so no moves to do
 			assertEquals(0, moved.numAllocs());

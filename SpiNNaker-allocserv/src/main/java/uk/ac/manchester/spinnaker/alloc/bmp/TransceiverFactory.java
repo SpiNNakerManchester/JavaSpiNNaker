@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
@@ -230,6 +231,7 @@ public class TransceiverFactory
 	}
 
 	/** Operations for testing only. */
+	@ForTestingOnly
 	public interface TestAPI {
 		void setVersion(short version);
 
@@ -242,6 +244,7 @@ public class TransceiverFactory
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 */
+	@ForTestingOnly
 	@Deprecated
 	public final TestAPI getTestAPI() {
 		return new TestAPI() {

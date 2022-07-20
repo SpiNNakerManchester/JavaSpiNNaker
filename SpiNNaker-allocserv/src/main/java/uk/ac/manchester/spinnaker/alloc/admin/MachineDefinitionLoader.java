@@ -70,6 +70,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
@@ -851,7 +852,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * <p>
 	 * Only non-{@code private} for testing purposes.
 	 */
-	final class Updates extends AbstractSQL {
+	private final class Updates extends AbstractSQL {
 		private final Update makeMachine = conn.update(INSERT_MACHINE_SPINN_5);
 
 		private final Update makeTag = conn.update(INSERT_TAG);
@@ -957,7 +958,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @throws InsertFailedException
 	 *             If the machine couldn't be created.
 	 */
-	Integer loadMachineDefinition(Updates sql, Machine machine) {
+	private Integer loadMachineDefinition(Updates sql, Machine machine) {
 		int machineId = makeMachine(sql, machine);
 		Map<BMPCoords, Integer> bmpIds = makeBMPs(sql, machine, machineId);
 		Map<TriadCoords, Integer> boardIds =
@@ -1079,5 +1080,40 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			}
 			throw e;
 		}
+	}
+
+	/** Operations for testing only. */
+	@ForTestingOnly
+	interface TestAPI {
+		/**
+		 * Add a machine definition using the SQL update profile.
+		 *
+		 * @param machine
+		 *            The description of the machine to add.
+		 * @return The ID of the created machine.
+		 * @throws InsertFailedException
+		 *             If the machine couldn't be created.
+		 */
+		Integer loadMachineDefinition(Machine machine);
+	}
+
+	/**
+	 * @param c
+	 *            How to talk to the DB.
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@Deprecated
+	@ForTestingOnly
+	TestAPI getTestAPI(Connection c) {
+		return new TestAPI() {
+			@Override
+			public Integer loadMachineDefinition(Machine machine) {
+				try (Updates updates = new Updates(c)) {
+					return MachineDefinitionLoader.this
+							.loadMachineDefinition(updates, machine);
+				}
+			}
+		};
 	}
 }
