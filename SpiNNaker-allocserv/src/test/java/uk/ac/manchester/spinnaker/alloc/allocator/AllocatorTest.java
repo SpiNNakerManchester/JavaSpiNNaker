@@ -57,6 +57,8 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
+import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -97,6 +99,9 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	@Autowired
 	private BMPController bmpCtrl;
 
+	@Autowired
+	private TransceiverFactory txrxFactory;
+
 	private void doTest(Transacted action) {
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> {
@@ -124,8 +129,10 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	}
 
 	@BeforeEach
+	@SuppressWarnings("deprecation")
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
+		txrxFactory.getTestAPI().setFactory(MockTransceiver::new);
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB3(c));
 		}

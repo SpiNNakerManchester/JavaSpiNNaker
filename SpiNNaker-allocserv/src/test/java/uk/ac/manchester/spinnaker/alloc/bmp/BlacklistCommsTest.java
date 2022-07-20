@@ -117,6 +117,7 @@ class BlacklistCommsTest extends SQLQueries {
 	 */
 	@SuppressWarnings("deprecation") // Calling internal API
 	private Future<String> bmpWorker(ExecutorService exec) {
+		txrxFactory.getTestAPI().setFactory(MockTransceiver::new);
 		OneShotEvent ready = new OneShotEvent();
 		return exec.submit(() -> {
 			ready.fire();
@@ -168,10 +169,10 @@ class BlacklistCommsTest extends SQLQueries {
 	public void writeBlacklistToSystem() throws Exception {
 		// This is messy; can't have a transaction open and roll it back
 		BoardState bs = stateCtrl.findId(BOARD).get();
+		TestAPI testAPI = txrxFactory.getTestAPI();
 		ExecutorService exec = newSingleThreadExecutor();
 		try {
 			Future<?> future = bmpWorker(exec);
-			TestAPI testAPI = txrxFactory.getTestAPI();
 			assertNotEquals(WRITE_BASELINE, testAPI.getCurrentBlacklist());
 			stateCtrl.writeBlacklistToMachine(bs,
 					new Blacklist("chip 4 4 core 4,6"));

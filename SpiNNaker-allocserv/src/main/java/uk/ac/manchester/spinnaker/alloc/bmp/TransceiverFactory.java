@@ -16,20 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,20 +39,14 @@ import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
-import uk.ac.manchester.spinnaker.messages.model.FPGA;
-import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
-import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
-import uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -151,11 +138,9 @@ public class TransceiverFactory
 		}
 	}
 
-	private short dummyVersion = DummyTransceiver.VERSION;
-
-	private String dummyBlacklist = DummyTransceiver.BLACKLIST;
-
 	private final ValueHolder<Blacklist> setBlacklist = new ValueHolder<>();
+
+	private TestAPI.TestTransceiverFactory testFactory = null;
 
 	private BMPTransceiverInterface makeTransceiver(Machine machineDescription,
 			BMPCoords bmp) {
@@ -163,8 +148,8 @@ public class TransceiverFactory
 				makeConnectionData(machineDescription, bmp);
 		try {
 			if (control.isUseDummyBMP()) {
-				return new DummyTransceiver(machineDescription.getName(),
-						connData, dummyVersion, dummyBlacklist, setBlacklist);
+				return testFactory.create(machineDescription.getName(),
+						connData, setBlacklist);
 			} else {
 				return makeTransceiver(connData);
 			}
@@ -233,11 +218,26 @@ public class TransceiverFactory
 	/** Operations for testing only. */
 	@ForTestingOnly
 	public interface TestAPI {
-		void setVersion(short version);
-
-		void setBlacklistData(String blacklistData);
-
 		Blacklist getCurrentBlacklist();
+
+		void setFactory(TestTransceiverFactory factory);
+
+		interface TestTransceiverFactory {
+			/**
+			 * Make a test transceiver.
+			 *
+			 * @param machineName
+			 *            The name of the machine.
+			 * @param data
+			 *            The connection data.
+			 * @param setBlacklist
+			 *            Where to record the current blacklist
+			 * @return Transceiver for testing.
+			 */
+			BMPTransceiverInterface create(String machineName,
+					BMPConnectionData data,
+					ValueHolder<Blacklist> setBlacklist);
+		}
 	}
 
 	/**
@@ -249,129 +249,16 @@ public class TransceiverFactory
 	public final TestAPI getTestAPI() {
 		return new TestAPI() {
 			@Override
-			public void setVersion(short version) {
-				dummyVersion = version;
-			}
-
-			@Override
-			public void setBlacklistData(String blacklistData) {
-				dummyBlacklist = blacklistData;
-			}
-
-			@Override
 			public Blacklist getCurrentBlacklist() {
 				synchronized (setBlacklist) {
 					return setBlacklist.getValue();
 				}
 			}
+
+			@Override
+			public void setFactory(TestTransceiverFactory factory) {
+				testFactory = factory;
+			}
 		};
-	}
-}
-
-class DummyTransceiver extends UnimplementedBMPTransceiver {
-	private static final Logger log = getLogger(DummyTransceiver.class);
-
-	/** Not a real serial number at all! Just for testing purposes. */
-	private static final String SERIAL_NUMBER = "gorp";
-
-	private static final int VERSION_INFO_SIZE = 32;
-
-	/** Dummy version code. */
-	static final short VERSION = 0x202;
-
-	/** Initial dummy blacklist data. */
-	static final String BLACKLIST = "chip 5 5 core 5";
-
-	private String blacklistData;
-
-	private final VersionInfo version;
-
-	private Map<Integer, Boolean> status;
-
-	private final ValueHolder<Blacklist> setBlacklist;
-
-	DummyTransceiver(String machineName, BMPConnectionData data, short version,
-			String blacklist, ValueHolder<Blacklist> setBlacklist) {
-		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
-				data.ipAddress, data.boards);
-		this.version = new VersionInfo(syntheticVersionData(version), true);
-		status = new HashMap<>();
-		this.blacklistData = blacklist;
-		this.setBlacklist = setBlacklist;
-	}
-
-	/**
-	 * @return The bytes of a response, correct in the places which Spalloc
-	 *         checks, and arbitrary (zero) elsewhere.
-	 */
-	private static ByteBuffer syntheticVersionData(short versionCode) {
-		ByteBuffer b = allocate(VERSION_INFO_SIZE);
-		b.order(LITTLE_ENDIAN);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
-		b.putShort((short) 0);
-		b.putShort(versionCode);
-		b.putInt(0);
-		b.put("abc/def".getBytes(UTF_8));
-		b.flip();
-		return b;
-	}
-
-	public Map<Integer, Boolean> getStatus() {
-		return unmodifiableMap(status);
-	}
-
-	@Override
-	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<BMPBoard> boards) {
-		log.info("power({},{},{})", powerCommand, bmp, boards);
-		for (BMPBoard b : boards) {
-			status.put(b.board, powerCommand == POWER_ON);
-		}
-	}
-
-	@Override
-	public int readFPGARegister(FPGA fpga, MemoryLocation register,
-			BMPCoords bmp, BMPBoard board) {
-		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
-		return fpga.value;
-	}
-
-	@Override
-	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
-			BMPCoords bmp, BMPBoard board) {
-		log.info("writeFPGARegister({},{},{},{},{})", fpga, register, value,
-				bmp, board);
-	}
-
-	@Override
-	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board) {
-		return version;
-	}
-
-	@Override
-	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		log.info("readBoardSerialNumber({},{})", bmp, board);
-		return SERIAL_NUMBER;
-	}
-
-	public Blacklist readBlacklist(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		log.info("readBlacklist({},{})", bmp, board);
-		return new Blacklist(blacklistData);
-	}
-
-	@Override
-	public void writeBlacklist(BMPCoords bmp, BMPBoard board,
-			Blacklist blacklist)
-			throws ProcessException, IOException, InterruptedException {
-		log.info("writeBlacklist({},{},{})", bmp, board, blacklist);
-		blacklistData = blacklist.render();
-		synchronized (setBlacklist) {
-			setBlacklist.setValue(blacklist);
-		}
 	}
 }
