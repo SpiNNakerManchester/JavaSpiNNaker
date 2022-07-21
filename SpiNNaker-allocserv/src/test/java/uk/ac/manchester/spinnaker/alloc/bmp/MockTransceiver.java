@@ -46,8 +46,20 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 /**
  * BMP transceiver mock just for test purposes.
  */
-public class MockTransceiver extends UnimplementedBMPTransceiver {
+public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	private static final Logger log = getLogger(MockTransceiver.class);
+
+	/**
+	 * Install this mock transceiver as the thing to be manufactured by the
+	 * given transceiver factory.
+	 *
+	 * @param txrxFactory
+	 *            The transceiver factory to install into.
+	 */
+	@SuppressWarnings("deprecation")
+	public static void installIntoFactory(TransceiverFactory txrxFactory) {
+		txrxFactory.getTestAPI().setFactory(MockTransceiver::new);
+	}
 
 	/** Not a real serial number at all! Just for testing purposes. */
 	private static final String SERIAL_NUMBER = "gorp";
@@ -69,7 +81,7 @@ public class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	private final ValueHolder<Blacklist> setBlacklist;
 
-	public MockTransceiver(String machineName, BMPConnectionData data,
+	private MockTransceiver(String machineName, BMPConnectionData data,
 			ValueHolder<Blacklist> setBlacklist) {
 		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
 				data.ipAddress, data.boards);
@@ -143,19 +155,88 @@ public class MockTransceiver extends UnimplementedBMPTransceiver {
 		return SERIAL_NUMBER;
 	}
 
-	public Blacklist readBlacklist(BMPCoords bmp, BMPBoard board)
-			throws IOException, ProcessException {
-		log.info("readBlacklist({},{})", bmp, board);
-		return new Blacklist(blacklistData);
+	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length) {
+		log.info("readSerialFlash({},{},{},{})", bmp, board, baseAddress,
+				length);
+		// Pad to length
+		ByteBuffer b = ByteBuffer.allocate(length).order(LITTLE_ENDIAN);
+		if (baseAddress.address == SERIAL_FLASH_BLACKLIST_OFFSET) {
+			b.put(new Blacklist(blacklistData).getRawData());
+		}
+		b.limit(length).position(length).flip();
+		return b;
 	}
 
 	@Override
-	public void writeBlacklist(BMPCoords bmp, BMPBoard board,
-			Blacklist blacklist)
-			throws ProcessException, IOException, InterruptedException {
-		log.info("writeBlacklist({},{},{})", bmp, board, blacklist);
+	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
+		log.info("readBMPMemory({},{},{},{})", bmp, board, baseAddress,
+				length);
+		ByteBuffer b = ByteBuffer.allocate(length).order(LITTLE_ENDIAN);
+		b.limit(length).position(length).flip();
+		return b;
+	}
+
+	private ByteBuffer chunkedData;
+
+	private ByteBuffer written;
+
+	private static final int SPACE = 0x10000;
+
+	private static final MemoryLocation BUF_PLACE =
+			new MemoryLocation(0x12345678);
+
+	@Override
+	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size) {
+		log.info("eraseBMPFlash({},{},{},{})", bmp, board, baseAddress, size);
+		chunkedData = ByteBuffer.allocate(SPACE).order(LITTLE_ENDIAN);
+		return BUF_PLACE;
+	}
+
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data) {
+		log.info("writeBMPMemory({},{},{}:{})", bmp, board, baseAddress,
+				data.remaining());
+		written = data.duplicate();
+	}
+
+	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation address) {
+		log.info("chunkBMPFlash({},{},{})", bmp, board, address);
+		chunkedData.put(written);
+	}
+
+	private static final int BMP_FLASH_BLACKLIST_OFFSET = 0xe00;
+
+	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size) {
+		log.info("copyBMPFlash({},{},{},{})", bmp, board, baseAddress, size);
+		ByteBuffer inFlash = chunkedData.duplicate();
+		inFlash.flip();
+		inFlash.position(BMP_FLASH_BLACKLIST_OFFSET);
 		synchronized (setBlacklist) {
-			setBlacklist.setValue(blacklist);
+			setBlacklist.setValue(new Blacklist(inFlash.slice()));
+		}
+	}
+
+	private static final int SERIAL_FLASH_BLACKLIST_OFFSET = 0x100;
+
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data) {
+		log.info("writeSerialFlash({},{},{}:{})", bmp, board, baseAddress,
+				data.remaining());
+		ByteBuffer b = data.duplicate().order(LITTLE_ENDIAN);
+		b.position(SERIAL_FLASH_BLACKLIST_OFFSET);
+		Blacklist bl = new Blacklist(b);
+		synchronized (setBlacklist) {
+			if (!bl.equals(setBlacklist.getValue())) {
+				throw new IllegalStateException("blacklist in serial flash ("
+						+ bl + ") is different to blacklist in BMP flash ("
+						+ setBlacklist.getValue() + ")");
+			}
 		}
 	}
 }

@@ -117,7 +117,7 @@ class BlacklistCommsTest extends SQLQueries {
 	 */
 	@SuppressWarnings("deprecation") // Calling internal API
 	private Future<String> bmpWorker(ExecutorService exec) {
-		txrxFactory.getTestAPI().setFactory(MockTransceiver::new);
+		MockTransceiver.installIntoFactory(txrxFactory);
 		OneShotEvent ready = new OneShotEvent();
 		return exec.submit(() -> {
 			ready.fire();

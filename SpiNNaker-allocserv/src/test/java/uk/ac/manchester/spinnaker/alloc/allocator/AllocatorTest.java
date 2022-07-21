@@ -129,10 +129,9 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	}
 
 	@BeforeEach
-	@SuppressWarnings("deprecation")
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		txrxFactory.getTestAPI().setFactory(MockTransceiver::new);
+		MockTransceiver.installIntoFactory(txrxFactory);
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB3(c));
 		}
@@ -216,13 +215,15 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 				() -> format("expected %s but got %s", expected, got));
 	}
 
+	private static final int DELAY_MS = 2000;
+
 	/**
 	 * Expiry tests need a two second sleep to get things to tick over to *past*
 	 * the expiration timestamp.
 	 */
 	private static void snooze() {
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(DELAY_MS);
 		} catch (InterruptedException e) {
 			assumeTrue(false, "sleep() was interrupted");
 		}
@@ -230,7 +231,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@SuppressWarnings("deprecation")
 	private void processBMPRequests() throws Exception {
-		bmpCtrl.getTestAPI().processRequests(2000);
+		bmpCtrl.getTestAPI().processRequests(DELAY_MS);
 	}
 
 	@SuppressWarnings("deprecation")
