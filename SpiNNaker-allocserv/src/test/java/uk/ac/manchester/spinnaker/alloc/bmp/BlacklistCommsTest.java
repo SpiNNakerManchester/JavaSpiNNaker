@@ -47,13 +47,16 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
-import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
+/**
+ * Tests whether we can do blacklist pushing and pulling through the DB so that
+ * the front-end will be able to communicate with the BMP.
+ */
 @SpringBootTest
 @SpringJUnitWebConfig(BlacklistCommsTest.Config.class)
 @ActiveProfiles("unittest")
@@ -70,6 +73,17 @@ class BlacklistCommsTest extends SQLQueries {
 
 	private static final Logger log = getLogger(BlacklistCommsTest.class);
 
+	/** Timeouts on individual tests, in seconds. */
+	private static final int TEST_TIMEOUT = 15;
+
+	/** Basic delay in fake BMP thread, in microseconds. */
+	private static final int TEST_DELAY = 750;
+
+	private static final String BMP_DONE_TOKEN = "BMP done";
+
+	private static final Blacklist WRITE_BASELINE =
+			new Blacklist("chip 4 4 core 6,4");
+
 	@Configuration
 	@ComponentScan(basePackageClasses = SpallocProperties.class)
 	static class Config {
@@ -81,11 +95,9 @@ class BlacklistCommsTest extends SQLQueries {
 	@Autowired
 	private MachineStateControl stateCtrl;
 
-	@Autowired
-	private BMPController bmpCtrl;
+	private BMPController.TestAPI bmpCtrl;
 
-	@Autowired
-	private TransceiverFactory txrxFactory;
+	private TransceiverFactory.TestAPI txrxFactory;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
@@ -97,14 +109,18 @@ class BlacklistCommsTest extends SQLQueries {
 	}
 
 	@BeforeEach
-	void checkSetup() {
+	@SuppressWarnings("deprecation")
+	void checkSetup(@Autowired BMPController bmpCtrl,
+			@Autowired TransceiverFactory txrxFactory) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
+		// Get the test stuff set up
+		this.bmpCtrl = bmpCtrl.getTestAPI();
+		MockTransceiver.installIntoFactory(txrxFactory);
+		this.txrxFactory = txrxFactory.getTestAPI();
 	}
-
-	private static final int TEST_DELAY = 750;
 
 	/**
 	 * A faked up running of the BMP worker thread because the main schedule is
@@ -114,30 +130,31 @@ class BlacklistCommsTest extends SQLQueries {
 	 *            The executor used by the test.
 	 * @return The future to wait for as part of shutting down. The value is
 	 *         meaningless, but the exceptions potentially thrown are not.
+	 * @throws InterruptedException If interrupted.
 	 */
-	@SuppressWarnings("deprecation") // Calling internal API
-	private Future<String> bmpWorker(ExecutorService exec) {
-		MockTransceiver.installIntoFactory(txrxFactory);
+	private Future<String> bmpWorker(ExecutorService exec)
+			throws InterruptedException {
 		OneShotEvent ready = new OneShotEvent();
-		return exec.submit(() -> {
+		Future<String> future = exec.submit(() -> {
 			ready.fire();
 			// Time to allow main thread to submit the work we'll carry out
 			Thread.sleep(TEST_DELAY);
-			bmpCtrl.getTestAPI().processRequests(TEST_DELAY);
-			return "BMP done";
+			bmpCtrl.processRequests(TEST_DELAY);
+			return BMP_DONE_TOKEN;
 		});
+		ready.await();
+		return future;
 	}
 
 	@Test
-	@Timeout(15)
-	public void readSerialNumberFromSystem() throws Exception {
-		// This is messy; can't have a transaction open and roll it back
+	@Timeout(TEST_TIMEOUT)
+	public void getSerialNumber() throws Exception {
 		BoardState bs = stateCtrl.findId(BOARD).get();
 		ExecutorService exec = newSingleThreadExecutor();
 		try {
-			Future<?> future = bmpWorker(exec);
+			Future<String> future = bmpWorker(exec);
 			String serialNumber = stateCtrl.getSerialNumber(bs);
-			assertEquals("BMP done", future.get());
+			assertEquals(BMP_DONE_TOKEN, future.get());
 			assertEquals("gorp", serialNumber); // Magic value in dummy!
 		} finally {
 			exec.shutdown();
@@ -145,39 +162,32 @@ class BlacklistCommsTest extends SQLQueries {
 	}
 
 	@Test
-	@Timeout(15)
-	public void readBlacklistFromSystem() throws Exception {
-		// This is messy; can't have a transaction open and roll it back
+	@Timeout(TEST_TIMEOUT)
+	public void readBlacklistFromMachine() throws Exception {
 		BoardState bs = stateCtrl.findId(BOARD).get();
 		ExecutorService exec = newSingleThreadExecutor();
 		try {
-			Future<?> future = bmpWorker(exec);
+			Future<String> future = bmpWorker(exec);
 			Blacklist bl = stateCtrl.readBlacklistFromMachine(bs).get();
-			assertEquals("BMP done", future.get());
+			assertEquals(BMP_DONE_TOKEN, future.get());
 			assertEquals(new Blacklist("chip 5 5 core 5"), bl);
 		} finally {
 			exec.shutdown();
 		}
 	}
 
-	private static final Blacklist WRITE_BASELINE =
-			new Blacklist("chip 4 4 core 6,4");
-
 	@Test
-	@Timeout(15)
-	@SuppressWarnings("deprecation") // Calling internal API
-	public void writeBlacklistToSystem() throws Exception {
-		// This is messy; can't have a transaction open and roll it back
+	@Timeout(TEST_TIMEOUT)
+	public void writeBlacklistToMachine() throws Exception {
 		BoardState bs = stateCtrl.findId(BOARD).get();
-		TestAPI testAPI = txrxFactory.getTestAPI();
 		ExecutorService exec = newSingleThreadExecutor();
 		try {
-			Future<?> future = bmpWorker(exec);
-			assertNotEquals(WRITE_BASELINE, testAPI.getCurrentBlacklist());
+			Future<String> future = bmpWorker(exec);
+			assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 			stateCtrl.writeBlacklistToMachine(bs,
 					new Blacklist("chip 4 4 core 4,6"));
-			assertEquals("BMP done", future.get());
-			assertEquals(WRITE_BASELINE, testAPI.getCurrentBlacklist());
+			assertEquals(BMP_DONE_TOKEN, future.get());
+			assertEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 		} finally {
 			exec.shutdown();
 		}

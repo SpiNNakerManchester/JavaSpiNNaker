@@ -81,8 +81,8 @@ class QuotaManagerTest extends SQLQueries implements SupportQueries {
 	@Autowired
 	private DatabaseEngine db;
 
-	@Autowired
-	private QuotaManager qm;
+	/** Because the regular scheduled actions are not running. */
+	private QuotaManager.TestAPI qm;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
@@ -94,11 +94,13 @@ class QuotaManagerTest extends SQLQueries implements SupportQueries {
 	}
 
 	@BeforeEach
-	void checkSetup() {
+	@SuppressWarnings("deprecation")
+	void checkSetup(@Autowired QuotaManager qm) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
+		this.qm = qm.getTestAPI();
 	}
 
 	/**
@@ -142,29 +144,27 @@ class QuotaManagerTest extends SQLQueries implements SupportQueries {
 
 	/** Does a job get consolidated once and only once. */
 	@Test
-	@SuppressWarnings("deprecation")
 	public void consolidate() {
 		checkAndRollback(c -> {
 			int used = 100;
 			makeFinishedJob(c, 1, used);
 			assertEquals(INITIAL_QUOTA, getQuota(c));
-			qm.getTestAPI().doConsolidate(c);
+			qm.doConsolidate(c);
 			assertEquals(INITIAL_QUOTA - used, getQuota(c));
-			qm.getTestAPI().doConsolidate(c);
+			qm.doConsolidate(c);
 			assertEquals(INITIAL_QUOTA - used, getQuota(c));
 		});
 	}
 
 	/** Does a job <em>not</em> get consolidated if there's no quota. */
 	@Test
-	@SuppressWarnings("deprecation")
 	public void noConsolidate() {
 		checkAndRollback(c -> {
 			// Delete the quota
 			setQuota(c, null);
 			makeFinishedJob(c, 1, 100);
 			assertNull(getQuota(c));
-			qm.getTestAPI().doConsolidate(c);
+			qm.doConsolidate(c);
 			assertNull(getQuota(c));
 		});
 	}

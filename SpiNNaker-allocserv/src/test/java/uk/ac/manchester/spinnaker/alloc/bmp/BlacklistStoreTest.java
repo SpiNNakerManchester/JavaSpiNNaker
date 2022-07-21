@@ -91,9 +91,6 @@ class BlacklistStoreTest extends SQLQueries {
 	@Autowired
 	private DatabaseEngine db;
 
-	@Autowired
-	private BlacklistStore blio;
-
 	private BlacklistStore.TestAPI testAPI;
 
 	@BeforeAll
@@ -137,7 +134,7 @@ class BlacklistStoreTest extends SQLQueries {
 
 	@BeforeEach
 	@SuppressWarnings("deprecation") // Calling internal API
-	void checkSetup() {
+	void checkSetup(@Autowired BlacklistStore blio) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));

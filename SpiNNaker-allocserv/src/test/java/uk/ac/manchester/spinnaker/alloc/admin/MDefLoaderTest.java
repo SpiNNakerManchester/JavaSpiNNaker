@@ -70,9 +70,6 @@ class MDefLoaderTest {
 	@Autowired
 	private MachineDefinitionLoader loader;
 
-	@Autowired
-	private DatabaseEngine mainDBEngine;
-
 	@Value("classpath:single-board-example.json")
 	private Resource singleBoard;
 
@@ -93,7 +90,7 @@ class MDefLoaderTest {
 	}
 
 	@BeforeAll
-	void makeMemoryDatabase() {
+	void makeMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = mainDBEngine.getInMemoryDB();
 	}

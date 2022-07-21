@@ -96,11 +96,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	@Autowired
 	private AllocatorTask alloc;
 
-	@Autowired
-	private BMPController bmpCtrl;
-
-	@Autowired
-	private TransceiverFactory txrxFactory;
+	private BMPController.TestAPI bmpCtrl;
 
 	private void doTest(Transacted action) {
 		try (Connection c = db.getConnection()) {
@@ -129,12 +125,15 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 	}
 
 	@BeforeEach
-	void checkSetup() {
+	@SuppressWarnings("deprecation")
+	void checkSetup(@Autowired TransceiverFactory txrxFactory,
+			@Autowired BMPController bmpCtrl) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		MockTransceiver.installIntoFactory(txrxFactory);
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB3(c));
 		}
+		this.bmpCtrl = bmpCtrl.getTestAPI();
 	}
 
 	/**
@@ -229,9 +228,8 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private void processBMPRequests() throws Exception {
-		bmpCtrl.getTestAPI().processRequests(DELAY_MS);
+		bmpCtrl.processRequests(DELAY_MS);
 	}
 
 	@SuppressWarnings("deprecation")

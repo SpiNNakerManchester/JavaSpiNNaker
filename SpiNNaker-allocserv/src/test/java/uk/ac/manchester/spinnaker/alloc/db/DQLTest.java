@@ -68,15 +68,12 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
 class DQLTest extends SQLQueries {
-	@Autowired
-	private DatabaseEngine mainDBEngine;
-
 	private DatabaseEngine memdb;
 
 	private Connection c;
 
 	@BeforeAll
-	void getMemoryDatabase() {
+	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = mainDBEngine.getInMemoryDB();
 	}

@@ -73,15 +73,12 @@ class DMLTest extends SQLQueries {
 	// No such alloc record
 	private static final int NO_ALLOC = -1;
 
-	@Autowired
-	private DatabaseEngine mainDBEngine;
-
 	private DatabaseEngine memdb;
 
 	private Connection c;
 
 	@BeforeAll
-	void getMemoryDatabase() {
+	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = mainDBEngine.getInMemoryDB();
 	}
