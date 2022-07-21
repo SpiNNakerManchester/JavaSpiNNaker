@@ -176,13 +176,6 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private int getJobCount() {
-		try (Query q = conn.query(TEST_COUNT_JOBS)) {
-			return conn.transaction(() -> q.call1().get().getInt("cnt"));
-		}
-	}
-
 	private int getJobRequestCount() {
 		try (Query q = conn.query(TEST_COUNT_REQUESTS)) {
 			return conn.transaction(() -> q.call1(QUEUED).get().getInt("cnt"));

@@ -37,7 +37,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.set;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 
-import java.nio.ByteBuffer;
 import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
@@ -755,17 +754,10 @@ class DMLTest extends SQLQueries {
 		}
 	}
 
-	private Blacklist dummyBlacklist() {
-		ByteBuffer b = ByteBuffer.allocate(4);
-		b.putInt(0);
-		b.flip();
-		return new Blacklist(b);
-	}
-
 	@Test
 	void completedBlacklistRead() {
 		assumeWritable(c);
-		Blacklist bl = dummyBlacklist();
+		Blacklist bl = new Blacklist("");
 		try (Update u = c.update(COMPLETED_BLACKLIST_READ)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
@@ -821,7 +813,7 @@ class DMLTest extends SQLQueries {
 	@Test
 	void createBlacklistWrite() {
 		assumeWritable(c);
-		Blacklist bl = dummyBlacklist();
+		Blacklist bl = new Blacklist("");
 		try (Update u = c.update(CREATE_BLACKLIST_WRITE)) {
 			assertEquals(2, u.getNumArguments());
 			c.transaction(() -> {
