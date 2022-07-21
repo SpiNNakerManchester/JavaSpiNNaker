@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
@@ -83,17 +82,13 @@ public final class MachinesResponse {
 	public final List<BriefMachineDescription> machines;
 
 	MachinesResponse(Map<String, Machine> machines, UriInfo ui) {
-		List<BriefMachineDescription> mlist = new ArrayList<>();
+		List<BriefMachineDescription> mlist = new ArrayList<>(machines.size());
 		UriBuilder ub = ui.getAbsolutePathBuilder().path("{name}");
-		for (Entry<String, Machine> ment : machines.entrySet()) {
-			String name = ment.getKey();
-			URI uri = ub.build(name);
-			Machine m = ment.getValue();
-
-			mlist.add(new BriefMachineDescription(name, uri, m.getWidth(),
-					m.getHeight(), m.getTags(), m.getDeadBoards(),
-					m.getDownLinks()));
-		}
+		machines.forEach((name,
+				machine) -> mlist.add(new BriefMachineDescription(name,
+						ub.build(name), machine.getWidth(), machine.getHeight(),
+						machine.getTags(), machine.getDeadBoards(),
+						machine.getDownLinks())));
 		this.machines = unmodifiableList(mlist);
 	}
 }

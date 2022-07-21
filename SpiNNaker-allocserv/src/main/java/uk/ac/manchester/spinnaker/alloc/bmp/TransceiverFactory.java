@@ -16,20 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,22 +34,20 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
-import uk.ac.manchester.spinnaker.machine.MemoryLocation;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
-import uk.ac.manchester.spinnaker.messages.model.FPGA;
-import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
-import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.BMPSendTimedOutException;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Creates transceivers for talking to the BMPs of machines. Note that each
@@ -147,14 +138,18 @@ public class TransceiverFactory
 		}
 	}
 
+	private final ValueHolder<Blacklist> setBlacklist = new ValueHolder<>();
+
+	private TestAPI.TestTransceiverFactory testFactory = null;
+
 	private BMPTransceiverInterface makeTransceiver(Machine machineDescription,
 			BMPCoords bmp) {
 		BMPConnectionData connData =
 				makeConnectionData(machineDescription, bmp);
 		try {
 			if (control.isUseDummyBMP()) {
-				return new DummyTransceiver(machineDescription.getName(),
-						connData);
+				return testFactory.create(machineDescription.getName(),
+						connData, setBlacklist);
 			} else {
 				return makeTransceiver(connData);
 			}
@@ -219,74 +214,51 @@ public class TransceiverFactory
 			}
 		}
 	}
-}
 
-class DummyTransceiver extends UnimplementedTransceiver {
-	private static final Logger log = getLogger(DummyTransceiver.class);
+	/** Operations for testing only. */
+	@ForTestingOnly
+	public interface TestAPI {
+		Blacklist getCurrentBlacklist();
 
-	private static final int VERSION_INFO_SIZE = 32;
+		void setFactory(TestTransceiverFactory factory);
 
-	private static final short VERSION = 0x202;
-
-	private final VersionInfo version;
-
-	private Map<Integer, Boolean> status;
-
-	DummyTransceiver(String machineName, BMPConnectionData data) {
-		log.info("constructed dummy transceiver for {} ({} : {})", machineName,
-				data.ipAddress, data.boards);
-		version = new VersionInfo(syntheticVersionData(), true);
-		status = new HashMap<>();
-	}
-
-	/**
-	 * @return The bytes of a response, correct in the places which Spalloc
-	 *         checks, and arbitrary (zero) elsewhere.
-	 */
-	private static ByteBuffer syntheticVersionData() {
-		ByteBuffer b = allocate(VERSION_INFO_SIZE);
-		b.order(LITTLE_ENDIAN);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
-		b.putShort((short) 0);
-		b.putShort(VERSION);
-		b.putInt(0);
-		b.put("abc/def".getBytes(UTF_8));
-		b.flip();
-		return b;
-	}
-
-	public Map<Integer, Boolean> getStatus() {
-		return unmodifiableMap(status);
-	}
-
-	@Override
-	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<BMPBoard> boards) {
-		log.info("power({},{},{})", powerCommand, bmp, boards);
-		for (BMPBoard b : boards) {
-			status.put(b.board, powerCommand == POWER_ON);
+		interface TestTransceiverFactory {
+			/**
+			 * Make a test transceiver.
+			 *
+			 * @param machineName
+			 *            The name of the machine.
+			 * @param data
+			 *            The connection data.
+			 * @param setBlacklist
+			 *            Where to record the current blacklist
+			 * @return Transceiver for testing.
+			 */
+			BMPTransceiverInterface create(String machineName,
+					BMPConnectionData data,
+					ValueHolder<Blacklist> setBlacklist);
 		}
 	}
 
-	@Override
-	public int readFPGARegister(FPGA fpga, MemoryLocation register,
-			BMPCoords bmp, BMPBoard board) {
-		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
-		return fpga.value;
-	}
+	/**
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@ForTestingOnly
+	@Deprecated
+	public final TestAPI getTestAPI() {
+		return new TestAPI() {
+			@Override
+			public Blacklist getCurrentBlacklist() {
+				synchronized (setBlacklist) {
+					return setBlacklist.getValue();
+				}
+			}
 
-	@Override
-	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
-			BMPCoords bmp, BMPBoard board) {
-		log.info("writeFPGARegister({},{},{},{},{})", fpga, register, value,
-				bmp, board);
-	}
-
-	@Override
-	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board) {
-		return version;
+			@Override
+			public void setFactory(TestTransceiverFactory factory) {
+				testFactory = factory;
+			}
+		};
 	}
 }

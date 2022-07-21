@@ -35,6 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<form:options items="${ names }" />
 			</form:select>
 			<form:input type="hidden" path="machineName" />
+			<c:if test="${ not empty board.bmpSerial }">
+				<p>
+					<span class="minordetail">
+						Serial: <spring:eval expression="board.bmpSerial" />
+						<c:if test="${ not empty board.physicalSerial }">
+							(<spring:eval expression="board.physicalSerial" />)
+						</c:if>
+					</span>
+				</p>
+			</c:if>
 			<br>
 			<h3>Triad coordinates:</h3>
 			<form:label path="x">X:&nbsp;</form:label><form:input
@@ -137,6 +147,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<br>
 			Note that disabling a board only means that it will not be handed
 			out in future allocations.
+		</form:form>
+		<h2>Blacklisted Hardware</h2>
+		<form:form method="POST" modelAttribute="bldata" action="${ blacklistControlUri }">
+			<form:hidden path="id" />
+			<c:if test="${ bldata.present }">
+				<form:textarea path="blacklist" />
+				<input type="submit" name="save" value="Save blacklist" />
+			</c:if>
+			<input type="submit" name="fetch" value="Refresh blacklist from board" />
+			<input type="submit" name="push" value="Push saved blacklist to board"
+				class="warningbutton" ${ bldata.synched ? 'disabled="disabled"' : '' } />
 		</form:form>
 	</c:when>
 	<c:otherwise>

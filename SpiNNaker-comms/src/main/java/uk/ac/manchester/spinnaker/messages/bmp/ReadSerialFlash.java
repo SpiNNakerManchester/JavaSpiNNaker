@@ -26,8 +26,7 @@ import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of serial flash from a BMP. */
-public class BMPReadSerialFlash
-		extends BMPRequest<BMPReadSerialFlash.Response> {
+public class ReadSerialFlash extends BMPRequest<ReadSerialFlash.Response> {
 	private static int validate(int size) {
 		if (size < 1 || size > UDP_MESSAGE_MAX_SIZE) {
 			throw new IllegalArgumentException(
@@ -44,8 +43,7 @@ public class BMPReadSerialFlash
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public BMPReadSerialFlash(BMPBoard board, MemoryLocation address,
-			int size) {
+	public ReadSerialFlash(BMPBoard board, MemoryLocation address, int size) {
 		super(board, CMD_BMP_SF, address.address, validate(size), 0);
 	}
 

@@ -71,6 +71,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Role;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ViewResolver;
@@ -104,6 +105,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 @Import({JaxRsConfig.class, MvcConfig.class, SecurityConfig.class})
 @PropertySource("classpath:service.properties")
 @EnableScheduling
+@EnableAsync
 @SpringBootApplication
 @ApplicationPath("spalloc")
 @Role(ROLE_APPLICATION)

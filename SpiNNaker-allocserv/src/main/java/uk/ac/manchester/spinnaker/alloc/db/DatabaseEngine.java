@@ -42,6 +42,7 @@ import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_MS;
 import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_US;
+import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_INNOCUOUS;
@@ -55,10 +56,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -96,7 +99,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
-import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Service;
 import org.sqlite.Function;
@@ -264,21 +266,16 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	@PreDestroy
 	private void logStatementExecutionTimes() {
 		warnOnLongTransactions = false;
-		if (props.isPerformanceLog()) {
+		if (props.isPerformanceLog() && log.isInfoEnabled()) {
 			statementLengths.entrySet().stream()
 					.filter(e -> e.getValue().getMax() >= props
 							.getPerformanceThreshold())
-					.forEach(DatabaseEngine::logStatementExecutionTime);
-		}
-	}
-
-	private static void
-			logStatementExecutionTime(Entry<String, SummaryStatistics> e) {
-		if (log.isInfoEnabled()) {
-			log.info("statement execution time " + "{}us (max: {}us) for: {}",
-					e.getValue().getMean() / NS_PER_US,
-					e.getValue().getMax() / NS_PER_US,
-					trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH));
+					.forEach(e -> log.info(
+							"statement execution time "
+									+ "{}us (max: {}us) for: {}",
+							e.getValue().getMean() / NS_PER_US,
+							e.getValue().getMax() / NS_PER_US,
+							trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH)));
 		}
 	}
 
@@ -324,6 +321,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @param properties
 	 *            The application configuration.
+	 * @throws IllegalStateException
+	 *             If the database and the tombstone database are the same file.
+	 *             This is thrown hard here because otherwise you get the
+	 *             <em>weirdest</em> and most misleading error out of SQLite.
+	 *             The system won't work, so might as well make it very clear
+	 *             immediately.
 	 */
 	@Autowired
 	public DatabaseEngine(SpallocProperties properties) {
@@ -331,6 +334,10 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				"a database file must be given").getAbsoluteFile().toPath();
 		tombstoneFile = requireNonNull(properties.getHistoricalData().getPath(),
 				"an historical database file must be given").getAbsolutePath();
+		if (dbPath.equals(Paths.get(tombstoneFile))) {
+			throw new IllegalStateException(
+					"tombstone DB is same as main DB (" + dbPath + ")");
+		}
 		dbConnectionUrl = "jdbc:sqlite:" + dbPath;
 		props = properties.getSqlite();
 		log.info("will manage database at {}", dbPath);
@@ -518,8 +525,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			try {
 				wrapper.exec(r);
 				log.info("applied schema update from {}", r);
-			} catch (UncategorizedSQLException e) {
-				log.debug("failed to apply schema update from {}", r, e);
+			} catch (DataAccessException e) {
+				if (!e.getMessage().contains("duplicate column name")) {
+					log.warn("failed to apply schema update from {}", r, e);
+					throw e;
+				}
 			}
 		}
 	}
@@ -1540,6 +1550,15 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					arg = ((Duration) arg).getSeconds();
 				} else if (arg instanceof Enum) {
 					arg = ((Enum<?>) arg).ordinal();
+				} else if (arg != null && arg instanceof Serializable
+						&& !(arg instanceof String || arg instanceof Number
+								|| arg instanceof Boolean
+								|| arg instanceof byte[])) {
+					try {
+						arg = serialize(arg);
+					} catch (IOException e) {
+						arg = null;
+					}
 				}
 				s.setObject(++idx, arg);
 			}

@@ -20,13 +20,17 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.IS_ADMIN;
 
 import java.security.Principal;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +48,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.TagList;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * The API for the controller for the admin user interface.
@@ -91,6 +96,9 @@ public interface AdminController {
 
 	/** Path to boards operations. */
 	String BOARDS_PATH = "/boards";
+
+	/** Path to blacklist operations. */
+	String BLACKLIST_PATH = "/boards/blacklist";
 
 	/** Path to machine-instantiation operations. */
 	String MACHINE_PATH = "/machine";
@@ -377,6 +385,50 @@ public interface AdminController {
 			ModelMap model);
 
 	/**
+	 * Manipulate a blacklist.
+	 *
+	 * @param bldata
+	 *            The blacklist data.
+	 * @param model
+	 *            Overall model
+	 * @return the model and view
+	 */
+	@PostMapping(BLACKLIST_PATH)
+	ModelAndView blacklistSave(
+			@Valid @ModelAttribute("bldata") BlacklistData bldata,
+			ModelMap model);
+
+	/**
+	 * Fetch the blacklist for a board from the machine.
+	 *
+	 * @param bldata
+	 *            The blacklist data.
+	 * @param model
+	 *            Overall model
+	 * @return the model and view in a future
+	 */
+	@Async
+	@PostMapping(value = BLACKLIST_PATH, params = "fetch")
+	CompletableFuture<ModelAndView> blacklistFetch(
+			@Valid @ModelAttribute("bldata") BlacklistData bldata,
+			ModelMap model);
+
+	/**
+	 * Push the blacklist for a board to the machine.
+	 *
+	 * @param bldata
+	 *            The blacklist data.
+	 * @param model
+	 *            Overall model
+	 * @return the model and view in a future
+	 */
+	@Async
+	@PostMapping(value = BLACKLIST_PATH, params = "push")
+	CompletableFuture<ModelAndView> blacklistPush(
+			@Valid @ModelAttribute("bldata") BlacklistData bldata,
+			ModelMap model);
+
+	/**
 	 * Provide the form for uploading a machine definition.
 	 *
 	 * @return the model and view
@@ -432,4 +484,77 @@ public interface AdminController {
 	@PostMapping(path = MACHINE_PATH, params = MACHINE_FILE_PARAM)
 	ModelAndView defineMachine(
 			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
+
+	class BlacklistData {
+		private int id;
+
+		private String blacklist;
+
+		private boolean present;
+
+		private boolean synched;
+
+		/** @return The board ID. */
+		@Positive
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		/** @return The text of the blacklist, if present. */
+		public String getBlacklist() {
+			return blacklist;
+		}
+
+		public void setBlacklist(String blacklist) {
+			this.blacklist = blacklist;
+		}
+
+		/**
+		 * @return The parsed blacklist.
+		 * @throws NullPointerException
+		 *             If no blacklist data is present.
+		 * @throws IllegalArgumentException
+		 *             If the string is invalid.
+		 */
+		public Blacklist getParsedBlacklist() {
+			return new Blacklist(blacklist);
+		}
+
+		/** @return Whether there is blacklist data present. */
+		public boolean isPresent() {
+			return present;
+		}
+
+		public void setPresent(boolean present) {
+			this.present = present;
+		}
+
+		/**
+		 * @return Whether the blacklist data is believed to be the same as the
+		 *         data on the board.
+		 */
+		public boolean isSynched() {
+			return synched;
+		}
+
+		public void setSynched(boolean synched) {
+			this.synched = synched;
+		}
+
+		@AssertTrue(message = "blacklist must be validly formatted")
+		private boolean isValidBlacklist() {
+			if (present) {
+				try {
+					new Blacklist(blacklist);
+				} catch (Exception e) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
 }

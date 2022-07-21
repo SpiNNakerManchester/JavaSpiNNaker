@@ -24,6 +24,7 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
 
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
@@ -41,7 +43,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -98,9 +99,13 @@ public class SpallocClientFactory {
 		return uri;
 	}
 
-	private static String encode(String string)
-			throws UnsupportedEncodingException {
-		return URLEncoder.encode(string, UTF_8.name());
+	private static String encode(String string) {
+		try {
+			// TODO Use the encoding directly once we're not bound to Java 8
+			return URLEncoder.encode(string, UTF_8.name());
+		} catch (UnsupportedEncodingException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	/**
@@ -134,19 +139,15 @@ public class SpallocClientFactory {
 	 */
 	static void writeForm(HttpURLConnection connection, Map<String, String> map)
 			throws IOException {
-		StringBuilder sb = new StringBuilder();
-		String sep = "";
-		for (Entry<String, String> e : map.entrySet()) {
-			sb.append(sep).append(e.getKey()).append("=")
-					.append(encode(e.getValue()));
-			sep = "&";
-		}
+		String form = map.entrySet().stream()
+				.map(e -> e.getKey() + "=" + encode(e.getValue()))
+				.collect(joining("&"));
 
 		connection.setDoOutput(true);
 		connection.setRequestProperty(CONTENT_TYPE, FORM_ENCODED);
 		try (Writer w =
 				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
-			w.write(sb.toString());
+			w.write(form);
 		}
 	}
 

@@ -70,9 +70,6 @@ class MDefLoaderTest {
 	@Autowired
 	private MachineDefinitionLoader loader;
 
-	@Autowired
-	private DatabaseEngine mainDBEngine;
-
 	@Value("classpath:single-board-example.json")
 	private Resource singleBoard;
 
@@ -93,7 +90,7 @@ class MDefLoaderTest {
 	}
 
 	@BeforeAll
-	void makeMemoryDatabase() {
+	void makeMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = mainDBEngine.getInMemoryDB();
 	}
@@ -133,18 +130,17 @@ class MDefLoaderTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void loadSingleBoardExample() throws IOException {
 		List<Machine> machines =
 				loader.readMachineDefinitions(singleBoard.getFile());
 		assumeTrue(machines != null && machines.size() == 1);
-		@SuppressWarnings("null")
+		//@SuppressWarnings("null")
 		Machine machine = machines.get(0);
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
-				loader.loadMachineDefinition(q, machine);
-			}
+			loader.getTestAPI(c).loadMachineDefinition(machine);
 		});
 
 		c.transaction(() -> {
@@ -175,6 +171,7 @@ class MDefLoaderTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void loadThreeBoardExample() throws IOException {
 		List<Machine> machines =
 				loader.readMachineDefinitions(threeBoard.getFile());
@@ -184,9 +181,7 @@ class MDefLoaderTest {
 		assumeTrue(machine != null);
 
 		c.transaction(() -> {
-			try (MachineDefinitionLoader.Updates q = loader.new Updates(c)) {
-				loader.loadMachineDefinition(q, machine);
-			}
+			loader.getTestAPI(c).loadMachineDefinition(machine);
 		});
 
 		c.transaction(() -> {

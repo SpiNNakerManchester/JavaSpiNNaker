@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
@@ -83,10 +82,7 @@ public class BootMessages {
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		bootVariables = initFlags(bootVariables);
 		if (extraBootValues != null) {
-			for (Entry<SystemVariableDefinition, Object> entry : extraBootValues
-					.entrySet()) {
-				bootVariables.setValue(entry.getKey(), entry.getValue());
-			}
+			extraBootValues.forEach(bootVariables::setValue);
 		}
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
 		injectBootVariableBlock(bootVariables);

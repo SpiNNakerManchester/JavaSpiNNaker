@@ -27,6 +27,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
+import uk.ac.manchester.spinnaker.alloc.bmp.BlacklistStore;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl;
 import uk.ac.manchester.spinnaker.storage.GeneratesID;
@@ -346,6 +347,7 @@ public abstract class SQLQueries {
 	 * Get the boards (and related info) of a machine that are in service.
 	 */
 	@Parameter("machine_id")
+	@ResultColumn("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
@@ -354,8 +356,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	protected static final String GET_LIVE_BOARDS =
-			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp USING (bmp_id) "
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND board_num IS NOT NULL "
 					+ "AND functioning IS 1 ORDER BY z ASC, x ASC, y ASC";
@@ -364,6 +366,7 @@ public abstract class SQLQueries {
 	 * Get the boards (and related info) of a machine that have been disabled.
 	 */
 	@Parameter("machine_id")
+	@ResultColumn("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
@@ -372,16 +375,57 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	protected static final String GET_DEAD_BOARDS =
-			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp USING (bmp_id) "
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.machine_id = :machine_id "
 					+ "AND (board_num IS NULL OR functioning IS 0) "
+					+ "ORDER BY z ASC, x ASC, y ASC";
+
+	/**
+	 * Get all the boards (and related info) of a machine.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	protected static final String GET_ALL_BOARDS =
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
+					+ "WHERE boards.machine_id = :machine_id "
+					+ "AND board_num IS NOT NULL "
+					+ "ORDER BY z ASC, x ASC, y ASC";
+
+	/**
+	 * Get all the boards (and related info) known to the service.
+	 *
+	 * @see MachineStateControl
+	 */
+	@ResultColumn("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("z")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	@ResultColumn("board_num")
+	@ResultColumn("address")
+	protected static final String GET_ALL_BOARDS_OF_ALL_MACHINES =
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
+					+ "WHERE board_num IS NOT NULL "
 					+ "ORDER BY z ASC, x ASC, y ASC";
 
 	/**
 	 * Get the coords of boards assigned to a job.
 	 */
 	@Parameter("job_id")
+	@ResultColumn("board_id")
 	@ResultColumn("x")
 	@ResultColumn("y")
 	@ResultColumn("z")
@@ -390,8 +434,8 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	protected static final String GET_JOB_BOARD_COORDS =
-			"SELECT x, y, z, bmp.cabinet, bmp.frame, board_num, boards.address "
-					+ "FROM boards JOIN bmp USING (bmp_id) "
+			"SELECT board_id, x, y, z, bmp.cabinet, bmp.frame, board_num, "
+					+ "boards.address FROM boards JOIN bmp USING (bmp_id) "
 					+ "WHERE boards.allocated_job = :job_id "
 					+ "ORDER BY z ASC, x ASC, y ASC";
 
@@ -576,7 +620,7 @@ public abstract class SQLQueries {
 	@ResultColumn("board_id")
 	@SingleRowResult
 	protected static final String GET_BOARD_BY_COORDS =
-			"SELECT board_id FROM boards WHERE " + "machine_id = :machine_id "
+			"SELECT board_id FROM boards WHERE machine_id = :machine_id "
 					+ "AND x = :x AND y = :y AND z = :z "
 					+ "AND may_be_allocated LIMIT 1";
 
@@ -838,14 +882,18 @@ public abstract class SQLQueries {
 	@ResultColumn("board_num")
 	@ResultColumn("address")
 	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_ID =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
-					+ "WHERE board_id = :board_id LIMIT 1";
+					+ "LEFT JOIN board_serial USING (board_id) "
+					+ "WHERE boards.board_id = :board_id LIMIT 1";
 
 	/** Get a board's ID given it's triad coordinates. */
 	@Parameter("machine_name")
@@ -860,13 +908,18 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("board_num")
 	@ResultColumn("address")
+	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_XYZ =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND x = :x AND y = :y AND z = :z LIMIT 1";
 
@@ -883,13 +936,18 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("board_num")
 	@ResultColumn("address")
+	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_CFB =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND bmp.cabinet = :cabinet AND bmp.frame = :frame "
 					+ "AND boards.board_num IS NOT NULL "
@@ -906,13 +964,18 @@ public abstract class SQLQueries {
 	@ResultColumn("frame")
 	@ResultColumn("board_num")
 	@ResultColumn("address")
+	@ResultColumn("machine_name")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("physical_serial_id")
 	@SingleRowResult
 	protected static final String FIND_BOARD_BY_NAME_AND_IP_ADDRESS =
-			"SELECT board_id, boards.x, boards.y, boards.z, "
+			"SELECT boards.board_id, boards.x, boards.y, boards.z, "
 					+ "bmp.cabinet, bmp.frame, board_num, boards.address, "
-					+ "machines.machine_name "
+					+ "machines.machine_name, bmp_serial_id, "
+					+ "physical_serial_id "
 					+ "FROM boards JOIN machines USING (machine_id) "
 					+ "JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
 					+ "WHERE machine_name = :machine_name "
 					+ "AND boards.address IS NOT NULL "
 					+ "AND boards.address = :address LIMIT 1";
@@ -1654,6 +1717,359 @@ public abstract class SQLQueries {
 	protected static final String CLEAR_STUCK_PENDING =
 			"UPDATE pending_changes SET in_progress = 0";
 
+	/**
+	 * Read the blacklisted chips for a board.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("notes")
+	protected static final String GET_BLACKLISTED_CHIPS =
+			"SELECT chip_x AS x, chip_y AS y, notes FROM blacklisted_chips "
+					+ "JOIN board_model_coords USING (coord_id) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Read the blacklisted cores for a board.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("p")
+	@ResultColumn("notes")
+	protected static final String GET_BLACKLISTED_CORES =
+			"SELECT chip_x AS x, chip_y AS y, physical_core AS p, notes "
+					+ "FROM blacklisted_cores "
+					+ "JOIN board_model_coords USING (coord_id) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Read the blacklisted links for a board.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	@ResultColumn("x")
+	@ResultColumn("y")
+	@ResultColumn("direction")
+	@ResultColumn("notes")
+	protected static final String GET_BLACKLISTED_LINKS =
+			"SELECT chip_x AS x, chip_y AS y, direction, notes "
+					+ "FROM blacklisted_links "
+					+ "JOIN board_model_coords USING (coord_id) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Mark a board as having had its blacklist modified.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	protected static final String MARK_BOARD_BLACKLIST_CHANGED =
+			"UPDATE boards SET blacklist_set_timestamp = "
+					+ "CAST(strftime('%s','now') AS INTEGER) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Mark a board as having had its blacklist synchronised with the hardware.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	protected static final String MARK_BOARD_BLACKLIST_SYNCHED =
+			"UPDATE boards SET blacklist_sync_timestamp = "
+					+ "CAST(strftime('%s','now') AS INTEGER) "
+					+ "WHERE board_id = :board_id";
+
+	/**
+	 * Asks whether the blacklist model for a board is believed to be
+	 * synchronised to the hardware.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@ResultColumn("current")
+	@SingleRowResult
+	protected static final String IS_BOARD_BLACKLIST_CURRENT =
+			"SELECT blacklist_sync_timestamp >= blacklist_set_timestamp "
+					+ "AS current FROM boards WHERE board_id = :board_id "
+					+ "LIMIT 1";
+
+	/**
+	 * Add a chip on a board to that board's blacklist. Does not cause the
+	 * blacklist to be written to anywhere. The {@code x},{@code y} are
+	 * board-local coordinates.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
+	protected static final String ADD_BLACKLISTED_CHIP =
+			"WITH args(board_id, x, y) AS (VALUES(:board_id, :x, :y)),"
+					+ "m(model) AS (SELECT board_model FROM machines "
+					+ "JOIN boards USING (machine_id) "
+					+ "JOIN args USING (board_id)) "
+					+ "INSERT INTO blacklisted_chips(board_id, coord_id, notes)"
+					+ "SELECT args.board_id, coord_id, NULL "
+					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
+					+ "WHERE chip_x = args.x AND chip_y = args.y";
+
+	/**
+	 * Add a core on a board to that board's blacklist. Does not cause the
+	 * blacklist to be written to anywhere. The {@code x},{@code y} are
+	 * board-local coordinates.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("p")
+	protected static final String ADD_BLACKLISTED_CORE =
+			"WITH args(board_id, x, y, p) AS (VALUES(:board_id, :x, :y, :p)),"
+					+ "m(model) AS (SELECT board_model FROM machines "
+					+ "JOIN boards USING (machine_id) "
+					+ "JOIN args USING (board_id)) "
+					+ "INSERT INTO blacklisted_cores("
+					+ "board_id, coord_id, physical_core, notes)"
+					+ "SELECT args.board_id, coord_id, p, NULL "
+					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
+					+ "WHERE chip_x = args.x AND chip_y = args.y";
+
+	/**
+	 * Add a link on a board to that board's blacklist. Does not cause the
+	 * blacklist to be written to anywhere. The {@code x},{@code y} are
+	 * board-local coordinates.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	@Parameter("x")
+	@Parameter("y")
+	@Parameter("direction")
+	protected static final String ADD_BLACKLISTED_LINK =
+			"WITH args(board_id, x, y, dir) AS ("
+					+ "VALUES(:board_id, :x, :y, :direction)),"
+					+ "m(model) AS (SELECT board_model FROM machines "
+					+ "JOIN boards USING (machine_id) "
+					+ "JOIN args USING (board_id)) "
+					+ "INSERT INTO blacklisted_links("
+					+ "board_id, coord_id, direction, notes)"
+					+ "SELECT args.board_id, coord_id, dir, NULL "
+					+ "FROM board_model_coords JOIN m USING (model) JOIN args "
+					+ "WHERE chip_x = args.x AND chip_y = args.y";
+
+	/**
+	 * Delete all blacklist entries for chips on a board.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	protected static final String CLEAR_BLACKLISTED_CHIPS =
+			"DELETE FROM blacklisted_chips WHERE board_id = :board_id";
+
+	/**
+	 * Delete all blacklist entries for cores on a board.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	protected static final String CLEAR_BLACKLISTED_CORES =
+			"DELETE FROM blacklisted_cores WHERE board_id = :board_id";
+
+	/**
+	 * Delete all blacklist entries for links on a board.
+	 *
+	 * @see BlacklistStore
+	 */
+	@Parameter("board_id")
+	protected static final String CLEAR_BLACKLISTED_LINKS =
+			"DELETE FROM blacklisted_links WHERE board_id = :board_id";
+
+	/**
+	 * Get the list of writes (to the machine) of blacklist data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_BLACKLIST_WRITES =
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
+					+ "cabinet, frame, data FROM blacklist_ops "
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
+					+ "WHERE op = 1 AND NOT completed "
+					+ "AND boards.machine_id = :machine_id";
+
+	/**
+	 * Get the list of reads (from the machine) of blacklist data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_BLACKLIST_READS =
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
+					+ "cabinet, frame FROM blacklist_ops "
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
+					+ "WHERE op = 0 AND NOT completed "
+					+ "AND boards.machine_id = :machine_id";
+
+	/**
+	 * Get the list of reads (from the machine) of serial data to perform.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("machine_id")
+	@ResultColumn("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("bmp_serial_id")
+	@ResultColumn("board_num")
+	@ResultColumn("cabinet")
+	@ResultColumn("frame")
+	protected static final String GET_SERIAL_INFO_REQS =
+			"SELECT op_id, board_id, board_serial.bmp_serial_id, board_num, "
+					+ "cabinet, frame FROM blacklist_ops "
+					+ "JOIN boards USING (board_id) JOIN bmp USING (bmp_id) "
+					+ "LEFT JOIN board_serial USING (board_id) "
+					+ "WHERE op = 2 AND NOT completed "
+					+ "AND boards.machine_id = :machine_id";
+
+	/**
+	 * Set the BMP and physical serial IDs based on the information actually
+	 * read off the machine. A bit of care is needed because we might not yet
+	 * have a row for that board.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("board_id")
+	@Parameter("bmp_serial_id")
+	@Parameter("physical_serial_id")
+	@GeneratesID
+	protected static final String SET_BOARD_SERIAL_IDS =
+			"INSERT INTO board_serial("
+					+ "board_id, bmp_serial_id, physical_serial_id) "
+					+ "VALUES(:board_id, :bmp_serial_id, :physical_serial_id) "
+					+ "ON CONFLICT DO UPDATE SET "
+					+ "bmp_serial_id = excluded.bmp_serial_id, "
+					+ "physical_serial_id = excluded.physical_serial_id";
+
+	/**
+	 * Mark a read of a blacklist as completed.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("data")
+	@Parameter("op_id")
+	protected static final String COMPLETED_BLACKLIST_READ =
+			"UPDATE blacklist_ops SET data = :data, completed = 1 "
+					+ "WHERE op_id = :op_id";
+
+	/**
+	 * Mark a write of a blacklist as completed.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("op_id")
+	protected static final String COMPLETED_BLACKLIST_WRITE =
+			"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id";
+
+	/**
+	 * Mark a read of serial data as completed. (Text same as
+	 * {@link #COMPLETED_BLACKLIST_WRITE} for now, but logically distinct.)
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("op_id")
+	protected static final String COMPLETED_GET_SERIAL_REQ =
+			"UPDATE blacklist_ops SET completed = 1 WHERE op_id = :op_id";
+
+	/**
+	 * Mark a read or write of a blacklist as failed, noting the reason.
+	 *
+	 * @see BMPController
+	 */
+	@Parameter("failure")
+	@Parameter("op_id")
+	protected static final String FAILED_BLACKLIST_OP = "UPDATE blacklist_ops "
+			+ "SET failure = :failure, completed = 1 WHERE op_id = :op_id";
+
+	/**
+	 * Retrieve a completed request to read or write a blacklist for a board.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("op_id")
+	@ResultColumn("board_id")
+	@ResultColumn("op")
+	@ResultColumn("data")
+	@ResultColumn("failure")
+	@SingleRowResult
+	protected static final String GET_COMPLETED_BLACKLIST_OP =
+			"SELECT board_id, op, data, failure, "
+					+ "failure IS NOT NULL AS failed "
+					+ "FROM blacklist_ops WHERE op_id = :op_id AND completed "
+					+ "LIMIT 1";
+
+	/**
+	 * Delete a blacklist request.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("op_id")
+	protected static final String DELETE_BLACKLIST_OP =
+			"DELETE FROM blacklist_ops WHERE op_id = :op_id";
+
+	/**
+	 * Insert a request to read a board's blacklist.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@GeneratesID
+	protected static final String CREATE_BLACKLIST_READ =
+			"INSERT INTO blacklist_ops(board_id, op, completed) "
+					+ "VALUES(:board_id, 0, 0)";
+
+	/**
+	 * Insert a request to write a board's blacklist.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@Parameter("blacklist")
+	@GeneratesID
+	protected static final String CREATE_BLACKLIST_WRITE =
+			"INSERT INTO blacklist_ops(board_id, op, completed, data) "
+					+ "VALUES(:board_id, 1, 0, :blacklist)";
+
+	/**
+	 * Insert a request to read a board's serial information.
+	 *
+	 * @see MachineStateControl
+	 */
+	@Parameter("board_id")
+	@GeneratesID
+	protected static final String CREATE_SERIAL_READ_REQ =
+			"INSERT INTO blacklist_ops(board_id, op, completed) "
+					+ "VALUES(:board_id, 2, 0)";
+
 	// SQL loaded from files because it is too complicated otherwise!
 
 	/**
@@ -2015,6 +2431,6 @@ interface SQLQueriesUseImportsForCheckstyle {
 		DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
 		UserControl.class, AllocatorTask.class, QuotaManager.class,
 		Spalloc.class, BMPController.class, BoardIssueReport.class,
-		LocalAuthProviderImpl.class
+		LocalAuthProviderImpl.class, BlacklistStore.class
 	};
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.bmp;
+package uk.ac.manchester.spinnaker.transceiver;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +30,6 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
 import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
-import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
-import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -41,10 +39,11 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-class UnimplementedTransceiver implements BMPTransceiverInterface {
+public abstract class UnimplementedBMPTransceiver
+		implements BMPTransceiverInterface {
 	private BMPCoords boundBMP = new BMPCoords(0, 0);
 
-	UnimplementedTransceiver() {
+	protected UnimplementedBMPTransceiver() {
 	}
 
 	@Override
@@ -161,6 +160,7 @@ class UnimplementedTransceiver implements BMPTransceiverInterface {
 	}
 
 	@Override
+	@Deprecated
 	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException {
@@ -168,12 +168,14 @@ class UnimplementedTransceiver implements BMPTransceiverInterface {
 	}
 
 	@Override
+	@Deprecated
 	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address) throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
+	@Deprecated
 	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException {
@@ -201,6 +203,12 @@ class UnimplementedTransceiver implements BMPTransceiverInterface {
 
 	@Override
 	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
+			throws IOException, ProcessException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		throw new UnsupportedOperationException();
 	}

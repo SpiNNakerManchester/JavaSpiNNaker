@@ -54,7 +54,7 @@ public class ReadSerialFlashCRC
 		public final int crc;
 
 		Response(ByteBuffer buffer) throws UnexpectedResponseCodeException {
-			super("Read", CMD_BMP_SF, buffer);
+			super("Read Serial Flash CRC", CMD_BMP_SF, buffer);
 			buffer = buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 			crc = buffer.getInt();
 		}

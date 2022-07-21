@@ -81,8 +81,8 @@ class QuotaManagerTest extends SQLQueries implements SupportQueries {
 	@Autowired
 	private DatabaseEngine db;
 
-	@Autowired
-	private QuotaManager qm;
+	/** Because the regular scheduled actions are not running. */
+	private QuotaManager.TestAPI qm;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
@@ -94,11 +94,13 @@ class QuotaManagerTest extends SQLQueries implements SupportQueries {
 	}
 
 	@BeforeEach
-	void checkSetup() {
+	@SuppressWarnings("deprecation")
+	void checkSetup(@Autowired QuotaManager qm) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
+		this.qm = qm.getTestAPI();
 	}
 
 	/**

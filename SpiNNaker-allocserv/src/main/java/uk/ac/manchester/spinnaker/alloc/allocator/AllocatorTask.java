@@ -47,6 +47,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.HistoricalDataProperties;
@@ -350,8 +351,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *            The DB connection
 	 * @return Whether any changes have been done
 	 */
-	@Deprecated
-	boolean allocate(Connection conn) {
+	private boolean allocate(Connection conn) {
 		try (AllocSQL sql = new AllocSQL(conn)) {
 			int maxImportance = -1;
 			boolean changed = false;
@@ -410,8 +410,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *            How to talk to the DB
 	 * @return Whether any jobs have been expired.
 	 */
-	@Deprecated // INTERNAL
-	boolean expireJobs(Connection conn) {
+	private boolean expireJobs(Connection conn) {
 		boolean changed = false;
 		try (Query find = conn.query(FIND_EXPIRED_JOBS)) {
 			List<Integer> toKill = find.call().map(integer("job_id")).toList();
@@ -506,7 +505,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *            The DB connection
 	 * @return Description of the tombstoned IDs
 	 */
-	Copied tombstone(Connection conn) {
+	private Copied tombstone(Connection conn) {
 		try (Query copyJobs = conn.query(copyJobsToHistoricalData);
 				Query copyAllocs = conn.query(copyAllocsToHistoricalData);
 				Update deleteJobs = conn.update(DELETE_JOB_RECORD);
@@ -542,8 +541,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 *            Why is the job being destroyed.
 	 * @return Whether the job was destroyed.
 	 */
-	@Deprecated // INTERNAL
-	boolean destroyJob(Connection conn, int id, String reason) {
+	private boolean destroyJob(Connection conn, int id, String reason) {
 		JobLifecycle.log.info("destroying job {} \"{}\"", id, reason);
 		try (DestroySQL sql = new DestroySQL(conn)) {
 			if (sql.getJob.call1(id).map(enumerate("job_state", JobState.class))
@@ -948,6 +946,74 @@ public class AllocatorTask extends DatabaseAwareBean
 				numPending, jobId);
 
 		return numPending > 0;
+	}
+
+	/** Operations for testing only. */
+	@ForTestingOnly
+	interface TestAPI {
+		/**
+		 * Allocate all current requests for resources.
+		 *
+		 * @return Whether any changes have been done
+		 */
+		boolean allocate();
+
+		/**
+		 * Destroy a job.
+		 *
+		 * @param id
+		 *            The ID of the job
+		 * @param reason
+		 *            Why is the job being destroyed.
+		 * @return Whether the job was destroyed.
+		 */
+		boolean destroyJob(int id, String reason);
+
+		/**
+		 * Destroy jobs that have missed their keepalive.
+		 *
+		 * @return Whether any jobs have been expired.
+		 */
+		boolean expireJobs();
+
+		/**
+		 * Implementation of {@link AllocatorTask#tombstone()}.
+		 *
+		 * @return Description of the tombstoned IDs
+		 */
+		Copied tombstone();
+	}
+
+	/**
+	 * @param conn
+	 *            The DB connection
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@ForTestingOnly
+	@Deprecated
+	TestAPI getTestAPI(Connection conn) {
+		return new TestAPI() {
+			@Override
+			public boolean allocate() {
+				return AllocatorTask.this.allocate(conn);
+			}
+
+			@Override
+			public boolean destroyJob(int id, String reason) {
+				return AllocatorTask.this.destroyJob(conn, id, reason);
+			}
+
+			@Override
+			public boolean expireJobs() {
+				return AllocatorTask.this.expireJobs(conn);
+			}
+
+			@Override
+			public Copied tombstone() {
+				return AllocatorTask.this.tombstone(conn);
+			}
+		};
 	}
 
 	@SuppressWarnings("unused")

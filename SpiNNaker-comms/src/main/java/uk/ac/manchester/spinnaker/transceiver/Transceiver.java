@@ -23,6 +23,7 @@ import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
@@ -42,6 +43,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FI
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector.SerialVector.SERIAL_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -1738,6 +1740,16 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new ReadSerialVector(board)).vector
 				.getFlashBuffer();
+	}
+
+	@Override
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		int[] serialNumber = new int[SERIAL_LENGTH];
+		bmpCall(bmp, new ReadSerialVector(board)).vector.getSerialNumber()
+				.get(serialNumber);
+		return format("%08x-%08x-%08x-%08x",
+				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
 	}
 
 	@Override

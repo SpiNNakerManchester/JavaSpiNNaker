@@ -25,7 +25,6 @@ import static java.util.Collections.unmodifiableSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
@@ -322,19 +321,16 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 */
 	public CoreSubsets intersection(CoreSubsets other) {
 		CoreSubsets results = new CoreSubsets();
-		for (Entry<?, Map<Integer, CoreLocation>> entry : locations
-				.entrySet()) {
-			Map<?, CoreLocation> otherSubset =
-					other.locations.get(entry.getKey());
-			if (otherSubset == null) {
-				continue;
+		locations.forEach((chip, locs) -> {
+			Map<?, CoreLocation> otherSubset = other.locations.get(chip);
+			if (otherSubset != null) {
+				locs.forEach((ignored, location) -> {
+					if (otherSubset.containsValue(location)) {
+						results.addCore(location);
+					}
+				});
 			}
-			for (CoreLocation location : entry.getValue().values()) {
-				if (otherSubset.containsValue(location)) {
-					results.addCore(location);
-				}
-			}
-		}
+		});
 		return results;
 	}
 
