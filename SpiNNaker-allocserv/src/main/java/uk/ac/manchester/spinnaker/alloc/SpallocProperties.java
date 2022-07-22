@@ -85,6 +85,12 @@ public class SpallocProperties {
 
 	private ProxyProperties proxy;
 
+	/** Properties relating to board issue reporting. */
+	private ReportProperties reportEmail;
+
+	/** Properties relating to control of the overall machine state. */
+	private StateControlProperties stateCtrl;
+
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
@@ -98,7 +104,9 @@ public class SpallocProperties {
 			@DefaultValue ProxyProperties proxy,
 			@DefaultValue QuotaProperties quota,
 			@DefaultValue DBProperties sqlite,
-			@DefaultValue TxrxProperties transceiver) {
+			@DefaultValue ReportProperties reportEmail,
+			@DefaultValue TxrxProperties transceiver,
+			@DefaultValue StateControlProperties stateControl) {
 		this.databasePath = databasePath;
 		this.wait = wait;
 		this.pause = pause;
@@ -111,7 +119,9 @@ public class SpallocProperties {
 		this.proxy = proxy;
 		this.quota = quota;
 		this.sqlite = sqlite;
+		this.reportEmail = reportEmail;
 		this.transceiver = transceiver;
+		this.stateCtrl = stateControl;
 	}
 
 	/**
@@ -287,6 +297,17 @@ public class SpallocProperties {
 		this.sqlite = sqlite;
 	}
 
+	/** @return Properties relating to board issue reporting. */
+	@NotNull
+	@Valid
+	public ReportProperties getReportEmail() {
+		return reportEmail;
+	}
+
+	public void setReportEmail(ReportProperties reportEmail) {
+		this.reportEmail = reportEmail;
+	}
+
 	/**
 	 * @return Properties relating to the Spalloc v1 compatibility layer.
 	 */
@@ -298,6 +319,17 @@ public class SpallocProperties {
 
 	public void setCompat(CompatibilityProperties compat) {
 		this.compat = compat;
+	}
+
+	/** @return Properties relating to control of the overall machine state. */
+	@NotNull
+	@Valid
+	public StateControlProperties getStateControl() {
+		return stateCtrl;
+	}
+
+	public void setStateControl(StateControlProperties stateCtrl) {
+		this.stateCtrl = stateCtrl;
 	}
 
 	/** How to handle job data that is now only of historic interest. */
@@ -446,9 +478,6 @@ public class SpallocProperties {
 		 */
 		private int reportActionThreshold;
 
-		/** Properties relating to board issue reporting. */
-		private ReportProperties reportEmail;
-
 		/** Name of user that system-generated reports are done by. */
 		private String systemReportUser;
 
@@ -456,13 +485,11 @@ public class SpallocProperties {
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
 				@DefaultValue("2") int reportActionThreshold,
-				@DefaultValue ReportProperties reportEmail,
 				@DefaultValue("") String systemReportUser) {
 			this.period = period;
 			this.importanceSpan = importanceSpan;
 			this.priorityScale = priorityScale;
 			this.reportActionThreshold = reportActionThreshold;
-			this.reportEmail = reportEmail;
 			this.systemReportUser = systemReportUser;
 		}
 
@@ -522,17 +549,6 @@ public class SpallocProperties {
 
 		public void setReportActionThreshold(int threshold) {
 			reportActionThreshold = threshold;
-		}
-
-		/** @return Properties relating to board issue reporting. */
-		@NotNull
-		@Valid
-		public ReportProperties getReportEmail() {
-			return reportEmail;
-		}
-
-		public void setReportEmail(ReportProperties reportEmail) {
-			this.reportEmail = reportEmail;
 		}
 
 		/** @return Name of user that system-generated reports are done by. */
@@ -1827,6 +1843,84 @@ public class SpallocProperties {
 
 		public void setLocalHost(String localHost) {
 			this.localHost = localHost;
+		}
+	}
+
+	/** Settings for control of the administrative state of a machine. */
+	public static class StateControlProperties {
+		/** How long to wait between polls of the BMP controller. */
+		private Duration blacklistPoll;
+
+		/** How long to wait for a blacklist operation to complete. */
+		private Duration blacklistTimeout;
+
+		/**
+		 * How many board serial numbers to read from a full machine at once
+		 * when synchronizing the overall state?
+		 */
+		private int serialReadBatchSize;
+
+		/**
+		 * How many blacklists to read from a full machine at once when
+		 * synchronizing the overall state?
+		 */
+		private int blacklistReadBatchSize;
+
+		public StateControlProperties(
+				@DefaultValue("15s") Duration blacklistPoll,
+				@DefaultValue("60s") Duration blacklistTimeout,
+				@DefaultValue("24") int serialReadBatchSize,
+				@DefaultValue("6") int blacklistReadBatchSize) {
+			this.blacklistPoll = blacklistPoll;
+			this.blacklistTimeout = blacklistTimeout;
+			this.serialReadBatchSize = serialReadBatchSize;
+			this.blacklistReadBatchSize = blacklistReadBatchSize;
+		}
+
+		/** @return How long to wait between polls of the BMP controller. */
+		@NotNull
+		public Duration getBlacklistPoll() {
+			return blacklistPoll;
+		}
+
+		public void setBlacklistPoll(Duration blacklistPoll) {
+			this.blacklistPoll = blacklistPoll;
+		}
+
+		/** @return How long to wait for a blacklist operation to complete. */
+		@NotNull
+		public Duration getBlacklistTimeout() {
+			return blacklistTimeout;
+		}
+
+		public void setBlacklistTimeout(Duration blacklistTimeout) {
+			this.blacklistTimeout = blacklistTimeout;
+		}
+
+		/**
+		 * @return How many board serial numbers to read from a full machine at
+		 *         once when synchronizing the overall state?
+		 */
+		@Positive
+		public int getSerialReadBatchSize() {
+			return serialReadBatchSize;
+		}
+
+		public void setSerialReadBatchSize(int serialReadBatchSize) {
+			this.serialReadBatchSize = serialReadBatchSize;
+		}
+
+		/**
+		 * @return How many blacklists to read from a full machine at once when
+		 *         synchronizing the overall state?
+		 */
+		@Positive
+		public int getBlacklistReadBatchSize() {
+			return blacklistReadBatchSize;
+		}
+
+		public void setBlacklistReadBatchSize(int blacklistReadBatchSize) {
+			this.blacklistReadBatchSize = blacklistReadBatchSize;
 		}
 	}
 }

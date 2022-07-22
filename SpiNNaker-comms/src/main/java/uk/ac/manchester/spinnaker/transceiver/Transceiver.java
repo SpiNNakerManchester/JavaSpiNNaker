@@ -22,6 +22,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
+import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -37,6 +38,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FI
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector.SerialVector.SERIAL_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -1712,8 +1714,7 @@ public class Transceiver extends UDPTransceiver
 	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, File file)
 			throws IOException, ProcessException {
-		BMPWriteMemoryProcess wmp =
-				new BMPWriteMemoryProcess(bmpConnection(bmp), this);
+		var wmp = new BMPWriteMemoryProcess(bmpConnection(bmp), this);
 		try (var f = new BufferedInputStream(new FileInputStream(file))) {
 			// The file had better fit...
 			wmp.writeMemory(board, baseAddress, f, (int) file.length());
@@ -1725,6 +1726,16 @@ public class Transceiver extends UDPTransceiver
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new ReadSerialVector(board)).vector
 				.getFlashBuffer();
+	}
+
+	@Override
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		var serialNumber = new int[SERIAL_LENGTH];
+		bmpCall(bmp, new ReadSerialVector(board)).vector.getSerialNumber()
+				.get(serialNumber);
+		return format("%08x-%08x-%08x-%08x",
+				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
 	}
 
 	@Override
@@ -1766,8 +1777,7 @@ public class Transceiver extends UDPTransceiver
 	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, File file)
 			throws ProcessException, IOException {
-		try (var f =
-				new BufferedInputStream(new FileInputStream(file))) {
+		try (var f = new BufferedInputStream(new FileInputStream(file))) {
 			// The file had better fit...
 			new BMPWriteSerialFlashProcess(bmpConnection(bmp), this)
 					.write(board, baseAddress, f, (int) file.length());

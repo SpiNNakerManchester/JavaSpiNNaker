@@ -314,7 +314,7 @@ class V1TaskImpl extends V1CompatTask {
 		 */
 		private <T, U> U[] mapArrayTx(Supplier<Collection<T>> srcItems,
 				Class<U> targetCls, BiConsumer<T, U> itemMapper) {
-			return execute(false,
+			return executeRead(
 					c -> mapToArray(srcItems.get(), targetCls, itemMapper));
 		}
 

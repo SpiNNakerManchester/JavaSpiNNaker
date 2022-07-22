@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BLACKLIST_OP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BMP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BOARD;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_CHANGE;
@@ -33,6 +34,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertThrowsChe
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertThrowsFK;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assumeWritable;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.INTERNAL;
+import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 
 import java.time.Duration;
 import java.util.Set;
@@ -50,6 +52,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * Tests of inserts, updates and deletes. Ensures that the SQL and the schema
@@ -67,15 +70,12 @@ class DMLTest extends SQLQueries {
 	// No such alloc record
 	private static final int NO_ALLOC = -1;
 
-	@Autowired
-	private DatabaseEngine mainDBEngine;
-
 	private DatabaseEngine memdb;
 
 	private Connection c;
 
 	@BeforeAll
-	void getMemoryDatabase() {
+	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = mainDBEngine.getInMemoryDB();
 	}
@@ -285,7 +285,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(11, u.getNumArguments());
 			c.transaction(() -> {
 				// No such job
-				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, 0, 0, //
+				assertThrowsFK(() -> u.keys(NO_JOB, NO_BOARD, UNKNOWN, UNKNOWN,
 						true, false, false, false, false, false, false));
 			});
 		}
@@ -738,6 +738,191 @@ class DMLTest extends SQLQueries {
 			assertEquals(0, u.getNumArguments());
 			c.transaction(() -> {
 				assertEquals(0, u.call());
+			});
+		}
+	}
+
+	@Test
+	void setBoardSerialIds() {
+		assumeWritable(c);
+		try (var u = c.update(SET_BOARD_SERIAL_IDS)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD, "foo", "bar"));
+			});
+		}
+	}
+
+	@Test
+	void completedBlacklistRead() {
+		assumeWritable(c);
+		var bl = new Blacklist("");
+		try (var u = c.update(COMPLETED_BLACKLIST_READ)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(bl, NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void completedBlacklistWrite() {
+		assumeWritable(c);
+		try (var u = c.update(COMPLETED_BLACKLIST_WRITE)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void completedGetSerialReq() {
+		assumeWritable(c);
+		try (var u = c.update(COMPLETED_GET_SERIAL_REQ)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void failedBlacklistOp() {
+		assumeWritable(c);
+		try (var u = c.update(FAILED_BLACKLIST_OP)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(new Exception(), NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void createBlacklistRead() {
+		assumeWritable(c);
+		try (var u = c.update(CREATE_BLACKLIST_READ)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void createBlacklistWrite() {
+		assumeWritable(c);
+		var bl = new Blacklist("");
+		try (var u = c.update(CREATE_BLACKLIST_WRITE)) {
+			assertEquals(2, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD, bl));
+			});
+		}
+	}
+
+	@Test
+	void createSerialReadReq() {
+		assumeWritable(c);
+		try (var u = c.update(CREATE_SERIAL_READ_REQ)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertThrowsFK(() -> u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void deleteBlacklistOp() {
+		assumeWritable(c);
+		try (var u = c.update(DELETE_BLACKLIST_OP)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				assertEquals(0, u.call(NO_BLACKLIST_OP));
+			});
+		}
+	}
+
+	@Test
+	void addBlacklistedChip() {
+		assumeWritable(c);
+		try (var u = c.update(ADD_BLACKLISTED_CHIP)) {
+			assertEquals(3, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no insert
+				assertEquals(0, u.call(NO_BOARD, -1, -1));
+			});
+		}
+	}
+
+	@Test
+	void addBlacklistedCore() {
+		assumeWritable(c);
+		try (var u = c.update(ADD_BLACKLISTED_CORE)) {
+			assertEquals(4, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no insert
+				assertEquals(0, u.call(NO_BOARD, -1, -1, -1));
+			});
+		}
+	}
+
+	@Test
+	void addBlacklistedLink() {
+		assumeWritable(c);
+		try (var u = c.update(ADD_BLACKLISTED_LINK)) {
+			assertEquals(4, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no insert
+				assertEquals(0, u.call(NO_BOARD, -1, -1, Direction.N));
+			});
+		}
+	}
+
+	@Test
+	void clearBlacklistedChips() {
+		assumeWritable(c);
+		try (var u = c.update(CLEAR_BLACKLISTED_CHIPS)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void clearBlacklistedCores() {
+		assumeWritable(c);
+		try (var u = c.update(CLEAR_BLACKLISTED_CORES)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void markBoardBlacklistChanged() {
+		assumeWritable(c);
+		try (var u = c.update(MARK_BOARD_BLACKLIST_CHANGED)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
+			});
+		}
+	}
+
+	@Test
+	void markBoardBlacklistSynched() {
+		assumeWritable(c);
+		try (var u = c.update(MARK_BOARD_BLACKLIST_SYNCHED)) {
+			assertEquals(1, u.getNumArguments());
+			c.transaction(() -> {
+				// No such board, so no delete
+				assertEquals(0, u.call(NO_BOARD));
 			});
 		}
 	}

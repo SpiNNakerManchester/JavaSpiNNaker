@@ -18,13 +18,14 @@ package uk.ac.manchester.spinnaker.machine;
 
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
@@ -269,26 +270,15 @@ public final class Router implements MappableIterable<Link> {
 	 * @return The destination locations
 	 */
 	public List<ChipLocation> neighbouringChipsCoords() {
-		var neighbours = new ArrayList<ChipLocation>();
-		for (var link : links.values()) {
-			neighbours.add(link.destination);
-		}
-		return neighbours;
+		return links.values().stream().map(link -> link.destination)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public String toString() {
-		var result = new StringBuilder("Router[");
-		String sep = "";
-		for (var entry : links.entrySet()) {
-			result.append(sep);
-			result.append(entry.getKey());
-			result.append(":");
-			result.append(entry.getValue().destination);
-			sep = " ";
-		}
-		result.append("]");
-		return result.toString();
+		return links.entrySet().stream().map(
+				entry -> entry.getKey() + ":" + entry.getValue().destination)
+				.collect(joining(" ", "Router[", "]"));
 	}
 
 	@Override

@@ -319,17 +319,16 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 */
 	public CoreSubsets intersection(CoreSubsets other) {
 		var results = new CoreSubsets();
-		for (var entry : locations.entrySet()) {
-			var otherSubset = other.locations.get(entry.getKey());
-			if (otherSubset == null) {
-				continue;
+		locations.forEach((chip, locs) -> {
+			var otherSubset = other.locations.get(chip);
+			if (otherSubset != null) {
+				locs.forEach((ignored, location) -> {
+					if (otherSubset.containsValue(location)) {
+						results.addCore(location);
+					}
+				});
 			}
-			for (var location : entry.getValue().values()) {
-				if (otherSubset.containsValue(location)) {
-					results.addCore(location);
-				}
-			}
-		}
+		});
 		return results;
 	}
 

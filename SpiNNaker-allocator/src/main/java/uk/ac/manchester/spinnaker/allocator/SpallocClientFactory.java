@@ -22,8 +22,10 @@ import static java.lang.String.format;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
 
@@ -31,10 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -95,11 +95,6 @@ public class SpallocClientFactory {
 		return uri;
 	}
 
-	private static String encode(String string)
-			throws UnsupportedEncodingException {
-		return URLEncoder.encode(string, UTF_8.name());
-	}
-
 	/**
 	 * Read an object from a stream.
 	 *
@@ -131,19 +126,15 @@ public class SpallocClientFactory {
 	 */
 	static void writeForm(HttpURLConnection connection, Map<String, String> map)
 			throws IOException {
-		var sb = new StringBuilder();
-		var sep = "";
-		for (var e : map.entrySet()) {
-			sb.append(sep).append(e.getKey()).append("=")
-					.append(encode(e.getValue()));
-			sep = "&";
-		}
+		var form = map.entrySet().stream()
+				.map(e -> e.getKey() + "=" + encode(e.getValue(), UTF_8))
+				.collect(joining("&"));
 
 		connection.setDoOutput(true);
 		connection.setRequestProperty(CONTENT_TYPE, FORM_ENCODED);
-		try (var w = new OutputStreamWriter(connection.getOutputStream(),
-				UTF_8)) {
-			w.write(sb.toString());
+		try (var w =
+				new OutputStreamWriter(connection.getOutputStream(), UTF_8)) {
+			w.write(form);
 		}
 	}
 
@@ -456,7 +447,8 @@ public class SpallocClientFactory {
 		@Override
 		public void delete(String reason) throws IOException {
 			s.withRenewal(() -> {
-				var conn = s.connection(uri, "?reason=" + encode(reason), true);
+				var conn = s.connection(uri, "?reason=" + encode(reason, UTF_8),
+						true);
 				conn.setRequestMethod("DELETE");
 				try (var is = checkForError(conn, "couldn't delete job")) {
 					readLines(is, UTF_8);
@@ -616,8 +608,8 @@ public class SpallocClientFactory {
 
 		@Override
 		public WhereIs getBoardByIPAddress(String address) throws IOException {
-			return whereis(bmd.uri
-					.resolve(format("board-ip?address=%s", encode(address))));
+			return whereis(bmd.uri.resolve(
+					format("board-ip?address=%s", encode(address, UTF_8))));
 		}
 	}
 }

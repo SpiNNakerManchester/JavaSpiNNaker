@@ -69,7 +69,7 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_BMP_INFO, buffer);
+			super("Read CAN Status", CMD_BMP_INFO, buffer);
 			statusData = new byte[buffer.remaining()];
 			buffer.get(statusData);
 		}

@@ -60,7 +60,8 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 
 		private static final int SERIAL_INDEX = 1;
 
-		private static final int SERIAL_LENGTH = 4;
+		/** The length of the serial number, in words. */
+		public static final int SERIAL_LENGTH = 4;
 
 		private static final int FLASH_BUFFER_INDEX = 5;
 
@@ -82,9 +83,8 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 		/** @return The serial number data, as a read-only buffer. */
 		public IntBuffer getSerialNumber() {
 			// TODO use slice(int,int) once base Java version recent enough
-			IntBuffer b = buffer.asReadOnlyBuffer();
-			b.position(SERIAL_INDEX);
-			b.limit(SERIAL_INDEX + SERIAL_LENGTH);
+			var b = buffer.asReadOnlyBuffer();
+			b.position(SERIAL_INDEX).limit(SERIAL_INDEX + SERIAL_LENGTH);
 			return b.slice();
 		}
 

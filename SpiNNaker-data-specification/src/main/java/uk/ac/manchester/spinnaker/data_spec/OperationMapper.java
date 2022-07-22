@@ -88,16 +88,13 @@ abstract class OperationMapper {
 	private static void manufactureCallables(Map<Commands, Callable> map,
 			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
 		// Note that getOperations() below ensures the safety of this
-		for (var e : ops.entrySet()) {
-			var c = e.getKey();
-			var m = e.getValue();
-			var rt = m.getReturnType();
-			if (rt.equals(Void.TYPE)) {
+		ops.forEach((c, m) -> {
+			if (m.getReturnType().equals(Void.TYPE)) {
 				map.put(c, cmd -> doVoidCall(objref.get(), m, c, cmd));
 			} else {
 				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
 			}
-		}
+		});
 	}
 
 	private static Map<Commands, Method> getOperations(
@@ -107,7 +104,7 @@ abstract class OperationMapper {
 			return ops;
 		}
 		ops = new HashMap<>();
-		for (Method m : cls.getMethods()) {
+		for (var m : cls.getMethods()) {
 			// Skip methods without the annotation. They're no problem.
 			if (!m.isAnnotationPresent(Operation.class)) {
 				continue;

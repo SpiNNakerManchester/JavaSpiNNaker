@@ -109,7 +109,7 @@ public final class SpiNNakerTriadGeometry {
 		this.yCentre = yCentre;
 
 		localChipCoordinates = new HashMap<>();
-		singleBoardCoordinates = new ArrayList<>();
+		singleBoardCoordinates = new LinkedHashSet<>();
 
 		for (int x = 0; x < triadHeight; x++) {
 			for (int y = 0; y < triadWidth; y++) {

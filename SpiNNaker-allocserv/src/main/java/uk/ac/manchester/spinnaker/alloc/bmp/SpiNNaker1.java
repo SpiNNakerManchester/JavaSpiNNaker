@@ -40,6 +40,7 @@ import uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderExcepti
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
@@ -311,6 +312,24 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void powerOff(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
 		txrx.powerOff(remap(boards));
+	}
+
+	@Override
+	public String readSerial(BMPBoard board)
+			throws ProcessException, IOException {
+		return txrx.readBoardSerialNumber(board);
+	}
+
+	@Override
+	public Blacklist readBlacklist(BMPBoard board)
+			throws ProcessException, IOException {
+		return txrx.readBlacklist(board);
+	}
+
+	@Override
+	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
+			throws ProcessException, InterruptedException, IOException {
+		txrx.writeBlacklist(board, blacklist);
 	}
 
 	@SuppressWarnings("unused")

@@ -123,13 +123,14 @@ spalloc:
       specific-board: 65.0
     # Number of reports of board problems at which the board is taken out of service.
     report-action-threshold: 2
-    report-email:
-      # In addition to configuring the email sender, you need to turn on
-      # sending here too.
-      send: false
-      from: spalloc@localhost
-      to: SPINNAKER@listserv.manchester.ac.uk
-      subject: Spalloc Board Issue
+  # Sending of emails relating to board problems: where to, etc.
+  report-email:
+    # In addition to configuring the email sender, you need to turn on
+    # sending here too.
+    send: false
+    from: spalloc@localhost
+    to: SPINNAKER@listserv.manchester.ac.uk
+    subject: Spalloc Board Issue
   auth:
     # Support HTTP Basic Authentication (bad for browsers, OK for code, slow)
     basic: true
@@ -231,6 +232,17 @@ spalloc:
     notify-wait-time: 1m
     # Jobs' default keepalive property duration
     default-keepalive: 1m
+  state-control:
+    # Settings relating to overall system (admin) state
+    
+    # How long to wait between polls of the BMP controller 
+    blacklist-poll: 15s
+    # How long to wait for a BMP controller operation to complete 
+    blacklist-timeout: 120s
+    # Max number of board serial numbers to read in a batch 
+    serial-read-batch-size: 24
+    # Max number of board blacklists to read in a batch 
+    blacklist-read-batch-size: 6
 
 ---
 # Only enable the OpenID Connect stuff in production. This is because of the

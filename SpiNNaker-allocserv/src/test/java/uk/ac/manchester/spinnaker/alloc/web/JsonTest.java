@@ -71,8 +71,6 @@ class JsonTest {
 		var uri = new URI(base);
 
 		return new StubUriInfo() {
-			UriBuilder ub = new UriBuilderImpl(uri);
-
 			@Override
 			public URI getRequestUri() {
 				return uri;
@@ -80,7 +78,7 @@ class JsonTest {
 
 			@Override
 			public UriBuilder getRequestUriBuilder() {
-				return ub;
+				return new UriBuilderImpl(uri);
 			}
 
 			@Override
@@ -90,7 +88,7 @@ class JsonTest {
 
 			@Override
 			public UriBuilder getAbsolutePathBuilder() {
-				return ub;
+				return new UriBuilderImpl(uri);
 			}
 
 			@Override
@@ -100,7 +98,7 @@ class JsonTest {
 
 			@Override
 			public UriBuilder getBaseUriBuilder() {
-				return ub;
+				return new UriBuilderImpl(uri);
 			}
 		};
 	}

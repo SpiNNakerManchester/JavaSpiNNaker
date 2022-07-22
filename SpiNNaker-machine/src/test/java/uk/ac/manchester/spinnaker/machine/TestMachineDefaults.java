@@ -45,14 +45,11 @@ public class TestMachineDefaults {
 				new CoreLocation(1, 1, 0), new CoreLocation(1, 1, 1));
 
 		var fromDefaults = new ArrayList<CoreLocation>();
-		var map = MachineDefaults.FOUR_CHIP_DOWN_LINKS;
-		for (var entry : map.entrySet()) {
-			assertNotNull(entry.getKey());
-			for (var direction : entry.getValue()) {
-				fromDefaults
-						.add(new CoreLocation(entry.getKey(), direction.id));
-			}
-		}
+		MachineDefaults.FOUR_CHIP_DOWN_LINKS.forEach((chip, dirs) -> {
+			assertNotNull(chip);
+			dirs.stream().map(direction -> new CoreLocation(chip, direction.id))
+					.forEach(fromDefaults::add);
+		});
 		assertThat(fromDefaults, containsInAnyOrder(fromPython.toArray()));
 	}
 }

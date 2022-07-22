@@ -66,4 +66,8 @@ public final class BMPCoords {
 		}
 		return false;
 	}
+
+	public String toString() {
+		return "BMP[C:" + cabinet + ",F:" + frame + "]";
+	}
 }

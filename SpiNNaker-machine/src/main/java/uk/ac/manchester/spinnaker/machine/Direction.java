@@ -106,6 +106,10 @@ public enum Direction {
 	 *             if the ID is not correct
 	 */
 	public static Direction byId(int id) throws ArrayIndexOutOfBoundsException {
+		if (id < 0 || id >= BY_ID.length) {
+			throw new ArrayIndexOutOfBoundsException("direction ID " + id
+					+ " not in range 0 to " + (BY_ID.length - 1));
+		}
 		return BY_ID[id];
 	}
 

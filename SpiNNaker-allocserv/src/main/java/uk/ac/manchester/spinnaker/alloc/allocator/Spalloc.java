@@ -33,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
@@ -49,15 +50,13 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
+import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs.Epoch;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -109,8 +108,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Autowired
 	private QuotaManager quotaManager;
 
-	@Autowired(required = false)
-	private JavaMailSender emailSender;
+	@Autowired
+	private ReportMailSender emailSender;
 
 	@Autowired
 	private AllocatorProperties props;
@@ -180,7 +179,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	public Optional<Machine> getMachine(String name,
 			boolean allowOutOfService) {
-		return execute(false,
+		return executeRead(
 				conn -> getMachine(name, allowOutOfService, conn).map(m -> m));
 	}
 
@@ -282,7 +281,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public Jobs getJobs(boolean deleted, int limit, int start) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			var jc = new JobCollection(epochs.getJobsEpoch());
 			if (deleted) {
 				try (var jobs = conn.query(GET_JOB_IDS)) {
@@ -299,7 +298,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 	@Override
 	public List<JobListEntryRecord> listJobs(Permit permit) {
-		return execute(false, conn -> {
+		return executeRead(conn -> {
 			try (var listLiveJobs = conn.query(LIST_LIVE_JOBS);
 					var countPoweredBoards = conn.query(COUNT_POWERED_BOARDS)) {
 				return listLiveJobs.call()
@@ -335,7 +334,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	@PostFilter(MAY_SEE_JOB_DETAILS)
 	public Optional<Job> getJob(Permit permit, int id) {
-		return execute(false, conn -> getJob(id, conn).map(j -> (Job) j));
+		return executeRead(conn -> getJob(id, conn).map(j -> (Job) j));
 	}
 
 	private Optional<JobImpl> getJob(int id, Connection conn) {
@@ -636,7 +635,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			String description, Permit permit) {
 		try (var sql = new BoardReportSQL()) {
 			var desc = mergeDescription(coreLocation, description);
-			Optional<EmailBuilder> email = sql.transaction(() -> {
+			var email = sql.transaction(() -> {
 				var machines = getMachines(sql.getConnection(), true).values();
 				for (var m : machines) {
 					var mail = sql.findBoardNet.call1(m.getId(), address)
@@ -649,7 +648,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				return Optional.empty();
 			});
 			// Outside the transaction!
-			email.ifPresent(this::sendBoardServiceMail);
+			email.ifPresent(emailSender::sendServiceMail);
 		} catch (ReportRollbackExn e) {
 			log.warn("failed to handle problem report", e);
 		}
@@ -693,38 +692,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			epochs.nextMachineEpoch();
 		}
 		return acted > 0 ? Optional.of(acted) : Optional.empty();
-	}
-
-	/**
-	 * Send an assembled message if the service is configured to do so.
-	 * <p>
-	 * <strong>NB:</strong> This call may take some time; do not hold a
-	 * transaction open when calling this.
-	 *
-	 * @param email
-	 *            The message contents to send.
-	 */
-	private void sendBoardServiceMail(EmailBuilder email) {
-		var properties = props.getReportEmail();
-		if (nonNull(emailSender) && nonNull(properties.getTo())
-				&& properties.isSend()) {
-			var message = new SimpleMailMessage();
-			if (nonNull(properties.getFrom())) {
-				message.setFrom(properties.getFrom());
-			}
-			message.setTo(properties.getTo());
-			if (nonNull(properties.getSubject())) {
-				message.setSubject(properties.getSubject());
-			}
-			message.setText(email.toString());
-			try {
-				if (!properties.getTo().isEmpty()) {
-					emailSender.send(message);
-				}
-			} catch (MailException e) {
-				log.warn("problem when sending email", e);
-			}
-		}
 	}
 
 	private static DownLink makeDownLinkFromRow(Row row) {
@@ -1170,10 +1137,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			owner = row.getString("owner");
 			if (nonNull(root)) {
 				try (var boardRoot = conn.query(GET_ROOT_OF_BOARD)) {
-					boardRoot.call1(root).ifPresent(subrow -> {
-						chipRoot = new ChipLocation(subrow.getInt("root_x"),
-								subrow.getInt("root_y"));
-					});
+					chipRoot = boardRoot.call1(root)
+							.map(chip("root_x", "root_y")).orElse(null);
 				}
 			}
 			state = row.getEnum("job_state", JobState.class);
@@ -1269,8 +1234,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (isNull(root)) {
 				return Optional.empty();
 			}
-			return execute(false,
-					conn -> Optional.of(new SubMachineImpl(conn)));
+			return executeRead(conn -> Optional.of(new SubMachineImpl(conn)));
 		}
 
 		@Override
@@ -1296,7 +1260,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var email = new EmailBuilder(id);
 				var result = q.transaction(
 						() -> reportIssue(report, permit, email, q));
-				sendBoardServiceMail(email);
+				emailSender.sendServiceMail(email);
 				return result;
 			} catch (ReportRollbackExn e) {
 				return e.getMessage();
@@ -1621,13 +1585,12 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					row.getInt("z"));
 			physical = new BoardPhysicalCoordinates(row.getInt("cabinet"),
 					row.getInt("frame"), row.getInteger("board_num"));
-			chip = new ChipLocation(row.getInt("chip_x"), row.getInt("chip_y"));
+			chip = chip(row, "chip_x", "chip_y");
 			machineWidth = machine.getWidth();
 			machineHeight = machine.getHeight();
 			var boardX = row.getInteger("board_chip_x");
 			if (nonNull(boardX)) {
-				boardChip =
-						new ChipLocation(boardX, row.getInt("board_chip_y"));
+				boardChip = chip(row, "board_chip_x", "board_chip_y");
 			} else {
 				boardChip = chip;
 			}
@@ -1636,8 +1599,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			if (nonNull(jobId)) {
 				job = new JobImpl(epochs.getJobsEpoch(), jobId,
 						machine.getId());
-				job.chipRoot = new ChipLocation(row.getInt("job_root_chip_x"),
-						row.getInt("job_root_chip_y"));
+				job.chipRoot = chip(row, "job_root_chip_x", "job_root_chip_y");
 			}
 		}
 

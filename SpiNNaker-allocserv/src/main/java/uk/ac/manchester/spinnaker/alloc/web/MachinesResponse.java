@@ -81,17 +81,13 @@ public final class MachinesResponse {
 	public final List<BriefMachineDescription> machines;
 
 	MachinesResponse(Map<String, Machine> machines, UriInfo ui) {
-		var mlist = new ArrayList<BriefMachineDescription>();
+		var mlist = new ArrayList<BriefMachineDescription>(machines.size());
 		var ub = ui.getAbsolutePathBuilder().path("{name}");
-		for (var ment : machines.entrySet()) {
-			var name = ment.getKey();
-			var uri = ub.build(name);
-			var m = ment.getValue();
-
-			mlist.add(new BriefMachineDescription(name, uri, m.getWidth(),
-					m.getHeight(), m.getTags(), m.getDeadBoards(),
-					m.getDownLinks()));
-		}
+		machines.forEach((name,
+				machine) -> mlist.add(new BriefMachineDescription(name,
+						ub.build(name), machine.getWidth(), machine.getHeight(),
+						machine.getTags(), machine.getDeadBoards(),
+						machine.getDownLinks())));
 		this.machines = unmodifiableList(mlist);
 	}
 }

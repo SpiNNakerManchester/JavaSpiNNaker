@@ -17,11 +17,23 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
+import static java.lang.Thread.interrupted;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BLACKLIST_BLANK;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_BLACKLIST_OFFSET;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_CRC_OFFSET;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_SECTOR_ADDR;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.BMP_BOOT_SECTOR_SIZE;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_ADDR;
+import static uk.ac.manchester.spinnaker.transceiver.BMPConstants.SF_BL_LEN;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.crc;
+import static uk.ac.manchester.spinnaker.transceiver.Utils.fill;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +47,7 @@ import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters;
 import uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters;
@@ -1133,7 +1146,7 @@ public interface BMPTransceiverInterface {
 	default void writeBMPMemory(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		var data = ByteBuffer.allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var data = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		data.putInt(dataWord);
 		data.flip();
 		writeBMPMemory(bmp, board, baseAddress, data);
@@ -1227,6 +1240,157 @@ public interface BMPTransceiverInterface {
 	ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException;
+
+	/**
+	 * Read the BMP serial number from a board.
+	 *
+	 * @param bmp
+	 *            Which BMP are we sending messages to directly?
+	 * @param board
+	 *            Which board's BMP (of those managed by the BMP we send the
+	 *            message to) are we getting the serial number from?
+	 * @return The LPC1768 serial number.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	@ParallelSafeWithCare
+	String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException;
+
+	/**
+	 * Read the BMP serial number from a board.
+	 *
+	 * @param board
+	 *            Which board's BMP are we reading the serial number of? Must
+	 *            be one controlled by the current bound BMP.
+	 * @return The LPC1768 serial number.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default String readBoardSerialNumber(BMPBoard board)
+			throws ProcessException, IOException {
+		return readBoardSerialNumber(getBoundBMP(), board);
+	}
+
+	/**
+	 * Read the blacklist from a board.
+	 *
+	 * @param bmp
+	 *            Which BMP are we sending messages to directly?
+	 * @param board
+	 *            Which board's blacklist are we reading?
+	 * @return The contents of the blacklist.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default Blacklist readBlacklist(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		return new Blacklist(
+				readSerialFlash(bmp, board, SF_BL_ADDR, SF_BL_LEN));
+	}
+
+	/**
+	 * Read the blacklist from a board.
+	 *
+	 * @param board
+	 *            Which board's blacklist are we reading? Must
+	 *            be one controlled by the current bound BMP.
+	 * @return The contents of the blacklist.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default Blacklist readBlacklist(BMPBoard board)
+			throws IOException, ProcessException {
+		return readBlacklist(getBoundBMP(), board);
+	}
+
+	/**
+	 * Write a blacklist to a board. Note that this is a non-transactional
+	 * operation!
+	 *
+	 * @param board
+	 *            Which board's BMP to write to.
+	 * @param blacklist
+	 *            The blacklist to write.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If interrupted. Interruption can happen <em>prior</em> to
+	 *             commencing the actual writes.
+	 */
+	default void writeBlacklist(BMPBoard board, Blacklist blacklist)
+			throws ProcessException, IOException, InterruptedException {
+		writeBlacklist(getBoundBMP(), board, blacklist);
+	}
+
+	/**
+	 * Write a blacklist to a board. Note that this is a non-transactional
+	 * operation!
+	 *
+	 * @param bmp
+	 *            The BMP to send communications via.
+	 * @param board
+	 *            Which board's BMP to write to.
+	 * @param blacklist
+	 *            The blacklist to write.
+	 * @throws ProcessException
+	 *             If a BMP rejects a message.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws InterruptedException
+	 *             If interrupted. Interruption can happen <em>prior</em> to
+	 *             commencing the actual writes.
+	 */
+	default void writeBlacklist(BMPCoords bmp, BMPBoard board,
+			Blacklist blacklist)
+			throws ProcessException, IOException, InterruptedException {
+		// Clear the interrupt status
+		interrupted();
+
+		// Prepare the boot data
+		var data = allocate(BMP_BOOT_SECTOR_SIZE);
+		data.order(LITTLE_ENDIAN);
+		data.put(readBMPMemory(bmp, board, BMP_BOOT_SECTOR_ADDR,
+				BMP_BOOT_SECTOR_SIZE));
+		fill(data, BMP_BOOT_BLACKLIST_OFFSET, SF_BL_LEN, BLACKLIST_BLANK);
+		data.position(BMP_BOOT_BLACKLIST_OFFSET);
+		data.put(blacklist.getRawData());
+		data.putInt(BMP_BOOT_CRC_OFFSET,
+				crc(data, 0, BMP_BOOT_BLACKLIST_OFFSET));
+
+		if (interrupted()) {
+			throw new InterruptedException(
+					"interrupted while reading boot data");
+		}
+
+		// Prepare the serial flash update; must read part of the data first
+		var sfData = new byte[SF_BL_ADDR.address + SF_BL_LEN];
+		readSerialFlash(bmp, board, NULL, SF_BL_ADDR.address).get(sfData, 0,
+				SF_BL_ADDR.address);
+		data.position(BMP_BOOT_BLACKLIST_OFFSET);
+		data.get(sfData, SF_BL_ADDR.address, SF_BL_LEN);
+
+		data.position(0); // Prep for write
+
+		if (interrupted()) {
+			throw new InterruptedException(
+					"interrupted while reading serial flash");
+		}
+
+		// Do the actual writes here; any failure before here is unimportant
+		writeFlash(bmp, board, BMP_BOOT_SECTOR_ADDR, data, true);
+		writeSerialFlash(bmp, board, NULL, ByteBuffer.wrap(sfData));
+	}
 
 	/**
 	 * Read the CRC32 checksum of BMP serial flash memory.
@@ -1577,4 +1741,27 @@ public interface BMPTransceiverInterface {
 			copyBMPFlash(bmp, board, baseAddress, size);
 		}
 	}
+}
+
+interface BMPConstants {
+	/** Location in serial flash of blacklist. */
+	MemoryLocation SF_BL_ADDR = new MemoryLocation(0x100);
+
+	/** Size of blacklist, in bytes. */
+	int SF_BL_LEN = 256;
+
+	/** Offset of blacklist in boot sector of flash. */
+	int BMP_BOOT_BLACKLIST_OFFSET = 0xe00;
+
+	/** Location of boot sector of flash. */
+	MemoryLocation BMP_BOOT_SECTOR_ADDR = new MemoryLocation(0x1000);
+
+	/** Size of boot sector of flash. */
+	int BMP_BOOT_SECTOR_SIZE = 0x1000;
+
+	/** Offset of CRC in boot sector of flash. */
+	int BMP_BOOT_CRC_OFFSET = BMP_BOOT_SECTOR_SIZE - WORD_SIZE;
+
+	/** Byte used to blank out the space used for blacklists. */
+	byte BLACKLIST_BLANK = (byte) 255;
 }

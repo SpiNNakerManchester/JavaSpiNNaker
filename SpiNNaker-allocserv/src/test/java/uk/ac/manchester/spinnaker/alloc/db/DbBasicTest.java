@@ -45,15 +45,12 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
 class DbBasicTest {
-	@Autowired
-	private DatabaseEngine mainDBEngine;
-
 	private DatabaseEngine memdb;
 
 	private Connection c;
 
 	@BeforeAll
-	void getMemoryDatabase() {
+	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
 		memdb = mainDBEngine.getInMemoryDB();
 	}

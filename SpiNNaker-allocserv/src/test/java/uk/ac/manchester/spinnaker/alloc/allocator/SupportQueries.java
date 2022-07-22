@@ -45,6 +45,11 @@ interface SupportQueries {
 	String TEST_INSERT_REQ_BOARD =
 			"INSERT INTO job_request(job_id, board_id) VALUES (?, ?)";
 
+	/** Count the jobs. */
+	@ResultColumn("cnt")
+	@SingleRowResult
+	String TEST_COUNT_JOBS = "SELECT COUNT(*) AS cnt FROM jobs";
+
 	/** Count the active allocation requests. */
 	@Parameter("job_state")
 	@ResultColumn("cnt")

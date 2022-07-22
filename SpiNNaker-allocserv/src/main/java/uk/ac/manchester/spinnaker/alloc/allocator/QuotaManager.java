@@ -29,6 +29,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -202,8 +203,7 @@ public class QuotaManager extends DatabaseAwareBean {
 		}
 	}
 
-	// Accessible for testing; do not inline
-	final void doConsolidate(Connection c) {
+	private void doConsolidate(Connection c) {
 		try (var sql = new ConsolidateSQL(c)) {
 			sql.transaction(sql::consolidate);
 		}
@@ -238,5 +238,32 @@ public class QuotaManager extends DatabaseAwareBean {
 			}
 			return null;
 		}
+	}
+
+	/** Operations for testing only. */
+	@ForTestingOnly
+	interface TestAPI {
+		/**
+		 * Consolidates usage from finished jobs onto quotas.
+		 *
+		 * @param c
+		 *            How to talk to the DB.
+		 */
+		void doConsolidate(Connection c);
+	}
+
+	/**
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@ForTestingOnly
+	@Deprecated
+	TestAPI getTestAPI() {
+		return new TestAPI() {
+			@Override
+			public void doConsolidate(Connection c) {
+				QuotaManager.this.doConsolidate(c);
+			}
+		};
 	}
 }
