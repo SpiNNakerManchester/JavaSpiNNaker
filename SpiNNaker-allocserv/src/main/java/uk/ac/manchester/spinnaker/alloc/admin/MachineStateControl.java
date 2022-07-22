@@ -32,7 +32,6 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -557,7 +556,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 			}
 			return machines.call1(machineName).map(integer("machine_id")).map(
 					mid -> boards.call(mid).map(integer("board_id")).toList())
-					.orElse(Collections.emptyList());
+					.orElse(List.of());
 		}
 	}
 
