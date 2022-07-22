@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -61,6 +62,12 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		txrxFactory.getTestAPI().setFactory(MockTransceiver::new);
 	}
 
+	private static MockTransceiver current;
+
+	public static MockTransceiver getCurrentMock() {
+		return current;
+	}
+
 	/** Not a real serial number at all! Just for testing purposes. */
 	private static final String SERIAL_NUMBER = "gorp";
 
@@ -87,6 +94,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 				data.ipAddress, data.boards);
 		status = new HashMap<>();
 		this.setBlacklist = setBlacklist;
+		current = this;
 	}
 
 	public static void setVersion(short versionCode) {
@@ -102,12 +110,13 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	 *         checks, and arbitrary (zero) elsewhere.
 	 */
 	private static ByteBuffer syntheticVersionData(short versionCode) {
+		byte zero = 0;
 		ByteBuffer b = allocate(VERSION_INFO_SIZE);
 		b.order(LITTLE_ENDIAN);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
+		b.put(zero);
+		b.put(zero);
+		b.put(zero);
+		b.put(zero);
 		b.putShort((short) 0);
 		b.putShort(versionCode);
 		b.putInt(0);
@@ -129,10 +138,21 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		}
 	}
 
+	/**
+	 * A place where you can set a queue of wonky results from the read of the
+	 * FPGA registers.
+	 */
+	@SuppressWarnings("checkstyle:visibilitymodifier")
+	public static LinkedList<Integer> fpgaResults = new LinkedList<>();
+
 	@Override
 	public int readFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPCoords bmp, BMPBoard board) {
 		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
+		Integer r = fpgaResults.pollFirst();
+		if (r != null) {
+			return r;
+		}
 		return fpga.value;
 	}
 
