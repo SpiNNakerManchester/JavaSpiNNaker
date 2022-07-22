@@ -17,7 +17,9 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import static java.lang.System.nanoTime;
-import static java.lang.Thread.yield;
+import static java.util.concurrent.locks.LockSupport.parkNanos;
+
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * Utilities for waiting very short periods of time.
@@ -34,15 +36,19 @@ public abstract class WaitUtils {
 	 * @param nanoTimestamp
 	 *            The first time at which the code may return. If in the past,
 	 *            returns immediately.
-	 * @see java.lang.System#nanoTime()
+	 * @see System#nanoTime()
+	 * @see LockSupport#parkNanos()
+	 * @see <a href="https://stackoverflow.com/q/35875117/301832">Stack
+	 *      Overflow</a>
 	 */
 	public static void waitUntil(long nanoTimestamp) {
 		// Critical: this is static so JRE can inline this code!
-
-		// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
-		while (nanoTime() < nanoTimestamp) {
-			// The yield makes this a bit less CPU intensive
-			yield();
+		while (true) {
+			long dt = nanoTimestamp - nanoTime();
+			if (dt <= 0) {
+				break;
+			}
+			parkNanos(dt);
 		}
 	}
 }
