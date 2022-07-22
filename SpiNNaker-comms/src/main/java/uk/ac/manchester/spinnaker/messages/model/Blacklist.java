@@ -277,7 +277,7 @@ public final class Blacklist implements Serializable {
 	// REs from Perl code to read blacklist files
 
 	private static final Pattern CHIP_PATTERN = compile(
-			"chip\\s+(?<x>[0-7])\\s+(?<y>[0-7])\\s+(?<rest>.+)$");
+			"chip\\s+(?<x>[0-7])\\s+(?<y>[0-7])\\s+(?<rest>.*)$");
 
 	private static final Pattern CORE_PATTERN = compile(
 			"core\\s+(?<cores>\\S+)\\s*");
