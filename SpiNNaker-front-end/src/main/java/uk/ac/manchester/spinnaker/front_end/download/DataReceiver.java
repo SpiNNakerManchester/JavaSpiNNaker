@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -80,10 +78,9 @@ public class DataReceiver extends BoardLocalSupport {
 		this.machine = machine;
 	}
 
-	private Stream<List<Placement>> partitionByBoard(
+	private Stream<? extends List<Placement>> partitionByBoard(
 			List<Placement> placements) {
-		Map<ChipLocation, List<Placement>> map =
-				new DefaultMap<>(ArrayList::new);
+		var map = new DefaultMap<>(ArrayList<Placement>::new);
 		for (var p : placements) {
 			map.get(machine.getChipAt(p).nearestEthernet).add(p);
 		}
