@@ -277,7 +277,7 @@ public final class Blacklist implements Serializable {
 	// REs from Perl code to read blacklist files
 
 	private static final Pattern CHIP_PATTERN = compile(
-			"chip\\s+(?<x>[0-7])\\s+(?<y>[0-7])\\s+(?<rest>.*)$");
+			"^\\s*chip\\s+(?<x>[0-7])\\s+(?<y>[0-7])\\s*");
 
 	private static final Pattern CORE_PATTERN = compile(
 			"core\\s+(?<cores>\\S+)\\s*");
@@ -288,7 +288,7 @@ public final class Blacklist implements Serializable {
 	private static final Pattern DEAD_PATTERN = compile("dead\\s*");
 
 	private static String deleteMatched(Matcher m) {
-		// Java 8 uses StringBuffer for this; WHYWHYWHY?!
+		// TODO Java 8 uses StringBuffer for this; WHYWHYWHY?!
 		StringBuffer sb = new StringBuffer();
 		m.appendReplacement(sb, "").appendTail(sb);
 		return sb.toString();
@@ -316,7 +316,7 @@ public final class Blacklist implements Serializable {
 	 */
 	private void parseLine(String line) {
 		Matcher m = CHIP_PATTERN.matcher(line);
-		if (!m.matches()) {
+		if (!m.find()) {
 			throw new IllegalArgumentException("bad line: " + line);
 		}
 		int x = parseInt(m.group("x"));
@@ -325,7 +325,7 @@ public final class Blacklist implements Serializable {
 		if (!GEOM.singleBoard().contains(chip)) {
 			throw new IllegalArgumentException("bad chip coords: " + line);
 		}
-		String rest = m.group("rest");
+		String rest = deleteMatched(m);
 
 		ChipLocation dead = null;
 		Set<Integer> deadCores = null;
