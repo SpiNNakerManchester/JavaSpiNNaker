@@ -37,7 +37,7 @@ public abstract class WaitUtils {
 	 *            The first time at which the code may return. If in the past,
 	 *            returns immediately.
 	 * @see System#nanoTime()
-	 * @see LockSupport#parkNanos()
+	 * @see LockSupport#parkNanos(long)
 	 * @see <a href="https://stackoverflow.com/q/35875117/301832">Stack
 	 *      Overflow</a>
 	 */
