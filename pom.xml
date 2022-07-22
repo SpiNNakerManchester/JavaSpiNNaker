@@ -577,6 +577,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>jsp/**/*.class</exclude>
+						<exclude>views/**/*.class</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.rat</groupId>
