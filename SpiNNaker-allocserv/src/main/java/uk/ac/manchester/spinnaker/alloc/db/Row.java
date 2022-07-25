@@ -22,6 +22,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -41,6 +42,8 @@ import org.springframework.dao.TypeMismatchDataAccessException;
 public final class Row {
 	private final ResultSet rs;
 
+	private Set<String> columns;
+
 	Row(ResultSet rs) {
 		this.rs = rs;
 	}
@@ -56,8 +59,12 @@ public final class Row {
 	 *             If the column names can't be retrieved.
 	 */
 	public Set<String> getColumnNames() {
+		if (columns != null) {
+			return columns;
+		}
 		try {
-			return columnNames(rs.getMetaData());
+			columns = columnNames(rs.getMetaData());
+			return columns;
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
@@ -415,6 +422,25 @@ public final class Row {
 	 */
 	public static Function<Row, Long> int64(String columnLabel) {
 		return r -> r.getLong(columnLabel);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder("Row(");
+		try {
+			ResultSetMetaData md = rs.getMetaData();
+			String sep = "";
+			for (int i = 1; i <= md.getColumnCount(); i++) {
+				String col = md.getColumnName(i);
+				Object val = rs.getObject(i);
+				sb.append(sep).append(col).append(":").append(val);
+				sep = ", ";
+			}
+		} catch (Exception e) {
+			// Can't get the contents of the row after all
+			sb.append("...");
+		}
+		return sb.append(")").toString();
 	}
 
 	static {

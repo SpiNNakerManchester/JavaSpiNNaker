@@ -256,6 +256,7 @@ public class BMPController extends DatabaseAwareBean {
 			boolean changed = false;
 			for (Function<AfterSQL, Boolean> cleanup = cleanupTasks.poll();
 					nonNull(cleanup); cleanup = cleanupTasks.poll()) {
+				log.debug("processing cleanup: {}", cleanup);
 				try (AfterSQL sql = new AfterSQL(conn)) {
 					changed |= cleanup.apply(sql);
 				} catch (DataAccessException e) {
@@ -273,9 +274,11 @@ public class BMPController extends DatabaseAwareBean {
 		}
 		for (Runnable postCleanup = postCleanupTasks.poll();
 				nonNull(postCleanup); postCleanup = postCleanupTasks.poll()) {
+			log.debug("processing postCleanup: {}", postCleanup);
 			postCleanup.run();
 		}
 		for (Request req : takeRequests()) {
+			log.debug("processing request: {}", req);
 			addRequestToBMPQueue(req);
 		}
 	}

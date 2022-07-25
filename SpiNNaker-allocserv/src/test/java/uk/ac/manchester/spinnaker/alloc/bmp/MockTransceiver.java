@@ -20,14 +20,18 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.unmodifiableMap;
+import static org.apache.commons.io.IOUtils.readFully;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.zip.CRC32;
 
 import org.slf4j.Logger;
 
@@ -61,6 +65,12 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		txrxFactory.getTestAPI().setFactory(MockTransceiver::new);
 	}
 
+	private static MockTransceiver current;
+
+	public static MockTransceiver getCurrentMock() {
+		return current;
+	}
+
 	/** Not a real serial number at all! Just for testing purposes. */
 	private static final String SERIAL_NUMBER = "gorp";
 
@@ -87,6 +97,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 				data.ipAddress, data.boards);
 		status = new HashMap<>();
 		this.setBlacklist = setBlacklist;
+		current = this;
 	}
 
 	public static void setVersion(short versionCode) {
@@ -102,12 +113,13 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	 *         checks, and arbitrary (zero) elsewhere.
 	 */
 	private static ByteBuffer syntheticVersionData(short versionCode) {
+		byte zero = 0;
 		ByteBuffer b = allocate(VERSION_INFO_SIZE);
 		b.order(LITTLE_ENDIAN);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
-		b.putInt(0);
+		b.put(zero);
+		b.put(zero);
+		b.put(zero);
+		b.put(zero);
 		b.putShort((short) 0);
 		b.putShort(versionCode);
 		b.putInt(0);
@@ -129,10 +141,21 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		}
 	}
 
+	/**
+	 * A place where you can set a queue of wonky results from the read of the
+	 * FPGA registers.
+	 */
+	@SuppressWarnings("checkstyle:visibilitymodifier")
+	public static LinkedList<Integer> fpgaResults = new LinkedList<>();
+
 	@Override
 	public int readFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPCoords bmp, BMPBoard board) {
 		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
+		Integer r = fpgaResults.pollFirst();
+		if (r != null) {
+			return r;
+		}
 		return fpga.value;
 	}
 
@@ -155,16 +178,35 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		return SERIAL_NUMBER;
 	}
 
+	private static final int MEM_SIZE = 8 * 1024 * 1024;
+
+	private static ByteBuffer allocateMemory() {
+		ByteBuffer buf = ByteBuffer.allocate(MEM_SIZE).order(LITTLE_ENDIAN);
+		buf.position(0).limit(MEM_SIZE);
+		return buf;
+	}
+
+	private ByteBuffer memory = allocateMemory();
+
+	private ByteBuffer flash = allocateMemory();
+
+	private static ByteBuffer slice(ByteBuffer buffer, MemoryLocation start,
+			int length) {
+		ByteBuffer b = buffer.duplicate();
+		b.position(start.address).limit(start.address + length);
+		return b.slice();
+	}
+
 	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length) {
 		log.info("readSerialFlash({},{},{},{})", bmp, board, baseAddress,
 				length);
 		// Pad to length
-		ByteBuffer b = ByteBuffer.allocate(length).order(LITTLE_ENDIAN);
+		ByteBuffer b = slice(flash, baseAddress, length);
 		if (baseAddress.address == SERIAL_FLASH_BLACKLIST_OFFSET) {
 			b.put(new Blacklist(blacklistData).getRawData());
+			b.position(0);
 		}
-		b.limit(length).position(length).flip();
 		return b;
 	}
 
@@ -174,9 +216,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			throws IOException, ProcessException {
 		log.info("readBMPMemory({},{},{},{})", bmp, board, baseAddress,
 				length);
-		ByteBuffer b = ByteBuffer.allocate(length).order(LITTLE_ENDIAN);
-		b.limit(length).position(length).flip();
-		return b;
+		return slice(memory, baseAddress, length);
 	}
 
 	private ByteBuffer chunkedData;
@@ -196,13 +236,19 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		return BUF_PLACE;
 	}
 
+	@Override
 	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, ByteBuffer data) {
 		log.info("writeBMPMemory({},{},{}:{})", bmp, board, baseAddress,
 				data.remaining());
-		written = data.duplicate();
+		if (BUF_PLACE.equals(baseAddress)) {
+			written = data.duplicate();
+		} else {
+			slice(memory, baseAddress, data.remaining()).put(data);
+		}
 	}
 
+	@Override
 	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address) {
 		log.info("chunkBMPFlash({},{},{})", bmp, board, address);
@@ -211,6 +257,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	private static final int BMP_FLASH_BLACKLIST_OFFSET = 0xe00;
 
+	@Override
 	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int size) {
 		log.info("copyBMPFlash({},{},{},{})", bmp, board, baseAddress, size);
@@ -224,11 +271,12 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	private static final int SERIAL_FLASH_BLACKLIST_OFFSET = 0x100;
 
+	@Override
 	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, ByteBuffer data) {
 		log.info("writeSerialFlash({},{},{}:{})", bmp, board, baseAddress,
 				data.remaining());
-		ByteBuffer b = data.duplicate().order(LITTLE_ENDIAN);
+		ByteBuffer b = slice(flash, baseAddress, data.remaining()).put(data);
 		b.position(SERIAL_FLASH_BLACKLIST_OFFSET);
 		Blacklist bl = new Blacklist(b);
 		synchronized (setBlacklist) {
@@ -238,5 +286,38 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 						+ setBlacklist.getValue() + ")");
 			}
 		}
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size, InputStream stream)
+			throws IOException {
+		log.info("writeSerialFlash({},{},{},{})", bmp, board, baseAddress,
+				size);
+		slice(flash, baseAddress, size).put(readFully(stream, size));
+	}
+
+	@Override
+	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board) {
+		log.info("getSerialFlashBuffer({},{})", bmp, board);
+		return BUF_PLACE;
+	}
+
+	@Override
+	public void writeBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress) {
+		log.info("writeBMPFlash({},{},{})", bmp, board, baseAddress);
+	}
+
+	private static final long CRC_MASK = 0xffffffffL;
+
+	@Override
+	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length) {
+		log.info("readSerialFlashCRC({},{},{},{})", bmp, board, baseAddress,
+				length);
+		CRC32 crc = new CRC32();
+		crc.update(slice(flash, baseAddress, length));
+		return (int) (crc.getValue() & CRC_MASK);
 	}
 }

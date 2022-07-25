@@ -469,7 +469,8 @@ public class FirmwareLoader {
 		int length = data.getInt();
 		int mtime = data.getInt();
 		byte[] filenameBytes = new byte[size];
-		data.get(filenameBytes, DATA_SECTOR_HEADER_BYTES, size);
+		data.position(DATA_SECTOR_HEADER_BYTES);
+		data.get(filenameBytes, 0, size);
 
 		String state =
 				(flags & BITFILE_ENABLED_FLAG) > 0 ? "ENABLED " : "DISABLED";
@@ -612,7 +613,9 @@ public class FirmwareLoader {
 		logBMPVersion();
 
 		if (postDelay) {
+			log.info("beginning post-load delay");
 			sleep(BIG_SLEEP);
+			log.info("completed post-load delay");
 		}
 	}
 }
