@@ -39,6 +39,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,6 +78,8 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 
 	/** The name of the database file. */
 	static final String HIST_DB = "target/firmware_test-hist.sqlite3";
+
+	private static final int TEST_TIMEOUT = 10;
 
 	@Configuration
 	@ComponentScan(basePackageClasses = SpallocProperties.class)
@@ -185,65 +188,103 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 		}
 	}
 
+	private void resetDBState(Connection c, int job) throws Exception {
+		c.transaction(() -> getAllocTester().destroyJob(job, "test"));
+		processBMPRequests();
+		c.transaction(() -> {
+			if (log.isDebugEnabled()) {
+				/*
+				 * NB: explicit map(Object::toString) needed so strings are
+				 * created while row is open; without that, the error messages
+				 * are very strange.
+				 */
+				log.debug("state to force reset: {} {} {}",
+						c.query("SELECT * FROM job_request").call()
+								.map(Object::toString).toList(),
+						c.query("SELECT * FROM pending_changes").call()
+								.map(Object::toString).toList(),
+						c.query("SELECT * FROM boards").call()
+								.map(Object::toString).toList());
+			}
+			c.update("DELETE FROM job_request").call();
+			c.update("DELETE FROM pending_changes").call();
+			// Board must be bootable now to not interfere with following tests
+			c.update("UPDATE boards SET allocated_job = NULL, "
+					+ "power_on_timestamp = 0, power_off_timestamp = 0").call();
+		});
+	}
+
 	// The actual tests
 
 	@Test
-	public void bootWithReboot() throws Exception {
-		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
+	@Timeout(TEST_TIMEOUT)
+	public void bootSimply() throws Exception {
 		try (Connection c = db.getConnection()) {
 			this.conn = c;
-			int job = makeQueuedJob(1);
+			int job = c.transaction(() -> makeQueuedJob(1));
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> {
 					getAllocTester().allocate();
 				});
-				snooze();
 				processBMPRequests();
 
 				assertState(job, READY, 0, 0);
 			} finally {
-				c.transaction(() -> {
-					getAllocTester().destroyJob(job, "test");
-					c.update("DELETE FROM job_request").call();
-					c.update("DELETE FROM pending_changes").call();
-				});
+				resetDBState(c, job);
 			}
 		}
 	}
 
 	@Test
-	public void bootWithFirmwareReload() throws Exception {
-		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
+	@Timeout(TEST_TIMEOUT)
+	public void bootWithReboot() throws Exception {
 		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
 		try (Connection c = db.getConnection()) {
 			this.conn = c;
-			int job = makeQueuedJob(1);
+			int job = c.transaction(() -> makeQueuedJob(1));
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> {
 					getAllocTester().allocate();
 				});
-				snooze();
-				processBMPRequests();
-				// This is a long delay!
-				snooze();
-				snooze();
-				snooze();
-				snooze();
-				snooze();
-				snooze();
 				processBMPRequests();
 
 				assertState(job, READY, 0, 0);
 			} finally {
+				resetDBState(c, job);
+			}
+		}
+	}
+
+	@Test
+	@Timeout(TEST_TIMEOUT + TEST_TIMEOUT)
+	public void bootWithFirmwareReload() throws Exception {
+		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
+		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
+		try (Connection c = db.getConnection()) {
+			this.conn = c;
+			int job = c.transaction(() -> makeQueuedJob(1));
+			log.info("job id = {}", job);
+			try {
+				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> {
-					getAllocTester().destroyJob(job, "test");
-					c.update("DELETE FROM job_request").call();
-					c.update("DELETE FROM pending_changes").call();
+					getAllocTester().allocate();
 				});
+				// Post-reset delay is a long delay! 10 will hit timeout...
+				for (int i = 0; i < 10; i++) {
+					processBMPRequests();
+					if (getJobState(job) == READY) {
+						break;
+					}
+					snooze();
+				}
+
+				assertState(job, READY, 0, 0);
+			} finally {
+				resetDBState(c, job);
 			}
 		}
 	}
