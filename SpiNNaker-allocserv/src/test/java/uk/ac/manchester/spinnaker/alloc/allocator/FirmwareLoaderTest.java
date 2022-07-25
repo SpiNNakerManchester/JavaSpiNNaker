@@ -152,6 +152,13 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 		}
 	}
 
+	/**
+	 * Run a BMP processing cycle. <em>Do not</em> hold a transaction when
+	 * calling this!
+	 *
+	 * @throws Exception
+	 *             if anything fails
+	 */
 	private void processBMPRequests() throws Exception {
 		bmpCtrl.processRequests(DELAY_MS);
 	}
@@ -225,9 +232,7 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				c.transaction(() -> {
-					getAllocTester().allocate();
-				});
+				c.transaction(() -> getAllocTester().allocate());
 				processBMPRequests();
 
 				assertState(job, READY, 0, 0);
@@ -240,6 +245,7 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void bootWithReboot() throws Exception {
+		// One failure triggers an extra power cycle of the board
 		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
 		try (Connection c = db.getConnection()) {
 			this.conn = c;
@@ -247,9 +253,7 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				c.transaction(() -> {
-					getAllocTester().allocate();
-				});
+				c.transaction(() -> getAllocTester().allocate());
 				processBMPRequests();
 
 				assertState(job, READY, 0, 0);
@@ -262,6 +266,7 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 	@Test
 	@Timeout(TEST_TIMEOUT + TEST_TIMEOUT)
 	public void bootWithFirmwareReload() throws Exception {
+		// Two failures trigger a the reloading of the firmware
 		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
 		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
 		try (Connection c = db.getConnection()) {
@@ -270,9 +275,7 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
-				c.transaction(() -> {
-					getAllocTester().allocate();
-				});
+				c.transaction(() -> getAllocTester().allocate());
 				// Post-reset delay is a long delay! 10 will hit timeout...
 				for (int i = 0; i < 10; i++) {
 					processBMPRequests();
