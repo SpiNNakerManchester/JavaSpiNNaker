@@ -228,6 +228,12 @@ class FirmwareLoaderTest extends SQLQueries implements SupportQueries {
 				});
 				snooze();
 				processBMPRequests();
+				// This is a long delay!
+				snooze();
+				snooze();
+				snooze();
+				snooze();
+				snooze();
 				snooze();
 				processBMPRequests();
 
