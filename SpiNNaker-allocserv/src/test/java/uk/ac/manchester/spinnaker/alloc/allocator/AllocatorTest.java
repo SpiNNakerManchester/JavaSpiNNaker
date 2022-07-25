@@ -456,9 +456,13 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 				assertState(job, DESTROYED, 0, 0);
 			} finally {
 				c.transaction(() -> {
+					// Reset the state
 					getAllocTester().destroyJob(job, "test");
 					c.update("DELETE FROM job_request").call();
 					c.update("DELETE FROM pending_changes").call();
+					c.update("UPDATE boards SET allocated_job = NULL, "
+							+ "power_on_timestamp = 0, "
+							+ "power_off_timestamp = 0").call();
 				});
 			}
 		}

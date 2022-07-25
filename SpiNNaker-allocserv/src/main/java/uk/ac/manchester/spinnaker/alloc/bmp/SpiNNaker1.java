@@ -257,6 +257,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void powerOnAndCheck(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
 		var boardsToPower = remap(boards);
+		boolean reloadDone = false; // so we only do firmware loading once
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			if (attempt > 1) {
 				log.warn("rebooting {} boards in allocation to "
@@ -292,10 +293,11 @@ class SpiNNaker1 implements SpiNNakerControl {
 			// We don't try reloading the first time
 			if (props.isFpgaReload() && attempt > 1
 					&& attempt < props.getFpgaAttempts()
-					&& !reloadBoards.isEmpty()) {
+					&& !reloadBoards.isEmpty() && !reloadDone) {
 				log.warn("reloading FPGA firmware on {} boards",
 						retryBoards.size());
 				loadFirmware(reloadBoards);
+				reloadDone = true;
 				// Need a full retry after that!
 				boardsToPower = remap(boards);
 				continue;

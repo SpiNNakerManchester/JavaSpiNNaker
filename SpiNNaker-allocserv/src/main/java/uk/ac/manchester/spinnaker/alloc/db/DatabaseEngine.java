@@ -648,6 +648,23 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		}
 	}
 
+	private static final class MishandledTransactionException
+			extends Exception {
+		private static final long serialVersionUID = 1L;
+
+		private MishandledTransactionException() {
+			super("mishandled transaction");
+		}
+
+		static MishandledTransactionException generateException() {
+			try {
+				throw new MishandledTransactionException();
+			} catch (MishandledTransactionException e) {
+				return e;
+			}
+		}
+	}
+
 	/**
 	 * Connections made by the database engine bean. Its methods do not throw
 	 * checked exceptions. The connection is thread-bound, and will be cleaned
@@ -758,10 +775,12 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		void checkInTransaction(boolean expectedLockType) {
 			if (!inTransaction) {
 				log.warn("executing not inside transaction: {}",
-						getDebugContext());
+						getDebugContext(),
+						MishandledTransactionException.generateException());
 			} else if (expectedLockType && !isLockedForWrites) {
 				log.warn("performing write inside read transaction: {}",
-						getDebugContext());
+						getDebugContext(),
+						MishandledTransactionException.generateException());
 			}
 		}
 

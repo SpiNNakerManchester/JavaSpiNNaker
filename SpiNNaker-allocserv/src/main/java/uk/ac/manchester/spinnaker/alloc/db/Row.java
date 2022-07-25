@@ -41,6 +41,8 @@ import org.springframework.dao.TypeMismatchDataAccessException;
 public final class Row {
 	private final ResultSet rs;
 
+	private Set<String> columns;
+
 	Row(ResultSet rs) {
 		this.rs = rs;
 	}
@@ -56,8 +58,12 @@ public final class Row {
 	 *             If the column names can't be retrieved.
 	 */
 	public Set<String> getColumnNames() {
+		if (columns != null) {
+			return columns;
+		}
 		try {
-			return columnNames(rs.getMetaData());
+			columns = columnNames(rs.getMetaData());
+			return columns;
 		} catch (SQLException e) {
 			throw mapException(e, null);
 		}
@@ -415,6 +421,25 @@ public final class Row {
 	 */
 	public static Function<Row, Long> int64(String columnLabel) {
 		return r -> r.getLong(columnLabel);
+	}
+
+	@Override
+	public String toString() {
+		var sb = new StringBuilder("Row(");
+		try {
+			var md = rs.getMetaData();
+			String sep = "";
+			for (int i = 1; i <= md.getColumnCount(); i++) {
+				var col = md.getColumnName(i);
+				var val = rs.getObject(i);
+				sb.append(sep).append(col).append(":").append(val);
+				sep = ", ";
+			}
+		} catch (Exception e) {
+			// Can't get the contents of the row after all
+			sb.append("...");
+		}
+		return sb.append(")").toString();
 	}
 
 	static {
