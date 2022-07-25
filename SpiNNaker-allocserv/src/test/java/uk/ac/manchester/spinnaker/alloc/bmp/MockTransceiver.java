@@ -20,6 +20,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.unmodifiableMap;
+import static org.apache.commons.io.IOUtils.readFully;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 
@@ -32,7 +33,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.zip.CRC32;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -180,19 +180,15 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	private static final int MEM_SIZE = 8 * 1024 * 1024;
 
-	private ByteBuffer memory = ByteBuffer.allocate(MEM_SIZE);
-
-	private ByteBuffer flash = ByteBuffer.allocate(MEM_SIZE);
-
-	{
-		memory.position(0);
-		memory.limit(memory.capacity());
-		memory.order(LITTLE_ENDIAN);
-
-		flash.position(0);
-		flash.limit(flash.capacity());
-		flash.order(LITTLE_ENDIAN);
+	private static ByteBuffer allocateMemory() {
+		ByteBuffer buf = ByteBuffer.allocate(MEM_SIZE).order(LITTLE_ENDIAN);
+		buf.position(0).limit(MEM_SIZE);
+		return buf;
 	}
+
+	private ByteBuffer memory = allocateMemory();
+
+	private ByteBuffer flash = allocateMemory();
 
 	private static ByteBuffer slice(ByteBuffer buffer, MemoryLocation start,
 			int length) {
@@ -298,8 +294,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			throws IOException {
 		log.info("writeSerialFlash({},{},{},{})", bmp, board, baseAddress,
 				size);
-		ByteBuffer data = ByteBuffer.wrap(IOUtils.readFully(stream, size));
-		slice(flash, baseAddress, data.remaining()).put(data);
+		slice(flash, baseAddress, size).put(readFully(stream, size));
 	}
 
 	@Override
