@@ -436,8 +436,9 @@ public final class Row {
 				sb.append(sep).append(col).append(":").append(val);
 				sep = ", ";
 			}
-		} catch (SQLException e) {
-			throw mapException(e, null);
+		} catch (Exception e) {
+			// Can't get the contents of the row after all
+			sb.append("...");
 		}
 		return sb.append(")").toString();
 	}
