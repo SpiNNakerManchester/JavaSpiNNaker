@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.socket.CloseStatus.BAD_DATA;
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
@@ -308,8 +310,8 @@ public class ProxyCore implements AutoCloseable {
 			throws IOException {
 		try {
 			Impl impl = decode(message.getInt());
-			ByteBuffer reply = impl != null ? impl.call(message) : null;
-			if (reply != null) {
+			ByteBuffer reply = nonNull(impl) ? impl.call(message) : null;
+			if (nonNull(reply)) {
 				reply.flip();
 				session.sendMessage(new BinaryMessage(reply));
 			}
@@ -392,7 +394,7 @@ public class ProxyCore implements AutoCloseable {
 
 	private InetAddress getTargetHost(int x, int y) {
 		InetAddress who = hosts.get(new ChipLocation(x, y));
-		if (who == null) {
+		if (isNull(who)) {
 			throw new IllegalArgumentException("unrecognised ethernet chip");
 		}
 		return who;
@@ -430,7 +432,7 @@ public class ProxyCore implements AutoCloseable {
 
 	private int openUnconnected(ValueHolder<InetAddress> localAddress,
 			ValueHolder<Integer> localPort) throws IOException {
-		if (localHost == null) {
+		if (isNull(localHost)) {
 			throw new IOException(
 					"cannot receive if localHost is not definite");
 		}
@@ -506,7 +508,7 @@ public class ProxyCore implements AutoCloseable {
 		Integer id = message.getInt();
 		log.debug("got message for channel {}", id);
 		ProxyUDPConnection conn = getConnection(id);
-		if (isValid(conn) && conn.getRemoteIPAddress() != null) {
+		if (isValid(conn) && nonNull(conn.getRemoteIPAddress())) {
 			ByteBuffer payload = message.slice();
 			log.debug("sending message to {} of length {}", conn,
 					payload.remaining());
@@ -545,7 +547,7 @@ public class ProxyCore implements AutoCloseable {
 		log.debug("got message for channel {} for {}:{}", id, who, port);
 		ProxyUDPConnection conn = getConnection(id);
 		if (isValid(conn)) {
-			if (conn.getRemoteIPAddress() != null) {
+			if (nonNull(conn.getRemoteIPAddress())) {
 				throw new IllegalArgumentException("channel is connected");
 			}
 			ByteBuffer payload = message.slice();
@@ -557,7 +559,7 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	private static boolean isValid(ProxyUDPConnection conn) {
-		return conn != null && !conn.isClosed();
+		return nonNull(conn) && !conn.isClosed();
 	}
 
 	private static void validatePort(int port) {
@@ -595,7 +597,7 @@ public class ProxyCore implements AutoCloseable {
 		// Take a copy immediately
 		ArrayList<ProxyUDPConnection> copy = listConnections();
 		for (ProxyUDPConnection conn : copy) {
-			if (conn != null && !conn.isClosed()) {
+			if (nonNull(conn) && !conn.isClosed()) {
 				try {
 					conn.close();
 				} catch (IOException e) {

@@ -26,6 +26,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.*;
@@ -139,7 +140,7 @@ public class TransceiverITCase {
 
 	@AfterAll
 	static void tearDownAtTheEnd() throws Exception {
-		if (job != null) {
+		if (nonNull(job)) {
 			job.destroy();
 			job.close();
 		}

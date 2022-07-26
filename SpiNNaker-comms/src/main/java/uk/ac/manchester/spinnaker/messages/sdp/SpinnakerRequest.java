@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.sdp;
 
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
@@ -62,7 +63,7 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	 *             If a message is prepared for sending a second time.
 	 */
 	public final ByteBuffer getMessageData(HasChipLocation originatingChip) {
-		if (sdpHeader.getSource() != null) {
+		if (nonNull(sdpHeader.getSource())) {
 			throw new IllegalStateException(
 					"can only prepare request for sending once");
 		}

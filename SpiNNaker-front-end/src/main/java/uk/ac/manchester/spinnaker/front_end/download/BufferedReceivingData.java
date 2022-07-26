@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
@@ -118,7 +119,7 @@ class BufferedReceivingData {
 	public RecordingRegion getRecordingRegion(RegionLocation location) {
 		CoreLocation coreLocation = location.asCoreLocation();
 		List<RecordingRegion> value = recordingRegions.get(coreLocation);
-		if (value == null) {
+		if (isNull(value)) {
 			throw new IllegalArgumentException(
 					"no regions known for " + coreLocation);
 		}

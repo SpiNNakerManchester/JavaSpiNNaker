@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.lang.Integer.toUnsignedLong;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
@@ -318,7 +319,7 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 
 				for (MemoryRegion reg : executor.regions()) {
 					MemoryRegionReal r = getRealRegionOrNull(reg);
-					if (r != null) {
+					if (nonNull(r)) {
 						written += writeRegion(ctl.core, r, r.getRegionBase());
 					}
 				}

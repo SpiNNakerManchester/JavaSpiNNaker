@@ -20,6 +20,7 @@ import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Integer.toUnsignedLong;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTING_TABLE_DATA;
@@ -210,7 +211,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 			int mask = data.getInt();
 
 			if (toUnsignedLong(route) < INVALID_ROUTE_MARKER
-					&& (appID == null || appID.equals(appid))) {
+					&& (isNull(appID) || appID.equals(appid))) {
 				routes.put(r + offset,
 						new MulticastRoutingEntry(key, mask, route, false));
 			}

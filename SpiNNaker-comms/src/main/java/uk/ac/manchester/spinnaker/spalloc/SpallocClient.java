@@ -22,6 +22,8 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MACHINE_PROPERTY;
@@ -161,7 +163,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 	 *            The default timeout.
 	 */
 	public SpallocClient(String hostname, Integer port, Integer timeout) {
-		super(hostname, (port == null) ? PORT_DEFAULT : port, timeout);
+		super(hostname, isNull(port) ? PORT_DEFAULT : port, timeout);
 	}
 
 	/**
@@ -188,11 +190,11 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			throws SpallocProtocolException, SpallocProtocolTimeoutException {
 		// If we already have a notification, return it
 		Notification n = notifications.poll();
-		if (n != null) {
+		if (nonNull(n)) {
 			return n;
 		}
 		// Check for a duff timeout
-		if (timeout != null && timeout < 0) {
+		if (nonNull(timeout) && timeout < 0) {
 			return null;
 		}
 
@@ -317,13 +319,13 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			throws IOException, SpallocServerException {
 		Command<?> c;
 		if (enable) {
-			if (jobID == null) {
+			if (isNull(jobID)) {
 				c = new NotifyJobCommand();
 			} else {
 				c = new NotifyJobCommand(jobID);
 			}
 		} else {
-			if (jobID == null) {
+			if (isNull(jobID)) {
 				c = new NoNotifyJobCommand();
 			} else {
 				c = new NoNotifyJobCommand(jobID);
@@ -340,13 +342,13 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 			Integer timeout) throws IOException, SpallocServerException {
 		Command<?> c;
 		if (enable) {
-			if (machineName == null) {
+			if (isNull(machineName)) {
 				c = new NotifyMachineCommand();
 			} else {
 				c = new NotifyMachineCommand(machineName);
 			}
 		} else {
-			if (machineName == null) {
+			if (isNull(machineName)) {
 				c = new NoNotifyMachineCommand();
 			} else {
 				c = new NoNotifyMachineCommand(machineName);

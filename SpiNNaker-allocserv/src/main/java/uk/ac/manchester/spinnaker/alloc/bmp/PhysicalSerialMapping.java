@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -80,12 +81,12 @@ class PhysicalSerialMapping {
 		String physical = bits[0];
 		String logical = bits[1];
 		String old = physicalToLogical.put(physical, logical);
-		if (old != null) {
+		if (nonNull(old)) {
 			log.warn("replaced mapping for {} (to {}) with {}", physical, old,
 					logical);
 		}
 		old = logicalToPhysical.put(logical, physical);
-		if (old != null) {
+		if (nonNull(old)) {
 			log.warn("replaced mapping for {} (to {}) with {}", logical, old,
 					physical);
 		}

@@ -24,6 +24,8 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
@@ -253,7 +255,7 @@ public class SpallocClientFactory {
 				synchronizedMap(new HashMap<>());
 
 		Common(SpallocClient client, ClientSession s) {
-			this.client = client != null ? client : (SpallocClient) this;
+			this.client = nonNull(client) ? client : (SpallocClient) this;
 			this.s = s;
 		}
 
@@ -261,10 +263,10 @@ public class SpallocClientFactory {
 			Machine m;
 			do {
 				m = machineMap.get(name);
-				if (m == null) {
+				if (isNull(m)) {
 					client.listMachines();
 				}
-			} while (m == null);
+			} while (isNull(m));
 			return m;
 		}
 
@@ -338,7 +340,7 @@ public class SpallocClientFactory {
 
 			@Override
 			List<URI> fetchNext() throws IOException {
-				if (first != null) {
+				if (nonNull(first)) {
 					try {
 						return first;
 					} finally {
@@ -352,16 +354,16 @@ public class SpallocClientFactory {
 
 			@Override
 			boolean canFetchMore() {
-				if (first != null) {
+				if (nonNull(first)) {
 					return true;
 				}
-				return next != null;
+				return nonNull(next);
 			}
 		}
 
 		private Stream<Job> listJobs(URI flags) throws IOException {
 			JobLister basicData =
-					new JobLister(flags != null ? jobs.resolve(flags) : jobs);
+					new JobLister(nonNull(flags) ? jobs.resolve(flags) : jobs);
 			return basicData.stream().flatMap(Collection::stream)
 					.map(this::job);
 		}

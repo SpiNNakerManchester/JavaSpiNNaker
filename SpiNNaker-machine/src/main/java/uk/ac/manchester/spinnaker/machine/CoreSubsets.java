@@ -21,6 +21,8 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -294,7 +296,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (isNull(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {
@@ -321,7 +323,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 		CoreSubsets results = new CoreSubsets();
 		locations.forEach((chip, locs) -> {
 			Map<?, CoreLocation> otherSubset = other.locations.get(chip);
-			if (otherSubset != null) {
+			if (nonNull(otherSubset)) {
 				locs.forEach((ignored, location) -> {
 					if (otherSubset.containsValue(location)) {
 						results.addCore(location);

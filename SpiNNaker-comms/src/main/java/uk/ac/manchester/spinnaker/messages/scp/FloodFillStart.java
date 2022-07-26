@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
@@ -90,7 +91,7 @@ public final class FloodFillStart extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument2(HasChipLocation chip) {
-		if (chip == null) {
+		if (isNull(chip)) {
 			return NO_CHIP;
 		}
 		// TODO what is this doing?

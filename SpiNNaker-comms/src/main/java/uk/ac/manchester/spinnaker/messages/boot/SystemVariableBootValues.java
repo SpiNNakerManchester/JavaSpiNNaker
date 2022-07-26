@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.boot;
 
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.hardware_version;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.led_0;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.variables;
@@ -119,7 +120,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
 		SystemVariableBootValues bv = BootValues.get(boardVersion);
-		if (bv != null) {
+		if (nonNull(bv)) {
 			return bv;
 		}
 		throw new IllegalArgumentException(
@@ -141,7 +142,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	public static SystemVariableBootValues get(MachineVersion boardVersion) {
 		SystemVariableBootValues bv =
 				BootValues.get(boardVersion.hardwareVersion());
-		if (bv != null) {
+		if (nonNull(bv)) {
 			return bv;
 		}
 		throw new IllegalArgumentException(

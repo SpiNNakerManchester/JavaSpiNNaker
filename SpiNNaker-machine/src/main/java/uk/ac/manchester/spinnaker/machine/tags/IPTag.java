@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.Integer.rotateLeft;
 import static java.net.InetAddress.getByName;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier.DEFAULT;
 
 import java.net.InetAddress;
@@ -193,15 +195,15 @@ public final class IPTag extends Tag {
 			String trafficIdentifier)
 			throws UnknownHostException {
 		super(getByName(boardAddress), tagID,
-				(port == null ? DEFAULT_PORT : port));
+				isNull(port) ? DEFAULT_PORT : port);
 		this.destination = new ChipLocation(x, y);
 		this.ipAddress = getByName(targetAddress);
-		if (stripSDP == null) {
+		if (isNull(stripSDP)) {
 			this.stripSDP = DEFAULT_STRIP_SDP;
 		} else {
 			this.stripSDP = stripSDP;
 		}
-		if (trafficIdentifier == null) {
+		if (isNull(trafficIdentifier)) {
 			this.trafficIdentifier = null;
 		} else {
 			this.trafficIdentifier =
@@ -246,7 +248,7 @@ public final class IPTag extends Tag {
 	 * @return whether they are equal
 	 */
 	public boolean equals(IPTag otherTag) {
-		if (otherTag == null) {
+		if (isNull(otherTag)) {
 			return false;
 		}
 		return partialEquals(otherTag) && ipAddress.equals(otherTag.ipAddress)
@@ -274,11 +276,11 @@ public final class IPTag extends Tag {
 			sb.append("strip");
 		}
 		sb.append("-> {").append(getIPAddress());
-		if (getPort() != null) {
+		if (nonNull(getPort())) {
 			sb.append(":").append(getPort());
 		}
 		sb.append("}");
-		if (trafficIdentifier != null) {
+		if (nonNull(trafficIdentifier)) {
 			sb.append(" TRF:").append(trafficIdentifier.label);
 		}
 		sb.append(" ").append(destination);

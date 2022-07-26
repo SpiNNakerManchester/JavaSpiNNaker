@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Float.POSITIVE_INFINITY;
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
 import java.util.Set;
@@ -54,7 +55,7 @@ public class CoresNotInStateException extends SpinnmanException {
 	}
 
 	private static float convertTimeout(Integer timeout) {
-		if (timeout == null) {
+		if (isNull(timeout)) {
 			return POSITIVE_INFINITY;
 		}
 		return timeout / (float) MSEC_PER_SEC;

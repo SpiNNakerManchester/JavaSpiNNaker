@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.web;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_BOARD_BY_CHIP;
 import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.JOB_KEEPALIVE;
@@ -132,7 +133,7 @@ public class JobStateResponse {
 		switch (state) {
 		case POWER:
 		case READY:
-			if (servletPath != null) {
+			if (nonNull(servletPath)) {
 				proxyRef = makeProxyURI(job, ui, servletPath);
 				break;
 			}

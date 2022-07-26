@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.rangeClosed;
 
@@ -79,7 +80,7 @@ public class AppIdTracker {
 			int maxAppID) {
 		freeIDs = rangeClosed(minAppID, maxAppID).mapToObj(AppID::new)
 				.collect(toSet());
-		if (appIDsInUse != null) {
+		if (nonNull(appIDsInUse)) {
 			freeIDs.removeAll(appIDsInUse);
 		}
 		this.minID = minAppID;

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.boot;
 
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.nio.ByteBuffer;
@@ -130,7 +131,7 @@ public class BootMessage implements SerializableMessage {
 		buffer.putInt(operand1);
 		buffer.putInt(operand2);
 		buffer.putInt(operand3);
-		if (data != null) {
+		if (nonNull(data)) {
 			buffer.put(data);
 		}
 	}

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collection;
@@ -63,7 +65,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		this.connections = new HashMap<>();
 		C firstConnection = null;
 		for (C conn : connections) {
-			if (firstConnection == null || conn.getChip().equals(ROOT)) {
+			if (isNull(firstConnection) || conn.getChip().equals(ROOT)) {
 				firstConnection = conn;
 			}
 			this.connections.put(conn.getChip(), conn);
@@ -73,7 +75,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 
 	@Override
 	public C getNextConnection(SCPRequest<?> request) {
-		if (machine == null || connections.size() == 1) {
+		if (isNull(machine) || connections.size() == 1) {
 			return defaultConnection;
 		}
 		ChipLocation destination = request.sdpHeader.getDestination()
@@ -81,7 +83,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		ChipLocation routeVia = machine.getChipAt(destination).nearestEthernet;
 		C conn = connections.get(routeVia);
 		if (log.isDebugEnabled()) {
-			if (conn != null) {
+			if (nonNull(conn)) {
 				log.debug("will route packets for {} via {}", destination,
 						routeVia);
 			} else {
@@ -89,7 +91,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 						+ "default connecttion", destination);
 			}
 		}
-		return (conn == null) ? defaultConnection : conn;
+		return isNull(conn) ? defaultConnection : conn;
 	}
 
 	/**

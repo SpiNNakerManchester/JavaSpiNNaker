@@ -19,12 +19,14 @@ package uk.ac.manchester.spinnaker.data_spec;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOf;
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.range;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
@@ -94,7 +96,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @return True exactly when the region is empty.
 	 */
 	public boolean isEmpty(int regionID) {
-		return isEmpty() || regions[regionID] == null;
+		return isEmpty() || isNull(regions[regionID]);
 	}
 
 	/**
@@ -129,7 +131,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 * @return How many regions have been set.
 	 */
 	public int countUsedRegions() {
-		return (int) stream().filter(r -> r != null).count();
+		return (int) stream().filter(Objects::nonNull).count();
 	}
 
 	/**

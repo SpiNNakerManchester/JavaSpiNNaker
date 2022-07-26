@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.CPU_INFO;
 
@@ -62,7 +63,7 @@ public abstract class Utils {
 	public static BMPConnectionData defaultBMPforMachine(InetAddress host,
 			Integer numberOfBoards) throws UnknownHostException {
 		return new BMPConnectionData(host,
-				numberOfBoards == null ? 0 : numberOfBoards);
+				isNull(numberOfBoards) ? 0 : numberOfBoards);
 	}
 
 	/**

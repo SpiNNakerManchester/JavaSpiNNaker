@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine.reports;
 
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedWriter;
@@ -92,7 +93,7 @@ public abstract class Reports {
 	private static void writeChipRouterReport(PrintWriter f, Machine machine,
 			int x, int y) {
 		Chip chip = machine.getChipAt(new ChipLocation(x, y));
-		if (chip != null) {
+		if (nonNull(chip)) {
 			f.printf("\nInformation for chip %d:%d\n", chip.getX(),
 					chip.getY());
 			f.printf("Neighbouring chips:\n\t%s\n",

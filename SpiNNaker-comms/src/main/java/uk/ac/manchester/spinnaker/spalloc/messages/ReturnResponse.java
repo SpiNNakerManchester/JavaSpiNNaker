@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import static java.util.Objects.isNull;
+
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -32,6 +34,6 @@ public class ReturnResponse implements Response {
 
 	@JsonSetter("return")
 	void setReturnValue(JsonNode returnValue) {
-		this.returnValue = returnValue == null ? "" : returnValue.toString();
+		this.returnValue = isNull(returnValue) ? "" : returnValue.toString();
 	}
 }

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.storage.threading;
 
+import static java.util.Objects.nonNull;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -756,7 +758,7 @@ final class OTResults extends OTWrapper implements ResultSet {
 
 	@Override
 	public Statement getStatement() throws SQLException {
-		if (s != null) {
+		if (nonNull(s)) {
 			return s;
 		}
 		validateThread();

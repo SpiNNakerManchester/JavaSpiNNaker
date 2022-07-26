@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Request to destroy a job.
  *
@@ -46,7 +48,7 @@ public class DestroyJobCommand extends Command<Integer> {
 	public DestroyJobCommand(int jobId, String reason) {
 		super("destroy_job");
 		addArg(jobId);
-		if (reason != null) {
+		if (nonNull(reason)) {
 			addKwArg("reason", reason);
 		}
 	}

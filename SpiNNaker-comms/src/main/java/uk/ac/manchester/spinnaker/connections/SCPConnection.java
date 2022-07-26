@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
@@ -124,7 +125,7 @@ public class SCPConnection extends SDPConnection
 			throws IOException {
 		super(chip, localHost, localPort, requireNonNull(remoteHost,
 				"SCPConnection only meaningful with a real remote host"),
-				(remotePort == null) ? SCP_SCAMP_PORT : remotePort);
+				isNull(remotePort) ? SCP_SCAMP_PORT : remotePort);
 	}
 
 	@Override

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Objects;
@@ -110,7 +111,7 @@ public final class Link {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (isNull(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {

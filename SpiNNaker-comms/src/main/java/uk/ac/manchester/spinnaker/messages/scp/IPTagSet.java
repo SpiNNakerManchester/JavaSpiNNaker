@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.SET;
@@ -68,7 +70,7 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 			boolean strip, boolean useSender) {
 		super(chip.getScampCore(), CMD_IPTAG, argument1(tag, strip, useSender),
 				argument2(port), argument3(host));
-		if (useSender && host != null && !Arrays.equals(host, INADDR_ANY)) {
+		if (useSender && nonNull(host) && !Arrays.equals(host, INADDR_ANY)) {
 			log.warn("IPTag has real host address but useSender was true");
 		}
 	}
@@ -84,7 +86,7 @@ public class IPTagSet extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static int argument3(byte[] host) {
-		if (host == null) {
+		if (isNull(host)) {
 			return 0;
 		}
 		return range(0, host.length)

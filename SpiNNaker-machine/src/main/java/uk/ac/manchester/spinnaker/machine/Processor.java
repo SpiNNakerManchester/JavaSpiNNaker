@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import static java.lang.Integer.compare;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.DTCM_AVAILABLE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSOR_CLOCK_SPEED;
@@ -123,7 +124,7 @@ public final class Processor implements Comparable<Processor> {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (isNull(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {
@@ -207,13 +208,13 @@ public final class Processor implements Comparable<Processor> {
 	public static Processor factory(int processorId, boolean isMonitor) {
 		try {
 			if (isMonitor) {
-				if (MONITOR[processorId] == null) {
+				if (isNull(MONITOR[processorId])) {
 					MONITOR[processorId] = new Processor(processorId,
 							PROCESSOR_CLOCK_SPEED, DTCM_AVAILABLE, isMonitor);
 				}
 				return MONITOR[processorId];
 			}
-			if (NON_MONITOR[processorId] == null) {
+			if (isNull(NON_MONITOR[processorId])) {
 				NON_MONITOR[processorId] = new Processor(processorId,
 						PROCESSOR_CLOCK_SPEED, DTCM_AVAILABLE, isMonitor);
 			}

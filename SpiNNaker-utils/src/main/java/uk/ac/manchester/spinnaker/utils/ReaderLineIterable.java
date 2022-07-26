@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
@@ -98,29 +101,27 @@ public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 
 			@Override
 			public boolean hasNext() {
-				if (s == null) {
+				if (isNull(s)) {
 					try {
 						s = r.readLine();
-						if (s == null) {
+						if (isNull(s)) {
 							silentClose();
 						}
 					} catch (IOException ex) {
 						// Ignore an error because this closed the stream
-						if (!closed) {
-							if (caught == null) {
-								caught = ex;
-							}
+						if (!closed && isNull(caught)) {
+							caught = ex;
 						}
 						silentClose();
 						return false;
 					}
 				}
-				return s != null;
+				return nonNull(s);
 			}
 
 			@Override
 			public String next() {
-				if (s == null) {
+				if (isNull(s)) {
 					boolean boolResult = hasNext();
 					if (!boolResult) {
 						throw new NoSuchElementException("No lines left.");
@@ -137,7 +138,7 @@ public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 		try {
 			r.close();
 		} catch (IOException ex) {
-			if (caught == null) {
+			if (isNull(caught)) {
 				caught = ex;
 			}
 		} finally {
@@ -148,7 +149,7 @@ public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 	@Override
 	public void close() throws IOException {
 		silentClose();
-		if (caught != null) {
+		if (nonNull(caught)) {
 			IOException temp = caught;
 			caught = null;
 			throw temp;

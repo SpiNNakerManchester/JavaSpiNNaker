@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Objects.isNull;
+
 /** Represents the size of a machine in chips. */
 public final class MachineDimensions {
 	/** The width of the machine in chips. */
@@ -51,7 +53,7 @@ public final class MachineDimensions {
 	 * @return True exactly when they are equal.
 	 */
 	public boolean equals(MachineDimensions dimension) {
-		if (dimension == null) {
+		if (isNull(dimension)) {
 			return false;
 		}
 		return width == dimension.width && height == dimension.height;

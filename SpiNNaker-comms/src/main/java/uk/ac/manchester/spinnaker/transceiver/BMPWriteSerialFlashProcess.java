@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
@@ -127,7 +128,7 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 				}
 			}
 		});
-		if (exn.getValue() != null) {
+		if (nonNull(exn.getValue())) {
 			throw exn.getValue();
 		}
 	}

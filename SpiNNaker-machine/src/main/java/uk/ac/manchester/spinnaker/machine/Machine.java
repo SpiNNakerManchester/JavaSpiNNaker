@@ -20,6 +20,8 @@ import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Collections.unmodifiableSortedMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 
@@ -203,10 +205,10 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public Machine rebuild(Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Direction>> ignoreLinks) {
-		if (ignoreChips == null) {
+		if (isNull(ignoreChips)) {
 			ignoreChips = findAbnormalChips();
 		}
-		if (ignoreLinks == null) {
+		if (isNull(ignoreLinks)) {
 			ignoreLinks = findAbnormalLinks();
 		}
 		if (ignoreLinks.isEmpty() && ignoreChips.isEmpty()) {
@@ -269,7 +271,7 @@ public class Machine implements MappableIterable<Chip> {
 		}
 
 		chips.put(location, chip);
-		if (chip.ipAddress != null) {
+		if (nonNull(chip.ipAddress)) {
 			ethernetConnectedChips.add(chip);
 			if (boot.onSameChipAs(chip)) {
 				bootEthernetAddress = chip.ipAddress;
@@ -410,7 +412,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return True if and only if the machine has a Chip at that location.
 	 */
 	public final boolean hasChipAt(ChipLocation location) {
-		if (location == null) {
+		if (isNull(location)) {
 			return false;
 		}
 		return chips.containsKey(location);
@@ -424,7 +426,7 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return True if and only if the machine has a Chip at that location.
 	 */
 	public final boolean hasChipAt(HasChipLocation location) {
-		if (location == null) {
+		if (isNull(location)) {
 			return false;
 		}
 		return chips.containsKey(location.asChipLocation());
@@ -450,7 +452,7 @@ public class Machine implements MappableIterable<Chip> {
 	// }
 
 	// public boolean hasChipAt(int x, int y) {
-	// return chipArray[x][y] != null;
+	// return nonNull(chipArray[x][y]);
 	// }
 
 	/**
@@ -464,7 +466,7 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final boolean hasLinkAt(ChipLocation source, Direction link) {
 		Chip chip = chips.get(source);
-		if (chip == null) {
+		if (isNull(chip)) {
 			return false;
 		}
 		return chip.router.hasLink(link);
@@ -574,7 +576,7 @@ public class Machine implements MappableIterable<Chip> {
 	public final SpinnakerLinkData getSpinnakerLink(int id,
 			InetAddress address) {
 		InetIdTuple key;
-		if (address == null) {
+		if (isNull(address)) {
 			key = new InetIdTuple(bootEthernetAddress, id);
 		} else {
 			key = new InetIdTuple(address, id);
@@ -710,11 +712,11 @@ public class Machine implements MappableIterable<Chip> {
 			InetAddress address) {
 		Map<FpgaId, Map<Integer, FPGALinkData>> byAddress;
 		byAddress = fpgaLinks.get(address);
-		if (byAddress == null) {
+		if (isNull(byAddress)) {
 			return null;
 		}
 		Map<Integer, FPGALinkData> byId = byAddress.get(fpgaId);
-		if (byId == null) {
+		if (isNull(byId)) {
 			return null;
 		}
 		return byId.get(fpgaLinkId);
@@ -746,7 +748,7 @@ public class Machine implements MappableIterable<Chip> {
 			getFpgaLinks(InetAddress address) {
 		Map<FpgaId, Map<Integer, FPGALinkData>> byAddress =
 				fpgaLinks.get(address);
-		if (byAddress == null) {
+		if (isNull(byAddress)) {
 			return Collections::emptyIterator;
 		}
 		return new DoubleMapIterable<>(byAddress);
@@ -889,7 +891,7 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public boolean hasInverseLinkAt(ChipLocation chip, Direction direction) {
 		Chip source = getChipOverLink(chip, direction);
-		if (source == null) {
+		if (isNull(source)) {
 			return false;
 		}
 		return source.router.hasLink(direction.inverse());
@@ -925,7 +927,7 @@ public class Machine implements MappableIterable<Chip> {
 					Chip destChip = getChipAt(link.destination);
 					Link inverse = destChip.router
 							.getLink(link.sourceLinkDirection.inverse());
-					if (inverse == null) {
+					if (isNull(inverse)) {
 						abnormalLinks.get(link.source)
 								.add(link.sourceLinkDirection);
 					}
@@ -969,7 +971,7 @@ public class Machine implements MappableIterable<Chip> {
 		if (!(obj instanceof Machine)) {
 			return false;
 		}
-		return difference((Machine) obj) == null;
+		return isNull(difference((Machine) obj));
 	}
 
 	/**
@@ -1113,12 +1115,12 @@ public class Machine implements MappableIterable<Chip> {
 
 		@Override
 		public boolean hasNext() {
-			return nextChip != null;
+			return nonNull(nextChip);
 		}
 
 		@Override
 		public Chip next() {
-			if (nextChip == null) {
+			if (isNull(nextChip)) {
 				throw new NoSuchElementException("No more chips available.");
 			}
 			Chip result = nextChip;
@@ -1132,7 +1134,7 @@ public class Machine implements MappableIterable<Chip> {
 				ChipLocation global = normalizedLocation(
 						root.getX() + local.getX(), root.getY() + local.getY());
 				nextChip = getChipAt(global);
-				if (nextChip != null) {
+				if (nonNull(nextChip)) {
 					return;
 				}
 			}

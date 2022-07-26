@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.System.nanoTime;
 import static java.nio.ByteBuffer.allocate;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
@@ -138,7 +139,7 @@ final class GatherDownloadConnection extends SDPConnection {
 	ByteBuffer getNextPacket(int timeout) throws IOException {
 		try {
 			ByteBuffer b = receive(timeout);
-			if (b == null) {
+			if (isNull(b)) {
 				return EMPTY_DATA;
 			}
 			return b;

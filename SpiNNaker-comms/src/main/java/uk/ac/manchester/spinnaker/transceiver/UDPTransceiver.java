@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.net.InetAddress.getByAddress;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.IPV4_SIZE;
 
@@ -150,7 +152,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	public void close() throws Exception {
 		for (Map<?, Pair<?>> connections : connectionsByPort.values()) {
 			for (Pair<?> p : connections.values()) {
-				if (p.listener != null) {
+				if (nonNull(p.listener)) {
 					p.listener.close();
 				}
 			}
@@ -175,7 +177,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 	}
 
 	private static InetAddress normalize(InetAddress addr) {
-		if (addr == null || addr.isAnyLocalAddress()) {
+		if (isNull(addr) || addr.isAnyLocalAddress()) {
 			return WILDCARD_ADDRESS;
 		}
 		return addr;
@@ -267,11 +269,11 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		Pair<T> pair;
 		log.info("creating connection listening on {}:{}",
 				addr.getHostAddress(), localPort);
-		if (localPort != null && localPort != 0) {
+		if (nonNull(localPort) && localPort != 0) {
 			pair = lookup(connectionFactory.getClassKey(), addr, localPort);
 
 			// Create a connection if there isn't already one
-			if (pair.connection == null) {
+			if (isNull(pair.connection)) {
 				log.info("creating connection on {}:{}", addr.getHostAddress(),
 						localPort);
 				pair.connection =
@@ -282,7 +284,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			pair = lookup(connectionFactory.getClassKey(), addr);
 
 			// Create a connection if there isn't already one
-			if (pair.connection == null) {
+			if (isNull(pair.connection)) {
 				log.info("creating connection on {}:0 (arbitrary port)",
 						addr.getHostAddress());
 				pair.connection = connectionFactory.getInstance(addr);
@@ -291,7 +293,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 		}
 
 		// Launch a listener if one is required
-		if (pair.listener == null) {
+		if (isNull(pair.listener)) {
 			// Caller has guaranteed the type constraint
 			@SuppressWarnings("resource")
 			ConnectionListener<T> listener =
@@ -384,7 +386,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 			InetAddress addr) {
 		for (Pair<T> a : getConnections(clazz)) {
 			if (normalize(a.connection.getLocalIPAddress()).equals(addr)) {
-				if (a.listener == null) {
+				if (isNull(a.listener)) {
 					a = a.clone();
 				}
 				return a;
@@ -435,7 +437,7 @@ public abstract class UDPTransceiver implements AutoCloseable {
 
 			if (receivers.containsKey(addr)) {
 				Pair<T> p = getPair(receivers, addr, clazz);
-				if (p.listener == null) {
+				if (isNull(p.listener)) {
 					p = p.clone();
 				}
 				return p;

@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,10 +64,10 @@ class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 *             if given bad arguments
 	 */
 	protected void register(String propertyName, Class<? extends T> type) {
-		if (propertyName == null) {
+		if (isNull(propertyName)) {
 			throw new IllegalArgumentException("propertyName must be non-null");
 		}
-		if (type == null) {
+		if (isNull(type)) {
 			throw new IllegalArgumentException("type must be non-null");
 		}
 
@@ -82,7 +85,7 @@ class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	private Class<? extends T> getTargetClass(Iterator<String> elementNames) {
 		while (elementNames.hasNext()) {
 			Class<? extends T> cls = registry.get(elementNames.next());
-			if (cls != null) {
+			if (nonNull(cls)) {
 				return cls;
 			}
 		}
@@ -109,7 +112,7 @@ class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 			throws IOException {
 		ObjectNode root = parser.readValueAsTree();
 		Class<? extends T> cls = getTargetClass(root.fieldNames());
-		if (cls == null) {
+		if (isNull(cls)) {
 			return null;
 		}
 		return parser.getCodec().treeToValue(root, cls);

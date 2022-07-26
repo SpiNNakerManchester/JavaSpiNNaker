@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_AR;
@@ -62,7 +63,7 @@ public class ApplicationRun extends SCPRequest<CheckOKResponse> {
 	private static int argument1(AppID appId, Iterable<Integer> processors,
 			boolean wait) {
 		int processorMask = 0;
-		if (processors != null) {
+		if (nonNull(processors)) {
 			for (int p : processors) {
 				if (p >= 1 && p < MAX_NUM_CORES) {
 					processorMask |= 1 << p;

@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
+import static java.util.Objects.isNull;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -109,7 +110,7 @@ public final class Version implements Comparable<Version> {
 	}
 
 	private static int parsePossibleInt(String s) {
-		if (s == null) {
+		if (isNull(s)) {
 			return 0;
 		}
 		return parseInt(s);

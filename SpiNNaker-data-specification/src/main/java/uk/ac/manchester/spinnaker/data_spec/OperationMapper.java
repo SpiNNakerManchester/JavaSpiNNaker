@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.String.format;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -70,7 +72,7 @@ abstract class OperationMapper {
 		// Note that MAP is using the object identity; this is by design
 		Map<Commands, Callable> map = MAP.get(requireNonNull(funcs,
 				"can only look up method implementations of real objects"));
-		if (map == null) {
+		if (isNull(map)) {
 			map = new HashMap<>();
 			MAP.put(funcs, map);
 
@@ -100,7 +102,7 @@ abstract class OperationMapper {
 	private static Map<Commands, Method> getOperations(
 			Class<? extends FunctionAPI> cls) {
 		Map<Commands, Method> ops = OPS_MAP.get(cls);
-		if (ops != null) {
+		if (nonNull(ops)) {
 			return ops;
 		}
 		ops = new HashMap<>();
@@ -119,7 +121,7 @@ abstract class OperationMapper {
 			if (m.getParameterCount() != 0
 					|| !(m.getReturnType().equals(Void.TYPE)
 							|| m.getReturnType().equals(Integer.TYPE))
-					|| c == null) {
+					|| isNull(c)) {
 				throw new IllegalArgumentException(
 						format("bad Operation annotation on method %s of %s",
 								m.getName(), cls));

@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.time.Instant.now;
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -561,7 +562,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		try (Query machines = conn.query(GET_NAMED_MACHINE);
 				Query boards = conn.query(GET_ALL_BOARDS);
 				Query all = conn.query(GET_ALL_BOARDS_OF_ALL_MACHINES)) {
-			if (machineName == null) {
+			if (isNull(machineName)) {
 				return all.call().map(integer("board_id")).toList();
 			}
 			return machines.call1(machineName).map(integer("machine_id")).map(

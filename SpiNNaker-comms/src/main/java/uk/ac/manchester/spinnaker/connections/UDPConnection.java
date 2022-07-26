@@ -21,6 +21,8 @@ import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -136,7 +138,8 @@ public abstract class UDPConnection<T>
 	public UDPConnection(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort,
 			TrafficClass trafficClass) throws IOException {
-		canSend = (remoteHost != null && remotePort != null && remotePort > 0);
+		canSend =
+				nonNull(remoteHost) && nonNull(remotePort) && (remotePort > 0);
 		socket = initialiseSocket(localHost, localPort, remoteHost, remotePort,
 				trafficClass);
 		if (log.isDebugEnabled()) {
@@ -162,7 +165,7 @@ public abstract class UDPConnection<T>
 			us = getLocalAddress();
 		} catch (Exception ignore) {
 		}
-		if (us == null) {
+		if (isNull(us)) {
 			us = new InetSocketAddress((InetAddress) null, 0);
 		}
 		InetSocketAddress them = null;
@@ -170,7 +173,7 @@ public abstract class UDPConnection<T>
 			them = getRemoteAddress();
 		} catch (Exception ignore) {
 		}
-		if (them == null) {
+		if (isNull(them)) {
 			them = new InetSocketAddress((InetAddress) null, 0);
 		}
 		log.debug("{} socket created ({} <--> {})", getClass().getName(), us,
@@ -201,7 +204,7 @@ public abstract class UDPConnection<T>
 		// SpiNNaker only speaks IPv4
 		DatagramSocket sock = new DatagramSocket(
 				createLocalAddress(localHost, localPort));
-		if (trafficClass != null) {
+		if (nonNull(trafficClass)) {
 			sock.setTrafficClass(trafficClass.value);
 		}
 		sock.setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
@@ -216,12 +219,12 @@ public abstract class UDPConnection<T>
 	private static SocketAddress createLocalAddress(InetAddress localHost,
 			Integer localPort) throws UnknownHostException {
 		// Convert null into wildcard
-		if (localPort == null) {
+		if (isNull(localPort)) {
 			localPort = 0;
 		}
 		Inet4Address localAddr;
 		try {
-			if (localHost == null) {
+			if (isNull(localHost)) {
 				localAddr = (Inet4Address) getByAddress(new byte[IPV4_SIZE]);
 			} else {
 				localAddr = (Inet4Address) localHost;
@@ -323,7 +326,7 @@ public abstract class UDPConnection<T>
 	 */
 	public final ByteBuffer receive(Integer timeout)
 			throws SocketTimeoutException, IOException {
-		if (timeout != null) {
+		if (nonNull(timeout)) {
 			return receive(convertTimeout(timeout));
 		}
 		// Want to wait forever but the underlying engine won't...

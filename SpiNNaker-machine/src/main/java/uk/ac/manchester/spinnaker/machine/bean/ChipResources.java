@@ -17,6 +17,10 @@
 package uk.ac.manchester.spinnaker.machine.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.util.List;
 
 /**
@@ -74,13 +78,13 @@ public class ChipResources {
 		if (sdram == NOT_SET) {
 			sdram = defaults.sdram;
 		}
-		if (tags == null) {
+		if (isNull(tags)) {
 			tags = defaults.tags;
 		}
 		if (routerEntries == NOT_SET) {
 			routerEntries = defaults.routerEntries;
 		}
-		if (virtual == null) {
+		if (isNull(virtual)) {
 			virtual = defaults.getVirtual();
 		}
 	}
@@ -187,7 +191,7 @@ public class ChipResources {
 		if (sdram != NOT_SET) {
 			builder.append("sdram: ").append(sdram).append(", ");
 		}
-		if (tags != null) {
+		if (nonNull(tags)) {
 			builder.append("tags: ").append(tags).append(", ");
 		}
 		if (routerEntries != NOT_SET) {

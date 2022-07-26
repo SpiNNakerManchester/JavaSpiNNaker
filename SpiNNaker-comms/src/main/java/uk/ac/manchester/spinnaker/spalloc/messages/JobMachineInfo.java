@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
 
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class JobMachineInfo {
 
 	/** @param connections How to talk to the allocated boards. */
 	public void setConnections(List<Connection> connections) {
-		this.connections = connections == null ? emptyList()
+		this.connections = isNull(connections) ? emptyList()
 				: unmodifiableList(connections);
 	}
 
@@ -87,7 +88,7 @@ public class JobMachineInfo {
 
 	/** @param boards Locations of the allocated boards. */
 	public void setBoards(List<BoardCoordinates> boards) {
-		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
+		this.boards = isNull(boards) ? emptyList() : unmodifiableList(boards);
 	}
 
 	@Override

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 
 import static java.lang.Integer.parseInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -241,7 +243,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 */
 	protected final void closed(WebSocketSession session, ProxyCore proxy,
 			Job job) {
-		if (proxy != null) {
+		if (nonNull(proxy)) {
 			proxy.close();
 			job.forgetProxy(proxy);
 		}
@@ -307,7 +309,7 @@ abstract class Utils {
 	static Optional<String> getFieldFromTemplate(UriTemplate template,
 			URI uri, String key) {
 		Map<String, String> templateResults = template.match(uri.getPath());
-		if (templateResults == null) {
+		if (isNull(templateResults)) {
 			return Optional.empty();
 		}
 		String val = templateResults.get(key);

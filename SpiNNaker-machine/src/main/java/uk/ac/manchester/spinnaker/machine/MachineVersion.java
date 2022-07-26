@@ -16,11 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
+
+import java.util.Objects;
 
 /**
  * Known types of machine. Properly this should be an open set.
@@ -229,7 +232,7 @@ public enum MachineVersion {
 	 */
 	public static MachineVersion byId(Integer id) {
 		for (MachineVersion possible : MachineVersion.values()) {
-			if (possible.id != null && possible.id.equals(id)) {
+			if (Objects.equals(possible.id, id)) {
 				return possible;
 			}
 		}
@@ -329,7 +332,7 @@ public enum MachineVersion {
 	 * @return 2, 3, 4 or 5.
 	 */
 	public int hardwareVersion() {
-		if (id == null) {
+		if (isNull(id)) {
 			return DEFAULT_HARDWARE_VERSION;
 		}
 		return id;

@@ -21,6 +21,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SDRAM_PER_CHIP;
 
@@ -136,8 +137,8 @@ public class Chip implements HasChipLocation {
 		this.sdram = sdram;
 		this.ipAddress = ipAddress;
 		this.virtual = virtual;
-		if (tagIds == null) {
-			if (ipAddress == null) {
+		if (isNull(tagIds)) {
+			if (isNull(ipAddress)) {
 				this.tagIds = emptyList();
 			} else {
 				this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
@@ -240,7 +241,7 @@ public class Chip implements HasChipLocation {
 		this.ipAddress = ipAddress;
 
 		virtual = false;
-		if (ipAddress == null) {
+		if (isNull(ipAddress)) {
 			tagIds = emptyList();
 		} else {
 			tagIds = DEFAULT_ETHERNET_TAG_IDS;
@@ -460,7 +461,7 @@ public class Chip implements HasChipLocation {
 		if (!(obj instanceof Chip)) {
 			return false;
 		}
-		return difference((Chip) obj) == null;
+		return isNull(difference((Chip) obj));
 	}
 
 	/**

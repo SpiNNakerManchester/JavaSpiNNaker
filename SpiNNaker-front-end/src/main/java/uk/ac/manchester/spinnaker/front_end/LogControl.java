@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.lang.System.getProperty;
+import static java.util.Objects.isNull;
 import static org.apache.logging.log4j.Level.DEBUG;
 import static org.apache.logging.log4j.Level.ERROR;
 import static org.apache.logging.log4j.Level.INFO;
@@ -149,7 +150,7 @@ public final class LogControl {
 	}
 
 	private static Level debugIfDefined(String propertyName) {
-		return getProperty(propertyName) == null ? INFO : DEBUG;
+		return isNull(getProperty(propertyName)) ? INFO : DEBUG;
 	}
 
 	private RootLoggerComponentBuilder rootLog(String level) {

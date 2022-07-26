@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.connections;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
 import static java.lang.System.out;
+import static java.util.Objects.nonNull;
 
 import java.net.InetAddress;
 import java.util.Calendar;
@@ -51,7 +52,7 @@ public abstract class LocateConnectedMachineIPAddress {
 			while (true) {
 				InetAddress ipAddress = connection.receiveMessage();
 				Calendar now = Calendar.getInstance();
-				if (ipAddress != null && !seenBoards.contains(ipAddress)) {
+				if (nonNull(ipAddress) && !seenBoards.contains(ipAddress)) {
 					seenBoards.add(ipAddress);
 					if (handler.handle(ipAddress, now)) {
 						break;

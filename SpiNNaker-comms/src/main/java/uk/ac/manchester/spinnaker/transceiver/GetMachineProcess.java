@@ -20,6 +20,8 @@ import static java.lang.Math.min;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
@@ -70,15 +72,15 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private final Integer maxSDRAMSize;
 
 	private static <T> Set<T> def(Set<T> c) {
-		return c == null ? emptySet() : c;
+		return isNull(c) ? emptySet() : c;
 	}
 
 	private static <K, V> Map<K, V> def(Map<K, V> m) {
-		return m == null ? emptyMap() : m;
+		return isNull(m) ? emptyMap() : m;
 	}
 
 	private static int clamp(int value, Integer limit) {
-		if (limit == null) {
+		if (isNull(limit)) {
 			return value;
 		}
 		return min(value, limit);
@@ -195,7 +197,7 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 				ignoreCoresMap.getOrDefault(location, emptySet());
 		for (int id = 0; id < chipInfo.numCores; id++) {
 			// Add the core provided it is not to be ignored
-			if (ignoreCores != null && !ignoreCores.contains(id)) {
+			if (nonNull(ignoreCores) && !ignoreCores.contains(id)) {
 				if (id == 0) {
 					processors.add(Processor.factory(id, true));
 				} else if (chipInfo.coreStates.get(id) == IDLE) {

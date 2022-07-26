@@ -20,6 +20,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableCollection;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.openInputStream;
 import static org.apache.commons.io.IOUtils.toByteArray;
@@ -129,7 +130,7 @@ public class Executor implements Closeable {
 	 */
 	@Override
 	public void close() throws IOException {
-		if (inputStream != null) {
+		if (nonNull(inputStream)) {
 			inputStream.close();
 			inputStream = null;
 		}
@@ -211,7 +212,7 @@ public class Executor implements Closeable {
 	public void addPointerTable(ByteBuffer buffer) {
 		assert buffer.order() == LITTLE_ENDIAN;
 		for (MemoryRegion reg : memRegions) {
-			if (reg != null) {
+			if (nonNull(reg)) {
 				buffer.putInt(reg.getRegionBase().address);
 				if (reg instanceof MemoryRegionReal) {
 					// Work out the checksum

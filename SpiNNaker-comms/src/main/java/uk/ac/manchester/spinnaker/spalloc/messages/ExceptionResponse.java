@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -33,6 +34,6 @@ public class ExceptionResponse implements Response {
 	}
 
 	void setException(String exception) {
-		this.exception = exception == null ? "" : exception.toString();
+		this.exception = isNull(exception) ? "" : exception.toString();
 	}
 }

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static java.util.concurrent.TimeUnit.DAYS;
 
@@ -157,7 +159,7 @@ public class BasicExecutor implements AutoCloseable {
 		}
 
 		private synchronized void add(Future<Exception> task) {
-			if (tasks == null) {
+			if (isNull(tasks)) {
 				throw new IllegalStateException("tasks already awaited");
 			}
 			tasks.add(task);
@@ -182,20 +184,20 @@ public class BasicExecutor implements AutoCloseable {
 				tasks = this.tasks;
 				this.tasks = null;
 			}
-			if (tasks == null) {
+			if (isNull(tasks)) {
 				throw new IllegalStateException("tasks already awaited");
 			}
 			for (Future<Exception> f : tasks) {
 				Exception e = f.get();
-				if (e != null) {
-					if (ex == null) {
+				if (nonNull(e)) {
+					if (isNull(ex)) {
 						ex = e;
 					} else {
 						ex.addSuppressed(e);
 					}
 				}
 			}
-			if (ex != null) {
+			if (nonNull(ex)) {
 				throw ex;
 			}
 		}

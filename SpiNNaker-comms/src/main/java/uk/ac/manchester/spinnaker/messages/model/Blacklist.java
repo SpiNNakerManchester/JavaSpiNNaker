@@ -24,6 +24,8 @@ import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.EnumSet.copyOf;
 import static java.util.EnumSet.noneOf;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toMap;
@@ -339,7 +341,7 @@ public final class Blacklist implements Serializable {
 		// Look for patterns at start of line while we can
 		while (true) {
 			m = CORE_PATTERN.matcher(rest);
-			if (m.find() && deadCores == null) {
+			if (m.find() && isNull(deadCores)) {
 				deadCores = parseCommaSeparatedSet(m.group("cores"));
 				deadCores.forEach(c -> {
 					if (c < 0 || c >= PROCESSORS_PER_CHIP) {
@@ -352,7 +354,7 @@ public final class Blacklist implements Serializable {
 			}
 
 			m = LINK_PATTERN.matcher(rest);
-			if (m.find() && deadLinks == null) {
+			if (m.find() && isNull(deadLinks)) {
 				deadLinks = parseCommaSeparatedSet(m.group("links"),
 						Direction::byId, Direction.class);
 				rest = deleteMatched(m);
@@ -360,7 +362,7 @@ public final class Blacklist implements Serializable {
 			}
 
 			m = DEAD_PATTERN.matcher(rest);
-			if (m.find() && dead == null) {
+			if (m.find() && isNull(dead)) {
 				dead = chip;
 				rest = deleteMatched(m);
 				continue;
@@ -374,17 +376,17 @@ public final class Blacklist implements Serializable {
 			break;
 		}
 
-		if (dead != null) {
+		if (nonNull(dead)) {
 			chips.add(dead);
 			// Mask any info from lines defined above this one
 			cores.remove(dead);
 			links.remove(dead);
 		} else if (!chips.contains(chip)) {
-			if (deadCores != null && !deadCores.isEmpty()) {
+			if (nonNull(deadCores) && !deadCores.isEmpty()) {
 				cores.computeIfAbsent(chip, k -> new HashSet<>())
 						.addAll(deadCores);
 			}
-			if (deadLinks != null && !deadLinks.isEmpty()) {
+			if (nonNull(deadLinks) && !deadLinks.isEmpty()) {
 				links.computeIfAbsent(chip, k -> noneOf(Direction.class))
 						.addAll(deadLinks);
 			}
@@ -505,7 +507,7 @@ public final class Blacklist implements Serializable {
 		if (this == object) {
 			return true;
 		}
-		if (object != null && object instanceof Blacklist) {
+		if (nonNull(object) && object instanceof Blacklist) {
 			return equals((Blacklist) object);
 		}
 		return false;

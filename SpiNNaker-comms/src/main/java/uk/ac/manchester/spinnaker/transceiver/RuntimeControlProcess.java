@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_IOBUF_ADDRESS_OFFSET;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
@@ -129,8 +130,8 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
-		int runTime = (runTimesteps == null ? 0 : runTimesteps);
-		boolean infiniteRun = runTimesteps == null;
+		int runTime = isNull(runTimesteps) ? 0 : runTimesteps;
+		boolean infiniteRun = isNull(runTimesteps);
 		for (CoreLocation core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new UpdateRuntime(core, runTime, infiniteRun));

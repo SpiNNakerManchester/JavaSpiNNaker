@@ -22,6 +22,8 @@ import static java.lang.System.getProperty;
 import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
@@ -395,7 +397,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 					 */
 					for (Region region : regionsOnCore) {
 						ByteBuffer data = dl.doDownload(item.monitor, region);
-						if (SPINNAKER_COMPARE_DOWNLOAD != null) {
+						if (nonNull(SPINNAKER_COMPARE_DOWNLOAD)) {
 							compareDownloadWithSCP(region, data);
 						}
 						storeData(region, data);
@@ -415,12 +417,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 		// Sanity check the inputs
 		for (Gather g : gatherers) {
-			if (machine.getChipAt(g).ipAddress == null) {
+			if (isNull(machine.getChipAt(g).ipAddress)) {
 				throw new IllegalStateException(
 						"gatherer on chip without IP address: "
 								+ g.asChipLocation());
 			}
-			if (s != null && !s.hasDirectConnectionFor(machine.getChipAt(g))) {
+			if (nonNull(s) && !s.hasDirectConnectionFor(machine.getChipAt(g))) {
 				throw new IllegalStateException(
 						"gatherer at " + g.asCoreLocation()
 								+ " without direct route in transceiver");

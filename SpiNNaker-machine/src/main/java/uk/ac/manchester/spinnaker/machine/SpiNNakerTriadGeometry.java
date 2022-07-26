@@ -20,6 +20,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
@@ -311,7 +312,7 @@ public final class SpiNNakerTriadGeometry {
 	 * @return SpiNN5 geometry
 	 */
 	public static SpiNNakerTriadGeometry getSpinn5Geometry() {
-		if (spinn5TriadGeometry == null) {
+		if (isNull(spinn5TriadGeometry)) {
 			Collection<ChipLocation> roots = asList(new ChipLocation(0, 0),
 					new ChipLocation(HALF_SIZE, SIZE_Y_OF_ONE_BOARD),
 					new ChipLocation(SIZE_X_OF_ONE_BOARD, HALF_SIZE));

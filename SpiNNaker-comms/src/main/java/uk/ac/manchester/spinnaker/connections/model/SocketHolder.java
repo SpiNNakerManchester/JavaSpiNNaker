@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.connections.model;
 
+import static java.util.Objects.isNull;
+
 import java.net.InetAddress;
 
 /**
@@ -56,7 +58,7 @@ public interface SocketHolder extends AutoCloseable {
 	 * @return The primitive timeout.
 	 */
 	default int convertTimeout(Integer timeout) {
-		if (timeout == null) {
+		if (isNull(timeout)) {
 			/*
 			 * "Infinity" is nearly 25 days, which is a very long time to wait
 			 * for any message from SpiNNaker.

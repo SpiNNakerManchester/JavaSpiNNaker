@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.data_spec;
 import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
@@ -179,7 +181,7 @@ class Functions implements FunctionAPI {
 	}
 
 	private MemoryRegion getRegion() {
-		if (currentRegion == null) {
+		if (isNull(currentRegion)) {
 			return null;
 		}
 		return memRegions.get(currentRegion);
@@ -274,10 +276,10 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(WRITE)
 	public void write() throws DataSpecificationException {
-		int numRepeats = (src2 != null ? registers[src2]
+		int numRepeats = (nonNull(src2) ? registers[src2]
 				: REPEATS.getValue(packedCommand));
 		long value;
-		if (src1 != null) {
+		if (nonNull(src1)) {
 			value = registers[src1];
 		} else if (cmdSize == LEN2 && dataLength != LONG_SIZE) {
 			value = spec.getInt();
@@ -319,7 +321,7 @@ class Functions implements FunctionAPI {
 	@Operation(SWITCH_FOCUS)
 	public void switchFocus() throws DataSpecificationException {
 		int region =
-				(src1 != null ? registers[src1] : SRC1.getValue(packedCommand));
+				nonNull(src1) ? registers[src1] : SRC1.getValue(packedCommand);
 		if (memRegions.isEmpty(region)) {
 			throw new RegionUnfilledException(region, SWITCH_FOCUS);
 		}
@@ -335,11 +337,11 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(MV)
 	public void move() throws DataSpecificationException {
-		if (dest == null) {
+		if (isNull(dest)) {
 			throw new DataSpecificationException(
 					"destination register not correctly specified");
 		}
-		if (src1 != null) {
+		if (nonNull(src1)) {
 			registers[dest] = registers[src1];
 		} else {
 			registers[dest] = spec.getInt();
@@ -359,7 +361,7 @@ class Functions implements FunctionAPI {
 	@Operation(SET_WR_PTR)
 	public void setWritePointer() throws DataSpecificationException {
 		int address;
-		if (src1 != null) {
+		if (nonNull(src1)) {
 			// the data is a register
 			address = registers[src1];
 		} else {
@@ -368,7 +370,7 @@ class Functions implements FunctionAPI {
 		}
 
 		MemoryRegion reg = getRegion();
-		if (reg == null || !(reg instanceof MemoryRegionReal)) {
+		if (isNull(reg) || !(reg instanceof MemoryRegionReal)) {
 			throw new NoRegionSelectedException(
 					"no current region has been selected");
 		}
@@ -435,11 +437,11 @@ class Functions implements FunctionAPI {
 	private void writeToMemory(byte[] array, Commands command)
 			throws DataSpecificationException {
 		// Sanity checks
-		if (currentRegion == null) {
+		if (isNull(currentRegion)) {
 			throw new NoRegionSelectedException(command);
 		}
 		MemoryRegion reg = getRegion();
-		if (reg == null || !(reg instanceof MemoryRegionReal)) {
+		if (isNull(reg) || !(reg instanceof MemoryRegionReal)) {
 			throw new RegionNotAllocatedException(currentRegion, command);
 		}
 

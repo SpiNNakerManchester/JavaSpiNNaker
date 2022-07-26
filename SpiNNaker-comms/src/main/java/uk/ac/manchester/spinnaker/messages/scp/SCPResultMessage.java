@@ -20,6 +20,8 @@ import static java.lang.Byte.toUnsignedInt;
 import static java.lang.Integer.toHexString;
 import static java.lang.Short.toUnsignedInt;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_LEN;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_NOREPLY;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_P2P_TIMEOUT;
@@ -122,7 +124,7 @@ public final class SCPResultMessage {
 	 */
 	public <T extends SCPResponse> T parsePayload(SCPRequest<T> request)
 			throws Exception {
-		if (responseData == null) {
+		if (isNull(responseData)) {
 			throw new IllegalStateException("can only parse a payload once");
 		}
 		try {
@@ -145,7 +147,7 @@ public final class SCPResultMessage {
 	@Override
 	public String toString() {
 		Object contents;
-		if (responseData != null) {
+		if (nonNull(responseData)) {
 			List<String> data = new ArrayList<>();
 			for (int i = 0; i < responseData.limit(); i++) {
 				data.add(toHexString(toUnsignedInt(responseData.get(i))));

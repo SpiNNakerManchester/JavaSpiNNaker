@@ -1569,7 +1569,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					arg = ((Duration) arg).getSeconds();
 				} else if (arg instanceof Enum) {
 					arg = ((Enum<?>) arg).ordinal();
-				} else if (arg != null && arg instanceof Serializable
+				} else if (nonNull(arg) && arg instanceof Serializable
 						&& !(arg instanceof String || arg instanceof Number
 								|| arg instanceof Boolean
 								|| arg instanceof byte[])) {

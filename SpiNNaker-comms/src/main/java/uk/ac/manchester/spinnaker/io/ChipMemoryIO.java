@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.io;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.UNBUFFERED_SDRAM_START;
 
@@ -107,7 +108,7 @@ final class ChipMemoryIO {
 
 	private Transceiver txrx() throws IOException {
 		Transceiver t = transceiver.get();
-		if (t == null) {
+		if (isNull(t)) {
 			throw new EOFException();
 		}
 		return t;
@@ -124,7 +125,7 @@ final class ChipMemoryIO {
 	void flushWriteBuffer() throws IOException, ProcessException {
 		if (writeBuffer.position() > 0) {
 			Transceiver t = hold;
-			if (t == null) {
+			if (isNull(t)) {
 				t = txrx();
 			}
 			ByteBuffer b = writeBuffer.duplicate();

@@ -20,6 +20,8 @@ import static java.lang.Math.max;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -155,7 +157,7 @@ interface Accumulator<T> {
 					file.write(buf);
 				}
 			} catch (IOException e) {
-				if (exception == null) {
+				if (isNull(exception)) {
 					exception = e;
 				}
 			}
@@ -169,7 +171,7 @@ interface Accumulator<T> {
 		@Override
 		public Void finish() throws IOException {
 			done = true;
-			if (exception != null) {
+			if (nonNull(exception)) {
 				throw exception;
 			}
 			file.seek(initOffset);

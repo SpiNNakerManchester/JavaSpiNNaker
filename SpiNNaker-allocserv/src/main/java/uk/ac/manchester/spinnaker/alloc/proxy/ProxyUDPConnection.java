@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
 import static java.lang.Thread.currentThread;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_THROUGHPUT;
 
@@ -76,7 +77,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		workingBuffer.putInt(ProxyOp.MESSAGE.ordinal());
 		workingBuffer.putInt(id);
 		// Make the name now so it remains useful after close()
-		if (remoteHost == null) {
+		if (isNull(remoteHost)) {
 			name = session.getUri() + "#" + id + " ANY/ANY";
 		} else {
 			name = session.getUri() + "#" + id + " " + remoteHost + "/"

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.makeTimeout;
 import static uk.ac.manchester.spinnaker.spalloc.Utils.timeLeft;
@@ -139,9 +141,9 @@ public abstract class SpallocConnection implements Closeable {
 				throw new EOFException("not connected");
 			}
 			sock = getConnectedSocket(key, timeout);
-		} while (sock == null);
+		} while (isNull(sock));
 
-		if (timeout != null) {
+		if (nonNull(timeout)) {
 			sock.setSoTimeout(timeout);
 		}
 		return sock;
@@ -172,7 +174,7 @@ public abstract class SpallocConnection implements Closeable {
 		}
 
 		if (connectNeeded) {
-			sock.setSoTimeout(timeout != null ? timeout : 0);
+			sock.setSoTimeout(nonNull(timeout) ? timeout : 0);
 			if (!doConnect(sock)) {
 				closeThreadConnection(key);
 				return null;
@@ -237,7 +239,7 @@ public abstract class SpallocConnection implements Closeable {
 		synchronized (socksLock) {
 			sock = socks.remove(key);
 		}
-		if (sock != null) {
+		if (nonNull(sock)) {
 			// Mark the thread local so it will reinitialise
 			if (key == currentThread()) {
 				local.remove();
@@ -271,7 +273,7 @@ public abstract class SpallocConnection implements Closeable {
 			throws SpallocProtocolTimeoutException, IOException {
 		try {
 			String line = sock.getReader().readLine();
-			if (line == null) {
+			if (isNull(line)) {
 				throw new EOFException("Connection closed");
 			}
 			return line;
@@ -296,7 +298,7 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	protected Response receiveResponse(Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException {
-		if (timeout == null || timeout < 0) {
+		if (isNull(timeout) || timeout < 0) {
 			timeout = 0;
 		}
 		TextSocket sock = getConnection(timeout);
@@ -304,7 +306,7 @@ public abstract class SpallocConnection implements Closeable {
 		// Wait for some data to arrive
 		String line = readLine(sock);
 		Response response = parseResponse(line);
-		if (response == null) {
+		if (isNull(response)) {
 			throw new SpallocProtocolException("unexpected response: " + line);
 		}
 		return response;
@@ -325,7 +327,7 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	protected void sendCommand(Command<?> command, Integer timeout)
 			throws SpallocProtocolTimeoutException, IOException {
-		if (timeout == null || timeout < 0) {
+		if (isNull(timeout) || timeout < 0) {
 			timeout = 0;
 		}
 		if (log.isDebugEnabled()) {
@@ -403,7 +405,7 @@ public abstract class SpallocConnection implements Closeable {
 			// Command sent! Attempt to receive the response...
 			while (!timedOut(finishTime)) {
 				Response r = receiveResponse(timeLeft(finishTime));
-				if (r == null) {
+				if (isNull(r)) {
 					continue;
 				}
 				if (r instanceof ReturnResponse) {
@@ -440,7 +442,7 @@ public abstract class SpallocConnection implements Closeable {
 		private PrintWriter pw;
 
 		PrintWriter getWriter() throws IOException {
-			if (pw == null) {
+			if (isNull(pw)) {
 				pw = new PrintWriter(
 						new OutputStreamWriter(getOutputStream(), UTF_8));
 			}
@@ -448,7 +450,7 @@ public abstract class SpallocConnection implements Closeable {
 		}
 
 		BufferedReader getReader() throws IOException {
-			if (br == null) {
+			if (isNull(br)) {
 				br = new BufferedReader(
 						new InputStreamReader(getInputStream(), UTF_8));
 			}

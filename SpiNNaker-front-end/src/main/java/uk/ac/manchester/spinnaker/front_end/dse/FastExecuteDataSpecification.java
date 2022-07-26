@@ -23,6 +23,8 @@ import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -153,14 +155,14 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
 			File reportDir) throws IOException, ProcessException {
 		super(machine);
-		if (SPINNAKER_COMPARE_UPLOAD != null) {
+		if (nonNull(SPINNAKER_COMPARE_UPLOAD)) {
 			log.warn("detailed comparison of uploaded data enabled; "
 					+ "this may destabilize the protocol");
 		}
 		this.machine = machine;
 		executor = new BasicExecutor(PARALLEL_SIZE);
 
-		if (reportDir != null) {
+		if (nonNull(reportDir)) {
 			writeReports = true;
 			reportPath = new File(reportDir, IN_REPORT_NAME);
 		}
@@ -518,13 +520,13 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 			for (MemoryRegion reg : executor.regions()) {
 				MemoryRegionReal r = getRealRegionOrNull(reg);
-				if (r == null) {
+				if (isNull(r)) {
 					continue;
 				}
 
 				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
 				writeCount++;
-				if (SPINNAKER_COMPARE_UPLOAD != null) {
+				if (nonNull(SPINNAKER_COMPARE_UPLOAD)) {
 					ByteBuffer readBack = txrx.readMemory(ctl.core,
 							r.getRegionBase(), r.getRegionData().remaining());
 					compareBuffers(r.getRegionData(), readBack);
@@ -737,7 +739,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 							 * sequence numbers. Accumulate and dispatch
 							 * transactionId when we've got them all.
 							 */
-							if (missing == null) {
+							if (isNull(missing)) {
 								missing = missingSequenceNumbers.issueNew(
 										numPackets);
 							}
@@ -769,7 +771,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 						 * If we never received a packet, we will never have
 						 * created the buffer, so send everything again
 						 */
-						if (missing == null) {
+						if (isNull(missing)) {
 							log.debug("full timeout; resending initial "
 									+ "packets for stream with transaction "
 									+ "id {}", transactionId);

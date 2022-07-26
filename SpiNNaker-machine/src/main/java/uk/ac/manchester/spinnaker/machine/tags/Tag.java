@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.Integer.compare;
+import static java.util.Objects.nonNull;
 
 import java.net.InetAddress;
 import java.util.Objects;
@@ -77,7 +78,7 @@ public abstract class Tag implements Comparable<Tag> {
 	 *             If the port has already been set.
 	 */
 	public void setPort(int port) {
-		if (this.port != null && this.port != port) {
+		if (nonNull(this.port) && this.port != port) {
 			throw new IllegalStateException("port cannot be changed to " + port
 					+ " once set to " + this.port);
 		}
@@ -120,7 +121,7 @@ public abstract class Tag implements Comparable<Tag> {
 	 */
 	protected final int partialHashCode() {
 		int h = (tagID * MAGIC1) ^ boardAddress.hashCode();
-		if (port != null) {
+		if (nonNull(port)) {
 			h ^= port * MAGIC2;
 		}
 		return h;

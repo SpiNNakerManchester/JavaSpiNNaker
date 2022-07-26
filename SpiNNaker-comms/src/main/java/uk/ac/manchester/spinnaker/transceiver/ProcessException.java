@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -72,7 +73,7 @@ public class ProcessException extends SpinnmanException {
 		if (requireNonNull(cause) instanceof UnexpectedResponseCodeException) {
 			UnexpectedResponseCodeException urc =
 					(UnexpectedResponseCodeException) cause;
-			if (urc.response == null) {
+			if (isNull(urc.response)) {
 				return new ProcessException(core, cause, null);
 			}
 			switch (urc.response) {

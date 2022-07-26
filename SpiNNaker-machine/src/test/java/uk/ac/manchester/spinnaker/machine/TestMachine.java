@@ -32,6 +32,7 @@ import java.util.SortedMap;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
+import static java.util.Objects.nonNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
@@ -175,7 +176,7 @@ public class TestMachine {
 		ChipLocation previous = null;
 		for (Chip found : instance) {
 			count++;
-			if (previous != null) {
+			if (nonNull(previous)) {
 				assertThat(previous, lessThan(found.asChipLocation()));
 			}
 			previous = found.asChipLocation();

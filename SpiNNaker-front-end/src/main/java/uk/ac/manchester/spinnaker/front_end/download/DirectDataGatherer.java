@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
@@ -111,7 +112,7 @@ public class DirectDataGatherer extends DataGatherer {
 		}
 		// Individual cores are only ever handled from one thread
 		ByteBuffer buffer = map.get(vertex.getBase());
-		if (buffer == null) {
+		if (isNull(buffer)) {
 			buffer = txrx.readMemory(core, vertex.getBase(),
 					WORD_SIZE * (MAX_MEM_REGIONS + 2));
 			int word = buffer.getInt();

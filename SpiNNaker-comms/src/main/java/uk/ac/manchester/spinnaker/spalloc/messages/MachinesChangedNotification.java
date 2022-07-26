@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class MachinesChangedNotification implements Notification {
 
 	/** @param machinesChanged What jobs have changed. */
 	public void setMachinesChanged(List<String> machinesChanged) {
-		this.machinesChanged = machinesChanged == null ? emptyList()
+		this.machinesChanged = isNull(machinesChanged) ? emptyList()
 				: unmodifiableList(machinesChanged);
 	}
 

@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
 
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class Machine {
 
 	/** @param tags The tags on the machine. */
 	public void setTags(List<String> tags) {
-		this.tags = tags == null ? emptyList() : unmodifiableList(tags);
+		this.tags = isNull(tags) ? emptyList() : unmodifiableList(tags);
 	}
 
 	/** @return The width of the machine. */

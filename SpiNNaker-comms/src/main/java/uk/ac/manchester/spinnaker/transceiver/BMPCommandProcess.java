@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.RETRY_DELAY_MS;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
@@ -140,7 +142,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 				connectionSelector.getNextConnection(request));
 		requestPipeline.sendRequest((BMPRequest<R>) request, holder::setValue);
 		requestPipeline.finish();
-		if (exception != null) {
+		if (nonNull(exception)) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
@@ -176,7 +178,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 		requestPipeline.sendRequest((BMPRequest<R>) request, retries,
 				holder::setValue);
 		requestPipeline.finish();
-		if (exception != null) {
+		if (nonNull(exception)) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
@@ -206,7 +208,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 		List<R> results = new ArrayList<>();
 		RequestPipeline requestPipeline = null;
 		for (BMPRequest<T> request : requests) {
-			if (requestPipeline == null) {
+			if (isNull(requestPipeline)) {
 				/*
 				 * If no pipeline built yet, build one on the connection
 				 * selected for it.
@@ -218,7 +220,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			requestPipeline.sendRequest((BMPRequest<R>) request, results::add);
 			requestPipeline.finish();
 		}
-		if (exception != null) {
+		if (nonNull(exception)) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
@@ -250,7 +252,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 		List<R> results = new ArrayList<>();
 		RequestPipeline requestPipeline = null;
 		for (BMPRequest<T> request : requests) {
-			if (requestPipeline == null) {
+			if (isNull(requestPipeline)) {
 				/*
 				 * If no pipeline built yet, build one on the connection
 				 * selected for it.
@@ -263,7 +265,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 					results::add);
 			requestPipeline.finish();
 		}
-		if (exception != null) {
+		if (nonNull(exception)) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
@@ -329,7 +331,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			private void resend(String reason) throws IOException {
 				retries--;
 				retryReason.add(reason);
-				if (retryTracker != null) {
+				if (nonNull(retryTracker)) {
 					retryTracker.retryNeeded();
 				}
 				send();
@@ -346,7 +348,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			private void parseReceivedResponse(SCPResultMessage msg)
 					throws Exception {
 				R response = msg.parsePayload(request);
-				if (callback != null) {
+				if (nonNull(callback)) {
 					callback.accept(response);
 				}
 			}
@@ -387,7 +389,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 			// Send the request, keeping track of how many are sent
 			Request req = new Request(request, callback);
-			if (requests.put(sequence, req) != null) {
+			if (nonNull(requests.put(sequence, req))) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
 			}
@@ -416,7 +418,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 			// Send the request, keeping track of how many are sent
 			Request req = new Request(request, retries, callback);
-			if (requests.put(sequence, req) != null) {
+			if (nonNull(requests.put(sequence, req))) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
 			}
@@ -447,7 +449,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			// Receive the next response
 			SCPResultMessage msg = connection.receiveSCPResponse(timeout);
 			Request req = msg.pickRequest(requests);
-			if (req == null) {
+			if (isNull(req)) {
 				// Only process responses which have matching requests
 				log.info("discarding message with unknown sequence number: {}",
 						msg.getSequenceNumber());
@@ -478,7 +480,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 			BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
 			for (int seq : new ArrayList<>(requests.keySet())) {
 				Request req = requests.get(seq);
-				if (req == null) {
+				if (isNull(req)) {
 					// Shouldn't happen, but if it does we should nuke it.
 					toRemove.set(seq);
 					continue;

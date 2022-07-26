@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.Integer.rotateLeft;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.net.InetAddress;
 
@@ -102,7 +104,7 @@ public final class ReverseIPTag extends Tag {
 	 * @return whether they are equal
 	 */
 	public boolean equals(ReverseIPTag otherTag) {
-		if (otherTag == null) {
+		if (isNull(otherTag)) {
 			return false;
 		}
 		return partialEquals(otherTag) && sdpPort == otherTag.sdpPort
@@ -121,7 +123,7 @@ public final class ReverseIPTag extends Tag {
 	public String toString() {
 		StringBuilder sb = new StringBuilder("ReverseIPTag(");
 		sb.append(getTag()).append(" {").append(getBoardAddress());
-		if (getPort() != null) {
+		if (nonNull(getPort())) {
 			sb.append(":").append(getPort());
 		}
 		sb.append("} <-- {?:?}");

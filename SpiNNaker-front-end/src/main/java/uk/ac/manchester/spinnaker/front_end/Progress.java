@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.lang.Boolean.getBoolean;
+import static java.util.Objects.nonNull;
 
 import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
 
@@ -61,7 +62,7 @@ public final class Progress implements AutoCloseable {
 	 * Advances the progress bar by one step.
 	 */
 	public void update() {
-		if (bar != null) {
+		if (nonNull(bar)) {
 			synchronized (bar) {
 				bar.update();
 			}
@@ -75,7 +76,7 @@ public final class Progress implements AutoCloseable {
 	 *            The number of steps to advance.
 	 */
 	public void update(int numSteps) {
-		if (bar != null) {
+		if (nonNull(bar)) {
 			synchronized (bar) {
 				bar.update(numSteps);
 			}
@@ -84,7 +85,7 @@ public final class Progress implements AutoCloseable {
 
 	@Override
 	public void close() {
-		if (bar != null) {
+		if (nonNull(bar)) {
 			synchronized (bar) {
 				bar.close();
 			}

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.deserialize;
 import static uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.columnNames;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
@@ -106,7 +108,7 @@ public final class Row {
 	 *             If the column names can't be retrieved.
 	 */
 	public Set<String> getColumnNames() {
-		if (columns != null) {
+		if (nonNull(columns)) {
 			return columns;
 		}
 		return get(() -> {
@@ -252,7 +254,7 @@ public final class Row {
 	 */
 	public <T> T getSerial(String columnLabel, Class<T> cls) {
 		byte[] bytes = getBytes(columnLabel);
-		if (bytes == null) {
+		if (isNull(bytes)) {
 			return null;
 		}
 		try {

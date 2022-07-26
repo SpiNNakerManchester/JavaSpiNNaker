@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import java.io.File;
@@ -1133,7 +1134,7 @@ public class SpallocProperties {
 				@DefaultValue("") String truststorePassword) {
 			this.enable = enable;
 			this.domain = domain;
-			this.setScopes(scopes != null ? scopes : new HashSet<>());
+			this.setScopes(nonNull(scopes) ? scopes : new HashSet<>());
 			this.id = id;
 			this.secret = secret;
 			this.usernamePrefix = usernamePrefix;
@@ -1163,7 +1164,7 @@ public class SpallocProperties {
 		 * @return The application installation identity.
 		 */
 		public String getId() {
-			return id == null ? null : id.trim();
+			return isNull(id) ? null : id.trim();
 		}
 
 		void setId(String id) {
@@ -1177,7 +1178,7 @@ public class SpallocProperties {
 		 * @return The application installation secret.
 		 */
 		public String getSecret() {
-			return secret == null ? null : secret.trim();
+			return isNull(secret) ? null : secret.trim();
 		}
 
 		void setSecret(String secret) {

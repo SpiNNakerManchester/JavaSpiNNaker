@@ -23,6 +23,8 @@ import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
@@ -229,7 +231,7 @@ public class SCPRequestPipeline {
 		private void resend(Object reason) throws IOException {
 			retries--;
 			retryReason.add(reason.toString());
-			if (retryTracker != null) {
+			if (nonNull(retryTracker)) {
 				retryTracker.retryNeeded();
 			}
 			send();
@@ -253,7 +255,7 @@ public class SCPRequestPipeline {
 		private void parseReceivedResponse(SCPResultMessage msg)
 				throws Exception {
 			T response = msg.parsePayload(request);
-			if (callback != null) {
+			if (nonNull(callback)) {
 				callback.accept(response);
 			}
 		}
@@ -274,7 +276,7 @@ public class SCPRequestPipeline {
 		 *            The problem that is being reported.
 		 */
 		private void handleError(Throwable exception) {
-			if (errorCallback != null) {
+			if (nonNull(errorCallback)) {
 				errorCallback.handleError(request, exception);
 			}
 		}
@@ -437,7 +439,7 @@ public class SCPRequestPipeline {
 
 			log.debug("sending message with sequence {}", sequence);
 			Request<T> req = new Request<>(request, callback, errorCallback);
-			if (outstandingRequests.put(sequence, req) != null) {
+			if (nonNull(outstandingRequests.put(sequence, req))) {
 				throw new DuplicateSequenceNumberException();
 			}
 			numRequests++;
@@ -508,7 +510,7 @@ public class SCPRequestPipeline {
 		Request<?> req = msg.pickRequest(outstandingRequests);
 
 		// Only process responses which have matching requests
-		if (req == null) {
+		if (isNull(req)) {
 			log.info("discarding message with unknown sequence number: {}",
 					msg.getSequenceNumber());
 			if (log.isDebugEnabled()) {
@@ -560,7 +562,7 @@ public class SCPRequestPipeline {
 		for (int seq : currentSeqs) {
 			log.debug("resending seq {}", seq);
 			Request<?> req = outstandingRequests.get(seq);
-			if (req == null) {
+			if (isNull(req)) {
 				// Shouldn't happen, but if it does we should nuke it.
 				toRemove.set(seq);
 				continue;

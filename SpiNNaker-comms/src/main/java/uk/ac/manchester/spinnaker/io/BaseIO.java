@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.io;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -131,10 +134,10 @@ abstract class BaseIO implements AbstractIO {
 
 	@Override
 	public byte[] read(Integer numBytes) throws IOException, ProcessException {
-		if (numBytes != null && numBytes == 0) {
+		if (nonNull(numBytes) && numBytes == 0) {
 			return new byte[0];
 		}
-		int n = (numBytes == null || numBytes < 0) ? end.diff(current)
+		int n = (isNull(numBytes) || numBytes < 0) ? end.diff(current)
 				: numBytes;
 		inRange(n);
 		byte[] data = doRead(n);
@@ -154,7 +157,7 @@ abstract class BaseIO implements AbstractIO {
 	@Override
 	public void fill(int value, Integer size, FillDataType type)
 			throws IOException, ProcessException {
-		int len = (size == null) ? end.diff(current) : size;
+		int len = isNull(size) ? end.diff(current) : size;
 		inRange(len);
 		if (len < 0 || len % type.size != 0) {
 			throw new IllegalArgumentException(
@@ -204,14 +207,14 @@ abstract class BaseIO implements AbstractIO {
 			SliceFactory<IO> factory) {
 		MemoryLocation from = start;
 		MemoryLocation to = end;
-		if (slice.start != null) {
+		if (nonNull(slice.start)) {
 			if (slice.start < 0) {
 				from = end.add(slice.start);
 			} else {
 				from = from.add(slice.start);
 			}
 		}
-		if (slice.stop != null) {
+		if (nonNull(slice.stop)) {
 			if (slice.stop < 0) {
 				to = end.add(slice.stop);
 			} else {

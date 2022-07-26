@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.messages.sdp;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.nio.ByteBuffer;
 
@@ -45,7 +47,7 @@ public class SDPMessage extends SpinnakerRequest {
 	 *            the message payload.
 	 */
 	public SDPMessage(SDPHeader header, byte[] data) {
-		this(header, data, 0, data == null ? 0 : data.length);
+		this(header, data, 0, isNull(data) ? 0 : data.length);
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class SDPMessage extends SpinnakerRequest {
 	 *            where in the array the payload starts.
 	 */
 	public SDPMessage(SDPHeader header, byte[] data, int offset) {
-		this(header, data, offset, data == null ? 0 : data.length - offset);
+		this(header, data, offset, isNull(data) ? 0 : data.length - offset);
 	}
 
 	/**
@@ -76,11 +78,7 @@ public class SDPMessage extends SpinnakerRequest {
 	 */
 	public SDPMessage(SDPHeader header, byte[] data, int offset, int length) {
 		super(header);
-		if (data == null) {
-			databuf = null;
-		} else {
-			databuf = wrap(data, offset, length);
-		}
+		databuf = isNull(data) ? null : wrap(data, offset, length);
 	}
 
 	/**
@@ -94,11 +92,7 @@ public class SDPMessage extends SpinnakerRequest {
 	 */
 	public SDPMessage(SDPHeader header, ByteBuffer data) {
 		super(header);
-		if (data == null) {
-			databuf = null;
-		} else {
-			databuf = data.duplicate();
-		}
+		databuf = isNull(data) ? null : data.duplicate();
 	}
 
 	/**
@@ -117,7 +111,7 @@ public class SDPMessage extends SpinnakerRequest {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		sdpHeader.addToBuffer(buffer);
-		if (databuf != null) {
+		if (nonNull(databuf)) {
 			buffer.put(databuf);
 		}
 	}
@@ -126,12 +120,7 @@ public class SDPMessage extends SpinnakerRequest {
 	 * @return The payload of the message, as a read-only little-endian buffer.
 	 */
 	public final ByteBuffer getData() {
-		ByteBuffer buffer;
-		if (databuf != null) {
-			buffer = databuf;
-		} else {
-			buffer = allocate(0);
-		}
+		ByteBuffer buffer = nonNull(databuf) ? databuf : allocate(0);
 		return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
 	}
 }

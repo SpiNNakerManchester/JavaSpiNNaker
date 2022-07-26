@@ -29,6 +29,8 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -421,14 +423,14 @@ public class Transceiver extends UDPTransceiver
 		 * machine, then an assumption can be made that the BMP is at -1 on the
 		 * final value of the IP address
 		 */
-		if (version != null && !version.isFourChip && autodetectBMP
-				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
+		if (nonNull(version) && !version.isFourChip && autodetectBMP
+				&& (isNull(bmpConnectionData) || bmpConnectionData.isEmpty())) {
 			bmpConnectionData =
 					singletonList(defaultBMPforMachine(host, numberOfBoards));
 		}
 
 		// handle BMP connections
-		if (bmpConnectionData != null) {
+		if (nonNull(bmpConnectionData)) {
 			List<InetAddress> bmpIPs = new ArrayList<>();
 			for (BMPConnectionData connData : bmpConnectionData) {
 				BMPConnection connection = new BMPConnection(connData);
@@ -439,7 +441,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// handle the SpiNNaker connection
-		if (scampConnections == null) {
+		if (isNull(scampConnections)) {
 			scampConnections = emptyList();
 		}
 		if (scampConnections.isEmpty()) {
@@ -450,13 +452,13 @@ public class Transceiver extends UDPTransceiver
 		connections.add(new BootConnection(host, bootPortNumber));
 
 		this.version = version;
-		if (ignoredChips != null) {
+		if (nonNull(ignoredChips)) {
 			ignoreChips.addAll(ignoredChips);
 		}
-		if (ignoredCores != null) {
+		if (nonNull(ignoredCores)) {
 			ignoreCores.putAll(ignoredCores);
 		}
-		if (ignoredLinks != null) {
+		if (nonNull(ignoredLinks)) {
 			ignoreLinks.putAll(ignoredLinks);
 		}
 		this.maxSDRAMSize = maxSDRAMSize;
@@ -600,24 +602,24 @@ public class Transceiver extends UDPTransceiver
 			Collection<ConnectionDescriptor> scampConnections,
 			Integer maxSDRAMSize) throws IOException, SpinnmanException {
 		this.version = version;
-		if (ignoredChips != null) {
+		if (nonNull(ignoredChips)) {
 			ignoreChips.addAll(ignoredChips);
 		}
-		if (ignoredCores != null) {
+		if (nonNull(ignoredCores)) {
 			ignoreCores.putAll(ignoredCores);
 		}
-		if (ignoredLinks != null) {
+		if (nonNull(ignoredLinks)) {
 			ignoreLinks.putAll(ignoredLinks);
 		}
 		this.maxSDRAMSize = maxSDRAMSize;
 
-		if (connections == null) {
+		if (isNull(connections)) {
 			connections = emptyList();
 		}
 		originalConnections.addAll(connections);
 		allConnections.addAll(connections);
 		// if there has been SCAMP connections given, build them
-		if (scampConnections != null) {
+		if (nonNull(scampConnections)) {
 			for (ConnectionDescriptor desc : scampConnections) {
 				connections.add(new SCPConnection(desc.chip, desc.hostname,
 						desc.portNumber));
@@ -645,7 +647,7 @@ public class Transceiver extends UDPTransceiver
 	private void identifyConnection(Connection conn) {
 		// locate the only boot send conn
 		if (conn instanceof BootSender) {
-			if (bootSendConnection != null) {
+			if (nonNull(bootSendConnection)) {
 				throw new IllegalArgumentException(
 						"Only a single BootSender can be specified");
 			}
@@ -699,11 +701,11 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private Collection<SCPConnection> getConnectionList(
 			InetAddress boardAddress) {
-		if (boardAddress == null) {
+		if (isNull(boardAddress)) {
 			return scpConnections;
 		}
 		SCPConnection connection = locateSpinnakerConnection(boardAddress);
-		if (connection == null) {
+		if (isNull(connection)) {
 			return emptyList();
 		}
 		return singletonList(connection);
@@ -719,7 +721,7 @@ public class Transceiver extends UDPTransceiver
 	 */
 	private Collection<SCPConnection> getConnectionList(
 			SCPConnection connection) {
-		if (connection == null) {
+		if (isNull(connection)) {
 			return scpConnections;
 		}
 		return singletonList(connection);
@@ -870,7 +872,7 @@ public class Transceiver extends UDPTransceiver
 	public void sendSCPMessage(SCPRequest<?> message, SCPConnection connection)
 			throws IOException {
 		SCPSender c = connection;
-		if (c == null) {
+		if (isNull(c)) {
 			c = getRandomConnection(scpSenderConnections);
 		}
 		c.send(message);
@@ -880,7 +882,7 @@ public class Transceiver extends UDPTransceiver
 	public void sendSDPMessage(SDPMessage message, SDPConnection connection)
 			throws IOException {
 		SDPSender c = connection;
-		if (c == null) {
+		if (isNull(c)) {
 			c = getRandomConnection(sdpSenderConnections);
 		}
 		c.send(message);
@@ -977,7 +979,7 @@ public class Transceiver extends UDPTransceiver
 			SCPConnection conn = searchForProxies(chip);
 
 			// if no data, no proxy
-			if (conn == null) {
+			if (isNull(conn)) {
 				conn = new SCPConnection(chip, ipAddress);
 			} else {
 				// proxy, needs an adjustment
@@ -1034,7 +1036,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	public MachineDimensions getMachineDimensions()
 			throws IOException, ProcessException {
-		if (dimensions == null) {
+		if (isNull(dimensions)) {
 			ByteBuffer data =
 					readMemory(BOOT_CHIP, SYS_VARS.add(y_size.offset), 2);
 			int height = toUnsignedInt(data.get());
@@ -1046,7 +1048,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public Machine getMachineDetails() throws IOException, ProcessException {
-		if (machine == null) {
+		if (isNull(machine)) {
 			updateMachine();
 		}
 		return machine;
@@ -1060,7 +1062,7 @@ public class Transceiver extends UDPTransceiver
 	 *             If SpiNNaker rejects a message.
 	 */
 	public AppIdTracker getAppIdTracker() throws IOException, ProcessException {
-		if (appIDTracker == null) {
+		if (isNull(appIDTracker)) {
 			updateMachine();
 		}
 		return appIDTracker;
@@ -1068,7 +1070,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	public boolean isConnected(Connection connection) {
-		if (connection != null) {
+		if (nonNull(connection)) {
 			return connectedTest(connection);
 		}
 		return scpConnections.stream().anyMatch(this::connectedTest);
@@ -1086,7 +1088,7 @@ public class Transceiver extends UDPTransceiver
 	public VersionInfo getScampVersion(HasChipLocation chip,
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
-		if (connectionSelector == null) {
+		if (isNull(connectionSelector)) {
 			connectionSelector = scpSelector;
 		}
 		return simpleProcess(connectionSelector)
@@ -1201,7 +1203,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// If we fail to get a SCAMP version this time, try other things
-		if (versionInfo == null && !bmpConnections.isEmpty()) {
+		if (isNull(versionInfo) && !bmpConnections.isEmpty()) {
 			// start by powering up each BMP connection
 			log.info("Attempting to power on machine");
 			powerOnMachine();
@@ -1215,7 +1217,7 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// verify that the version is the expected one for this transceiver
-		if (versionInfo == null) {
+		if (isNull(versionInfo)) {
 			throw new IOException("Failed to communicate with the machine");
 		}
 		if (!versionInfo.name.equals(SCAMP_NAME)
@@ -1261,7 +1263,7 @@ public class Transceiver extends UDPTransceiver
 			throws InterruptedException, IOException, ProcessException {
 		VersionInfo versionInfo = null;
 		int triesLeft = numAttempts;
-		while (versionInfo == null && triesLeft > 0) {
+		while (isNull(versionInfo) && triesLeft > 0) {
 			try {
 				versionInfo = getScampVersion();
 				if (versionInfo.core.asChipLocation().equals(BOOT_CHIP)) {
@@ -1290,13 +1292,13 @@ public class Transceiver extends UDPTransceiver
 		}
 
 		// The last thing we tried was booting, so try again to get the version
-		if (versionInfo == null) {
+		if (isNull(versionInfo)) {
 			versionInfo = getScampVersion();
 			if (versionInfo.core.asChipLocation().equals(BOOT_CHIP)) {
 				versionInfo = null;
 			}
 		}
-		if (versionInfo != null) {
+		if (nonNull(versionInfo)) {
 			log.info("Found board with hardware {} firmware {} version {}",
 					versionInfo.hardware, versionInfo.name,
 					versionInfo.versionNumber);
@@ -1305,7 +1307,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	private CoreSubsets getAllCores() throws IOException, ProcessException {
-		if (machine == null) {
+		if (isNull(machine)) {
 			updateMachine();
 		}
 		CoreSubsets coreSubsets = new CoreSubsets();
@@ -1327,7 +1329,7 @@ public class Transceiver extends UDPTransceiver
 	public MappableIterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
-		if (coreSubsets == null) {
+		if (isNull(coreSubsets)) {
 			coreSubsets = getAllCores();
 		}
 
@@ -1339,12 +1341,12 @@ public class Transceiver extends UDPTransceiver
 	public MappableIterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
-		if (iobufSize == null) {
+		if (isNull(iobufSize)) {
 			iobufSize = (Integer) getSystemVariable(BOOT_CHIP, iobuf_size);
 		}
 
 		// Get all the cores if the subsets are not given
-		if (coreSubsets == null) {
+		if (isNull(coreSubsets)) {
 			coreSubsets = getAllCores();
 		}
 
@@ -1358,7 +1360,7 @@ public class Transceiver extends UDPTransceiver
 	public void clearIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
-		if (coreSubsets == null) {
+		if (isNull(coreSubsets)) {
 			coreSubsets = getAllCores();
 		}
 
@@ -1371,7 +1373,7 @@ public class Transceiver extends UDPTransceiver
 	public void updateRuntime(Integer runTimesteps, CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
-		if (coreSubsets == null) {
+		if (isNull(coreSubsets)) {
 			coreSubsets = getAllCores();
 		}
 
@@ -1385,7 +1387,7 @@ public class Transceiver extends UDPTransceiver
 	public void updateProvenanceAndExit(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
-		if (coreSubsets == null) {
+		if (isNull(coreSubsets)) {
 			coreSubsets = getAllCores();
 		}
 
@@ -2014,10 +2016,10 @@ public class Transceiver extends UDPTransceiver
 		// check that the right number of processors are in the states
 		int processorsReady = 0;
 		long timeoutTime =
-				currentTimeMillis() + (timeout == null ? 0 : timeout);
+				currentTimeMillis() + (isNull(timeout) ? 0 : timeout);
 		int tries = 0;
 		while (processorsReady < allCoreSubsets.size()
-				&& (timeout == null || currentTimeMillis() < timeoutTime)) {
+				&& (isNull(timeout) || currentTimeMillis() < timeoutTime)) {
 			// Get the number of processors in the ready states
 			processorsReady = 0;
 			for (CPUState state : cpuStates) {
@@ -2095,7 +2097,7 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafeWithCare
 	public void setIPTag(IPTag tag) throws IOException, ProcessException {
 		// Check that the tag has a port assigned
-		if (tag.getPort() == null) {
+		if (isNull(tag.getPort())) {
 			throw new IllegalArgumentException(
 					"The tag port must have been set");
 		}
@@ -2106,7 +2108,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		Collection<SCPConnection> connections =
 				getConnectionList(tag.getBoardAddress());
-		if (connections == null || connections.isEmpty()) {
+		if (isNull(connections) || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
 		}
@@ -2115,7 +2117,7 @@ public class Transceiver extends UDPTransceiver
 		for (SCPConnection connection : connections) {
 			// Convert the host string
 			InetAddress host = tag.getIPAddress();
-			if (host == null || host.isAnyLocalAddress()
+			if (isNull(host) || host.isAnyLocalAddress()
 					|| host.isLoopbackAddress()) {
 				host = connection.getLocalIPAddress();
 			}
@@ -2135,7 +2137,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		Collection<SCPConnection> connections =
 				getConnectionList(connection.getRemoteIPAddress());
-		if (connections == null || connections.isEmpty()) {
+		if (isNull(connections) || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
 		}
@@ -2162,7 +2164,7 @@ public class Transceiver extends UDPTransceiver
 		 */
 		Collection<SCPConnection> connections =
 				getConnectionList(tag.getBoardAddress());
-		if (connections == null || connections.isEmpty()) {
+		if (isNull(connections) || connections.isEmpty()) {
 			throw new IllegalArgumentException(
 					"The given board address is not recognised");
 		}

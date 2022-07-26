@@ -18,16 +18,16 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import static java.util.Objects.isNull;
-
-import java.util.Objects;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
@@ -95,10 +95,10 @@ public final class Connection {
 	@Override
 	public int hashCode() {
 		int hashcode = 0;
-		if (hostname != null) {
+		if (nonNull(hostname)) {
 			hashcode += 5 * hostname.hashCode();
 		}
-		if (chip != null) {
+		if (nonNull(chip)) {
 			hashcode += 7 * chip.hashCode();
 		}
 		return hashcode;

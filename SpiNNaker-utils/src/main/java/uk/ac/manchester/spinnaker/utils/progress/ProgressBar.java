@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.utils.progress;
 
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.out;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.formatDuration;
 
 import java.io.Closeable;
@@ -155,7 +157,7 @@ public class ProgressBar implements Closeable {
 		}
 		long duration = currentTimeMillis() - startTime;
 		String durationSt = formatDuration(duration);
-		if (description == null) {
+		if (isNull(description)) {
 			output.println("This took " + durationSt);
 		} else {
 			output.println(description + " took " + durationSt);
@@ -164,7 +166,7 @@ public class ProgressBar implements Closeable {
 	}
 
 	private void printHeader() {
-		if (description != null) {
+		if (nonNull(description)) {
 			output.println(description);
 		}
 		output.println(START_CHAR + DISTANCE_INDICATOR + END_CHAR);

@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
@@ -79,11 +82,11 @@ class MockServer implements SupportUtils.IServer {
 
 	@Override
 	public void close() throws IOException {
-		if (serverSocket != null && !serverSocket.isClosed()) {
+		if (nonNull(serverSocket) && !serverSocket.isClosed()) {
 			serverSocket.close();
 		}
 		serverSocket = null;
-		if (sock != null) {
+		if (nonNull(sock)) {
 			sock.close();
 		}
 		sock = null;
@@ -99,7 +102,7 @@ class MockServer implements SupportUtils.IServer {
 	@Override
 	public JSONObject recv() throws JSONException, IOException {
 		String line = in.readLine();
-		return line == null ? null : new JSONObject(line);
+		return isNull(line) ? null : new JSONObject(line);
 	}
 
 	/** Message used to stop the server. */
@@ -119,7 +122,7 @@ class MockServer implements SupportUtils.IServer {
 						break;
 					}
 					JSONObject r = recv();
-					if (r == null) {
+					if (isNull(r)) {
 						break;
 					}
 					received.offer(r);
@@ -140,7 +143,7 @@ class MockServer implements SupportUtils.IServer {
 				s.connect();
 				while (true) {
 					JSONObject o = s.recv();
-					if (o == null) {
+					if (isNull(o)) {
 						break;
 					}
 					keepaliveQueue.offer(o);

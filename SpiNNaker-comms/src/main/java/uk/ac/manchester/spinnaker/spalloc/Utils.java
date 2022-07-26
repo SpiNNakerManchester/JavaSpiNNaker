@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 /**
  * Utility operations for working with timestamps.
@@ -38,7 +40,7 @@ abstract class Utils {
 	 *         expire, or {@code null} for "wait indefinitely".
 	 */
 	static Integer timeLeft(Long timestamp) {
-		if (timestamp == null) {
+		if (isNull(timestamp)) {
 			return null;
 		}
 		return max(0, (int) (timestamp - currentTimeMillis()));
@@ -53,7 +55,7 @@ abstract class Utils {
 	 * @return true if the timestamp has been passed.
 	 */
 	static boolean timedOut(Long timestamp) {
-		return timestamp != null && timestamp < currentTimeMillis();
+		return nonNull(timestamp) && timestamp < currentTimeMillis();
 	}
 
 	/**
@@ -65,7 +67,7 @@ abstract class Utils {
 	 * @return when the timeout expires, or {@code null} for "never".
 	 */
 	static Long makeTimeout(Integer delay) {
-		if (delay == null) {
+		if (isNull(delay)) {
 			return null;
 		}
 		return currentTimeMillis() + delay;

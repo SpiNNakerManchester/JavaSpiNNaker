@@ -21,6 +21,8 @@ import static java.lang.Math.floorDiv;
 import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOPrefix.LOWER_HALF_WORD;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
@@ -90,11 +92,11 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			Short keyPrefix, Integer payloadPrefix, Integer timestamp,
 			EIEIOPrefix prefixType) {
 		Integer payloadBase = payloadPrefix;
-		if (timestamp != null) {
+		if (nonNull(timestamp)) {
 			payloadBase = timestamp;
 		}
 		header = new Header(eieioType, (byte) 0, keyPrefix, prefixType,
-				payloadBase, timestamp != null, count);
+				payloadBase, nonNull(timestamp), count);
 		elements = newMessageBuffer();
 		this.data = data;
 	}
@@ -182,7 +184,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	 *             If the message was created to read data
 	 */
 	public void addElement(AbstractDataElement element) {
-		if (data != null) {
+		if (nonNull(data)) {
 			throw new IllegalStateException("This packet is read-only");
 		}
 		element.addToBuffer(elements, header.eieioType);
@@ -200,18 +202,18 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	@Override
 	public Iterator<AbstractDataElement> iterator() {
 		final ByteBuffer d =
-				data == null ? null : data.duplicate().order(LITTLE_ENDIAN);
+				isNull(data) ? null : data.duplicate().order(LITTLE_ENDIAN);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;
 
 			@Override
 			public boolean hasNext() {
-				return d != null && elementsRead < header.getCount();
+				return nonNull(d) && elementsRead < header.getCount();
 			}
 
 			@Override
 			public AbstractDataElement next() {
-				if (d == null || !hasNext()) {
+				if (isNull(d) || !hasNext()) {
 					throw new NoSuchElementException("read all elements");
 				}
 				elementsRead++;
@@ -237,17 +239,17 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 				default:
 					throw new IllegalStateException();
 				}
-				if (header.prefix != null) {
+				if (nonNull(header.prefix)) {
 					key |= header.prefix << header.prefixType.shift;
 				}
-				if (header.payloadBase != null) {
-					if (payload != null) {
+				if (nonNull(header.payloadBase)) {
+					if (nonNull(payload)) {
 						payload |= header.payloadBase;
 					} else {
 						payload = header.payloadBase;
 					}
 				}
-				if (payload == null) {
+				if (isNull(payload)) {
 					return new KeyDataElement(key);
 				}
 				return new KeyPayloadDataElement(key, payload, header.isTime);
@@ -391,10 +393,10 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		/** @return The unit size per data component. */
 		public int getSize() {
 			int size = SHORT_WIDTH;
-			if (prefix != null) {
+			if (nonNull(prefix)) {
 				size += SHORT_WIDTH;
 			}
-			if (payloadBase != null) {
+			if (nonNull(payloadBase)) {
 				size += eieioType.keyBytes;
 			}
 			return size;
@@ -417,11 +419,11 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 		@Override
 		public void addToBuffer(ByteBuffer buffer) {
 			byte data = 0;
-			if (prefix != null) {
+			if (nonNull(prefix)) {
 				data |= 1 << PREFIX_BIT;
 				data |= prefixType.getValue() << PREFIX_TYPE_BIT;
 			}
-			if (payloadBase != null) {
+			if (nonNull(payloadBase)) {
 				data |= 1 << PAYLOAD_BIT;
 			}
 			if (isTime) {
@@ -432,10 +434,10 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 			buffer.put(count);
 			buffer.put(data);
-			if (prefix != null) {
+			if (nonNull(prefix)) {
 				buffer.putShort(prefix);
 			}
-			if (payloadBase == null) {
+			if (isNull(payloadBase)) {
 				return;
 			}
 			switch (eieioType) {

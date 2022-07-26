@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static picocli.CommandLine.populateCommand;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.JSON_MAPPER;
@@ -59,7 +60,7 @@ public final class CommandLineCheck {
 				.map(m -> m.getName()).collect(toList()));
 		for (Machine m : client.listMachines()) {
 			WhereIs where = m.getBoardByTriad(0, 0, 1);
-			if (where == null) {
+			if (isNull(where)) {
 				System.out.println(
 						"board (0,0,1) not in machine " + m.getName());
 				continue;

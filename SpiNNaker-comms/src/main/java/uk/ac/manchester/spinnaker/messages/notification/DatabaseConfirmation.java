@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.notification;
 
 import static java.nio.charset.Charset.defaultCharset;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.notification.NotificationMessageCode.DATABASE_CONFIRMATION;
 
@@ -85,7 +86,7 @@ public class DatabaseConfirmation extends AbstractNotificationMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		super.addToBuffer(buffer);
-		if (databasePath != null) {
+		if (nonNull(databasePath)) {
 			buffer.put(databasePath.getBytes(CHARSET));
 		}
 	}

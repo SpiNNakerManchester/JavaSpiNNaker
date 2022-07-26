@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 
 import java.net.InetAddress;
@@ -52,10 +53,10 @@ public class AbstractDataLink implements HasChipLocation {
 	 */
 	AbstractDataLink(HasChipLocation location, Direction linkId,
 			InetAddress boardAddress) {
-		if (location == null) {
+		if (isNull(location)) {
 			throw new IllegalArgumentException("location was null");
 		}
-		if (linkId == null) {
+		if (isNull(linkId)) {
 			throw new IllegalArgumentException("linkId was null");
 		}
 		this.location = location.asChipLocation();
@@ -91,7 +92,7 @@ public class AbstractDataLink implements HasChipLocation {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (isNull(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {

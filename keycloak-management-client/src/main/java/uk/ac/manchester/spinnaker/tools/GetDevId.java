@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.tools;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static java.lang.System.getProperty;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.tools.SpiNNakerAllocatorApp.SPALLOC_ID;
@@ -68,7 +70,7 @@ public class GetDevId extends CredentialDB {
 
 		@Override
 		public String getUser() {
-			if (user == null) {
+			if (isNull(user)) {
 				user = console.readLine("Enter your username: ");
 			}
 			return user;
@@ -76,7 +78,7 @@ public class GetDevId extends CredentialDB {
 
 		@Override
 		public String getPass() {
-			if (pass == null) {
+			if (isNull(pass)) {
 				pass = new String(
 						console.readPassword("Enter your password: "));
 			}
@@ -93,11 +95,11 @@ public class GetDevId extends CredentialDB {
 	private ClientRegistration getRegistrationClient(String clientId) {
 		var cr = ClientRegistration.create().url(HBP_OPENID_BASE, "hbp")
 				.build();
-		if (nextAuth != null) {
+		if (nonNull(nextAuth)) {
 			cr.auth(nextAuth);
-		} else if (clientId != null) {
+		} else if (nonNull(clientId)) {
 			var token = getToken(clientId);
-			if (token != null) {
+			if (nonNull(token)) {
 				cr.auth(Auth.token(token));
 			}
 		}
@@ -106,7 +108,7 @@ public class GetDevId extends CredentialDB {
 
 	private ClientRepresentation saveAuth(ClientRepresentation client) {
 		var clientId = requireNonNull(client.getClientId());
-		if (client.getRegistrationAccessToken() != null) {
+		if (nonNull(client.getRegistrationAccessToken())) {
 			var registrationAccessToken = client.getRegistrationAccessToken();
 			log.debug("RAT: {}", registrationAccessToken);
 			nextAuth = Auth.token(client);
@@ -230,7 +232,7 @@ public class GetDevId extends CredentialDB {
 		var db = getDBFilename(arguments);
 		try (var gdi = new GetDevId(db)) {
 			ClientRepresentation cr;
-			if (gdi.getToken(id) != null) {
+			if (nonNull(gdi.getToken(id))) {
 				cr = gdi.getClient(id);
 				// cr = gdi.updateClient(makeSpallocDescriptor(id));
 			} else {

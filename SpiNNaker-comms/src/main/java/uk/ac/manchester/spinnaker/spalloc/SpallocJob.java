@@ -22,6 +22,8 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.RECONNECT_DELAY_DEFAULT;
@@ -268,7 +270,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 */
 	public SpallocJob(SpallocClient client, Integer timeout, CreateJob builder)
 			throws IOException, SpallocServerException {
-		if (builder == null) {
+		if (isNull(builder)) {
 			throw new IllegalArgumentException("a builder must be specified");
 		}
 		this.client = client;
@@ -306,7 +308,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public SpallocJob(String hostname, Integer port, Integer timeout,
 			CreateJob builder)
 			throws IOException, SpallocServerException {
-		if (builder == null) {
+		if (isNull(builder)) {
 			throw new IllegalArgumentException("a builder must be specified");
 		}
 		this.client = new SpallocClient(hostname, port, timeout);
@@ -390,7 +392,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 *         operations.
 	 */
 	private static Integer f2ms(Object obj) {
-		if (obj == null) {
+		if (isNull(obj)) {
 			return null;
 		}
 		return (int) (((Number) obj).doubleValue() * MSEC_PER_SEC);
@@ -428,7 +430,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		JobState jobState = getStatus();
 		if (jobState.getState() == UNKNOWN
 				|| jobState.getState() == DESTROYED) {
-			if (jobState.getReason() != null) {
+			if (nonNull(jobState.getReason())) {
 				throw new JobDestroyedException(format(
 						"SpallocJob %d does not exist: %s: %s", id,
 						jobState.getState().name(), jobState.getReason()));
@@ -447,7 +449,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	private void launchKeepaliveDaemon() {
 		log.info("launching keepalive thread for " + id + " with interval "
 				+ (keepaliveTime / 2) + "ms");
-		if (keepalive != null) {
+		if (nonNull(keepalive)) {
 			log.warn("launching second keepalive thread for " + id);
 		}
 		keepalive = new Thread(SPALLOC_WORKERS, this::keepalive,
@@ -541,7 +543,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public void setPower(Boolean powerOn)
 			throws IOException, SpallocServerException {
-		if (powerOn == null) {
+		if (isNull(powerOn)) {
 			return;
 		}
 		if (powerOn) {
@@ -558,7 +560,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	}
 
 	private JobState getStatus() throws IOException, SpallocServerException {
-		if (statusCache == null || statusTimestamp < currentTimeMillis()
+		if (isNull(statusCache) || statusTimestamp < currentTimeMillis()
 				- STATUS_CACHE_PERIOD) {
 			statusCache = client.getJobState(id, timeout);
 			statusTimestamp = currentTimeMillis();
@@ -608,8 +610,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public List<Connection> getConnections()
 			throws IOException, SpallocServerException, IllegalStateException {
-		if (machineInfoCache == null
-				|| machineInfoCache.getConnections() == null) {
+		if (isNull(machineInfoCache)
+				|| isNull(machineInfoCache.getConnections())) {
 			retrieveMachineInfo();
 		}
 		return machineInfoCache.getConnections();
@@ -628,10 +630,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public MachineDimensions getDimensions()
 			throws IOException, SpallocServerException, IllegalStateException {
-		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
+		if (isNull(machineInfoCache) || machineInfoCache.getWidth() == 0) {
 			retrieveMachineInfo();
 		}
-		if (machineInfoCache == null || machineInfoCache.getWidth() == 0) {
+		if (isNull(machineInfoCache) || machineInfoCache.getWidth() == 0) {
 			return null;
 		}
 		return new MachineDimensions(machineInfoCache.getWidth(),
@@ -641,11 +643,11 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public String getMachineName()
 			throws IOException, SpallocServerException, IllegalStateException {
-		if (machineInfoCache == null
-				|| machineInfoCache.getMachineName() == null) {
+		if (isNull(machineInfoCache)
+				|| isNull(machineInfoCache.getMachineName())) {
 			retrieveMachineInfo();
 		}
-		if (machineInfoCache == null) {
+		if (isNull(machineInfoCache)) {
 			return null;
 		}
 		return machineInfoCache.getMachineName();
@@ -654,10 +656,10 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	@Override
 	public List<BoardCoordinates> getBoards()
 			throws IOException, SpallocServerException, IllegalStateException {
-		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
+		if (isNull(machineInfoCache) || isNull(machineInfoCache.getBoards())) {
 			retrieveMachineInfo();
 		}
-		if (machineInfoCache == null || machineInfoCache.getBoards() == null) {
+		if (isNull(machineInfoCache) || isNull(machineInfoCache.getBoards())) {
 			return null;
 		}
 		return machineInfoCache.getBoards();
@@ -740,15 +742,14 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 				 * user-specified timeout or half the keepalive interval.
 				 */
 				Integer waitTimeout;
-				if (finishTime != null && keepaliveTime != null) {
+				if (nonNull(finishTime) && nonNull(keepaliveTime)) {
 					waitTimeout = min(keepaliveTime / 2, timeLeft(finishTime));
-				} else if (finishTime == null) {
-					waitTimeout =
-							(keepalive == null) ? null : keepaliveTime / 2;
+				} else if (isNull(finishTime)) {
+					waitTimeout = isNull(keepalive) ? null : keepaliveTime / 2;
 				} else {
 					waitTimeout = timeLeft(finishTime);
 				}
-				if (waitTimeout == null || waitTimeout >= 0) {
+				if (isNull(waitTimeout) || waitTimeout >= 0) {
 					client.waitForNotification(waitTimeout);
 					return true;
 				}
@@ -776,7 +777,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 			throws IOException, InterruptedException {
 		client.close();
 		int delay;
-		if (finishTime != null) {
+		if (nonNull(finishTime)) {
 			delay = min(timeLeft(finishTime), reconnectDelay);
 		} else {
 			delay = reconnectDelay;
@@ -792,7 +793,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 		State curState = null;
 		Long finishTime = makeTimeout(timeout);
 		while (!timedOut(finishTime)) {
-			if (curState == null) {
+			if (isNull(curState)) {
 				/*
 				 * Get initial state (NB: done here such that the command is
 				 * never sent if the timeout has already occurred)
@@ -832,7 +833,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	public BoardPhysicalCoordinates whereIs(HasChipLocation chip)
 			throws IOException, SpallocServerException {
 		WhereIs result = client.whereIs(id, chip, timeout);
-		if (result == null) {
+		if (isNull(result)) {
 			throw new IllegalStateException(
 					"received null instead of machine location");
 		}

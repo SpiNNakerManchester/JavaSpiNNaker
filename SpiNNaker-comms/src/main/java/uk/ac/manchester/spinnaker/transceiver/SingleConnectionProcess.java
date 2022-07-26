@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 
 import java.io.IOException;
@@ -80,7 +81,7 @@ abstract class SingleConnectionProcess<T extends SCPConnection>
 		 * If no pipe line built yet, build one on the connection selected for
 		 * it
 		 */
-		if (requestPipeline == null) {
+		if (isNull(requestPipeline)) {
 			requestPipeline = new SCPRequestPipeline(
 					connectionSelector.getNextConnection(request), timeout,
 					retryTracker);

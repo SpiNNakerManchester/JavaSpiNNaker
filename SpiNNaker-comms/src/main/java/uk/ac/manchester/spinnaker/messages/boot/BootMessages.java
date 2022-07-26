@@ -24,6 +24,8 @@ import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.BIG_ENDIAN;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.IntStream.range;
 import static java.util.stream.Stream.concat;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
@@ -69,7 +71,7 @@ public class BootMessages {
 	private static SystemVariableBootValues initFlags(
 			SystemVariableBootValues bootVars) {
 		SystemVariableBootValues specific =
-				bootVars == null ? new SystemVariableBootValues()
+				isNull(bootVars) ? new SystemVariableBootValues()
 						: new SystemVariableBootValues(bootVars);
 		int currentTime = (int) (currentTimeMillis() / MSEC_PER_SEC);
 		specific.setValue(unix_timestamp, currentTime);
@@ -81,7 +83,7 @@ public class BootMessages {
 	private BootMessages(SystemVariableBootValues bootVariables,
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		bootVariables = initFlags(bootVariables);
-		if (extraBootValues != null) {
+		if (nonNull(extraBootValues)) {
 			extraBootValues.forEach(bootVariables::setValue);
 		}
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));

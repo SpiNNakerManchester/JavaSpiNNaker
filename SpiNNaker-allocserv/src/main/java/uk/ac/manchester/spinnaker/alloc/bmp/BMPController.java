@@ -443,7 +443,7 @@ public class BMPController extends DatabaseAwareBean {
 			if (result) {
 				sql.findBoardById.call1(boardId).ifPresent(row -> {
 					String ser = row.getString("physical_serial_id");
-					if (ser == null) {
+					if (isNull(ser)) {
 						ser = "<UNKNOWN>";
 					}
 					String fullMessage = format(BOARD_MARKED_DEAD_TEMPLATE,
@@ -1001,7 +1001,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void readBlacklist(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
 			readSerial = controller.readSerial(board);
-			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+			if (nonNull(bmpSerialId) && !bmpSerialId.equals(readSerial)) {
 				/*
 				 * Doesn't match; WARN but keep going; hardware may just be
 				 * remapped behind our back.
@@ -1034,7 +1034,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void writeBlacklist(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
 			readSerial = controller.readSerial(board);
-			if (bmpSerialId != null && !bmpSerialId.equals(readSerial)) {
+			if (nonNull(bmpSerialId) && !bmpSerialId.equals(readSerial)) {
 				// Doesn't match, so REALLY unsafe to keep going!
 				throw new IllegalStateException(format(
 						"aborting blacklist write: expected serial ID '%s' "
@@ -1411,7 +1411,7 @@ public class BMPController extends DatabaseAwareBean {
 					 * this queue.
 					 */
 					Request r = requests.poll();
-					if (r != null) {
+					if (nonNull(r)) {
 						if (r instanceof PowerRequest) {
 							processRequest((PowerRequest) r);
 						} else {

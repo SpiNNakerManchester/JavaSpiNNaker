@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -245,7 +246,7 @@ class TestTransceiver {
 				txrx.ensureBoardIsReady();
 				txrx.getMachineDimensions();
 				txrx.getScampVersion();
-				if (first == null) {
+				if (isNull(first)) {
 					first = txrx.getMachineDetails();
 				} else {
 					assertNull(first.difference(txrx.getMachineDetails()));

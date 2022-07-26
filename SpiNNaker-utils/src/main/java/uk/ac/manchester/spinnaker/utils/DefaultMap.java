@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
@@ -148,7 +150,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 		if (direct) {
 			return defValue;
 		}
-		if (defFactory != null) {
+		if (nonNull(defFactory)) {
 			return defFactory.get();
 		}
 		return advFactory.createValue(key);
@@ -163,7 +165,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 		@SuppressWarnings("unchecked")
 		K k = (K) key;
 		V value = super.get(k);
-		if (value == null) {
+		if (isNull(value)) {
 			value = makeDefault(k);
 			put(k, value);
 		}
@@ -183,11 +185,11 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 			BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		return super.compute(key, (k, v) -> {
 			// Not very efficient, but can't see internals needed to do better
-			if (v == null) {
+			if (isNull(v)) {
 				v = makeDefault(k);
 			}
 			V result = remappingFunction.apply(k, v);
-			if (result == null) {
+			if (isNull(result)) {
 				result = makeDefault(k);
 			}
 			return result;
@@ -205,7 +207,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 			Function<? super K, ? extends V> mappingFunction) {
 		return super.computeIfAbsent(key, k -> {
 			V result = mappingFunction.apply(k);
-			if (result == null) {
+			if (isNull(result)) {
 				result = makeDefault(k);
 			}
 			return result;
@@ -223,7 +225,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 			BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		return super.computeIfPresent(key, (k, v) -> {
 			V result = remappingFunction.apply(k, v);
-			if (result == null) {
+			if (isNull(result)) {
 				result = makeDefault(k);
 			}
 			return result;
@@ -239,12 +241,12 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	@Override
 	public V merge(K key, V value,
 			BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
-		if (value == null) {
+		if (isNull(value)) {
 			value = makeDefault(key);
 		}
 		return super.merge(key, value, (v1, v2) -> {
 			V result = remappingFunction.apply(v1, v2);
-			if (result == null) {
+			if (isNull(result)) {
 				result = makeDefault(key);
 			}
 			return result;

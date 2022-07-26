@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
+import static java.util.Objects.isNull;
+
 import java.net.InetAddress;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -66,7 +68,7 @@ public final class FPGALinkData extends AbstractDataLink {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (isNull(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {

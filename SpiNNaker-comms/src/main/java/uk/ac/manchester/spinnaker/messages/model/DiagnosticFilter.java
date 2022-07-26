@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
@@ -115,7 +116,7 @@ public class DiagnosticFilter {
 
 	private static <T> Collection<T> convert(Collection<T> collection,
 			T[] defaults) {
-		if (collection == null || collection.isEmpty()) {
+		if (isNull(collection) || collection.isEmpty()) {
 			return unmodifiableList(asList(defaults));
 		}
 		return unmodifiableCollection(collection);

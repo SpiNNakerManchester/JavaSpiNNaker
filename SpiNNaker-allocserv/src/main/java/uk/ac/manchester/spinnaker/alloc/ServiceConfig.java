@@ -22,6 +22,7 @@ import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
@@ -245,7 +246,7 @@ public class ServiceConfig extends Application {
 		 */
 		private void upgradeEndpointProtocol(ServletRequest request) {
 			String addr = (String) request.getAttribute(ENDPOINT_ADDRESS);
-			if (addr != null && addr.startsWith("http:")) {
+			if (nonNull(addr) && addr.startsWith("http:")) {
 				request.setAttribute(ENDPOINT_ADDRESS,
 						addr.replace("http:", "https:"));
 			}

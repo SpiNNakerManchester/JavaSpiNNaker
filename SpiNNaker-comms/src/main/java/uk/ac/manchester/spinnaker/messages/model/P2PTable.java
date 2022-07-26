@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Math.min;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
@@ -85,7 +87,7 @@ public class P2PTable {
 		range(0, min(ROUTE_CHUNK, height - chipYBase)).forEach(y -> {
 			P2PTableRoute route =
 					P2PTableRoute.get((word >> (ROUTE_BITS * y)) & ROUTE_MASK);
-			if (route != null && route != NONE) {
+			if (nonNull(route) && route != NONE) {
 				routes.put(new ChipLocation(chipX, chipYBase + y), route);
 			}
 		});
@@ -127,7 +129,7 @@ public class P2PTable {
 	 */
 	public boolean isRoute(HasChipLocation chip) {
 		P2PTableRoute r = routes.get(chip.asChipLocation());
-		return r != null && r != NONE;
+		return nonNull(r) && r != NONE;
 	}
 
 	/**
@@ -139,6 +141,6 @@ public class P2PTable {
 	 */
 	public P2PTableRoute getRoute(HasChipLocation chip) {
 		P2PTableRoute r = routes.get(chip.asChipLocation());
-		return r == null ? NONE : r;
+		return isNull(r) ? NONE : r;
 	}
 }

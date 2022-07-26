@@ -18,6 +18,7 @@ package testconfig;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
@@ -122,7 +123,7 @@ public class BoardTestConfiguration {
 		initRemoteHost(config.get(MCSEC, "machineName"), true);
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 		String names = config.get(MCSEC, "bmp_names");
-		if (names == null || "None".equals(names)) {
+		if (isNull(names) || "None".equals(names)) {
 			bmpNames = null;
 		} else {
 			Inet4Address bmpHost = getByName(names);
@@ -138,7 +139,7 @@ public class BoardTestConfiguration {
 	}
 
 	private CreateJob jobDesc(int size, double keepAlive, String tag) {
-		if (tag == null) {
+		if (isNull(tag)) {
 			tag = "default";
 		}
 		return new CreateJob(size).owner(OWNER).keepAlive(keepAlive).tags(tag);

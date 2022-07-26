@@ -20,6 +20,7 @@ import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.io.IOUtils.readFully;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -153,7 +154,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			BMPCoords bmp, BMPBoard board) {
 		log.info("readFPGARegister({},{},{},{})", fpga, register, bmp, board);
 		Integer r = fpgaResults.pollFirst();
-		if (r != null) {
+		if (nonNull(r)) {
 			return r;
 		}
 		return fpga.value;

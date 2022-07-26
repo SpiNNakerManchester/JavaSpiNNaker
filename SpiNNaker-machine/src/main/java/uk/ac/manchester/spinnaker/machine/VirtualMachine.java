@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.machine;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.FOUR_CHIP_DOWN_LINKS;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
@@ -75,13 +76,13 @@ public class VirtualMachine extends Machine {
 			Map<ChipLocation, Set<Direction>> ignoreLinks) {
 		super(machineDimensions, ZERO_ZERO);
 
-		if (ignoreChips == null) {
+		if (isNull(ignoreChips)) {
 			ignoreChips = emptySet();
 		}
-		if (ignoreCores == null) {
+		if (isNull(ignoreCores)) {
 			ignoreCores = emptyMap();
 		}
-		if (ignoreLinks == null) {
+		if (isNull(ignoreLinks)) {
 			ignoreLinks = new HashMap<>();
 		}
 

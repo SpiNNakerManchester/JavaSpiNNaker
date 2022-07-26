@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.py2json;
 
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
+import static java.util.Objects.isNull;
 
 import org.python.util.PythonInterpreter;
 
@@ -40,7 +41,7 @@ final class WithCurrentDirectory implements AutoCloseable {
 	}
 
 	private void run(String script) {
-		if (python == null) {
+		if (isNull(python)) {
 			return;
 		}
 		python.exec(script);

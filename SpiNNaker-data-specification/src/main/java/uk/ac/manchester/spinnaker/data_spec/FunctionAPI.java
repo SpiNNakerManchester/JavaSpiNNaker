@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
 import static uk.ac.manchester.spinnaker.data_spec.Functions.OPCODE;
@@ -52,11 +53,11 @@ public interface FunctionAPI {
 			throws UnimplementedDSECommandException {
 		int opcode = OPCODE.getValue(cmdOpcode);
 		Commands c = Commands.get(opcode);
-		if (c == null) {
+		if (isNull(c)) {
 			throw new UnimplementedDSECommandException(index, opcode);
 		}
 		Callable opImpl = getOperationImpl(this, c);
-		if (opImpl == null) {
+		if (isNull(opImpl)) {
 			throw new UnimplementedDSECommandException(index, c);
 		}
 		return opImpl;

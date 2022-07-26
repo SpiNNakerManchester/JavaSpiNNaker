@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstance;
 
 import java.io.IOException;
@@ -60,7 +61,7 @@ abstract class Process {
 	 * @return Whether an exception is waiting to be thrown.
 	 */
 	private boolean isError() {
-		return exception != null;
+		return nonNull(exception);
 	}
 
 	/**

@@ -20,6 +20,8 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.asDir;
@@ -260,12 +262,12 @@ final class ClientSession {
 		 * manager on a per-connection basis, so we need to manage the session
 		 * cookie ourselves.
 		 */
-		if (session != null) {
+		if (nonNull(session)) {
 			log.debug("Attaching to session {}", session);
 			c.setRequestProperty(COOKIE, SESSION_NAME + "=" + session);
 		}
 
-		if (csrfHeader != null && csrf != null && forStateChange) {
+		if (nonNull(csrfHeader) && nonNull(csrf) && forStateChange) {
 			log.debug("Marking session with token {}={}", csrfHeader, csrf);
 			c.setRequestProperty(csrfHeader, csrf);
 		}
@@ -288,14 +290,14 @@ final class ClientSession {
 		boolean found = false;
 		for (int i = 0; true; i++) {
 			String key = conn.getHeaderFieldKey(i);
-			if (key == null) {
+			if (isNull(key)) {
 				break;
 			}
 			if (!key.equalsIgnoreCase(SET_COOKIE)) {
 				continue;
 			}
 			String setCookie = conn.getHeaderField(i);
-			if (setCookie != null) {
+			if (nonNull(setCookie)) {
 				Matcher m = SESSION_ID_RE.matcher(setCookie);
 				if (m.find()) {
 					session = m.group(1);

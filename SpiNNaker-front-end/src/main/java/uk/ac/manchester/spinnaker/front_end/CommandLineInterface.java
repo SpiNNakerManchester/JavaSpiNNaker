@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end;
 import static java.lang.System.err;
 import static java.lang.System.exit;
 import static java.lang.System.out;
+import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
@@ -244,7 +245,7 @@ public final class CommandLineInterface {
 
 		try (HostExecuteDataSpecification dseExec =
 				new HostExecuteDataSpecification(machine)) {
-			if (filterSystemCores == null) {
+			if (isNull(filterSystemCores)) {
 				dseExec.loadAllCores(database);
 			} else if (filterSystemCores) {
 				dseExec.loadApplicationCores(database);
@@ -289,7 +290,7 @@ public final class CommandLineInterface {
 		Machine machine = getMachine(machineJsonFile);
 		DSEDatabaseEngine database =
 				new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
-		File reportDir = reportFolder == null ? null : new File(reportFolder);
+		File reportDir = isNull(reportFolder) ? null : new File(reportFolder);
 
 		try (FastExecuteDataSpecification dseExec =
 				new FastExecuteDataSpecification(machine, gathers, reportDir)) {

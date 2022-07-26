@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -100,7 +102,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 		// Cheap check first
 		synchronized (recordingRegions) {
 			List<RecordingRegion> regions = recordingRegions.get(placement);
-			if (regions != null) {
+			if (nonNull(regions)) {
 				return regions;
 			}
 		}
@@ -130,7 +132,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data) {
-		if (data == null) {
+		if (isNull(data)) {
 			log.warn("failed to download data for {} R:{} from {}:{}", r.core,
 					r.regionIndex, r.startAddress, r.size);
 			return;

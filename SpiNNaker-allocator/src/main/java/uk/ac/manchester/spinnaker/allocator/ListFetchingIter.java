@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static java.util.Objects.isNull;
 import static java.util.Spliterator.IMMUTABLE;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
@@ -48,7 +49,7 @@ abstract class ListFetchingIter<T> implements Iterator<List<T>> {
 	@Override
 	public final boolean hasNext() {
 		if (!done) {
-			if (handles == null && canFetchMore()) {
+			if (isNull(handles) && canFetchMore()) {
 				try {
 					handles = fetchNext();
 				} catch (IOException e) {
@@ -56,7 +57,7 @@ abstract class ListFetchingIter<T> implements Iterator<List<T>> {
 					handles = null;
 				}
 			}
-			if (handles == null || handles.isEmpty()) {
+			if (isNull(handles) || handles.isEmpty()) {
 				done = true;
 			}
 		}
@@ -65,7 +66,7 @@ abstract class ListFetchingIter<T> implements Iterator<List<T>> {
 
 	@Override
 	public final List<T> next() {
-		if (handles == null) {
+		if (isNull(handles)) {
 			throw new NoSuchElementException("no more");
 		}
 		try {

@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static uk.ac.manchester.spinnaker.connections.UDPConnection.TrafficClass.IPTOS_RELIABILITY;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
@@ -59,8 +60,9 @@ public class BMPConnection extends UDPConnection<SDPMessage>
 	 */
 	public BMPConnection(BMPConnectionData connectionData) throws IOException {
 		super(null, null, connectionData.ipAddress,
-				(connectionData.portNumber == null ? SCP_SCAMP_PORT
-						: connectionData.portNumber), IPTOS_RELIABILITY);
+				isNull(connectionData.portNumber) ? SCP_SCAMP_PORT
+						: connectionData.portNumber,
+				IPTOS_RELIABILITY);
 		coords = new BMPCoords(connectionData.cabinet, connectionData.frame);
 		boards = connectionData.boards.stream().map(BMPBoard::new)
 				.collect(toList());

@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -76,12 +79,12 @@ public class TripleMapIterator<V> implements Iterator<V> {
 
 	@Override
 	public boolean hasNext() {
-		return inner != null;
+		return nonNull(inner);
 	}
 
 	@Override
 	public V next() {
-		if (inner == null) {
+		if (isNull(inner)) {
 			throw new NoSuchElementException("no more elements available");
 		}
 		V result = inner.next();
@@ -90,7 +93,7 @@ public class TripleMapIterator<V> implements Iterator<V> {
 	}
 
 	private void checkInner() {
-		while (inner != null) {
+		while (nonNull(inner)) {
 			if (inner.hasNext()) {
 				return;
 			}

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.util.Objects.nonNull;
+
 /**
  * A description of a slice (range) of an object. Modelled after the concept
  * with the same name in Python. Note that this does not create the actual
@@ -77,11 +79,11 @@ public final class Slice {
 	@Override
 	public String toString() {
 		StringBuilder str = new StringBuilder("Slice(");
-		if (start != null) {
+		if (nonNull(start)) {
 			str.append(start);
 		}
 		str.append(";");
-		if (stop != null) {
+		if (nonNull(stop)) {
 			str.append(stop);
 		}
 		return str.append(")").toString();

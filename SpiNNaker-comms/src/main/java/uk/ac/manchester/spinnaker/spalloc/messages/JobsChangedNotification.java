@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.isNull;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class JobsChangedNotification implements Notification {
 
 	/** @param jobsChanged What jobs have changed. */
 	public void setJobsChanged(List<Integer> jobsChanged) {
-		this.jobsChanged = jobsChanged == null ? emptyList()
+		this.jobsChanged = isNull(jobsChanged) ? emptyList()
 				: unmodifiableList(jobsChanged);
 	}
 

@@ -19,6 +19,9 @@ package uk.ac.manchester.spinnaker.machine.bean;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.Chip;
@@ -91,7 +94,7 @@ public class ChipBean {
 
 	@Override
 	public String toString() {
-		if (resources != null) {
+		if (nonNull(resources)) {
 			return location + ", " + details + " " + resources;
 		} else {
 			return location + ", " + details + " DEFAULTS";
@@ -110,12 +113,12 @@ public class ChipBean {
 	 */
 	public void addDefaults(MachineBean bean) {
 		ChipResources defaults;
-		if (details.getIpAddress() == null) {
+		if (isNull(details.getIpAddress())) {
 			defaults = bean.getStandardResources();
 		} else {
 			defaults = bean.getEthernetResources();
 		}
-		if (resources == null) {
+		if (isNull(resources)) {
 			resources = defaults;
 		}
 		resources.addDefaults(defaults);

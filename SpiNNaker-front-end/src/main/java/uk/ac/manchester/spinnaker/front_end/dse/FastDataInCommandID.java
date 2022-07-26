@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end.dse;
 
+import static java.util.Objects.isNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,7 +65,7 @@ public enum FastDataInCommandID {
 	 */
 	public static FastDataInCommandID forValue(int value) {
 		FastDataInCommandID id = MAP.get(value);
-		if (id == null) {
+		if (isNull(id)) {
 			throw new IllegalArgumentException(
 					"unexpected command code: " + value);
 		}

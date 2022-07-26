@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static java.util.Objects.nonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +72,7 @@ public enum EIEIOCommandID implements EIEIOCommand {
 	 */
 	public static EIEIOCommand get(int command) {
 		EIEIOCommandID id = MAP.get(command);
-		if (id != null) {
+		if (nonNull(id)) {
 			return id;
 		}
 		return new CustomEIEIOCommand(command);

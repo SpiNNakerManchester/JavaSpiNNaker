@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE0;
@@ -89,7 +90,7 @@ public final class FloodFillEnd extends SCPRequest<CheckOKResponse> {
 	private static int argument2(AppID appID, Iterable<Integer> processors,
 			boolean wait) {
 		int processorMask = 0;
-		if (processors != null) {
+		if (nonNull(processors)) {
 			for (int p : processors) {
 				if (p >= 1 && p < MAX_NUM_CORES) {
 					processorMask |= 1 << p;
