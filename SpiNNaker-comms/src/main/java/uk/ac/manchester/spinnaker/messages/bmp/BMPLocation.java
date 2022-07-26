@@ -38,10 +38,36 @@ public final class BMPLocation implements HasCoreLocation {
 	 * Create an instance with cabinet and frame both zero.
 	 *
 	 * @param board
+	 *            The board.
+	 */
+	public BMPLocation(BMPBoard board) {
+		cabinet = 0;
+		frame = 0;
+		this.board = board.board;
+	}
+
+	/**
+	 * Create an instance with cabinet and frame both zero.
+	 *
+	 * @param board
 	 *            The board number.
 	 */
 	public BMPLocation(int board) {
 		this(0, 0, board);
+	}
+
+	/**
+	 * Create an instance.
+	 *
+	 * @param bmp
+	 *            The managing BMP.
+	 * @param board
+	 *            The board.
+	 */
+	public BMPLocation(BMPCoords bmp, BMPBoard board) {
+		this.cabinet = bmp.getCabinet();
+		this.frame = bmp.getFrame();
+		this.board = board.board;
 	}
 
 	/**
@@ -84,6 +110,20 @@ public final class BMPLocation implements HasCoreLocation {
 	@Override
 	public int getP() {
 		return board;
+	}
+
+	/**
+	 * @return The coordinates of the BMP that manages the board.
+	 */
+	public BMPCoords getBMPCoords() {
+		return new BMPCoords(cabinet, frame);
+	}
+
+	/**
+	 * @return The board number of the board.
+	 */
+	public BMPBoard getBMPBoard() {
+		return new BMPBoard(board);
 	}
 
 	@Override

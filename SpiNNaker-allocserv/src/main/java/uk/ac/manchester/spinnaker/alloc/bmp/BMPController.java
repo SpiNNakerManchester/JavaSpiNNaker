@@ -839,6 +839,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final BMPBoard board;
 
+		/** The <em>expected</em> serial ID. {@code null} if no expectation. */
 		private final String bmpSerialId;
 
 		private final Blacklist blacklist;
@@ -987,6 +988,14 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		/**
+		 * @return Whether the board's current serial ID (just read) is the same
+		 *         as the serial ID we expected.
+		 */
+		private boolean validSerial() {
+			return nonNull(bmpSerialId) && !bmpSerialId.equals(readSerial);
+		}
+
+		/**
 		 * Process an action to read a blacklist.
 		 *
 		 * @param controller
@@ -1001,7 +1010,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void readBlacklist(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
 			readSerial = controller.readSerial(board);
-			if (nonNull(bmpSerialId) && !bmpSerialId.equals(readSerial)) {
+			if (validSerial()) {
 				/*
 				 * Doesn't match; WARN but keep going; hardware may just be
 				 * remapped behind our back.
@@ -1034,7 +1043,7 @@ public class BMPController extends DatabaseAwareBean {
 		private void writeBlacklist(SpiNNakerControl controller)
 				throws InterruptedException, ProcessException, IOException {
 			readSerial = controller.readSerial(board);
-			if (nonNull(bmpSerialId) && !bmpSerialId.equals(readSerial)) {
+			if (validSerial()) {
 				// Doesn't match, so REALLY unsafe to keep going!
 				throw new IllegalStateException(format(
 						"aborting blacklist write: expected serial ID '%s' "

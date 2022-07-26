@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  * A response to a request that indicates a failure.
  */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class ExceptionResponse implements Response {
+public final class ExceptionResponse implements Response {
 	private String exception;
 
 	/** @return The exception message. Should not include a stack trace. */

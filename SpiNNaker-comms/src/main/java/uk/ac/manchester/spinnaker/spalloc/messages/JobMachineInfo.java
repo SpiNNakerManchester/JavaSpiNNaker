@@ -26,7 +26,7 @@ import java.util.List;
  * A description of a machine associated with a job, in terms of width, height,
  * connections and its name.
  */
-public class JobMachineInfo {
+public final class JobMachineInfo {
 	private int width;
 
 	private int height;

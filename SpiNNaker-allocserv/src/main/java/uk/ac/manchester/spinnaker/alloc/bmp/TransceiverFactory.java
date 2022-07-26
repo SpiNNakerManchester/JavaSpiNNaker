@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -78,7 +79,8 @@ public class TransceiverFactory
 		@Override
 		public boolean equals(Object o) {
 			Key other = (Key) o;
-			return machine.equals(other.machine) && bmp.equals(other.bmp);
+			return Objects.equals(machine, other.machine)
+					&& Objects.equals(bmp, other.bmp);
 		}
 
 		@Override

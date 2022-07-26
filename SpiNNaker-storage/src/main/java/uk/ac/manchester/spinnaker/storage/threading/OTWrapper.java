@@ -27,6 +27,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Wrapper;
+import java.util.Objects;
 
 /**
  * Core wrapper functionality, and single-threadedness enforcement point.
@@ -67,7 +68,7 @@ abstract class OTWrapper implements Wrapper {
 
 	@Override
 	public final boolean equals(Object o) {
-		return w.equals(o);
+		return Objects.equals(w, o);
 	}
 
 	/**

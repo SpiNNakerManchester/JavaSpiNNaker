@@ -42,7 +42,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *      Python Version</a>
  * @author Christian-B
  */
-public class CoreSubsets implements MappableIterable<CoreLocation> {
+public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	private final Map<ChipLocation, Map<Integer, CoreLocation>> locations;
 
 	private boolean immutable;

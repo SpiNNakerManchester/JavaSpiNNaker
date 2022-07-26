@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * A response that describes what machines have changed state.
  */
-public class MachinesChangedNotification implements Notification {
+public final class MachinesChangedNotification implements Notification {
 	private List<String> machinesChanged = emptyList();
 
 	/** @return What machines have changed. */

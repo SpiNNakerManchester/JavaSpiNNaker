@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class BoardPhysicalCoordinates {
+public final class BoardPhysicalCoordinates {
 	private int cabinet;
 
 	private int frame;

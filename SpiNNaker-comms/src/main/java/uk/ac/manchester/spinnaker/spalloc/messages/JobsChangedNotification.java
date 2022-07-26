@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * A response that describes what jobs have changed state.
  */
-public class JobsChangedNotification implements Notification {
+public final class JobsChangedNotification implements Notification {
 	private List<Integer> jobsChanged = emptyList();
 
 	/** Create a notification response. */

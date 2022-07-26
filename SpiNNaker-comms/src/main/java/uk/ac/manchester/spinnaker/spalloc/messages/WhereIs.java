@@ -22,7 +22,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 /**
  * The description of where some resource is on a SpiNNaker system.
  */
-public class WhereIs {
+public final class WhereIs {
 	private ChipLocation jobChip;
 
 	private Integer jobId;

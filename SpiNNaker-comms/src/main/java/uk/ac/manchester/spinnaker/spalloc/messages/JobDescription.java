@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * A description of the state of a job.
  */
-public class JobDescription {
+public final class JobDescription {
 	private int jobID;
 
 	private String owner;

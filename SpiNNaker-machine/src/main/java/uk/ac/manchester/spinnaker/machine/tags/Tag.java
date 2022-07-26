@@ -105,7 +105,7 @@ public abstract class Tag implements Comparable<Tag> {
 	 */
 	protected final boolean partialEquals(Tag otherTag) {
 		return tagID == otherTag.tagID
-				&& boardAddress.equals(otherTag.boardAddress)
+				&& Objects.equals(boardAddress, otherTag.boardAddress)
 				&& Objects.equals(port, otherTag.port);
 	}
 

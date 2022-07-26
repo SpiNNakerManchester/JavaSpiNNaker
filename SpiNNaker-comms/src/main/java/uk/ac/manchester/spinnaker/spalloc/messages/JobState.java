@@ -21,7 +21,7 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
  * boards are powered, the advised keep-alive polling interval and the reason
  * that the job died (if in the {@link State#DESTROYED DESTROYED} state).
  */
-public class JobState {
+public final class JobState {
 	private State state;
 
 	private Boolean power;
