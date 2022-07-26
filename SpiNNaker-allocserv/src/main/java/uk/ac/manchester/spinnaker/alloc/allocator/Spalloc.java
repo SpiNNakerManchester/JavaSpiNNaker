@@ -445,34 +445,25 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	 *             If we can't get a definite group to account against.
 	 */
 	private int selectGroup(Connection conn, String user, String groupName) {
-		try (Query getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER);
-				Query listGroupsForUser = conn.query(GET_GROUPS_OF_USER)) {
-			if (nonNull(groupName)) {
+		if (nonNull(groupName)) {
+			try (Query getGroup = conn.query(GET_GROUP_BY_NAME_AND_MEMBER)) {
 				return getGroup.call1(user, groupName).map(integer("group_id"))
 						.orElseThrow(() -> new NoSuchGroupException(
 								"group {} does not exist or {} "
 										+ "is not a member of it",
 								groupName, user));
 			}
-
+		}
+		try (Query listGroups = conn.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
 			// No name given; need to guess.
-			int groupId = -1;
-			for (int g : listGroupsForUser.call(user)
-					.map(integer("group_id"))) {
-				if (groupId >= 0) {
-					throw new MultipleGroupsException(
-							"user {} has multiple groups available; "
-									+ "one must be selected explicitly "
-									+ "in the request",
-							user);
-				}
-				groupId = g;
-			}
-			if (groupId < 0) {
-				throw new NoSuchGroupException(
-						"user {} is not a member of any groups", user);
-			}
-			return groupId;
+			return listGroups.call(user)
+					.filter(r -> isNull(r.getLong("quota"))
+							|| r.getLong("quota") > 0L)
+					.map(integer("group_id")).first()
+					.orElseThrow(() -> new NoSuchGroupException(
+							"user {} is not a member of any "
+									+ "groups with quota left",
+							user));
 		}
 	}
 

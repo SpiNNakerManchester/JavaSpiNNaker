@@ -1215,16 +1215,20 @@ public abstract class SQLQueries {
 					+ "AND group_name = :group_name LIMIT 1";
 
 	/**
-	 * List all the groups that a user is a member of.
+	 * List all the groups that a user is a member of and that have quota left.
 	 *
 	 * @see Spalloc
 	 */
 	@Parameter("user_name")
 	@ResultColumn("group_id")
-	protected static final String GET_GROUPS_OF_USER =
-			"SELECT group_id FROM group_memberships "
+	@ResultColumn("quota")
+	protected static final String GET_GROUPS_AND_QUOTAS_OF_USER =
+			"SELECT groups.group_id, COALESCE(groups.quota, 1) AS quota "
+					+ "FROM group_memberships "
 					+ "JOIN user_info USING (user_id) "
-					+ "WHERE user_name = :user_name";
+					+ "JOIN groups USING (group_id) "
+					+ "WHERE user_name = :user_name AND quota > 0 "
+					+ "ORDER BY groups.quota DESC";
 
 	/**
 	 * List the members of a group.

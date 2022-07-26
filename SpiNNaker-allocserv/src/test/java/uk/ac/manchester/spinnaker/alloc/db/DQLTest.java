@@ -1023,10 +1023,10 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
-	void getGroupsOfUser() {
-		try (Query q = c.query(GET_GROUPS_OF_USER)) {
+	void getGroupsAndQuotasOfUser() {
+		try (Query q = c.query(GET_GROUPS_AND_QUOTAS_OF_USER)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(set("group_id"), q.getRowColumnNames());
+			assertSetEquals(set("group_id", "quota"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(NO_NAME).isPresent());
 			});
