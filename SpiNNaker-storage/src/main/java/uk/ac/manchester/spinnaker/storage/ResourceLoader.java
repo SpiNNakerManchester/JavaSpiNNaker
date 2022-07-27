@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.storage;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 
 import org.apache.commons.io.IOUtils;
@@ -44,9 +45,8 @@ abstract class ResourceLoader {
 	 *             If the file can't be read.
 	 */
 	static String resourceToString(String name) {
-		try {
-			return IOUtils.resourceToString(name, UTF_8,
-					ResourceLoader.class.getClassLoader());
+		try (InputStream is = ResourceLoader.class.getResourceAsStream(name)) {
+			return IOUtils.toString(is, UTF_8);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}

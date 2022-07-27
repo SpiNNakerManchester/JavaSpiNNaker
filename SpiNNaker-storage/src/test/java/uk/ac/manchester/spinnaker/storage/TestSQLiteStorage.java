@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 
 class TestSQLiteStorage {
-	File db;
+	private File db;
 
 	@BeforeEach
 	void makeDB() {
