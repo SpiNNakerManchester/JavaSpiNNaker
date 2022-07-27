@@ -91,47 +91,4 @@ public final class Constants {
 	public static final int APP_PTR_TABLE_BYTE_SIZE =
 			APP_PTR_TABLE_HEADER_SIZE
 			+ (MAX_MEM_REGIONS * APP_PTR_TABLE_REGION_SIZE);
-
-	// Constants used by DSG command encoding: payload length field
-
-	/** DSG command is one word long. */
-	static final int LEN1 = 0;
-
-	/** DSG command is two words long. */
-	static final int LEN2 = 1;
-
-	/** DSG command is three words long. */
-	static final int LEN3 = 2;
-
-	/** DSG command is four words long. */
-	static final int LEN4 = 3;
-
-	// Constants used by DSG command encoding: register usage field
-
-	/** DSG command uses no registers. */
-	static final int NO_REGS = 0;
-
-	/** DSG command uses just the src2 register. */
-	static final int SRC2_ONLY = 1;
-
-	/** DSG command uses just the src1 register. */
-	static final int SRC1_ONLY = 2;
-
-	/** DSG command uses just the src1 and src2 registers. */
-	static final int SRC1_AND_SRC2 = 3;
-
-	/** DSG command uses just the dest register. */
-	static final int DEST_ONLY = 4;
-
-	/** DSG command uses just the src2 and dest registers. */
-	static final int DEST_AND_SRC2 = 5;
-
-	/** DSG command uses just the src1 and dest registers. */
-	static final int DEST_AND_SRC1 = 6;
-
-	/** DSG command uses the src1, src2 and dest registers. */
-	static final int ALL_REGS = 7;
-
-	/** return values from functions of the data spec executor. */
-	static final int END_SPEC_EXECUTOR = -1;
 }

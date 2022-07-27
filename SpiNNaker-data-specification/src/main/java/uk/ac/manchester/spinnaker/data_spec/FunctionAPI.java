@@ -27,7 +27,7 @@ import static uk.ac.manchester.spinnaker.data_spec.OperationMapper.getOperationI
  *
  * @author Donal Fellows
  */
-public interface FunctionAPI {
+interface FunctionAPI {
 	/**
 	 * Decode the command, storing the fields in variables in this object.
 	 *

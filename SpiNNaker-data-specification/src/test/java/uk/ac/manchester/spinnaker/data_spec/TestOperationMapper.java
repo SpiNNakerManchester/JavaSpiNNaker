@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.data_spec;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.PRINT_STRUCT;
-import static uk.ac.manchester.spinnaker.data_spec.Generator.Field.COMMAND;
+import static uk.ac.manchester.spinnaker.data_spec.generator.Generator.Field.COMMAND;
 
 import java.awt.AWTError;
 import java.io.IOException;

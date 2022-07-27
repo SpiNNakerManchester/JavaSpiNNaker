@@ -23,13 +23,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
-import static uk.ac.manchester.spinnaker.data_spec.Generator.*;
+import static uk.ac.manchester.spinnaker.data_spec.generator.Generator.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import uk.ac.manchester.spinnaker.data_spec.generator.Generator;
 
 public class TestDataSpecExecutor {
 

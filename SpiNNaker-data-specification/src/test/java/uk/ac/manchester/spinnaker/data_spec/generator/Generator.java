@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.generator;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -22,26 +22,28 @@ import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.REFERENCE;
+import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE;
 import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE_ARRAY;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.DEST_ONLY;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN1;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN2;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.LEN3;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.NO_REGS;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC1_ONLY;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.SRC2_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.DEST_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN1;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN2;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN3;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.NO_REGS;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.SRC1_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.SRC2_ONLY;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /** Severely cut down version of the DSG, for testing only. */
 public class Generator {
@@ -72,7 +74,7 @@ public class Generator {
 	}
 
 	@FunctionalInterface
-	interface SpecGen {
+	public interface SpecGen {
 		void generate(Generator generator);
 	}
 
@@ -84,7 +86,7 @@ public class Generator {
 	 * Various shifts for fields used with
 	 * {@link #command(Command,int,int,Object[]) command(...)}.
 	 */
-	enum Field {
+	public enum Field {
 		/** length field. */
 		LENGTH(28),
 		/** opcode field. */
@@ -108,7 +110,7 @@ public class Generator {
 		/** immediate value field. */
 		IMMEDIATE(0);
 
-		final int offset;
+		public final int offset;
 
 		Field(int offset) {
 			this.offset = offset;

@@ -26,9 +26,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APPDATA_MAGIC_NUM;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
-import static uk.ac.manchester.spinnaker.data_spec.Constants.END_SPEC_EXECUTOR;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
+import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.END_SPEC_EXECUTOR;
 
 import java.io.Closeable;
 import java.io.File;
