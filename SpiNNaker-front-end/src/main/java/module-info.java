@@ -27,6 +27,7 @@ module spinnaker.front_end {
 	requires spinnaker.storage;
 
 	// External dependencies
+	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
 	requires org.slf4j;
 	requires org.apache.logging.log4j;
