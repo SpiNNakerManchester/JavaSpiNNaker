@@ -38,6 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<property name="ignoreLines" value="2" />
 		<property name="headerFile" value="${checkstyle.config.path}/java-header.txt" />
 	</module>
+	<module name="BeforeExecutionExclusionFileFilter">
+		<property name="fileNamePattern" value="module\-info\.java$"/>
+	</module>
 	<module name="SuppressionFilter">
 		<property name="file" value="${checkstyle.config.path}/suppressions.xml" />
 	</module>
@@ -49,9 +52,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			value="^(import |package |^\s*\*[ ]*(@see &lt;a href=)?\S*$)" />
 	</module>
 	<module name="TreeWalker">
-		<module name="BeforeExecutionExclusionFileFilter">
-			<property name="fileNamePattern" value="module\-info\.java$"/>
-		</module>
 		<module name="SuppressWarningsHolder" />
 		<property name="tabWidth" value="4" />
 		<module name="RegexpSinglelineJava">
@@ -144,9 +144,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	</module>
 	<module name="TreeWalker">
 		<!-- These are not applied to test code -->
-		<module name="BeforeExecutionExclusionFileFilter">
-			<property name="fileNamePattern" value="module\-info\.java$"/>
-		</module>
 		<module name="SuppressWarningsHolder" />
 		<property name="id" value="mainOnly" />
 		<property name="tabWidth" value="4" />
