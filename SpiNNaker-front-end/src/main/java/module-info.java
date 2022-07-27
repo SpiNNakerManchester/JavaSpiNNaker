@@ -36,4 +36,9 @@ module spinnaker.front_end {
 	requires org.apache.commons.text;
 
 	requires diffutils; // Ugh!
+
+	opens uk.ac.manchester.spinnaker.front_end.download.request
+			to com.fasterxml.jackson.databind;
+	opens uk.ac.manchester.spinnaker.front_end.iobuf
+			to com.fasterxml.jackson.databind;
 }
