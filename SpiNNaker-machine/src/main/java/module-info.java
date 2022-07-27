@@ -21,9 +21,12 @@
  * @author Christian Brenninkmeijer
  */
 open module spinnaker.machine {
+	// Internal dependencies
 	requires spinnaker.utils;
-	requires com.fasterxml.jackson.annotation;
+
+	// External dependencies
 	requires org.slf4j;
+	requires com.fasterxml.jackson.annotation;
 	requires transitive com.fasterxml.jackson.databind;
 
 	exports uk.ac.manchester.spinnaker.machine;

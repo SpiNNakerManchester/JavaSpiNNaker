@@ -22,12 +22,15 @@
  * @author Donal Fellows
  */
 module spinnaker.comms {
+	// Internal dependencies
 	requires transitive spinnaker.utils;
 	requires transitive spinnaker.machine;
 	requires transitive spinnaker.storage;
 
+	// External dependencies
 	requires org.slf4j;
 	requires org.apache.commons.configuration2;
+	requires com.fasterxml.jackson.annotation;
 	requires transitive com.fasterxml.jackson.databind;
 
 	exports uk.ac.manchester.spinnaker.connections;

@@ -21,15 +21,18 @@
  * @author Donal Fellows
  */
 module spinnaker.front_end {
+	// Internal dependencies
 	requires spinnaker.comms;
 	requires spinnaker.data_spec;
 	requires spinnaker.storage;
 
+	// External dependencies
 	requires com.fasterxml.jackson.databind;
 	requires org.slf4j;
 	requires org.apache.logging.log4j;
 	requires org.apache.logging.log4j.core;
-	requires diffutils; // Ugh!
 	requires org.apache.commons.io;
 	requires org.apache.commons.text;
+
+	requires diffutils; // Ugh!
 }
