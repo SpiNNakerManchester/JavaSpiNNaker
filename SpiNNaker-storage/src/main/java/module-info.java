@@ -27,6 +27,7 @@ open module spinnaker.storage {
 	requires org.xerial.sqlitejdbc;
 	requires transitive java.sql;
 	requires org.apache.commons.io;
+	requires java.base;
 
 	exports uk.ac.manchester.spinnaker.storage;
 }
