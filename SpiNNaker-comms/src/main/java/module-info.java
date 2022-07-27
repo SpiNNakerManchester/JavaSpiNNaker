@@ -32,6 +32,7 @@ module spinnaker.comms {
 	requires org.apache.commons.configuration2;
 	requires com.fasterxml.jackson.annotation;
 	requires transitive com.fasterxml.jackson.databind;
+	requires com.fasterxml.jackson.core;
 
 	exports uk.ac.manchester.spinnaker.connections;
 	exports uk.ac.manchester.spinnaker.connections.model;
