@@ -14,18 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
+
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 
 /**
- * A special exception that indicates that a
- * {@link uk.ac.manchester.spinnaker.data_spec.Commands#BREAK BREAK} was
- * encountered.
+ * An exception that indicates that a region has already been allocated.
  */
-public class ExecuteBreakInstruction extends DataSpecificationException {
-	private static final long serialVersionUID = -4902287652556707319L;
+public class RegionInUseException extends DataSpecificationException {
+	private static final long serialVersionUID = 5490046026344412303L;
 
-	/** Create an instance. */
-	ExecuteBreakInstruction() {
-		super("BREAK instruction reached");
+	/**
+	 * State that a particular region is in use.
+	 *
+	 * @param key
+	 *            The region key for the region that is in use
+	 */
+	RegionInUseException(int key) {
+		super("region " + key + " was already allocated");
 	}
 }

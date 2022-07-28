@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
 
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.asList;
@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
+
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 
 /**
  * A collection of memory regions. Note that the collection cannot be modified

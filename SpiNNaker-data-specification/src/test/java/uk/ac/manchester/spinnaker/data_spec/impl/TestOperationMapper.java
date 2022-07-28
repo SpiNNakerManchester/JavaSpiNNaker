@@ -14,17 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.PRINT_STRUCT;
 import static uk.ac.manchester.spinnaker.data_spec.generator.Generator.Field.COMMAND;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.PRINT_STRUCT;
 
 import java.awt.AWTError;
 import java.io.IOException;
 import java.nio.channels.AcceptPendingException;
 
 import org.junit.jupiter.api.Test;
+
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 
 class TestOperationMapper {
 	static final int KEY = PRINT_STRUCT.value << COMMAND.offset;

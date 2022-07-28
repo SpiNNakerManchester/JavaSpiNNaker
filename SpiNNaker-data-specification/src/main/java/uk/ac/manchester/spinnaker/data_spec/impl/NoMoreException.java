@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
+
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 
 /**
  * An exception that indicates that there is no more space for the requested

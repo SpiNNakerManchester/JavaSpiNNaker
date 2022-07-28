@@ -14,31 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
+
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 
 /**
- * An exception that indicates that a memory region has not been selected.
+ * A special exception that indicates that a
+ * {@link uk.ac.manchester.spinnaker.data_spec.impl.Commands#BREAK BREAK} was
+ * encountered.
  */
-public class NoRegionSelectedException extends DataSpecificationException {
-	private static final long serialVersionUID = -3704038507680648327L;
+public class ExecuteBreakInstruction extends DataSpecificationException {
+	private static final long serialVersionUID = -4902287652556707319L;
 
-	/**
-	 * Create an instance.
-	 *
-	 * @param msg
-	 *            The message in the exception.
-	 */
-	NoRegionSelectedException(String msg) {
-		super(msg);
-	}
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param command
-	 *            What command was using memory without a region selected.
-	 */
-	NoRegionSelectedException(Commands command) {
-		super("no region has been selected for writing by " + command);
+	/** Create an instance. */
+	ExecuteBreakInstruction() {
+		super("BREAK instruction reached");
 	}
 }

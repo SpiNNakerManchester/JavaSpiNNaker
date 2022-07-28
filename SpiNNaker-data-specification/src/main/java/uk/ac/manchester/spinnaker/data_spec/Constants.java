@@ -76,14 +76,14 @@ public final class Constants {
 	 * Note that the header consists of 2 uint32_t variables
 	 * (magic number, version).
 	 */
-	public static final int APP_PTR_TABLE_HEADER_SIZE = INT_SIZE * 2;
+	private static final int APP_PTR_TABLE_HEADER_SIZE = INT_SIZE * 2;
 
 	/**
 	 * The size of a Data Specification region description, in bytes.
 	 * Note that each description consists of a pointer and 2 uint32_t variables
 	 * (pointer, checksum, n_words).
 	 */
-	public static final int APP_PTR_TABLE_REGION_SIZE = INT_SIZE * 3;
+	private static final int APP_PTR_TABLE_REGION_SIZE = INT_SIZE * 3;
 
 	/**
 	 * The size of the Data Specification table, in bytes.

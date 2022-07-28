@@ -24,10 +24,12 @@ module spinnaker.data_spec {
 	requires spinnaker.utils;
 	requires spinnaker.comms;
 	requires spinnaker.storage;
-	requires org.apache.commons.lang3;
-	requires static java.desktop;
+
 	requires org.slf4j;
 	requires org.apache.commons.io;
+	requires org.apache.commons.lang3;
+
+	requires static java.desktop;
 
 	exports uk.ac.manchester.spinnaker.data_spec;
 }

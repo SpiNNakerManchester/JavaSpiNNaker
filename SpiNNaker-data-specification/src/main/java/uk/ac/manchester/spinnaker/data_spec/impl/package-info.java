@@ -14,23 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
-
 /**
- * An exception that indicates that the value of the requested type is unknown.
+ * Data specification executor implementation support classes.
  */
-public class UnknownTypeLengthException extends DataSpecificationException {
-	private static final long serialVersionUID = 8012093021275095441L;
-
-	/**
-	 * Create an instance.
-	 *
-	 * @param dataLen
-	 *            How long a set of data was requested.
-	 * @param command
-	 *            What command was being executed.
-	 */
-	UnknownTypeLengthException(int dataLen, Commands command) {
-		super("Unknown data length " + dataLen + " during command " + command);
-	}
-}
+package uk.ac.manchester.spinnaker.data_spec.impl;

@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
-import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
@@ -302,11 +301,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 						toHexString(toUnsignedLong(start)));
 				int written = APP_PTR_TABLE_BYTE_SIZE;
 
-				for (var reg : executor.regions()) {
-					var r = getRealRegionOrNull(reg);
-					if (r != null) {
-						written += writeRegion(ctl.core, r, r.getRegionBase());
-					}
+				for (var r : executor.realRegions()) {
+					written += writeRegion(ctl.core, r);
 				}
 
 				int user0 = txrx.getUser0RegisterAddress(ctl.core);
@@ -337,33 +333,20 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		 *            Which core to write to.
 		 * @param region
 		 *            The region to write.
-		 * @param baseAddress
-		 *            Where to write the region.
 		 * @return How many bytes were actually written.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
 		 * @throws ProcessException
 		 *             If SCAMP rejects the request.
 		 */
-		private int writeRegion(HasCoreLocation core, MemoryRegionReal region,
-				int baseAddress) throws IOException, ProcessException {
+		private int writeRegion(HasCoreLocation core, MemoryRegionReal region)
+				throws IOException, ProcessException {
 			var data = region.getRegionData().duplicate();
 
 			data.flip();
 			int written = data.remaining();
-			txrx.writeMemory(core.getScampCore(), baseAddress, data);
+			txrx.writeMemory(core.getScampCore(), region.getRegionBase(), data);
 			return written;
 		}
-	}
-
-	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
-		if (!(reg instanceof MemoryRegionReal)) {
-			return null;
-		}
-		var r = (MemoryRegionReal) reg;
-		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
-			return null;
-		}
-		return r;
 	}
 }

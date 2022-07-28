@@ -14,31 +14,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
 
 import static java.lang.String.format;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.REFERENCE;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE_ARRAY;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.LONG_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_REGISTERS;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.END_SPEC_EXECUTOR;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN2;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN3;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.END_SPEC;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.MV;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.REFERENCE;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.RESERVE;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.SET_WR_PTR;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.SWITCH_FOCUS;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.WRITE;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.WRITE_ARRAY;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.END_SPEC_EXECUTOR;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.LEN2;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.LEN3;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.BitField;
+
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
+import uk.ac.manchester.spinnaker.data_spec.Executor;
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
+import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReference;
 
 /**
  * Functions that implement {@linkplain Operation operations} for the
@@ -48,7 +54,7 @@ import org.apache.commons.lang3.BitField;
  * @see OperationMapper
  */
 @SuppressWarnings("unused")
-class Functions implements FunctionAPI {
+public class Functions implements FunctionAPI {
 	private static final int SIZE_FIELD = 28;
 
 	private static final int OPCODE_FIELD = 20;
@@ -168,7 +174,7 @@ class Functions implements FunctionAPI {
 	 *            Where are we storing the memory regions that we are
 	 *            allocating.
 	 */
-	Functions(ByteBuffer input, int memorySpace,
+	public Functions(ByteBuffer input, int memorySpace,
 			MemoryRegionCollection memRegions) {
 		spec = input;
 		this.memorySpace = memorySpace;
@@ -244,7 +250,7 @@ class Functions implements FunctionAPI {
 					new MemoryRegionReal(region, 0, unfilled, size, reference));
 			referenceableRegions.add(region);
 		}
-		spaceAllocated += size;
+		spaceAllocated = getSpaceAllocated() + size;
 	}
 
 	@Operation(REFERENCE)
@@ -474,5 +480,13 @@ class Functions implements FunctionAPI {
 	 */
 	public List<Integer> getRegionsToFill() {
 		return regionsToFill;
+	}
+
+	public int getSpaceAllocated() {
+		return spaceAllocated;
+	}
+
+	static {
+		Executor.class.getClass();
 	}
 }

@@ -37,7 +37,7 @@ public final class MemoryRegionReference extends MemoryRegion {
 	 * @param reference
 	 *            The reference to make.
 	 */
-	MemoryRegionReference(int index, int reference) {
+	public MemoryRegionReference(int index, int reference) {
 		this.index = index;
 		this.reference = reference;
 	}

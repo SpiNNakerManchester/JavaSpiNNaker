@@ -56,7 +56,6 @@ import difflib.DeleteDelta;
 import difflib.InsertDelta;
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
-import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
@@ -283,17 +282,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {
-		if (!(reg instanceof MemoryRegionReal)) {
-			return null;
-		}
-		var r = (MemoryRegionReal) reg;
-		if (r.isUnfilled() || r.getMaxWritePointer() <= 0) {
-			return null;
-		}
-		return r;
-	}
-
 	/**
 	 * Opens a file for writing text.
 	 *
@@ -513,13 +501,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			int written = APP_PTR_TABLE_BYTE_SIZE;
 			int writeCount = 1;
 
-			for (var reg : executor.regions()) {
-				var r = getRealRegionOrNull(reg);
-				if (r == null) {
-					continue;
-				}
-
-				written += writeRegion(ctl.core, r, r.getRegionBase(), gather);
+			for (var r : executor.writableRegions()) {
+				written += writeRegion(ctl.core, r, gather);
 				writeCount++;
 				if (SPINNAKER_COMPARE_UPLOAD != null) {
 					var readBack = txrx.readMemory(ctl.core,
@@ -595,8 +578,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            monitor core.
 		 * @param region
 		 *            The region to write.
-		 * @param baseAddress
-		 *            Where to write the region.
 		 * @param transactionId
 		 *            the transaction id for the stream
 		 * @return How many bytes were actually written.
@@ -606,9 +587,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *             If SCAMP rejects the request.
 		 */
 		private int writeRegion(CoreLocation core, MemoryRegionReal region,
-				int baseAddress, Gather gather)
-				throws IOException, ProcessException {
+				Gather gather) throws IOException, ProcessException {
 			var data = region.getRegionData().duplicate();
+			int baseAddress = region.getRegionBase();
 
 			data.flip();
 			int written = data.remaining();

@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
 
-import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
-import static uk.ac.manchester.spinnaker.data_spec.Functions.OPCODE;
-import static uk.ac.manchester.spinnaker.data_spec.OperationMapper.getOperationImpl;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.BREAK;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.NOP;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Functions.OPCODE;
+import static uk.ac.manchester.spinnaker.data_spec.impl.OperationMapper.getOperationImpl;
 
 /**
  * The interface supported by the {@link Functions} class. This makes generating
@@ -27,7 +27,7 @@ import static uk.ac.manchester.spinnaker.data_spec.OperationMapper.getOperationI
  *
  * @author Donal Fellows
  */
-interface FunctionAPI {
+public interface FunctionAPI {
 	/**
 	 * Decode the command, storing the fields in variables in this object.
 	 *

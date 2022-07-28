@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
 
 import static java.lang.String.format;
 import static java.util.Collections.synchronizedMap;
@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
+
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 
 /**
  * Clever stuff to turn a method annotated with {@link Operation @Operation}

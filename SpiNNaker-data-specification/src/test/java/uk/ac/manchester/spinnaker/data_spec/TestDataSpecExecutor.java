@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.data_spec.generator.Generator;
+import uk.ac.manchester.spinnaker.data_spec.impl.ExecuteBreakInstruction;
 
 public class TestDataSpecExecutor {
 

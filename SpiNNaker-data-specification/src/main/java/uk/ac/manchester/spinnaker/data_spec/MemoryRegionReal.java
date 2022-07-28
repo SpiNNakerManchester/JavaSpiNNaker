@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.Math.max;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Objects.requireNonNull;
 
@@ -66,14 +67,15 @@ public final class MemoryRegionReal extends MemoryRegion {
 	 * @param size
 	 *            the allocated size of the memory region
 	 */
-	MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size) {
+	public MemoryRegionReal(int index, int memoryPointer, boolean unfilled,
+			int size) {
 		this.index = index;
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
 		regionBaseAddress = 0;
 		this.unfilled = unfilled;
 		reference = null;
-		buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+		buffer = allocate(size).order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -90,15 +92,15 @@ public final class MemoryRegionReal extends MemoryRegion {
 	 * @param reference
 	 *            the reference of the memory region
 	 */
-	MemoryRegionReal(int index, int memoryPointer, boolean unfilled, int size,
-			int reference) {
+	public MemoryRegionReal(int index, int memoryPointer, boolean unfilled,
+			int size, int reference) {
 		this.index = index;
 		memPointer = memoryPointer;
 		maxWritePointer = 0;
 		regionBaseAddress = 0;
 		this.unfilled = unfilled;
 		this.reference = reference;
-		buffer = ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+		buffer = allocate(size).order(LITTLE_ENDIAN);
 	}
 
 	public int getMemoryPointer() {

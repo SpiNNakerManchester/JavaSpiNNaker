@@ -18,24 +18,24 @@ package uk.ac.manchester.spinnaker.data_spec.generator;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.BREAK;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.END_SPEC;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.MV;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.NOP;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.REFERENCE;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.RESERVE;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.SET_WR_PTR;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.SWITCH_FOCUS;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE;
-import static uk.ac.manchester.spinnaker.data_spec.Commands.WRITE_ARRAY;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.DEST_ONLY;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN1;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN2;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.LEN3;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.NO_REGS;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.SRC1_ONLY;
-import static uk.ac.manchester.spinnaker.data_spec.EncodingConstants.SRC2_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.BREAK;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.END_SPEC;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.MV;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.NOP;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.REFERENCE;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.RESERVE;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.SET_WR_PTR;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.SWITCH_FOCUS;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.WRITE;
+import static uk.ac.manchester.spinnaker.data_spec.impl.Commands.WRITE_ARRAY;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.DEST_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.LEN1;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.LEN2;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.LEN3;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.NO_REGS;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.SRC1_ONLY;
+import static uk.ac.manchester.spinnaker.data_spec.impl.EncodingConstants.SRC2_ONLY;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -43,7 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import uk.ac.manchester.spinnaker.data_spec.Commands;
+import uk.ac.manchester.spinnaker.data_spec.impl.Commands;
 
 /** Severely cut down version of the DSG, for testing only. */
 public class Generator {

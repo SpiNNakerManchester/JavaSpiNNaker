@@ -14,25 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.data_spec;
+package uk.ac.manchester.spinnaker.data_spec.impl;
+
+import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 
 /**
- * An exception that indicates that a memory region is being used that was
- * originally requested to be unfilled.
+ * An exception which occurs when trying to write to an unallocated region of
+ * memory.
  */
-public class RegionUnfilledException extends DataSpecificationException {
-	private static final long serialVersionUID = -3485312741873589073L;
+public class RegionNotAllocatedException extends DataSpecificationException {
+	private static final long serialVersionUID = 7075946109066864639L;
 
 	/**
 	 * Create an instance.
 	 *
-	 * @param region
-	 *            What region are we talking about.
+	 * @param currentRegion
+	 *            What is the current region.
 	 * @param command
-	 *            What command wanted to use the region.
+	 *            What command was trying to use the region.
 	 */
-	RegionUnfilledException(int region, Commands command) {
-		super("Region " + region + " was requested unfilled, but command "
-				+ command + " requests its use");
+	RegionNotAllocatedException(int currentRegion, Commands command) {
+		super("Region " + currentRegion
+				+ " has not been allocated during execution of command "
+				+ command);
 	}
 }
