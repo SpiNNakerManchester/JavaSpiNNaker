@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.storage;
+package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -30,7 +30,7 @@ import org.apache.commons.io.IOUtils;
  *
  * @author Donal Fellows
  */
-abstract class ResourceLoader {
+public abstract class ResourceLoader {
 	private ResourceLoader() {
 	}
 
@@ -44,7 +44,7 @@ abstract class ResourceLoader {
 	 * @throws UncheckedIOException
 	 *             If the file can't be read.
 	 */
-	static String resourceToString(String name) {
+	public static String resourceToString(String name) {
 		try (InputStream is = ResourceLoader.class.getResourceAsStream(name)) {
 			return IOUtils.toString(is, UTF_8);
 		} catch (IOException e) {

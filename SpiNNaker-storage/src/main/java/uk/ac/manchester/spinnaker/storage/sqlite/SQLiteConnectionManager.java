@@ -53,45 +53,6 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	}
 
 	/**
-	 * A wrapped piece of code that produces a result.
-	 *
-	 * @param <T>
-	 *            The type of the result of the call
-	 * @author Donal Fellows
-	 */
-	@FunctionalInterface
-	interface CallWithResult<T> {
-		/**
-		 * The wrapped code.
-		 *
-		 * @param conn
-		 *            The connection that has a running transaction on it.
-		 * @return The result of the code.
-		 * @throws SQLException
-		 *             If anything goes wrong.
-		 */
-		T call(Connection conn) throws SQLException;
-	}
-
-	/**
-	 * A wrapped piece of code that doesn't produce a result.
-	 *
-	 * @author Donal Fellows
-	 */
-	@FunctionalInterface
-	interface CallWithoutResult {
-		/**
-		 * The wrapped code.
-		 *
-		 * @param conn
-		 *            The connection that has a running transaction on it.
-		 * @throws SQLException
-		 *             If anything goes wrong.
-		 */
-		void call(Connection conn) throws SQLException;
-	}
-
-	/**
 	 * Wrapper for applying a transaction correctly.
 	 *
 	 * @param <T>

@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import static uk.ac.manchester.spinnaker.storage.ResourceLoader.resourceToString;
+import static uk.ac.manchester.spinnaker.storage.sqlite.ResourceLoader.resourceToString;
 
 import java.io.File;
 
@@ -27,8 +27,8 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
  *
  * @author Donal Fellows
  */
-public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
-	private static String sqlDDL = resourceToString("/dse.sql");
+public final class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
+	private static String sqlDDL = resourceToString("dse.sql");
 
 	/**
 	 * Create an engine interface for an in-memory database.
@@ -47,7 +47,7 @@ public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
 	}
 
 	@Override
-	public String getDDL() {
+	protected String getDDL() {
 		return sqlDDL;
 	}
 

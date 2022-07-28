@@ -24,6 +24,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.sqlite.SQLiteConfig;
@@ -65,25 +66,30 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 	}
 
 	@Override
-	public Connection getConnection() throws SQLException {
+	public final Connection getConnection() throws SQLException {
 		if (log.isDebugEnabled()) {
 			log.debug("opening database connection {}", dbConnectionUrl);
 		}
-		var config = new SQLiteConfig();
-		config.enforceForeignKeys(true);
-		config.setSynchronous(OFF);
-		config.setBusyTimeout(BUSY_TIMEOUT);
-		config.setTransactionMode(IMMEDIATE);
 		var conn = DriverManager.getConnection(dbConnectionUrl,
-				config.toProperties());
+				getConnectionProperties());
 		try (var statement = conn.createStatement()) {
 			statement.executeUpdate(getDDL());
 		}
 		return conn;
 	}
 
+	/** @return The properties of the connection to create. Overridable. */
+	protected Properties getConnectionProperties() {
+		var config = new SQLiteConfig();
+		config.enforceForeignKeys(true);
+		config.setSynchronous(OFF);
+		config.setBusyTimeout(BUSY_TIMEOUT);
+		config.setTransactionMode(IMMEDIATE);
+		return config.toProperties();
+	}
+
 	/**
 	 * @return The DDL for initialising this kind of database.
 	 */
-	public abstract String getDDL();
+	protected abstract String getDDL();
 }
