@@ -69,6 +69,13 @@ public class TestChip {
 				Processor.factory(4));
 	}
 
+	private List<Processor> getProcessors(Processor extra) {
+		return List.of(//
+				Processor.factory(1), //
+				Processor.factory(2, true), //
+				Processor.factory(4), extra);
+	}
+
 	@Test
 	public void testChipBasic() throws UnknownHostException {
 		var tags = List.of(1, 2, 3, 4, 5, 6);
@@ -123,8 +130,7 @@ public class TestChip {
 
 	@Test
 	public void testRepeatMonitor() {
-		var processors = getProcessors();
-		processors.add(Processor.factory(2, false));
+		var processors = getProcessors(Processor.factory(2, false));
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
 			var chip = new Chip(LOCATION_00, processors, createRouter(), 100,
@@ -134,8 +140,7 @@ public class TestChip {
 
 	@Test
 	public void testRepeatUser() {
-		var processors = getProcessors();
-		processors.add(Processor.factory(4, true));
+		var processors = getProcessors(Processor.factory(4, true));
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
 			var chip = new Chip(LOCATION_00, processors, createRouter(), 100,
