@@ -27,6 +27,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
+/** Utilities to support MVC controllers. */
 public abstract class ControllerUtils {
 	private ControllerUtils() {
 	}
@@ -49,6 +52,7 @@ public abstract class ControllerUtils {
 	 * @return URL that will invoke the method
 	 * @see MvcUriComponentsBuilder
 	 */
+	@UsedInJavadocOnly(MvcUriComponentsBuilder.class)
 	public static URI uri(Object selfCall, Object... objects) {
 		UriComponentsBuilder b = fromMethodCall(selfCall);
 		// Force some dumb stuff to be right
@@ -129,12 +133,6 @@ public abstract class ControllerUtils {
 		 */
 		public ModelAndView view(String key, Object value) {
 			return new ModelAndView(view, key, value);
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(MvcUriComponentsBuilder q) {
 		}
 	}
 }

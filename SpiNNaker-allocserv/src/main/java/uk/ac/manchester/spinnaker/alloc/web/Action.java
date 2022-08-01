@@ -23,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Describes what action a method is to take. Used to enhance logging in
@@ -30,12 +31,8 @@ import uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl;
  */
 @Target(METHOD)
 @Retention(RUNTIME)
+@UsedInJavadocOnly(AdminControllerImpl.class)
 public @interface Action {
 	/** @return The action we do in the annotated method. */
 	String value();
-}
-
-abstract class ActionUseOtherClassReferences {
-	private ActionUseOtherClassReferences(AdminControllerImpl q) {
-	}
 }

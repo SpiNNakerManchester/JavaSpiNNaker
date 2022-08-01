@@ -60,6 +60,7 @@ import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 @Service
 public class AllocatorTask extends DatabaseAwareBean
@@ -223,6 +224,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	}
 
 	/** Encapsulates the queries and updates used in allocation. */
+	@UsedInJavadocOnly(SQLQueries.class)
 	private final class AllocSQL extends PowerSQL {
 		/** Increases the importance of a job. */
 		private final Update bumpImportance;
@@ -1014,11 +1016,5 @@ public class AllocatorTask extends DatabaseAwareBean
 				return AllocatorTask.this.tombstone(conn);
 			}
 		};
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(SQLQueries q) {
-		}
 	}
 }

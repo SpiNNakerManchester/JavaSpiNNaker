@@ -30,9 +30,10 @@ import org.springframework.context.annotation.Role;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Component;
+
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Because Spring otherwise can't apply {@link PostFilter} to {@link Stream}.
@@ -42,9 +43,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Role(ROLE_INFRASTRUCTURE)
+@UsedInJavadocOnly(PostFilter.class)
 class AnyTypeMethodSecurityExpressionHandler
-		extends DefaultMethodSecurityExpressionHandler
-		implements MethodSecurityExpressionHandler {
+		extends DefaultMethodSecurityExpressionHandler {
 	@Override
 	public Object filter(Object target, Expression expr,
 			EvaluationContext ctx) {
@@ -70,11 +71,5 @@ class AnyTypeMethodSecurityExpressionHandler
 		List<T> a = new ArrayList<T>();
 		target.ifPresent(a::add);
 		return ((Stream<T>) super.filter(a.stream(), expr, ctx)).findFirst();
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(PostFilter q) {
-		}
 	}
 }

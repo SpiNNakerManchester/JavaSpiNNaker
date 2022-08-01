@@ -44,7 +44,6 @@ import java.util.stream.Stream;
  */
 public abstract class CollectionUtils {
 	private CollectionUtils() {
-		Stream.class.getClass();
 	}
 
 	/**
@@ -131,6 +130,7 @@ public abstract class CollectionUtils {
 	 *            How to map an element.
 	 * @return The output list.
 	 */
+	@UsedInJavadocOnly(Stream.class)
 	public static <T, U> List<U> lmap(Collection<T> list, Function<T, U> fun) {
 		return list.stream().map(fun).collect(toList());
 	}

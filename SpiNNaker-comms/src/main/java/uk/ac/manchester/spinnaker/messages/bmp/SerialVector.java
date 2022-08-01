@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The data in the serial vector. The result of a {@link SCPCommand#CMD_BMP_INFO
@@ -27,6 +28,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
  * <p>
  * See {@code cmd_bmp_info()} in {@code bmp_cmd.c}.
  */
+@UsedInJavadocOnly(SCPCommand.class)
 public class SerialVector {
 	/** Hardware version. */
 	public final int hardwareVersion;
@@ -57,9 +59,5 @@ public class SerialVector {
 		flashBuffer = b.get();
 		boardStat = b.get();
 		cortexBootVector = b.get();
-	}
-
-	static {
-		SCPCommand.class.getClass();
 	}
 }

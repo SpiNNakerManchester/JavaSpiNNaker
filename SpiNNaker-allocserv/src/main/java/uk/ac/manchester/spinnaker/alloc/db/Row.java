@@ -33,12 +33,15 @@ import java.util.function.ToIntFunction;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.TypeMismatchDataAccessException;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * A restricted form of result set. Note that this object <em>must not</em> be
  * saved outside the context of iteration over its' query's results.
  *
  * @author Donal Fellows
  */
+@UsedInJavadocOnly(DataAccessException.class)
 public final class Row {
 	private final ResultSet rs;
 
@@ -441,9 +444,5 @@ public final class Row {
 			sb.append("...");
 		}
 		return sb.append(")").toString();
-	}
-
-	static {
-		DataAccessException.class.getClass();
 	}
 }

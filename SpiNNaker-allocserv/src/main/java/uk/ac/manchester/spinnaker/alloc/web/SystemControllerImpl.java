@@ -62,6 +62,7 @@ import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The main web interface controller.
@@ -151,6 +152,7 @@ public class SystemControllerImpl implements SystemController {
 	 * @return How to render this to the user.
 	 */
 	@ExceptionHandler(BindException.class)
+	@UsedInJavadocOnly(Valid.class)
 	private ModelAndView bindingError(BindException result) {
 		if (result.hasGlobalErrors()) {
 			log.debug("binding problem", result);
@@ -286,11 +288,5 @@ public class SystemControllerImpl implements SystemController {
 		}
 		mach.setMachineUrl(uri(self().getMachineInfo(mach.getMachine())));
 		return view(JOB_VIEW, ONE_JOB_OBJ, mach);
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(Valid q) {
-		}
 	}
 }

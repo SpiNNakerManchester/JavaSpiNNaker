@@ -26,6 +26,8 @@ import java.util.concurrent.ThreadFactory;
 import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * A thread factory that makes it possible to get a notification when a thread
  * terminates. The termination callback, if set to non-{@code null}, will be run
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Role(ROLE_INFRASTRUCTURE)
+@UsedInJavadocOnly(Executors.class)
 public class TerminationNotifyingThreadFactory implements ThreadFactory {
 	private ThreadFactory realThreadFactory;
 
@@ -60,11 +63,5 @@ public class TerminationNotifyingThreadFactory implements ThreadFactory {
 				}
 			}
 		});
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(Executors q) {
-		}
 	}
 }

@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.storage.GeneratesID;
 import uk.ac.manchester.spinnaker.storage.Parameter;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The literal SQL queries used in this package.
@@ -44,6 +45,14 @@ import uk.ac.manchester.spinnaker.storage.SingleRowResult;
  * @author Donal Fellows
  */
 @SuppressWarnings("checkstyle:visibilitymodifier")
+// @formatter:off
+@UsedInJavadocOnly({
+	DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
+	UserControl.class, AllocatorTask.class, QuotaManager.class,
+	Spalloc.class, BMPController.class, BoardIssueReport.class,
+	LocalAuthProviderImpl.class, BlacklistStore.class
+})
+// @formatter:on
 public abstract class SQLQueries {
 	/** Get basic information about all machines. */
 	@Parameter("allow_out_of_service")
@@ -2427,14 +2436,4 @@ public abstract class SQLQueries {
 	@ResultColumn("alloc_id")
 	@Value("classpath:queries/copy-allocs-to-historical-data.sql")
 	protected Resource copyAllocsToHistoricalData;
-}
-
-interface SQLQueriesUseImportsForCheckstyle {
-	/** For Checkstyle. */
-	Class<?>[] CLASSES = {
-		DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
-		UserControl.class, AllocatorTask.class, QuotaManager.class,
-		Spalloc.class, BMPController.class, BoardIssueReport.class,
-		LocalAuthProviderImpl.class, BlacklistStore.class
-	};
 }

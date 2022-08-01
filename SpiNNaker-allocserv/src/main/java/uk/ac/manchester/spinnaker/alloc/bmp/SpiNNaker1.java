@@ -47,6 +47,7 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Implementation of controller for one BMP of one SpiNNaker 1 based system.
@@ -112,6 +113,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @throws FirmwareLoaderException
 	 *             If something goes wrong.
 	 */
+	@UsedInJavadocOnly(FirmwareLoaderException.class)
 	private void loadFirmware(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
 		int count = 0;
@@ -334,11 +336,5 @@ class SpiNNaker1 implements SpiNNakerControl {
 	public void writeBlacklist(BMPBoard board, Blacklist blacklist)
 			throws ProcessException, InterruptedException, IOException {
 		txrx.writeBlacklist(board, blacklist);
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(FirmwareLoaderException q) {
-		}
 	}
 }
