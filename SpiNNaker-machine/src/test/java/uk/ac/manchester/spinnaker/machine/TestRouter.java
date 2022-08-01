@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -74,7 +73,7 @@ public class TestRouter {
 	}
 
 	@Test
-	public void testgetNeighbouringChipsCoords() throws UnknownHostException {
+	public void testgetNeighbouringChipsCoords() {
 		ArrayList<Link> links = new ArrayList<>();
 		links.add(LINK00_10);
 		links.add(LINK00_01);

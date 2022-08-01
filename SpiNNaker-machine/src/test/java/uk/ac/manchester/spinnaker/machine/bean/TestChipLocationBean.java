@@ -52,7 +52,7 @@ public class TestChipLocationBean {
 	}
 
 	@Test
-	public void testOneNullJson() throws IOException {
+	public void testOneNullJson() {
 		String json = "[2]";
 		ObjectMapper mapper = MapperFactory.createMapper();
 		assertThrows(MismatchedInputException.class, () -> {

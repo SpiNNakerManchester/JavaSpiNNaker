@@ -22,14 +22,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
-
 /**
  * A connection that detects any UDP packet that is transmitted by SpiNNaker
  * boards prior to boot.
  */
-public class IPAddressConnection extends UDPConnection<InetAddress>
-		implements MessageReceiver<InetAddress> {
+public class IPAddressConnection extends UDPConnection<InetAddress> {
 	/** Matches SPINN_PORT in spinnaker_bootROM. */
 	private static final int BOOTROM_SPINN_PORT = 54321;
 

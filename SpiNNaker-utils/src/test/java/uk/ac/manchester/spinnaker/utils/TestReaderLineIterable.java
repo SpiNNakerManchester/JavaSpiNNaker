@@ -30,14 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Christian-B
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "resource"})
 public class TestReaderLineIterable {
 
 	public TestReaderLineIterable() {
 	}
 
 	@Test
-	public void testSimple() {
+	public void testSimple() throws IOException {
 		StringReader reader = new StringReader("First\nSecond\nThird");
 		ReaderLineIterable iterable = new ReaderLineIterable(reader);
 		int count = 0;
@@ -51,15 +51,11 @@ public class TestReaderLineIterable {
 			}
 		});
 		assertEquals(3, count);
-		try {
-			iterable.close();
-		} catch (IOException ex) {
-			assertTrue(false, "Unexpected Exception");
-		}
+		iterable.close();
 	}
 
 	@Test
-	public void testStream() {
+	public void testStream() throws IOException {
 		InputStream inputStream =
 				new ByteArrayInputStream("First\nSecond\nThird".getBytes());
 		ReaderLineIterable iterable = new ReaderLineIterable(inputStream);
@@ -74,22 +70,14 @@ public class TestReaderLineIterable {
 			}
 		});
 		assertEquals(3, count);
-		try {
-			iterable.close();
-		} catch (IOException ex) {
-			assertTrue(false, "Unexpected Exception");
-		}
+		iterable.close();
 	}
 
 	@Test
-	public void testEarlyClose() {
+	public void testEarlyClose() throws IOException {
 		StringReader reader = new StringReader("First\nSecond\nThird");
 		ReaderLineIterable iterable = new ReaderLineIterable(reader);
-		try {
-			iterable.close();
-		} catch (IOException ex) {
-			assertTrue(false, "Unexpected Exception");
-		}
+		iterable.close();
 		assertThrows(IllegalStateException.class, () -> {
 			for (String line : iterable) {
 				continue;
@@ -118,7 +106,6 @@ public class TestReaderLineIterable {
 	 * test that close method is not called if used simply.
 	 */
 	@Test
-	@SuppressWarnings("resource")
 	public void testNoClose() {
 		Reader reader = new CloseError();
 		for (String line : new ReaderLineIterable(reader)) {
@@ -137,33 +124,25 @@ public class TestReaderLineIterable {
 			count += 1;
 		}
 		assertEquals(0, count);
-		try {
-			iterable.close();
-			assertTrue(false, "Expected Exception");
-		} catch (IOException ex) {
-			assertEquals("Weird marker", ex.getMessage());
-		}
+		assertEquals("Weird marker",
+				assertThrows(IOException.class, iterable::close).getMessage());
 	}
 
 	@Test
-	public void testHasNext() {
+	public void testHasNext() throws IOException {
 		StringReader reader = new StringReader("First\nSecond\nThird");
-		ReaderLineIterable iterable = new ReaderLineIterable(reader);
-		Iterator<String> iterator = iterable.iterator();
-		assertEquals("First", iterator.next());
-		iterator.hasNext();
-		iterator.hasNext();
-		iterator.hasNext();
-		assertEquals("Second", iterator.next());
-		assertEquals("Third", iterator.next());
-		assertThrows(NoSuchElementException.class, () -> {
-			iterator.next();
-		});
-		iterator.hasNext();
-		try {
-			iterable.close();
-		} catch (IOException ex) {
-			assertTrue(false, "Unexpected Exception");
+		try (ReaderLineIterable iterable = new ReaderLineIterable(reader)) {
+			Iterator<String> iterator = iterable.iterator();
+			assertEquals("First", iterator.next());
+			iterator.hasNext();
+			iterator.hasNext();
+			iterator.hasNext();
+			assertEquals("Second", iterator.next());
+			assertEquals("Third", iterator.next());
+			assertThrows(NoSuchElementException.class, () -> {
+				iterator.next();
+			});
+			iterator.hasNext();
 		}
 	}
 

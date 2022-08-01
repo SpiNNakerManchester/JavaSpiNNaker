@@ -80,9 +80,8 @@ public final class CommandLineInterface {
 		Class<?> cls = CommandLineInterface.class;
 		Properties prop = new Properties();
 		try {
-			prop.load(cls.getClassLoader()
-					.getResourceAsStream("command-line.properties"));
-		} catch (IOException e) {
+			prop.load(cls.getResourceAsStream("command-line.properties"));
+		} catch (IOException | NullPointerException e) {
 			getLogger(cls).error("failed to read properties", e);
 			exit(2);
 		}

@@ -139,7 +139,7 @@ class TestBlacklist {
 	@Nested
 	class WithStrings {
 		@Test
-		void parseEmptyBlacklist() throws IOException {
+		void parseEmptyBlacklist() {
 			String blData = "";
 
 			Blacklist bl = new Blacklist(blData);
@@ -150,7 +150,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneWholeDeadChip() throws IOException {
+		void parseOneWholeDeadChip() {
 			String blData = "chip 0 0 dead";
 
 			Blacklist bl = new Blacklist(blData);
@@ -161,7 +161,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCoreAndLink() throws IOException {
+		void parseOneChipDeadCoreAndLink() {
 			String blData = "chip 0 0 core 2 link 3";
 
 			Blacklist bl = new Blacklist(blData);
@@ -172,7 +172,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCores() throws IOException {
+		void parseOneChipDeadCores() {
 			String blData = "chip 0 0 core 2,16";
 
 			Blacklist bl = new Blacklist(blData);
@@ -183,7 +183,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadLinks() throws IOException {
+		void parseOneChipDeadLinks() {
 			String blData = "chip 0 0 link 0,3,5,2";
 
 			Blacklist bl = new Blacklist(blData);
@@ -195,7 +195,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCoresAndLinks() throws IOException {
+		void parseOneChipDeadCoresAndLinks() {
 			String blData = "chip 0 0 core 2,3 link 3,0";
 
 			Blacklist bl = new Blacklist(blData);
@@ -206,7 +206,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipAllParts() throws IOException {
+		void parseOneChipAllParts() {
 			String blData = "chip 0 0 core 2 link 3 dead";
 
 			Blacklist bl = new Blacklist(blData);
@@ -217,7 +217,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipAllPartsAlternateOrdering() throws IOException {
+		void parseOneChipAllPartsAlternateOrdering() {
 			String blData = "chip 0 0 dead link 3 core 2";
 
 			Blacklist bl = new Blacklist(blData);
@@ -228,7 +228,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseSeveralChips() throws IOException {
+		void parseSeveralChips() {
 			String blData = "chip 0 0 core 2\nchip 0 1 link 0\nchip 1 0 dead";
 
 			Blacklist bl = new Blacklist(blData);
@@ -239,7 +239,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCoresAndLinksTwoLines() throws IOException {
+		void parseOneChipDeadCoresAndLinksTwoLines() {
 			String blData = "chip 0 0 core 2,3\nchip 0 0 link 3,0";
 
 			Blacklist bl = new Blacklist(blData);
@@ -250,7 +250,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseWhitespaceCommentStrip() throws IOException {
+		void parseWhitespaceCommentStrip() {
 			String blData =
 					"#comment\n\n  \n   chip    0    0    dead   \n# comment";
 
@@ -262,7 +262,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseJunkLine() throws IOException {
+		void parseJunkLine() {
 			String blData = "garbage\nchip 0 0 dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -272,7 +272,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseJunkPrefix() throws IOException {
+		void parseJunkPrefix() {
 			String blData = "garbage chip 0 0 dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -282,7 +282,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseJunkSuffix() throws IOException {
+		void parseJunkSuffix() {
 			String blData = "chip 0 0 dead junk";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -292,7 +292,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseDoubleDead() throws IOException {
+		void parseDoubleDead() {
 			String blData = "chip 0 0 dead dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -302,7 +302,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseDoubleCore() throws IOException {
+		void parseDoubleCore() {
 			String blData = "chip 0 0 core 1 core 2";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -312,7 +312,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseDoubleLink() throws IOException {
+		void parseDoubleLink() {
 			String blData = "chip 0 0 link 1 link 2";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -322,7 +322,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseBadChipCoords() throws IOException {
+		void parseBadChipCoords() {
 			String blData = "chip 0 7 dead";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -332,7 +332,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseBadCoreNumber() throws IOException {
+		void parseBadCoreNumber() {
 			String blData = "chip 0 0 core 42";
 
 			Exception e = assertThrows(IllegalArgumentException.class, () -> {
@@ -342,7 +342,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseBadLinkNumber() throws IOException {
+		void parseBadLinkNumber() {
 			String blData = "chip 0 0 link 42";
 
 			Exception e =

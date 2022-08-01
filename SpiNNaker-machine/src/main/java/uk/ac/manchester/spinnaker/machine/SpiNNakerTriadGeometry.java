@@ -178,7 +178,7 @@ public final class SpiNNakerTriadGeometry {
 		float bestDistance = Float.MAX_VALUE;
 		for (Location ethernet : roots) {
 			float calc = hexagonalMetricDistance(x, y,
-					ethernet.x + (float) xCentre, ethernet.y + (float) yCentre);
+					ethernet.x + xCentre, ethernet.y + yCentre);
 			if (calc < bestDistance) {
 				bestDistance = calc;
 				bestCalc = ethernet;

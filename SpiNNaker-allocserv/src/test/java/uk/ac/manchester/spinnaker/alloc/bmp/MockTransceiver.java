@@ -197,6 +197,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 		return b.slice();
 	}
 
+	@Override
 	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length) {
 		log.info("readSerialFlash({},{},{},{})", bmp, board, baseAddress,

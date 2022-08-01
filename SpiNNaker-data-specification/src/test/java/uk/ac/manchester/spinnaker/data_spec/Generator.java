@@ -63,8 +63,7 @@ public final class Generator {
 		}
 	}
 
-	public static ByteArrayInputStream makeSpecStream(SpecGen specGen)
-			throws IOException {
+	public static ByteArrayInputStream makeSpecStream(SpecGen specGen) {
 		Generator spec = new Generator();
 		specGen.generate(spec);
 		return new ByteArrayInputStream(spec.buffer.array(), 0,

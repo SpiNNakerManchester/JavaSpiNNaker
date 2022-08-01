@@ -878,6 +878,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @return The {@code team/roles} sub-claim, provided it exists and really
 	 *         looks like a list of strings.
 	 */
+	@SuppressWarnings("cast")
 	private static List<String>
 			getTeamsFromClaim(Map<String, List<String>> rolesClaim) {
 		// Messy; all the implicit types and hidden casts!

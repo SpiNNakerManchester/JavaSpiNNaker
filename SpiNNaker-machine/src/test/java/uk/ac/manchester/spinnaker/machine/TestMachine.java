@@ -205,7 +205,7 @@ public class TestMachine {
 	}
 
 	@Test
-	public void testAddChip() throws UnknownHostException {
+	public void testAddChip() {
 		ArrayList<Processor> processors = createProcessors();
 		ArrayList<Chip> chips = new ArrayList<>();
 		Machine instance =

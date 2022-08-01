@@ -504,6 +504,7 @@ public final class Blacklist implements Serializable {
 				&& links.equals(other.links);
 	}
 
+	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder("Blacklist(");
 		s.append(chips).append(", ").append(cores).append(", ").append(links);

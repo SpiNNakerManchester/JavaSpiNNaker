@@ -44,7 +44,7 @@ public class TestInetIdTuple {
 	}
 
 	@Test
-	public void testEqualsWithNull() throws UnknownHostException {
+	public void testEqualsWithNull() {
 		InetIdTuple t1 = new InetIdTuple(null, 23);
 		InetIdTuple t2 = new InetIdTuple(null, 23);
 

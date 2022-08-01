@@ -87,7 +87,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 	private StateControlProperties props;
 
 	@PostConstruct
-	private void launchBackground() throws InterruptedException {
+	private void launchBackground() {
 		props = properties.getStateControl();
 		// After a minute, start retrieving board serial numbers
 		executor.schedule((Runnable) this::readAllBoardSerialNumbers,

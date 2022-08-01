@@ -36,7 +36,7 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 
 	public ReadCANStatus() {
 		// The CAN status is shared between all BMPs; it's how they communicate
-		super(FRAME_ROOT, CMD_BMP_INFO, (int) CAN_STATUS.value);
+		super(FRAME_ROOT, CMD_BMP_INFO, CAN_STATUS.value);
 	}
 
 	@Override

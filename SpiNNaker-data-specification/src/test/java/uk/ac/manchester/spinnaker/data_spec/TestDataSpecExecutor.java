@@ -62,6 +62,7 @@ public class TestDataSpecExecutor {
 		});
 
 		// Execute the spec
+		@SuppressWarnings("resource")
 		Executor executor = new Executor(spec, 400);
 		executor.execute();
 		executor.close();
@@ -131,7 +132,7 @@ public class TestDataSpecExecutor {
 		ByteBuffer buffer = ByteBuffer.allocate(4096).order(LITTLE_ENDIAN);
 		executor.setBaseAddress(NULL);
 		executor.addPointerTable(buffer);
-		IntBuffer table = ((ByteBuffer) buffer.flip()).asIntBuffer();
+		IntBuffer table = asIntBuffer(buffer);
 		assertEquals(MAX_MEM_REGIONS * 3, table.limit());
 		assertEquals(headerAndTableSize, table.get(0));
 		assertEquals(headerAndTableSize + 100, table.get(3));
@@ -143,10 +144,15 @@ public class TestDataSpecExecutor {
 		// Test the header
 		buffer.clear();
 		executor.addHeader(buffer);
-		IntBuffer header = ((ByteBuffer) buffer.flip()).asIntBuffer();
+		IntBuffer header = asIntBuffer(buffer);
 		assertEquals(2, header.limit());
 		assertEquals(APPDATA_MAGIC_NUM, header.get(0));
 		assertEquals(DSE_VERSION, header.get(1));
+	}
+
+	private static IntBuffer asIntBuffer(ByteBuffer buffer) {
+		buffer.flip();
+		return buffer.asIntBuffer();
 	}
 
 	@Test
@@ -157,6 +163,7 @@ public class TestDataSpecExecutor {
 		});
 
 		// Execute the spec
+		@SuppressWarnings("resource")
 		Executor executor = new Executor(spec, 400);
 		executor.execute();
 		executor.close();
@@ -239,7 +246,7 @@ public class TestDataSpecExecutor {
 	}
 
 	@Test
-	void testFailingSpec() throws IOException, DataSpecificationException {
+	void testFailingSpec() throws IOException {
 		ByteBuffer spec = makeSpec(s -> {
 			s.fail();
 			s.endSpecification();

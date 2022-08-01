@@ -44,13 +44,13 @@ public class PingITCase {
 	}
 
 	@Test
-	public void testPingLocalhost() throws UnknownHostException {
+	public void testPingLocalhost() {
 		// Can't ping localhost? Network catastrophically bad!
 		assertEquals(0, Ping.ping("localhost"));
 	}
 
 	@Test
-	public void testPingDownHost() throws UnknownHostException {
+	public void testPingDownHost() {
 		// CHECKSTYLE:OFF
 		/*
 		 * Definitely unpingable host

@@ -474,6 +474,7 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	private int closeChannel(int id) throws IOException {
+		@SuppressWarnings("resource")
 		ProxyUDPConnection conn = removeConnection(id);
 		if (!isValid(conn)) {
 			return 0;

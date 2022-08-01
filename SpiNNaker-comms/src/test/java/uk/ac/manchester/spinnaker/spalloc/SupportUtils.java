@@ -97,14 +97,14 @@ abstract class SupportUtils {
 	}
 
 	static void withConnection(WithConn op) throws Exception {
-		try (MockServer s = new MockServer()) {
-			SpallocClient c = new SpallocClient("localhost", s.getPort(), null);
+		try (MockServer s = new MockServer();
+				SpallocClient c =
+						new SpallocClient("localhost", s.getPort(), null)) {
 			Joinable bgAccept = backgroundAccept(s);
 			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
 				op.act(s, c, bgAccept);
 			});
 			bgAccept.join();
-			c.close();
 		}
 	}
 }

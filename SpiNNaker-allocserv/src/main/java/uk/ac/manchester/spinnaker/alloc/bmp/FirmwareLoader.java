@@ -381,7 +381,7 @@ public class FirmwareLoader {
 
 	private void updateFlashData(ByteBuffer data)
 			throws ProcessException, IOException {
-		data.putInt(CRC_OFFSET, (int) ~crc(data, 0, CRC_OFFSET));
+		data.putInt(CRC_OFFSET, ~crc(data, 0, CRC_OFFSET));
 		data.position(0);
 		MemoryLocation fb = txrx.getSerialFlashBuffer(board);
 		txrx.writeBMPMemory(board, fb, data);

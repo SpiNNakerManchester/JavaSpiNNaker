@@ -423,7 +423,7 @@ class Functions implements FunctionAPI {
 				b.putInt((int) value);
 				break;
 			case LONG_SIZE:
-				b.putLong((long) value);
+				b.putLong(value);
 				break;
 			default:
 				throw new UnknownTypeLengthException(dataLen, command);

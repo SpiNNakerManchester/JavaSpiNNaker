@@ -94,7 +94,7 @@ public class TestVirtualMachine {
 	}
 
 	@Test
-	public void testSingleBoard() throws UnknownHostException {
+	public void testSingleBoard() {
 		Machine instance = new VirtualMachine(MachineVersion.FOUR);
 		assertEquals(48, instance.chips().size());
 		instance.addFpgaLinks();

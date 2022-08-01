@@ -33,7 +33,7 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 	 *            which board to request the ADC register from
 	 */
 	public ReadADC(BMPBoard board) {
-		super(board, CMD_BMP_INFO, (int) ADC.value);
+		super(board, CMD_BMP_INFO, ADC.value);
 	}
 
 	@Override

@@ -139,7 +139,7 @@ public class TestChip {
 	}
 
 	@Test
-	public void testRepeatMonitor() throws UnknownHostException {
+	public void testRepeatMonitor() {
 		ArrayList<Processor> processors = getProcessors();
 		processors.add(Processor.factory(2, false));
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -150,7 +150,7 @@ public class TestChip {
 	}
 
 	@Test
-	public void testRepeatUser() throws UnknownHostException {
+	public void testRepeatUser() {
 		ArrayList<Processor> processors = getProcessors();
 		processors.add(Processor.factory(4, true));
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -178,7 +178,7 @@ public class TestChip {
 	}
 
 	@Test
-	public void testDefault1() throws UnknownHostException {
+	public void testDefault1() {
 		Chip chip = new Chip(ChipLocation.ONE_ZERO, createRouter(), null,
 				LOCATION_11);
 		assertEquals(ChipLocation.ONE_ZERO, chip.asChipLocation());
