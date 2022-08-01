@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /** SARK CPU States. */
@@ -62,16 +62,11 @@ public enum CPUState {
 	/** The canonical SARK value for the state. */
 	public final int value;
 
-	private static final Map<Integer, CPUState> MAP = new HashMap<>();
+	private static final Map<Integer, CPUState> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	CPUState() {
 		value = ordinal();
-	}
-
-	static {
-		for (var state : values()) {
-			MAP.put(state.value, state);
-		}
 	}
 
 	/**

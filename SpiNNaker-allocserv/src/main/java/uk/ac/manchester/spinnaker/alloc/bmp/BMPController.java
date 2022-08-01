@@ -96,6 +96,7 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException.TransientProcessE
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 import uk.ac.manchester.spinnaker.utils.Ping;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages the BMPs of machines controlled by Spalloc.
@@ -161,6 +162,7 @@ public class BMPController extends DatabaseAwareBean {
 	 *            What the thread will be doing.
 	 * @return The thread.
 	 */
+	@UsedInJavadocOnly(ThreadFactory.class)
 	private Thread makeThread(Runnable target) {
 		var t = new Thread(group, target);
 		t.setUncaughtExceptionHandler(this::handleException);
@@ -175,6 +177,7 @@ public class BMPController extends DatabaseAwareBean {
 	 * @param exception
 	 *            The exception that describes the problem.
 	 */
+	@UsedInJavadocOnly(UncaughtExceptionHandler.class)
 	private void handleException(Thread thread, Throwable exception) {
 		log.error("uncaught exception in BMP worker {}", thread, exception);
 	}
@@ -1579,12 +1582,6 @@ public class BMPController extends DatabaseAwareBean {
 		map.put(request.bmp,
 				controllerFactory.create(request.machine, request.bmp));
 		return map;
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(ThreadFactory q1, UncaughtExceptionHandler q2) {
-		}
 	}
 
 	/**

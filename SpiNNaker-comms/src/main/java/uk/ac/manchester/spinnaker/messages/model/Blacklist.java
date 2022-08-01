@@ -67,6 +67,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry;
 import uk.ac.manchester.spinnaker.utils.CollectionUtils;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * A blacklist read off a board. Note that all chip coordinates are
@@ -103,6 +104,7 @@ public final class Blacklist implements Serializable {
 	 * (i.e., there are {@link Buffer#remaining()} bytes left). Access to this
 	 * variable must be careful!
 	 */
+	@UsedInJavadocOnly(Buffer.class)
 	private transient ByteBuffer rawData;
 
 	private Set<ChipLocation> chips = new HashSet<>();
@@ -487,6 +489,7 @@ public final class Blacklist implements Serializable {
 				&& links.equals(other.links);
 	}
 
+	@Override
 	public String toString() {
 		var s = new StringBuilder("Blacklist(");
 		s.append(chips).append(", ").append(cores).append(", ").append(links);
@@ -512,9 +515,5 @@ public final class Blacklist implements Serializable {
 		var buf = new byte[len];
 		in.read(buf);
 		rawData = wrap(buf).order(LITTLE_ENDIAN);
-	}
-
-	static {
-		Buffer.class.getClass();
 	}
 }

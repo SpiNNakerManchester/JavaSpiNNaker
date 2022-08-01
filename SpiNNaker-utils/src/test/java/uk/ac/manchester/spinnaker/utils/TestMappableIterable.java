@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +39,7 @@ public class TestMappableIterable {
 
 	@Test
 	public void testMap() {
-		MappableIterable<Integer> mi = () -> values.iterator();
+		MappableIterable<Integer> mi = values::iterator;
 
 		int i = 3;
 		for (Integer value : mi.map(x -> x * 3)) {
@@ -62,7 +61,7 @@ public class TestMappableIterable {
 
 	@Test
 	public void testToListAndSet() {
-		MappableIterable<Integer> mi = () -> values2.iterator();
+		MappableIterable<Integer> mi = values2::iterator;
 
 		assertEquals(values2, mi.toList());
 		assertEquals(List.of(1, 2, 3), new ArrayList<>(mi.toSet()));
@@ -70,7 +69,7 @@ public class TestMappableIterable {
 
 	@Test
 	public void testFilter() {
-		MappableIterable<Integer> mi = () -> values.iterator();
+		MappableIterable<Integer> mi = values::iterator;
 
 		int i = 1;
 		for (Integer value : mi.filter(x -> (x & 1) > 0)) {
@@ -101,13 +100,13 @@ public class TestMappableIterable {
 
 	@Test
 	public void testFirst() {
-		MappableIterable<Integer> mi = () -> values.iterator();
+		MappableIterable<Integer> mi = values::iterator;
 
-		Optional<Integer> first = mi.first();
+		var first = mi.first();
 		assertTrue(first.isPresent());
 		assertEquals(1, first.get());
 
-		List<Integer> first3 = mi.first(3).toList();
+		var first3 = mi.first(3).toList();
 		assertEquals(List.of(1, 2, 3), first3);
 
 		mi = () -> empty.iterator();
@@ -116,7 +115,7 @@ public class TestMappableIterable {
 
 	@Test
 	public void testNth() {
-		MappableIterable<Integer> mi = () -> values3.iterator();
+		MappableIterable<Integer> mi = values3::iterator;
 
 		assertEquals(7, mi.nth(2).get());
 		assertFalse(mi.nth(7).isPresent());

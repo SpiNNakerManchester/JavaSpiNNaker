@@ -78,9 +78,8 @@ public final class CommandLineInterface {
 		var cls = CommandLineInterface.class;
 		var prop = new Properties();
 		try {
-			prop.load(cls.getClassLoader()
-					.getResourceAsStream("command-line.properties"));
-		} catch (IOException e) {
+			prop.load(cls.getResourceAsStream("command-line.properties"));
+		} catch (IOException | NullPointerException e) {
 			getLogger(cls).error("failed to read properties", e);
 			exit(2);
 		}
@@ -464,7 +463,7 @@ interface CLICommands {
 	 */
 	static String list() {
 		var sb = new StringBuilder();
-		String sep = "";
+		var sep = "";
 		for (var item : ALL) {
 			sb.append(sep);
 			sep = ", ";

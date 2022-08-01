@@ -114,7 +114,7 @@ class TestBlacklist {
 	@Nested
 	class WithStrings {
 		@Test
-		void parseEmptyBlacklist() throws IOException {
+		void parseEmptyBlacklist() {
 			var blData = "";
 
 			var bl = new Blacklist(blData);
@@ -125,7 +125,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneWholeDeadChip() throws IOException {
+		void parseOneWholeDeadChip() {
 			var blData = "chip 0 0 dead";
 
 			var bl = new Blacklist(blData);
@@ -136,7 +136,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCoreAndLink() throws IOException {
+		void parseOneChipDeadCoreAndLink() {
 			var blData = "chip 0 0 core 2 link 3";
 
 			var bl = new Blacklist(blData);
@@ -147,7 +147,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCores() throws IOException {
+		void parseOneChipDeadCores() {
 			var blData = "chip 0 0 core 2,16";
 
 			var bl = new Blacklist(blData);
@@ -158,7 +158,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadLinks() throws IOException {
+		void parseOneChipDeadLinks() {
 			var blData = "chip 0 0 link 0,3,5,2";
 
 			var bl = new Blacklist(blData);
@@ -170,7 +170,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCoresAndLinks() throws IOException {
+		void parseOneChipDeadCoresAndLinks() {
 			var blData = "chip 0 0 core 2,3 link 3,0";
 
 			var bl = new Blacklist(blData);
@@ -181,7 +181,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipAllParts() throws IOException {
+		void parseOneChipAllParts() {
 			var blData = "chip 0 0 core 2 link 3 dead";
 
 			var bl = new Blacklist(blData);
@@ -192,7 +192,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipAllPartsAlternateOrdering() throws IOException {
+		void parseOneChipAllPartsAlternateOrdering() {
 			var blData = "chip 0 0 dead link 3 core 2";
 
 			var bl = new Blacklist(blData);
@@ -203,7 +203,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseSeveralChips() throws IOException {
+		void parseSeveralChips() {
 			var blData = "chip 0 0 core 2\nchip 0 1 link 0\nchip 1 0 dead";
 
 			var bl = new Blacklist(blData);
@@ -214,7 +214,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseOneChipDeadCoresAndLinksTwoLines() throws IOException {
+		void parseOneChipDeadCoresAndLinksTwoLines() {
 			var blData = "chip 0 0 core 2,3\nchip 0 0 link 3,0";
 
 			var bl = new Blacklist(blData);
@@ -225,7 +225,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseWhitespaceCommentStrip() throws IOException {
+		void parseWhitespaceCommentStrip() {
 			var blData =
 					"#comment\n\n  \n   chip    0    0    dead   \n# comment";
 
@@ -237,7 +237,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseJunkLine() throws IOException {
+		void parseJunkLine() {
 			var blData = "garbage\nchip 0 0 dead";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -247,7 +247,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseJunkPrefix() throws IOException {
+		void parseJunkPrefix() {
 			var blData = "garbage chip 0 0 dead";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -257,7 +257,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseJunkSuffix() throws IOException {
+		void parseJunkSuffix() {
 			var blData = "chip 0 0 dead junk";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -267,7 +267,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseDoubleDead() throws IOException {
+		void parseDoubleDead() {
 			var blData = "chip 0 0 dead dead";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -277,7 +277,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseDoubleCore() throws IOException {
+		void parseDoubleCore() {
 			var blData = "chip 0 0 core 1 core 2";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -287,7 +287,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseDoubleLink() throws IOException {
+		void parseDoubleLink() {
 			var blData = "chip 0 0 link 1 link 2";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -297,7 +297,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseBadChipCoords() throws IOException {
+		void parseBadChipCoords() {
 			var blData = "chip 0 7 dead";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -307,7 +307,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseBadCoreNumber() throws IOException {
+		void parseBadCoreNumber() {
 			var blData = "chip 0 0 core 42";
 
 			var e = assertThrows(IllegalArgumentException.class, () -> {
@@ -317,7 +317,7 @@ class TestBlacklist {
 		}
 
 		@Test
-		void parseBadLinkNumber() throws IOException {
+		void parseBadLinkNumber() {
 			var blData = "chip 0 0 link 42";
 
 			var e = assertThrows(ArrayIndexOutOfBoundsException.class, () -> {

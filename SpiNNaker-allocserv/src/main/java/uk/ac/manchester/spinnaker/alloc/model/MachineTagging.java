@@ -23,7 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Describes a tagging of a machine.
@@ -42,6 +44,14 @@ public class MachineTagging {
 	public MachineTagging() {
 	}
 
+	/**
+	 * Build a basic instance (without tags, which need another query) from the
+	 * result of {@link SQLQueries#GET_ALL_MACHINES}.
+	 *
+	 * @param row
+	 *            The database row.
+	 */
+	@UsedInJavadocOnly(SQLQueries.class)
 	public MachineTagging(Row row) {
 		id = row.getInt("machine_id");
 		name = row.getString("machine_name");

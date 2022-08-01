@@ -78,6 +78,7 @@ import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
 import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 
 /**
@@ -728,14 +729,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 					"problem with processing file: " + e.getMessage());
 		}
 	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(GroupType t, BoardIssueReport b) {
-		}
-	}
 }
 
+@UsedInJavadocOnly({GroupType.class, BoardIssueReport.class})
 interface AdminControllerConstants {
 	// These are paths below src/main/webapp/WEB-INF/views
 	/** View: {@code admin/index.jsp}. */

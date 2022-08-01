@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -84,7 +83,7 @@ class BootTest {
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
+		var dbp = Paths.get(DB);
 		if (exists(dbp)) {
 			log.info("deleting old database: {}", dbp);
 			delete(dbp);

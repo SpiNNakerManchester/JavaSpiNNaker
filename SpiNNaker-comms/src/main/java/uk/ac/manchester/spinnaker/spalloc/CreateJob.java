@@ -35,6 +35,7 @@ import java.util.Map;
 
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * An abstract, high-level request to create a job.
@@ -92,14 +93,11 @@ public class CreateJob {
 	 *            Third coordinate
 	 * @see WhereIs
 	 */
+	@UsedInJavadocOnly(WhereIs.class)
 	public CreateJob(int x, int y, int z) {
 		args.add(x);
 		args.add(y);
 		args.add(z);
-	}
-
-	static {
-		WhereIs.class.hashCode(); // NEEDED FOR JAVADOC @see ABOVE
 	}
 
 	/**

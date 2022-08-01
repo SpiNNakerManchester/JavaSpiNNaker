@@ -28,7 +28,6 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Optional;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.springframework.dao.DataAccessException;
@@ -120,7 +119,7 @@ public class JobStateResponse {
 		owner = job.getOwner().orElse(null);
 		originalRequest = origRequest(mapper, job);
 
-		UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
+		var b = ui.getAbsolutePathBuilder().path("{resource}");
 		keepaliveRef = b.build(JOB_KEEPALIVE);
 		machineRef = b.build(JOB_MACHINE);
 		chipRef = b.build(JOB_BOARD_BY_CHIP);
@@ -143,7 +142,7 @@ public class JobStateResponse {
 
 	private static URI makeProxyURI(Job job, UriInfo ui, String servletPath) {
 		// Messy; needs to refer to the other half of the application
-		URI u = ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
+		var u = ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
 				.path(SpinWSHandler.PATH).build(job.getId());
 		return u;
 	}

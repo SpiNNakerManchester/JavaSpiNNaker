@@ -224,7 +224,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(Set.of("width", "height"), q.getRowColumnNames());
 			c.transaction(() -> {
-				Row row = q.call1(NO_JOB).get();
+				var row = q.call1(NO_JOB).get();
 				// These two are actually NULL when there's no job
 				assertEquals(0, row.getInt("width"));
 				assertEquals(0, row.getInt("height"));
@@ -429,7 +429,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(1, q.getNumArguments());
 			assertSetEquals(Set.of("total_on"), q.getRowColumnNames());
 			c.transaction(() -> {
-				Row row = q.call1(NO_JOB).get();
+				var row = q.call1(NO_JOB).get();
 				assertEquals(0, row.getInt("total_on"));
 			});
 		}
@@ -583,7 +583,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(5, q.getNumArguments());
 			assertSetEquals(Set.of("connected_size"), q.getRowColumnNames());
 			c.transaction(() -> {
-				Row row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
+				var row = q.call1(NO_MACHINE, -1, -1, -1, -1).get();
 				assertEquals(0, row.getInt("connected_size"));
 			});
 		}
@@ -595,7 +595,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(0, q.getNumArguments());
 			assertSetEquals(Set.of("c"), q.getRowColumnNames());
 			c.transaction(() -> {
-				Row row = q.call1().get();
+				var row = q.call1().get();
 				assertEquals(0, row.getInt("c"));
 			});
 		}
@@ -1034,7 +1034,7 @@ class DQLTest extends SQLQueries {
 			assertSetEquals(Set.of("board_count", "in_use", "num_jobs"),
 					q.getRowColumnNames());
 			c.transaction(() -> {
-				Row r = q.call1(NO_MACHINE).get();
+				var r = q.call1(NO_MACHINE).get();
 				assertEquals(0, r.getInt("board_count"));
 				assertEquals(0, r.getInt("in_use"));
 				assertEquals(0, r.getInt("num_jobs"));

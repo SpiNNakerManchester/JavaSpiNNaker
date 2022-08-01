@@ -16,14 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.net.UnknownHostException;
 import java.util.List;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 import static org.hamcrest.Matchers.*;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.Test;
@@ -69,7 +68,7 @@ public class TestRouter {
 	}
 
 	@Test
-	public void testgetNeighbouringChipsCoords() throws UnknownHostException {
+	public void testgetNeighbouringChipsCoords() {
 		var links = List.of(LINK00_10, LINK00_01);
 		assertThat(CHIP01, is(oneOf(CHIP01, CHIP10)));
 		var router = new Router(links);
@@ -117,7 +116,7 @@ public class TestRouter {
 	public void testDefaults1() {
 		var router = new Router();
 		assertThat(router.links(), IsEmptyCollection.empty());
-		assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES,
+		assertEquals(ROUTER_AVAILABLE_ENTRIES,
 				router.nAvailableMulticastEntries);
 	}
 
@@ -126,7 +125,7 @@ public class TestRouter {
 		var links = List.of(LINK00_01, LINK00_10);
 		var router = new Router(links);
 		assertThat(router.links(), containsInAnyOrder(links.toArray()));
-		assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES,
+		assertEquals(ROUTER_AVAILABLE_ENTRIES,
 				router.nAvailableMulticastEntries);
 	}
 
@@ -136,7 +135,7 @@ public class TestRouter {
 		var router =
 				new Router(links, MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1);
 		assertThat(router.links(), containsInAnyOrder(links.toArray()));
-		assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1,
+		assertEquals(ROUTER_AVAILABLE_ENTRIES + 1,
 				router.nAvailableMulticastEntries);
 	}
 

@@ -80,7 +80,7 @@ public class TestJobDescription {
 		var json = "{\"job_id\":null}";
 
 		var mapper = SpallocClient.createMapper();
-		JobDescription fromJson = mapper.readValue(json, JobDescription.class);
+		var fromJson = mapper.readValue(json, JobDescription.class);
 		assertEquals(0, fromJson.getJobID());
 		assertNotNull(fromJson.toString());
 	}

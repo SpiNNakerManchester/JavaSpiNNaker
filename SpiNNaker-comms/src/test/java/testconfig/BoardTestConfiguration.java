@@ -131,7 +131,7 @@ public class BoardTestConfiguration {
 
 	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
-			SpallocStateChangeTimeoutException, InterruptedException {
+			SpallocStateChangeTimeoutException {
 		var spalloc = config.get(SPSEC, "hostname");
 		assumeTrue(spalloc != null, "no spalloc server defined");
 		assumeTrue(hostIsReachable(spalloc),
@@ -139,6 +139,7 @@ public class BoardTestConfiguration {
 		var port = config.getInt(SPSEC, "port");
 		var timeout = config.getInt(SPSEC, "timeout");
 		var tag = config.get(SPSEC, "tag");
+		@SuppressWarnings("resource")
 		var job = new SpallocJob(spalloc, port, timeout,
 				jobDesc(1, KEEPALIVE_SECS, tag));
 		job.waitUntilReady(null);

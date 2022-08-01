@@ -59,6 +59,7 @@ public class TestDataSpecExecutor {
 		});
 
 		// Execute the spec
+		@SuppressWarnings("resource")
 		var executor = new Executor(spec, 400);
 		executor.execute();
 		executor.close();
@@ -128,7 +129,7 @@ public class TestDataSpecExecutor {
 		var buffer = ByteBuffer.allocate(4096).order(LITTLE_ENDIAN);
 		executor.setBaseAddress(NULL);
 		executor.addPointerTable(buffer);
-		var table = ((ByteBuffer) buffer.flip()).asIntBuffer();
+		var table = buffer.flip().asIntBuffer();
 		assertEquals(MAX_MEM_REGIONS * 3, table.limit());
 		assertEquals(headerAndTableSize, table.get(0));
 		assertEquals(headerAndTableSize + 100, table.get(3));
@@ -140,7 +141,7 @@ public class TestDataSpecExecutor {
 		// Test the header
 		buffer.clear();
 		executor.addHeader(buffer);
-		var header = ((ByteBuffer) buffer.flip()).asIntBuffer();
+		var header = buffer.flip().asIntBuffer();
 		assertEquals(2, header.limit());
 		assertEquals(APPDATA_MAGIC_NUM, header.get(0));
 		assertEquals(DSE_VERSION, header.get(1));
@@ -154,6 +155,7 @@ public class TestDataSpecExecutor {
 		});
 
 		// Execute the spec
+		@SuppressWarnings("resource")
 		var executor = new Executor(spec, 400);
 		executor.execute();
 		executor.close();
@@ -236,7 +238,7 @@ public class TestDataSpecExecutor {
 	}
 
 	@Test
-	void testFailingSpec() throws IOException, DataSpecificationException {
+	void testFailingSpec() throws IOException {
 		var spec = makeSpec(s -> {
 			s.fail();
 			s.endSpecification();

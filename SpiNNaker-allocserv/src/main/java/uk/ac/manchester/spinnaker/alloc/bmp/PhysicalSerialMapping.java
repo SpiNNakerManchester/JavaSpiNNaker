@@ -77,9 +77,9 @@ class PhysicalSerialMapping {
 			log.debug("bogus line: {}", line);
 			return;
 		}
-		String physical = bits[0];
-		String logical = bits[1];
-		String old = physicalToLogical.put(physical, logical);
+		var physical = bits[0];
+		var logical = bits[1];
+		var old = physicalToLogical.put(physical, logical);
 		if (old != null) {
 			log.warn("replaced mapping for {} (to {}) with {}", physical, old,
 					logical);

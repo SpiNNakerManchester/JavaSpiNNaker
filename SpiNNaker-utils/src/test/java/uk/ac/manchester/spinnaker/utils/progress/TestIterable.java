@@ -45,33 +45,34 @@ public class TestIterable {
 	@Test
 	public void testBasic() {
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5), description,
-				new PrintStream(new ByteArrayOutputStream()));
-		int sum = 0;
-		for (int i : pb) {
-			sum += i;
+		try (var pb = new ProgressIterable<>(
+				of(1, 2, 3, 4, 5), description,
+				new PrintStream(new ByteArrayOutputStream()))) {
+			int sum = 0;
+			for (int i : pb) {
+				sum += i;
+			}
+			assertEquals(1 + 2 + 3 + 4 + 5, sum);
 		}
-		assertEquals(1 + 2 + 3 + 4 + 5, sum);
-		pb.close();
 	}
 
 	@Test
 	public void testSimple() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5, 6, 7), description,
-				new PrintStream(baos));
-		int sum = 0;
-		for (int i : pb) {
-			sum += i;
+		try (var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5, 6, 7),
+				description, new PrintStream(baos))) {
+			int sum = 0;
+			for (int i : pb) {
+				sum += i;
+			}
+			assertEquals(1 + 2 + 3 + 4 + 5 + 6 + 7, sum);
+			var lines = baos.toString().split("\\r?\\n");
+			assertEquals(4, lines.length);
+			assertEquals(description, lines[0]);
+			assertEquals(PERCENTS, lines[1]);
+			assertEquals(DASHES, lines[2]);
 		}
-		assertEquals(1 + 2 + 3 + 4 + 5 + 6 + 7, sum);
-		var lines = baos.toString().split(NEWLINE);
-		assertEquals(4, lines.length);
-		assertEquals(description, lines[0]);
-		assertEquals(PERCENTS, lines[1]);
-		assertEquals(DASHES, lines[2]);
-		pb.close();
 	}
 
 	@Test
@@ -97,16 +98,16 @@ public class TestIterable {
 	public void testForEachRemaining() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Easiest";
-		var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5), description,
-				new PrintStream(baos));
-		var sum = new Counter();
-		pb.forEach(sum::add);
-		assertEquals(1 + 2 + 3 + 4 + 5, sum.get());
-		var lines = baos.toString().split(NEWLINE);
-		assertEquals(4, lines.length);
-		assertEquals(description, lines[0]);
-		assertEquals(PERCENTS, lines[1]);
-		assertEquals(DASHES, lines[2]);
-		pb.close();
+		try (var pb = new ProgressIterable<>(of(1, 2, 3, 4, 5), description,
+				new PrintStream(baos))) {
+			var sum = new Counter();
+			pb.forEach(sum::add);
+			assertEquals(1 + 2 + 3 + 4 + 5, sum.get());
+			String[] lines = baos.toString().split("\\r?\\n");
+			assertEquals(4, lines.length);
+			assertEquals(description, lines[0]);
+			assertEquals(PERCENTS, lines[1]);
+			assertEquals(DASHES, lines[2]);
+		}
 	}
 }

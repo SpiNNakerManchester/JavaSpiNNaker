@@ -559,7 +559,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			 * @return The bitfield.
 			 */
 			BitSet issueNew(int expectedMax) {
-				BitSet s = new BitSet(expectedMax);
+				var s = new BitSet(expectedMax);
 				addLast(s);
 				return s;
 			}

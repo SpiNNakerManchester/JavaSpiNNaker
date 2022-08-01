@@ -193,7 +193,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 			if (v == null) {
 				v = makeDefault(k);
 			}
-			V result = remappingFunction.apply(k, v);
+			var result = remappingFunction.apply(k, v);
 			if (result == null) {
 				result = makeDefault(k);
 			}
@@ -211,7 +211,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	public V computeIfAbsent(K key,
 			Function<? super K, ? extends V> mappingFunction) {
 		return super.computeIfAbsent(key, k -> {
-			V result = mappingFunction.apply(k);
+			var result = mappingFunction.apply(k);
 			if (result == null) {
 				result = makeDefault(k);
 			}
@@ -229,7 +229,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	public V computeIfPresent(K key,
 			BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		return super.computeIfPresent(key, (k, v) -> {
-			V result = remappingFunction.apply(k, v);
+			var result = remappingFunction.apply(k, v);
 			if (result == null) {
 				result = makeDefault(k);
 			}
@@ -250,7 +250,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 			value = makeDefault(key);
 		}
 		return super.merge(key, value, (v1, v2) -> {
-			V result = remappingFunction.apply(v1, v2);
+			var result = remappingFunction.apply(v1, v2);
 			if (result == null) {
 				result = makeDefault(key);
 			}

@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Christian-B
  */
+@SuppressWarnings("resource")
 public class TestBar {
 
 	private static final String PERCENTS =

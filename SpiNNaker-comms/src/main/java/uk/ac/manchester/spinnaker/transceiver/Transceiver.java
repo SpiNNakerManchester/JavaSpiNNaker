@@ -1383,7 +1383,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	private static ByteBuffer oneByte(int value) {
-		ByteBuffer data = allocate(1);
+		var data = allocate(1);
 		data.put((byte) value).flip();
 		return data;
 	}

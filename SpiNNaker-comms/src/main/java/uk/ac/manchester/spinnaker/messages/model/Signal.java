@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /** SCP Signals. */
@@ -58,7 +58,8 @@ public enum Signal {
 	/** The "type" of the signal. */
 	public final Type type;
 
-	private static final Map<Byte, Signal> MAP = new HashMap<>();
+	private static final Map<Integer, Signal> MAP =
+			makeEnumBackingMap(values(), v -> (int) v.value);
 
 	/**
 	 * @param value the value
@@ -69,14 +70,8 @@ public enum Signal {
 		this.type = type;
 	}
 
-	static {
-		for (var r : values()) {
-			MAP.put(r.value, r);
-		}
-	}
-
 	public static Signal get(byte value) {
-		return requireNonNull(MAP.get(value), "unknown signal: " + value);
+		return requireNonNull(MAP.get((int) value), "unknown signal: " + value);
 	}
 
 	/** The type of signal, determined by how it is transmitted. */

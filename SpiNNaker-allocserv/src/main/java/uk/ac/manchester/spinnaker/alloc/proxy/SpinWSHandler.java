@@ -55,6 +55,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Initial handler for web sockets. Maps a particular websocket to a
@@ -85,9 +86,9 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
 
 	public SpinWSHandler() {
-		ThreadGroup group = new ThreadGroup("ws/udp workers");
+		var group = new ThreadGroup("ws/udp workers");
 		executor = newCachedThreadPool(r -> {
-			Thread t = new Thread(group, r, "ws/udp worker");
+			var t = new Thread(group, r, "ws/udp worker");
 			t.setDaemon(true);
 			return t;
 		});
@@ -212,6 +213,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	 * @throws RequestFailedException
 	 *             If the job doesn't have an allocated machine
 	 */
+	@UsedInJavadocOnly(NotFound.class)
 	protected final void initProxyCore(WebSocketSession session, Job job) {
 		var proxy = job.getMachine()
 				.map(machine -> new ProxyCore(session, machine.getConnections(),
@@ -329,11 +331,5 @@ abstract class Utils {
 
 	static boolean positive(int n) {
 		return n > 0;
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(NotFound q) {
-		}
 	}
 }

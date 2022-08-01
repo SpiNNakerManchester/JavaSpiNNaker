@@ -269,7 +269,7 @@ public class AdminImpl implements AdminAPI {
 
 	@Override
 	public Response addMember(int groupId, MemberRecord request, UriInfo ui) {
-		String userName = request.getUserName();
+		var userName = request.getUserName();
 		log.warn("CALLED addMember({},{})", groupId, userName);
 		var ub = ui.getBaseUriBuilder().path(DESCRIBE_MEMBER);
 		var group = userManager.getGroup(groupId, null)

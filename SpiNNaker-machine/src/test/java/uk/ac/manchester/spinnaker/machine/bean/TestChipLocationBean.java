@@ -51,7 +51,7 @@ public class TestChipLocationBean {
 	}
 
 	@Test
-	public void testOneNullJson() throws IOException {
+	public void testOneNullJson() {
 		var json = "[2]";
 		var mapper = MapperFactory.createMapper();
 		assertThrows(MismatchedInputException.class, () -> {

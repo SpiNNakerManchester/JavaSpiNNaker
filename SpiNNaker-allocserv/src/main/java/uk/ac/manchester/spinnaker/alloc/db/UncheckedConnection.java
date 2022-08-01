@@ -42,6 +42,8 @@ import org.sqlite.SQLiteConfig.TransactionMode;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.core.DB;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * A connection that guarantees to not throw {@link SQLException} from many of
  * its methods. Such exceptions are wrapped as {@link DataAccessException}s
@@ -49,6 +51,7 @@ import org.sqlite.core.DB;
  *
  * @author Donal Fellows
  */
+@UsedInJavadocOnly(DataAccessException.class)
 class UncheckedConnection implements Connection {
 	private final Connection c;
 
@@ -599,12 +602,6 @@ class UncheckedConnection implements Connection {
 			return c.getNetworkTimeout();
 		} catch (SQLException e) {
 			throw mapException(e, null);
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(DataAccessException q) {
 		}
 	}
 }

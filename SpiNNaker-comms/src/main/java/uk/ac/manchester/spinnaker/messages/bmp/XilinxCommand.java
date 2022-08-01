@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /** Commands to send to the Xilinx FPGA handler. */
 public enum XilinxCommand {
 	/** Load block of data. */
@@ -29,6 +31,7 @@ public enum XilinxCommand {
 	 *
 	 * @see FPGAResetType
 	 */
+	@UsedInJavadocOnly(FPGAResetType.class)
 	Reset(2);
 
 	/** The command code to use in the message. */
@@ -36,9 +39,5 @@ public enum XilinxCommand {
 
 	XilinxCommand(int code) {
 		this.code = code;
-	}
-
-	static {
-		FPGAResetType.class.getClass();
 	}
 }

@@ -38,6 +38,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Component;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * Make access denied (from a {@code @}{@link PreAuthorize} check) not fill the
  * log with huge stack traces.
@@ -45,6 +47,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Provider
 @Role(ROLE_SUPPORT)
+@UsedInJavadocOnly(PreAuthorize.class)
 class AccessDeniedExceptionMapper
 		implements ExceptionMapper<AccessDeniedException> {
 	private static final Logger log =
@@ -81,11 +84,5 @@ class AccessDeniedExceptionMapper
 		}
 		// But the user gets a bland response
 		return status(FORBIDDEN).entity(BLAND_AUTH_MSG).build();
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(PreAuthorize q) {
-		}
 	}
 }

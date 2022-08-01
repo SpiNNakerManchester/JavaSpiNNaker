@@ -47,6 +47,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The API of the core service that interacts with the database.
@@ -205,6 +206,7 @@ public interface SpallocAPI {
 	 * @param permit
 	 *            Who is making the request.
 	 */
+	@UsedInJavadocOnly(HasCoreLocation.class)
 	void reportProblem(String address, HasChipLocation coreLocation,
 			String description, Permit permit);
 
@@ -240,6 +242,7 @@ public interface SpallocAPI {
 	 *
 	 * @see V1CompatService
 	 */
+	@UsedInJavadocOnly(V1CompatService.class)
 	final class CreateDimensions extends CreateDescriptor {
 		/** Width requested, in boards. */
 		public final int width;
@@ -964,10 +967,5 @@ public interface SpallocAPI {
 		 *            What to set the power state to.
 		 */
 		void setPower(PowerState powerState);
-	}
-}
-
-abstract class SpallocAPIUseInJavadoc {
-	SpallocAPIUseInJavadoc(V1CompatService q1, HasCoreLocation q2) {
 	}
 }

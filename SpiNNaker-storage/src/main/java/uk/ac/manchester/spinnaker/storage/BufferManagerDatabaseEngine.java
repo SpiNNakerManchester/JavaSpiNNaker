@@ -16,11 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.io.IOUtils.resourceToString;
+import static uk.ac.manchester.spinnaker.storage.sqlite.ResourceLoader.loadResource;
 
 import java.io.File;
-import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
 
@@ -31,16 +29,7 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
  */
 public class BufferManagerDatabaseEngine
 		extends DatabaseEngine<BufferManagerStorage> {
-	private static String sqlDDL;
-
-	static {
-		try {
-			sqlDDL = resourceToString("/buffer_manager.sql", UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException(
-					"failed to read buffer manager database definition SQL", e);
-		}
-	}
+	private static String sqlDDL = loadResource("buffer_manager.sql");
 
 	/**
 	 * Create an engine interface for an in-memory database.

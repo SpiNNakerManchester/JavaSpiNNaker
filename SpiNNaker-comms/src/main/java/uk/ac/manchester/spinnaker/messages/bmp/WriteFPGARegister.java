@@ -64,8 +64,10 @@ public class WriteFPGARegister extends BMPRequest<BMPRequest.BMPResponse> {
 	}
 
 	private static ByteBuffer data(int value) {
-		return (ByteBuffer) allocate(WORD_SIZE).order(LITTLE_ENDIAN)
-				.putInt(value).flip();
+		var buffer = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		buffer.putInt(value);
+		buffer.flip();
+		return buffer;
 	}
 
 	@Override

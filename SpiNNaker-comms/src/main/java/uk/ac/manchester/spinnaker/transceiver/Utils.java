@@ -136,7 +136,7 @@ public abstract class Utils {
 		} else {
 			var work = new byte[len];
 			Arrays.fill(work, value);
-			ByteBuffer buf = buffer.duplicate();
+			var buf = buffer.duplicate();
 			buf.position(start);
 			buf.put(work);
 		}

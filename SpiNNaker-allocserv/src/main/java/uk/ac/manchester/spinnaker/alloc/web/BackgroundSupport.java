@@ -28,6 +28,7 @@ import org.springframework.dao.DataAccessException;
 
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Enables a web service class to move processing a request into a background
@@ -35,6 +36,7 @@ import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
  *
  * @author Donal Fellows
  */
+@UsedInJavadocOnly(Response.class)
 public abstract class BackgroundSupport {
 	@Autowired
 	private Executor executor;
@@ -125,12 +127,6 @@ public abstract class BackgroundSupport {
 		} catch (Exception e) {
 			response.resume(
 					new RequestFailedException("unexpected server problem", e));
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(Response q) {
 		}
 	}
 }

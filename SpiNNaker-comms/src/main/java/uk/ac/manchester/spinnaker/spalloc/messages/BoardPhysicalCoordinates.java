@@ -84,7 +84,7 @@ public class BoardPhysicalCoordinates {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof BoardPhysicalCoordinates) {
-			BoardPhysicalCoordinates other = (BoardPhysicalCoordinates) o;
+			var other = (BoardPhysicalCoordinates) o;
 			return cabinet == other.cabinet && frame == other.frame
 					&& board == other.board;
 		}

@@ -146,7 +146,7 @@ public class TestMockClient {
 			assertEquals(State.POWER, state.getState());
 			assertTrue(state.getPower());
 			var machineInfo = client.getJobMachineInfo(jobId, timeout);
-			String machineName = machineInfo.getMachineName();
+			var machineName = machineInfo.getMachineName();
 			if (client.isActual()) {
 				assert !machineName.isEmpty() : "must have a machine name";
 			} else {

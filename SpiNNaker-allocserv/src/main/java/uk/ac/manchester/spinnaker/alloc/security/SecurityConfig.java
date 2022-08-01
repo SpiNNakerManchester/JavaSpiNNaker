@@ -55,6 +55,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The security and administration configuration of the service.
@@ -70,6 +71,7 @@ import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 @EnableWebSecurity
 @Role(ROLE_APPLICATION)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@UsedInJavadocOnly(PreAuthorize.class)
 public class SecurityConfig {
 	private static final Logger log = getLogger(SecurityConfig.class);
 
@@ -339,11 +341,5 @@ public class SecurityConfig {
 		handler.setClearAuthentication(true);
 		handler.setInvalidateHttpSession(true);
 		return handler;
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(PreAuthorize q) {
-		}
 	}
 }

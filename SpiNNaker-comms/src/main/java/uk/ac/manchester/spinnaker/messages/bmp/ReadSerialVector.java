@@ -34,7 +34,7 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	 *            which board to request the serial data from
 	 */
 	public ReadSerialVector(BMPBoard board) {
-		super(board, CMD_BMP_INFO, (int) SERIAL.value);
+		super(board, CMD_BMP_INFO, SERIAL.value);
 	}
 
 	@Override

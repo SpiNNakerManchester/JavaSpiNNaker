@@ -236,7 +236,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			if (!(other instanceof EthernetImpl)) {
 				return false;
 			}
-			EthernetImpl b = (EthernetImpl) other;
+			var b = (EthernetImpl) other;
 			return id == b.id;
 		}
 
@@ -261,7 +261,7 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			if (!(other instanceof CoreToLoadImpl)) {
 				return false;
 			}
-			CoreToLoadImpl c = (CoreToLoadImpl) other;
+			var c = (CoreToLoadImpl) other;
 			return id == c.id;
 		}
 

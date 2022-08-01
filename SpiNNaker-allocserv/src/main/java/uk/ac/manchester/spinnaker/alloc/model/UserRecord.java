@@ -38,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The description and model of a user. POJO class. Some things are stated to be
@@ -82,6 +83,7 @@ public final class UserRecord {
 	 * @param row
 	 *            The row with the result.
 	 */
+	@UsedInJavadocOnly(SQLQueries.class)
 	public UserRecord(Row row) {
 		try {
 			setUserId(row.getInt("user_id"));
@@ -310,12 +312,6 @@ public final class UserRecord {
 		}
 		if (isNull(getLocked())) {
 			setLocked(false);
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(SQLQueries q) {
 		}
 	}
 }

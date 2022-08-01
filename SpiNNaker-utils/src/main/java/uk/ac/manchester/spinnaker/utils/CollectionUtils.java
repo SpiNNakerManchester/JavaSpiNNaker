@@ -23,11 +23,13 @@ import static java.util.EnumSet.noneOf;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static java.util.stream.IntStream.range;
 
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -44,7 +46,6 @@ import java.util.stream.Stream;
  */
 public abstract class CollectionUtils {
 	private CollectionUtils() {
-		Stream.class.getClass();
 	}
 
 	/**
@@ -131,6 +132,7 @@ public abstract class CollectionUtils {
 	 *            How to map an element.
 	 * @return The output list.
 	 */
+	@UsedInJavadocOnly(Stream.class)
 	public static <T, U> List<U> lmap(Collection<T> list, Function<T, U> fun) {
 		return list.stream().map(fun).collect(toList());
 	}
@@ -149,5 +151,22 @@ public abstract class CollectionUtils {
 	public static <T> Set<T> parseCommaSeparatedSet(String str,
 			Function<String, T> mapper) {
 		return stream(str.split(",")).map(mapper).collect(toSet());
+	}
+
+	/**
+	 * Utility for making the backing maps for fast {@code enum}s.
+	 *
+	 * @param <E>
+	 *            The type of the {@code enum}.
+	 * @param values
+	 *            The values in the {@code enum}.
+	 * @param valueExtractor
+	 *            How to get the value to use as the map key.
+	 * @return Unmodifiable map from the values to the {@code enum} members.
+	 */
+	public static <E extends Enum<E>> Map<Integer, E> makeEnumBackingMap(
+			E[] values, Function<E, Integer> valueExtractor) {
+		return stream(values)
+				.collect(toUnmodifiableMap(valueExtractor, v -> v));
 	}
 }

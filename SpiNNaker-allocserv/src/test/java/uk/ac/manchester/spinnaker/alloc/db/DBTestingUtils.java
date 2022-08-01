@@ -38,6 +38,7 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Miscellaneous shared bits and pieces for testing the database code.
@@ -78,6 +79,7 @@ abstract class DBTestingUtils {
 	/**
 	 * The columns needed to make a {@link SpallocAPI.Machine} implementation.
 	 */
+	@UsedInJavadocOnly(SpallocAPI.class)
 	static final Set<String> BASIC_MACHINE_INFO = Set.of("in_service",
 			"machine_id", "machine_name", "width", "height");
 
@@ -216,11 +218,5 @@ abstract class DBTestingUtils {
 	 */
 	static void assumeWritable(Connection conn) {
 		assumeFalse(conn.isReadOnly(), "connection is read-only");
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(SpallocAPI q) {
-		}
 	}
 }

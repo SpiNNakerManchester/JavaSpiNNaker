@@ -54,7 +54,7 @@ public class TestInetFactory {
 
 	@Test
 	public void testByName6() {
-		String bytes = "3731:54:65fe:2::a7";
+		var bytes = "3731:54:65fe:2::a7";
 		assertThrows(Inet6NotSupportedException.class, () -> {
 			InetFactory.getByName(bytes);
 		});

@@ -52,6 +52,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.PasswordServices;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * User and group administration DAO.
@@ -85,6 +86,7 @@ public class UserControl extends DatabaseAwareBean {
 		}
 	}
 
+	@UsedInJavadocOnly(SQLQueries.class)
 	private class UserCheckSQL extends AbstractSQL {
 		private final Query userCheck = conn.query(GET_USER_ID);
 
@@ -914,11 +916,5 @@ public class UserControl extends DatabaseAwareBean {
 			}
 		});
 		return mr;
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(SQLQueries q) {
-		}
 	}
 }

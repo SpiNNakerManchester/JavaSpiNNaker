@@ -160,7 +160,7 @@ public class JobDescription {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("Job: ").append(jobID);
+		var builder = new StringBuilder("Job: ").append(jobID);
 		builder.append(" owner: ").append(owner);
 		builder.append(" startTime: ")
 				.append(new Date((long) (startTime * MSEC_PER_SEC)));

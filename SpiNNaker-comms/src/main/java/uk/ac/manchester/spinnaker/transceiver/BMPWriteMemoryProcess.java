@@ -34,6 +34,7 @@ import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPWriteMemory;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -176,6 +177,7 @@ abstract class BMPWriteIterator
 	 * @return The wrapped chunk, or {@link Optional#empty()} if no chunk
 	 *         available.
 	 */
+	@UsedInJavadocOnly(Constants.class)
 	abstract Optional<ByteBuffer> prepareSendBuffer(int plannedSize);
 
 	@Override
@@ -202,9 +204,5 @@ abstract class BMPWriteIterator
 	@Override
 	public Iterator<BMPWriteMemory> iterator() {
 		return this;
-	}
-
-	static {
-		Constants.class.getClass();
 	}
 }

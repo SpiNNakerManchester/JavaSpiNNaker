@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /** The SCP Command codes. */
@@ -109,16 +109,11 @@ public enum SCPCommand implements CommandCode {
 	/** The SCAMP encoding. */
 	public final short value;
 
-	private static final Map<Short, SCPCommand> MAP = new HashMap<>();
+	private static final Map<Integer, SCPCommand> MAP =
+			makeEnumBackingMap(values(), v -> (int) v.value);
 
 	SCPCommand(int value) {
 		this.value = (short) value;
-	}
-
-	static {
-		for (var r : values()) {
-			MAP.put(r.value, r);
-		}
 	}
 
 	/**
@@ -129,7 +124,7 @@ public enum SCPCommand implements CommandCode {
 	 * @return The enum element
 	 */
 	public static SCPCommand get(short value) {
-		return requireNonNull(MAP.get(value),
+		return requireNonNull(MAP.get((int) value),
 				"unrecognised command value: " + value);
 	}
 

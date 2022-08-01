@@ -239,7 +239,7 @@ class Functions implements FunctionAPI {
 		if (!referenceable) {
 			memRegions.set(new MemoryRegionReal(region, unfilled, size));
 		} else {
-			Reference reference = new Reference(spec.getInt());
+			var reference = new Reference(spec.getInt());
 			memRegions.set(
 					new MemoryRegionReal(region, unfilled, size, reference));
 			referenceableRegions.add(region);
@@ -260,7 +260,7 @@ class Functions implements FunctionAPI {
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
 		}
-		Reference reference = new Reference(spec.getInt());
+		var reference = new Reference(spec.getInt());
 		memRegions.set(new MemoryRegionReference(region, reference));
 		regionsToFill.add(region);
 	}
@@ -423,7 +423,7 @@ class Functions implements FunctionAPI {
 				b.putInt((int) value);
 				break;
 			case LONG_SIZE:
-				b.putLong((long) value);
+				b.putLong(value);
 				break;
 			default:
 				throw new UnknownTypeLengthException(dataLen, command);

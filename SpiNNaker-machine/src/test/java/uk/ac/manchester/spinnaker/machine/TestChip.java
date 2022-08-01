@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,33 +122,32 @@ public class TestChip {
 	}
 
 	@Test
-	public void testRepeatMonitor() throws UnknownHostException {
-		var processors = new ArrayList<>(getProcessors());
+	public void testRepeatMonitor() {
+		var processors = getProcessors();
 		processors.add(Processor.factory(2, false));
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
-			var chip = new Chip(ChipLocation.ZERO_ZERO, processors,
-					createRouter(), 100, createInetAddress(), LOCATION_11);
+			var chip = new Chip(LOCATION_00, processors, createRouter(), 100,
+					createInetAddress(), LOCATION_11);
 		});
 	}
 
 	@Test
-	public void testRepeatUser() throws UnknownHostException {
-		var processors = new ArrayList<>(getProcessors());
+	public void testRepeatUser() {
+		var processors = getProcessors();
 		processors.add(Processor.factory(4, true));
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
-			var chip = new Chip(ChipLocation.ZERO_ZERO, processors,
-					createRouter(), 100, createInetAddress(), LOCATION_11);
+			var chip = new Chip(LOCATION_00, processors, createRouter(), 100,
+					createInetAddress(), LOCATION_11);
 		});
 	}
 
 	@Test
 	public void testAsLocation() throws UnknownHostException {
-		var chip1 = new Chip(ChipLocation.ZERO_ZERO, getProcessors(),
-				createRouter(), 100, createInetAddress(), false, null,
-				LOCATION_11);
-		assertEquals(ChipLocation.ZERO_ZERO, chip1.asChipLocation());
+		var chip1 = new Chip(LOCATION_00, getProcessors(), createRouter(), 100,
+				createInetAddress(), false, null, LOCATION_11);
+		assertEquals(LOCATION_00, chip1.asChipLocation());
 	}
 
 	@Test
@@ -162,10 +160,9 @@ public class TestChip {
 	}
 
 	@Test
-	public void testDefault1() throws UnknownHostException {
-		var chip = new Chip(ChipLocation.ONE_ZERO, createRouter(), null,
-				LOCATION_11);
-		assertEquals(ChipLocation.ONE_ZERO, chip.asChipLocation());
+	public void testDefault1() {
+		var chip = new Chip(LOCATION_00, createRouter(), null, LOCATION_11);
+		assertEquals(LOCATION_00, chip.asChipLocation());
 		assertFalse(chip.virtual, "Chips on virtual nmachine are not virtual!");
 		assertEquals(17, chip.nUserProcessors());
 		assertEquals(18, chip.nProcessors());
@@ -176,9 +173,9 @@ public class TestChip {
 	@Test
 	public void testDefault2() throws UnknownHostException {
 		var tags = List.of(1, 2, 3, 4, 5, 6, 7);
-		var chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
-				createInetAddress(), LOCATION_11);
-		assertEquals(ChipLocation.ZERO_ZERO, chip.asChipLocation());
+		var chip = new Chip(LOCATION_00, createRouter(), createInetAddress(),
+				LOCATION_11);
+		assertEquals(LOCATION_00, chip.asChipLocation());
 		assertFalse(chip.virtual, "Chips on virtual nmachine are not virtual!");
 		assertEquals(17, chip.nUserProcessors());
 		assertEquals(18, chip.nProcessors());
@@ -188,8 +185,8 @@ public class TestChip {
 
 	@Test
 	public void testLinksVirtualMachine() throws UnknownHostException {
-		var chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
-				createInetAddress(), LOCATION_11);
+		var chip = new Chip(LOCATION_00, createRouter(), createInetAddress(),
+				LOCATION_11);
 		final var values = chip.router.links();
 		assertEquals(2, values.size());
 		assertThrows(UnsupportedOperationException.class, () -> {

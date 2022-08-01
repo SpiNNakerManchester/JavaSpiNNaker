@@ -41,7 +41,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test0() throws DataSpecificationException {
+	void testUnimplemented() {
 		var mock = new MockFunctions();
 		assertThrows(UnimplementedDSECommandException.class,
 				() -> mock.getOperation(KEY, 0));
@@ -50,7 +50,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test1() throws DataSpecificationException {
+	void testBadResultType() {
 		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public double foo() {
@@ -62,7 +62,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test2() throws DataSpecificationException {
+	void testArgumentNotAllowed() {
 		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo(int xy) {
@@ -74,7 +74,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test3() throws DataSpecificationException {
+	void testUnexpectedCheckedExceptionInCall() {
 		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() throws IOException {
@@ -89,7 +89,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test4() throws DataSpecificationException {
+	void testUncheckedExceptionInCall() {
 		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() {
@@ -102,7 +102,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test5() throws DataSpecificationException {
+	void testErrorInCall() {
 		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() {
@@ -115,7 +115,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test6() throws DataSpecificationException {
+	void testExpectedCheckedExceptionInCall() {
 		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() throws DataSpecificationException {
@@ -129,7 +129,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test7() throws DataSpecificationException {
+	void testWorkingCall() throws DataSpecificationException {
 		class MockFunctions7 extends MockFunctions {
 			int act;
 

@@ -136,18 +136,16 @@ class MockServer implements SupportUtils.IServer {
 	private static void launchKeepaliveListener(
 			BlockingDeque<JSONObject> keepaliveQueue) {
 		new SupportUtils.Daemon(() -> {
-			try {
-				MockServer s = new MockServer();
+			try (MockServer s = new MockServer()) {
 				s.connect();
 				while (true) {
-					JSONObject o = s.recv();
+					var o = s.recv();
 					if (o == null) {
 						break;
 					}
 					keepaliveQueue.offer(o);
 					s.send("{\"return\": null}");
 				}
-				s.close();
 			} catch (EOFException e) {
 				// do nothing
 			} catch (Exception e) {

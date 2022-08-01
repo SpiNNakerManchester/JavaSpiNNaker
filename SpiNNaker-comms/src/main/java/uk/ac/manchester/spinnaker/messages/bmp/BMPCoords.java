@@ -67,6 +67,7 @@ public final class BMPCoords {
 		return false;
 	}
 
+	@Override
 	public String toString() {
 		return "BMP[C:" + cabinet + ",F:" + frame + "]";
 	}

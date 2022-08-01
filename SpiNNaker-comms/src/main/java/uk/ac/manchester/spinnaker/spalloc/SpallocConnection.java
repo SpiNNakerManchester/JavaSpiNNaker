@@ -231,6 +231,7 @@ public abstract class SpallocConnection implements Closeable {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	private void closeThreadConnection(Thread key) throws IOException {
 		Socket sock;
 		synchronized (socksLock) {
@@ -298,7 +299,7 @@ public abstract class SpallocConnection implements Closeable {
 		if (timeout == null || timeout < 0) {
 			timeout = 0;
 		}
-		TextSocket sock = getConnection(timeout);
+		var sock = getConnection(timeout);
 
 		// Wait for some data to arrive
 		var line = readLine(sock);

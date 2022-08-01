@@ -23,7 +23,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 
@@ -243,8 +242,7 @@ public class JobDescription {
 	 * @return The width of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadWidth() {
-		IntSummaryStatistics stats =
-				boards.stream().collect(summarizingInt(BoardCoords::getX));
+		var stats = boards.stream().collect(summarizingInt(BoardCoords::getX));
 		if (stats.getCount() < 1) {
 			return 0;
 		}
@@ -255,8 +253,7 @@ public class JobDescription {
 	 * @return The height of the allocation in triads. 0 if not yet allocated.
 	 */
 	public int getTriadHeight() {
-		IntSummaryStatistics stats =
-				boards.stream().collect(summarizingInt(BoardCoords::getY));
+		var stats = boards.stream().collect(summarizingInt(BoardCoords::getY));
 		if (stats.getCount() < 1) {
 			return 0;
 		}

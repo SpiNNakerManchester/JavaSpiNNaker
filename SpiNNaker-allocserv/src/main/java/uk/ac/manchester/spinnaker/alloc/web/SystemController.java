@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * The main web interface controller.
@@ -137,11 +138,7 @@ public interface SystemController {
 	 * @see LogoutHandler
 	 */
 	@GetMapping("/perform_logout")
+	@UsedInJavadocOnly(LogoutHandler.class)
 	String performLogout(HttpServletRequest request,
 			HttpServletResponse response);
-}
-
-abstract class SystemControllerUseLogoutHandler {
-	private SystemControllerUseLogoutHandler(LogoutHandler q) {
-	}
 }

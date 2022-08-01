@@ -471,6 +471,7 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	private int closeChannel(int id) throws IOException {
+		@SuppressWarnings("resource")
 		var conn = removeConnection(id);
 		if (!isValid(conn)) {
 			return 0;

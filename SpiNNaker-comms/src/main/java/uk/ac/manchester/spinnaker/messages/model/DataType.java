@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Enum for data types of system variables.
@@ -38,6 +39,7 @@ public enum DataType {
 	 * The value is four bytes, representing a {@linkplain MemoryLocation memory
 	 * location}.
 	 */
+	@UsedInJavadocOnly(MemoryLocation.class)
 	ADDRESS(4);
 
 	/** The SCAMP data type descriptor code. */
@@ -45,9 +47,5 @@ public enum DataType {
 
 	DataType(int value) {
 		this.value = value;
-	}
-
-	static {
-		MemoryLocation.class.getClass();
 	}
 }

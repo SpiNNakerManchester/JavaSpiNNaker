@@ -41,7 +41,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author Christian-B
  */
 public class TestMachine {
-
 	public TestMachine() {
 	}
 
@@ -55,17 +54,13 @@ public class TestMachine {
 
 	private static final ChipLocation CHIP20 = new ChipLocation(2, 0);
 
-	private static final Link LINK00_01 =
-			new Link(CHIP00, Direction.NORTH, CHIP01);
+	private static final Link LINK00_01 = new Link(CHIP00, NORTH, CHIP01);
 
-	private static final Link LINK01_11 =
-			new Link(CHIP01, Direction.SOUTH, CHIP11);
+	private static final Link LINK01_11 = new Link(CHIP01, SOUTH, CHIP11);
 
-	private static final Link LINK11_20 =
-			new Link(CHIP11, Direction.EAST, CHIP20);
+	private static final Link LINK11_20 = new Link(CHIP11, EAST, CHIP20);
 
-	private static final Link LINK10_30 =
-			new Link(CHIP10, Direction.WEST, CHIP01);
+	private static final Link LINK10_30 = new Link(CHIP10, WEST, CHIP01);
 
 	private static final List<Link> LINKS =
 			List.of(LINK00_01, LINK01_11, LINK11_20, LINK10_30);
@@ -151,21 +146,21 @@ public class TestMachine {
 
 		assertEquals(450, instance.totalCores());
 		assertEquals(425, instance.totalAvailableUserCores());
-		assertEquals(ChipLocation.ZERO_ZERO, instance.boot);
+		assertEquals(CHIP00, instance.boot);
 		assertEquals(address, instance.bootChip().ipAddress);
 		assertEquals(25, instance.nChips());
 		/*
 		 * Not implemented as Java has no len and size() could be boards, chips,
 		 * processors ect so a bad call anyway
 		 */
-		//self.assertEqual(len(new_machine), 25)
+		// self.assertEqual(len(new_machine), 25)
 		/*
 		 * Not implemented as Java has no iter and iter() could be boards,
 		 * chips, processors ect so a bad call anyway
 		 */
-		//self.assertEqual(next(x[1].ip_address for x in new_machine), self._ip)
-		assertEquals(ChipLocation.ZERO_ZERO,
-				instance.chipCoordinates().iterator().next());
+		// self.assertEqual(next(x[1].ip_address for x in new_machine),
+		// self._ip)
+		assertEquals(CHIP00, instance.chipCoordinates().iterator().next());
 		// String is simplified to assumje each link unique and bi directional
 		assertEquals("450 cores and 50.0 links",
 				instance.coresAndLinkOutputString());
@@ -196,8 +191,7 @@ public class TestMachine {
 	public void testRepeatChipInvalid() throws UnknownHostException {
 		var processors = createProcessors();
 		var chips = createdChips(processors);
-		chips.add(new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER, SDRAM,
-				null, BOOT_CHIP));
+		chips.add(new Chip(CHIP00, processors, ROUTER, SDRAM, null, BOOT_CHIP));
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
 			var instance =
@@ -206,16 +200,17 @@ public class TestMachine {
 	}
 
 	@Test
-	public void testAddChip() throws UnknownHostException {
+	public void testAddChip() {
 		var processors = createProcessors();
-		var instance = new Machine(new MachineDimensions(8, 8), List.of(),
-				BOOT_CHIP);
-		var chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
-				SDRAM, null, BOOT_CHIP);
+		var chips = new ArrayList<Chip>();
+		var instance =
+				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
+		var chip00 =
+				new Chip(CHIP00, processors, ROUTER, SDRAM, null, BOOT_CHIP);
 		instance.addChip(chip00);
 		assertEquals(1, instance.nChips());
-		var repeat = new Chip(ChipLocation.ZERO_ZERO, processors, ROUTER,
-				SDRAM, null, BOOT_CHIP);
+		var repeat =
+				new Chip(CHIP00, processors, ROUTER, SDRAM, null, BOOT_CHIP);
 		assertThrows(IllegalArgumentException.class, () -> {
 			instance.addChip(repeat);
 		});
@@ -235,26 +230,24 @@ public class TestMachine {
 	@Test
 	public void testLinks() {
 		var processors = createProcessors();
-		var instance = new Machine(new MachineDimensions(8, 8), List.of(),
-				BOOT_CHIP);
-		var link01 = new Link(CHIP00, Direction.NORTH, CHIP01);
-		var link10 = new Link(CHIP00, Direction.EAST, CHIP10);
+		var instance =
+				new Machine(new MachineDimensions(8, 8), List.of(), BOOT_CHIP);
+		var link01 = new Link(CHIP00, NORTH, CHIP01);
+		var link10 = new Link(CHIP00, EAST, CHIP10);
 
 		var router = new Router(List.of(link01, link10));
-		var chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, router,
-				SDRAM, null, BOOT_CHIP);
+		var chip00 =
+				new Chip(CHIP00, processors, router, SDRAM, null, BOOT_CHIP);
 		// Chip created but not added
-		assertFalse(instance.hasChipAt(ChipLocation.ZERO_ZERO));
-		assertFalse(
-				instance.hasLinkAt(ChipLocation.ZERO_ZERO, Direction.NORTH));
+		assertFalse(instance.hasChipAt(CHIP00));
+		assertFalse(instance.hasLinkAt(CHIP00, NORTH));
 
 		instance.addChip(chip00);
 		// Chip added
-		assertTrue(instance.hasChipAt(ChipLocation.ZERO_ZERO));
-		assertTrue(instance.hasLinkAt(ChipLocation.ZERO_ZERO, Direction.NORTH));
-		assertFalse(
-				instance.hasLinkAt(ChipLocation.ZERO_ZERO, Direction.SOUTH));
-		assertFalse(instance.hasLinkAt(ChipLocation.ZERO_ZERO, null));
+		assertTrue(instance.hasChipAt(CHIP00));
+		assertTrue(instance.hasLinkAt(CHIP00, NORTH));
+		assertFalse(instance.hasLinkAt(CHIP00, SOUTH));
+		assertFalse(instance.hasLinkAt(CHIP00, null));
 	}
 
 	@Test
@@ -264,8 +257,8 @@ public class TestMachine {
 		var instance =
 				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
 		assertThrows(IllegalArgumentException.class, () -> {
-			instance.addChip(new Chip(ChipLocation.ZERO_ZERO, processors,
-					ROUTER, SDRAM, null, BOOT_CHIP));
+			instance.addChip(new Chip(CHIP00, processors, ROUTER, SDRAM, null,
+					BOOT_CHIP));
 		});
 	}
 
@@ -275,9 +268,9 @@ public class TestMachine {
 		var chips = createdChips(processors);
 		var instance =
 				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
-		assertEquals(chips.get(0), instance.getChipAt(ChipLocation.ZERO_ZERO));
+		assertEquals(chips.get(0), instance.getChipAt(CHIP00));
 		assertNull(instance.getChipAt(10, 10));
-		assertTrue(instance.hasChipAt(ChipLocation.ZERO_ZERO));
+		assertTrue(instance.hasChipAt(CHIP00));
 		assertFalse(instance.hasChipAt(10, 10));
 	}
 
@@ -290,14 +283,14 @@ public class TestMachine {
 			processors.add(Processor.factory(i));
 		}
 		var chips = new ArrayList<Chip>();
-		var chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, null, SDRAM,
+		var chip00 = new Chip(CHIP00, processors, null, SDRAM,
 				InetAddress.getByAddress(BYTES00), BOOT_CHIP);
 		chips.add(chip00);
 		var chip01 = new Chip(new ChipLocation(0, 1), processors, null, SDRAM,
 				null, BOOT_CHIP);
 		chips.add(chip01);
-		var chip02 = new Chip(new ChipLocation(0, 2), Set.of(),
-				null, SDRAM, null, BOOT_CHIP);
+		var chip02 = new Chip(new ChipLocation(0, 2), Set.of(), null, SDRAM,
+				null, BOOT_CHIP);
 		chips.add(chip02);
 		var instance =
 				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
@@ -344,13 +337,13 @@ public class TestMachine {
 				null, BOOT_CHIP);
 		instance.addChip(chip);
 		assertEquals(chip,
-				instance.getChipOverLink(CHIP00, Direction.SOUTHWEST));
+				instance.getChipOverLink(CHIP00, SOUTHWEST));
 	}
 
 	@Test
 	public void testNormalizeWithWrapAround() {
-		var instance = new Machine(new MachineDimensions(48, 24), List.of(),
-				ChipLocation.ZERO_ZERO);
+		var instance =
+				new Machine(new MachineDimensions(48, 24), List.of(), CHIP00);
 		assertEquals(new ChipLocation(24, 0),
 				instance.normalizedLocation(24, 24));
 		assertEquals(new ChipLocation(24, 1),
@@ -361,8 +354,8 @@ public class TestMachine {
 
 	@Test
 	public void testNormalizeWithWrapVertical() {
-		var instance = new Machine(new MachineDimensions(40, 24), List.of(),
-				ChipLocation.ZERO_ZERO);
+		var instance =
+				new Machine(new MachineDimensions(40, 24), List.of(), CHIP00);
 		assertEquals(MachineVersion.TRIAD_WITH_VERTICAL_WRAP, instance.version);
 		assertEquals(new ChipLocation(24, 0),
 				instance.normalizedLocation(24, 24));
@@ -372,8 +365,8 @@ public class TestMachine {
 
 	@Test
 	public void testNormalizeWithWrapHorizontal() {
-		var instance = new Machine(new MachineDimensions(48, 16), List.of(),
-				ChipLocation.ZERO_ZERO);
+		var instance =
+				new Machine(new MachineDimensions(48, 16), List.of(), CHIP00);
 		assertEquals(MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP,
 				instance.version);
 		assertEquals(new ChipLocation(4, 14),
@@ -382,8 +375,8 @@ public class TestMachine {
 
 	@Test
 	public void testNormalizeWithOutWrapAround() {
-		var instance = new Machine(new MachineDimensions(52, 28), List.of(),
-				ChipLocation.ZERO_ZERO);
+		var instance =
+				new Machine(new MachineDimensions(52, 28), List.of(), CHIP00);
 		assertEquals(new ChipLocation(24, 24),
 				instance.normalizedLocation(24, 24));
 		assertEquals(new ChipLocation(24, 24),
@@ -394,7 +387,7 @@ public class TestMachine {
 	public void testEthernetChip() throws UnknownHostException {
 		var processors = createProcessors();
 		var chips = new ArrayList<Chip>();
-		var chip00 = new Chip(ChipLocation.ZERO_ZERO, processors, null, SDRAM,
+		var chip00 = new Chip(CHIP00, processors, null, SDRAM,
 				InetAddress.getByAddress(BYTES00), BOOT_CHIP);
 		chips.add(chip00);
 		var chip84 = new Chip(new ChipLocation(8, 4), processors, null, SDRAM,

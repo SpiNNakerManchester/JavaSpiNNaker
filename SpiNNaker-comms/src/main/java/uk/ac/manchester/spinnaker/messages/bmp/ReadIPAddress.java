@@ -35,7 +35,7 @@ public class ReadIPAddress extends BMPRequest<ReadIPAddress.Response> {
 	 *            which board to request the IP address data from
 	 */
 	public ReadIPAddress(BMPBoard board) {
-		super(board, CMD_BMP_INFO, (int) IP_ADDR.value);
+		super(board, CMD_BMP_INFO, IP_ADDR.value);
 	}
 
 	@Override

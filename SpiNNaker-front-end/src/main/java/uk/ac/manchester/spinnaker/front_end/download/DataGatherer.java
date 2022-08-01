@@ -64,6 +64,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -497,18 +498,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	}
 
 	/**
-	 * Hack. Make BufferManagerStorage used for checkstyle.
-	 *
-	 * @param hack
-	 *            this is a hack
-	 * @return this is a hack.
-	 */
-	@Deprecated
-	Class<?> hack(BufferManagerStorage hack) {
-		return hack.getClass();
-	}
-
-	/**
 	 * Work out exactly where is going to be downloaded. The elements of the
 	 * list this method returns will end up directing what calls to
 	 * {@link #storeData(BufferManagerStorage.Region,ByteBuffer) storeData(...)}
@@ -530,6 +519,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws StorageException
 	 *             If the database doesn't like something.
 	 */
+	@UsedInJavadocOnly(BufferManagerStorage.class)
 	protected abstract List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, StorageException;
 

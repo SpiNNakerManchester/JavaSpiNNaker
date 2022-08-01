@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,13 +39,8 @@ public enum MailboxCommand {
 	/** The SARK value. */
 	public final int value;
 
-	private static final Map<Integer, MailboxCommand> MAP = new HashMap<>();
-
-	static {
-		for (var v : values()) {
-			MAP.put(v.value, v);
-		}
-	}
+	private static final Map<Integer, MailboxCommand> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	MailboxCommand(int value) {
 		this.value = value;

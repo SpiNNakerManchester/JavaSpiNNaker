@@ -19,9 +19,9 @@ package uk.ac.manchester.spinnaker.messages.sdp;
 import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -329,20 +329,15 @@ public class SDPHeader implements SerializableMessage {
 		/** The SDP-encoded form of the flag. */
 		public final byte value;
 
-		private static final Map<Byte, Flag> MAP = new HashMap<>();
+		private static final Map<Integer, Flag> MAP =
+				makeEnumBackingMap(values(), v -> (int) v.value);
 
 		Flag(int value) {
 			this.value = (byte) value;
 		}
 
-		static {
-			for (Flag flag : values()) {
-				MAP.put(flag.value, flag);
-			}
-		}
-
 		public static Flag get(byte value) {
-			return MAP.get(value);
+			return MAP.get((int) value);
 		}
 	}
 }

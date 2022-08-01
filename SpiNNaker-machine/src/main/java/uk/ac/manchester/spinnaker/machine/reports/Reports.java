@@ -28,7 +28,6 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Link;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -91,7 +90,7 @@ public abstract class Reports {
 
 	private static void writeChipRouterReport(PrintWriter f, Machine machine,
 			int x, int y) {
-		Chip chip = machine.getChipAt(new ChipLocation(x, y));
+		var chip = machine.getChipAt(new ChipLocation(x, y));
 		if (chip != null) {
 			f.printf("\nInformation for chip %d:%d\n", chip.getX(),
 					chip.getY());

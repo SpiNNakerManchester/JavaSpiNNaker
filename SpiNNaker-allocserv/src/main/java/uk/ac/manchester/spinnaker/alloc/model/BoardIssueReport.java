@@ -20,6 +20,7 @@ import java.time.Instant;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * A report of an issue with a board.
@@ -47,6 +48,7 @@ public class BoardIssueReport {
 	 *            The database row.
 	 * @see SQLQueries#GET_BOARD_REPORTS
 	 */
+	@UsedInJavadocOnly(SQLQueries.class)
 	public BoardIssueReport(Row row) {
 		id = row.getInt("report_id");
 		boardId = row.getInt("board_id");
@@ -104,11 +106,5 @@ public class BoardIssueReport {
 
 	public void setTimestamp(Instant timestamp) {
 		this.timestamp = timestamp;
-	}
-
-	@SuppressWarnings("unused")
-	private abstract static class Use {
-		Use(SQLQueries q) {
-		}
 	}
 }

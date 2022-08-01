@@ -22,7 +22,6 @@ import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.JSON_MAP
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import picocli.CommandLine.Parameters;
 
@@ -44,7 +43,7 @@ public final class CommandLineCheck {
 	private static final int SHORT_SLEEP = 100;
 
 	public static void main(String... args)
-			throws URISyntaxException, IOException, InterruptedException {
+			throws IOException, InterruptedException {
 		var a = populateCommand(new TestingClientArgs(), args);
 		var factory = new SpallocClientFactory();
 		var client = factory.createClient(a.baseUrl, a.username, a.password);

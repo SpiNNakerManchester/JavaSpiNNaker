@@ -330,7 +330,7 @@ public class SpallocClientFactory {
 						first = null;
 					}
 				}
-				Jobs j = getJobList(s.connection(next));
+				var j = getJobList(s.connection(next));
 				next = j.next;
 				return j.jobs;
 			}

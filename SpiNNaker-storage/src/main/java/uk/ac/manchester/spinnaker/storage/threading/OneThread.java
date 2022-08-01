@@ -38,7 +38,7 @@ public final class OneThread {
 	 * @return The wrapped connection.
 	 */
 	public static Connection threadBound(Connection conn) {
-		OneThread ot = new OneThread();
+		var ot = new OneThread();
 		return new OTConnection(ot, conn, true);
 	}
 
@@ -52,7 +52,7 @@ public final class OneThread {
 	 * @return The wrapped connection.
 	 */
 	public static Connection uncloseableThreadBound(Connection conn) {
-		OneThread ot = new OneThread();
+		var ot = new OneThread();
 		return new OTConnection(ot, conn, false);
 	}
 

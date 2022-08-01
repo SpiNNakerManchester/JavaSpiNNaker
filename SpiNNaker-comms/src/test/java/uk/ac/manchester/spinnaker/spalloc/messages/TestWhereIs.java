@@ -50,7 +50,7 @@ public class TestWhereIs {
 		assertEquals(logical, fromJson.getLogical());
 		assertEquals("Spin24b-001", fromJson.getMachine());
 		assertEquals(boardChip, fromJson.getBoardChip());
-		BoardPhysicalCoordinates physical2 = fromJson.getPhysical();
+		var physical2 = fromJson.getPhysical();
 		assertEquals(physical, physical2);
 
 		var direct = new WhereIs(jobChip, 666, chip, logical, "Spin24b-001",

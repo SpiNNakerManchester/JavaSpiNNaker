@@ -363,7 +363,7 @@ final class ClientSession {
 	 */
 	private synchronized void renew(boolean postRenew) throws IOException {
 		// Create a temporary session so we can log in
-		String tempCsrf = makeTemporarySession();
+		var tempCsrf = makeTemporarySession();
 
 		// This makes the real session
 		logSessionIn(tempCsrf);

@@ -100,7 +100,7 @@ public class TestOneShotEvent {
 	};
 
 	@Test
-	public void testMultiple() throws InterruptedException {
+	public void testMultiple() {
 		var thanger = new Thread(hanger);
 		thanger.start();
 		var tinOrder = new Thread(inOrder);

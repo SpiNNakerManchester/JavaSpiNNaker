@@ -47,7 +47,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -103,7 +102,7 @@ public interface AdminAPI {
 		public final URI setBoardEnabled;
 
 		private Description(UriInfo ui) {
-			UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
+			var b = ui.getAbsolutePathBuilder().path("{resource}");
 			importMachines = b.build(IMPORT);
 			setBoardEnabled = b.build(BOARD);
 		}
