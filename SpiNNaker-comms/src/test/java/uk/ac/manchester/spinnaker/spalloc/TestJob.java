@@ -42,12 +42,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
 class TestJob {
 	@BeforeAll
-	private static void setupConfiguration() {
+	static void setupConfiguration() {
 		setConfigurationSource("spalloc-test.ini");
 	}
 
 	@AfterAll
-	private static void resetConfiguration() {
+	static void resetConfiguration() {
 		setConfigurationSource(DEFAULT_CONFIGURATION_SOURCE);
 	}
 
