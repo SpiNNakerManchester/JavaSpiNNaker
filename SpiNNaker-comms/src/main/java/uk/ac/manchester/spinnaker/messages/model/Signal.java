@@ -58,8 +58,8 @@ public enum Signal {
 	/** The "type" of the signal. */
 	public final Type type;
 
-	private static final Map<Integer, Signal> MAP =
-			makeEnumBackingMap(values(), v -> (int) v.value);
+	private static final Map<Byte, Signal> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	/**
 	 * @param value the value
@@ -71,7 +71,7 @@ public enum Signal {
 	}
 
 	public static Signal get(byte value) {
-		return requireNonNull(MAP.get((int) value), "unknown signal: " + value);
+		return requireNonNull(MAP.get(value), "unknown signal: " + value);
 	}
 
 	/** The type of signal, determined by how it is transmitted. */

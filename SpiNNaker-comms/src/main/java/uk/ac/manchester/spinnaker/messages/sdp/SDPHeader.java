@@ -329,15 +329,15 @@ public class SDPHeader implements SerializableMessage {
 		/** The SDP-encoded form of the flag. */
 		public final byte value;
 
-		private static final Map<Integer, Flag> MAP =
-				makeEnumBackingMap(values(), v -> (int) v.value);
+		private static final Map<Byte, Flag> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		Flag(int value) {
 			this.value = (byte) value;
 		}
 
 		public static Flag get(byte value) {
-			return MAP.get((int) value);
+			return MAP.get(value);
 		}
 	}
 }

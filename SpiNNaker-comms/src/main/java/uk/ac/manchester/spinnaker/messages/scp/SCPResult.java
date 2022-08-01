@@ -58,8 +58,8 @@ public enum SCPResult {
 	/** The encoded result value. */
 	public final short value;
 
-	private static final Map<Integer, SCPResult> MAP =
-			makeEnumBackingMap(values(), v -> (int) v.value);
+	private static final Map<Short, SCPResult> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	SCPResult(int value) {
 		this.value = (short) value;
@@ -73,6 +73,6 @@ public enum SCPResult {
 	 * @return The decoded value, or {@code null} if unrecognised.
 	 */
 	public static SCPResult get(short value) {
-		return MAP.get((int) value);
+		return MAP.get(value);
 	}
 }

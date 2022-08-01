@@ -109,8 +109,8 @@ public enum SCPCommand implements CommandCode {
 	/** The SCAMP encoding. */
 	public final short value;
 
-	private static final Map<Integer, SCPCommand> MAP =
-			makeEnumBackingMap(values(), v -> (int) v.value);
+	private static final Map<Short, SCPCommand> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	SCPCommand(int value) {
 		this.value = (short) value;
@@ -124,7 +124,7 @@ public enum SCPCommand implements CommandCode {
 	 * @return The enum element
 	 */
 	public static SCPCommand get(short value) {
-		return requireNonNull(MAP.get((int) value),
+		return requireNonNull(MAP.get(value),
 				"unrecognised command value: " + value);
 	}
 

@@ -27,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -125,11 +126,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.z = z;
 		}
 
-		private static final Pattern PATTERN;
-
-		static {
-			PATTERN = Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
-		}
+		private static final Pattern PATTERN =
+				Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
 
 		@JsonCreator
 		public TriadCoords(String serialForm) {
@@ -257,11 +255,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.f = f;
 		}
 
-		private static final Pattern PATTERN;
-
-		static {
-			PATTERN = Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
-		}
+		private static final Pattern PATTERN =
+				Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
 
 		public BMPCoords(String serialForm) {
 			var m = PATTERN.matcher(serialForm);
@@ -330,11 +325,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.b = b;
 		}
 
-		private static final Pattern PATTERN;
-
-		static {
-			PATTERN = Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
-		}
+		private static final Pattern PATTERN =
+				Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
 
 		@JsonCreator
 		public BoardPhysicalCoords(String serialForm) {
@@ -416,15 +408,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		/** South. */
 		south(Direction.S);
 
-		private static final Map<Direction, Link> MAP;
-
-		static {
-			// This *MUST* be made in the static block
-			MAP = new HashMap<>(values().length);
-			for (var l : values()) {
-				MAP.put(l.d, l);
-			}
-		}
+		private static final Map<Direction, Link> MAP =
+				makeEnumBackingMap(values(), v -> v.d);
 
 		private final Direction d;
 
