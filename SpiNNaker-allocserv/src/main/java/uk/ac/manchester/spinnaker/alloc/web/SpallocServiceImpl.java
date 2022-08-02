@@ -218,7 +218,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		bgAction(response, () -> ifElse(
 				core.createJob(trim(req.owner), trim(req.group), crds,
 						req.machineName, req.tags, req.keepaliveInterval,
-						req.maxDeadBoards, mapper.writeValueAsBytes(req)),
+						mapper.writeValueAsBytes(req)),
 				job -> created(ui.getRequestUriBuilder().path("{id}")
 						.build(job.getId()))
 								.entity(new CreateJobResponse(job, ui)).build(),
@@ -273,7 +273,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 
 		if (nonNull(req.numBoards)) {
-			return new CreateNumBoards(req.numBoards);
+			return new CreateNumBoards(req.numBoards, req.maxDeadBoards);
 		} else if (nonNull(req.dimensions)) {
 			if (nonNull(req.board)) {
 				// Both dimensions AND board; rooted rectangle
@@ -284,14 +284,16 @@ public class SpallocServiceImpl extends BackgroundSupport
 				} else if (nonNull(req.board.cabinet)) {
 					return CreateDimensionsAt.physical(req.dimensions.width,
 							req.dimensions.height, req.board.cabinet,
-							req.board.frame, req.board.board);
+							req.board.frame, req.board.board,
+							req.maxDeadBoards);
 				} else {
 					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.address);
+							req.dimensions.height, req.board.address,
+							req.maxDeadBoards);
 				}
 			}
 			return new CreateDimensions(req.dimensions.width,
-					req.dimensions.height);
+					req.dimensions.height, req.maxDeadBoards);
 		} else if (nonNull(req.board)) {
 			if (nonNull(req.board.x)) {
 				return triad(req.board.x, req.board.y, req.board.z);
@@ -303,7 +305,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 			}
 		} else {
 			// It's a single board
-			return new CreateNumBoards(1);
+			return new CreateNumBoards(1, 0);
 		}
 	}
 }
