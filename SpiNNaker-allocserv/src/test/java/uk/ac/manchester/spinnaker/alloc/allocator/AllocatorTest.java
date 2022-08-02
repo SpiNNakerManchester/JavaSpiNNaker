@@ -432,7 +432,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 		// This is messier; can't have a transaction open and roll it back
 		try (var c = db.getConnection()) {
 			this.conn = c;
-			int job = makeQueuedJob(1);
+			int job = c.transaction(() -> makeQueuedJob(1));
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> {

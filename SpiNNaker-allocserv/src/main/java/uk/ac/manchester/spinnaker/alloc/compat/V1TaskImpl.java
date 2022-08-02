@@ -233,31 +233,51 @@ class V1TaskImpl extends V1CompatTask {
 
 	@Override
 	protected final Optional<Integer> createJobNumBoards(int numBoards,
-			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(new CreateNumBoards(numBoards), kwargs, cmd);
+			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
+		Integer maxDead = parseDec(kwargs.get("max_dead_boards"));
+		return createJob(new CreateNumBoards(numBoards, maxDead), kwargs, cmd);
 	}
 
 	@Override
 	protected final Optional<Integer> createJobRectangle(int width, int height,
-			Map<String, Object> kwargs, byte[] cmd) {
-		return createJob(new CreateDimensions(width, height), kwargs, cmd);
+			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
+		Integer maxDead = parseDec(kwargs.get("max_dead_boards"));
+		return createJob(new CreateDimensions(width, height, maxDead), kwargs,
+				cmd);
 	}
 
 	@Override
 	protected final Optional<Integer> createJobSpecificBoard(TriadCoords coords,
-			Map<String, Object> kwargs, byte[] cmd) {
+			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
 		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd);
 	}
 
+	private static String getOwner(Map<String, Object> kwargs)
+			throws TaskException {
+		var ownerObj = kwargs.get("owner");
+		if (isNull(ownerObj) || !(ownerObj instanceof String)) {
+			throw new TaskException("owner must be supplied as a string");
+		}
+		var owner = ownerObj.toString();
+		if (owner.isEmpty()) {
+			throw new TaskException(
+					"invalid owner identifier; must be non-empty");
+		}
+		if (owner.matches(".*[^\\x21-\\x7e].*")) {
+			throw new TaskException(
+					"invalid owner identifier; must be printable ASCII");
+		}
+		return owner;
+	}
+
 	private Optional<Integer> createJob(SpallocAPI.CreateDescriptor create,
-			Map<String, Object> kwargs, byte[] cmd) {
-		var owner = kwargs.get("owner").toString();
-		var maxDead = parseDec(kwargs.get("max_dead_boards"));
+			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
+		var owner = getOwner(kwargs);
 		var keepalive = parseKeepalive((Number) kwargs.get("keepalive"));
 		var machineName = (String) kwargs.get("machine");
 		var ts = tags(kwargs.get("tags"), isNull(machineName));
 		var result = permit.authorize(() -> spalloc.createJob(permit.name,
-				groupName, create, machineName, ts, keepalive, maxDead, cmd));
+				groupName, create, machineName, ts, keepalive, cmd));
 		result.ifPresent(
 				j -> log.info(
 						"made compatibility-mode job {} "

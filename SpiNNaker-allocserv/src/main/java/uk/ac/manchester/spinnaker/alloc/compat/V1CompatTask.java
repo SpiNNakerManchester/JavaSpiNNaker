@@ -330,7 +330,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		Object r;
 		try {
 			r = callOperation(cmd.get());
-		} catch (Oops | TaskException e) {
+		} catch (Oops | TaskException | IllegalArgumentException e) {
 			// Expected exceptions; don't log
 			writeException(e);
 			return true;

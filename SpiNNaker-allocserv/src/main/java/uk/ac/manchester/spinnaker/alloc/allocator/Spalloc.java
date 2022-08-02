@@ -387,7 +387,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Override
 	public Optional<Job> createJob(String owner, String groupName,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
-			Duration keepaliveInterval, Integer maxDeadBoards, byte[] req) {
+			Duration keepaliveInterval, byte[] req) {
 		return execute(conn -> {
 			int user = getUser(conn, owner).orElseThrow(
 					() -> new RuntimeException("no such user: " + owner));
@@ -413,10 +413,68 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			int jobId = id.get();
 
 			epochs.nextJobsEpoch();
+			var scale = props.getPriorityScale();
+
+			if (machine.getArea() < descriptor.getArea()) {
+				throw new IllegalArgumentException(
+						"request cannot fit on machine");
+			}
 
 			// Ask the allocator engine to do the allocation
-			int numBoards = insertRequest(conn, machine, jobId, descriptor,
-					maxDeadBoards);
+			int numBoards = descriptor.visit(new CreateVisitor<Integer>() {
+				@Override
+				public Integer numBoards(CreateNumBoards nb) {
+					try (var insertReq = conn.update(INSERT_REQ_N_BOARDS)) {
+						insertReq.call(jobId, nb.numBoards, nb.maxDead,
+								(int) (nb.getArea() * scale.getSize()));
+					}
+					return nb.numBoards;
+				}
+
+				@Override
+				public Integer dimensions(CreateDimensions d) {
+					try (var insertReq = conn.update(INSERT_REQ_SIZE)) {
+						insertReq.call(jobId, d.width, d.height, d.maxDead,
+								(int) (d.getArea() * scale.getDimensions()));
+					}
+					return max(1, d.getArea() - d.maxDead);
+				}
+
+				/*
+				 * Request by area rooted at specific location; resolve to board
+				 * ID now, as that doesn't depend on whether the board is
+				 * currently in use.
+				 */
+				@Override
+				public Integer dimensionsAt(CreateDimensionsAt da) {
+					try (var insertReq = conn.update(INSERT_REQ_SIZE_BOARD)) {
+						insertReq.call(jobId,
+								locateBoard(conn, machine.name, da, true),
+								da.width, da.height, da.maxDead,
+								(int) scale.getSpecificBoard());
+					}
+					return max(1, da.getArea() - da.maxDead);
+				}
+
+				/*
+				 * Request by specific location; resolve to board ID now, as
+				 * that doesn't depend on whether the board is currently in
+				 * use.
+				 */
+				@Override
+				public Integer board(CreateBoard b) {
+					try (var insertReq = conn.update(INSERT_REQ_BOARD)) {
+						/*
+						 * This doesn't pass along the max dead boards; only
+						 * after one!
+						 */
+						insertReq.call(jobId,
+								locateBoard(conn, machine.name, b, false),
+								(int) scale.getSpecificBoard());
+					}
+					return 1;
+				}
+			});
 
 			// DB now changed; can report success
 			JobLifecycle.log.info(
@@ -513,60 +571,6 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 						.orElseThrow(() -> new IllegalArgumentException(
 								NO_BOARD_MSG));
 			}
-		}
-	}
-
-	private int insertRequest(Connection conn, MachineImpl machine, int id,
-			CreateDescriptor descriptor, Integer numDeadBoards) {
-		var scale = props.getPriorityScale();
-		if (descriptor instanceof CreateNumBoards) {
-			// Request by number of boards
-			var nb = (CreateNumBoards) descriptor;
-			if (machine.getArea() < nb.numBoards) {
-				throw new IllegalArgumentException(
-						"request cannot fit on machine");
-			}
-			try (var ps = conn.update(INSERT_REQ_N_BOARDS)) {
-				ps.call(id, nb.numBoards, numDeadBoards,
-						(int) (nb.numBoards * scale.getSize()));
-			}
-			return nb.numBoards;
-		} else if (descriptor instanceof CreateDimensions) {
-			// Request by specific size IN BOARDS
-			var d = (CreateDimensions) descriptor;
-			if (machine.getArea() < d.width * d.height) {
-				throw new IllegalArgumentException(
-						"request cannot fit on machine");
-			}
-			try (var ps = conn.update(INSERT_REQ_SIZE)) {
-				ps.call(id, d.width, d.height, numDeadBoards,
-						(int) (d.width * d.height * scale.getDimensions()));
-			}
-			return max(1, d.height * d.width - numDeadBoards);
-		} else if (descriptor instanceof CreateDimensionsAt) {
-			var da = (CreateDimensionsAt) descriptor;
-			if (machine.getArea() < da.width * da.height * TRIAD_DEPTH) {
-				throw new IllegalArgumentException(
-						"request cannot fit on machine");
-			}
-			var boardId = locateBoard(conn, machine.name, da, true);
-			try (var ps = conn.update(INSERT_REQ_SIZE_BOARD)) {
-				ps.call(id, boardId, da.width, da.height, numDeadBoards,
-						(int) scale.getSpecificBoard());
-			}
-			return max(1, da.width * da.height * TRIAD_DEPTH - numDeadBoards);
-		} else {
-			/*
-			 * Request by specific location; resolve to board ID now, as that
-			 * doesn't depend on whether the board is currently in use.
-			 */
-			var b = (CreateBoard) descriptor;
-			var boardId = locateBoard(conn, machine.name, b, false);
-			try (var ps = conn.update(INSERT_REQ_BOARD)) {
-				// This doesn't pass along the max dead boards; only after one!
-				ps.call(id, boardId, (int) scale.getSpecificBoard());
-			}
-			return 1;
 		}
 	}
 

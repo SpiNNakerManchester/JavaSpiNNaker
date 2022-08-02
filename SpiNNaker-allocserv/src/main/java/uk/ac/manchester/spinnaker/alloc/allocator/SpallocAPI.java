@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
+import static java.util.Objects.isNull;
+import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
 
 import java.time.Duration;
@@ -173,19 +175,14 @@ public interface SpallocAPI {
 	 * @param keepaliveInterval
 	 *            The maximum interval between keepalive requests or the job
 	 *            becomes eligible for automated deletion.
-	 * @param maxDeadBoards
-	 *            The maximum number of dead boards tolerated in the allocation.
-	 *            Ignored when asking for a single board.
 	 * @param originalRequest
 	 *            The serialized original request, which will be stored in the
 	 *            database for later retrieval.
 	 * @return Handle to the job, or {@code empty} if the job couldn't be made.
 	 */
-	@SuppressWarnings("checkstyle:ParameterNumber")
 	Optional<Job> createJob(String owner, String group,
 			CreateDescriptor descriptor, String machineName, List<String> tags,
-			Duration keepaliveInterval, Integer maxDeadBoards,
-			byte[] originalRequest);
+			Duration keepaliveInterval, byte[] originalRequest);
 
 	/** Purge the cache of what boards are down. */
 	void purgeDownCache();
@@ -219,9 +216,44 @@ public interface SpallocAPI {
 	 * @see CreateBoard
 	 */
 	abstract class CreateDescriptor {
-		/** Only known subclasses permitted. */
-		private CreateDescriptor() {
+		/**
+		 * The maximum number of dead boards tolerated in the allocation.
+		 * Ignored when asking for a single board.
+		 */
+		public final int maxDead;
+
+		/**
+		 * Only known subclasses permitted.
+		 *
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards. {@code null} is
+		 *            equivalent to 0.
+		 */
+		private CreateDescriptor(Integer maxDeadBoards) {
+			this.maxDead = isNull(maxDeadBoards) ? 0 : maxDeadBoards;
 		}
+
+		/**
+		 * Apply a visitor to this descriptor.
+		 *
+		 * @param <T>
+		 *            The type of the result of the visiting.
+		 * @param visitor
+		 *            The visitor to apply.
+		 * @return The result computed by the visitor.
+		 */
+		public final <T> T visit(CreateVisitor<T> visitor) {
+			return doVisit(visitor);
+		}
+
+		/**
+		 * Get the area. The area is the number of boards required.
+		 *
+		 * @return The number of boards requested by the job.
+		 */
+		public abstract int getArea();
+
+		abstract <T> T doVisit(CreateVisitor<T> visitor);
 	}
 
 	/**
@@ -231,8 +263,19 @@ public interface SpallocAPI {
 		/** The number of boards requested. */
 		public final int numBoards;
 
-		public CreateNumBoards(int numBoards) {
+		public CreateNumBoards(int numBoards, Integer maxDeadBoards) {
+			super(maxDeadBoards);
 			this.numBoards = numBoards;
+		}
+
+		@Override
+		<T> T doVisit(CreateVisitor<T> visitor) {
+			return visitor.numBoards(this);
+		}
+
+		@Override
+		public int getArea() {
+			return numBoards;
 		}
 	}
 
@@ -250,9 +293,20 @@ public interface SpallocAPI {
 		/** Height requested, in boards. */
 		public final int height;
 
-		public CreateDimensions(int width, int height) {
+		public CreateDimensions(int width, int height, Integer maxDeadBoards) {
+			super(maxDeadBoards);
 			this.width = width;
 			this.height = height;
+		}
+
+		@Override
+		<T> T doVisit(CreateVisitor<T> visitor) {
+			return visitor.dimensions(this);
+		}
+
+		@Override
+		public int getArea() {
+			return width * height;
 		}
 	}
 
@@ -267,7 +321,9 @@ public interface SpallocAPI {
 		/** The network coordinates, or {@code null}. */
 		public final String ip;
 
-		private HasBoardCoords(Triad triad, Phys physical, String ip) {
+		private HasBoardCoords(Triad triad, Phys physical, String ip,
+				Integer maxDeadBoards) {
+			super(maxDeadBoards);
 			this.triad = triad;
 			this.physical = physical;
 			this.ip = ip;
@@ -301,9 +357,13 @@ public interface SpallocAPI {
 		 *            The X coordinate of the root board of the request.
 		 * @param y
 		 *            The Y coordinate of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
 		 */
-		public CreateDimensionsAt(int width, int height, int x, int y) {
-			super(new Triad(x, y, 0), null, null);
+		public CreateDimensionsAt(int width, int height, int x, int y,
+				Integer maxDeadBoards) {
+			super(new Triad(x, y, 0), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
 		}
@@ -320,54 +380,65 @@ public interface SpallocAPI {
 		 *            The X coordinate of the root board of the request.
 		 * @param y
 		 *            The Y coordinate of the root board of the request.
-		 */
-		public CreateDimensionsAt(int width, int height, Integer x, Integer y) {
-			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y), 0),
-					null, null);
-			this.width = width;
-			this.height = height;
-		}
-
-		/**
-		 * Create a request for a rectangle at a specific board. The board must
-		 * have a Z coordinate of 0.
-		 *
-		 * @param width
-		 *            Width requested, in triads.
-		 * @param height
-		 *            Height requested, in triads.
-		 * @param x
-		 *            The X coordinate of the root board of the request.
-		 * @param y
-		 *            The Y coordinate of the root board of the request.
-		 * @param z
-		 *            The Z coordinate of the root board of the request.
-		 */
-		public CreateDimensionsAt(int width, int height, int x, int y, int z) {
-			super(new Triad(x, y, z), null, null);
-			this.width = width;
-			this.height = height;
-		}
-
-		/**
-		 * Create a request for a rectangle at a specific board. The board must
-		 * have a Z coordinate of 0.
-		 *
-		 * @param width
-		 *            Width requested, in triads.
-		 * @param height
-		 *            Height requested, in triads.
-		 * @param x
-		 *            The X coordinate of the root board of the request.
-		 * @param y
-		 *            The Y coordinate of the root board of the request.
-		 * @param z
-		 *            The Z coordinate of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
 		 */
 		public CreateDimensionsAt(int width, int height, Integer x, Integer y,
-				Integer z) {
+				Integer maxDeadBoards) {
+			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y), 0),
+					null, null, maxDeadBoards);
+			this.width = width;
+			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @param z
+		 *            The Z coordinate of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(int width, int height, int x, int y, int z,
+				Integer maxDeadBoards) {
+			super(new Triad(x, y, z), null, null, maxDeadBoards);
+			this.width = width;
+			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param width
+		 *            Width requested, in triads.
+		 * @param height
+		 *            Height requested, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @param z
+		 *            The Z coordinate of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(int width, int height, Integer x, Integer y,
+				Integer z, Integer maxDeadBoards) {
 			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y),
-					HasBoardCoords.get(z)), null, null);
+					HasBoardCoords.get(z)), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
 		}
@@ -382,15 +453,20 @@ public interface SpallocAPI {
 		 *            Height requested, in triads.
 		 * @param ip
 		 *            The network address of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
 		 */
-		public CreateDimensionsAt(int width, int height, String ip) {
-			super(null, null, ip);
+		public CreateDimensionsAt(int width, int height, String ip,
+				Integer maxDeadBoards) {
+			super(null, null, ip, maxDeadBoards);
 			this.width = width;
 			this.height = height;
 		}
 
-		private CreateDimensionsAt(int width, int height, Phys physical) {
-			super(null, physical, null);
+		private CreateDimensionsAt(int width, int height, Phys physical,
+				Integer maxDeadBoards) {
+			super(null, physical, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
 		}
@@ -409,13 +485,16 @@ public interface SpallocAPI {
 		 *            The frame number of the root board.
 		 * @param board
 		 *            The board number of the root board.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
 		 * @return Descriptor
 		 */
 		public static CreateDimensionsAt physical(int width, int height,
-				int cabinet, int frame, int board) {
+				int cabinet, int frame, int board, Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
-					new Phys(cabinet, frame, board));
+					new Phys(cabinet, frame, board), maxDeadBoards);
 		}
 
 		/**
@@ -432,15 +511,29 @@ public interface SpallocAPI {
 		 *            The frame number of the root board.
 		 * @param board
 		 *            The board number of the root board.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
 		 * @return Descriptor
 		 */
 		public static CreateDimensionsAt physical(int width, int height,
-				Integer cabinet, Integer frame, Integer board) {
+				Integer cabinet, Integer frame, Integer board,
+				Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
 					new Phys(HasBoardCoords.get(cabinet),
 							HasBoardCoords.get(frame),
-							HasBoardCoords.get(board)));
+							HasBoardCoords.get(board)), maxDeadBoards);
+		}
+
+		@Override
+		<T> T doVisit(CreateVisitor<T> visitor) {
+			return visitor.dimensionsAt(this);
+		}
+
+		@Override
+		public int getArea() {
+			return width * height * TRIAD_DEPTH;
 		}
 	}
 
@@ -485,7 +578,7 @@ public interface SpallocAPI {
 	 */
 	final class CreateBoard extends HasBoardCoords {
 		private CreateBoard(Triad triad, Phys physical, String ip) {
-			super(triad, physical, ip);
+			super(triad, physical, ip, null);
 		}
 
 		/**
@@ -528,6 +621,60 @@ public interface SpallocAPI {
 		public static CreateBoard address(String ip) {
 			return new CreateBoard(null, null, ip);
 		}
+
+		@Override
+		<T> T doVisit(CreateVisitor<T> visitor) {
+			return visitor.board(this);
+		}
+
+		@Override
+		public int getArea() {
+			return 1;
+		}
+	}
+
+	/**
+	 * Visitor for {@link CreateDescriptor}.
+	 *
+	 * @param <T>
+	 *            The type of the result of visiting.
+	 */
+	interface CreateVisitor<T> {
+		/**
+		 * Visit a descriptor.
+		 *
+		 * @param createNumBoards
+		 *            The descriptor.
+		 * @return The result of the visiting.
+		 */
+		T numBoards(CreateNumBoards createNumBoards);
+
+		/**
+		 * Visit a descriptor.
+		 *
+		 * @param createDimensionsAt
+		 *            The descriptor.
+		 * @return The result of the visiting.
+		 */
+		T dimensionsAt(CreateDimensionsAt createDimensionsAt);
+
+		/**
+		 * Visit a descriptor.
+		 *
+		 * @param createDimensions
+		 *            The descriptor.
+		 * @return The result of the visiting.
+		 */
+		T dimensions(CreateDimensions createDimensions);
+
+		/**
+		 * Visit a descriptor.
+		 *
+		 * @param createBoard
+		 *            The descriptor.
+		 * @return The result of the visiting.
+		 */
+		T board(CreateBoard createBoard);
 	}
 
 	/**
