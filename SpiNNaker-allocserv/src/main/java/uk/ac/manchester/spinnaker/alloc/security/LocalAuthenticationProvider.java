@@ -28,13 +28,19 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
+
 /**
  * Locally-defined authentication providers include the capability to create
  * users.
  *
+ * @param <TestAPI>
+ *            The type of the test interface. Not important for non-test
+ *            purposes.
  * @author Donal Fellows
  */
-public interface LocalAuthenticationProvider extends AuthenticationProvider {
+public interface LocalAuthenticationProvider<TestAPI>
+		extends AuthenticationProvider {
 	/**
 	 * Create a user. Only admins can create users.
 	 *
@@ -86,4 +92,12 @@ public interface LocalAuthenticationProvider extends AuthenticationProvider {
 	 */
 	void mapAuthorities(Jwt token,
 			Collection<GrantedAuthority> resultCollection);
+
+	/**
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@ForTestingOnly
+	@Deprecated
+	TestAPI getTestAPI();
 }

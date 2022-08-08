@@ -100,7 +100,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
  */
 @Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
-		implements LocalAuthenticationProvider {
+		implements LocalAuthenticationProvider<LocalAuthProviderImpl.TestAPI> {
 	private static final Logger log = getLogger(LocalAuthProviderImpl.class);
 
 	@Autowired
@@ -512,12 +512,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
 
 		Query unlock = conn.query(UNLOCK_LOCKED_USERS);
-
-		/**
-		 * Make an instance.
-		 */
-		AuthQueries() {
-		}
 
 		@Override
 		public void close() {
@@ -1209,9 +1203,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 */
+	@Override
 	@ForTestingOnly
 	@Deprecated
-	public final TestAPI getTestAPI() {
+	public TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
