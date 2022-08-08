@@ -51,6 +51,14 @@ public final class Row {
 		this.rs = rs;
 	}
 
+	private String getSQL() {
+		try {
+			return rs.getStatement().toString();
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Get the column names from this row.
 	 *
@@ -69,7 +77,7 @@ public final class Row {
 			columns = columnNames(rs.getMetaData());
 			return columns;
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -86,7 +94,7 @@ public final class Row {
 		try {
 			return rs.getString(columnLabel);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -114,7 +122,7 @@ public final class Row {
 		try {
 			return rs.getBoolean(columnLabel);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -142,7 +150,7 @@ public final class Row {
 		try {
 			return rs.getInt(columnLabel);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -170,7 +178,7 @@ public final class Row {
 		try {
 			return (Integer) rs.getObject(columnLabel);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -198,7 +206,7 @@ public final class Row {
 		try {
 			return rs.getBytes(columnLabel);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -275,7 +283,7 @@ public final class Row {
 			}
 			return Instant.ofEpochSecond(moment);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -307,7 +315,7 @@ public final class Row {
 			}
 			return Duration.ofSeconds(span);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -338,7 +346,7 @@ public final class Row {
 		try {
 			return rs.getObject(columnLabel);
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -374,7 +382,7 @@ public final class Row {
 			}
 			return type.getEnumConstants()[value];
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
@@ -411,7 +419,7 @@ public final class Row {
 			}
 			return value.longValue();
 		} catch (SQLException e) {
-			throw mapException(e, null);
+			throw mapException(e, getSQL());
 		}
 	}
 
