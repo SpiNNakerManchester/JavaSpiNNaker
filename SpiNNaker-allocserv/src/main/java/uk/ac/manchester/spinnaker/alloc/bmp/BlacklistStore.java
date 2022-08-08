@@ -187,6 +187,7 @@ public class BlacklistStore extends DatabaseAwareBean {
 	@Deprecated
 	@ForTestingOnly
 	TestAPI getTestAPI() {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
 			public Optional<Blacklist> readBlacklist(Connection conn,

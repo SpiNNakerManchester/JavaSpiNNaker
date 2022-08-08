@@ -1623,6 +1623,7 @@ public class BMPController extends DatabaseAwareBean {
 	@ForTestingOnly
 	@Deprecated
 	public final TestAPI getTestAPI() {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
 			public void processRequests(long millis) throws IOException,

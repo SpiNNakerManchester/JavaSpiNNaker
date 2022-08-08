@@ -46,7 +46,7 @@ public final class Permit {
 	/** What is the name of the user? */
 	public final String name;
 
-	private List<GrantedAuthority> authorities = new ArrayList<>();
+	private final List<GrantedAuthority> authorities = new ArrayList<>();
 
 	private static final String[] STDAUTH = {
 		GRANT_ADMIN, GRANT_READER, GRANT_USER
@@ -80,8 +80,7 @@ public final class Permit {
 	 *            The originating security context.
 	 */
 	public Permit(SecurityContext context) {
-		authorities =
-				new ArrayList<>(context.getAuthentication().getAuthorities());
+		authorities.addAll(context.getAuthentication().getAuthorities());
 		admin = isAdmin(authorities);
 		name = context.getAuthentication().getName();
 	}
@@ -145,7 +144,7 @@ public final class Permit {
 		 * do so.
 		 */
 		@SuppressWarnings("serial")
-		class TempAuth implements Authentication {
+		final class TempAuth implements Authentication {
 			// The permit already proves we're authenticated
 			private boolean auth = true;
 

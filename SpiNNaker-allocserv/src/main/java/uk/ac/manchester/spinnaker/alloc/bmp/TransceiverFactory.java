@@ -247,6 +247,7 @@ public class TransceiverFactory
 	@ForTestingOnly
 	@Deprecated
 	public final TestAPI getTestAPI() {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
 			public Blacklist getCurrentBlacklist() {

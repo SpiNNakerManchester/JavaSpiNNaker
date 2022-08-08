@@ -28,7 +28,7 @@ import org.springframework.security.core.Authentication;
  *
  * @author Donal Fellows
  */
-class Token implements Serializable {
+final class Token implements Serializable {
 	private static final long serialVersionUID = -439034988839648948L;
 
 	private final String id;

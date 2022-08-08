@@ -16,9 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.Thread.currentThread;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
+import static java.util.Arrays.stream;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -35,4 +37,26 @@ import java.lang.annotation.Target;
 @Retention(CLASS)
 @Target({ TYPE, METHOD })
 public @interface ForTestingOnly {
+	/** Utilities for checking the promises relating to the annotation. */
+	abstract class Utils {
+		private Utils() {
+		}
+
+		/**
+		 * A simple test for whether there are test classes on the stack at the
+		 * point it is called. Moderately expensive, but it only guards stuff
+		 * that should be used on test paths, so that isn't important.
+		 *
+		 * @throws Error
+		 *             if not called from the right place; it's a serious
+		 *             security failure and wrong programming.
+		 */
+		public static void checkForTestClassOnStack() {
+			// TODO change to java.lang.StackWalker in Java 11 onwards
+			if (!stream(currentThread().getStackTrace())
+					.anyMatch(e -> e.getClassName().endsWith("Test"))) {
+				throw new Error("test-only code called from non-test context");
+			}
+		}
+	}
 }
