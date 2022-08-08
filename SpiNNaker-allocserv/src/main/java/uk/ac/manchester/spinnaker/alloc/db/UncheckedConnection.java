@@ -67,6 +67,92 @@ class UncheckedConnection implements Connection {
 	}
 
 	/**
+	 * Produce a value or throw. Only used in {@link UncheckedConnection}.
+	 *
+	 * @param <T>
+	 *            The type of value to produce.
+	 */
+	private interface Getter<T> {
+		/**
+		 * Produce a value or throw.
+		 *
+		 * @return The value produced.
+		 * @throws SQLException
+		 *             If things fail.
+		 */
+		T get() throws SQLException;
+	}
+
+	/**
+	 * Handles exception mapping if an exception is thrown.
+	 *
+	 * @param <T>
+	 *            The type of the result.
+	 * @param getter
+	 *            How to get the result. May throw.
+	 * @return The result.
+	 * @throws DataAccessException
+	 *             If the interior code throws an {@link SQLException}.
+	 */
+	private <T> T get(Getter<T> getter) {
+		try {
+			return getter.get();
+		} catch (SQLException e) {
+			throw mapException(e, null);
+		}
+	}
+
+	/**
+	 * Handles exception mapping if an exception is thrown.
+	 *
+	 * @param <T>
+	 *            The type of the result.
+	 * @param sql
+	 *            The SQL being handled. Not {@code null}.
+	 * @param getter
+	 *            How to get the result. May throw.
+	 * @return The result.
+	 * @throws DataAccessException
+	 *             If the interior code throws an {@link SQLException}.
+	 */
+	private <T> T get(String sql, Getter<T> getter) {
+		try {
+			return getter.get();
+		} catch (SQLException e) {
+			throw mapException(e, sql);
+		}
+	}
+
+	/**
+	 * Take an action or throw. Only used in {@link UncheckedConnection}.
+	 */
+	private interface Acter {
+		/**
+		 * Take an action or throw.
+		 *
+		 * @throws SQLException
+		 *             If things fail.
+		 */
+		void act() throws SQLException;
+	}
+
+	/**
+	 * Handles exception mapping if an exception is thrown.
+	 *
+	 * @param acter
+	 *            How to take the action. May throw.
+	 * @throws DataAccessException
+	 *             If the interior code throws an {@link SQLException}.
+	 */
+	private void act(Acter acter) {
+		try {
+			acter.act();
+		} catch (SQLException e) {
+			throw mapException(e, null);
+		}
+	}
+
+	/**
 	 * A real database {@code BEGIN} in SQLite. Can't use
 	 * {@link #setAutoCommit(boolean)} as that maintains transactions when it
 	 * doesn't need to, eventually causing database locking problems.
@@ -77,11 +163,7 @@ class UncheckedConnection implements Connection {
 	 *             If the {@code BEGIN} fails.
 	 */
 	final void realBegin(TransactionMode mode) {
-		try {
-			realDB.exec("begin " + mode.name() + ";", false);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> realDB.exec("begin " + mode.name() + ";", false));
 	}
 
 	/**
@@ -93,11 +175,7 @@ class UncheckedConnection implements Connection {
 	 *             If the {@code COMMIT} fails.
 	 */
 	final void realCommit() {
-		try {
-			realDB.exec("commit;", false);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> realDB.exec("commit;", false));
 	}
 
 	/**
@@ -109,407 +187,238 @@ class UncheckedConnection implements Connection {
 	 *             If the {@code ROLLBACK} fails.
 	 */
 	final void realRollback() {
-		try {
-			realDB.exec("rollback;", false);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> realDB.exec("rollback;", false));
 	}
 
 	@Override
 	public final <T> T unwrap(Class<T> iface) {
-		try {
-			return c.unwrap(iface);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.unwrap(iface));
 	}
 
 	@Override
 	public final boolean isWrapperFor(Class<?> iface) {
-		try {
-			return c.isWrapperFor(iface);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.isWrapperFor(iface));
 	}
 
 	@Override
 	public final Statement createStatement() {
-		try {
-			return c.createStatement();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createStatement());
 	}
 
 	@Override
 	public final PreparedStatement prepareStatement(String sql) {
-		try {
-			return c.prepareStatement(sql);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareStatement(sql));
 	}
 
 	@Override
 	public final CallableStatement prepareCall(String sql) {
-		try {
-			return c.prepareCall(sql);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareCall(sql));
 	}
 
 	@Override
 	public final String nativeSQL(String sql) {
-		try {
-			return c.nativeSQL(sql);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.nativeSQL(sql));
 	}
 
 	@Override
 	public final void setAutoCommit(boolean autoCommit) {
-		try {
-			c.setAutoCommit(autoCommit);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setAutoCommit(autoCommit));
 	}
 
 	@Override
 	public final boolean getAutoCommit() {
-		try {
-			return c.getAutoCommit();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getAutoCommit());
 	}
 
 	@Override
 	public final void commit() {
-		try {
-			c.commit();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.commit());
 	}
 
 	@Override
 	public final void rollback() {
-		try {
-			c.rollback();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.rollback());
 	}
 
 	@Override
 	public final void close() {
-		try {
-			c.close();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.close());
 	}
 
 	@Override
 	public final boolean isClosed() {
-		try {
-			return c.isClosed();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.isClosed());
 	}
 
 	@Override
 	public final DatabaseMetaData getMetaData() {
-		try {
-			return c.getMetaData();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getMetaData());
 	}
 
 	@Override
 	public final void setReadOnly(boolean readOnly) {
-		try {
-			c.setReadOnly(readOnly);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setReadOnly(readOnly));
 	}
 
 	@Override
 	public final boolean isReadOnly() {
-		try {
-			return c.isReadOnly();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.isReadOnly());
 	}
 
 	@Override
 	public final void setCatalog(String catalog) {
-		try {
-			c.setCatalog(catalog);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setCatalog(catalog));
 	}
 
 	@Override
 	public final String getCatalog() {
-		try {
-			return c.getCatalog();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getCatalog());
 	}
 
 	@Override
 	public final void setTransactionIsolation(int level) {
-		try {
-			c.setTransactionIsolation(level);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setTransactionIsolation(level));
 	}
 
 	@Override
 	public final int getTransactionIsolation() {
-		try {
-			return c.getTransactionIsolation();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getTransactionIsolation());
 	}
 
 	@Override
 	public final SQLWarning getWarnings() {
-		try {
-			return c.getWarnings();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getWarnings());
 	}
 
 	@Override
 	public final void clearWarnings() {
-		try {
-			c.clearWarnings();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.clearWarnings());
 	}
 
 	@Override
 	public final Statement createStatement(int resultSetType,
 			int resultSetConcurrency) {
-		try {
-			return c.createStatement(resultSetType, resultSetConcurrency);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(
+				() -> c.createStatement(resultSetType, resultSetConcurrency));
 	}
 
 	@Override
 	public final PreparedStatement prepareStatement(String sql,
 			int resultSetType, int resultSetConcurrency) {
-		try {
-			return c.prepareStatement(sql, resultSetType, resultSetConcurrency);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareStatement(sql, resultSetType,
+				resultSetConcurrency));
 	}
 
 	@Override
 	public final CallableStatement prepareCall(String sql, int resultSetType,
 			int resultSetConcurrency) {
-		try {
-			return c.prepareCall(sql, resultSetType, resultSetConcurrency);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql,
+				() -> c.prepareCall(sql, resultSetType, resultSetConcurrency));
 	}
 
 	@Override
-	public final Map<String, Class<?>> getTypeMap() throws SQLException {
-		return c.getTypeMap();
+	public final Map<String, Class<?>> getTypeMap() {
+		return get(() -> c.getTypeMap());
 	}
 
 	@Override
 	public final void setTypeMap(Map<String, Class<?>> map) {
-		try {
-			c.setTypeMap(map);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setTypeMap(map));
 	}
 
 	@Override
 	public final void setHoldability(int holdability) {
-		try {
-			c.setHoldability(holdability);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setHoldability(holdability));
 	}
 
 	@Override
 	public final int getHoldability() {
-		try {
-			return c.getHoldability();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getHoldability());
 	}
 
 	@Override
 	public final Savepoint setSavepoint() {
-		try {
-			return c.setSavepoint();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.setSavepoint());
 	}
 
 	@Override
 	public final Savepoint setSavepoint(String name) {
-		try {
-			return c.setSavepoint(name);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.setSavepoint(name));
 	}
 
 	@Override
 	public final void rollback(Savepoint savepoint) {
-		try {
-			c.rollback(savepoint);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.rollback(savepoint));
 	}
 
 	@Override
 	public final void releaseSavepoint(Savepoint savepoint) {
-		try {
-			c.releaseSavepoint(savepoint);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.releaseSavepoint(savepoint));
 	}
 
 	@Override
 	public final Statement createStatement(int resultSetType,
 			int resultSetConcurrency, int resultSetHoldability) {
-		try {
-			return c.createStatement(resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createStatement(resultSetType, resultSetConcurrency,
+				resultSetHoldability));
 	}
 
 	@Override
 	public final PreparedStatement prepareStatement(String sql,
 			int resultSetType, int resultSetConcurrency,
 			int resultSetHoldability) {
-		try {
-			return c.prepareStatement(sql, resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareStatement(sql, resultSetType,
+				resultSetConcurrency, resultSetHoldability));
 	}
 
 	@Override
 	public final CallableStatement prepareCall(String sql, int resultSetType,
 			int resultSetConcurrency, int resultSetHoldability) {
-		try {
-			return c.prepareCall(sql, resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareCall(sql, resultSetType,
+				resultSetConcurrency, resultSetHoldability));
 	}
 
 	@Override
 	public final PreparedStatement prepareStatement(String sql,
 			int autoGeneratedKeys) {
-		try {
-			return c.prepareStatement(sql, autoGeneratedKeys);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareStatement(sql, autoGeneratedKeys));
 	}
 
 	@Override
 	public final PreparedStatement prepareStatement(String sql,
 			int[] columnIndexes) {
-		try {
-			return c.prepareStatement(sql, columnIndexes);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareStatement(sql, columnIndexes));
 	}
 
 	@Override
 	public final PreparedStatement prepareStatement(String sql,
 			String[] columnNames) {
-		try {
-			return c.prepareStatement(sql, columnNames);
-		} catch (SQLException e) {
-			throw mapException(e, sql);
-		}
+		return get(sql, () -> c.prepareStatement(sql, columnNames));
 	}
 
 	@Override
 	public final Clob createClob() {
-		try {
-			return c.createClob();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createClob());
 	}
 
 	@Override
 	public final Blob createBlob() {
-		try {
-			return c.createBlob();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createBlob());
 	}
 
 	@Override
 	public final NClob createNClob() {
-		try {
-			return c.createNClob();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createNClob());
 	}
 
 	@Override
 	public final SQLXML createSQLXML() {
-		try {
-			return c.createSQLXML();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createSQLXML());
 	}
 
 	@Override
 	public final boolean isValid(int timeout) {
-		try {
-			return c.isValid(timeout);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.isValid(timeout));
 	}
 
 	@Override
@@ -526,82 +435,46 @@ class UncheckedConnection implements Connection {
 
 	@Override
 	public final String getClientInfo(String name) {
-		try {
-			return c.getClientInfo(name);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getClientInfo(name));
 	}
 
 	@Override
 	public final Properties getClientInfo() {
-		try {
-			return c.getClientInfo();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getClientInfo());
 	}
 
 	@Override
 	public final Array createArrayOf(String typeName, Object[] elements) {
-		try {
-			return c.createArrayOf(typeName, elements);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createArrayOf(typeName, elements));
 	}
 
 	@Override
 	public final Struct createStruct(String typeName, Object[] attributes) {
-		try {
-			return c.createStruct(typeName, attributes);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.createStruct(typeName, attributes));
 	}
 
 	@Override
 	public final void setSchema(String schema) {
-		try {
-			c.setSchema(schema);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setSchema(schema));
 	}
 
 	@Override
 	public final String getSchema() {
-		try {
-			return c.getSchema();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getSchema());
 	}
 
 	@Override
 	public final void abort(Executor executor) {
-		try {
-			c.abort(executor);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.abort(executor));
 	}
 
 	@Override
 	public final void setNetworkTimeout(Executor executor, int milliseconds) {
-		try {
-			c.setNetworkTimeout(executor, milliseconds);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		act(() -> c.setNetworkTimeout(executor, milliseconds));
 	}
 
 	@Override
 	public final int getNetworkTimeout() {
-		try {
-			return c.getNetworkTimeout();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> c.getNetworkTimeout());
 	}
 }

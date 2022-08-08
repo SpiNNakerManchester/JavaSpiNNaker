@@ -90,6 +90,9 @@ class DbBasicTest {
 				assertEquals(1, rows, "should be only one row in query result");
 			});
 		}
+
+		// Not supported by SQLite
+		assertThrows(Exception.class, () -> c.createSQLXML());
 	}
 
 	@Test
@@ -132,9 +135,12 @@ class DbBasicTest {
 		Row row = c.transaction(() -> {
 			try (Query q =
 					c.query("SELECT COUNT(*) AS c FROM board_model_coords")) {
-				return q.call1().get();
+				Row r = q.call1().get();
+				assertContains("Row(c:", r.toString());
+				return r;
 			}
 		});
+		row.toString(); // Must not throw!
 		Exception e = assertThrows(Exception.class, () -> row.getInt("c"));
 		assertContains("closed", e.getMessage());
 	}
