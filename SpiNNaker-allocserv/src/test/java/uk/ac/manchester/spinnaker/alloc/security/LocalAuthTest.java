@@ -87,12 +87,13 @@ class LocalAuthTest extends SQLQueries {
 
 	@BeforeEach
 	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired LocalAuthenticationProvider<?> authEngine) {
+	void checkSetup(
+			@Autowired LocalAuthenticationProvider<TestAPI> authEngine) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
-		this.authEngine = (TestAPI) authEngine.getTestAPI();
+		this.authEngine = authEngine.getTestAPI();
 	}
 
 	// The actual tests

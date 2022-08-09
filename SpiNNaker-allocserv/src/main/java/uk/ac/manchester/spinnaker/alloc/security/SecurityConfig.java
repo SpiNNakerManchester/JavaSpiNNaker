@@ -142,7 +142,7 @@ public class SecurityConfig {
 	private BasicAuthEntryPoint authenticationEntryPoint;
 
 	@Autowired
-	private LocalAuthenticationProvider localAuthProvider;
+	private LocalAuthenticationProvider<?> localAuthProvider;
 
 	@Autowired
 	private AppAuthTransformationFilter authApplicationFilter;
