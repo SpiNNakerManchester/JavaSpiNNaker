@@ -76,10 +76,13 @@ class DbBasicTest {
 				() -> "did not find " + expected + " in " + value);
 	}
 
+	/** A very simple query. Note the space at the end. */
+	private static final String COUNT =
+			"SELECT COUNT(*) AS c FROM board_model_coords ";
+
 	@Test
 	void testDbConn() {
-		try (Query q =
-				c.query("SELECT COUNT(*) AS c FROM board_model_coords")) {
+		try (Query q = c.query(COUNT)) {
 			c.transaction(() -> {
 				int rows = 0;
 				for (Row row : q.call()) {
@@ -99,11 +102,8 @@ class DbBasicTest {
 	void testBadQueries() {
 		c.transaction(() -> {
 			Exception e;
-			try (Query q0 =
-					c.query("SELECT COUNT(*) AS c FROM board_model_coords");
-					Query q1 = c.query(
-							"SELECT COUNT(*) AS c from board_model_coords "
-									+ "WHERE model = :model")) {
+			try (Query q0 = c.query(COUNT);
+					Query q1 = c.query(COUNT + "WHERE model = :model")) {
 
 				// Too many args
 				e = assertThrows(InvalidDataAccessResourceUsageException.class,
@@ -125,22 +125,19 @@ class DbBasicTest {
 
 			// No column in query definition
 			e = assertThrows(BadSqlGrammarException.class,
-					() -> c.query(
-							"SELECT COUNT(*) AS c FROM board_model_coords "
-									+ "WHERE job_id = ?"));
+					() -> c.query(COUNT + "WHERE job_id = ?"));
 			assertContains("no such column: job_id", e.getMessage());
 		});
 
 		// Accessing row after it has been disposed of
 		Row row = c.transaction(() -> {
-			try (Query q =
-					c.query("SELECT COUNT(*) AS c FROM board_model_coords")) {
+			try (Query q = c.query(COUNT)) {
 				Row r = q.call1().get();
 				assertContains("Row(c:", r.toString());
 				return r;
 			}
 		});
-		row.toString(); // Must not throw!
+		assertNotNull(row.toString()); // Must not throw or return null!
 		Exception e = assertThrows(Exception.class, () -> row.getInt("c"));
 		assertContains("closed", e.getMessage());
 	}
@@ -150,11 +147,8 @@ class DbBasicTest {
 		// Not very good SQL for updates, but we won't actually run them
 		c.transaction(() -> {
 			Exception e;
-			try (Update q0 =
-					c.update("SELECT COUNT(*) AS c FROM board_model_coords");
-					Update q1 = c.update(
-							"SELECT COUNT(*) AS c from board_model_coords "
-									+ "WHERE model = :model")) {
+			try (Update q0 = c.update(COUNT);
+					Update q1 = c.update(COUNT + "WHERE model = :model")) {
 
 				// Too many args
 				e = assertThrows(InvalidDataAccessResourceUsageException.class,
@@ -171,9 +165,7 @@ class DbBasicTest {
 
 			// No column in query definition
 			e = assertThrows(BadSqlGrammarException.class,
-					() -> c.update(
-							"SELECT COUNT(*) AS c FROM board_model_coords "
-									+ "WHERE job_id = ?"));
+					() -> c.update(COUNT + "WHERE job_id = ?"));
 			assertContains("no such column: job_id", e.getMessage());
 		});
 	}
