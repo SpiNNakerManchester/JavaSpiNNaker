@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.System.arraycopy;
+import static java.util.Objects.isNull;
 import static org.sqlite.SQLiteErrorCode.SQLITE_BUSY;
 
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.InvalidResultSetAccessException;
 import org.springframework.jdbc.UncategorizedSQLException;
 import org.sqlite.SQLiteException;
 
@@ -65,6 +67,9 @@ public abstract class Utils {
 	 * @return The trimmed SQL.
 	 */
 	public static String trimSQL(String sql, int length) {
+		if (isNull(sql)) {
+			return null;
+		}
 		sql = trimSQLComments(sql);
 		// Trim long queries to no more than TRIM_LENGTH...
 		var sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
@@ -76,6 +81,9 @@ public abstract class Utils {
 	}
 
 	private static String trimSQLComments(String sql) {
+		if (isNull(sql)) {
+			return null;
+		}
 		return sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
 	}
 
@@ -106,6 +114,11 @@ public abstract class Utils {
 	public static DataAccessException mapException(SQLException exception,
 			String sql) {
 		if (!(exception instanceof SQLiteException)) {
+			if (exception.getMessage().contains("no such column: ")) {
+				return restack(new InvalidResultSetAccessException(
+						exception.getMessage(), trimSQLComments(sql),
+						exception));
+			}
 			return restack(new UncategorizedSQLException(
 					"general SQL exception", trimSQLComments(sql), exception));
 		}

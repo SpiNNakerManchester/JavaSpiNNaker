@@ -993,6 +993,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	@ForTestingOnly
 	@Deprecated
 	TestAPI getTestAPI(Connection conn) {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
 			public boolean allocate() {

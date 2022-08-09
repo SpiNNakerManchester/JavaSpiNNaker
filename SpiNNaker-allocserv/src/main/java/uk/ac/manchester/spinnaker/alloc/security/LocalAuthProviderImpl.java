@@ -21,9 +21,6 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.oauth2.core.oidc.IdTokenClaimNames.SUB;
-import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL;
-import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.EMAIL_VERIFIED;
-import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.NAME;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
@@ -43,7 +40,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -78,6 +74,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.QuotaProperties;
@@ -100,7 +97,7 @@ import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
  */
 @Service
 public class LocalAuthProviderImpl extends DatabaseAwareBean
-		implements LocalAuthenticationProvider {
+		implements LocalAuthenticationProvider<LocalAuthProviderImpl.TestAPI> {
 	private static final Logger log = getLogger(LocalAuthProviderImpl.class);
 
 	@Autowired
@@ -186,7 +183,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	private static class SetupException extends RuntimeException {
+	private static final class SetupException extends RuntimeException {
 		private static final long serialVersionUID = -3915472090182223715L;
 
 		SetupException(String message) {
@@ -204,39 +201,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			throw new UsernameNotFoundException("empty user name?");
 		}
 		var encPass = passServices.encodePassword(password);
-		try (var conn = getConnection();
-				var createUser = conn.update(CREATE_USER)) {
-			return conn.transaction(() -> createUser(username, encPass,
-					trustLevel, null, createUser).isPresent());
+		try (var sql = new AuthQueries()) {
+			return sql.transaction(
+					() -> sql.createUser(username, encPass, trustLevel, null)
+							.isPresent());
 		}
-	}
-
-	/**
-	 * Create a user. A transaction <em>must</em> be held open when calling
-	 * this.
-	 *
-	 * @param username
-	 *            The username to create
-	 * @param encPass
-	 *            The already-encoded password to use; {@code null} for a user
-	 *            that needs to authenticate by another mechanism.
-	 * @param trustLevel
-	 *            What level of permissions to grant
-	 * @param openIdSubject
-	 *            The real OpenID {@code SUB} claim, if available/known.
-	 * @param createUser
-	 *            SQL statement
-	 * @return The user ID if the user was successfully created.
-	 */
-	private Optional<Integer> createUser(String username, String encPass,
-			TrustLevel trustLevel, String openIdSubject, Update createUser) {
-		return createUser
-				.key(username, encPass, trustLevel, false, openIdSubject)
-				.map(userId -> {
-					log.info("added user {} with trust level {}", username,
-							trustLevel);
-					return userId;
-				});
 	}
 
 	/** Marks an authentication that we've already taken a decision about. */
@@ -356,8 +325,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		return false;
 	}
 
-	private static class PerformedUsernamePasswordAuthenticationToken extends
-			UsernamePasswordAuthenticationToken implements AlreadyDoneMarker {
+	private static final class PerformedUsernamePasswordAuthenticationToken
+			extends UsernamePasswordAuthenticationToken
+			implements AlreadyDoneMarker {
 		private static final long serialVersionUID = -3164620207079316329L;
 
 		PerformedUsernamePasswordAuthenticationToken(String name,
@@ -366,9 +336,20 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	private UsernamePasswordAuthenticationToken
-			authenticateDirect(UsernamePasswordAuthenticationToken auth)
-					throws AuthenticationException {
+	/**
+	 * Do authorization mapping for users coming in with a direct username and
+	 * password.
+	 *
+	 * @param auth
+	 *            The credentials they presented
+	 * @return The remapped auth token, or {@code null} if we are throwing
+	 *         things out at this stage.
+	 * @throws AuthenticationException
+	 *             If something is badly wrong.
+	 */
+	private Authentication authenticateDirect(
+			UsernamePasswordAuthenticationToken auth)
+			throws AuthenticationException {
 		log.info("authenticating Local Login {}", auth.toString());
 		// We ALWAYS trim the username; extraneous whitespace is bogus
 		var name = auth.getName().trim();
@@ -388,15 +369,36 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				authorities);
 	}
 
-	private OpenIDDerivedAuthenticationToken authorizeOpenId(String name,
-			String subject, OriginatingCredential credential,
-			Collection<? extends GrantedAuthority> authorities) {
+	/**
+	 * Do authorization mapping for users coming in via OpenID Connect from
+	 * HBP/EBRAINS.
+	 *
+	 * @param name
+	 *            The name of the user <em>with standard namespacing prefix
+	 *            added</em>.
+	 * @param subject
+	 *            The OpenID subject.
+	 * @param credential
+	 *            The reason we believe the user should be allowed to use the
+	 *            service.
+	 * @param authorities
+	 *            The claimed authorities derived from the HBP OpenID service.
+	 *            Interesting because they include claims about organisation and
+	 *            collabratory membership.
+	 * @return The remapped auth token, or {@code null} if we are throwing
+	 *         things out at this stage.
+	 * @throws AuthenticationException
+	 *             If something is badly wrong.
+	 */
+	private Authentication authorizeOpenId(String name, String subject,
+			OriginatingCredential credential,
+			Collection<? extends GrantedAuthority> authorities)
+			throws AuthenticationException {
 		log.debug("authenticating OpenID {}", credential);
 		if (isNull(name)
 				|| name.equals(authProps.getOpenid().getUsernamePrefix())) {
 			// No actual name there?
-			log.warn("failed to handle OpenID user with no real user name");
-			return null;
+			throw new UsernameNotFoundException("empty user name?");
 		}
 		try (var queries = new AuthQueries()) {
 			if (!queries.transaction(() -> authOpenIDAgainstDB(name, subject,
@@ -435,90 +437,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			} else {
 				return token.toString();
 			}
-		}
-	}
-
-	/**
-	 * An object that can say something about what user it was derived from.
-	 * Note that you never have both the user information and the token at the
-	 * same time, but they contain fairly similar contents.
-	 */
-	public interface OpenIDUserAware {
-		/**
-		 * Get the underlying OpenID user information.
-		 *
-		 * @return The user info, if known. Pay attention to the attributes.
-		 */
-		Optional<OAuth2User> getOpenIdUser();
-
-		/**
-		 * Get the underlying OpenID user token.
-		 *
-		 * @return The user's bearer token. Pay attention to the claims.
-		 */
-		Optional<Jwt> getOpenIdToken();
-
-		/**
-		 * Get a claim/attribute that is a string.
-		 *
-		 * @param claimName
-		 *            The name of the claim.
-		 * @return The string.
-		 * @throws IllegalStateException
-		 *             If neither {@link #getOpenIdUser()} nor
-		 *             {@link #getOpenIdToken()} provide anything we can get
-		 *             claims from.
-		 */
-		default String getStringClaim(String claimName) {
-			return getOpenIdUser()
-					.map(u -> Objects.toString(u.getAttribute(claimName)))
-					.or(() -> getOpenIdToken()
-							.map(t -> t.getClaimAsString(claimName)))
-					.orElseThrow(() -> new IllegalStateException(
-							"no user or token to supply claim"));
-		}
-
-		/**
-		 * @return The OpenID subject identifier.
-		 * @throws IllegalStateException
-		 *             If the object was made without either a user or a token.
-		 */
-		default String getOpenIdSubject() {
-			return getStringClaim(SUB);
-		}
-
-		/**
-		 * @return The preferred OpenID user name. <em>We don't use this
-		 *         directly</em> as it may clash with other user names.
-		 * @throws IllegalStateException
-		 *             If the object was made without either a user or a token.
-		 */
-		default String getOpenIdUserName() {
-			return getStringClaim(PREFERRED_USERNAME);
-		}
-
-		/**
-		 * @return The real name of the OpenID user.
-		 * @throws IllegalStateException
-		 *             If the object was made without either a user or a token.
-		 */
-		default String getOpenIdName() {
-			return getStringClaim(NAME);
-		}
-
-		/**
-		 * @return The verified email address of the OpenID user, if available.
-		 */
-		default Optional<String> getOpenIdEmail() {
-			var email = getOpenIdUser().map(uu -> uu.getAttributes())
-					.filter(uu -> uu.containsKey(EMAIL_VERIFIED)
-							&& (Boolean) uu.get(EMAIL_VERIFIED))
-					.map(uu -> uu.get(EMAIL).toString());
-			if (email.isPresent()) {
-				return email;
-			}
-			return getOpenIdToken().filter(t -> t.getClaim(EMAIL_VERIFIED))
-					.map(t -> t.getClaimAsString(EMAIL));
 		}
 	}
 
@@ -589,11 +507,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		private final Update createGroup =
 				conn.update(CREATE_GROUP_IF_NOT_EXISTS);
 
-		/**
-		 * Make an instance.
-		 */
-		AuthQueries() {
-		}
+		Query unlock = conn.query(UNLOCK_LOCKED_USERS);
 
 		@Override
 		public void close() {
@@ -603,6 +517,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			loginSuccess.close();
 			userAuthorities.close();
 			getUserBlocked.close();
+			unlock.close();
 			super.close();
 		}
 
@@ -616,6 +531,30 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		 */
 		Optional<Row> getUser(String username) {
 			return getUserBlocked.call1(username);
+		}
+
+		/**
+		 * Create a user.
+		 *
+		 * @param username
+		 *            The username to create
+		 * @param encPass
+		 *            The already-encoded password to use; {@code null} for a
+		 *            user that needs to authenticate by another mechanism.
+		 * @param trustLevel
+		 *            What level of permissions to grant
+		 * @param subject
+		 *            The real OpenID {@code SUB} claim, if available/known.
+		 * @return The user ID if the user was successfully created.
+		 */
+		Optional<Integer> createUser(String username, String encPass,
+				TrustLevel trustLevel, String subject) {
+			return createUser.key(username, encPass, trustLevel, false, subject)
+					.map(userId -> {
+						log.info("added user {} with trust level {}", username,
+								trustLevel);
+						return userId;
+					});
 		}
 
 		/**
@@ -694,6 +633,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				log.warn("automatically locking user {} for {}", username,
 						authProps.getAccountLockDuration());
 			}
+		}
+
+		void unlock() {
+			unlock.call(authProps.getAccountLockDuration())
+					.map(string("user_name")).forEach(user -> log
+							.info("automatically unlocked user {}", user));
 		}
 	}
 
@@ -780,7 +725,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	class CollabratoryAuthority extends SimpleGrantedAuthority {
+	final class CollabratoryAuthority extends SimpleGrantedAuthority {
 		private static final long serialVersionUID = 4964366746649162092L;
 
 		private final String collabratory;
@@ -795,7 +740,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	class OrganisationAuthority extends SimpleGrantedAuthority {
+	final class OrganisationAuthority extends SimpleGrantedAuthority {
 		private static final long serialVersionUID = 8260068770503054502L;
 
 		private final String organisation;
@@ -1119,8 +1064,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * the user, they're also immediately authorised as they're
 			 * definitely not disabled or locked.
 			 */
-			return ifElse(createUser(username, null, USER, subject,
-					queries.createUser), id -> {
+			return ifElse(queries.createUser(username, null, USER, subject),
+					id -> {
 						synchExternalGroups(username, id, orgs, collabs,
 								queries);
 						return true;
@@ -1233,14 +1178,36 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	void unlock() {
-		try (var conn = getConnection();
-				var unlock = conn.query(UNLOCK_LOCKED_USERS)) {
-			conn.transaction(() -> {
-				unlock.call(authProps.getAccountLockDuration())
-						.map(string("user_name")).forEach(user -> log
-								.info("automatically unlocked user {}", user));
+	private void unlock() {
+		try (var sql = new AuthQueries()) {
+			sql.transaction(() -> {
+				sql.unlock();
+				return null;
 			});
 		}
+	}
+
+	interface TestAPI {
+		/**
+		 * Run the core of the user unlocker.
+		 */
+		void unlock();
+	}
+
+	/**
+	 * @return The test interface.
+	 * @deprecated This interface is just for testing.
+	 */
+	@Override
+	@ForTestingOnly
+	@Deprecated
+	public TestAPI getTestAPI() {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
+		return new TestAPI() {
+			@Override
+			public void unlock() {
+				LocalAuthProviderImpl.this.unlock();
+			}
+		};
 	}
 }

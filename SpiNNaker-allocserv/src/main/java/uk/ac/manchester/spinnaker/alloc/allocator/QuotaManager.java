@@ -259,6 +259,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	@ForTestingOnly
 	@Deprecated
 	TestAPI getTestAPI() {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
 			public void doConsolidate(Connection c) {

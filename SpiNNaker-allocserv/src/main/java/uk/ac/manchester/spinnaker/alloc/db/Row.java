@@ -50,6 +50,50 @@ public final class Row {
 		this.rs = rs;
 	}
 
+	private String getSQL() {
+		try {
+			return rs.getStatement().toString();
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Produce a value or throw. Only used in {@link Row}.
+	 *
+	 * @param <T>
+	 *            The type of value to produce.
+	 */
+	private interface Getter<T> {
+		/**
+		 * Produce a value or throw.
+		 *
+		 * @return The value produced.
+		 * @throws SQLException
+		 *             If things fail.
+		 */
+		T get() throws SQLException;
+	}
+
+	/**
+	 * Handles exception mapping if an exception is thrown.
+	 *
+	 * @param <T>
+	 *            The type of the result.
+	 * @param getter
+	 *            How to get the result. May throw.
+	 * @return The result.
+	 * @throws DataAccessException
+	 *             If the interior code throws an {@link SQLException}.
+	 */
+	private <T> T get(Getter<T> getter) {
+		try {
+			return getter.get();
+		} catch (SQLException e) {
+			throw mapException(e, getSQL());
+		}
+	}
+
 	/**
 	 * Get the column names from this row.
 	 *
@@ -64,12 +108,10 @@ public final class Row {
 		if (columns != null) {
 			return columns;
 		}
-		try {
+		return get(() -> {
 			columns = columnNames(rs.getMetaData());
 			return columns;
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		});
 	}
 
 	/**
@@ -82,11 +124,7 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public String getString(String columnLabel) {
-		try {
-			return rs.getString(columnLabel);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> rs.getString(columnLabel));
 	}
 
 	/**
@@ -110,11 +148,7 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public boolean getBoolean(String columnLabel) {
-		try {
-			return rs.getBoolean(columnLabel);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> rs.getBoolean(columnLabel));
 	}
 
 	/**
@@ -138,11 +172,7 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public int getInt(String columnLabel) {
-		try {
-			return rs.getInt(columnLabel);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> rs.getInt(columnLabel));
 	}
 
 	/**
@@ -166,11 +196,7 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public Integer getInteger(String columnLabel) {
-		try {
-			return (Integer) rs.getObject(columnLabel);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> (Integer) rs.getObject(columnLabel));
 	}
 
 	/**
@@ -194,11 +220,7 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public byte[] getBytes(String columnLabel) {
-		try {
-			return rs.getBytes(columnLabel);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> rs.getBytes(columnLabel));
 	}
 
 	/**
@@ -267,15 +289,13 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public Instant getInstant(String columnLabel) {
-		try {
+		return get(() -> {
 			long moment = rs.getLong(columnLabel);
 			if (rs.wasNull()) {
 				return null;
 			}
 			return Instant.ofEpochSecond(moment);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		});
 	}
 
 	/**
@@ -299,15 +319,13 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public Duration getDuration(String columnLabel) {
-		try {
+		return get(() -> {
 			long span = rs.getLong(columnLabel);
 			if (rs.wasNull()) {
 				return null;
 			}
 			return Duration.ofSeconds(span);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		});
 	}
 
 	/**
@@ -334,11 +352,7 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public Object getObject(String columnLabel) {
-		try {
-			return rs.getObject(columnLabel);
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		return get(() -> rs.getObject(columnLabel));
 	}
 
 	/**
@@ -366,15 +380,13 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public <T extends Enum<T>> T getEnum(String columnLabel, Class<T> type) {
-		try {
+		return get(() -> {
 			int value = rs.getInt(columnLabel);
 			if (rs.wasNull()) {
 				return null;
 			}
 			return type.getEnumConstants()[value];
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		});
 	}
 
 	/**
@@ -403,15 +415,13 @@ public final class Row {
 	 *             If the column's contents can't be retrieved.
 	 */
 	public Long getLong(String columnLabel) {
-		try {
+		return get(() -> {
 			var value = (Number) rs.getObject(columnLabel);
 			if (rs.wasNull()) {
 				return null;
 			}
 			return value.longValue();
-		} catch (SQLException e) {
-			throw mapException(e, null);
-		}
+		});
 	}
 
 	/**

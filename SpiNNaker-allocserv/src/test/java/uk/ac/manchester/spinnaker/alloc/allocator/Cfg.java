@@ -49,7 +49,7 @@ public abstract class Cfg {
 	static final String BOARD_ADDR = "2.2.2.2";
 
 	/** User ID. */
-	static final int USER = 4000;
+	public static final int USER = 4000;
 
 	/** Group ID. */
 	static final int GROUP = 5000;

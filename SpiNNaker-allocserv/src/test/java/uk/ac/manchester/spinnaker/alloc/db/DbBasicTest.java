@@ -30,6 +30,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.InvalidResultSetAccessException;
 import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -66,9 +69,18 @@ class DbBasicTest {
 		c.close();
 	}
 
+	private static void assertContains(String expected, String value) {
+		assertTrue(value.contains(expected),
+				() -> "did not find " + expected + " in " + value);
+	}
+
+	/** A very simple query. Note the space at the end is deliberate. */
+	private static final String COUNT =
+			"SELECT COUNT(*) AS c FROM board_model_coords ";
+
 	@Test
 	void testDbConn() {
-		try (var q = c.query("SELECT COUNT(*) AS c FROM board_model_coords")) {
+		try (var q = c.query(COUNT)) {
 			c.transaction(() -> {
 				int rows = 0;
 				for (var row : q.call()) {
@@ -79,6 +91,81 @@ class DbBasicTest {
 				assertEquals(1, rows, "should be only one row in query result");
 			});
 		}
+
+		// Not supported by SQLite
+		assertThrows(Exception.class, () -> c.createSQLXML());
+	}
+
+	@Test
+	void testBadQueries() {
+		c.transaction(() -> {
+			Exception e;
+			try (var q0 = c.query(COUNT);
+					var q1 = c.query(COUNT + " WHERE model = :model")) {
+
+				// Too many args
+				e = assertThrows(InvalidDataAccessResourceUsageException.class,
+						() -> q0.call1(1));
+				assertEquals("prepared statement takes no arguments",
+						e.getMessage());
+
+				// Not enough args
+				e = assertThrows(InvalidDataAccessResourceUsageException.class,
+						() -> q1.call1());
+				assertEquals("prepared statement takes 1 arguments, not 0",
+						e.getMessage());
+
+				// No column to fetch
+				e = assertThrows(InvalidResultSetAccessException.class,
+						() -> q0.call1().get().getInstant("d"));
+				assertContains("no such column: 'd'", e.getMessage());
+			}
+
+			// No column in query definition
+			e = assertThrows(BadSqlGrammarException.class,
+					() -> c.query(COUNT + " WHERE job_id = ?"));
+			assertContains("no such column: job_id", e.getMessage());
+		});
+
+		// Accessing row after it has been disposed of
+		var row = c.transaction(() -> {
+			try (var q = c.query(COUNT)) {
+				var r = q.call1().get();
+				assertContains("Row(c:", r.toString());
+				return r;
+			}
+		});
+		assertNotNull(row.toString()); // Must not throw or return null!
+		var e = assertThrows(DataAccessException.class, () -> row.getInt("c"));
+		assertContains("closed", e.getMessage());
+	}
+
+	@Test
+	void testBadUpdates() {
+		// Not very good SQL for updates, but we won't actually run them
+		c.transaction(() -> {
+			Exception e;
+			try (var q0 = c.update(COUNT);
+					var q1 = c.update(COUNT + " WHERE model = :model")) {
+
+				// Too many args
+				e = assertThrows(InvalidDataAccessResourceUsageException.class,
+						() -> q0.call(1));
+				assertEquals("prepared statement takes no arguments",
+						e.getMessage());
+
+				// Not enough args
+				e = assertThrows(InvalidDataAccessResourceUsageException.class,
+						() -> q1.call());
+				assertEquals("prepared statement takes 1 arguments, not 0",
+						e.getMessage());
+			}
+
+			// No column in query definition
+			e = assertThrows(BadSqlGrammarException.class,
+					() -> c.update(COUNT + " WHERE job_id = ?"));
+			assertContains("no such column: job_id", e.getMessage());
+		});
 	}
 
 	@Test

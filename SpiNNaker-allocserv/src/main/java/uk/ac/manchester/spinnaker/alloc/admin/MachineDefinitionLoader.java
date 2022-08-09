@@ -1082,6 +1082,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	@Deprecated
 	@ForTestingOnly
 	TestAPI getTestAPI(Connection c) {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
 			public Integer loadMachineDefinition(Machine machine) {

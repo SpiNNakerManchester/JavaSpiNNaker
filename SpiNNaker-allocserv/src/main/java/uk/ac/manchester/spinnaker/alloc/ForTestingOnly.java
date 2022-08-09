@@ -16,13 +16,17 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
+import java.lang.StackWalker.StackFrame;
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Arrays;
 
 /**
  * Marks a type or method that only exists for testing purposes. Do not use for
@@ -35,4 +39,39 @@ import java.lang.annotation.Target;
 @Retention(CLASS)
 @Target({ TYPE, METHOD })
 public @interface ForTestingOnly {
+	/** Utilities for checking the promises relating to the annotation. */
+	abstract class Utils {
+		/**
+		 * The <em>name</em> of the class used to annotate tests that can access
+		 * bean test APIs.
+		 */
+		private static final String SPRING_BOOT_TEST =
+				"org.springframework.boot.test.context.SpringBootTest";
+
+		private Utils() {
+		}
+
+		/**
+		 * A simple test for whether there are classes annotated with
+		 * {@code @SpringBootTest} on the stack at the point it is called.
+		 * Moderately expensive, but it only guards stuff that should be used on
+		 * test paths, so that isn't important.
+		 *
+		 * @throws Error
+		 *             if not called from the right place; it's a serious
+		 *             security failure and wrong programming.
+		 */
+		// No link to doc; built in code that doesn't see test classes
+		public static void checkForTestClassOnStack() {
+			if (!StackWalker.getInstance(RETAIN_CLASS_REFERENCE)
+					.walk(s -> s.map(StackFrame::getDeclaringClass) //
+							.map(Class::getAnnotations) //
+							.flatMap(Arrays::stream) //
+							.map(Annotation::annotationType) //
+							.map(Class::getName) //
+							.anyMatch(SPRING_BOOT_TEST::equals))) {
+				throw new Error("test-only code called from non-test context");
+			}
+		}
+	}
 }
