@@ -24,16 +24,33 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+/** Utilities for security-related testing. */
 public abstract class SecurityUtils {
 	private SecurityUtils() {
 	}
 
+	/** Capability provided by {@link #inContext(InC)} to what it guards. */
 	public interface C {
-		void setAuth(Authentication a);
+		/**
+		 * Install an authentication token.
+		 *
+		 * @param auth
+		 *            The authentication token to install. {@code null} to
+		 *            remove.
+		 */
+		void setAuth(Authentication auth);
 
-		@SuppressWarnings("serial")
-		default void setAuth(String name) {
-			setAuth(new Authentication() {
+		/**
+		 * Install the named user as the current user and provide a permit that
+		 * allows that user to touch resources.
+		 *
+		 * @param name
+		 *            The user name.
+		 * @return The newly-minted permit.
+		 */
+		default Permit setAuth(String name) {
+			@SuppressWarnings("serial")
+			Authentication a = new Authentication() {
 				@Override
 				public String getName() {
 					return name;
@@ -67,14 +84,32 @@ public abstract class SecurityUtils {
 				@Override
 				public void setAuthenticated(boolean isAuthenticated) {
 				}
-			});
+			};
+			setAuth(a);
+			return new Permit(SecurityContextHolder.getContext());
 		}
 	}
 
+	/**
+	 * An action wrapped by {@link #inContext(InC)}.
+	 */
 	public interface InC {
+		/**
+		 * The wrapped action.
+		 *
+		 * @param c
+		 *            The capability to set the current user.
+		 */
 		void act(C c);
 	}
 
+	/**
+	 * Run code with the capability to set the current user. Will clean up
+	 * afterwards.
+	 *
+	 * @param inc
+	 *            The code to run.
+	 */
 	public static void inContext(InC inc) {
 		SecurityContext context = SecurityContextHolder.getContext();
 		try {
@@ -83,5 +118,4 @@ public abstract class SecurityUtils {
 			context.setAuthentication(null);
 		}
 	}
-
 }

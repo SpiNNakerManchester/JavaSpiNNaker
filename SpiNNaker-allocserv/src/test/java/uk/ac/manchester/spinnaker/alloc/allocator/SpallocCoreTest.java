@@ -34,6 +34,7 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setAllocRoot;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
+import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityUtils.inContext;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.IntConsumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,8 +55,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -70,6 +70,7 @@ import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -103,8 +104,6 @@ class SpallocCoreTest extends SQLQueries {
 	@Autowired
 	private SpallocAPI spalloc;
 
-	//private TestAPI testAPI;
-
 	@BeforeAll
 	static void clearDB() throws IOException {
 		Path dbp = Paths.get(DB);
@@ -115,24 +114,20 @@ class SpallocCoreTest extends SQLQueries {
 	}
 
 	@BeforeEach
-	//@SuppressWarnings("deprecation")
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
-		//testAPI = spalloc.getTestAPI();
 	}
 
-	private interface WithJob {
-		void act(int jobId);
-	}
+	// Wrappers for temporarily putting the DB into a state with a job/alloc
 
-	private void withJob(WithJob act) {
+	private void withJob(IntConsumer act) {
 		int jobId = db.execute(c -> makeJob(c, null, QUEUED, null,
 				ofEpochMilli(0), null, null, ofSeconds(0), now()));
 		try {
-			act.act(jobId);
+			act.accept(jobId);
 		} finally {
 			db.executeVoid(c1 -> {
 				try (Update u =
@@ -188,7 +183,8 @@ class SpallocCoreTest extends SQLQueries {
 	@Test
 	public void getMachineByName() throws Exception {
 		Optional<Machine> m = spalloc.getMachine(MACHINE_NAME, false);
-		assertTrue(m.isPresent());
+		assertNotNull(m);
+		assertNotEquals(Optional.empty(), m);
 		Machine machine = m.get();
 		// Not tagged
 		assertEquals(new HashSet<>(), machine.getTags());
@@ -198,17 +194,27 @@ class SpallocCoreTest extends SQLQueries {
 	@Test
 	public void getMachineInfo() throws Exception {
 		inContext(c -> {
-			SecurityContext context = SecurityContextHolder.getContext();
-
-			c.setAuth(USER_NAME);
+			Permit p = c.setAuth(USER_NAME);
 			Optional<MachineDescription> m = spalloc
-					.getMachineInfo(MACHINE_NAME, false, new Permit(context));
-			assertTrue(m.isPresent());
+					.getMachineInfo(MACHINE_NAME, false, p);
+			assertNotNull(m);
+			assertNotEquals(Optional.empty(), m);
 			MachineDescription machine = m.get();
 			// Not tagged
 			assertEquals(MACHINE_NAME, machine.getName());
 			assertEquals(asList(), machine.getTags());
 			assertEquals(asList(), machine.getLive()); // TODO fix test setup
+
+			withJob(jobId -> withAllocation(jobId, () -> {
+				MachineDescription m2 = spalloc.getMachineInfo(
+						MACHINE_NAME, false, p).get();
+				assertEquals(1, m2.getJobs().size());
+				JobInfo j = m2.getJobs().get(0);
+				assertEquals(Optional.of(USER_NAME), j.getOwner());
+				assertEquals(jobId, j.getId());
+				// URL not set; task of front-end only
+				assertEquals(Optional.empty(), j.getUrl());
+			}));
 		});
 	}
 
@@ -226,16 +232,13 @@ class SpallocCoreTest extends SQLQueries {
 	@Test
 	public void getJob() {
 		withJob(jobId -> inContext(c -> {
-			SecurityContext context = SecurityContextHolder.getContext();
-
 			// user_foo can't see user_bar's job details...
-			c.setAuth(BAD_USER);
-			assertFalse(spalloc.getJob(new Permit(context), jobId).isPresent());
+			Permit p0 = c.setAuth(BAD_USER);
+			assertEquals(Optional.empty(), spalloc.getJob(p0, jobId));
 
 			// ... but user_bar can.
-			c.setAuth(USER_NAME);
-			Permit p = new Permit(context);
-			assertTrue(spalloc.getJob(p, jobId).isPresent());
+			Permit p = c.setAuth(USER_NAME);
+			assertNotEquals(Optional.empty(), spalloc.getJob(p, jobId));
 
 			Job j = spalloc.getJob(p, jobId).get();
 
@@ -243,7 +246,7 @@ class SpallocCoreTest extends SQLQueries {
 			assertEquals(QUEUED, j.getState());
 			assertEquals(USER_NAME, j.getOwner().get());
 			// Not yet allocated so no machine to get
-			assertFalse(j.getMachine().isPresent());
+			assertEquals(Optional.empty(), j.getMachine());
 
 			withAllocation(jobId, () -> {
 				Job j2 = spalloc.getJob(p, jobId).get();
@@ -261,6 +264,7 @@ class SpallocCoreTest extends SQLQueries {
 				assertEquals(0, m.getRootZ());
 				assertEquals(asList(new BoardCoordinates(0, 0, 0)),
 						m.getBoards());
+				assertEquals(OFF, m.getPower());
 			});
 
 			j.destroy("gorp");
@@ -275,17 +279,13 @@ class SpallocCoreTest extends SQLQueries {
 	@Test
 	public void getJobInfo() {
 		withJob(jobId -> inContext(c -> {
-			SecurityContext context = SecurityContextHolder.getContext();
-
 			// user_foo can't see user_bar's job details...
-			c.setAuth(BAD_USER);
-			assertFalse(
-					spalloc.getJobInfo(new Permit(context), jobId).isPresent());
+			Permit p0 = c.setAuth(BAD_USER);
+			assertEquals(Optional.empty(), spalloc.getJobInfo(p0, jobId));
 
 			// ... but user_bar can.
-			c.setAuth(USER_NAME);
-			Permit p = new Permit(context);
-			assertTrue(spalloc.getJobInfo(p, jobId).isPresent());
+			Permit p = c.setAuth(USER_NAME);
+			assertNotEquals(Optional.empty(), spalloc.getJobInfo(p, jobId));
 
 			JobDescription j = spalloc.getJobInfo(p, jobId).get();
 
