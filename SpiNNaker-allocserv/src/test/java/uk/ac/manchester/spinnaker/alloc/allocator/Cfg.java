@@ -61,6 +61,9 @@ public abstract class Cfg {
 	/** Group ID. */
 	static final int GROUP = 5000;
 
+	/** Group name. */
+	public static final String GROUP_NAME = "grill";
+
 	/** User-group membership ID. */
 	static final int MEMBERSHIP = 6000;
 
@@ -129,7 +132,7 @@ public abstract class Cfg {
 			u.call(USER, USER_NAME, BASIC, true);
 		}
 		try (Update u = c.update(INSERT_GROUP)) {
-			u.call(GROUP, "grill", INITIAL_QUOTA);
+			u.call(GROUP, GROUP_NAME, INITIAL_QUOTA);
 		}
 		try (Update u = c.update(INSERT_MEMBER)) {
 			u.call(MEMBERSHIP, USER, GROUP);

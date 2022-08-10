@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.GROUP_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.USER_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.allocateBoardToJob;
@@ -40,6 +41,7 @@ import static uk.ac.manchester.spinnaker.alloc.security.SecurityUtils.inContext;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -60,6 +62,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensionsAt;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
@@ -129,13 +135,16 @@ class SpallocCoreTest extends SQLQueries {
 		try {
 			act.accept(jobId);
 		} finally {
-			db.executeVoid(c1 -> {
-				try (Update u =
-						c1.update("DELETE FROM jobs WHERE job_id = ?")) {
-					u.call(jobId);
-				}
-			});
+			nukeJob(jobId);
 		}
+	}
+
+	private void nukeJob(int jobId) {
+		db.executeVoid(c -> {
+			try (Update u = c.update("DELETE FROM jobs WHERE job_id = ?")) {
+				u.call(jobId);
+			}
+		});
 	}
 
 	private void withAllocation(int jobId, Runnable act) {
@@ -222,11 +231,28 @@ class SpallocCoreTest extends SQLQueries {
 	public void getJobs() {
 		assertEquals(0, spalloc.getJobs(false, 10, 0).ids().size());
 
+		// We don't run this after because withJob() leaves no trace
+		assertEquals(0, spalloc.getJobs(true, 10, 0).ids().size());
+
 		withJob(jobId -> {
 			assertEquals(jobId, spalloc.getJobs(false, 10, 0).ids().get(0));
 		});
 
 		assertEquals(0, spalloc.getJobs(false, 10, 0).ids().size());
+	}
+
+	@Test
+	public void listJobs() {
+		inContext(c -> {
+			Permit p = c.setAuth(USER_NAME);
+			assertEquals(0, spalloc.listJobs(p).size());
+
+			withJob(jobId -> {
+				assertEquals(jobId, spalloc.listJobs(p).get(0).getId());
+			});
+
+			assertEquals(0, spalloc.listJobs(p).size());
+		});
 	}
 
 	@Test
@@ -308,5 +334,47 @@ class SpallocCoreTest extends SQLQueries {
 						j2.getBoards());
 			});
 		}));
+	}
+
+	@Test
+	public void createJob() {
+		Job job = spalloc
+				.createJob(USER_NAME, GROUP_NAME, CreateBoard.triad(0, 0, 0),
+						MACHINE_NAME, asList(), Duration.ofSeconds(1), null)
+				.get();
+		try {
+			job.access("0.0.0.0");
+			assertEquals(QUEUED, job.getState());
+		} finally {
+			nukeJob(job.getId());
+		}
+
+		job = spalloc
+				.createJob(USER_NAME, GROUP_NAME, new CreateDimensions(1, 1, 1),
+						MACHINE_NAME, asList(), Duration.ofSeconds(1), null)
+				.get();
+		try {
+			assertEquals(QUEUED, job.getState());
+		} finally {
+			nukeJob(job.getId());
+		}
+
+		job = spalloc.createJob(USER_NAME, GROUP_NAME,
+				new CreateDimensionsAt(1, 1, "2.2.2.2", null), MACHINE_NAME,
+				asList(), Duration.ofSeconds(1), null).get();
+		try {
+			assertEquals(QUEUED, job.getState());
+		} finally {
+			nukeJob(job.getId());
+		}
+		job = spalloc
+				.createJob(USER_NAME, GROUP_NAME, new CreateNumBoards(1, 0),
+						MACHINE_NAME, asList(), Duration.ofSeconds(1), null)
+				.get();
+		try {
+			assertEquals(QUEUED, job.getState());
+		} finally {
+			nukeJob(job.getId());
+		}
 	}
 }
