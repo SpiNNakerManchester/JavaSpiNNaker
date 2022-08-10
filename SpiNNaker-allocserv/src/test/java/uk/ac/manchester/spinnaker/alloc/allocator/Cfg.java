@@ -37,6 +37,9 @@ public abstract class Cfg {
 	/** Machine ID. */
 	static final int MACHINE = 1000;
 
+	/** Machine name. */
+	static final String MACHINE_NAME = "foo_machine";
+
 	/** BMP ID. */
 	static final int BMP = 2000;
 
@@ -51,6 +54,9 @@ public abstract class Cfg {
 
 	/** User ID. */
 	public static final int USER = 4000;
+
+	/** User name. */
+	static final String USER_NAME = "user_bar";
 
 	/** Group ID. */
 	static final int GROUP = 5000;
@@ -85,7 +91,7 @@ public abstract class Cfg {
 	private static void makeMachine(Connection c, int width, int height,
 			int depth) {
 		try (Update u = c.update(INSERT_MACHINE)) {
-			u.call(MACHINE, "foo", width, height, depth);
+			u.call(MACHINE, MACHINE_NAME, width, height, depth);
 		}
 		try (Update u = c.update(INSERT_BMP)) {
 			u.call(BMP, MACHINE, BMP_ADDR, 1, 1);
@@ -120,7 +126,7 @@ public abstract class Cfg {
 
 	private static void makeUser(Connection c) {
 		try (Update u = c.update(INSERT_USER)) {
-			u.call(USER, "bar", BASIC, true);
+			u.call(USER, USER_NAME, BASIC, true);
 		}
 		try (Update u = c.update(INSERT_GROUP)) {
 			u.call(GROUP, "grill", INITIAL_QUOTA);

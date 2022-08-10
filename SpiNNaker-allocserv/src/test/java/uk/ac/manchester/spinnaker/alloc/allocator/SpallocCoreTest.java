@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,17 +25,20 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.USER_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.makeJob;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
+import static uk.ac.manchester.spinnaker.alloc.security.SecurityUtils.inContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,8 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
@@ -64,6 +65,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
+import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 
 @SpringBootTest
@@ -81,6 +83,8 @@ class SpallocCoreTest extends SQLQueries {
 
 	/** The name of the database file. */
 	static final String HIST_DB = "target/spalloc_test-hist.sqlite3";
+
+	private static final String BAD_USER = "user_foo";
 
 	@Configuration
 	@ComponentScan(basePackageClasses = SpallocProperties.class)
@@ -133,63 +137,6 @@ class SpallocCoreTest extends SQLQueries {
 		}
 	}
 
-	private interface C {
-		void setAuth(Authentication a);
-
-		@SuppressWarnings("serial")
-		default void setAuth(String name) {
-			setAuth(new Authentication() {
-				@Override
-				public String getName() {
-					return name;
-				}
-
-				@Override
-				public Collection<? extends GrantedAuthority> getAuthorities() {
-					return new ArrayList<>();
-				}
-
-				@Override
-				public Object getCredentials() {
-					return null;
-				}
-
-				@Override
-				public Object getDetails() {
-					return null;
-				}
-
-				@Override
-				public Object getPrincipal() {
-					return null;
-				}
-
-				@Override
-				public boolean isAuthenticated() {
-					return true;
-				}
-
-				@Override
-				public void setAuthenticated(boolean isAuthenticated) {
-				}
-			});
-		}
-	}
-
-	private interface InC {
-		void act(C c);
-	}
-
-	private void inContext(InC inc) {
-		SecurityContext context = SecurityContextHolder.getContext();
-		C c = context::setAuthentication;
-		try {
-			inc.act(c);
-		} finally {
-			context.setAuthentication(null);
-		}
-	}
-
 	// The actual tests
 
 	@Test
@@ -197,15 +144,29 @@ class SpallocCoreTest extends SQLQueries {
 		Map<String, Machine> machines = spalloc.getMachines(false);
 		assertNotNull(machines);
 		assertEquals(1, machines.size());
-		assertEquals(asList("foo"), new ArrayList<>(machines.keySet()));
+		assertEquals(asList(MACHINE_NAME), new ArrayList<>(machines.keySet()));
 		// Not tagged
-		assertEquals(new HashSet<>(), machines.get("foo").getTags());
-		assertEquals(asList(0), machines.get("foo").getAvailableBoards());
+		Machine m = machines.get(MACHINE_NAME);
+		assertEquals(MACHINE_NAME, m.getName());
+		assertEquals(new HashSet<>(), m.getTags());
+		assertEquals(asList(0), m.getAvailableBoards());
+	}
+
+	@Test
+	public void listMachines() throws Exception {
+		List<MachineListEntryRecord> machines = spalloc.listMachines(false);
+		assertNotNull(machines);
+		assertEquals(1, machines.size());
+		MachineListEntryRecord machine = machines.get(0);
+		assertEquals(MACHINE_NAME, machine.getName());
+		// Not tagged
+		assertEquals(asList(), machine.getTags());
+		assertEquals(1, machine.getNumBoards());
 	}
 
 	@Test
 	public void getMachineByName() throws Exception {
-		Optional<Machine> m = spalloc.getMachine("foo", false);
+		Optional<Machine> m = spalloc.getMachine(MACHINE_NAME, false);
 		assertTrue(m.isPresent());
 		Machine machine = m.get();
 		// Not tagged
@@ -218,12 +179,13 @@ class SpallocCoreTest extends SQLQueries {
 		inContext(c -> {
 			SecurityContext context = SecurityContextHolder.getContext();
 
-			c.setAuth("foo");
-			Optional<MachineDescription> m =
-					spalloc.getMachineInfo("foo", false, new Permit(context));
+			c.setAuth(USER_NAME);
+			Optional<MachineDescription> m = spalloc
+					.getMachineInfo(MACHINE_NAME, false, new Permit(context));
 			assertTrue(m.isPresent());
 			MachineDescription machine = m.get();
 			// Not tagged
+			assertEquals(MACHINE_NAME, machine.getName());
 			assertEquals(asList(), machine.getTags());
 			assertEquals(asList(), machine.getLive()); // TODO fix test setup
 		});
@@ -245,12 +207,12 @@ class SpallocCoreTest extends SQLQueries {
 		withJob(jobId -> inContext(c -> {
 			SecurityContext context = SecurityContextHolder.getContext();
 
-			// foo can't see bar's job details...
-			c.setAuth("foo");
+			// user_foo can't see user_bar's job details...
+			c.setAuth(BAD_USER);
 			assertFalse(spalloc.getJob(new Permit(context), jobId).isPresent());
 
-			// ... but bar can.
-			c.setAuth("bar");
+			// ... but user_bar can.
+			c.setAuth(USER_NAME);
 			Permit p = new Permit(context);
 			assertTrue(spalloc.getJob(p, jobId).isPresent());
 
@@ -258,7 +220,9 @@ class SpallocCoreTest extends SQLQueries {
 
 			assertEquals(jobId, j.getId());
 			assertEquals(QUEUED, j.getState());
-			assertEquals("bar", j.getOwner().get());
+			assertEquals(USER_NAME, j.getOwner().get());
+			// Not yet allocated so no machine to get
+			assertFalse(j.getMachine().isPresent());
 
 			j.destroy("gorp");
 
@@ -274,13 +238,13 @@ class SpallocCoreTest extends SQLQueries {
 		withJob(jobId -> inContext(c -> {
 			SecurityContext context = SecurityContextHolder.getContext();
 
-			// foo can't see bar's job details...
-			c.setAuth("foo");
+			// user_foo can't see user_bar's job details...
+			c.setAuth(BAD_USER);
 			assertFalse(
 					spalloc.getJobInfo(new Permit(context), jobId).isPresent());
 
-			// ... but bar can.
-			c.setAuth("bar");
+			// ... but user_bar can.
+			c.setAuth(USER_NAME);
 			Permit p = new Permit(context);
 			assertTrue(spalloc.getJobInfo(p, jobId).isPresent());
 
@@ -288,7 +252,7 @@ class SpallocCoreTest extends SQLQueries {
 
 			assertEquals(jobId, j.getId());
 			assertEquals(QUEUED, j.getState());
-			assertEquals("bar", j.getOwner().get());
+			assertEquals(USER_NAME, j.getOwner().get());
 		}));
 	}
 }
