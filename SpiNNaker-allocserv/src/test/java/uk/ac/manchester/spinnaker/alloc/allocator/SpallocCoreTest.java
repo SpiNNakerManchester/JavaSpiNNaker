@@ -25,9 +25,12 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.USER_NAME;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.allocateBoardToJob;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.makeJob;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setAllocRoot;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
@@ -59,14 +62,17 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 
 @SpringBootTest
 @SpringJUnitWebConfig(SpallocCoreTest.Config.class)
@@ -133,6 +139,21 @@ class SpallocCoreTest extends SQLQueries {
 						c1.update("DELETE FROM jobs WHERE job_id = ?")) {
 					u.call(jobId);
 				}
+			});
+		}
+	}
+
+	private void withAllocation(int jobId, Runnable act) {
+		db.executeVoid(c -> {
+			allocateBoardToJob(c, BOARD, jobId);
+			setAllocRoot(c, jobId, BOARD);
+		});
+		try {
+			act.run();
+		} finally {
+			db.executeVoid(c -> {
+				allocateBoardToJob(c, BOARD, null);
+				setAllocRoot(c, jobId, null);
 			});
 		}
 	}
@@ -224,6 +245,24 @@ class SpallocCoreTest extends SQLQueries {
 			// Not yet allocated so no machine to get
 			assertFalse(j.getMachine().isPresent());
 
+			withAllocation(jobId, () -> {
+				Job j2 = spalloc.getJob(p, jobId).get();
+
+				assertEquals(jobId, j2.getId());
+				assertEquals(QUEUED, j2.getState());
+				assertEquals(USER_NAME, j2.getOwner().get());
+				SubMachine m = j2.getMachine().get();
+				assertEquals(MACHINE_NAME, m.getMachine().getName());
+				assertEquals(1, m.getWidth());
+				assertEquals(1, m.getHeight());
+				assertEquals(1, m.getDepth());
+				assertEquals(0, m.getRootX());
+				assertEquals(0, m.getRootY());
+				assertEquals(0, m.getRootZ());
+				assertEquals(asList(new BoardCoordinates(0, 0, 0)),
+						m.getBoards());
+			});
+
 			j.destroy("gorp");
 
 			// Re-fetch to see state change
@@ -253,6 +292,21 @@ class SpallocCoreTest extends SQLQueries {
 			assertEquals(jobId, j.getId());
 			assertEquals(QUEUED, j.getState());
 			assertEquals(USER_NAME, j.getOwner().get());
+			assertEquals(MACHINE_NAME, j.getMachine());
+
+			withAllocation(jobId, () -> {
+				JobDescription j2 = spalloc.getJobInfo(p, jobId).get();
+
+				assertEquals(jobId, j2.getId());
+				assertEquals(QUEUED, j2.getState());
+				assertEquals(USER_NAME, j2.getOwner().get());
+				assertEquals(MACHINE_NAME, j2.getMachine());
+				assertEquals(Optional.of(8), j2.getWidth());
+				assertEquals(Optional.of(8), j2.getHeight());
+				assertEquals(
+						asList(new BoardCoords(0, 0, 0, 1, 1, 0, "2.2.2.2")),
+						j2.getBoards());
+			});
 		}));
 	}
 }

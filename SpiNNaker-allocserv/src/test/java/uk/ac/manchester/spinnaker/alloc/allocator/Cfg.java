@@ -258,4 +258,38 @@ public abstract class Cfg {
 		}
 	}
 
+	/**
+	 * Directly manipulate the allocation.
+	 *
+	 * @param c
+	 *            DB connection
+	 * @param boardId
+	 *            What board are we changing
+	 * @param jobId
+	 *            What job are we assigning
+	 */
+	static void allocateBoardToJob(Connection c, int boardId, Integer jobId) {
+		try (Update u = c.update("UPDATE boards SET allocated_job = :job "
+				+ "WHERE board_id = :board")) {
+			u.call(jobId, boardId);
+		}
+	}
+
+	/**
+	 * Directly manipulate the reverse of the allocation (root only).
+	 *
+	 * @param c
+	 *            DB connection
+	 * @param jobId
+	 *            What job are we changing
+	 * @param boardId
+	 *            What board are we assigning as the root
+	 */
+	static void setAllocRoot(Connection c, int jobId, Integer boardId) {
+		try (Update u = c.update("UPDATE jobs SET root_id = :board, "
+				+ "width = 1, height = 1, depth = 1 "
+				+ "WHERE job_id = :job")) {
+			u.call(boardId, jobId);
+		}
+	}
 }
