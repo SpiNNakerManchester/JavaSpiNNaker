@@ -62,6 +62,8 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
+import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 
 @SpringBootTest
@@ -112,45 +114,6 @@ class SpallocCoreTest extends SQLQueries {
 		//testAPI = spalloc.getTestAPI();
 	}
 
-	@SuppressWarnings("serial")
-	private static Authentication makeAuth(String name) {
-		return new Authentication() {
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			public Collection<? extends GrantedAuthority> getAuthorities() {
-				return new ArrayList<>();
-			}
-
-			@Override
-			public Object getCredentials() {
-				return null;
-			}
-
-			@Override
-			public Object getDetails() {
-				return null;
-			}
-
-			@Override
-			public Object getPrincipal() {
-				return null;
-			}
-
-			@Override
-			public boolean isAuthenticated() {
-				return true;
-			}
-
-			@Override
-			public void setAuthenticated(boolean isAuthenticated) {
-			}
-		};
-	}
-
 	private interface WithJob {
 		void act(int jobId);
 	}
@@ -173,8 +136,43 @@ class SpallocCoreTest extends SQLQueries {
 	private interface C {
 		void setAuth(Authentication a);
 
+		@SuppressWarnings("serial")
 		default void setAuth(String name) {
-			setAuth(makeAuth(name));
+			setAuth(new Authentication() {
+				@Override
+				public String getName() {
+					return name;
+				}
+
+				@Override
+				public Collection<? extends GrantedAuthority> getAuthorities() {
+					return new ArrayList<>();
+				}
+
+				@Override
+				public Object getCredentials() {
+					return null;
+				}
+
+				@Override
+				public Object getDetails() {
+					return null;
+				}
+
+				@Override
+				public Object getPrincipal() {
+					return null;
+				}
+
+				@Override
+				public boolean isAuthenticated() {
+					return true;
+				}
+
+				@Override
+				public void setAuthenticated(boolean isAuthenticated) {
+				}
+			});
 		}
 	}
 
@@ -216,6 +214,22 @@ class SpallocCoreTest extends SQLQueries {
 	}
 
 	@Test
+	public void getMachineInfo() throws Exception {
+		inContext(c -> {
+			SecurityContext context = SecurityContextHolder.getContext();
+
+			c.setAuth("foo");
+			Optional<MachineDescription> m =
+					spalloc.getMachineInfo("foo", false, new Permit(context));
+			assertTrue(m.isPresent());
+			MachineDescription machine = m.get();
+			// Not tagged
+			assertEquals(asList(), machine.getTags());
+			assertEquals(asList(), machine.getLive()); // TODO fix test setup
+		});
+	}
+
+	@Test
 	public void getJobs() {
 		assertEquals(0, spalloc.getJobs(false, 10, 0).ids().size());
 
@@ -231,12 +245,16 @@ class SpallocCoreTest extends SQLQueries {
 		withJob(jobId -> inContext(c -> {
 			SecurityContext context = SecurityContextHolder.getContext();
 
+			// foo can't see bar's job details...
 			c.setAuth("foo");
 			assertFalse(spalloc.getJob(new Permit(context), jobId).isPresent());
-			c.setAuth("bar");
-			assertTrue(spalloc.getJob(new Permit(context), jobId).isPresent());
 
-			Job j = spalloc.getJob(new Permit(context), jobId).get();
+			// ... but bar can.
+			c.setAuth("bar");
+			Permit p = new Permit(context);
+			assertTrue(spalloc.getJob(p, jobId).isPresent());
+
+			Job j = spalloc.getJob(p, jobId).get();
 
 			assertEquals(jobId, j.getId());
 			assertEquals(QUEUED, j.getState());
@@ -246,8 +264,31 @@ class SpallocCoreTest extends SQLQueries {
 
 			// Re-fetch to see state change
 			assertEquals(QUEUED, j.getState());
-			j = spalloc.getJob(new Permit(context), jobId).get();
+			j = spalloc.getJob(p, jobId).get();
 			assertEquals(DESTROYED, j.getState());
+		}));
+	}
+
+	@Test
+	public void getJobInfo() {
+		withJob(jobId -> inContext(c -> {
+			SecurityContext context = SecurityContextHolder.getContext();
+
+			// foo can't see bar's job details...
+			c.setAuth("foo");
+			assertFalse(
+					spalloc.getJobInfo(new Permit(context), jobId).isPresent());
+
+			// ... but bar can.
+			c.setAuth("bar");
+			Permit p = new Permit(context);
+			assertTrue(spalloc.getJobInfo(p, jobId).isPresent());
+
+			JobDescription j = spalloc.getJobInfo(p, jobId).get();
+
+			assertEquals(jobId, j.getId());
+			assertEquals(QUEUED, j.getState());
+			assertEquals("bar", j.getOwner().get());
 		}));
 	}
 }
