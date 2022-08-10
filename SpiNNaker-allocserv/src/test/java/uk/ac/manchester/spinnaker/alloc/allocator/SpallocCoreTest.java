@@ -33,6 +33,7 @@ import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.allocateBoardToJob;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.makeJob;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setAllocRoot;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
+import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
@@ -71,6 +72,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
@@ -125,6 +127,23 @@ class SpallocCoreTest extends SQLQueries {
 		try (Connection c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
+	}
+
+	private List<String> getReports() {
+		return db.execute(c -> {
+			try (Query q =
+					c.query("SELECT reported_issue FROM board_reports")) {
+				return q.call().map(string("reported_issue")).toList();
+			}
+		});
+	}
+
+	private void killReports() {
+		db.executeVoid(c -> {
+			try (Update u = c.update("DELETE from board_reports")) {
+				u.call();
+			}
+		});
 	}
 
 	// Wrappers for temporarily putting the DB into a state with a job/alloc
@@ -334,6 +353,23 @@ class SpallocCoreTest extends SQLQueries {
 						j2.getBoards());
 			});
 		}));
+	}
+
+	@Test
+	public void reportProblem() {
+		inContext(c -> withJob(jobId -> withAllocation(jobId, () -> {
+			try {
+				assertEquals(asList(), getReports());
+
+				Permit p = c.setAuth(USER_NAME);
+				spalloc.reportProblem("2.2.2.2", null, "test", p);
+
+				assertEquals(asList("test"), getReports());
+			} finally {
+				// Without this, we can't delete the job...
+				killReports();
+			}
+		})));
 	}
 
 	@Test
