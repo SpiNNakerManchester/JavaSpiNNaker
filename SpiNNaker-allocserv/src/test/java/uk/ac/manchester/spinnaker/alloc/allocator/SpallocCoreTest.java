@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.GROUP_NAME;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.USER_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.allocateBoardToJob;
@@ -56,7 +57,7 @@ import java.util.function.ObjIntConsumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -88,7 +89,9 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
+import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 @SpringBootTest
 @SpringJUnitWebConfig(SpallocCoreTest.Config.class)
@@ -188,6 +191,12 @@ class SpallocCoreTest extends SQLQueries {
 		}
 	}
 
+	private void withStandardAllocatedJob(ObjIntConsumer<Permit> act) {
+		// Composite op, for brevity
+		withJob(jobId -> inContext(c -> withAllocation(jobId,
+				() -> act.accept(c.setAuth(USER_NAME), jobId))));
+	}
+
 	// The actual tests
 
 	@Test
@@ -224,6 +233,109 @@ class SpallocCoreTest extends SQLQueries {
 		// Not tagged
 		assertEquals(new HashSet<>(), machine.getTags());
 		assertEquals(asList(0), machine.getAvailableBoards());
+
+		assertEquals(Optional.empty(),
+				spalloc.getMachine("no such machine", false));
+	}
+
+	@Nested
+	@DisplayName("Spalloc.Machine")
+	class SpallocMachineTest {
+		private Machine machine;
+
+		@BeforeEach
+		void getMachine() {
+			machine = spalloc.getMachine(MACHINE_NAME, false).get();
+		}
+
+		@Test
+		void getId() {
+			assertEquals(MACHINE, machine.getId());
+		}
+
+		@Test
+		void getName() {
+			assertEquals(MACHINE_NAME, machine.getName());
+		}
+
+		@Test
+		void getTags() {
+			assertEquals(new HashSet<>(), machine.getTags());
+		}
+
+		@Test
+		void getWidth() {
+			assertEquals(1, machine.getWidth());
+		}
+
+		@Test
+		void getHeight() {
+			assertEquals(1, machine.getHeight());
+		}
+
+		@Test
+		void isInService() {
+			assertTrue(machine.isInService());
+		}
+
+		@Test
+		void getDeadBoards() {
+			assertEquals(asList(), machine.getDeadBoards());
+		}
+
+		@Test
+		void getDownLinks() {
+			assertEquals(asList(), machine.getDownLinks());
+		}
+
+		@Test
+		void getBoardByChip() {
+			assertEquals(new BoardPhysicalCoordinates(1, 1, 0),
+					machine.getBoardByChip(0, 0).get().getPhysical());
+		}
+
+		@Test
+		void getBoardByPhysicalCoords() {
+			assertEquals(new BoardCoordinates(0, 0, 0), machine
+					.getBoardByPhysicalCoords(1, 1, 0).get().getLogical());
+		}
+
+		@Test
+		void getBoardByLogicalCoords() {
+			assertEquals(new BoardPhysicalCoordinates(1, 1, 0), machine
+					.getBoardByLogicalCoords(0, 0, 0).get().getPhysical());
+		}
+
+		@Test
+		void getBoardByIPAddress() {
+			assertEquals(Optional.empty(), machine.getBoardByIPAddress(""));
+		}
+
+		@Test
+		void getRootBoardBMPAddress() {
+			assertEquals("1.1.1.1", machine.getRootBoardBMPAddress());
+		}
+
+		@Test
+		void getBoardNumbers() {
+			assertEquals(asList(0), machine.getBoardNumbers());
+		}
+
+		@Test
+		void getAvailableBoards() {
+			assertEquals(asList(0), machine.getAvailableBoards());
+		}
+
+		@Test
+		void getBMPAddress() {
+			assertEquals("1.1.1.1", machine.getBMPAddress(new BMPCoords(1, 1)));
+		}
+
+		@Test
+		void getBoardNumbersOfBmp() {
+			assertEquals(asList(0),
+					machine.getBoardNumbers(new BMPCoords(1, 1)));
+		}
 	}
 
 	@Test
@@ -250,7 +362,110 @@ class SpallocCoreTest extends SQLQueries {
 				// URL not set; task of front-end only
 				assertEquals(Optional.empty(), j.getUrl());
 			}));
+
+			assertEquals(Optional.empty(),
+					spalloc.getMachineInfo("no such machine", false, p));
 		});
+	}
+
+	@Nested
+	@DisplayName("Spalloc.MachineDescription")
+	class SpallocMachineDescriptionTest {
+		@Test
+		void getId() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(MACHINE, md.getId());
+			});
+		}
+
+		@Test
+		void getName() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(MACHINE_NAME, md.getName());
+			});
+		}
+
+		@Test
+		void getWidth() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(1, md.getWidth());
+			});
+		}
+
+		@Test
+		void getHeight() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(1, md.getHeight());
+			});
+		}
+
+		@Test
+		void getNumInUse() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(1, md.getNumInUse());
+			});
+		}
+
+		@Test
+		void getLive() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(asList(), md.getLive());
+			});
+		}
+
+		@Test
+		void getDead() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(asList(), md.getDead());
+			});
+		}
+
+		@Test
+		void getJobs() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(1, md.getJobs().size());
+				JobInfo j = md.getJobs().get(0);
+				assertEquals(jobId, j.getId());
+				assertEquals(Optional.of(USER_NAME), j.getOwner());
+				assertEquals(Optional.empty(), j.getUrl());
+				assertEquals(1, j.getBoards().size());
+				assertEquals("2.2.2.2", j.getBoards().get(0).getAddress());
+			});
+		}
+
+		@Test
+		void getTags() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(asList(), md.getTags());
+			});
+		}
+
+		@Test
+		void getQuota() {
+			withStandardAllocatedJob((p, jobId) -> {
+				MachineDescription md =
+						spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				assertEquals(Optional.of(1024L), md.getQuota());
+			});
+		}
 	}
 
 	@Test
@@ -317,14 +532,11 @@ class SpallocCoreTest extends SQLQueries {
 			j = spalloc.getJob(p, jobId).get();
 			assertEquals(DESTROYED, j.getState());
 		}));
-	}
-
-	private void withStandardAllocatedJob(ObjIntConsumer<Permit> act) {
-		withJob(jobId -> inContext(c -> withAllocation(jobId,
-				() -> act.accept(c.setAuth(USER_NAME), jobId))));
+		// See more detailed testing of Job below
 	}
 
 	@Nested
+	@DisplayName("Spalloc.Job")
 	class SpallocJobTest {
 		@Test
 		void getId() {
@@ -444,9 +656,11 @@ class SpallocCoreTest extends SQLQueries {
 		}
 
 		@Test
-		@Disabled("not yet working")
 		void termination() {
-			withStandardAllocatedJob((p, jobId) -> {
+			// Don't hold an allocation for this
+			inContext(c -> withJob(jobId -> {
+				Permit p = c.setAuth(USER_NAME);
+
 				Job j = spalloc.getJob(p, jobId).get();
 				assertEquals(QUEUED, j.getState());
 				assertEquals(Optional.empty(), j.getFinishTime());
@@ -457,11 +671,11 @@ class SpallocCoreTest extends SQLQueries {
 
 				// reread
 				Job j2 = spalloc.getJob(p, jobId).get();
-				assertEquals(DESTROYED, j.getState());
+				assertEquals(DESTROYED, j2.getState());
 				Instant ts1 = j2.getFinishTime().get();
 				assertFalse(ts0.isAfter(ts1));
 				assertEquals(Optional.of("foo bar"), j2.getReason());
-			});
+			}));
 		}
 	}
 
@@ -481,22 +695,143 @@ class SpallocCoreTest extends SQLQueries {
 			assertEquals(jobId, j.getId());
 			assertEquals(QUEUED, j.getState());
 			assertEquals(USER_NAME, j.getOwner().get());
-			assertEquals(MACHINE_NAME, j.getMachine());
+		}));
+		// See more detailed testing of JobDescription below
+	}
 
-			withAllocation(jobId, () -> {
-				JobDescription j2 = spalloc.getJobInfo(p, jobId).get();
+	@Nested
+	@DisplayName("Spalloc.JobDescription")
+	class SpallocJobDescriptionTest {
+		@Test
+		void getId() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(jobId, j.getId());
+			});
+		}
 
-				assertEquals(jobId, j2.getId());
-				assertEquals(QUEUED, j2.getState());
-				assertEquals(USER_NAME, j2.getOwner().get());
-				assertEquals(MACHINE_NAME, j2.getMachine());
-				assertEquals(Optional.of(8), j2.getWidth());
-				assertEquals(Optional.of(8), j2.getHeight());
+		@Test
+		void getOwner() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(Optional.of(USER_NAME), j.getOwner());
+			});
+		}
+
+		@Test
+		void getOwnerHost() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(Optional.empty(), j.getOwnerHost());
+			});
+		}
+
+		@Test
+		void getRequest() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertNull(j.getRequest());
+			});
+		}
+
+		@Test
+		void getRequestBytes() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertNull(j.getRequestBytes());
+			});
+		}
+
+		@Test
+		void getKeepAlive() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(Duration.ofSeconds(0), j.getKeepAlive());
+			});
+		}
+
+		@Test
+		void getState() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(QUEUED, j.getState());
+			});
+		}
+
+		@Test
+		void getHeight() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(Optional.of(8), j.getHeight());
+			});
+		}
+
+		@Test
+		void getWidth() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(Optional.of(8), j.getWidth());
+			});
+		}
+
+		@Test
+		void getTriadHeight() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(1, j.getTriadHeight());
+			});
+		}
+
+		@Test
+		void getTriadWidth() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(1, j.getTriadWidth());
+			});
+		}
+
+		@Test
+		void getMachine() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertEquals(MACHINE_NAME, j.getMachine());
+			});
+		}
+
+		@Test
+		void getMachineUrl() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertNull(j.getMachineUrl());
+			});
+		}
+
+		@Test
+		void getBoards() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
 				assertEquals(
 						asList(new BoardCoords(0, 0, 0, 1, 1, 0, "2.2.2.2")),
-						j2.getBoards());
+						j.getBoards());
 			});
-		}));
+		}
+
+		@Test
+		void isPowered() {
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertFalse(j.isPowered());
+			});
+		}
+
+		@Test
+		void getStartTime() {
+			Instant ts0 = Instant.now().truncatedTo(SECONDS);
+			withStandardAllocatedJob((p, jobId) -> {
+				JobDescription j = spalloc.getJobInfo(p, jobId).get();
+				assertFalse(ts0.isAfter(j.getStartTime()));
+			});
+		}
 	}
 
 	@Test

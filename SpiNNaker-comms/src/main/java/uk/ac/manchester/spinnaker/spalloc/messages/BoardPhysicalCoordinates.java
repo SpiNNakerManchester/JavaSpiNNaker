@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.util.Objects.isNull;
+
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -86,14 +89,15 @@ public class BoardPhysicalCoordinates {
 		if (o instanceof BoardPhysicalCoordinates) {
 			BoardPhysicalCoordinates other = (BoardPhysicalCoordinates) o;
 			return cabinet == other.cabinet && frame == other.frame
-					&& board == other.board;
+					&& Objects.equals(board, other.board);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return 9 * (cabinet * 1234567 + frame * 56789 + board);
+		return 9 * (cabinet * 1234567 + frame * 56789
+				+ (isNull(board) ? 0 : board));
 	}
 
 	@Override
