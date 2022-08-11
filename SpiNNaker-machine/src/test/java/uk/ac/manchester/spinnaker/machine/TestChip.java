@@ -78,7 +78,7 @@ public class TestChip {
         ArrayList<Integer> tags =
                 new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6));
         Chip chip = new Chip(location00, getProcessors(), createRouter(), 100,
-                createInetAddress(), false,  tags, location11);
+                createInetAddress(), tags, location11);
         assertEquals(0, chip.getX());
         assertEquals(0, chip.getY());
         assertEquals(3, chip.nProcessors());
@@ -102,7 +102,6 @@ public class TestChip {
         Chip chip = new Chip(location00, getProcessors(), createRouter(),
                 100, createInetAddress(), location11);
         assertEquals(tags, chip.getTagIds());
-        assertFalse(chip.virtual);
     }
 
     @Test
@@ -110,7 +109,7 @@ public class TestChip {
         ArrayList<Integer> tags =
                 new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6));
         Chip chip = new Chip(location00, getProcessors(), createRouter(), 100,
-                createInetAddress(), false, tags, location11);
+                createInetAddress(), tags, location11);
         Processor result = chip.getFirstUserProcessor();
         assertEquals(Processor.factory(1), result);
         assertEquals(2, chip.nUserProcessors());
@@ -124,9 +123,9 @@ public class TestChip {
         ArrayList<Integer> tags =
                 new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 6));
         Chip chip1 = new Chip(location00, getProcessors(), createRouter(), 100,
-                createInetAddress(), false, tags, location11);
+                createInetAddress(), tags, location11);
         Chip chip2 = new Chip(location00, getProcessors(), createRouter(), 100,
-                createInetAddress(), false, tags, location11);
+                createInetAddress(), tags, location11);
         assertEquals(chip1.toString(), chip2.toString());
     }
 
@@ -157,7 +156,7 @@ public class TestChip {
     @Test
     public void testAsLocation() throws UnknownHostException {
         Chip chip1 = new Chip(ChipLocation.ZERO_ZERO, getProcessors(),
-                createRouter(), 100, createInetAddress(), false, null, location11);
+                createRouter(), 100, createInetAddress(), null, location11);
         assertEquals(ChipLocation.ZERO_ZERO, chip1.asChipLocation());
     }
 
@@ -175,7 +174,6 @@ public class TestChip {
         Chip chip = new Chip(ChipLocation.ONE_ZERO, createRouter(),
                 null, location11);
         assertEquals(ChipLocation.ONE_ZERO, chip.asChipLocation());
-        assertFalse(chip.virtual, "Chips on virtual nmachine are not virtual!");
         assertEquals(17, chip.nUserProcessors());
         assertEquals(18, chip.nProcessors());
         assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);
@@ -189,7 +187,6 @@ public class TestChip {
         Chip chip = new Chip(ChipLocation.ZERO_ZERO, createRouter(),
                 createInetAddress(), location11);
         assertEquals(ChipLocation.ZERO_ZERO, chip.asChipLocation());
-        assertFalse(chip.virtual, "Chips on virtual nmachine are not virtual!");
         assertEquals(17, chip.nUserProcessors());
         assertEquals(18, chip.nProcessors());
         assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);

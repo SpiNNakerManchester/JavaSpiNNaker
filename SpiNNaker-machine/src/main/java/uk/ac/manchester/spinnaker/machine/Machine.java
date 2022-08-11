@@ -249,18 +249,14 @@ public class Machine implements Iterable<Chip> {
 		}
 
 		if (chip.getX() >= machineDimensions.width) {
-			if (!chip.virtual) {
-				throw new IllegalArgumentException("Chip x: " + chip.getX()
-						+ " is too high for a machine with width "
-						+ machineDimensions.width);
-			}
+			throw new IllegalArgumentException("Chip x: " + chip.getX()
+					+ " is too high for a machine with width "
+					+ machineDimensions.width);
 		}
 		if (chip.getY() >= machineDimensions.height) {
-			if (!chip.virtual) {
-				throw new IllegalArgumentException("Chip y: " + chip.getY()
-						+ " is too high for a machine with height "
-						+ machineDimensions.height + " " + chip);
-			}
+			throw new IllegalArgumentException("Chip y: " + chip.getY()
+					+ " is too high for a machine with height "
+					+ machineDimensions.height + " " + chip);
 		}
 
 		chips.put(location, chip);

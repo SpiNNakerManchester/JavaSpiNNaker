@@ -42,8 +42,6 @@ public class ChipResources {
 
 	private int routerEntries;
 
-	private Boolean virtual;
-
 	/**
 	 * Default constructor which sets all values to not set.
 	 */
@@ -79,9 +77,6 @@ public class ChipResources {
 		}
 		if (routerEntries == NOT_SET) {
 			routerEntries = defaults.routerEntries;
-		}
-		if (virtual == null) {
-			virtual = defaults.getVirtual();
 		}
 	}
 
@@ -158,21 +153,6 @@ public class ChipResources {
 	 */
 	public void setRouterEntries(int routerEntries) {
 		this.routerEntries = routerEntries;
-	}
-
-	/**
-	 * @return the virtual
-	 */
-	public Boolean getVirtual() {
-		return virtual;
-	}
-
-	/**
-	 * @param virtual
-	 *            the virtual to set
-	 */
-	public void setVirtual(Boolean virtual) {
-		this.virtual = virtual;
 	}
 
 	@Override
