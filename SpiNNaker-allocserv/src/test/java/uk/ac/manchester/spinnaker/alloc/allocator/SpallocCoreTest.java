@@ -70,6 +70,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensionsAt;
@@ -89,6 +90,7 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -600,6 +602,23 @@ class SpallocCoreTest extends SQLQueries {
 			withStandardAllocatedJob((p, jobId) -> {
 				Job j = spalloc.getJob(p, jobId).get();
 				assertEquals(Optional.of(ZERO_ZERO), j.getRootChip());
+			});
+		}
+
+		@Test
+		void whereIs() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				BoardLocation bl = j.whereIs(4, 4).get();
+				assertEquals(ZERO_ZERO, bl.getBoardChip());
+				assertEquals(new ChipLocation(4, 4), bl.getChip());
+				assertEquals(new ChipLocation(1, 3),
+						bl.getChipRelativeTo(new ChipLocation(3, 1)));
+				assertEquals(jobId, bl.getJob().getId());
+				assertEquals(new BoardCoordinates(0, 0, 0), bl.getLogical());
+				assertEquals(MACHINE_NAME, bl.getMachine());
+				assertEquals(new BoardPhysicalCoordinates(1, 1, 0),
+						bl.getPhysical());
 			});
 		}
 
