@@ -90,6 +90,8 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
 import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
+import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
+import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest.ReportedBoard;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
@@ -695,6 +697,29 @@ class SpallocCoreTest extends SQLQueries {
 				assertFalse(ts0.isAfter(ts1));
 				assertEquals(Optional.of("foo bar"), j2.getReason());
 			}));
+		}
+
+		@Test
+		void reportIssue() {
+			withStandardAllocatedJob((p, jobId) -> {
+				try {
+					assertEquals(asList(), getReports());
+
+					Job j = spalloc.getJob(p, jobId).get();
+					// Messy to build as usually only done by Jackson
+					IssueReportRequest r = new IssueReportRequest();
+					ReportedBoard b = new ReportedBoard();
+					b.address = "2.2.2.2";
+					r.issue = "test";
+					r.boards = asList(b);
+					j.reportIssue(r, p);
+
+					assertEquals(asList("test"), getReports());
+				} finally {
+					// Without this, we can't delete the job...
+					killReports();
+				}
+			});
 		}
 	}
 
