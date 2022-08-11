@@ -1299,10 +1299,6 @@ public class Transceiver extends UDPTransceiver
 		}
 		CoreSubsets coreSubsets = new CoreSubsets();
 		for (Chip chip : machine.chips()) {
-			if (chip.virtual) {
-				// Skip virtual chips; we can't talk to them
-				continue;
-			}
 			for (Processor processor : chip.allProcessors()) {
 				coreSubsets.addCore(new CoreLocation(chip.getX(), chip.getY(),
 						processor.processorId));
