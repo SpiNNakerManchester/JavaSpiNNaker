@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD_ADDR;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.GROUP_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
@@ -199,6 +200,16 @@ class SpallocCoreTest extends SQLQueries {
 		// Composite op, for brevity
 		withJob(jobId -> inContext(c -> withAllocation(jobId,
 				() -> act.accept(c.setAuth(USER_NAME), jobId))));
+	}
+
+	private static final int DELAY_MS = 1000;
+
+	private static void snooze() {
+		try {
+			Thread.sleep(DELAY_MS);
+		} catch (InterruptedException e) {
+			assumeTrue(false, "sleep() was interrupted");
+		}
 	}
 
 	// The actual tests
@@ -449,7 +460,7 @@ class SpallocCoreTest extends SQLQueries {
 				assertEquals(Optional.of(USER_NAME), j.getOwner());
 				assertEquals(Optional.empty(), j.getUrl());
 				assertEquals(1, j.getBoards().size());
-				assertEquals("2.2.2.2", j.getBoards().get(0).getAddress());
+				assertEquals(BOARD_ADDR, j.getBoards().get(0).getAddress());
 			});
 		}
 
@@ -639,7 +650,7 @@ class SpallocCoreTest extends SQLQueries {
 
 				assertEquals(asList(new BoardCoordinates(0, 0, 0)),
 						sm.getBoards());
-				assertEquals(asList(new ConnectionInfo(ZERO_ZERO, "2.2.2.2")),
+				assertEquals(asList(new ConnectionInfo(ZERO_ZERO, BOARD_ADDR)),
 						sm.getConnections());
 
 				assertEquals(MACHINE_NAME, sm.getMachine().getName());
@@ -652,19 +663,21 @@ class SpallocCoreTest extends SQLQueries {
 		@Test
 		void keepalives() {
 			Instant ts0 = Instant.now().truncatedTo(SECONDS);
+			snooze();
 			withStandardAllocatedJob((p, jobId) -> {
 				Job j = spalloc.getJob(p, jobId).get();
 				assertEquals(Optional.empty(), j.getKeepaliveHost());
 				Instant ts1 = j.getKeepaliveTimestamp();
-				assertFalse(ts0.isAfter(ts1));
+				assertTrue(ts0.isBefore(ts1));
 
+				snooze();
 				j.access("3.3.3.3");
 
 				// reread
 				Job j2 = spalloc.getJob(p, jobId).get();
 				assertEquals(Optional.of("3.3.3.3"), j2.getKeepaliveHost());
 				Instant ts2 = j2.getKeepaliveTimestamp();
-				assertFalse(ts1.isAfter(ts2));
+				assertTrue(ts1.isBefore(ts2));
 			});
 		}
 
@@ -709,7 +722,7 @@ class SpallocCoreTest extends SQLQueries {
 					// Messy to build as usually only done by Jackson
 					IssueReportRequest r = new IssueReportRequest();
 					ReportedBoard b = new ReportedBoard();
-					b.address = "2.2.2.2";
+					b.address = BOARD_ADDR;
 					r.issue = "test";
 					r.boards = asList(b);
 					j.reportIssue(r, p);
@@ -855,7 +868,7 @@ class SpallocCoreTest extends SQLQueries {
 			withStandardAllocatedJob((p, jobId) -> {
 				JobDescription j = spalloc.getJobInfo(p, jobId).get();
 				assertEquals(
-						asList(new BoardCoords(0, 0, 0, 1, 1, 0, "2.2.2.2")),
+						asList(new BoardCoords(0, 0, 0, 1, 1, 0, BOARD_ADDR)),
 						j.getBoards());
 			});
 		}
@@ -871,9 +884,10 @@ class SpallocCoreTest extends SQLQueries {
 		@Test
 		void getStartTime() {
 			Instant ts0 = Instant.now().truncatedTo(SECONDS);
+			snooze();
 			withStandardAllocatedJob((p, jobId) -> {
 				JobDescription j = spalloc.getJobInfo(p, jobId).get();
-				assertFalse(ts0.isAfter(j.getStartTime()));
+				assertTrue(ts0.isBefore(j.getStartTime()));
 			});
 		}
 	}
@@ -885,7 +899,7 @@ class SpallocCoreTest extends SQLQueries {
 				assertEquals(asList(), getReports());
 
 				Permit p = c.setAuth(USER_NAME);
-				spalloc.reportProblem("2.2.2.2", null, "test", p);
+				spalloc.reportProblem(BOARD_ADDR, null, "test", p);
 
 				assertEquals(asList("test"), getReports());
 			} finally {
@@ -919,7 +933,7 @@ class SpallocCoreTest extends SQLQueries {
 		}
 
 		job = spalloc.createJob(USER_NAME, GROUP_NAME,
-				new CreateDimensionsAt(1, 1, "2.2.2.2", null), MACHINE_NAME,
+				new CreateDimensionsAt(1, 1, BOARD_ADDR, null), MACHINE_NAME,
 				asList(), Duration.ofSeconds(1), null).get();
 		try {
 			assertEquals(QUEUED, job.getState());
