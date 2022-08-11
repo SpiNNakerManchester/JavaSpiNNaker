@@ -21,6 +21,7 @@ import static java.nio.file.Files.exists;
 import static java.time.Duration.ofSeconds;
 import static java.time.Instant.now;
 import static java.time.Instant.ofEpochMilli;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -38,20 +39,25 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityUtils.inContext;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.IntConsumer;
+import java.util.function.ObjIntConsumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +82,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
+import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
 import uk.ac.manchester.spinnaker.alloc.model.MachineDescription.JobInfo;
@@ -301,15 +308,6 @@ class SpallocCoreTest extends SQLQueries {
 				assertEquals(USER_NAME, j2.getOwner().get());
 				SubMachine m = j2.getMachine().get();
 				assertEquals(MACHINE_NAME, m.getMachine().getName());
-				assertEquals(1, m.getWidth());
-				assertEquals(1, m.getHeight());
-				assertEquals(1, m.getDepth());
-				assertEquals(0, m.getRootX());
-				assertEquals(0, m.getRootY());
-				assertEquals(0, m.getRootZ());
-				assertEquals(asList(new BoardCoordinates(0, 0, 0)),
-						m.getBoards());
-				assertEquals(OFF, m.getPower());
 			});
 
 			j.destroy("gorp");
@@ -319,6 +317,152 @@ class SpallocCoreTest extends SQLQueries {
 			j = spalloc.getJob(p, jobId).get();
 			assertEquals(DESTROYED, j.getState());
 		}));
+	}
+
+	private void withStandardAllocatedJob(ObjIntConsumer<Permit> act) {
+		withJob(jobId -> inContext(c -> withAllocation(jobId,
+				() -> act.accept(c.setAuth(USER_NAME), jobId))));
+	}
+
+	@Nested
+	class SpallocJobTest {
+		@Test
+		void getId() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(jobId, j.getId());
+			});
+		}
+
+		@Test
+		void getState() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(QUEUED, j.getState());
+			});
+		}
+
+		@Test
+		void getOwner() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(Optional.of(USER_NAME), j.getOwner());
+			});
+		}
+
+		@Test
+		void getOriginalRequest() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				// We didn't supply one
+				assertEquals(Optional.empty(), j.getOriginalRequest());
+			});
+		}
+
+		@Test
+		void getWidth() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(Optional.of(1), j.getWidth());
+			});
+		}
+
+		@Test
+		void getHeight() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(Optional.of(1), j.getHeight());
+			});
+		}
+
+		@Test
+		void getDepth() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(Optional.of(1), j.getDepth());
+			});
+		}
+
+		@Test
+		void getRootChip() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(Optional.of(ZERO_ZERO), j.getRootChip());
+			});
+		}
+
+		@Test
+		void getMachine() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				SubMachine sm = j.getMachine().get();
+
+				assertEquals(1, sm.getWidth());
+				assertEquals(1, sm.getHeight());
+				assertEquals(1, sm.getDepth());
+				assertEquals(0, sm.getRootX());
+				assertEquals(0, sm.getRootY());
+				assertEquals(0, sm.getRootZ());
+
+				assertEquals(asList(new BoardCoordinates(0, 0, 0)),
+						sm.getBoards());
+				assertEquals(asList(new ConnectionInfo(ZERO_ZERO, "2.2.2.2")),
+						sm.getConnections());
+
+				assertEquals(MACHINE_NAME, sm.getMachine().getName());
+				assertEquals(OFF, sm.getPower());
+				sm.setPower(OFF);
+				assertEquals(OFF, sm.getPower());
+			});
+		}
+
+		@Test
+		void keepalives() {
+			Instant ts0 = Instant.now().truncatedTo(SECONDS);
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(Optional.empty(), j.getKeepaliveHost());
+				Instant ts1 = j.getKeepaliveTimestamp();
+				assertFalse(ts0.isAfter(ts1));
+
+				j.access("3.3.3.3");
+
+				// reread
+				Job j2 = spalloc.getJob(p, jobId).get();
+				assertEquals(Optional.of("3.3.3.3"), j2.getKeepaliveHost());
+				Instant ts2 = j2.getKeepaliveTimestamp();
+				assertFalse(ts1.isAfter(ts2));
+			});
+		}
+
+		@Test
+		void getStartTime() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertNotNull(j.getStartTime());
+			});
+		}
+
+		@Test
+		@Disabled("not yet working")
+		void termination() {
+			withStandardAllocatedJob((p, jobId) -> {
+				Job j = spalloc.getJob(p, jobId).get();
+				assertEquals(QUEUED, j.getState());
+				assertEquals(Optional.empty(), j.getFinishTime());
+				assertEquals(Optional.empty(), j.getReason());
+				Instant ts0 = Instant.now().truncatedTo(SECONDS);
+
+				j.destroy("foo bar");
+
+				// reread
+				Job j2 = spalloc.getJob(p, jobId).get();
+				assertEquals(DESTROYED, j.getState());
+				Instant ts1 = j2.getFinishTime().get();
+				assertFalse(ts0.isAfter(ts1));
+				assertEquals(Optional.of("foo bar"), j2.getReason());
+			});
+		}
 	}
 
 	@Test
