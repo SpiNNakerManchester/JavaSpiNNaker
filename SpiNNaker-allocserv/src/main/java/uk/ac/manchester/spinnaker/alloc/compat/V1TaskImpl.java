@@ -31,6 +31,8 @@ import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.Socket;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -124,6 +126,10 @@ class V1TaskImpl extends V1CompatTask {
 
 	V1TaskImpl(V1CompatService srv, Socket sock) throws IOException {
 		super(srv, sock);
+	}
+
+	V1TaskImpl(V1CompatService srv, Reader in, Writer out) {
+		super(srv, in, out);
 	}
 
 	@PostConstruct

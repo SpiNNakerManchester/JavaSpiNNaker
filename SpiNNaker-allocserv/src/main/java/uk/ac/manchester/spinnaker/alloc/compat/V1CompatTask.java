@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
@@ -32,6 +33,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -101,10 +104,28 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		this.sock = sock;
 		sock.setTcpNoDelay(true);
 		sock.setSoTimeout((int) getProperties().getReceiveTimeout().toMillis());
-		in = new BufferedReader(
-				new InputStreamReader(sock.getInputStream(), UTF_8));
+
+		in = buffer(new InputStreamReader(sock.getInputStream(), UTF_8));
 		out = new PrintWriter(
 				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
+	}
+
+	/**
+	 * Constructor for testing. Makes a task that isn't connected to a socket.
+	 *
+	 * @param srv
+	 *            The overall service, used for looking up shared resources that
+	 *            are uncomfortable as beans.
+	 * @param in
+	 *            Input to the task.
+	 * @param out
+	 *            Output to the task.
+	 */
+	protected V1CompatTask(V1CompatService srv, Reader in, Writer out) {
+		super(srv);
+		this.sock = null;
+		this.in = buffer(in);
+		this.out = new PrintWriter(out);
 	}
 
 	final void handleConnection() {
@@ -123,7 +144,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
 			try {
-				sock.close();
+				if (nonNull(sock)) {
+					sock.close();
+				}
 			} catch (IOException e) {
 				log.error("problem closing socket {}", sock, e);
 			}
@@ -139,6 +162,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @return The remote host that this task is serving.
 	 */
 	public final String host() {
+		if (isNull(sock)) {
+			return "<NOWHERE>";
+		}
 		return ((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()
 				.getHostAddress();
 	}
@@ -235,6 +261,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		}
 	}
 
+	private boolean mayWrite() {
+		return isNull(sock) || !sock.isClosed();
+	}
+
 	/**
 	 * Send a response message.
 	 *
@@ -245,7 +275,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             JSON or a suitable primitive.
 	 */
 	protected final void writeResponse(Object response) throws IOException {
-		if (!sock.isClosed()) {
+		if (mayWrite()) {
 			sendMessage(new ReturnResponse(response));
 		}
 	}
@@ -259,7 +289,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If network access fails.
 	 */
 	protected final void writeException(Throwable exn) throws IOException {
-		if (!sock.isClosed()) {
+		if (mayWrite()) {
 			if (nonNull(exn.getMessage())) {
 				sendMessage(new ExceptionResponse(exn.getMessage()));
 			} else {
@@ -278,7 +308,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	protected final void writeJobNotification(List<Integer> jobIds)
 			throws IOException {
-		if (!jobIds.isEmpty() && !sock.isClosed()) {
+		if (!jobIds.isEmpty() && mayWrite()) {
 			sendMessage(new JobNotifyMessage(jobIds));
 		}
 	}
@@ -294,7 +324,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	protected final void writeMachineNotification(List<String> machineNames)
 			throws IOException {
-		if (!machineNames.isEmpty() && !sock.isClosed()) {
+		if (!machineNames.isEmpty() && mayWrite()) {
 			sendMessage(new MachineNotifyMessage(machineNames));
 		}
 	}
