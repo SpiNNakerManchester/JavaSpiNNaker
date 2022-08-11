@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.alloc.allocator;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.Math.sqrt;
+import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
@@ -126,7 +127,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		@Override
 		public String toString() {
-			return String.format("%dx%dx%d", width, height, depth);
+			return format("%dx%dx%d", width, height, depth);
 		}
 
 		public int getArea() {
@@ -154,7 +155,7 @@ public class AllocatorTask extends DatabaseAwareBean
 
 		@Override
 		public String toString() {
-			return String.format("[%d,%d,%d]", x, y, z);
+			return format("[%d,%d,%d]", x, y, z);
 		}
 	}
 

@@ -209,7 +209,7 @@ class SpallocCoreTest extends SQLQueries {
 	}
 
 	@Test
-	public void getMachineByName() throws Exception {
+	public void getMachine() throws Exception {
 		Optional<Machine> m = spalloc.getMachine(MACHINE_NAME, false);
 		assertNotNull(m);
 		assertNotEquals(Optional.empty(), m);
@@ -403,12 +403,25 @@ class SpallocCoreTest extends SQLQueries {
 		} finally {
 			nukeJob(job.getId());
 		}
+
 		job = spalloc
 				.createJob(USER_NAME, GROUP_NAME, new CreateNumBoards(1, 0),
 						MACHINE_NAME, asList(), Duration.ofSeconds(1), null)
 				.get();
 		try {
 			assertEquals(QUEUED, job.getState());
+		} finally {
+			nukeJob(job.getId());
+		}
+
+		// Should be able to guess what group...
+		job = spalloc
+				.createJob(USER_NAME, null, new CreateNumBoards(1, 0),
+						MACHINE_NAME, asList(), Duration.ofSeconds(1), null)
+				.get();
+		try {
+			assertEquals(QUEUED, job.getState());
+			// TODO check that the right group was selected
 		} finally {
 			nukeJob(job.getId());
 		}
