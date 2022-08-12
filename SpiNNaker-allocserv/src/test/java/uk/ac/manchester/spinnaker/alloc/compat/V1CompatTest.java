@@ -21,6 +21,7 @@ import static java.nio.file.Files.exists;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
 import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 
 import java.io.BufferedReader;
@@ -45,6 +46,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
+import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -113,6 +115,9 @@ class V1CompatTest extends SQLQueries {
 		}
 	}
 
+	// The representation of void
+	private static final String VOID_RESPONSE = "{\"return\":null}";
+
 	// The actual tests
 
 	@Test
@@ -131,9 +136,18 @@ class V1CompatTest extends SQLQueries {
 	}
 
 	@Test
+	public void version(@Autowired ServiceVersion version) throws Exception {
+		String response = "{\"return\":\"" + version.getVersion() + "\"}";
+		withInstance((to, from) -> {
+			to.println("{\"command\":\"version\"}");
+			assertEquals(response, from.readLine());
+		});
+	}
+
+	@Test
 	public void listMachines() throws Exception {
 		String machinesResponse =
-				"{\"return\":[{\"name\":\"foo_machine\",\"tags\":[],"
+				"{\"return\":[{\"name\":\"" + MACHINE_NAME + "\",\"tags\":[],"
 						+ "\"width\":1,\"height\":1,\"dead_boards\":[],"
 						+ "\"dead_links\":[]}]}";
 		withInstance((to, from) -> {
@@ -156,6 +170,44 @@ class V1CompatTest extends SQLQueries {
 		withInstance((to, from) -> {
 			to.println("{\"command\": \"list_jobs\"}");
 			assertEquals(jobsResponse, from.readLine());
+		});
+	}
+
+	@Test
+	public void notifyMachine() throws Exception {
+		withInstance((to, from) -> {
+			to.println("{\"command\": \"notify_machine\"}");
+			assertEquals(VOID_RESPONSE, from.readLine());
+			to.println("{\"command\": \"no_notify_machine\"}");
+			assertEquals(VOID_RESPONSE, from.readLine());
+			to.println("{\"command\":\"notify_machine\",\"args\":[\""
+					+ MACHINE_NAME + "\"]}");
+			assertEquals(VOID_RESPONSE, from.readLine());
+			to.println("{\"command\":\"no_notify_machine\",\"args\":[\""
+					+ MACHINE_NAME + "\"]}");
+			assertEquals(VOID_RESPONSE, from.readLine());
+		});
+	}
+
+	@Test
+	public void whereIs() throws Exception {
+		String chipLocation = "{\"return\":{\"job_chip\":null,"
+				+ "\"job_id\":null,\"chip\":[0,0],\"logical\":[0,0,0],"
+				+ "\"machine\":\"foo_machine\",\"board_chip\":[0,0],"
+				+ "\"physical\":[1,1,0]}}";
+		withInstance((to, from) -> {
+			to.println("{\"command\": \"where_is\", \"kwargs\":{"
+					+ "\"machine\": \"" + MACHINE_NAME + "\","
+					+ "\"x\": 0, \"y\": 0, \"z\": 0 }}");
+			assertEquals(chipLocation, from.readLine());
+			to.println("{\"command\": \"where_is\", \"kwargs\":{"
+					+ "\"machine\": \"" + MACHINE_NAME + "\","
+					+ "\"cabinet\": 1, \"frame\": 1, \"board\": 0 }}");
+			assertEquals(chipLocation, from.readLine());
+			to.println("{\"command\": \"where_is\", \"kwargs\":{"
+					+ "\"machine\": \"" + MACHINE_NAME + "\","
+					+ "\"chip_x\": 0, \"chip_y\": 0 }}");
+			assertEquals(chipLocation, from.readLine());
 		});
 	}
 }

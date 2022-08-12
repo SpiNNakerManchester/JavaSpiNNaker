@@ -38,7 +38,7 @@ public abstract class Cfg {
 	static final int MACHINE = 1000;
 
 	/** Machine name. */
-	static final String MACHINE_NAME = "foo_machine";
+	public static final String MACHINE_NAME = "foo_machine";
 
 	/** BMP ID. */
 	static final int BMP = 2000;
