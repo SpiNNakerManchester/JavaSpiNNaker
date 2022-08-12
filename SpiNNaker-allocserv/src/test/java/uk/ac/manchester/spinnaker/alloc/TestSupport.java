@@ -65,9 +65,10 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 	"checkstyle:ParameterNumber", "checkstyle:VisibilityModifier"
 })
 public abstract class TestSupport extends SQLQueries implements SupportQueries {
+	/** Bring in the application Spring configuration that we're testing. */
 	@Configuration
 	@ComponentScan(basePackageClasses = SpallocProperties.class)
-	protected static class Config {
+	public static class Config {
 	}
 
 	protected static final Logger log = getLogger(TestSupport.class);
