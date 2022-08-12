@@ -197,7 +197,10 @@ abstract class Utils {
 	 *            The instant to convert
 	 * @return The timestamp
 	 */
-	static double timestamp(Instant instant) {
+	static Double timestamp(Instant instant) {
+		if (isNull(instant)) {
+			return null;
+		}
 		double ts = instant.getEpochSecond();
 		ts += instant.getNano() / NS_PER_S;
 		return ts;

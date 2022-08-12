@@ -35,7 +35,7 @@ public class JobDescription {
 
 	private String owner;
 
-	private double startTime;
+	private Double startTime;
 
 	private State state;
 
@@ -109,11 +109,11 @@ public class JobDescription {
 	}
 
 	@JsonProperty("start_time")
-	public double getStartTime() {
+	public Double getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(double startTime) {
+	public void setStartTime(Double startTime) {
 		this.startTime = startTime;
 	}
 

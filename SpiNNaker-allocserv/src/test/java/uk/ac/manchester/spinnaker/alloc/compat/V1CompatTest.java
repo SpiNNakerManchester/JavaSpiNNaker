@@ -326,6 +326,30 @@ class V1CompatTest extends TestSupport {
 				assertEquals(VOID_RESPONSE, from.readLine());
 			});
 		}
+
+		@Test
+		void compound() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"create_job\","
+						+ "\"args\":[],\"kwargs\":{\"owner\":\"gorp\","
+						+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
+				String line = from.readLine();
+				Matcher m =
+						compile("\\{\"return\":(\\d+)\\}").matcher(line);
+				assertTrue(m.matches(), () -> "'" + m.pattern()
+						+ "' doesn't match against '" + line + "'");
+				String jobId = m.group(1);
+
+				to.println("{\"command\": \"list_jobs\"}");
+				assertThat("got job in list", from.readLine(), matchesPattern(
+						"\\{\"return\":\\[\\{.*\"job_id\":"
+								+ jobId + ",.*\\}\\]\\}"));
+
+				to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
+						+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+			});
+		}
 	}
 }
 
