@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static java.util.regex.Pattern.compile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 
@@ -28,6 +29,7 @@ import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -304,6 +306,24 @@ class V1CompatTest extends TestSupport {
 							+ "\"board_chip\":[0,0],"
 							+ "\"physical\":[1,1,0]}}", from.readLine());
 				});
+			});
+		}
+
+		@Test
+		void jobCreateDelete() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"create_job\","
+						+ "\"args\":[],\"kwargs\":{\"owner\":\"gorp\","
+						+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
+				String line = from.readLine();
+				Matcher m =
+						compile("\\{\"return\":(\\d+)\\}").matcher(line);
+				assertTrue(m.matches(), () -> "'" + m.pattern()
+						+ "' doesn't match against '" + line + "'");
+				String jobId = m.group(1);
+				to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
+						+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
+				assertEquals(VOID_RESPONSE, from.readLine());
 			});
 		}
 	}
