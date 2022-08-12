@@ -33,7 +33,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
@@ -133,9 +135,12 @@ public class V1CompatService {
 	private void open() throws IOException {
 		CompatibilityProperties props = mainProps.getCompat();
 		if (props.getThreadPoolSize() > 0) {
+			log.info("setting thread pool size to {}",
+					props.getThreadPoolSize());
 			executor = newFixedThreadPool(props.getThreadPoolSize(),
 					threadFactory);
 		} else {
+			log.info("using unbounded thread pool");
 			executor = newCachedThreadPool(threadFactory);
 		}
 
@@ -166,8 +171,13 @@ public class V1CompatService {
 
 		// Shut down the clients
 		executor.shutdown();
-		executor.shutdownNow();
+		List<Runnable> remainingTasks = executor.shutdownNow();
+		if (!remainingTasks.isEmpty()) {
+			log.warn("there are {} compat tasks outstanding",
+					remainingTasks.size());
+		}
 		executor.awaitTermination(shutdownTimeout.toMillis(), MILLISECONDS);
+		log.info("compat service stopped");
 	}
 
 	/**
@@ -235,10 +245,12 @@ public class V1CompatService {
 		 * @param out
 		 *            How to receive a message from the task. Should be
 		 *            <em>unconnected</em>.
+		 * @return A future that can be cancelled to shut things down.
 		 * @throws Exception
 		 *             If various things go wrong.
 		 */
-		void launchInstance(PipedWriter in, PipedReader out) throws Exception;
+		Future<?> launchInstance(PipedWriter in, PipedReader out)
+				throws Exception;
 	}
 
 	@ForTestingOnly
@@ -247,12 +259,12 @@ public class V1CompatService {
 		ForTestingOnly.Utils.checkForTestClassOnStack();
 		return new TestAPI() {
 			@Override
-			public void launchInstance(PipedWriter in, PipedReader out)
+			public Future<?> launchInstance(PipedWriter in, PipedReader out)
 					throws Exception {
 				V1CompatTask service =
 						taskFactory.getObject(V1CompatService.this,
 								new PipedReader(in), new PipedWriter(out));
-				executor.execute(() -> service.handleConnection());
+				return executor.submit(() -> service.handleConnection());
 			}
 		};
 	}

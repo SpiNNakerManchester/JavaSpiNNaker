@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -47,7 +48,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
@@ -136,6 +136,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 					break;
 				}
 			}
+		} catch (UnknownIOException e) {
+			/*
+			 * Nothing useful to do in this case except close.
+			 *
+			 * This happens when the problem is detected by a PrintWriter, but
+			 * the problem with PrintWriters is they swallow exceptions and
+			 * throw the information away. I'm not going to fix that.
+			 */
 		} catch (IOException e) {
 			log.error("problem with socket {}", sock, e);
 		} catch (InterruptedException e) {
@@ -146,6 +154,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			try {
 				if (nonNull(sock)) {
 					sock.close();
+				} else {
+					in.close();
+					out.close();
 				}
 			} catch (IOException e) {
 				log.error("problem closing socket {}", sock, e);
@@ -228,6 +239,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			default:
 				throw e;
 			}
+		} catch (InterruptedIOException e) {
+			InterruptedException ex = new InterruptedException();
+			ex.initCause(e);
+			throw ex;
 		}
 		if (isNull(line)) {
 			if (currentThread().isInterrupted()) {
@@ -247,22 +262,27 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *
 	 * @param msg
 	 *            The message to send. Must serializable to JSON.
-	 * @throws JsonProcessingException
-	 *             If the object isn't serializable.
+	 * @throws IOException
+	 *             If the message can't be written.
 	 */
-	private void sendMessage(Object msg) throws JsonProcessingException {
+	private void sendMessage(Object msg) throws IOException {
 		// We go via a string to avoid early closing issues
 		String data = getJsonMapper().writeValueAsString(msg);
 		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
 			out.println(data);
-			out.flush();
+			if (out.checkError()) {
+				throw new UnknownIOException();
+			}
 		}
 	}
 
 	private boolean mayWrite() {
-		return isNull(sock) || !sock.isClosed();
+		if (isNull(sock)) {
+			return true;
+		}
+		return !sock.isClosed();
 	}
 
 	/**
@@ -818,5 +838,13 @@ final class TaskException extends Exception {
 
 	TaskException(String msg) {
 		super(msg);
+	}
+}
+
+final class UnknownIOException extends IOException {
+	private static final long serialVersionUID = -852489744228393668L;
+
+	UnknownIOException() {
+		super("unknown error writing message");
 	}
 }

@@ -30,6 +30,8 @@ import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +55,8 @@ import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + V1CompatTest.DB,
-	"spalloc.historical-data.path=" + V1CompatTest.HIST_DB
+	"spalloc.historical-data.path=" + V1CompatTest.HIST_DB,
+	"spalloc.compat.thread-pool-size=10"
 })
 class V1CompatTest extends SQLQueries {
 	private static final Logger log = getLogger(V1CompatTest.class);
@@ -93,20 +96,82 @@ class V1CompatTest extends SQLQueries {
 		testAPI = compat.getTestApi();
 	}
 
+	private void withInstance(
+			BiConsumer<PrintWriter, NonThrowingLineReader> act)
+			throws Exception {
+		try (PipedWriter to = new PipedWriter();
+				PipedReader from = new PipedReader()) {
+			Future<?> f = testAPI.launchInstance(to, from);
+			try {
+				act.accept(new PrintWriter(to),
+						new NonThrowingLineReader(from));
+			} finally {
+				if (!f.cancel(true)) {
+					System.err.println("cancel failed?");
+				}
+			}
+		}
+	}
+
 	// The actual tests
 
 	@Test
-	public void getMachines() throws Exception {
-		try (PipedWriter toInstance = new PipedWriter();
-				PipedReader fromInstance = new PipedReader();
-				PrintWriter to = new PrintWriter(toInstance);
-				BufferedReader from = new BufferedReader(fromInstance)) {
-			testAPI.launchInstance(toInstance, fromInstance);
+	public void testMachineryTest() throws Exception {
+		for (int i = 0; i < 100; i++) {
+			withInstance((to, from) -> {
+				to.println();
+				from.readLine();
+			});
+		}
+		for (int i = 0; i < 100; i++) {
+			withInstance((to, from) -> {
+				to.println();
+			});
+		}
+	}
 
+	@Test
+	public void listMachines() throws Exception {
+		String machinesResponse =
+				"{\"return\":[{\"name\":\"foo_machine\",\"tags\":[],"
+						+ "\"width\":1,\"height\":1,\"dead_boards\":[],"
+						+ "\"dead_links\":[]}]}";
+		withInstance((to, from) -> {
 			to.println("{\"command\": \"list_machines\"}");
-			assertEquals("{\"return\":[{\"name\":\"foo_machine\",\"tags\":[],"
-					+ "\"width\":1,\"height\":1,\"dead_boards\":[],"
-					+ "\"dead_links\":[]}]}", from.readLine());
+			assertEquals(machinesResponse, from.readLine());
+			to.println("{\"command\": \"list_machines\", \"args\": [0]}");
+			assertEquals(machinesResponse, from.readLine());
+			// An exception
+			to.println("{\"command\": \"list_machines\", \"args\": false}");
+			String line = from.readLine();
+			assertNotEquals(machinesResponse, line);
+			assertTrue(line.startsWith("{\"exception\":"),
+					() -> "expected exception in " + line);
+		});
+	}
+
+	@Test
+	public void listJobs() throws Exception {
+		String jobsResponse = "{\"return\":[]}";
+		withInstance((to, from) -> {
+			to.println("{\"command\": \"list_jobs\"}");
+			assertEquals(jobsResponse, from.readLine());
+		});
+	}
+}
+
+/** A buffered reader that doesn't throw if it gets an error reading a line. */
+class NonThrowingLineReader extends BufferedReader {
+	NonThrowingLineReader(PipedReader r) {
+		super(r);
+	}
+
+	@Override
+	public String readLine() {
+		try {
+			return super.readLine();
+		} catch (IOException e) {
+			return "THREW " + e;
 		}
 	}
 }
