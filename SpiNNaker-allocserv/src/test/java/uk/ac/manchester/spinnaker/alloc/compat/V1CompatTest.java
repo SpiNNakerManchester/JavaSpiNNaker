@@ -348,6 +348,9 @@ class V1CompatTest extends TestSupport {
 				to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
 						+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
 				assertEquals(VOID_RESPONSE, from.readLine());
+
+				to.println("{\"command\": \"list_jobs\"}");
+				assertEquals("{\"return\":[]}", from.readLine());
 			});
 		}
 	}
