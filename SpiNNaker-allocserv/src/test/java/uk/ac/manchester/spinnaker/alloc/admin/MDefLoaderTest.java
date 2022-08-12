@@ -49,6 +49,8 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.storage.ResultColumn;
+import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 
 /**
  * Test that the database engine interface works and that the queries are
@@ -61,9 +63,13 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
 class MDefLoaderTest {
+	@ResultColumn("c")
+	@SingleRowResult
 	private static final String COUNT_LIVE_BOARDS =
 			"SELECT COUNT(*) AS c FROM boards WHERE board_num IS NOT NULL";
 
+	@ResultColumn("c")
+	@SingleRowResult
 	private static final String COUNT_LIVE_LINKS =
 			"SELECT COUNT(*) AS c FROM links WHERE live";
 

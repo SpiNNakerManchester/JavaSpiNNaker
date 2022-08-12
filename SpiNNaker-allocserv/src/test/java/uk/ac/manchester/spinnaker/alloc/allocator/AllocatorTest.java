@@ -17,111 +17,58 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.String.format;
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
-import static java.time.Duration.ofSeconds;
-import static java.time.Instant.now;
-import static java.time.Instant.ofEpochMilli;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.makeJob;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB3;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
 import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 @SpringBootTest
-@SpringJUnitWebConfig(AllocatorTest.Config.class)
+@SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + AllocatorTest.DB,
 	"spalloc.historical-data.path=" + AllocatorTest.HIST_DB
 })
-class AllocatorTest extends SQLQueries implements SupportQueries {
-	private static final Logger log = getLogger(AllocatorTest.class);
-
+class AllocatorTest extends TestSupport {
 	/** The name of the database file. */
 	static final String DB = "target/alloc_test.sqlite3";
 
 	/** The name of the database file. */
 	static final String HIST_DB = "target/alloc_test-hist.sqlite3";
 
-	@Configuration
-	@ComponentScan(basePackageClasses = SpallocProperties.class)
-	static class Config {
-	}
-
-	@Autowired
-	private DatabaseEngine db;
-
-	private Connection conn;
-
 	@Autowired
 	private AllocatorTask alloc;
 
 	private BMPController.TestAPI bmpCtrl;
 
-	private void doTest(Transacted action) {
-		try (Connection c = db.getConnection()) {
-			c.transaction(() -> {
-				try {
-					conn = c;
-					action.act();
-				} finally {
-					try {
-						c.rollback();
-					} catch (DataAccessException ignored) {
-					}
-					conn = null;
-				}
-			});
-		}
-	}
-
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
-		}
+		killDB(DB);
 	}
 
 	@BeforeEach
@@ -130,62 +77,8 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 			@Autowired BMPController bmpCtrl) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
 		MockTransceiver.installIntoFactory(txrxFactory);
-		try (Connection c = db.getConnection()) {
-			c.transaction(() -> setupDB3(c));
-		}
+		setupDB3();
 		this.bmpCtrl = bmpCtrl.getTestAPI();
-	}
-
-	/**
-	 * Insert a live job. Needs a matching allocation request.
-	 *
-	 * @param c
-	 *            DB connection
-	 * @param time
-	 *            Length of time for keepalive (seconds)
-	 * @return Job ID
-	 */
-	private int makeQueuedJob(int time) {
-		return makeJob(conn, null, QUEUED, null, ofEpochMilli(0), null, null,
-				ofSeconds(time), now());
-	}
-
-	private void makeAllocBySizeRequest(int job, int size) {
-		try (Update u = conn.update(TEST_INSERT_REQ_SIZE)) {
-			conn.transaction(() -> u.call(job, size));
-		}
-	}
-
-	private void makeAllocByDimensionsRequest(int job, int width, int height,
-			int allowedDead) {
-		try (Update u = conn.update(TEST_INSERT_REQ_DIMS)) {
-			conn.transaction(() -> u.call(job, width, height, allowedDead));
-		}
-	}
-
-	private void makeAllocByBoardIdRequest(int job, int board) {
-		try (Update u = conn.update(TEST_INSERT_REQ_BOARD)) {
-			conn.transaction(() -> u.call(job, board));
-		}
-	}
-
-	private JobState getJobState(int job) {
-		try (Query q = conn.query(GET_JOB)) {
-			return conn.transaction(() -> q.call1(job).get()
-					.getEnum("job_state", JobState.class));
-		}
-	}
-
-	private int getJobRequestCount() {
-		try (Query q = conn.query(TEST_COUNT_REQUESTS)) {
-			return conn.transaction(() -> q.call1(QUEUED).get().getInt("cnt"));
-		}
-	}
-
-	private int getPendingPowerChanges() {
-		try (Query q = conn.query(TEST_COUNT_POWER_CHANGES)) {
-			return conn.transaction(() -> q.call1().get().getInt("cnt"));
-		}
 	}
 
 	private void assertState(int jobId, JobState state, int requestCount,
@@ -207,19 +100,11 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 				() -> format("expected %s but got %s", expected, got));
 	}
 
-	private static final int DELAY_MS = 2000;
-
 	/**
 	 * Expiry tests need a two second sleep to get things to tick over to *past*
 	 * the expiration timestamp.
 	 */
-	private static void snooze() {
-		try {
-			Thread.sleep(DELAY_MS);
-		} catch (InterruptedException e) {
-			assumeTrue(false, "sleep() was interrupted");
-		}
-	}
+	private static final int DELAY_MS = 2000;
 
 	private void processBMPRequests() throws Exception {
 		bmpCtrl.processRequests(DELAY_MS);
@@ -241,7 +126,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void allocateBySize1board() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(100);
 
 			getAllocTester().allocate();
@@ -268,7 +153,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void allocateBySize3boards() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(100);
 			getAllocTester().allocate();
 
@@ -294,7 +179,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void allocateByDimensions1x1() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(100);
 			getAllocTester().allocate();
 
@@ -320,7 +205,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void allocateByDimensions1x2() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(100);
 			getAllocTester().allocate();
 
@@ -347,7 +232,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void allocateByBoardId() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(100);
 			getAllocTester().allocate();
 
@@ -373,9 +258,10 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void expireInitial() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(1);
-			snooze();
+			snooze1s();
+			snooze1s();
 
 			assumeState(job, QUEUED, 0, 0);
 
@@ -387,10 +273,11 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void expireQueued1() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(1);
 			getAllocTester().allocate();
-			snooze();
+			snooze1s();
+			snooze1s();
 
 			assumeState(job, QUEUED, 0, 0);
 
@@ -402,11 +289,12 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void expireQueued2() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(1);
 			getAllocTester().allocate();
 			makeAllocBySizeRequest(job, 1);
-			snooze();
+			snooze1s();
+			snooze1s();
 
 			assumeState(job, QUEUED, 1, 0);
 
@@ -418,11 +306,12 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void expirePower() {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(1);
 			makeAllocBySizeRequest(job, 1);
 			getAllocTester().allocate();
-			snooze();
+			snooze1s();
+			snooze1s();
 
 			assumeState(job, POWER, 0, 1);
 
@@ -446,7 +335,8 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 				c.transaction(() -> {
 					getAllocTester().allocate();
 				});
-				snooze();
+				snooze1s();
+				snooze1s();
 				processBMPRequests();
 
 				assumeState(job, READY, 0, 0);
@@ -478,7 +368,7 @@ class AllocatorTest extends SQLQueries implements SupportQueries {
 
 	@Test
 	public void tombstone() throws Exception {
-		doTest(() -> {
+		doTransactionalTest(() -> {
 			int job = makeQueuedJob(1);
 			conn.update(TEST_SET_JOB_STATE).call(DESTROYED, job);
 			conn.update(TEST_SET_JOB_DEATH_TIME).call(0, job);

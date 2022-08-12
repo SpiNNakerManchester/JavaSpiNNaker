@@ -16,18 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -35,21 +28,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
@@ -58,20 +45,18 @@ import uk.ac.manchester.spinnaker.utils.OneShotEvent;
  * the front-end will be able to communicate with the BMP.
  */
 @SpringBootTest
-@SpringJUnitWebConfig(BlacklistCommsTest.Config.class)
+@SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + BlacklistCommsTest.DB,
 	"spalloc.historical-data.path=" + BlacklistCommsTest.HIST_DB
 })
-class BlacklistCommsTest extends SQLQueries {
+class BlacklistCommsTest extends TestSupport {
 	/** The DB file. */
 	static final String DB = "target/blcomms_test.sqlite3";
 
 	/** The DB file. */
 	static final String HIST_DB = "target/blcomms_test_hist.sqlite3";
-
-	private static final Logger log = getLogger(BlacklistCommsTest.class);
 
 	/** Timeouts on individual tests, in seconds. */
 	private static final int TEST_TIMEOUT = 15;
@@ -84,14 +69,6 @@ class BlacklistCommsTest extends SQLQueries {
 	private static final Blacklist WRITE_BASELINE =
 			new Blacklist("chip 4 4 core 6,4");
 
-	@Configuration
-	@ComponentScan(basePackageClasses = SpallocProperties.class)
-	static class Config {
-	}
-
-	@Autowired
-	private DatabaseEngine db;
-
 	@Autowired
 	private MachineStateControl stateCtrl;
 
@@ -101,11 +78,7 @@ class BlacklistCommsTest extends SQLQueries {
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
-		}
+		killDB(DB);
 	}
 
 	@BeforeEach
@@ -113,9 +86,7 @@ class BlacklistCommsTest extends SQLQueries {
 	void checkSetup(@Autowired BMPController bmpCtrl,
 			@Autowired TransceiverFactory txrxFactory) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		try (Connection c = db.getConnection()) {
-			c.transaction(() -> setupDB1(c));
-		}
+		setupDB1();
 		// Get the test stuff set up
 		this.bmpCtrl = bmpCtrl.getTestAPI();
 		MockTransceiver.installIntoFactory(txrxFactory);

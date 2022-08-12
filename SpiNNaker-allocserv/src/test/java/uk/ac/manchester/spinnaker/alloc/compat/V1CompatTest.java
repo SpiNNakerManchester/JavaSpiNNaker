@@ -16,85 +16,56 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
+import uk.ac.manchester.spinnaker.alloc.TestSupport;
 
 @SpringBootTest
-@SpringJUnitWebConfig(V1CompatTest.Config.class)
+@SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + V1CompatTest.DB,
 	"spalloc.historical-data.path=" + V1CompatTest.HIST_DB,
 	"spalloc.compat.thread-pool-size=10"
 })
-class V1CompatTest extends SQLQueries {
-	private static final Logger log = getLogger(V1CompatTest.class);
-
+class V1CompatTest extends TestSupport {
 	/** The name of the database file. */
 	static final String DB = "target/compat_test.sqlite3";
 
 	/** The name of the database file. */
 	static final String HIST_DB = "target/compat_test-hist.sqlite3";
 
-	@Configuration
-	@ComponentScan(basePackageClasses = SpallocProperties.class)
-	static class Config {
-	}
-
-	@Autowired
-	private DatabaseEngine db;
-
 	private V1CompatService.TestAPI testAPI;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
-		}
+		killDB(DB);
 	}
 
 	@BeforeEach
 	@SuppressWarnings("deprecation")
 	void checkSetup(@Autowired V1CompatService compat) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		try (Connection c = db.getConnection()) {
-			c.transaction(() -> setupDB1(c));
-		}
+		setupDB1();
 		testAPI = compat.getTestApi();
 	}
 

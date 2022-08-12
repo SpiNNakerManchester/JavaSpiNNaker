@@ -16,15 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
@@ -35,8 +30,6 @@ import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,60 +39,39 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
+import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 @SpringBootTest
-@SpringJUnitWebConfig(BlacklistStoreTest.Config.class)
+@SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + BlacklistStoreTest.DB,
 	"spalloc.historical-data.path=" + BlacklistStoreTest.HIST_DB
 })
-class BlacklistStoreTest extends SQLQueries {
+class BlacklistStoreTest extends TestSupport {
 	/** The DB file. */
 	static final String DB = "target/blio_test.sqlite3";
 
 	/** The DB file. */
 	static final String HIST_DB = "target/blio_test_hist.sqlite3";
 
-	private static final Logger log = getLogger(BlacklistStoreTest.class);
-
-	@Configuration
-	@ComponentScan(basePackageClasses = SpallocProperties.class)
-	static class Config {
-	}
-
-	@Autowired
-	private DatabaseEngine db;
-
 	private BlacklistStore.TestAPI testAPI;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
-		}
+		killDB(DB);
 	}
 
 	@SafeVarargs
@@ -136,21 +108,9 @@ class BlacklistStoreTest extends SQLQueries {
 	@SuppressWarnings("deprecation") // Calling internal API
 	void checkSetup(@Autowired BlacklistStore blio) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		try (Connection c = db.getConnection()) {
-			c.transaction(() -> setupDB1(c));
-		}
+		setupDB1();
 		// Get at the internal API so we can control transaction boundaries
 		testAPI = blio.getTestAPI();
-	}
-
-	private void checkAndRollback(Connected act) {
-		db.executeVoid(c -> {
-			try {
-				act.act(c);
-			} finally {
-				c.rollback();
-			}
-		});
 	}
 
 	@Test

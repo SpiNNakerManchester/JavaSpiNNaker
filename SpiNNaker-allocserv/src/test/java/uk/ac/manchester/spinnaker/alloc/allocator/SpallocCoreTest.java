@@ -16,36 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
-import static java.time.Duration.ofSeconds;
-import static java.time.Instant.now;
-import static java.time.Instant.ofEpochMilli;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.BOARD_ADDR;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.GROUP_NAME;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.MACHINE_NAME;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.USER_NAME;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.allocateBoardToJob;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.makeJob;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setAllocRoot;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
-import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
-import static uk.ac.manchester.spinnaker.alloc.security.SecurityUtils.inContext;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -53,24 +33,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.IntConsumer;
-import java.util.function.ObjIntConsumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
+import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
@@ -79,11 +54,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.SubMachine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.BoardCoords;
 import uk.ac.manchester.spinnaker.alloc.model.ConnectionInfo;
 import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
@@ -99,15 +69,13 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 
 @SpringBootTest
-@SpringJUnitWebConfig(SpallocCoreTest.Config.class)
+@SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + SpallocCoreTest.DB,
 	"spalloc.historical-data.path=" + SpallocCoreTest.HIST_DB
 })
-class SpallocCoreTest extends SQLQueries {
-	private static final Logger log = getLogger(SpallocCoreTest.class);
-
+class SpallocCoreTest extends TestSupport {
 	/** The name of the database file. */
 	static final String DB = "target/spalloc_test.sqlite3";
 
@@ -116,100 +84,18 @@ class SpallocCoreTest extends SQLQueries {
 
 	private static final String BAD_USER = "user_foo";
 
-	@Configuration
-	@ComponentScan(basePackageClasses = SpallocProperties.class)
-	static class Config {
-	}
-
-	@Autowired
-	private DatabaseEngine db;
-
 	@Autowired
 	private SpallocAPI spalloc;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		Path dbp = Paths.get(DB);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
-		}
+		killDB(DB);
 	}
 
 	@BeforeEach
 	void checkSetup() {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		try (Connection c = db.getConnection()) {
-			c.transaction(() -> setupDB1(c));
-		}
-	}
-
-	private List<String> getReports() {
-		return db.execute(c -> {
-			try (Query q =
-					c.query("SELECT reported_issue FROM board_reports")) {
-				return q.call().map(string("reported_issue")).toList();
-			}
-		});
-	}
-
-	private void killReports() {
-		db.executeVoid(c -> {
-			try (Update u = c.update("DELETE from board_reports")) {
-				u.call();
-			}
-		});
-	}
-
-	// Wrappers for temporarily putting the DB into a state with a job/alloc
-
-	private void withJob(IntConsumer act) {
-		int jobId = db.execute(c -> makeJob(c, null, QUEUED, null,
-				ofEpochMilli(0), null, null, ofSeconds(0), now()));
-		try {
-			act.accept(jobId);
-		} finally {
-			nukeJob(jobId);
-		}
-	}
-
-	private void nukeJob(int jobId) {
-		db.executeVoid(c -> {
-			try (Update u = c.update("DELETE FROM jobs WHERE job_id = ?")) {
-				u.call(jobId);
-			}
-		});
-	}
-
-	private void withAllocation(int jobId, Runnable act) {
-		db.executeVoid(c -> {
-			allocateBoardToJob(c, BOARD, jobId);
-			setAllocRoot(c, jobId, BOARD);
-		});
-		try {
-			act.run();
-		} finally {
-			db.executeVoid(c -> {
-				allocateBoardToJob(c, BOARD, null);
-				setAllocRoot(c, jobId, null);
-			});
-		}
-	}
-
-	private void withStandardAllocatedJob(ObjIntConsumer<Permit> act) {
-		// Composite op, for brevity
-		withJob(jobId -> inContext(c -> withAllocation(jobId,
-				() -> act.accept(c.setAuth(USER_NAME), jobId))));
-	}
-
-	private static final int DELAY_MS = 1000;
-
-	private static void snooze() {
-		try {
-			Thread.sleep(DELAY_MS);
-		} catch (InterruptedException e) {
-			assumeTrue(false, "sleep() was interrupted");
-		}
+		setupDB1();
 	}
 
 	// The actual tests
@@ -663,14 +549,14 @@ class SpallocCoreTest extends SQLQueries {
 		@Test
 		void keepalives() {
 			Instant ts0 = Instant.now().truncatedTo(SECONDS);
-			snooze();
+			snooze1s();
 			withStandardAllocatedJob((p, jobId) -> {
 				Job j = spalloc.getJob(p, jobId).get();
 				assertEquals(Optional.empty(), j.getKeepaliveHost());
 				Instant ts1 = j.getKeepaliveTimestamp();
 				assertTrue(ts0.isBefore(ts1));
 
-				snooze();
+				snooze1s();
 				j.access("3.3.3.3");
 
 				// reread
@@ -884,7 +770,7 @@ class SpallocCoreTest extends SQLQueries {
 		@Test
 		void getStartTime() {
 			Instant ts0 = Instant.now().truncatedTo(SECONDS);
-			snooze();
+			snooze1s();
 			withStandardAllocatedJob((p, jobId) -> {
 				JobDescription j = spalloc.getJobInfo(p, jobId).get();
 				assertTrue(ts0.isBefore(j.getStartTime()));
