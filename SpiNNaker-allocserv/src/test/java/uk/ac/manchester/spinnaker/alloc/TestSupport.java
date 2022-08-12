@@ -95,13 +95,13 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	protected static final int USER = 4000;
 
 	/** User name. */
-	protected static final String USER_NAME = "user_bar";
+	public static final String USER_NAME = "user_bar";
 
 	/** Group ID. */
 	protected static final int GROUP = 5000;
 
 	/** Group name. */
-	protected static final String GROUP_NAME = "grill";
+	public static final String GROUP_NAME = "grill";
 
 	/** User-group membership ID. */
 	protected static final int MEMBERSHIP = 6000;

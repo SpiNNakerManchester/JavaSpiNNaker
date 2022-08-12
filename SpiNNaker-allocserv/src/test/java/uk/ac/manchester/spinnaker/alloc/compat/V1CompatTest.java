@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.text.MatchesPattern.matchesPattern;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.util.function.BiConsumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,7 +48,9 @@ import uk.ac.manchester.spinnaker.alloc.TestSupport;
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + V1CompatTest.DB,
 	"spalloc.historical-data.path=" + V1CompatTest.HIST_DB,
-	"spalloc.compat.thread-pool-size=10"
+	"spalloc.compat.thread-pool-size=10",
+	"spalloc.compat.service-user=" + TestSupport.USER_NAME,
+	"spalloc.compat.service-group=" + TestSupport.GROUP_NAME
 })
 class V1CompatTest extends TestSupport {
 	/** The name of the database file. */
@@ -89,6 +94,12 @@ class V1CompatTest extends TestSupport {
 	// The representation of void
 	private static final String VOID_RESPONSE = "{\"return\":null}";
 
+	private static final String CHIP_LOCATION =
+			"{\"return\":{\"job_chip\":null,"
+					+ "\"job_id\":null,\"chip\":[0,0],\"logical\":[0,0,0],"
+					+ "\"machine\":\"foo_machine\",\"board_chip\":[0,0],"
+					+ "\"physical\":[1,1,0]}}";
+
 	// The actual tests
 
 	@Test
@@ -106,80 +117,195 @@ class V1CompatTest extends TestSupport {
 		}
 	}
 
-	@Test
-	public void version(@Autowired ServiceVersion version) throws Exception {
-		String response = "{\"return\":\"" + version.getVersion() + "\"}";
-		withInstance((to, from) -> {
-			to.println("{\"command\":\"version\"}");
-			assertEquals(response, from.readLine());
-		});
+	@Nested
+	class WithoutJob {
+		@Test
+		void version(@Autowired ServiceVersion version) throws Exception {
+			String response = "{\"return\":\"" + version.getVersion() + "\"}";
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"version\"}");
+				assertEquals(response, from.readLine());
+			});
+		}
+
+		@Test
+		void listMachines() throws Exception {
+			String machinesResponse = "{\"return\":[{\"name\":\"" + MACHINE_NAME
+					+ "\",\"tags\":[],\"width\":1,\"height\":1,"
+					+ "\"dead_boards\":[],\"dead_links\":[]}]}";
+			withInstance((to, from) -> {
+				to.println("{\"command\": \"list_machines\"}");
+				assertEquals(machinesResponse, from.readLine());
+				to.println("{\"command\": \"list_machines\", \"args\": [0]}");
+				assertEquals(machinesResponse, from.readLine());
+				// An exception
+				to.println("{\"command\": \"list_machines\", \"args\": false}");
+				String line = from.readLine();
+				assertNotEquals(machinesResponse, line);
+				assertTrue(line.startsWith("{\"exception\":"),
+						() -> "expected exception in " + line);
+			});
+		}
+
+		@Test
+		void listJobs() throws Exception {
+			String jobsResponse = "{\"return\":[]}";
+			withInstance((to, from) -> {
+				to.println("{\"command\": \"list_jobs\"}");
+				assertEquals(jobsResponse, from.readLine());
+			});
+		}
+
+		@Test
+		void notifyJob() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\": \"notify_job\"}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+				to.println("{\"command\": \"no_notify_job\"}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+			});
+		}
+
+		@Test
+		void notifyMachine() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\": \"notify_machine\"}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+				to.println("{\"command\": \"no_notify_machine\"}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+				to.println("{\"command\":\"notify_machine\",\"args\":[\""
+						+ MACHINE_NAME + "\"]}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+				to.println("{\"command\":\"no_notify_machine\",\"args\":[\""
+						+ MACHINE_NAME + "\"]}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+			});
+		}
+
+		@Test
+		void whereIs() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\": \"where_is\", \"kwargs\":{"
+						+ "\"machine\": \"" + MACHINE_NAME + "\","
+						+ "\"x\": 0, \"y\": 0, \"z\": 0 }}");
+				assertEquals(CHIP_LOCATION, from.readLine());
+				to.println("{\"command\": \"where_is\", \"kwargs\":{"
+						+ "\"machine\": \"" + MACHINE_NAME + "\","
+						+ "\"cabinet\": 1, \"frame\": 1, \"board\": 0 }}");
+				assertEquals(CHIP_LOCATION, from.readLine());
+				to.println("{\"command\": \"where_is\", \"kwargs\":{"
+						+ "\"machine\": \"" + MACHINE_NAME + "\","
+						+ "\"chip_x\": 0, \"chip_y\": 0 }}");
+				assertEquals(CHIP_LOCATION, from.readLine());
+			});
+		}
+
+		@Test
+		void getBoardAtPosition() throws Exception {
+			// Physical->Logical map
+			String response = "{\"return\":[0,0,0]}";
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"get_board_at_position\",\"kwargs\":{"
+						+ "\"machine_name\":\"" + MACHINE_NAME
+						// Misnamed params if you ask me: cabinet, frame, board
+						+ "\",\"x\":1,\"y\":1,\"z\":0}}");
+				assertEquals(response, from.readLine());
+			});
+		}
+
+		@Test
+		void getBoardPosition() throws Exception {
+			// Logical->Physical map
+			String response = "{\"return\":[1,1,0]}";
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"get_board_position\",\"kwargs\":{"
+						+ "\"machine_name\":\"" + MACHINE_NAME
+						+ "\",\"x\":0,\"y\":0,\"z\":0}}");
+				assertEquals(response, from.readLine());
+			});
+		}
 	}
 
-	@Test
-	public void listMachines() throws Exception {
-		String machinesResponse =
-				"{\"return\":[{\"name\":\"" + MACHINE_NAME + "\",\"tags\":[],"
-						+ "\"width\":1,\"height\":1,\"dead_boards\":[],"
-						+ "\"dead_links\":[]}]}";
-		withInstance((to, from) -> {
-			to.println("{\"command\": \"list_machines\"}");
-			assertEquals(machinesResponse, from.readLine());
-			to.println("{\"command\": \"list_machines\", \"args\": [0]}");
-			assertEquals(machinesResponse, from.readLine());
-			// An exception
-			to.println("{\"command\": \"list_machines\", \"args\": false}");
-			String line = from.readLine();
-			assertNotEquals(machinesResponse, line);
-			assertTrue(line.startsWith("{\"exception\":"),
-					() -> "expected exception in " + line);
-		});
-	}
+	@Nested
+	class WithJob {
+		@Test
+		void getJobState() throws Exception {
+			withInstance((to, from) -> {
+				withStandardAllocatedJob((p, jobId) -> {
+					to.println("{\"command\":\"get_job_state\",\"args\":["
+							+ jobId + "]}");
+					assertThat("got job state", from.readLine(), matchesPattern(
+							"\\{\"return\":\\{\"state\":1,\"power\":false,"
+									+ ".*\\}\\}"));
+				});
+			});
+		}
 
-	@Test
-	public void listJobs() throws Exception {
-		String jobsResponse = "{\"return\":[]}";
-		withInstance((to, from) -> {
-			to.println("{\"command\": \"list_jobs\"}");
-			assertEquals(jobsResponse, from.readLine());
-		});
-	}
+		@Test
+		void getJobMachineInfo() throws Exception {
+			withInstance((to, from) -> {
+				withStandardAllocatedJob((p, jobId) -> {
+					to.println("{\"command\":\"get_job_machine_info\","
+							+ "\"args\":[" + jobId + "]}");
+					assertThat("got job state", from.readLine(), matchesPattern(
+							"\\{\"return\":\\{.*\"machine_name\":\""
+									+ MACHINE_NAME + "\",.*\\}\\}"));
+				});
+			});
+		}
 
-	@Test
-	public void notifyMachine() throws Exception {
-		withInstance((to, from) -> {
-			to.println("{\"command\": \"notify_machine\"}");
-			assertEquals(VOID_RESPONSE, from.readLine());
-			to.println("{\"command\": \"no_notify_machine\"}");
-			assertEquals(VOID_RESPONSE, from.readLine());
-			to.println("{\"command\":\"notify_machine\",\"args\":[\""
-					+ MACHINE_NAME + "\"]}");
-			assertEquals(VOID_RESPONSE, from.readLine());
-			to.println("{\"command\":\"no_notify_machine\",\"args\":[\""
-					+ MACHINE_NAME + "\"]}");
-			assertEquals(VOID_RESPONSE, from.readLine());
-		});
-	}
+		@Test
+		void jobKeepalive() throws Exception {
+			withInstance((to, from) -> {
+				withStandardAllocatedJob((p, jobId) -> {
+					to.println("{\"command\":\"job_keepalive\","
+							+ "\"args\":[" + jobId + "]}");
+					assertEquals(VOID_RESPONSE, from.readLine());
+				});
+			});
+		}
 
-	@Test
-	public void whereIs() throws Exception {
-		String chipLocation = "{\"return\":{\"job_chip\":null,"
-				+ "\"job_id\":null,\"chip\":[0,0],\"logical\":[0,0,0],"
-				+ "\"machine\":\"foo_machine\",\"board_chip\":[0,0],"
-				+ "\"physical\":[1,1,0]}}";
-		withInstance((to, from) -> {
-			to.println("{\"command\": \"where_is\", \"kwargs\":{"
-					+ "\"machine\": \"" + MACHINE_NAME + "\","
-					+ "\"x\": 0, \"y\": 0, \"z\": 0 }}");
-			assertEquals(chipLocation, from.readLine());
-			to.println("{\"command\": \"where_is\", \"kwargs\":{"
-					+ "\"machine\": \"" + MACHINE_NAME + "\","
-					+ "\"cabinet\": 1, \"frame\": 1, \"board\": 0 }}");
-			assertEquals(chipLocation, from.readLine());
-			to.println("{\"command\": \"where_is\", \"kwargs\":{"
-					+ "\"machine\": \"" + MACHINE_NAME + "\","
-					+ "\"chip_x\": 0, \"chip_y\": 0 }}");
-			assertEquals(chipLocation, from.readLine());
-		});
+		@Test
+		void jobNotify() throws Exception {
+			withInstance((to, from) -> {
+				withStandardAllocatedJob((p, jobId) -> {
+					to.println("{\"command\":\"notify_job\","
+							+ "\"args\":[" + jobId + "]}");
+					assertEquals(VOID_RESPONSE, from.readLine());
+					to.println("{\"command\":\"no_notify_job\","
+							+ "\"args\":[" + jobId + "]}");
+					assertEquals(VOID_RESPONSE, from.readLine());
+				});
+			});
+		}
+
+		@Test
+		void jobPower() throws Exception {
+			withInstance((to, from) -> {
+				withStandardAllocatedJob((p, jobId) -> {
+					to.println("{\"command\":\"power_off_job_boards\","
+							+ "\"args\":[" + jobId + "]}");
+					assertEquals(VOID_RESPONSE, from.readLine());
+				});
+			});
+		}
+
+		@Test
+		void whereIs() throws Exception {
+			withInstance((to, from) -> {
+				withStandardAllocatedJob((p, jobId) -> {
+					to.println("{\"command\":\"where_is\","
+							+ "\"kwargs\":{\"job_id\":" + jobId
+							+ ",\"chip_x\":0,\"chip_y\":0}}");
+					assertEquals("{\"return\":{\"job_chip\":[0,0],"
+							+ "\"job_id\":" + jobId
+							+ ",\"chip\":[0,0],\"logical\":[0,0,0],"
+							+ "\"machine\":\"" + MACHINE_NAME + "\","
+							+ "\"board_chip\":[0,0],"
+							+ "\"physical\":[1,1,0]}}", from.readLine());
+				});
+			});
+		}
 	}
 }
 
