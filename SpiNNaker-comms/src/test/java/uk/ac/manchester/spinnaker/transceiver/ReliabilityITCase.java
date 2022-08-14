@@ -31,6 +31,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -58,6 +59,7 @@ class ReliabilityITCase {
 	private static final int REPETITIONS = 8;
 
 	@Test
+	@Timeout(120) // Two minutes is enough
 	void testReliableMachine() throws Exception {
 		InetAddress host = InetAddress.getByName("spinn-4.cs.man.ac.uk");
 		assumeTrue(ping(host) == 0);

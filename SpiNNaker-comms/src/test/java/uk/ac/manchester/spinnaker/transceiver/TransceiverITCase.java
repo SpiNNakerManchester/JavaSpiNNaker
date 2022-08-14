@@ -28,8 +28,8 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.abort;
 import static org.slf4j.LoggerFactory.getLogger;
 import static testconfig.Utils.printEnumCollection;
 import static testconfig.Utils.printWordAsBinary;
@@ -63,6 +63,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 
@@ -92,6 +93,7 @@ import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 
 /**
  * Communications integration test.
@@ -116,9 +118,14 @@ public class TransceiverITCase {
 	private static Map<ChipLocation, Set<Integer>> downCores;
 
 	@BeforeAll
+	@Timeout(60) // Two minutes is enough
 	static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
-		job = boardConfig.setUpSpallocedBoard();
+		try {
+			job = boardConfig.setUpSpallocedBoard();
+		} catch (JobDestroyedException e) {
+			abort("could not set up job: " + e.getMessage());
+		}
 		coreSubsets = new CoreSubsets();
 		coreSubsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
