@@ -359,16 +359,16 @@ class V1TaskImpl extends V1CompatTask {
 							.orElseThrow(IllegalStateException::new)));
 		}
 
-		private void buildJobDescription(V1TaskImpl task, JobDescription jd,
-				Job j) {
-			jd.setJobID(j.getId());
+		private static void buildJobDescription(V1TaskImpl task,
+				JobDescription jd, Job job) {
+			jd.setJobID(job.getId());
 			jd.setOwner(""); // Default to information shrouded
-			jd.setKeepAlive(timestamp(j.getKeepaliveTimestamp()));
-			jd.setKeepAliveHost(j.getKeepaliveHost().orElse(""));
-			jd.setReason(j.getReason().orElse(""));
-			jd.setStartTime(timestamp(j.getStartTime()));
-			jd.setState(state(j));
-			getCommand(task, j).ifPresent(cmd -> {
+			jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
+			jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
+			jd.setReason(job.getReason().orElse(""));
+			jd.setStartTime(timestamp(job.getStartTime()));
+			jd.setState(state(job));
+			job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
 				// In order to get here, this must be safe
 				// Validation was when job was created
 				@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -378,21 +378,10 @@ class V1TaskImpl extends V1CompatTask {
 				// Override shrouded owner from above
 				jd.setOwner(cmd.getKwargs().get("owner").toString());
 			});
-			j.getMachine().ifPresent(sm -> {
+			job.getMachine().ifPresent(sm -> {
 				jd.setMachine(sm.getMachine().getName());
 				jd.setBoards(sm.getBoards());
 				jd.setPower(sm.getPower() == ON);
-			});
-		}
-
-		private Optional<Command> getCommand(V1TaskImpl task, Job job) {
-			return job.getOriginalRequest().map(req -> {
-				try {
-					return task.parseCommand(req);
-				} catch (IOException e) {
-					log.error("unexpected failure parsing JSON", e);
-					return null;
-				}
 			});
 		}
 
@@ -402,7 +391,8 @@ class V1TaskImpl extends V1CompatTask {
 					Machine.class, (m, md) -> buildMachineDescription(m, md));
 		}
 
-		private void buildMachineDescription(SpallocAPI.Machine m, Machine md) {
+		private static void buildMachineDescription(SpallocAPI.Machine m,
+				Machine md) {
 			md.setName(m.getName());
 			md.setTags(new ArrayList<>(m.getTags()));
 			md.setWidth(m.getWidth());

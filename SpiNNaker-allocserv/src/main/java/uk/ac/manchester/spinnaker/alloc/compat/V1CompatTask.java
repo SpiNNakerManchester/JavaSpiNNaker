@@ -194,16 +194,22 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	}
 
 	/**
-	 * Parse a command from a message.
+	 * Parse a command that was saved in the DB.
 	 *
 	 * @param msg
-	 *            The message to parse.
-	 * @return The command.
-	 * @throws IOException
-	 *             If the message doesn't contain a valid command.
+	 *            The saved command to parse.
+	 * @return The command, or {@code null} if the message can't be parsed.
 	 */
-	protected Command parseCommand(byte[] msg) throws IOException {
-		return getJsonMapper().readValue(msg, Command.class);
+	protected Command parseCommand(byte[] msg) {
+		if (isNull(msg)) {
+			return null;
+		}
+		try {
+			return getJsonMapper().readValue(msg, Command.class);
+		} catch (IOException e) {
+			log.error("unexpected failure parsing JSON", e);
+			return null;
+		}
 	}
 
 	/**

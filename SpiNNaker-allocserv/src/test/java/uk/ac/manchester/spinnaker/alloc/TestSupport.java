@@ -388,9 +388,13 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	// Wrappers for temporarily putting the DB into a state with a job/alloc
 
-	protected void withJob(IntConsumer act) {
-		int jobId = db.execute(c -> makeJob(c, null, QUEUED, null,
+	protected int makeJob() {
+		return db.execute(c -> makeJob(c, null, QUEUED, null,
 				ofEpochMilli(0), null, null, ofSeconds(0), now()));
+	}
+
+	protected void withJob(IntConsumer act) {
+		int jobId = makeJob();
 		try {
 			act.accept(jobId);
 		} finally {

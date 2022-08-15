@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,10 +35,12 @@ import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -90,7 +93,7 @@ class V1CompatTest extends TestSupport {
 						new NonThrowingLineReader(from));
 			} finally {
 				if (!f.cancel(true)) {
-					System.err.println("cancel failed?");
+					log.error("cancel failed?");
 				}
 			}
 		}
@@ -104,6 +107,26 @@ class V1CompatTest extends TestSupport {
 					+ "\"job_id\":null,\"chip\":[0,0],\"logical\":[0,0,0],"
 					+ "\"machine\":\"foo_machine\",\"board_chip\":[0,0],"
 					+ "\"physical\":[1,1,0]}}";
+
+	private static String create(PrintWriter to, NonThrowingLineReader from,
+			int... args) {
+		to.println("{\"command\":\"create_job\",\"args\":"
+				+ Arrays.toString(args) + ",\"kwargs\":{\"owner\":\"gorp\","
+				+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
+		String line = from.readLine();
+		Matcher m = compile("\\{\"return\":(\\d+)\\}").matcher(line);
+		assertTrue(m.matches(),
+				() -> format("'%s' doesn't match against '%s'", m.pattern(),
+						line));
+		return m.group(1);
+	}
+
+	private static void destroy(PrintWriter to, NonThrowingLineReader from,
+			Object jobId) {
+		to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
+				+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
+		assertEquals(VOID_RESPONSE, from.readLine());
+	}
 
 	// The actual tests
 
@@ -122,6 +145,7 @@ class V1CompatTest extends TestSupport {
 		}
 	}
 
+	/** Tests that don't require an existing job. */
 	@Nested
 	class WithoutJob {
 		@Test
@@ -229,108 +253,6 @@ class V1CompatTest extends TestSupport {
 				assertEquals(response, from.readLine());
 			});
 		}
-	}
-
-	@Nested
-	class WithJob {
-		@Test
-		void getJobState() throws Exception {
-			withInstance((to, from) -> {
-				withStandardAllocatedJob((p, jobId) -> {
-					to.println("{\"command\":\"get_job_state\",\"args\":["
-							+ jobId + "]}");
-					assertThat("got job state", from.readLine(), matchesPattern(
-							"\\{\"return\":\\{\"state\":1,\"power\":false,"
-									+ ".*\\}\\}"));
-				});
-			});
-		}
-
-		@Test
-		void getJobMachineInfo() throws Exception {
-			withInstance((to, from) -> {
-				withStandardAllocatedJob((p, jobId) -> {
-					to.println("{\"command\":\"get_job_machine_info\","
-							+ "\"args\":[" + jobId + "]}");
-					assertThat("got job state", from.readLine(), matchesPattern(
-							"\\{\"return\":\\{.*\"machine_name\":\""
-									+ MACHINE_NAME + "\",.*\\}\\}"));
-				});
-			});
-		}
-
-		@Test
-		void jobKeepalive() throws Exception {
-			withInstance((to, from) -> {
-				withStandardAllocatedJob((p, jobId) -> {
-					to.println("{\"command\":\"job_keepalive\","
-							+ "\"args\":[" + jobId + "]}");
-					assertEquals(VOID_RESPONSE, from.readLine());
-				});
-			});
-		}
-
-		@Test
-		void jobNotify() throws Exception {
-			withInstance((to, from) -> {
-				withStandardAllocatedJob((p, jobId) -> {
-					to.println("{\"command\":\"notify_job\","
-							+ "\"args\":[" + jobId + "]}");
-					assertEquals(VOID_RESPONSE, from.readLine());
-					to.println("{\"command\":\"no_notify_job\","
-							+ "\"args\":[" + jobId + "]}");
-					assertEquals(VOID_RESPONSE, from.readLine());
-				});
-			});
-		}
-
-		@Test
-		void jobPower() throws Exception {
-			withInstance((to, from) -> {
-				withStandardAllocatedJob((p, jobId) -> {
-					to.println("{\"command\":\"power_off_job_boards\","
-							+ "\"args\":[" + jobId + "]}");
-					assertEquals(VOID_RESPONSE, from.readLine());
-				});
-			});
-		}
-
-		@Test
-		void whereIs() throws Exception {
-			withInstance((to, from) -> {
-				withStandardAllocatedJob((p, jobId) -> {
-					to.println("{\"command\":\"where_is\","
-							+ "\"kwargs\":{\"job_id\":" + jobId
-							+ ",\"chip_x\":0,\"chip_y\":0}}");
-					assertEquals("{\"return\":{\"job_chip\":[0,0],"
-							+ "\"job_id\":" + jobId
-							+ ",\"chip\":[0,0],\"logical\":[0,0,0],"
-							+ "\"machine\":\"" + MACHINE_NAME + "\","
-							+ "\"board_chip\":[0,0],"
-							+ "\"physical\":[1,1,0]}}", from.readLine());
-				});
-			});
-		}
-
-		private String create(PrintWriter to, NonThrowingLineReader from,
-				int... args) {
-			to.println("{\"command\":\"create_job\",\"args\":"
-					+ Arrays.toString(args) + ",\"kwargs\":{\"owner\":\"gorp\","
-					+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
-			String line = from.readLine();
-			Matcher m = compile("\\{\"return\":(\\d+)\\}").matcher(line);
-			assertTrue(m.matches(),
-					() -> format("'%s' doesn't match against '%s'", m.pattern(),
-							line));
-			return m.group(1);
-		}
-
-		private void destroy(PrintWriter to, NonThrowingLineReader from,
-				Object jobId) {
-			to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
-					+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
-			assertEquals(VOID_RESPONSE, from.readLine());
-		}
 
 		@Test
 		void jobCreateDelete() throws Exception {
@@ -346,6 +268,14 @@ class V1CompatTest extends TestSupport {
 
 				jobId = create(to, from, 0, 0, 0);
 				destroy(to, from, jobId);
+
+				to.println("{\"command\":\"create_job\",\"args\":[0,0,0,0],"
+						+ "\"kwargs\":{\"owner\":\"gorp\"," + "\"machine\":\""
+						+ MACHINE_NAME + "\"}}");
+				assertEquals(
+						"{\"exception\":"
+								+ "\"unsupported number of arguments: 4\"}",
+						from.readLine());
 			});
 		}
 
@@ -354,17 +284,112 @@ class V1CompatTest extends TestSupport {
 			withInstance((to, from) -> {
 				String jobId = create(to, from, 1, 1);
 
-				to.println("{\"command\": \"list_jobs\"}");
-				String jobs = from.readLine();
-				assertThat("got job in list", jobs, matchesPattern(
-						"\\{\"return\":\\[\\{.*\"job_id\":"
-								+ jobId + ",.*\\}\\]\\}"));
-				assertThat(jobs, containsString("\"args\":[1,1]"));
-
-				destroy(to, from, jobId);
+				try {
+					to.println("{\"command\": \"list_jobs\"}");
+					String jobs = from.readLine();
+					assertThat("got job in list", jobs,
+							matchesPattern("\\{\"return\":\\[\\{.*\"job_id\":"
+									+ jobId + ",.*\\}\\]\\}"));
+					assertThat(jobs, containsString("\"args\":[1,1]"));
+				} finally {
+					destroy(to, from, jobId);
+				}
 
 				to.println("{\"command\": \"list_jobs\"}");
 				assertEquals("{\"return\":[]}", from.readLine());
+			});
+		}
+	}
+
+	/** Tests against an existing job. */
+	@Nested
+	@TestInstance(PER_CLASS)
+	class WithJob {
+		private int jobId;
+
+		// Make an allocated job for us to work with
+		@BeforeAll
+		void setupJob() {
+			jobId = makeJob();
+			db.executeVoid(c -> {
+				allocateBoardToJob(c, BOARD, jobId);
+				setAllocRoot(c, jobId, BOARD);
+			});
+		}
+
+		// Get rid of the allocated job
+		@AfterAll
+		void teardownJob() {
+			db.executeVoid(c -> {
+				allocateBoardToJob(c, BOARD, null);
+				setAllocRoot(c, jobId, null);
+			});
+			nukeJob(jobId);
+		}
+
+		@Test
+		void getJobState() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"get_job_state\",\"args\":[" + jobId
+						+ "]}");
+				assertThat("got job state", from.readLine(),
+						// state could be QUEUED or POWER; either is fine
+						matchesPattern("\\{\"return\":\\{\"state\":[12],"
+								+ "\"power\":false,.*\\}\\}"));
+			});
+		}
+
+		@Test
+		void getJobMachineInfo() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"get_job_machine_info\",\"args\":["
+						+ jobId + "]}");
+				assertThat("got job state", from.readLine(),
+						matchesPattern("\\{\"return\":\\{.*\"machine_name\":\""
+								+ MACHINE_NAME + "\",.*\\}\\}"));
+			});
+		}
+
+		@Test
+		void jobKeepalive() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"job_keepalive\",\"args\":[" + jobId
+						+ "]}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+			});
+		}
+
+		@Test
+		void jobNotify() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"notify_job\",\"args\":[" + jobId
+						+ "]}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+				to.println("{\"command\":\"no_notify_job\",\"args\":[" + jobId
+						+ "]}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+			});
+		}
+
+		@Test
+		void jobPower() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"power_off_job_boards\","
+						+ "\"args\":[" + jobId + "]}");
+				assertEquals(VOID_RESPONSE, from.readLine());
+			});
+		}
+
+		@Test
+		void whereIs() throws Exception {
+			withInstance((to, from) -> {
+				to.println("{\"command\":\"where_is\",\"kwargs\":{\"job_id\":"
+						+ jobId + ",\"chip_x\":0,\"chip_y\":0}}");
+				assertEquals("{\"return\":{\"job_chip\":[0,0],\"job_id\":"
+						+ jobId + ",\"chip\":[0,0],\"logical\":[0,0,0],"
+						+ "\"machine\":\"" + MACHINE_NAME + "\","
+						+ "\"board_chip\":[0,0],\"physical\":[1,1,0]}}",
+						from.readLine());
 			});
 		}
 	}
