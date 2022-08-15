@@ -35,7 +35,7 @@ class ListFetchingIterTest {
 			@Override
 			List<Integer> fetchNext() {
 				i++;
-				return List.of(i * 3, i * 3 + 1);
+				return asList(i * 3, i * 3 + 1);
 			}
 
 			@Override
@@ -59,7 +59,7 @@ class ListFetchingIterTest {
 				if (i++ > 2) {
 					throw new IOException("swallowed");
 				}
-				return List.of(i * 3, i * 3 + 1);
+				return asList(i * 3, i * 3 + 1);
 			}
 
 			@Override
