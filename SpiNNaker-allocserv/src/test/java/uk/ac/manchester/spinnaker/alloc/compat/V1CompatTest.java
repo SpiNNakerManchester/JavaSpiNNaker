@@ -307,10 +307,13 @@ class V1CompatTest extends TestSupport {
 	class WithJob {
 		private int jobId;
 
+		private String expectedNotification;
+
 		// Make an allocated job for us to work with
 		@BeforeAll
 		void setupJob() {
 			jobId = makeJob();
+			expectedNotification = "{\"jobs_changed\":[" + jobId + "]}";
 			db.executeVoid(c -> {
 				allocateBoardToJob(c, BOARD, jobId);
 				setAllocRoot(c, jobId, BOARD);
@@ -327,12 +330,21 @@ class V1CompatTest extends TestSupport {
 			nukeJob(jobId);
 		}
 
+		private String readReply(NonThrowingLineReader from) {
+			// Skip over any notifications
+			String r;
+			do {
+				r = from.readLine();
+			} while (r.equals(expectedNotification));
+			return r;
+		}
+
 		@Test
 		void getJobState() throws Exception {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_job_state\",\"args\":[" + jobId
 						+ "]}");
-				assertThat("got job state", from.readLine(),
+				assertThat("got job state", readReply(from),
 						// state could be QUEUED or POWER; either is fine
 						matchesPattern("\\{\"return\":\\{\"state\":[12],"
 								+ "\"power\":false,.*\\}\\}"));
@@ -344,7 +356,7 @@ class V1CompatTest extends TestSupport {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_job_machine_info\",\"args\":["
 						+ jobId + "]}");
-				assertThat("got job state", from.readLine(),
+				assertThat("got job state", readReply(from),
 						matchesPattern("\\{\"return\":\\{.*\"machine_name\":\""
 								+ MACHINE_NAME + "\",.*\\}\\}"));
 			});
@@ -355,7 +367,7 @@ class V1CompatTest extends TestSupport {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"job_keepalive\",\"args\":[" + jobId
 						+ "]}");
-				assertEquals(VOID_RESPONSE, from.readLine());
+				assertEquals(VOID_RESPONSE, readReply(from));
 			});
 		}
 
@@ -364,10 +376,10 @@ class V1CompatTest extends TestSupport {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"notify_job\",\"args\":[" + jobId
 						+ "]}");
-				assertEquals(VOID_RESPONSE, from.readLine());
+				assertEquals(VOID_RESPONSE, readReply(from));
 				to.println("{\"command\":\"no_notify_job\",\"args\":[" + jobId
 						+ "]}");
-				assertEquals(VOID_RESPONSE, from.readLine());
+				assertEquals(VOID_RESPONSE, readReply(from));
 			});
 		}
 
@@ -376,7 +388,7 @@ class V1CompatTest extends TestSupport {
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"power_off_job_boards\","
 						+ "\"args\":[" + jobId + "]}");
-				assertEquals(VOID_RESPONSE, from.readLine());
+				assertEquals(VOID_RESPONSE, readReply(from));
 			});
 		}
 
@@ -389,7 +401,7 @@ class V1CompatTest extends TestSupport {
 						+ jobId + ",\"chip\":[0,0],\"logical\":[0,0,0],"
 						+ "\"machine\":\"" + MACHINE_NAME + "\","
 						+ "\"board_chip\":[0,0],\"physical\":[1,1,0]}}",
-						from.readLine());
+						readReply(from));
 			});
 		}
 	}
