@@ -18,8 +18,10 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static java.lang.String.format;
 import static java.util.regex.Pattern.compile;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 
 import java.io.BufferedReader;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -309,45 +312,56 @@ class V1CompatTest extends TestSupport {
 			});
 		}
 
+		private String create(PrintWriter to, NonThrowingLineReader from,
+				int... args) {
+			to.println("{\"command\":\"create_job\",\"args\":"
+					+ Arrays.toString(args) + ",\"kwargs\":{\"owner\":\"gorp\","
+					+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
+			String line = from.readLine();
+			Matcher m = compile("\\{\"return\":(\\d+)\\}").matcher(line);
+			assertTrue(m.matches(),
+					() -> format("'%s' doesn't match against '%s'", m.pattern(),
+							line));
+			return m.group(1);
+		}
+
+		private void destroy(PrintWriter to, NonThrowingLineReader from,
+				Object jobId) {
+			to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
+					+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
+			assertEquals(VOID_RESPONSE, from.readLine());
+		}
+
 		@Test
 		void jobCreateDelete() throws Exception {
 			withInstance((to, from) -> {
-				to.println("{\"command\":\"create_job\","
-						+ "\"args\":[],\"kwargs\":{\"owner\":\"gorp\","
-						+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
-				String line = from.readLine();
-				Matcher m =
-						compile("\\{\"return\":(\\d+)\\}").matcher(line);
-				assertTrue(m.matches(), () -> "'" + m.pattern()
-						+ "' doesn't match against '" + line + "'");
-				String jobId = m.group(1);
-				to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
-						+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
-				assertEquals(VOID_RESPONSE, from.readLine());
+				String jobId = create(to, from);
+				destroy(to, from, jobId);
+
+				jobId = create(to, from, 1);
+				destroy(to, from, jobId);
+
+				jobId = create(to, from, 1, 1);
+				destroy(to, from, jobId);
+
+				jobId = create(to, from, 0, 0, 0);
+				destroy(to, from, jobId);
 			});
 		}
 
 		@Test
 		void compound() throws Exception {
 			withInstance((to, from) -> {
-				to.println("{\"command\":\"create_job\","
-						+ "\"args\":[],\"kwargs\":{\"owner\":\"gorp\","
-						+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
-				String line = from.readLine();
-				Matcher m =
-						compile("\\{\"return\":(\\d+)\\}").matcher(line);
-				assertTrue(m.matches(), () -> "'" + m.pattern()
-						+ "' doesn't match against '" + line + "'");
-				String jobId = m.group(1);
+				String jobId = create(to, from, 1, 1);
 
 				to.println("{\"command\": \"list_jobs\"}");
-				assertThat("got job in list", from.readLine(), matchesPattern(
+				String jobs = from.readLine();
+				assertThat("got job in list", jobs, matchesPattern(
 						"\\{\"return\":\\[\\{.*\"job_id\":"
 								+ jobId + ",.*\\}\\]\\}"));
+				assertThat(jobs, containsString("\"args\":[1,1]"));
 
-				to.println("{\"command\":\"destroy_job\",\"args\":[" + jobId
-						+ "],\"kwargs\":{\"reason\":\"whatever\"}}");
-				assertEquals(VOID_RESPONSE, from.readLine());
+				destroy(to, from, jobId);
 
 				to.println("{\"command\": \"list_jobs\"}");
 				assertEquals("{\"return\":[]}", from.readLine());

@@ -424,11 +424,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				return createJobRectangle(parseDec(args, 0), parseDec(args, 1),
 						kwargs, serialCmd).orElse(null);
 			case TRIAD_COORD_COUNT:
-				return requireNonNull(
-						createJobSpecificBoard(
-								new TriadCoords(parseDec(args, 0),
-										parseDec(args, 1), parseDec(args, 2)),
-								kwargs, serialCmd));
+				return createJobSpecificBoard(new TriadCoords(parseDec(args, 0),
+						parseDec(args, 1), parseDec(args, 2)), kwargs,
+						serialCmd).orElse(null);
 			default:
 				throw new Oops(
 						"unsupported number of arguments: " + args.size());

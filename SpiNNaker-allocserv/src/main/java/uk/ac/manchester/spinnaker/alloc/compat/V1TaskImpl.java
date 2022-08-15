@@ -351,32 +351,37 @@ class V1TaskImpl extends V1CompatTask {
 
 		private JobDescription[] listJobs(V1TaskImpl task) {
 			// Messy; hits the database many times
-			return mapArrayTx(
-					() -> spalloc.getJobs(false, LOTS, 0).jobs(),
-					JobDescription.class, (job, jd) -> {
-						jd.setJobID(job.getId());
-						jd.setOwner(job.getOwner().orElse(""));
-						jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-						jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-						jd.setReason(job.getReason().orElse(""));
-						jd.setStartTime(timestamp(job.getStartTime()));
-						jd.setState(state(job));
-						getCommand(task, job).ifPresent(cmd -> {
-							// In order to get here, this must be safe
-							// Validation was when job was created
-							@SuppressWarnings({
-								"unchecked", "rawtypes"
-							})
-							List<Integer> args = (List) cmd.getArgs();
-							jd.setArgs(args);
-							jd.setKwargs(cmd.getKwargs());
-						});
-						job.getMachine().ifPresent(sm -> {
-							jd.setMachine(sm.getMachine().getName());
-							jd.setBoards(sm.getBoards());
-							jd.setPower(sm.getPower() == ON);
-						});
-					});
+			return mapArrayTx(() -> spalloc.getJobs(false, LOTS, 0).jobs(),
+					JobDescription.class,
+					// NB: convert partial job description to full
+					(job, jd) -> buildJobDescription(task, jd, spalloc
+							.getJob(task.permit, job.getId()).orElseThrow()));
+		}
+
+		private void buildJobDescription(V1TaskImpl task, JobDescription jd,
+				Job j) {
+			jd.setJobID(j.getId());
+			jd.setOwner(""); // Default to information shrouded
+			jd.setKeepAlive(timestamp(j.getKeepaliveTimestamp()));
+			jd.setKeepAliveHost(j.getKeepaliveHost().orElse(""));
+			jd.setReason(j.getReason().orElse(""));
+			jd.setStartTime(timestamp(j.getStartTime()));
+			jd.setState(state(j));
+			getCommand(task, j).ifPresent(cmd -> {
+				// In order to get here, this must be safe
+				// Validation was when job was created
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				List<Integer> args = (List) cmd.getArgs();
+				jd.setArgs(args);
+				jd.setKwargs(cmd.getKwargs());
+				// Override shrouded owner from above
+				jd.setOwner(cmd.getKwargs().get("owner").toString());
+			});
+			j.getMachine().ifPresent(sm -> {
+				jd.setMachine(sm.getMachine().getName());
+				jd.setBoards(sm.getBoards());
+				jd.setPower(sm.getPower() == ON);
+			});
 		}
 
 		private Optional<Command> getCommand(V1TaskImpl task, Job job) {
@@ -393,16 +398,18 @@ class V1TaskImpl extends V1CompatTask {
 		private Machine[] listMachines() {
 			// Messy; hits the database many times
 			return mapArrayTx(() -> spalloc.getMachines(false).values(),
-					Machine.class, (m, md) -> {
-						md.setName(m.getName());
-						md.setTags(new ArrayList<>(m.getTags()));
-						md.setWidth(m.getWidth());
-						md.setHeight(m.getHeight());
-						md.setDeadBoards(m.getDeadBoards().stream()
-								.map(Utils::board).collect(toList()));
-						md.setDeadLinks(m.getDownLinks().stream()
-								.flatMap(Utils::boardLinks).collect(toList()));
-					});
+					Machine.class, (m, md) -> buildMachineDescription(m, md));
+		}
+
+		private void buildMachineDescription(SpallocAPI.Machine m, Machine md) {
+			md.setName(m.getName());
+			md.setTags(new ArrayList<>(m.getTags()));
+			md.setWidth(m.getWidth());
+			md.setHeight(m.getHeight());
+			md.setDeadBoards(m.getDeadBoards().stream().map(Utils::board)
+					.collect(toList()));
+			md.setDeadLinks(m.getDownLinks().stream().flatMap(Utils::boardLinks)
+					.collect(toList()));
 		}
 	}
 
