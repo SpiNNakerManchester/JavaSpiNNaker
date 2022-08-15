@@ -355,7 +355,8 @@ class V1TaskImpl extends V1CompatTask {
 					JobDescription.class,
 					// NB: convert partial job description to full
 					(job, jd) -> buildJobDescription(task, jd, spalloc
-							.getJob(task.permit, job.getId()).orElseThrow()));
+							.getJob(task.permit, job.getId())
+							.orElseThrow(IllegalStateException::new)));
 		}
 
 		private void buildJobDescription(V1TaskImpl task, JobDescription jd,
