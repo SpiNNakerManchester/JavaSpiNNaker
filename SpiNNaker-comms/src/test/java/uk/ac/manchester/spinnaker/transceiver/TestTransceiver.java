@@ -44,6 +44,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import net.jcip.annotations.NotThreadSafe;
 import testconfig.BoardTestConfiguration;
@@ -233,6 +234,7 @@ class TestTransceiver {
 	private static final int REPETITIONS = 10;
 
 	@Test
+	@Timeout(120) // Two minutes is enough
 	void testReliableMachine() throws Exception {
 		boardConfig.setUpRemoteBoard();
 		Machine first = null;

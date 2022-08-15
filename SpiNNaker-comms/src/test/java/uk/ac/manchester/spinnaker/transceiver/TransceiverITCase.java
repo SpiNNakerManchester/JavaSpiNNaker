@@ -385,6 +385,7 @@ public class TransceiverITCase {
 	}
 
 	@Test
+	@Timeout(120) // Two minutes is enough
 	@Disabled("not working right")
 	public void testTransceiver() throws Exception {
 		try (Transceiver txrx = new Transceiver(boardConfig.remotehost,
