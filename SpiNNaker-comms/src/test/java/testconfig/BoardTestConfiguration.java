@@ -16,9 +16,11 @@
  */
 package testconfig;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
+import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
@@ -41,7 +43,6 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocStateChangeTimeoutException;
-import uk.ac.manchester.spinnaker.utils.InetFactory;
 import uk.ac.manchester.spinnaker.utils.RawConfigParser;
 
 @SuppressWarnings({
@@ -93,24 +94,37 @@ public class BoardTestConfiguration {
 		this.autoDetectBMP = null;
 	}
 
+	private void initRemoteHost(String name, boolean checkReachable) {
+		try {
+			remotehost = getByName(name);
+		} catch (UnknownHostException e) {
+			assumeTrue(false,
+					() -> format("test board (%s) appears to be not in DNS",
+							name));
+		}
+		if (checkReachable) {
+			assumeTrue(hostIsReachable(remotehost.getHostAddress()),
+					() -> format("test board (%s) appears to be down",
+							remotehost));
+		}
+	}
+
 	public void setUpLocalVirtualBoard() throws UnknownHostException {
 		localhost = LOCALHOST;
 		localport = PORT;
-		remotehost = InetFactory.getByName(LOCALHOST);
+		initRemoteHost(LOCALHOST, false);
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 	}
 
 	public void setUpRemoteBoard()
 			throws SocketException, UnknownHostException {
-		remotehost = InetFactory.getByName(config.get(MCSEC, "machineName"));
-		assumeTrue(hostIsReachable(remotehost.getHostAddress()),
-			() -> "test board (" + remotehost + ") appears to be down");
+		initRemoteHost(config.get(MCSEC, "machineName"), true);
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 		var names = config.get(MCSEC, "bmp_names");
 		if (names == null || "None".equals(names)) {
 			bmpNames = null;
 		} else {
-			var bmpHost = InetFactory.getByName(names);
+			var bmpHost = getByName(names);
 			bmpNames = List.of(
 					new BMPConnectionData(0, 0, bmpHost, List.of(0), null));
 		}
@@ -135,7 +149,8 @@ public class BoardTestConfiguration {
 		var spalloc = config.get(SPSEC, "hostname");
 		assumeTrue(spalloc != null, "no spalloc server defined");
 		assumeTrue(hostIsReachable(spalloc),
-				() -> "spalloc server (" + spalloc + ") appears to be down");
+				() -> format("spalloc server (%s) appears to be down",
+						spalloc));
 		var port = config.getInt(SPSEC, "port");
 		var timeout = config.getInt(SPSEC, "timeout");
 		var tag = config.get(SPSEC, "tag");
@@ -144,11 +159,8 @@ public class BoardTestConfiguration {
 				jobDesc(1, KEEPALIVE_SECS, tag));
 		job.waitUntilReady(null);
 		try {
-			remotehost = InetFactory.getByName(job.getHostname());
-			assumeTrue(hostIsReachable(remotehost),
-					() -> "spalloc server (" + spalloc
-							+ ") gave unreachable board (" + remotehost + ")");
-		} catch (UnknownHostException | TestAbortedException e) {
+			initRemoteHost(job.getHostname(), true);
+		} catch (TestAbortedException e) {
 			job.destroy("cannot use board from here");
 			job.close();
 			throw e;
@@ -162,10 +174,11 @@ public class BoardTestConfiguration {
 	public void setUpNonexistentBoard() throws UnknownHostException {
 		localhost = null;
 		localport = PORT;
-		remotehost = InetFactory.getByName(NOHOST);
+		remotehost = getByName(NOHOST);
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
 		assumeFalse(hostIsReachable(remotehost),
-				() -> "unreachable host (" + remotehost + ") appears to be up");
+				() -> format("unreachable host (%s) appears to be up",
+						remotehost));
 	}
 
 	private static final Map<Object, Boolean> REACHABLE = new HashMap<>();

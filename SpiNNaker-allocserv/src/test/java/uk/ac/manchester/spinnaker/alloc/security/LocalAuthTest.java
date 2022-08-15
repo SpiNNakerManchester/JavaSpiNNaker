@@ -16,79 +16,53 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
 import static java.time.Instant.now;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.USER;
-import static uk.ac.manchester.spinnaker.alloc.allocator.Cfg.setupDB1;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
+import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
-import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI;
 
 @SpringBootTest
-@SpringJUnitWebConfig(LocalAuthTest.Config.class)
+@SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest")
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + LocalAuthTest.DB,
 	"spalloc.historical-data.path=" + LocalAuthTest.HIST_DB
 })
-class LocalAuthTest extends SQLQueries {
-	private static final Logger log = getLogger(LocalAuthTest.class);
-
+class LocalAuthTest extends TestSupport {
 	/** The name of the database file. */
 	static final String DB = "target/sec_test.sqlite3";
 
 	/** The name of the database file. */
 	static final String HIST_DB = "target/sec_test-hist.sqlite3";
 
-	@Configuration
-	@ComponentScan(basePackageClasses = SpallocProperties.class)
-	static class Config {
-	}
-
-	@Autowired
-	private DatabaseEngine db;
-
 	private TestAPI authEngine;
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		var dbp = Paths.get(DB);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
-		}
+		killDB(DB);
 	}
 
 	@BeforeEach
 	@SuppressWarnings("deprecation")
-	void checkSetup(@Autowired LocalAuthenticationProvider<?> authEngine) {
+	void checkSetup(
+			@Autowired LocalAuthenticationProvider<TestAPI> authEngine) {
 		assumeTrue(db != null, "spring-configured DB engine absent");
-		try (var c = db.getConnection()) {
-			c.transaction(() -> setupDB1(c));
-		}
-		this.authEngine = (TestAPI) authEngine.getTestAPI();
+		setupDB1();
+		this.authEngine = authEngine.getTestAPI();
 	}
 
 	// The actual tests

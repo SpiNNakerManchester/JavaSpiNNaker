@@ -29,6 +29,8 @@ import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.Socket;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -120,6 +122,10 @@ class V1TaskImpl extends V1CompatTask {
 
 	V1TaskImpl(V1CompatService srv, Socket sock) throws IOException {
 		super(srv, sock);
+	}
+
+	V1TaskImpl(V1CompatService srv, Reader in, Writer out) {
+		super(srv, in, out);
 	}
 
 	@PostConstruct
@@ -340,58 +346,56 @@ class V1TaskImpl extends V1CompatTask {
 
 		private JobDescription[] listJobs(V1TaskImpl task) {
 			// Messy; hits the database many times
-			return mapArrayTx(
-					() -> spalloc.getJobs(false, LOTS, 0).jobs(),
-					JobDescription.class, (job, jd) -> {
-						jd.setJobID(job.getId());
-						jd.setOwner(job.getOwner().orElse(""));
-						jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
-						jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
-						jd.setReason(job.getReason().orElse(""));
-						jd.setStartTime(timestamp(job.getStartTime()));
-						jd.setState(state(job));
-						getCommand(task, job).ifPresent(cmd -> {
-							// In order to get here, this must be safe
-							// Validation was when job was created
-							@SuppressWarnings({
-								"unchecked", "rawtypes"
-							})
-							List<Integer> args = (List) cmd.getArgs();
-							jd.setArgs(args);
-							jd.setKwargs(cmd.getKwargs());
-						});
-						job.getMachine().ifPresent(sm -> {
-							jd.setMachine(sm.getMachine().getName());
-							jd.setBoards(sm.getBoards());
-							jd.setPower(sm.getPower() == ON);
-						});
-					});
+			return mapArrayTx(() -> spalloc.getJobs(false, LOTS, 0).jobs(),
+					JobDescription.class,
+					// NB: convert partial job description to full
+					(job, jd) -> buildJobDescription(task, jd, spalloc
+							.getJob(task.permit, job.getId())
+							.orElseThrow(IllegalStateException::new)));
 		}
 
-		private Optional<Command> getCommand(V1TaskImpl task, Job job) {
-			return job.getOriginalRequest().map(req -> {
-				try {
-					return task.parseCommand(req);
-				} catch (IOException e) {
-					log.error("unexpected failure parsing JSON", e);
-					return null;
-				}
+		private static void buildJobDescription(V1TaskImpl task,
+				JobDescription jd, Job job) {
+			jd.setJobID(job.getId());
+			jd.setOwner(""); // Default to information shrouded
+			jd.setKeepAlive(timestamp(job.getKeepaliveTimestamp()));
+			jd.setKeepAliveHost(job.getKeepaliveHost().orElse(""));
+			jd.setReason(job.getReason().orElse(""));
+			jd.setStartTime(timestamp(job.getStartTime()));
+			jd.setState(state(job));
+			job.getOriginalRequest().map(task::parseCommand).ifPresent(cmd -> {
+				// In order to get here, this must be safe
+				// Validation was when job was created
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				List<Integer> args = (List) cmd.getArgs();
+				jd.setArgs(args);
+				jd.setKwargs(cmd.getKwargs());
+				// Override shrouded owner from above
+				jd.setOwner(cmd.getKwargs().get("owner").toString());
+			});
+			job.getMachine().ifPresent(sm -> {
+				jd.setMachine(sm.getMachine().getName());
+				jd.setBoards(sm.getBoards());
+				jd.setPower(sm.getPower() == ON);
 			});
 		}
 
 		private Machine[] listMachines() {
 			// Messy; hits the database many times
 			return mapArrayTx(() -> spalloc.getMachines(false).values(),
-					Machine.class, (m, md) -> {
-						md.setName(m.getName());
-						md.setTags(new ArrayList<>(m.getTags()));
-						md.setWidth(m.getWidth());
-						md.setHeight(m.getHeight());
-						md.setDeadBoards(m.getDeadBoards().stream()
-								.map(Utils::board).collect(toList()));
-						md.setDeadLinks(m.getDownLinks().stream()
-								.flatMap(Utils::boardLinks).collect(toList()));
-					});
+					Machine.class, (m, md) -> buildMachineDescription(m, md));
+		}
+
+		private static void buildMachineDescription(SpallocAPI.Machine m,
+				Machine md) {
+			md.setName(m.getName());
+			md.setTags(new ArrayList<>(m.getTags()));
+			md.setWidth(m.getWidth());
+			md.setHeight(m.getHeight());
+			md.setDeadBoards(m.getDeadBoards().stream().map(Utils::board)
+					.collect(toList()));
+			md.setDeadLinks(m.getDownLinks().stream().flatMap(Utils::boardLinks)
+					.collect(toList()));
 		}
 	}
 

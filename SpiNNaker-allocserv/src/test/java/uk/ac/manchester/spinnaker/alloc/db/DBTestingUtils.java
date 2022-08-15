@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
+import static java.lang.String.format;
 import static java.util.Collections.sort;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -175,7 +176,7 @@ abstract class DBTestingUtils {
 	private static String generateMessage(String expected,
 			SQLiteException got) {
 		// Extract the real error message out of SQLite itself
-		return String.format("expected %s failure but got %s", expected,
+		return format("expected %s failure but got %s", expected,
 				got.getMessage().replaceFirst(".*\\((.+)\\)$", "$1"));
 	}
 

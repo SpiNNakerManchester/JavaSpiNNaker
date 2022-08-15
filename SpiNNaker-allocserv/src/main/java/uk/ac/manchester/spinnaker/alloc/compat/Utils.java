@@ -73,6 +73,8 @@ abstract class Utils {
 				while (!interrupted()) {
 					waitAndNotify();
 				}
+			} catch (UnknownIOException e) {
+				// Nothing useful we can do here
 			} catch (DataAccessException e) {
 				log.error("SQL failure", e);
 			} catch (IOException e) {
@@ -194,7 +196,10 @@ abstract class Utils {
 	 *            The instant to convert
 	 * @return The timestamp
 	 */
-	static double timestamp(Instant instant) {
+	static Double timestamp(Instant instant) {
+		if (isNull(instant)) {
+			return null;
+		}
 		double ts = instant.getEpochSecond();
 		ts += instant.getNano() / NS_PER_S;
 		return ts;

@@ -101,7 +101,7 @@ class DbBasicTest {
 		c.transaction(() -> {
 			Exception e;
 			try (var q0 = c.query(COUNT);
-					var q1 = c.query(COUNT + " WHERE model = :model")) {
+					var q1 = c.query(COUNT + "WHERE model = :model")) {
 
 				// Too many args
 				e = assertThrows(InvalidDataAccessResourceUsageException.class,
@@ -123,7 +123,7 @@ class DbBasicTest {
 
 			// No column in query definition
 			e = assertThrows(BadSqlGrammarException.class,
-					() -> c.query(COUNT + " WHERE job_id = ?"));
+					() -> c.query(COUNT + "WHERE job_id = ?"));
 			assertContains("no such column: job_id", e.getMessage());
 		});
 
@@ -146,7 +146,7 @@ class DbBasicTest {
 		c.transaction(() -> {
 			Exception e;
 			try (var q0 = c.update(COUNT);
-					var q1 = c.update(COUNT + " WHERE model = :model")) {
+					var q1 = c.update(COUNT + "WHERE model = :model")) {
 
 				// Too many args
 				e = assertThrows(InvalidDataAccessResourceUsageException.class,
@@ -163,7 +163,7 @@ class DbBasicTest {
 
 			// No column in query definition
 			e = assertThrows(BadSqlGrammarException.class,
-					() -> c.update(COUNT + " WHERE job_id = ?"));
+					() -> c.update(COUNT + "WHERE job_id = ?"));
 			assertContains("no such column: job_id", e.getMessage());
 		});
 	}

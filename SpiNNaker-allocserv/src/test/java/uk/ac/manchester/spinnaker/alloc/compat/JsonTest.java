@@ -119,7 +119,7 @@ class JsonTest {
 			r[0].setMachine("foo");
 			r[0].setOwner("bar");
 			r[0].setPower(false);
-			r[0].setStartTime(321);
+			r[0].setStartTime(321.);
 			r[0].setState(State.POWER);
 			JSONAssert.assertEquals(
 					"[{ 'allocated_machine_name': 'foo', "

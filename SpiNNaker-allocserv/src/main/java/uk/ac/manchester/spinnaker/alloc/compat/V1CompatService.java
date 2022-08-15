@@ -26,12 +26,15 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
+import java.io.PipedReader;
+import java.io.PipedWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.PostConstruct;
@@ -45,6 +48,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.CompatibilityProperties;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
@@ -64,7 +68,7 @@ public class V1CompatService {
 
 	/**
 	 * Factory for {@linkplain V1CompatTask tasks}. Only use via
-	 * {@link #getTask(Socket) getTask(...)}.
+	 * {@link #getTask(Socket) getTask(...)} or the test API.
 	 */
 	@Autowired
 	private ObjectProvider<V1CompatTask> taskFactory;
@@ -130,9 +134,12 @@ public class V1CompatService {
 	private void open() throws IOException {
 		var props = mainProps.getCompat();
 		if (props.getThreadPoolSize() > 0) {
+			log.info("setting thread pool size to {}",
+					props.getThreadPoolSize());
 			executor = newFixedThreadPool(props.getThreadPoolSize(),
 					threadFactory);
 		} else {
+			log.info("using unbounded thread pool");
 			executor = newCachedThreadPool(threadFactory);
 		}
 
@@ -162,8 +169,13 @@ public class V1CompatService {
 
 		// Shut down the clients
 		executor.shutdown();
-		executor.shutdownNow();
+		var remainingTasks = executor.shutdownNow();
+		if (!remainingTasks.isEmpty()) {
+			log.warn("there are {} compat tasks outstanding",
+					remainingTasks.size());
+		}
 		executor.awaitTermination(shutdownTimeout.toMillis(), MILLISECONDS);
+		log.info("compat service stopped");
 	}
 
 	/**
@@ -217,5 +229,40 @@ public class V1CompatService {
 		}
 		// If we've been interrupted here, we want the main loop to stop
 		return !interrupted();
+	}
+
+	/** Operations for testing only. */
+	@ForTestingOnly
+	interface TestAPI {
+		/**
+		 * Make an instance of {@link V1CompatTask} that we can talk to.
+		 *
+		 * @param in
+		 *            How to send a message to the task. Should be
+		 *            <em>unconnected</em>.
+		 * @param out
+		 *            How to receive a message from the task. Should be
+		 *            <em>unconnected</em>.
+		 * @return A future that can be cancelled to shut things down.
+		 * @throws Exception
+		 *             If various things go wrong.
+		 */
+		Future<?> launchInstance(PipedWriter in, PipedReader out)
+				throws Exception;
+	}
+
+	@ForTestingOnly
+	@Deprecated
+	public TestAPI getTestApi() {
+		ForTestingOnly.Utils.checkForTestClassOnStack();
+		return new TestAPI() {
+			@Override
+			public Future<?> launchInstance(PipedWriter in, PipedReader out)
+					throws Exception {
+				var service = taskFactory.getObject(V1CompatService.this,
+						new PipedReader(in), new PipedWriter(out));
+				return executor.submit(() -> service.handleConnection());
+			}
+		};
 	}
 }

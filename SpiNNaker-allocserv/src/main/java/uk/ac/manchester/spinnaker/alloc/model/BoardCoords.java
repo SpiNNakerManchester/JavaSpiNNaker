@@ -16,6 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static java.lang.String.format;
+
+import java.util.Objects;
+
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
@@ -149,5 +153,41 @@ public final class BoardCoords {
 	 */
 	public String getAddress() {
 		return address;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) {
+			return true;
+		}
+		if (other instanceof BoardCoords) {
+			return equals((BoardCoords) other);
+		}
+		return false;
+	}
+
+	/**
+	 * Equality test when you know the other value is a BoardCoords.
+	 *
+	 * @param other
+	 *            The other value.
+	 * @return Whether the two are equal.
+	 */
+	public boolean equals(BoardCoords other) {
+		return x == other.x && y == other.y && z == other.z
+				&& cabinet == other.cabinet && frame == other.frame
+				&& Objects.equals(board, other.board)
+				&& Objects.equals(address, other.address);
+	}
+
+	@Override
+	public int hashCode() {
+		return x << 16 | y << 8 | z;
+	}
+
+	@Override
+	public String toString() {
+		return format("xyz:(%d,%d,%d);cfb:(%d,%d,%s);ip:%s", x, y, z, cabinet,
+				frame, board, address);
 	}
 }

@@ -22,6 +22,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
@@ -30,8 +31,11 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -44,7 +48,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.TriadCoords;
@@ -101,10 +104,28 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 		this.sock = sock;
 		sock.setTcpNoDelay(true);
 		sock.setSoTimeout((int) getProperties().getReceiveTimeout().toMillis());
-		in = new BufferedReader(
-				new InputStreamReader(sock.getInputStream(), UTF_8));
+
+		in = buffer(new InputStreamReader(sock.getInputStream(), UTF_8));
 		out = new PrintWriter(
 				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
+	}
+
+	/**
+	 * Constructor for testing. Makes a task that isn't connected to a socket.
+	 *
+	 * @param srv
+	 *            The overall service, used for looking up shared resources that
+	 *            are uncomfortable as beans.
+	 * @param in
+	 *            Input to the task.
+	 * @param out
+	 *            Output to the task.
+	 */
+	protected V1CompatTask(V1CompatService srv, Reader in, Writer out) {
+		super(srv);
+		this.sock = null;
+		this.in = buffer(in);
+		this.out = new PrintWriter(out);
 	}
 
 	final void handleConnection() {
@@ -115,6 +136,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 					break;
 				}
 			}
+		} catch (UnknownIOException e) {
+			/*
+			 * Nothing useful to do in this case except close.
+			 *
+			 * This happens when the problem is detected by a PrintWriter, but
+			 * the problem with PrintWriters is they swallow exceptions and
+			 * throw the information away. I'm not going to fix that.
+			 */
 		} catch (IOException e) {
 			log.error("problem with socket {}", sock, e);
 		} catch (InterruptedException e) {
@@ -123,7 +152,12 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			log.debug("closing down connection from {}", sock);
 			closeNotifiers();
 			try {
-				sock.close();
+				if (nonNull(sock)) {
+					sock.close();
+				} else {
+					in.close();
+					out.close();
+				}
 			} catch (IOException e) {
 				log.error("problem closing socket {}", sock, e);
 			}
@@ -139,6 +173,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 * @return The remote host that this task is serving.
 	 */
 	public final String host() {
+		if (isNull(sock)) {
+			return "<NOWHERE>";
+		}
 		return ((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()
 				.getHostAddress();
 	}
@@ -157,16 +194,22 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	}
 
 	/**
-	 * Parse a command from a message.
+	 * Parse a command that was saved in the DB.
 	 *
 	 * @param msg
-	 *            The message to parse.
-	 * @return The command.
-	 * @throws IOException
-	 *             If the message doesn't contain a valid command.
+	 *            The saved command to parse.
+	 * @return The command, or {@code null} if the message can't be parsed.
 	 */
-	protected Command parseCommand(byte[] msg) throws IOException {
-		return getJsonMapper().readValue(msg, Command.class);
+	protected Command parseCommand(byte[] msg) {
+		if (isNull(msg)) {
+			return null;
+		}
+		try {
+			return getJsonMapper().readValue(msg, Command.class);
+		} catch (IOException e) {
+			log.error("unexpected failure parsing JSON", e);
+			return null;
+		}
 	}
 
 	/**
@@ -202,6 +245,10 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			default:
 				throw e;
 			}
+		} catch (InterruptedIOException e) {
+			InterruptedException ex = new InterruptedException();
+			ex.initCause(e);
+			throw ex;
 		}
 		if (isNull(line)) {
 			if (currentThread().isInterrupted()) {
@@ -221,18 +268,27 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *
 	 * @param msg
 	 *            The message to send. Must serializable to JSON.
-	 * @throws JsonProcessingException
-	 *             If the object isn't serializable.
+	 * @throws IOException
+	 *             If the message can't be written.
 	 */
-	private void sendMessage(Object msg) throws JsonProcessingException {
+	private void sendMessage(Object msg) throws IOException {
 		// We go via a string to avoid early closing issues
 		var data = getJsonMapper().writeValueAsString(msg);
 		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
 			out.println(data);
-			out.flush();
+			if (out.checkError()) {
+				throw new UnknownIOException();
+			}
 		}
+	}
+
+	private boolean mayWrite() {
+		if (isNull(sock)) {
+			return true;
+		}
+		return !sock.isClosed();
 	}
 
 	/**
@@ -245,7 +301,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             JSON or a suitable primitive.
 	 */
 	protected final void writeResponse(Object response) throws IOException {
-		if (!sock.isClosed()) {
+		if (mayWrite()) {
 			sendMessage(new ReturnResponse(response));
 		}
 	}
@@ -259,7 +315,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 *             If network access fails.
 	 */
 	protected final void writeException(Throwable exn) throws IOException {
-		if (!sock.isClosed()) {
+		if (mayWrite()) {
 			if (nonNull(exn.getMessage())) {
 				sendMessage(new ExceptionResponse(exn.getMessage()));
 			} else {
@@ -278,7 +334,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	protected final void writeJobNotification(List<Integer> jobIds)
 			throws IOException {
-		if (!jobIds.isEmpty() && !sock.isClosed()) {
+		if (!jobIds.isEmpty() && mayWrite()) {
 			sendMessage(new JobNotifyMessage(jobIds));
 		}
 	}
@@ -294,7 +350,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	protected final void writeMachineNotification(List<String> machineNames)
 			throws IOException {
-		if (!machineNames.isEmpty() && !sock.isClosed()) {
+		if (!machineNames.isEmpty() && mayWrite()) {
 			sendMessage(new MachineNotifyMessage(machineNames));
 		}
 	}
@@ -374,11 +430,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				return createJobRectangle(parseDec(args, 0), parseDec(args, 1),
 						kwargs, serialCmd).orElse(null);
 			case TRIAD_COORD_COUNT:
-				return requireNonNull(
-						createJobSpecificBoard(
-								new TriadCoords(parseDec(args, 0),
-										parseDec(args, 1), parseDec(args, 2)),
-								kwargs, serialCmd));
+				return createJobSpecificBoard(new TriadCoords(parseDec(args, 0),
+						parseDec(args, 1), parseDec(args, 2)), kwargs,
+						serialCmd).orElse(null);
 			default:
 				throw new Oops(
 						"unsupported number of arguments: " + args.size());
@@ -788,5 +842,13 @@ final class TaskException extends Exception {
 
 	TaskException(String msg) {
 		super(msg);
+	}
+}
+
+final class UnknownIOException extends IOException {
+	private static final long serialVersionUID = -852489744228393668L;
+
+	UnknownIOException() {
+		super("unknown error writing message");
 	}
 }

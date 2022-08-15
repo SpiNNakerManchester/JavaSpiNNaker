@@ -16,21 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.exists;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -38,39 +31,28 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminAPI;
 import uk.ac.manchester.spinnaker.alloc.admin.AdminController;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 import uk.ac.manchester.spinnaker.alloc.web.SpallocServiceAPI;
 
 @SpringBootTest
-@SpringJUnitWebConfig(BootTest.Config.class)
+@SpringJUnitWebConfig(TestSupport.Config.class)
 @ActiveProfiles("unittest") // Disable booting CXF
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + BootTest.DB,
 	"spalloc.historical-data.path=" + BootTest.HIST_DB
 })
-class BootTest {
-	private static final Logger log = getLogger(BootTest.class);
-
+class BootTest extends TestSupport {
 	/** The DB file. */
 	static final String DB = "target/boot_test.sqlite3";
 
 	/** The DB history file. */
 	static final String HIST_DB = "target/boot_test_hist.sqlite3";
 
-	@Configuration
-	@ComponentScan
-	static class Config {
-	}
-
 	@Autowired
 	private SpallocServiceAPI service;
 
 	@Autowired
 	private SpallocAPI core;
-
-	@Autowired
-	private DatabaseEngine db;
 
 	@Autowired
 	private SystemController root;
@@ -83,11 +65,7 @@ class BootTest {
 
 	@BeforeAll
 	static void clearDB() throws IOException {
-		var dbp = Paths.get(DB);
-		if (exists(dbp)) {
-			log.info("deleting old database: {}", dbp);
-			delete(dbp);
-		}
+		killDB(DB);
 	}
 
 	@Test

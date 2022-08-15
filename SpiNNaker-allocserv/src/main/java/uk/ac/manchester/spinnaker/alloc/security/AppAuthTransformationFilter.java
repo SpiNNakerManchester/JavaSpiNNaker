@@ -56,7 +56,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 			AppAuthTransformationFilter.class.getName();
 
 	@Autowired
-	private LocalAuthenticationProvider localAuthProvider;
+	private LocalAuthenticationProvider<?> localAuthProvider;
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request)

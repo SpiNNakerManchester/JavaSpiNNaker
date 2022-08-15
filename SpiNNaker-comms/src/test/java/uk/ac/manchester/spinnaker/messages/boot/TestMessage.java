@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.boot;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 
@@ -78,8 +79,9 @@ class TestMessage {
 			var buf = ByteBuffer.allocate(1500);
 			b.addToBuffer(buf);
 			buf.flip();
-			assertTrue(EXPECTED_SIZES.contains(buf.remaining()), () -> String
-					.format("%d not in %s", buf.remaining(), EXPECTED_SIZES));
+			assertTrue(EXPECTED_SIZES.contains(buf.remaining()),
+					() -> format("%d not in %s", buf.remaining(),
+							EXPECTED_SIZES));
 		}
 	}
 }
