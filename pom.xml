@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<junit.version>5.9.0</junit.version>
 		<checkstyle.version>9.3</checkstyle.version>
-		<javadoc.version>3.4.0</javadoc.version>
+		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
 
 		<slf4j.version>1.7.36</slf4j.version>
@@ -669,7 +669,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.4.0</version>
+				<version>3.4.1</version>
 				<reportSets>
 					<reportSet>
 						<reports><!-- select reports -->
