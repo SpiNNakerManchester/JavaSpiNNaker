@@ -29,7 +29,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Data speed up packet gatherer description.
@@ -132,7 +132,7 @@ public class Gather implements HasCoreLocation {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
-	public void updateTransactionIdFromMachine(Transceiver txrx)
+	public void updateTransactionIdFromMachine(TransceiverInterface txrx)
 			throws IOException, ProcessException {
 		transactionId = txrx.readUser1(this);
 	}

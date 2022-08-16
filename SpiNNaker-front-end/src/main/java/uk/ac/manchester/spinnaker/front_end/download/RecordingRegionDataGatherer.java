@@ -40,7 +40,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A data gatherer that pulls the data from a recording region. Internally, this
@@ -61,7 +61,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	protected static final Logger log =
 			getLogger(RecordingRegionDataGatherer.class);
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final BufferManagerStorage database;
 
@@ -87,8 +87,8 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public RecordingRegionDataGatherer(Transceiver transceiver, Machine machine,
-			BufferManagerStorage database)
+	public RecordingRegionDataGatherer(TransceiverInterface transceiver,
+			Machine machine, BufferManagerStorage database)
 			throws IOException, ProcessException {
 		super(transceiver, machine);
 		this.txrx = transceiver;

@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static java.lang.String.format;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BoardCoords {
@@ -130,5 +132,21 @@ public class BoardCoords {
 	public String toString() {
 		return format("Board(%d,%d,%d|%d:%d:%d|%s)", x, y, z,
 				cabinet, frame, board, address);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (Objects.isNull(other) || !(other instanceof BoardCoords)) {
+			return false;
+		}
+		var o = (BoardCoords) other;
+		return x == o.x && y == o.y && z == o.z && cabinet == o.cabinet
+				&& frame == o.frame && Objects.equals(board, o.board)
+				&& Objects.equals(address, o.address);
+	}
+
+	@Override
+	public int hashCode() {
+		return (x << 16) | (y << 8) | z;
 	}
 }

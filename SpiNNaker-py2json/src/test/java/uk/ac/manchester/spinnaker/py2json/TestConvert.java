@@ -16,16 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.py2json;
 
+import static java.io.File.createTempFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.getJsonWriter;
+import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.main;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.EnumSet;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -62,6 +67,8 @@ class TestConvert {
 
 	private static final String SINGLE_BOARD = "single_board.py";
 
+	private static final String THREE_BOARD = "three_board.py";
+
 	private static final String CSV_DEFINED = "from_csv.py";
 
 	private static final String EXPECTED_JSON = "expected.json";
@@ -76,6 +83,32 @@ class TestConvert {
 			assertNotNull(machine);
 			assertEquals("my-board", machine.name);
 			assertEquals(1, machine.boardLocations.size());
+			assertEquals("192.168.0.2", machine.bmpIPs.get(new CF(0, 0)));
+			assertEquals(new CFB(0, 0, 0),
+					machine.boardLocations.get(new XYZ(0, 0, 0)));
+			assertEquals("192.168.0.3",
+					machine.spinnakerIPs.get(new XYZ(0, 0, 0)));
+			assertEquals(
+					"Machine(name=my-board,tags=[default],width=1,height=1,"
+							+ "deadBoards=[[x:0,y:0,z:1], [x:0,y:0,z:2]],"
+							+ "deadLinks={},"
+							+ "boardLocations={[x:0,y:0,z:0]=[c:0,f:0,b:0]},"
+							+ "bmpIPs={[c:0,f:0]=192.168.0.2},"
+							+ "spinnakerIPs={[x:0,y:0,z:0]=192.168.0.3})",
+					machine.toString());
+		}
+	}
+
+	@Test
+	void testReadPythonThreeBoard() {
+		var f = getFile(THREE_BOARD);
+		try (var mdl = new MachineDefinitionConverter()) {
+			var c = mdl.loadClassicConfigurationDefinition(f, false);
+			var m = c.machines.get(0);
+			assertNotNull(m);
+			assertEquals(EnumSet.of(Link.east),
+					m.deadLinks.get(new XYZ(0, 0, 0)));
+			assertNotEquals("", c.toString());
 		}
 	}
 
@@ -110,6 +143,27 @@ class TestConvert {
 			var json = getJsonWriter().writeValueAsString(c);
 			assertNotNull(json);
 			JSONAssert.assertEquals(expectedJson, json, STRICT);
+		}
+	}
+
+	@Test
+	void checkMain() throws Exception {
+		var expectedJson = IOUtils.toString(getResource(EXPECTED_JSON), UTF_8);
+		var src = getFile(SINGLE_BOARD);
+		var dst = createTempFile("dst", ".json");
+		try {
+			// Can't test command line parse errors; System.exit() is called
+			main(src.getAbsolutePath(), dst.getAbsolutePath());
+
+			assertTrue(dst.exists());
+			try (var r = new BufferedReader(new FileReader(dst))) {
+				JSONAssert.assertEquals(expectedJson, r.readLine(), true);
+			}
+		} finally {
+			dst.delete();
+			if (dst.exists()) {
+				dst.deleteOnExit();
+			}
 		}
 	}
 }

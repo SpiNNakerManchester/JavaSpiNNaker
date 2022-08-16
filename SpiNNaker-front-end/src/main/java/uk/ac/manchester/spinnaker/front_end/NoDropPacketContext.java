@@ -32,7 +32,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A context class that can disable dropping of packets on the SpiNNaker on-chip
@@ -51,7 +51,7 @@ public class NoDropPacketContext implements AutoCloseable {
 
 	private final CoreSubsets monitorCores;
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final ChipLocation firstChip;
 
@@ -87,8 +87,9 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public NoDropPacketContext(Transceiver txrx, CoreSubsets monitorCores,
-			CoreSubsets gatherers) throws IOException, ProcessException {
+	public NoDropPacketContext(TransceiverInterface txrx,
+			CoreSubsets monitorCores, CoreSubsets gatherers)
+			throws IOException, ProcessException {
 		this.txrx = txrx;
 		this.monitorCores = monitorCores;
 		// Store the last reinjection status for resetting
@@ -133,7 +134,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public NoDropPacketContext(Transceiver txrx,
+	public NoDropPacketContext(TransceiverInterface txrx,
 			CoreSubsets monitorCoreLocations, Gather gatherer)
 			throws IOException, ProcessException {
 		this(txrx, monitorCoreLocations, convertToCoreSubset(gatherer));
@@ -156,7 +157,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public NoDropPacketContext(Transceiver txrx,
+	public NoDropPacketContext(TransceiverInterface txrx,
 			List<? extends HasCoreLocation> monitorCoreLocations,
 			Gather gatherer) throws IOException, ProcessException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations),
@@ -180,7 +181,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public NoDropPacketContext(Transceiver txrx,
+	public NoDropPacketContext(TransceiverInterface txrx,
 			Stream<? extends HasCoreLocation> monitorCoreLocations,
 			Stream<Gather> gatherers) throws IOException, ProcessException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations),

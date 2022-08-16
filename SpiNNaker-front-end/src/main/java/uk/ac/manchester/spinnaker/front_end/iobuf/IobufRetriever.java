@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.iobuf;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedWriter;
@@ -27,9 +28,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -101,6 +103,8 @@ public class IobufRetriever extends BoardLocalSupport {
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws RuntimeException
+	 *             If an unexpected exception happens.
 	 */
 	public NotableMessages retrieveIobufContents(IobufRequest request,
 			String provenanceDir) throws IOException, ProcessException {
@@ -108,24 +112,22 @@ public class IobufRetriever extends BoardLocalSupport {
 		validateProvenanceDirectory(provDir);
 		var errorEntries = new ArrayList<String>();
 		var warnEntries = new ArrayList<String>();
+		var mapping = request.getRequestDetails();
 		try {
-			var mapping = request.getRequestDetails();
-			var tasks = executor
-					.submitTasks(mapping.entrySet().stream().flatMap(entry -> {
+			executor.submitTasks(mapping.entrySet().stream()
+					.map(this::partitionByBoard).flatMap(entry -> {
 						var r = new Replacer(entry.getKey());
-						return partitionByBoard(entry.getValue())
-								.map(cores -> () -> retrieveIobufContents(cores,
-										r, provDir, errorEntries, warnEntries));
-					}));
-			try {
-				tasks.awaitAndCombineExceptions();
-			} catch (IOException | ProcessException | RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("unexpected exception", e);
-			}
+						return entry.getValue().stream().map(cs -> {
+							return () -> retrieveIobufContents(cs, r, provDir,
+									errorEntries, warnEntries);
+						});
+					})).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {
 			e.rethrow();
+		} catch (IOException | ProcessException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
 		}
 		return new NotableMessages(errorEntries, warnEntries);
 	}
@@ -133,7 +135,7 @@ public class IobufRetriever extends BoardLocalSupport {
 	/**
 	 * Retrieve and translate some IOBUFs.
 	 *
-	 * @param coreSubsets
+	 * @param cores
 	 *            The cores from which the IOBUFs are to be extracted. They must
 	 *            be running the executable contained in {@code binaryFile} or
 	 *            the buffers will contain the wrong information.
@@ -148,8 +150,10 @@ public class IobufRetriever extends BoardLocalSupport {
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws RuntimeException
+	 *             If an unexpected exception happens.
 	 */
-	public NotableMessages retrieveIobufContents(CoreSubsets coreSubsets,
+	public NotableMessages retrieveIobufContents(CoreSubsets cores,
 			File binaryFile, File provenanceDir)
 			throws IOException, ProcessException {
 		validateProvenanceDirectory(provenanceDir);
@@ -157,19 +161,16 @@ public class IobufRetriever extends BoardLocalSupport {
 		var warnEntries = new ArrayList<String>();
 		try {
 			var replacer = new Replacer(binaryFile);
-			var tasks = executor.submitTasks(partitionByBoard(coreSubsets)
-					.map(boardSubset -> () -> retrieveIobufContents(boardSubset,
-							replacer, provenanceDir, errorEntries,
-							warnEntries)));
-			try {
-				tasks.awaitAndCombineExceptions();
-			} catch (IOException | ProcessException | RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("unexpected exception", e);
-			}
+			executor.submitTasks(partitionByBoard(cores), boards -> {
+				return () -> retrieveIobufContents(boards, replacer,
+						provenanceDir, errorEntries, warnEntries);
+			}).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {
 			e.rethrow();
+		} catch (IOException | ProcessException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
 		}
 		return new NotableMessages(errorEntries, warnEntries);
 	}
@@ -182,12 +183,21 @@ public class IobufRetriever extends BoardLocalSupport {
 		}
 	}
 
-	private Stream<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
-		var map = new DefaultMap<>(CoreSubsets::new);
+	private <K> Map.Entry<K, Collection<CoreSubsets>> partitionByBoard(
+			Map.Entry<K, CoreSubsets> entry) {
+		var map = new DefaultMap<Object, CoreSubsets>(CoreSubsets::new);
+		for (var core : entry.getValue()) {
+			map.get(machine.getChipAt(core).nearestEthernet).addCore(core);
+		}
+		return Map.entry(entry.getKey(), map.values());
+	}
+
+	private Collection<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
+		var map = new DefaultMap<Object, CoreSubsets>(CoreSubsets::new);
 		for (var core : coreSubsets) {
 			map.get(machine.getChipAt(core).nearestEthernet).addCore(core);
 		}
-		return map.values().stream();
+		return map.values();
 	}
 
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
@@ -223,8 +233,10 @@ public class IobufRetriever extends BoardLocalSupport {
 
 	private static BufferedWriter openFileForAppending(File file)
 			throws IOException {
-		return new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(file, true), UTF_8));
+		// TODO in Java 11, use this instead
+		//return buffer(new FileWriter(file, UTF_8, true));
+		return buffer(new OutputStreamWriter(new FileOutputStream(file, true),
+				UTF_8));
 	}
 
 	private static void addValueIfMatch(Pattern regex, String line,

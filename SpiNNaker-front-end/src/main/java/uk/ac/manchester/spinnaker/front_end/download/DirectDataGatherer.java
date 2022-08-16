@@ -35,7 +35,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A data gatherer that can fetch DSE regions.
@@ -56,7 +56,7 @@ public class DirectDataGatherer extends DataGatherer {
 	/** Version of the file produced by the DSE. */
 	private static final int DSE_VERSION = 0x00010000;
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final BufferManagerStorage database;
 
@@ -78,7 +78,7 @@ public class DirectDataGatherer extends DataGatherer {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DirectDataGatherer(Transceiver transceiver, Machine machine,
+	public DirectDataGatherer(TransceiverInterface transceiver, Machine machine,
 			BufferManagerStorage database)
 			throws IOException, ProcessException {
 		super(transceiver, machine);
