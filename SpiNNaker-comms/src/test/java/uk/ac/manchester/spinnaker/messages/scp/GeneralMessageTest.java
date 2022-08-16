@@ -33,6 +33,7 @@ import static uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPG
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Nested;
@@ -71,242 +72,299 @@ class GeneralMessageTest {
 
 	private static final BMPBoard BOARD = new BMPBoard(0);
 
+	private static final List<Integer> PROCS = asList(1);
+
 	private Set<Integer> set = new HashSet<>();
 
-	private int length(SCPRequest<?> r) {
+	/**
+	 * Serialise a request and get its length.
+	 *
+	 * @param req
+	 *            the request
+	 * @return the length of the request
+	 */
+	private int length(SCPRequest<?> req) {
 		// Serialise and get message length
-		ByteBuffer b = allocate(256);
-		r.sdpHeader.setSource(ZERO_ZERO_ZERO);
-		r.sdpHeader.setSourcePort(0);
-		r.sdpHeader.setDestination(ZERO_ZERO_ZERO);
-		r.sdpHeader.setDestinationPort(0);
-		r.scpRequestHeader.issueSequenceNumber(set);
-		r.addToBuffer(b);
+		ByteBuffer b = allocate(280);
+		req.sdpHeader.setSource(ZERO_ZERO_ZERO);
+		req.sdpHeader.setSourcePort(0);
+		req.sdpHeader.setDestination(ZERO_ZERO_ZERO);
+		req.sdpHeader.setDestinationPort(0);
+		req.scpRequestHeader.issueSequenceNumber(set);
+		req.addToBuffer(b);
 		return b.position();
 	}
+
+	private static final int NO_PAYLOAD = 24;
 
 	@Nested
 	class Scp {
 		@Test
 		void applicationRun() {
-			assertEquals(24,
-					length(new ApplicationRun(APP, ZERO_ZERO, asList(1))));
+			assertEquals(NO_PAYLOAD,
+					length(new ApplicationRun(APP, ZERO_ZERO, PROCS)));
+			assertEquals(NO_PAYLOAD,
+					length(new ApplicationRun(APP, ZERO_ZERO, PROCS, true)));
 		}
 
 		@Test
 		void applicationStop() {
-			assertEquals(24, length(new ApplicationStop(APP)));
+			assertEquals(NO_PAYLOAD, length(new ApplicationStop(APP)));
 		}
 
 		@Test
 		void clearIobuf() {
-			assertEquals(24, length(new ClearIOBUF(ZERO_ZERO_ZERO)));
-		}
-
-		@Test
-		void clearReinjectionQueue() {
-			assertEquals(24, length(new ClearReinjectionQueue(ZERO_ZERO_ZERO)));
+			assertEquals(NO_PAYLOAD, length(new ClearIOBUF(ZERO_ZERO_ZERO)));
 		}
 
 		@Test
 		void countState() {
-			assertEquals(24, length(new CountState(APP, IDLE)));
-		}
-
-		@Test
-		void fillRequest() {
-			assertEquals(24, length(new FillRequest(ZERO_ZERO, NULL, 0, 0)));
-		}
-
-		@Test
-		void fixedRouteInitialise() {
-			assertEquals(24,
-					length(new FixedRouteInitialise(ZERO_ZERO, 0, APP)));
-		}
-
-		@Test
-		void fixedRouteRead() {
-			assertEquals(24, length(new FixedRouteRead(ZERO_ZERO, APP)));
-		}
-
-		@Test
-		void floodFillData() {
-			ByteBuffer b = allocate(128);
-			assertEquals(152, length(new FloodFillData((byte) 0, 0, NULL, b)));
-		}
-
-		@Test
-		void floodFillEnd() {
-			assertEquals(24, length(new FloodFillEnd((byte) 0)));
-		}
-
-		@Test
-		void floodFillStart() {
-			assertEquals(24, length(new FloodFillStart((byte) 0, 0)));
+			assertEquals(NO_PAYLOAD, length(new CountState(APP, IDLE)));
 		}
 
 		@Test
 		void getChipInfo() {
-			assertEquals(24, length(new GetChipInfo(ZERO_ZERO)));
-		}
-
-		@Test
-		void getReinjectionStatus() {
-			assertEquals(24, length(new GetReinjectionStatus(ZERO_ZERO_ZERO)));
+			assertEquals(NO_PAYLOAD, length(new GetChipInfo(ZERO_ZERO)));
+			assertEquals(NO_PAYLOAD, length(new GetChipInfo(ZERO_ZERO, false)));
 		}
 
 		@Test
 		void getVersion() {
-			assertEquals(24, length(new GetVersion(ZERO_ZERO_ZERO)));
-		}
-
-		@Test
-		void ipTagClear() {
-			assertEquals(24, length(new IPTagClear(ZERO_ZERO_ZERO, 0)));
-		}
-
-		@Test
-		void ipTagGet() {
-			assertEquals(24, length(new IPTagGet(ZERO_ZERO_ZERO, 0)));
-		}
-
-		@Test
-		void ipTagGetInfo() {
-			assertEquals(24, length(new IPTagGetInfo(ZERO_ZERO_ZERO)));
-		}
-
-		@Test
-		void ipTagSet() {
-			assertEquals(24, length(
-					new IPTagSet(ZERO_ZERO_ZERO, null, 0, 0, true, true)));
-		}
-
-		@Test
-		void ipTagSetTto() {
-			assertEquals(24,
-					length(new IPTagSetTTO(ZERO_ZERO_ZERO, TIMEOUT_10_ms)));
-		}
-
-		@Test
-		void readLink() {
-			assertEquals(24, length(new ReadLink(ZERO_ZERO, EAST, NULL, 4)));
-		}
-
-		@Test
-		void readMemory() {
-			assertEquals(24, length(new ReadMemory(ZERO_ZERO, NULL, 4)));
-		}
-
-		@Test
-		void resetReinjectionCounters() {
-			assertEquals(24,
-					length(new ResetReinjectionCounters(ZERO_ZERO_ZERO)));
-		}
-
-		@Test
-		void reverseIpTagSet() {
-			assertEquals(24, length(
-					new ReverseIPTagSet(ZERO_ZERO, ZERO_ZERO_ZERO, 0, 0, 0)));
-		}
-
-		@Test
-		void routerAlloc() {
-			assertEquals(24, length(new RouterAlloc(ZERO_ZERO, APP, 4)));
-		}
-
-		@Test
-		void routerClear() {
-			assertEquals(24, length(new RouterClear(ZERO_ZERO)));
-		}
-
-		@Test
-		void routerInit() {
-			assertEquals(24,
-					length(new RouterInit(ZERO_ZERO, 4, NULL, 4, APP)));
-		}
-
-		@Test
-		void routerTableLoadApplicationRoutes() {
-			assertEquals(24, length(
-					new RouterTableLoadApplicationRoutes(ZERO_ZERO_ZERO)));
-		}
-
-		@Test
-		void routerTableLoadSystemRoutes() {
-			assertEquals(24,
-					length(new RouterTableLoadSystemRoutes(ZERO_ZERO_ZERO)));
-		}
-
-		@Test
-		void routerTableSaveApplicationRoutes() {
-			assertEquals(24, length(
-					new RouterTableSaveApplicationRoutes(ZERO_ZERO_ZERO)));
-		}
-
-		@Test
-		void sdramAlloc() {
-			assertEquals(24, length(new SDRAMAlloc(ZERO_ZERO, APP, 4)));
-		}
-
-		@Test
-		void sdramDealloc() {
-			assertEquals(24, length(new SDRAMDeAlloc(ZERO_ZERO, APP)));
-			assertEquals(24, length(new SDRAMDeAlloc(ZERO_ZERO, NULL)));
+			assertEquals(NO_PAYLOAD, length(new GetVersion(ZERO_ZERO_ZERO)));
 		}
 
 		@Test
 		void sendSignal() {
-			assertEquals(24, length(new SendSignal(APP, CONTINUE)));
+			assertEquals(NO_PAYLOAD, length(new SendSignal(APP, CONTINUE)));
 		}
 
 		@Test
 		void setLed() {
-			assertEquals(24,
+			assertEquals(NO_PAYLOAD,
 					length(new SetLED(ZERO_ZERO_ZERO, new HashMap<>())));
 		}
 
 		@Test
-		void setReinjectionPacketTypes() {
-			assertEquals(25,
-					length(new SetReinjectionPacketTypes(ZERO_ZERO_ZERO, true,
-							true, true, true)));
-		}
-
-		@Test
-		void setRouterEmergencyTimeout() {
-			assertEquals(24, length(
-					new SetRouterEmergencyTimeout(ZERO_ZERO_ZERO, 1, 1)));
-		}
-
-		@Test
-		void setRouterTimeout() {
-			assertEquals(24,
-					length(new SetRouterTimeout(ZERO_ZERO_ZERO, 1, 1)));
-		}
-
-		@Test
 		void updateProvenanceAndExit() {
-			assertEquals(24,
+			assertEquals(NO_PAYLOAD,
 					length(new UpdateProvenanceAndExit(ZERO_ZERO_ZERO)));
 		}
 
 		@Test
-		void udpateRuntime() {
-			assertEquals(24,
+		void updateRuntime() {
+			assertEquals(NO_PAYLOAD,
 					length(new UpdateRuntime(ZERO_ZERO_ZERO, 1, false)));
 		}
 
-		@Test
-		void writeLink() {
-			ByteBuffer b = allocate(128);
-			assertEquals(152,
-					length(new WriteLink(ZERO_ZERO_ZERO, EAST, NULL, b)));
+		@Nested
+		class IPTags {
+			@Test
+			void ipTagClear() {
+				assertEquals(NO_PAYLOAD,
+						length(new IPTagClear(ZERO_ZERO_ZERO, 0)));
+			}
+
+			@Test
+			void ipTagGet() {
+				assertEquals(NO_PAYLOAD,
+						length(new IPTagGet(ZERO_ZERO_ZERO, 0)));
+			}
+
+			@Test
+			void ipTagGetInfo() {
+				assertEquals(NO_PAYLOAD,
+						length(new IPTagGetInfo(ZERO_ZERO_ZERO)));
+			}
+
+			@Test
+			void ipTagSet() {
+				assertEquals(NO_PAYLOAD, length(
+						new IPTagSet(ZERO_ZERO_ZERO, null, 0, 0, true, true)));
+			}
+
+			@Test
+			void ipTagSetTto() {
+				assertEquals(NO_PAYLOAD,
+						length(new IPTagSetTTO(ZERO_ZERO_ZERO, TIMEOUT_10_ms)));
+			}
+
+			@Test
+			void reverseIpTagSet() {
+				assertEquals(NO_PAYLOAD, length(new ReverseIPTagSet(ZERO_ZERO,
+						ZERO_ZERO_ZERO, 0, 0, 0)));
+			}
 		}
 
-		@Test
-		void writeMemory() {
-			ByteBuffer b = allocate(128);
-			assertEquals(152, length(new WriteMemory(ZERO_ZERO_ZERO, NULL, b)));
+		@Nested
+		class Routers {
+			@Test
+			void clearReinjectionQueue() {
+				assertEquals(NO_PAYLOAD,
+						length(new ClearReinjectionQueue(ZERO_ZERO_ZERO)));
+			}
+
+			@Test
+			void fixedRouteInitialise() {
+				assertEquals(NO_PAYLOAD,
+						length(new FixedRouteInitialise(ZERO_ZERO, 0, APP)));
+			}
+
+			@Test
+			void fixedRouteRead() {
+				assertEquals(NO_PAYLOAD,
+						length(new FixedRouteRead(ZERO_ZERO, APP)));
+			}
+
+			@Test
+			void getReinjectionStatus() {
+				assertEquals(NO_PAYLOAD,
+						length(new GetReinjectionStatus(ZERO_ZERO_ZERO)));
+			}
+
+			@Test
+			void resetReinjectionCounters() {
+				assertEquals(NO_PAYLOAD,
+						length(new ResetReinjectionCounters(ZERO_ZERO_ZERO)));
+			}
+
+			@Test
+			void routerAlloc() {
+				assertEquals(NO_PAYLOAD,
+						length(new RouterAlloc(ZERO_ZERO, APP, 4)));
+			}
+
+			@Test
+			void routerClear() {
+				assertEquals(NO_PAYLOAD, length(new RouterClear(ZERO_ZERO)));
+			}
+
+			@Test
+			void routerInit() {
+				assertEquals(NO_PAYLOAD,
+						length(new RouterInit(ZERO_ZERO, 4, NULL, 4, APP)));
+			}
+
+			@Test
+			void routerTableLoadApplicationRoutes() {
+				assertEquals(NO_PAYLOAD, length(
+						new RouterTableLoadApplicationRoutes(ZERO_ZERO_ZERO)));
+			}
+
+			@Test
+			void routerTableLoadSystemRoutes() {
+				assertEquals(NO_PAYLOAD, length(
+						new RouterTableLoadSystemRoutes(ZERO_ZERO_ZERO)));
+			}
+
+			@Test
+			void routerTableSaveApplicationRoutes() {
+				assertEquals(NO_PAYLOAD, length(
+						new RouterTableSaveApplicationRoutes(ZERO_ZERO_ZERO)));
+			}
+
+			@Test
+			void setReinjectionPacketTypes() {
+				assertEquals(25,
+						length(new SetReinjectionPacketTypes(ZERO_ZERO_ZERO,
+								true, true, true, true)));
+			}
+
+			@Test
+			void setRouterEmergencyTimeout() {
+				assertEquals(NO_PAYLOAD, length(
+						new SetRouterEmergencyTimeout(ZERO_ZERO_ZERO, 1, 1)));
+			}
+
+			@Test
+			void setRouterTimeout() {
+				assertEquals(NO_PAYLOAD,
+						length(new SetRouterTimeout(ZERO_ZERO_ZERO, 1, 1)));
+			}
+		}
+
+		@Nested
+		class Memory {
+			@Test
+			void fillRequest() {
+				assertEquals(NO_PAYLOAD,
+						length(new FillRequest(ZERO_ZERO, NULL, 0, 0)));
+			}
+
+			@Test
+			void floodFillData() {
+				ByteBuffer b = allocate(128);
+				assertEquals(152,
+						length(new FloodFillData((byte) 0, 0, NULL, b)));
+				byte[] bs = new byte[64];
+				assertEquals(88,
+						length(new FloodFillData((byte) 0, 0, NULL, bs)));
+				assertEquals(56, length(
+						new FloodFillData((byte) 0, 0, NULL, bs, 16, 32)));
+			}
+
+			@Test
+			void floodFillEnd() {
+				assertEquals(NO_PAYLOAD, length(new FloodFillEnd((byte) 0)));
+				assertEquals(NO_PAYLOAD,
+						length(new FloodFillEnd((byte) 0, APP, PROCS)));
+				assertEquals(NO_PAYLOAD,
+						length(new FloodFillEnd((byte) 0, APP, PROCS, false)));
+			}
+
+			@Test
+			void floodFillStart() {
+				assertEquals(NO_PAYLOAD,
+						length(new FloodFillStart((byte) 0, 0)));
+				assertEquals(NO_PAYLOAD,
+						length(new FloodFillStart((byte) 0, 0, ZERO_ZERO)));
+			}
+
+			@Test
+			void readLink() {
+				assertEquals(NO_PAYLOAD,
+						length(new ReadLink(ZERO_ZERO, EAST, NULL, 4)));
+				assertEquals(NO_PAYLOAD,
+						length(new ReadLink(ZERO_ZERO_ZERO, EAST, NULL, 4)));
+			}
+
+			@Test
+			void readMemory() {
+				assertEquals(NO_PAYLOAD,
+						length(new ReadMemory(ZERO_ZERO, NULL, 4)));
+				assertEquals(NO_PAYLOAD,
+						length(new ReadMemory(ZERO_ZERO_ZERO, NULL, 4)));
+			}
+
+			@Test
+			void sdramAlloc() {
+				assertEquals(NO_PAYLOAD,
+						length(new SDRAMAlloc(ZERO_ZERO, APP, 4)));
+				assertEquals(NO_PAYLOAD,
+						length(new SDRAMAlloc(ZERO_ZERO, APP, 4, 4)));
+			}
+
+			@Test
+			void sdramDealloc() {
+				assertEquals(NO_PAYLOAD,
+						length(new SDRAMDeAlloc(ZERO_ZERO, APP)));
+				assertEquals(NO_PAYLOAD,
+						length(new SDRAMDeAlloc(ZERO_ZERO, NULL)));
+			}
+
+			@Test
+			void writeLink() {
+				ByteBuffer b = allocate(128);
+				assertEquals(152,
+						length(new WriteLink(ZERO_ZERO_ZERO, EAST, NULL, b)));
+			}
+
+			@Test
+			void writeMemory() {
+				ByteBuffer b = allocate(128);
+				assertEquals(152, length(new WriteMemory(ZERO_ZERO, NULL, b)));
+				assertEquals(152,
+						length(new WriteMemory(ZERO_ZERO_ZERO, NULL, b)));
+			}
 		}
 	}
 
@@ -314,13 +372,13 @@ class GeneralMessageTest {
 	class Bmp {
 		@Test
 		void readMemory() {
-			assertEquals(24, length(new BMPReadMemory(BOARD, NULL, 4)));
+			assertEquals(NO_PAYLOAD, length(new BMPReadMemory(BOARD, NULL, 4)));
 		}
 
 		@Test
 		void setLed() {
-			assertEquals(24,
-					length(new BMPSetLED(asList(), TOGGLE, asList(BOARD))));
+			assertEquals(NO_PAYLOAD,
+					length(new BMPSetLED(asList(0), TOGGLE, asList(BOARD))));
 		}
 
 		@Test
@@ -330,98 +388,114 @@ class GeneralMessageTest {
 		}
 
 		@Test
-		void eraseFlash() {
-			assertEquals(24, length(new EraseFlash(BOARD, NULL, 4)));
-		}
-
-		@Test
-		void getVersion() {
-			assertEquals(24, length(new GetBMPVersion(BOARD)));
-		}
-
-		@Test
-		void getFpgaResetStatus() {
-			assertEquals(24, length(new GetFPGAResetStatus(BOARD)));
-		}
-
-		@Test
-		void initFpga() {
-			assertEquals(24, length(new InitFPGA(BOARD, 0)));
-		}
-
-		@Test
-		void readAdc() {
-			assertEquals(24, length(new ReadADC(BOARD)));
-		}
-
-		@Test
-		void readCanStatus() {
-			assertEquals(24, length(new ReadCANStatus()));
-		}
-
-		@Test
-		void readFpgaRegister() {
-			assertEquals(24,
-					length(new ReadFPGARegister(FPGA_E_S, NULL, BOARD)));
-		}
-
-		@Test
-		void readIpAddress() {
-			assertEquals(24, length(new ReadIPAddress(BOARD)));
-		}
-
-		@Test
-		void readSerialFlash() {
-			assertEquals(24, length(new ReadSerialFlash(BOARD, NULL, 4)));
-		}
-
-		@Test
-		void readSerialFlashCrc() {
-			assertEquals(24, length(new ReadSerialFlashCRC(BOARD, NULL, 4)));
-		}
-
-		@Test
-		void readSerialVector() {
-			assertEquals(24, length(new ReadSerialVector(BOARD)));
-		}
-
-		@Test
-		void resetFpga() {
-			assertEquals(24, length(new ResetFPGA(BOARD, PULSE)));
-		}
-
-		@Test
 		void setPower() {
-			assertEquals(24,
+			assertEquals(NO_PAYLOAD,
 					length(new SetPower(POWER_OFF, asList(BOARD), 0.0)));
 		}
 
-		@Test
-		void updateFlash() {
-			assertEquals(24, length(new UpdateFlash(BOARD, NULL, 4)));
+		@Nested
+		class Info {
+			@Test
+			void getVersion() {
+				assertEquals(NO_PAYLOAD, length(new GetBMPVersion(BOARD)));
+			}
+
+			@Test
+			void readAdc() {
+				assertEquals(NO_PAYLOAD, length(new ReadADC(BOARD)));
+			}
+
+			@Test
+			void readCanStatus() {
+				assertEquals(NO_PAYLOAD, length(new ReadCANStatus()));
+			}
+
+			@Test
+			void readIpAddress() {
+				assertEquals(NO_PAYLOAD, length(new ReadIPAddress(BOARD)));
+			}
+
+			@Test
+			void readSerialVector() {
+				assertEquals(NO_PAYLOAD, length(new ReadSerialVector(BOARD)));
+			}
 		}
 
-		@Test
-		void writeFlashBuffer() {
-			assertEquals(24, length(new WriteFlashBuffer(BOARD, NULL, false)));
+		@Nested
+		class Fpgas {
+			@Test
+			void getFpgaResetStatus() {
+				assertEquals(NO_PAYLOAD, length(new GetFPGAResetStatus(BOARD)));
+			}
+
+			@Test
+			void initFpga() {
+				assertEquals(NO_PAYLOAD, length(new InitFPGA(BOARD, 0)));
+			}
+
+			@Test
+			void readFpgaRegister() {
+				assertEquals(NO_PAYLOAD,
+						length(new ReadFPGARegister(FPGA_E_S, NULL, BOARD)));
+			}
+
+			@Test
+			void resetFpga() {
+				assertEquals(NO_PAYLOAD, length(new ResetFPGA(BOARD, PULSE)));
+			}
+
+			@Test
+			void writeFpgaData() {
+				ByteBuffer b = allocate(128);
+				assertEquals(152, length(new WriteFPGAData(BOARD, b)));
+				byte[] bs = new byte[64];
+				assertEquals(88, length(new WriteFPGAData(BOARD, bs)));
+			}
+
+			@Test
+			void writeFpgaRegister() {
+				assertEquals(28, length(
+						new WriteFPGARegister(FPGA_E_S, NULL, 4, BOARD)));
+			}
 		}
 
-		@Test
-		void writeFpgaData() {
-			ByteBuffer b = allocate(128);
-			assertEquals(152, length(new WriteFPGAData(BOARD, b)));
-		}
+		@Nested
+		class Flash {
+			@Test
+			void eraseFlash() {
+				assertEquals(NO_PAYLOAD,
+						length(new EraseFlash(BOARD, NULL, 4)));
+			}
 
-		@Test
-		void writeFpgaRegister() {
-			assertEquals(28,
-					length(new WriteFPGARegister(FPGA_E_S, NULL, 4, BOARD)));
-		}
+			@Test
+			void readSerialFlash() {
+				assertEquals(NO_PAYLOAD,
+						length(new ReadSerialFlash(BOARD, NULL, 4)));
+			}
 
-		@Test
-		void writeSerialFlash() {
-			ByteBuffer b = allocate(128);
-			assertEquals(152, length(new WriteSerialFlash(BOARD, NULL, b)));
+			@Test
+			void readSerialFlashCrc() {
+				assertEquals(NO_PAYLOAD,
+						length(new ReadSerialFlashCRC(BOARD, NULL, 4)));
+			}
+
+			@Test
+			void updateFlash() {
+				assertEquals(NO_PAYLOAD,
+						length(new UpdateFlash(BOARD, NULL, 4)));
+			}
+
+			@Test
+			void writeFlashBuffer() {
+				assertEquals(NO_PAYLOAD,
+						length(new WriteFlashBuffer(BOARD, NULL, false)));
+			}
+
+			@Test
+			void writeSerialFlash() {
+				ByteBuffer b = allocate(128);
+				assertEquals(152, length(new WriteSerialFlash(BOARD, NULL, b)));
+			}
 		}
 	}
 }
