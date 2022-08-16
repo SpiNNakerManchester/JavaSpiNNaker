@@ -224,9 +224,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		List<Ethernet> ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (Progress bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets.stream().map(
-					board -> () -> loadBoard(board, storage, bar)))
-					.awaitAndCombineExceptions();
+			executor.submitTasks(ethernets, board -> {
+				return () -> loadBoard(board, storage, bar);
+			}).awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
 			throw e;

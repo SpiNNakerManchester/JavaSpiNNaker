@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 
@@ -33,6 +34,7 @@ import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
+import uk.ac.manchester.spinnaker.front_end.BasicExecutor.SimpleCallable;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -99,6 +101,37 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	}
 
 	/**
+	 * Run the tasks in parallel. Submits to {@link #executor} and detoxifies
+	 * the exceptions.
+	 *
+	 * @param tasks
+	 *            The tasks to run.
+	 * @throws StorageException
+	 *             If the database can't be talked to.
+	 * @throws IOException
+	 *             If the transceiver can't talk to its sockets.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 * @throws DataSpecificationException
+	 *             If a data specification in the database is invalid.
+	 * @throws IllegalStateException
+	 *             If an unexpected exception occurs in any of the parallel
+	 *             tasks.
+	 */
+	private void processTasksInParallel(List<Ethernet> tasks,
+			Function<Ethernet, SimpleCallable> mapper) throws StorageException,
+			IOException, ProcessException, DataSpecificationException {
+		try {
+			executor.submitTasks(tasks, mapper).awaitAndCombineExceptions();
+		} catch (StorageException | IOException | ProcessException
+				| DataSpecificationException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IllegalStateException("unexpected exception", e);
+		}
+	}
+
+	/**
 	 * Execute all data specifications that a particular connection knows about,
 	 * storing back in the database the information collected about those
 	 * executions.
@@ -125,14 +158,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		int opsToRun = storage.countWorkRequired();
 		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
 				ExecutionContext context = new ExecutionContext(txrx)) {
-			executor.submitTasks(ethernets.stream().map(
-					board -> () -> loadBoard(board, storage, bar, context)))
-					.awaitAndCombineExceptions();
-		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected exception", e);
+			processTasksInParallel(ethernets, board -> {
+				return () -> loadBoard(board, storage, bar, context);
+			});
 		}
 	}
 
@@ -163,16 +191,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		int opsToRun = storage.countWorkRequired();
 		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
 				ExecutionContext context = new ExecutionContext(txrx)) {
-			executor.submitTasks(
-					ethernets.stream()
-							.map(board -> () -> loadBoard(board, storage, bar,
-									false, context)))
-					.awaitAndCombineExceptions();
-		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected exception", e);
+			processTasksInParallel(ethernets, board -> {
+				return () -> loadBoard(board, storage, bar, false, context);
+			});
 		}
 	}
 
@@ -203,16 +224,9 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 		int opsToRun = storage.countWorkRequired();
 		try (Progress bar = new Progress(opsToRun, LOADING_MSG);
 				ExecutionContext context = new ExecutionContext(txrx)) {
-			executor.submitTasks(
-					ethernets.stream()
-							.map(board -> () -> loadBoard(board, storage, bar,
-									true, context)))
-					.awaitAndCombineExceptions();
-		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected exception", e);
+			processTasksInParallel(ethernets, board -> {
+				return () -> loadBoard(board, storage, bar, true, context);
+			});
 		}
 	}
 

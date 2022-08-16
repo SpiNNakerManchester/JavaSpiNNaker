@@ -64,7 +64,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
@@ -123,7 +123,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
 			getProperty("spinnaker.compare.download");
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final BasicExecutor pool;
 
@@ -146,7 +146,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DataGatherer(Transceiver transceiver, Machine machine)
+	public DataGatherer(TransceiverInterface transceiver, Machine machine)
 			throws IOException, ProcessException {
 		super(machine);
 		this.txrx = transceiver;

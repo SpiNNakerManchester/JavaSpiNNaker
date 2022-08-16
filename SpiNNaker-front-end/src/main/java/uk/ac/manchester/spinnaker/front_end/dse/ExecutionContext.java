@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A context for the execution of multiple data specifications with
@@ -44,13 +45,13 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 class ExecutionContext implements AutoCloseable {
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final Map<Reference, RegionToRef> regionsToRef = new HashMap<>();
 
 	private final List<CoreToFill> regionsToFill = new ArrayList<>();
 
-	ExecutionContext(Transceiver txrx) {
+	ExecutionContext(TransceiverInterface txrx) {
 		this.txrx = txrx;
 	}
 
@@ -139,28 +140,9 @@ class ExecutionContext implements AutoCloseable {
 		List<String> errors = new ArrayList<>();
 		for (CoreToFill toFill : regionsToFill) {
 			for (MemoryRegionReference ref : toFill.refs) {
-				Reference reference = ref.getReference();
-				if (!regionsToRef.containsKey(reference)) {
-					StringBuilder potentialRefs =
-							new StringBuilder("Reference ").append(reference)
-									.append(" from ").append(toFill)
-									.append(" not found from ");
-					regionsToRef.forEach((r, reg) -> {
-						if (reg.core.onSameChipAs(toFill.core)) {
-							potentialRefs.append(ref).append(" (from core ")
-									.append(reg.core).append("); ");
-						}
-					});
-					errors.add(potentialRefs.toString());
-				}
-				RegionToRef reg = regionsToRef.get(reference);
-				if (!reg.core.onSameChipAs(toFill.core)) {
-					errors.add("Region " + ref + " on " + reg
-							+ " cannot be referenced from " + toFill);
-				}
+				checkForCrossReferenceError(errors, toFill, ref);
 			}
 		}
-
 		if (!errors.isEmpty()) {
 			throw new DataSpecificationException(errors.toString());
 		}
@@ -172,6 +154,30 @@ class ExecutionContext implements AutoCloseable {
 				ref.setRegionBase(reg.pointer);
 			}
 			writeHeader(toFill.core, toFill.executor, toFill.start);
+		}
+	}
+
+	private void checkForCrossReferenceError(List<String> errors,
+			CoreToFill toFill, MemoryRegionReference ref) {
+		Reference reference = ref.getReference();
+		RegionToRef reg = regionsToRef.get(reference);
+
+		if (isNull(reg)) {
+			StringBuilder potentialRefs = new StringBuilder("Reference ")
+					.append(reference).append(" from ").append(toFill)
+					.append(" not found from ");
+			regionsToRef.values().forEach(region -> {
+				if (region.core.onSameChipAs(toFill.core)) {
+					potentialRefs.append(ref).append(" (from core ")
+							.append(region.core).append("); ");
+				}
+			});
+			errors.add(potentialRefs.toString().trim());
+		} else {
+			if (!reg.core.onSameChipAs(toFill.core)) {
+				errors.add("Region " + ref + " on " + reg
+						+ " cannot be referenced from " + toFill);
+			}
 		}
 	}
 
