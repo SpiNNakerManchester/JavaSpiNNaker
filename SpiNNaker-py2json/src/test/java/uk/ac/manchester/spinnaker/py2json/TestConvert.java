@@ -128,11 +128,13 @@ class TestConvert {
 			// Can't test command line parse errors; System.exit() is called
 			MachineDefinitionConverter.main(src.getAbsolutePath(),
 					dst.getAbsolutePath());
+			Thread.sleep(1000);
 			assertTrue(dst.exists());
 			try (BufferedReader r = new BufferedReader(new FileReader(dst))) {
 				JSONAssert.assertEquals(expectedJson, r.readLine(), true);
 			}
 		} finally {
+			Thread.sleep(1000);
 			dst.delete();
 			if (dst.exists()) {
 				dst.deleteOnExit();
