@@ -22,11 +22,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -207,7 +205,7 @@ public class IobufRetriever extends BoardLocalSupport {
 			// extract iobuf, write to file and check for errors for provenance
 			for (var iobuf : txrx.getIobuf(cores)) {
 				var file = getProvenanceFile(provenanceDir, iobuf);
-				try (var w = openFileForAppending(file)) {
+				try (var w = buffer(new FileWriter(file, UTF_8, true))) {
 					log.info("storing iobuf from {} (running {}) in {}",
 							iobuf.asCoreLocation(), replacer.origin, file);
 					// ISO 8859-1: bytes are zero-extended to chars
@@ -229,14 +227,6 @@ public class IobufRetriever extends BoardLocalSupport {
 		return new File(provenanceDir,
 				format("iobuf_for_chip_%d_%d_processor_id_%d.txt", iobuf.getX(),
 						iobuf.getY(), iobuf.getP()));
-	}
-
-	private static BufferedWriter openFileForAppending(File file)
-			throws IOException {
-		// TODO in Java 11, use this instead
-		//return buffer(new FileWriter(file, UTF_8, true));
-		return buffer(new OutputStreamWriter(new FileOutputStream(file, true),
-				UTF_8));
 	}
 
 	private static void addValueIfMatch(Pattern regex, String line,
