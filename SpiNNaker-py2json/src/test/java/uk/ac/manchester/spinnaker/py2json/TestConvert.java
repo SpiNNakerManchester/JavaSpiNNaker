@@ -90,7 +90,7 @@ class TestConvert {
 		Machine m = c.machines.get(0);
 		assertNotNull(m);
 		assertEquals(EnumSet.of(Link.east), m.deadLinks.get(new XYZ(0, 0, 0)));
-		assertNotEquals("", m.toString());
+		assertNotEquals("", c.toString());
 	}
 
 	@Test
