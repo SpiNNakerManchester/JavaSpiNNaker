@@ -19,7 +19,9 @@ package uk.ac.manchester.spinnaker.py2json;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.getJsonWriter;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -114,5 +116,27 @@ class TestConvert {
 		}
 		assertNotNull(json);
 		JSONAssert.assertEquals(expectedJson, json, true);
+	}
+
+	@Test
+	void checkMain() throws Exception {
+		String expectedJson = readFile("expected.json");
+		File src = getFile("single_board.py");
+		File dst = new File("dst.json");
+		try {
+			assertFalse(dst.exists());
+			// Can't test command line parse errors; System.exit() is called
+			MachineDefinitionConverter.main(src.getAbsolutePath(),
+					dst.getAbsolutePath());
+			assertTrue(dst.exists());
+			try (BufferedReader r = new BufferedReader(new FileReader(dst))) {
+				JSONAssert.assertEquals(expectedJson, r.readLine(), true);
+			}
+		} finally {
+			dst.delete();
+			if (dst.exists()) {
+				dst.deleteOnExit();
+			}
+		}
 	}
 }
