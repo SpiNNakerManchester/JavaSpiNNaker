@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.py2json;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.py2json.MachineDefinitionConverter.getJsonWriter;
 
 import java.io.File;
@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.EnumSet;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,30 @@ class TestConvert {
 				new MachineDefinitionConverter()) {
 			c = mdl.loadClassicConfigurationDefinition(f, false);
 		}
-		assertNotNull(c.machines.get(0));
+		Machine m = c.machines.get(0);
+		assertNotNull(m);
+		assertEquals("192.168.0.2", m.bmpIPs.get(new CF(0, 0)));
+		assertEquals(new CFB(0, 0, 0), m.boardLocations.get(new XYZ(0, 0, 0)));
+		assertEquals("192.168.0.3", m.spinnakerIPs.get(new XYZ(0, 0, 0)));
+		assertEquals("Machine(name=my-board,tags=[default],width=1,height=1,"
+				+ "deadBoards=[[x:0,y:0,z:1], [x:0,y:0,z:2]],deadLinks={},"
+				+ "boardLocations={[x:0,y:0,z:0]=[c:0,f:0,b:0]},"
+				+ "bmpIPs={[c:0,f:0]=192.168.0.2},"
+				+ "spinnakerIPs={[x:0,y:0,z:0]=192.168.0.3})", m.toString());
+	}
+
+	@Test
+	void testReadPythonThreeBoard() {
+		File f = getFile("three_board.py");
+		Configuration c;
+		try (MachineDefinitionConverter mdl =
+				new MachineDefinitionConverter()) {
+			c = mdl.loadClassicConfigurationDefinition(f, false);
+		}
+		Machine m = c.machines.get(0);
+		assertNotNull(m);
+		assertEquals(EnumSet.of(Link.east), m.deadLinks.get(new XYZ(0, 0, 0)));
+		assertNotEquals("", m.toString());
 	}
 
 	@Test
