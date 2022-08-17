@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.lang.Integer.compare;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT;
@@ -76,28 +77,19 @@ public class RegionLocation
 	}
 
 	@Override
+	@SuppressWarnings("checkstyle:InnerAssignment")
 	public int compareTo(RegionLocation o) {
-		if (this.x < o.x) {
-			return -1;
-		} else if (this.x > o.x) {
-			return 1;
+		int cmp;
+		if ((cmp = compare(x, o.x)) != 0) {
+			return cmp;
 		}
-		if (this.y < o.y) {
-			return -1;
-		} else if (this.y > o.y) {
-			return 1;
+		if ((cmp = compare(y, o.y)) != 0) {
+			return cmp;
 		}
-		if (this.p < o.p) {
-			return -1;
-		} else if (this.p > o.p) {
-			return 1;
+		if ((cmp = compare(p, o.p)) != 0) {
+			return cmp;
 		}
-		if (this.region < o.region) {
-			return -1;
-		} else if (this.region > o.region) {
-			return 1;
-		}
-		return 0;
+		return compare(region, o.region);
 	}
 
 	@Override
