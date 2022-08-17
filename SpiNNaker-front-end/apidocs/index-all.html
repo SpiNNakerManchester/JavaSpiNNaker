@@ -174,7 +174,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Implementation of the SpiNNaker Fast Data Download Protocol.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer(Transceiver, Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer(TransceiverInterface, Machine)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></dt>
 <dd>
 <div class="block">Create an instance of the protocol implementation.</div>
 </dd>
@@ -182,7 +182,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Stripped down version of the BufferManager for early testing.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataReceiver.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver(Transceiver, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataReceiver.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataReceiver</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DataReceiver.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DataReceiver(TransceiverInterface, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DataReceiver.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataReceiver</a></dt>
 <dd>
 <div class="block">Creates a new mini Buffer Manager.</div>
 </dd>
@@ -190,10 +190,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
 <div class="deprecationComment">This class uses an unimplemented API call that needs to be fixed
-             but hasn't been yet.</div>
+             but hasn't been yet. It also assumes that there are no shared
+             regions.</div>
 </div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DirectDataGatherer(Transceiver, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">DirectDataGatherer(TransceiverInterface, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></dt>
 <dd>
 <div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
 <div class="block">Create a data gatherer.</div>
@@ -263,6 +264,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html#gatherRun(java.lang.String,java.lang.String,java.lang.String)">gatherRun(String, String, String)</a></span> - Static method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/CommandLineInterface.html" title="class in uk.ac.manchester.spinnaker.front_end">CommandLineInterface</a></dt>
 <dd>
 <div class="block">Download data using data gatherer cores.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Vertex.html#getBase()">getBase()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Vertex.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Vertex</a></dt>
+<dd>
+<div class="block">Get the recording region base address.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Vertex.html#getBaseAddress()">getBaseAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Vertex.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Vertex</a></dt>
 <dd>
@@ -461,19 +466,19 @@ loadScripts(document, 'script');</script>
 <div class="block">A context class that can disable dropping of packets on the SpiNNaker on-chip
  network.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,java.util.List,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext(Transceiver, List&lt;? extends HasCoreLocation&gt;, Gather)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext(TransceiverInterface, List&lt;? extends HasCoreLocation&gt;, Gather)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
 <dd>
 <div class="block">Create a no-drop-packets context for a single board.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext(Transceiver, Stream&lt;? extends HasCoreLocation&gt;, Stream&lt;Gather&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream,java.util.stream.Stream)">NoDropPacketContext(TransceiverInterface, Stream&lt;? extends HasCoreLocation&gt;, Stream&lt;Gather&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
 <dd>
 <div class="block">Create a no-drop-packets context.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext(Transceiver, CoreSubsets, Gather)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext(TransceiverInterface, CoreSubsets, Gather)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
 <dd>
 <div class="block">Create a no-drop-packets context for a single board.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.machine.CoreSubsets)">NoDropPacketContext(Transceiver, CoreSubsets, CoreSubsets)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets,uk.ac.manchester.spinnaker.machine.CoreSubsets)">NoDropPacketContext(TransceiverInterface, CoreSubsets, CoreSubsets)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/NoDropPacketContext.html" title="class in uk.ac.manchester.spinnaker.front_end">NoDropPacketContext</a></dt>
 <dd>
 <div class="block">Create a no-drop-packets context.</div>
 </dd>
@@ -539,7 +544,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A data gatherer that pulls the data from a recording region.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer(Transceiver, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer(TransceiverInterface, Machine, BufferManagerStorage)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.download.<a href="uk/ac/manchester/spinnaker/front_end/download/RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></dt>
 <dd>
 <div class="block">Create a data gatherer.</div>
 </dd>
@@ -622,6 +627,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Submit some tasks to the pool.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/BasicExecutor.html#submitTasks(java.util.Collection,java.util.function.Function)">submitTasks(Collection&lt;T&gt;, Function&lt;T, BasicExecutor.SimpleCallable&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/BasicExecutor.html" title="class in uk.ac.manchester.spinnaker.front_end">BasicExecutor</a></dt>
+<dd>
+<div class="block">Submit some tasks to the pool.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/BasicExecutor.html#submitTasks(java.util.stream.Stream,java.util.function.Function)">submitTasks(Stream&lt;T&gt;, Function&lt;T, BasicExecutor.SimpleCallable&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/BasicExecutor.html" title="class in uk.ac.manchester.spinnaker.front_end">BasicExecutor</a></dt>
+<dd>
+<div class="block">Submit some tasks to the pool.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/BasicExecutor.html#submitTasks(java.util.stream.Stream)">submitTasks(Stream&lt;BasicExecutor.SimpleCallable&gt;)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.<a href="uk/ac/manchester/spinnaker/front_end/BasicExecutor.html" title="class in uk.ac.manchester.spinnaker.front_end">BasicExecutor</a></dt>
 <dd>
 <div class="block">Submit some tasks to the pool.</div>
@@ -630,15 +643,15 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A context class that loads up the system router tables while it is active.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,java.util.List)">SystemRouterTableContext(Transceiver, List&lt;? extends HasCoreLocation&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">SystemRouterTableContext</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext(TransceiverInterface, List&lt;? extends HasCoreLocation&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">SystemRouterTableContext</a></dt>
 <dd>
 <div class="block">Create a no-drop-packets context.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,java.util.stream.Stream)">SystemRouterTableContext(Transceiver, Stream&lt;? extends HasCoreLocation&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">SystemRouterTableContext</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext(TransceiverInterface, Stream&lt;? extends HasCoreLocation&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">SystemRouterTableContext</a></dt>
 <dd>
 <div class="block">Create a no-drop-packets context.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext(Transceiver, CoreSubsets)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">SystemRouterTableContext</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext(TransceiverInterface, CoreSubsets)</a></span> - Constructor for class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/SystemRouterTableContext.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">SystemRouterTableContext</a></dt>
 <dd>
 <div class="block">Create a no-drop-packets context.</div>
 </dd>
@@ -691,11 +704,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Updates the transaction id by 1 and wraps with the cap.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Gather.html#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.Transceiver)">updateTransactionIdFromMachine(Transceiver)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Gather.html#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)">updateTransactionIdFromMachine(TransceiverInterface)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a></dt>
 <dd>
 <div class="block">sets the transaction id from the machine.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Monitor.html#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.Transceiver)">updateTransactionIdFromMachine(Transceiver)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Monitor.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Monitor</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Monitor.html#updateTransactionIdFromMachine(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface)">updateTransactionIdFromMachine(TransceiverInterface)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Monitor.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Monitor</a></dt>
 <dd>
 <div class="block">gets the transaction id from the machine and updates.</div>
 </dd>
@@ -745,7 +758,7 @@ the order they are declared.</div>
 </a>
 <h2 class="title">W</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#writeReport(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int,int,java.lang.Object)">writeReport(HasChipLocation, long, int, int, Object)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html#writeReport(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.lang.Object)">writeReport(HasChipLocation, long, int, MemoryLocation, Object)</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.dse.<a href="uk/ac/manchester/spinnaker/front_end/dse/FastExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">FastExecuteDataSpecification</a></dt>
 <dd>
 <div class="block">Writes (part of) the report describing what data transfer rates were
  achieved.</div>

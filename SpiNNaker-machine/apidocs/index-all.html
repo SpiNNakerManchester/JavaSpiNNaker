@@ -72,6 +72,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Abstract Root of all Data Links.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#add(int)">add(int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#addChip(uk.ac.manchester.spinnaker.machine.Chip)">addChip(Chip)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
 <div class="block">Add a chip to the machine.</div>
@@ -125,6 +127,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html#address">address</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html" title="class in uk.ac.manchester.spinnaker.machine.datalinks">InetIdTuple</a></dt>
 <dd>
 <div class="block">The InetAddress of this tuple which may be <code>null</code>.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#address">address</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>
+<div class="block">The actual location.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#addSpinnakerLinks()">addSpinnakerLinks()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
@@ -290,16 +296,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/CoreLocation.html#compareTo(uk.ac.manchester.spinnaker.machine.CoreLocation)">compareTo(CoreLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#compareTo(uk.ac.manchester.spinnaker.machine.MemoryLocation)">compareTo(MemoryLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Processor.html#compareTo(uk.ac.manchester.spinnaker.machine.Processor)">compareTo(Processor)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html#compareTo(uk.ac.manchester.spinnaker.machine.RegionLocation)">compareTo(RegionLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html" title="class in uk.ac.manchester.spinnaker.machine">RegionLocation</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/Tag.html#compareTo(uk.ac.manchester.spinnaker.machine.tags.Tag)">compareTo(Tag)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/Tag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">Tag</a></dt>
 <dd>
-<div class="block">Compare this tag to another one for ordering <strong>Note:</strong> this
- class has a natural ordering that is inconsistent with equals; ordering
- is by the tag ID only (this is fine for tags obtained from the same chip
- at the same time, which is the primary use case).</div>
+<div class="block">Compare this tag to another one for ordering.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#COORD_SHIFT">COORD_SHIFT</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
@@ -346,6 +351,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructor which adds the locations.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">CoreSubsets(HasCoreLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></dt>
+<dd>
+<div class="block">Constructor which adds a single location.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Processor.html#cpuCyclesAvailable()">cpuCyclesAvailable()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></dt>
 <dd>
 <div class="block">The number of CPU cycles available from this processor per millisecond.</div>
@@ -383,6 +392,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipBean.html#details">details</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipBean</a></dt>
 <dd>
 <div class="block">The details for this Chip.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#diff(uk.ac.manchester.spinnaker.machine.MemoryLocation)">diff(MemoryLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>
+<div class="block">Get the difference between this location and another.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#difference(uk.ac.manchester.spinnaker.machine.Chip)">difference(Chip)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>
@@ -447,6 +460,8 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDimensions.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Processor.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></dt>
 <dd>&nbsp;</dd>
@@ -795,6 +810,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html#getY()">getY()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/RegionLocation.html" title="class in uk.ac.manchester.spinnaker.machine">RegionLocation</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#greaterThan(uk.ac.manchester.spinnaker.machine.MemoryLocation)">greaterThan(MemoryLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>
+<div class="block">Test if this location is greater than another location.</div>
+</dd>
 </dl>
 <a id="I:H">
 <!--   -->
@@ -856,6 +875,8 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDimensions.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Processor.html#hashCode()">hashCode()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></dt>
 <dd>&nbsp;</dd>
@@ -954,6 +975,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/IPTag.html#%3Cinit%3E(java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation,int,java.net.InetAddress,java.lang.Integer,boolean,uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier)">IPTag(InetAddress, ChipLocation, int, InetAddress, Integer, boolean, TrafficIdentifier)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#isAligned()">isAligned()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html#isChip(uk.ac.manchester.spinnaker.machine.ChipLocation)">isChip(ChipLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></dt>
 <dd>
 <div class="block">Determine if the chip with coordinates (x, y) is in the subset.</div>
@@ -982,6 +1005,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Determines if the processor is the monitor, and therefore not to be
  allocated.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#isNull()">isNull()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/tags/IPTag.html#isStripSDP()">isStripSDP()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.tags.<a href="uk/ac/manchester/spinnaker/machine/tags/IPTag.html" title="class in uk.ac.manchester.spinnaker.machine.tags">IPTag</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineVersion.html#isTriad">isTriad</a></span> - Variable in enum uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineVersion.html" title="enum in uk.ac.manchester.spinnaker.machine">MachineVersion</a></dt>
@@ -992,7 +1017,9 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html#iterator()">iterator()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#iterator()">iterator()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns an iterator over the Chips in this Machine.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Router.html#iterator()">iterator()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#iterChipsOnBoard(uk.ac.manchester.spinnaker.machine.Chip)">iterChipsOnBoard(Chip)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
@@ -1020,6 +1047,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaId.html#LEFT">LEFT</a></span> - uk.ac.manchester.spinnaker.machine.datalinks.<a href="uk/ac/manchester/spinnaker/machine/datalinks/FpgaId.html" title="enum in uk.ac.manchester.spinnaker.machine.datalinks">FpgaId</a></dt>
 <dd>
 <div class="block">The FGPA link that connects to the left and top left chips.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#lessThan(uk.ac.manchester.spinnaker.machine.MemoryLocation)">lessThan(MemoryLocation)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>
+<div class="block">Test if this location is less than another location.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/Link.html" title="class in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">Link</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
 <dd>
@@ -1135,6 +1166,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The maximum number of user cores on any chip.</div>
 </dd>
+<dt><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">MemoryLocation</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
+<dd>
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#%3Cinit%3E(int)">MemoryLocation(int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#%3Cinit%3E(long)">MemoryLocation(long)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/MulticastRoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">MulticastRoutingEntry</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
 <dd>
 <div class="block">A multicast packet routing table entry.</div>
@@ -1203,6 +1242,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#nProcessors()">nProcessors()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>
 <div class="block">The total number of processors.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#NULL">NULL</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>
+<div class="block">The zero memory location.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#NUM_ROUTER_DIAGNOSTIC_COUNTERS">NUM_ROUTER_DIAGNOSTIC_COUNTERS</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
@@ -1398,7 +1441,7 @@ loadScripts(document, 'script');</script>
 <dl>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#sdram">sdram</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>
-<div class="block">The size of the sdram.</div>
+<div class="block">The size of the SDRAM.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#SDRAM_PER_CHIP">SDRAM_PER_CHIP</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
@@ -1559,6 +1602,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Stream of the destinations of each link.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#subWordAlignment()">subWordAlignment()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
+<dd>
+<div class="block">How many bytes is this location's address above a word-aligned address?</div>
+</dd>
 </dl>
 <a id="I:T">
 <!--   -->
@@ -1622,6 +1669,8 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDimensions.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Processor.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a></dt>
 <dd>&nbsp;</dd>

@@ -99,8 +99,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">IPAddressConnection</span>
-extends <a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&gt;
-implements <a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&gt;</pre>
+extends <a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&gt;</pre>
 <div class="block">A connection that detects any UDP packet that is transmitted by SpiNNaker
  boards prior to boot.</div>
 </section>
@@ -200,15 +199,10 @@ int&nbsp;localPort)</code></th>
 <!--   -->
 </a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 <div class="inheritedList">
-<h3>Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></h3>
-<a id="methods.inherited.from.class.java.lang.AutoCloseable">
-<!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code></div>
-<div class="inheritedList">
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.connections.model.<a href="model/SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.model.SocketHolder">
 <!--   -->
-</a><code><a href="model/SocketHolder.html#convertTimeout(java.lang.Integer)">convertTimeout</a>, <a href="model/SocketHolder.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="model/SocketHolder.html#getLocalPort()">getLocalPort</a>, <a href="model/SocketHolder.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="model/SocketHolder.html#getRemotePort()">getRemotePort</a></code></div>
+</a><code><a href="model/SocketHolder.html#convertTimeout(java.lang.Integer)">convertTimeout</a></code></div>
 </section>
 </li>
 </ul>
@@ -274,8 +268,6 @@ int&nbsp;localPort)</span>
 <div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
  has been received.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="model/MessageReceiver.html#receiveMessage()">receiveMessage</a></code>&nbsp;in interface&nbsp;<code><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&gt;</code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The IP address, or <code>null</code> if none was forthcoming.</dd>
 </dl>
@@ -289,8 +281,6 @@ int&nbsp;localPort)</span>
 <div class="block">Receives a SpiNNaker message from this connection. Blocks until a message
  has been received, or a timeout occurs.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="model/MessageReceiver.html#receiveMessage(int)">receiveMessage</a></code>&nbsp;in interface&nbsp;<code><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - How long to wait for an IP address; <code>null</code> for forever.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>

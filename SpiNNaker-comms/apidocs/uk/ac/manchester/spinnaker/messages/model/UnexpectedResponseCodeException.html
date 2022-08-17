@@ -93,6 +93,10 @@ loadScripts(document, 'script');</script>
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html?is-external=true" title="class or interface in java.io" class="externalLink">Serializable</a></code></dd>
 </dl>
+<dl>
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="UnroutableMessageException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnroutableMessageException</a></code></dd>
+</dl>
 <hr>
 <pre>public class <span class="typeNameLabel">UnexpectedResponseCodeException</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></pre>
@@ -151,16 +155,19 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.h
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.String,java.lang.String)">UnexpectedResponseCodeException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;command,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;response)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Enum,uk.ac.manchester.spinnaker.messages.scp.SCPResult)">UnexpectedResponseCodeException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
+<a href="../scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a>&nbsp;response)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,uk.ac.manchester.spinnaker.messages.scp.SCPResult)">UnexpectedResponseCodeException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="../scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
-<a href="../scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a>&nbsp;response)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Enum,uk.ac.manchester.spinnaker.messages.scp.SCPResult,java.lang.Object)">UnexpectedResponseCodeException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
+<a href="../scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a>&nbsp;response,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;ignored)</code></th>
+<td class="colLast">
+<div class="block">Special constructor for one-way operations.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -215,23 +222,26 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.h
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,java.lang.String,java.lang.String)">UnexpectedResponseCodeException</a></h3>
+<h3><a id="&lt;init&gt;(java.lang.String,java.lang.Enum,uk.ac.manchester.spinnaker.messages.scp.SCPResult,java.lang.Object)">UnexpectedResponseCodeException</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">UnexpectedResponseCodeException</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;command,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;response)</span></div>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
+<a href="../scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a>&nbsp;response,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;ignored)</span></div>
+<div class="block">Special constructor for one-way operations.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>operation</code> - The operation being performed</dd>
 <dd><code>command</code> - The command being executed</dd>
 <dd><code>response</code> - The response received in error</dd>
+<dd><code>ignored</code> - Ignored</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,uk.ac.manchester.spinnaker.messages.scp.SCPResult)">UnexpectedResponseCodeException</a></h3>
+<h3><a id="&lt;init&gt;(java.lang.String,java.lang.Enum,uk.ac.manchester.spinnaker.messages.scp.SCPResult)">UnexpectedResponseCodeException</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">UnexpectedResponseCodeException</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="../scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
 <a href="../scp/SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a>&nbsp;response)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

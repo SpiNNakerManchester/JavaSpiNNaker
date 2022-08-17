@@ -75,46 +75,58 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.bmp">uk.ac.manchester.spinnaker.alloc.bmp</a></th>
+<td class="colLast">
+<div class="block">The BMP control subsystem.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
 <td class="colLast">
 <div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end">uk.ac.manchester.spinnaker.front_end</a></th>
 <td class="colLast">
 <div class="block">The front-end interface to the Java implementation of the SpiNNaker host
  libraries.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
 <td class="colLast">
 <div class="block">The buffer manager and support classes.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download.request">uk.ac.manchester.spinnaker.front_end.download.request</a></th>
 <td class="colLast">
 <div class="block">Classes used to describe the JSON requests to the data transfer code.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
 <td class="colLast">
 <div class="block">Data specification execution interface.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.iobuf">uk.ac.manchester.spinnaker.front_end.iobuf</a></th>
 <td class="colLast">
 <div class="block">Utility for retrieving IOBUF contents.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.io">uk.ac.manchester.spinnaker.io</a></th>
 <td class="colLast">
 <div class="block">Pretending that a SpiNNaker machine is simple I/O.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp</a></th>
+<td class="colLast">
+<div class="block">Messages that talk to the BMP.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -128,6 +140,43 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="packageUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.bmp">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> used by <a href="../alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPTransceiverInterface.html#uk.ac.manchester.spinnaker.alloc.bmp">BMPTransceiverInterface</a></th>
+<td class="colLast">
+<div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a> for talking to a BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/ProcessException.html#uk.ac.manchester.spinnaker.alloc.bmp">ProcessException</a></th>
+<td class="colLast">
+<div class="block">Encapsulates exceptions from processes which communicate with some core/chip.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/SpinnmanException.html#uk.ac.manchester.spinnaker.alloc.bmp">SpinnmanException</a></th>
+<td class="colLast">
+<div class="block">Basic exception from the transceiver.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
 <!--   -->
@@ -180,9 +229,9 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colFirst" scope="row"><a href="class-use/Transceiver.html#uk.ac.manchester.spinnaker.front_end">Transceiver</a></th>
+<th class="colFirst" scope="row"><a href="class-use/TransceiverInterface.html#uk.ac.manchester.spinnaker.front_end">TransceiverInterface</a></th>
 <td class="colLast">
-<div class="block">An encapsulation of various communications with the SpiNNaker board.</div>
+<div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a>.</div>
 </td>
 </tr>
 </tbody>
@@ -211,12 +260,6 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/Transceiver.html#uk.ac.manchester.spinnaker.front_end.download">Transceiver</a></th>
-<td class="colLast">
-<div class="block">An encapsulation of various communications with the SpiNNaker board.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/TransceiverInterface.html#uk.ac.manchester.spinnaker.front_end.download">TransceiverInterface</a></th>
 <td class="colLast">
 <div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a>.</div>
@@ -248,9 +291,9 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/Transceiver.html#uk.ac.manchester.spinnaker.front_end.download.request">Transceiver</a></th>
+<th class="colFirst" scope="row"><a href="class-use/TransceiverInterface.html#uk.ac.manchester.spinnaker.front_end.download.request">TransceiverInterface</a></th>
 <td class="colLast">
-<div class="block">An encapsulation of various communications with the SpiNNaker board.</div>
+<div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a>.</div>
 </td>
 </tr>
 </tbody>
@@ -279,9 +322,9 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="class-use/Transceiver.html#uk.ac.manchester.spinnaker.front_end.dse">Transceiver</a></th>
+<th class="colFirst" scope="row"><a href="class-use/TransceiverInterface.html#uk.ac.manchester.spinnaker.front_end.dse">TransceiverInterface</a></th>
 <td class="colLast">
-<div class="block">An encapsulation of various communications with the SpiNNaker board.</div>
+<div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a>.</div>
 </td>
 </tr>
 </tbody>
@@ -358,6 +401,31 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.bmp">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> used by <a href="../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPTransceiverInterface.FPGAResetType.html#uk.ac.manchester.spinnaker.messages.bmp">BMPTransceiverInterface.FPGAResetType</a></th>
+<td class="colLast">
+<div class="block">The type of reset to perform.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.transceiver">
 <!--   -->
 </a>
@@ -378,6 +446,18 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPTransceiverInterface.html#uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></th>
+<td class="colLast">
+<div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a> for talking to a BMP.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPTransceiverInterface.FPGAResetType.html#uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a></th>
+<td class="colLast">
+<div class="block">The type of reset to perform.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/FillDataType.html#uk.ac.manchester.spinnaker.transceiver">FillDataType</a></th>
 <td class="colLast">
 <div class="block">The fill unit for a fill of values in memory.</div>
@@ -394,8 +474,9 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/ParallelSafeWithCare.html#uk.ac.manchester.spinnaker.transceiver">ParallelSafeWithCare</a></th>
 <td class="colLast">
 <div class="block">Documents a transceiver operation that may be used from multiple threads in
- parallel provided those threads are accessing different boards, and care is
- taken to use this method in a way that only accesses a single board via it.</div>
+ parallel provided those threads are accessing different boards (or different
+ BMPs, for BMP-based operations), and care is taken to use this method in a
+ way that only accesses a single board via it.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -412,36 +493,54 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ProcessException.CallerProcessException.html#uk.ac.manchester.spinnaker.transceiver">ProcessException.CallerProcessException</a></th>
+<td class="colLast">
+<div class="block">Marks an exception for errors in the message by the caller.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/ProcessException.PermanentProcessException.html#uk.ac.manchester.spinnaker.transceiver">ProcessException.PermanentProcessException</a></th>
+<td class="colLast">
+<div class="block">Marks an exception for a permanent condition.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ProcessException.TransientProcessException.html#uk.ac.manchester.spinnaker.transceiver">ProcessException.TransientProcessException</a></th>
+<td class="colLast">
+<div class="block">Marks an exception for a transient condition.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/RetryTracker.html#uk.ac.manchester.spinnaker.transceiver">RetryTracker</a></th>
 <td class="colLast">
 <div class="block">Marks a class that is used to track how many retries were used.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SpinnmanException.html#uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></th>
 <td class="colLast">
 <div class="block">Basic exception from the transceiver.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/Transceiver.ConnectionDescriptor.html#uk.ac.manchester.spinnaker.transceiver">Transceiver.ConnectionDescriptor</a></th>
 <td class="colLast">
 <div class="block">A simple description of a connnection to create.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/TransceiverInterface.html#uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></th>
 <td class="colLast">
 <div class="block">The interface supported by the <a href="Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><code>Transceiver</code></a>.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/UDPTransceiver.html#uk.ac.manchester.spinnaker.transceiver">UDPTransceiver</a></th>
 <td class="colLast">
 <div class="block">A simple transceiver for UDP connections.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/UDPTransceiver.ConnectionFactory.html#uk.ac.manchester.spinnaker.transceiver">UDPTransceiver.ConnectionFactory</a></th>
 <td class="colLast">
 <div class="block">How to manufacture new instances of a connection as required.</div>

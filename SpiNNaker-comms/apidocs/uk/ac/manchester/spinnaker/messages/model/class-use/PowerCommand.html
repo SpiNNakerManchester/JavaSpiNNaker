@@ -114,7 +114,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/SetPower.html#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.PowerCommand,java.util.Collection,double)">SetPower</a></span>&#8203;(<a href="../PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards,
 double&nbsp;delay)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -177,29 +177,26 @@ the order they are declared.</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,int,int,java.util.Collection)">power</a></span>&#8203;(<a href="../PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
-int&nbsp;cabinet,
-int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Send a power request to the machine.</div>
 </td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
 <a href="../../bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Send a power request to the machine.</div>
-</td>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>

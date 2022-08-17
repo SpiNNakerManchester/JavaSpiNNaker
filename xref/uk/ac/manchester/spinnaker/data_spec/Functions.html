@@ -245,11 +245,11 @@
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> 							+ <span class="jxr_string">" (inclusive)"</span>);
 <a class="jxr_linenumber" name="L238" href="#L238">238</a> 		}
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> 		<strong class="jxr_keyword">if</strong> (!referenceable) {
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			memRegions.set(<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>(region, 0, unfilled, size));
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			memRegions.set(<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>(region, unfilled, size));
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			<strong class="jxr_keyword">int</strong> reference = spec.getInt();
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			Reference reference = <strong class="jxr_keyword">new</strong> <a name="Reference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/Reference.html#Reference">Reference</a>(spec.getInt());
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> 			memRegions.set(
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 					<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>(region, 0, unfilled, size, reference));
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 					<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>(region, unfilled, size, reference));
 <a class="jxr_linenumber" name="L245" href="#L245">245</a> 			referenceableRegions.add(region);
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> 		}
 <a class="jxr_linenumber" name="L247" href="#L247">247</a> 		spaceAllocated += size;
@@ -268,7 +268,7 @@
 <a class="jxr_linenumber" name="L260" href="#L260">260</a> 		<strong class="jxr_keyword">if</strong> (!memRegions.isEmpty(region)) {
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="RegionInUseException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/RegionInUseException.html#RegionInUseException">RegionInUseException</a>(region);
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> 		}
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 		<strong class="jxr_keyword">int</strong> reference = spec.getInt();
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 		Reference reference = <strong class="jxr_keyword">new</strong> <a name="Reference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/Reference.html#Reference">Reference</a>(spec.getInt());
 <a class="jxr_linenumber" name="L264" href="#L264">264</a> 		memRegions.set(<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReference.html#MemoryRegionReference">MemoryRegionReference</a>(region, reference));
 <a class="jxr_linenumber" name="L265" href="#L265">265</a> 		regionsToFill.add(region);
 <a class="jxr_linenumber" name="L266" href="#L266">266</a> 	}
@@ -431,7 +431,7 @@
 <a class="jxr_linenumber" name="L423" href="#L423">423</a> 				b.putInt((<strong class="jxr_keyword">int</strong>) value);
 <a class="jxr_linenumber" name="L424" href="#L424">424</a> 				<strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L425" href="#L425">425</a> 			<strong class="jxr_keyword">case</strong> LONG_SIZE:
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 				b.putLong((<strong class="jxr_keyword">long</strong>) value);
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 				b.putLong(value);
 <a class="jxr_linenumber" name="L427" href="#L427">427</a> 				<strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L428" href="#L428">428</a> 			<strong class="jxr_keyword">default</strong>:
 <a class="jxr_linenumber" name="L429" href="#L429">429</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="UnknownTypeLengthException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/UnknownTypeLengthException.html#UnknownTypeLengthException">UnknownTypeLengthException</a>(dataLen, command);

@@ -174,7 +174,7 @@ int&nbsp;parallelSize)</code></th>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="NotableMessages.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">NotableMessages</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieveIobufContents(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,java.io.File)">retrieveIobufContents</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieveIobufContents(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,java.io.File)">retrieveIobufContents</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;cores,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;binaryFile,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;provenanceDir)</code></th>
 <td class="colLast">
@@ -249,13 +249,14 @@ int&nbsp;parallelSize)</span></div>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network IO fails or the mapping dictionary is absent.</dd>
 <dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></code> - If an unexpected exception happens.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="retrieveIobufContents(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,java.io.File)">retrieveIobufContents</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="NotableMessages.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">NotableMessages</a></span>&nbsp;<span class="memberName">retrieveIobufContents</span>&#8203;(<span class="arguments"><a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;coreSubsets,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="NotableMessages.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">NotableMessages</a></span>&nbsp;<span class="memberName">retrieveIobufContents</span>&#8203;(<span class="arguments"><a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;cores,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;binaryFile,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;provenanceDir)</span>
                                       throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -263,7 +264,7 @@ int&nbsp;parallelSize)</span></div>
 <div class="block">Retrieve and translate some IOBUFs.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>coreSubsets</code> - The cores from which the IOBUFs are to be extracted. They must
+<dd><code>cores</code> - The cores from which the IOBUFs are to be extracted. They must
             be running the executable contained in <code>binaryFile</code> or
             the buffers will contain the wrong information.</dd>
 <dd><code>binaryFile</code> - The APLX file being executed. There must be a <code>.dict</code>
@@ -275,6 +276,7 @@ int&nbsp;parallelSize)</span></div>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If network IO fails or the mapping dictionary is absent.</dd>
 <dd><code><a href="../../transceiver/ProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException</a></code> - If SpiNNaker rejects a message.</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></code> - If an unexpected exception happens.</dd>
 </dl>
 </section>
 </li>

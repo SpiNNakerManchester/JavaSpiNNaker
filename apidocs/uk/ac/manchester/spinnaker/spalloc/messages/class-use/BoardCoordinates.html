@@ -75,6 +75,30 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.compat">uk.ac.manchester.spinnaker.alloc.compat</a></th>
+<td class="colLast">
+<div class="block">Spalloc v1 compatibility interface.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.web">uk.ac.manchester.spinnaker.alloc.web</a></th>
+<td class="colLast">
+<div class="block">The web interface to the service.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.allocator">uk.ac.manchester.spinnaker.allocator</a></th>
+<td class="colLast">
+<div class="block">Java client for the SpiNNaker allocation service.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker machine allocation client.</div>
@@ -91,6 +115,178 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<h2>Uses of <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a> in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> that return <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.BoardLocation.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.BoardLocation.html#getLogical()">getLogical</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Where is the board logically within its machine?</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> that return types with arguments of type <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.SubMachine.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.SubMachine.html#getBoards()">getBoards</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.compat">
+<!--   -->
+</a>
+<h2>Uses of <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a> in <a href="../../../alloc/compat/package-summary.html">uk.ac.manchester.spinnaker.alloc.compat</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../alloc/compat/package-summary.html">uk.ac.manchester.spinnaker.alloc.compat</a> that return <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected abstract <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">V1CompatTask.</span><code><span class="memberNameLink"><a href="../../../alloc/compat/V1CompatTask.html#getBoardAtPhysicalPosition(java.lang.String,int,int,int)">getBoardAtPhysicalPosition</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+int&nbsp;cabinet,
+int&nbsp;frame,
+int&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Get the coordinates of a board at a physical location.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.web">
+<!--   -->
+</a>
+<h2>Uses of <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a> in <a href="../../../alloc/web/package-summary.html">uk.ac.manchester.spinnaker.alloc.web</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Fields in <a href="../../../alloc/web/package-summary.html">uk.ac.manchester.spinnaker.alloc.web</a> declared as <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">WhereIsResponse.</span><code><span class="memberNameLink"><a href="../../../alloc/web/WhereIsResponse.html#logicalBoardCoordinates">logicalBoardCoordinates</a></span></code></th>
+<td class="colLast">
+<div class="block">The logical (triad) coordinates of the board.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Fields in <a href="../../../alloc/web/package-summary.html">uk.ac.manchester.spinnaker.alloc.web</a> with type parameters of type <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SubMachineResponse.</span><code><span class="memberNameLink"><a href="../../../alloc/web/SubMachineResponse.html#boards">boards</a></span></code></th>
+<td class="colLast">
+<div class="block">Where the boards are.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.allocator">
+<!--   -->
+</a>
+<h2>Uses of <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a> in <a href="../../../allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a> that return types with arguments of type <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">AllocatedMachine.</span><code><span class="memberNameLink"><a href="../../../allocator/AllocatedMachine.html#getBoards()">getBoards</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
+<caption><span>Method parameters in <a href="../../../allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a> with type arguments of type <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">AllocatedMachine.</span><code><span class="memberNameLink"><a href="../../../allocator/AllocatedMachine.html#setBoards(java.util.List)">setBoards</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.spalloc">
 <!--   -->
@@ -345,8 +541,8 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../WhereIs.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,int,uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.String,uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIs</a></span>&#8203;(<a href="../../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;jobChip,
-int&nbsp;jobId,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../WhereIs.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Integer,uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates,java.lang.String,uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates)">WhereIs</a></span>&#8203;(<a href="../../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;jobChip,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;jobId,
 <a href="../../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip,
 <a href="../BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&nbsp;logical,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,

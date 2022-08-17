@@ -40,8 +40,8 @@
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">	 * @param board</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">	 *            which board to request the ADC register from</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	<strong class="jxr_keyword">public</strong> <a name="ReadADC" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html#ReadADC">ReadADC</a>(<strong class="jxr_keyword">int</strong> board) {
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  		<strong class="jxr_keyword">super</strong>(board, CMD_BMP_INFO, (<strong class="jxr_keyword">int</strong>) ADC.value);
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	<strong class="jxr_keyword">public</strong> <a name="ReadADC" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/ReadADC.html#ReadADC">ReadADC</a>(<a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board) {
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  		<strong class="jxr_keyword">super</strong>(board, CMD_BMP_INFO, ADC.value);
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  	}
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  	@Override

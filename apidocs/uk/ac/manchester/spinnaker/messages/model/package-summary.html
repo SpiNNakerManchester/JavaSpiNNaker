@@ -96,41 +96,53 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></th>
+<td class="colLast">
+<div class="block">A blacklist read off a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="BMPConnectionData.html" title="class in uk.ac.manchester.spinnaker.messages.model">BMPConnectionData</a></th>
 <td class="colLast">
 <div class="block">Contains the details of a connection to a SpiNNaker Board Management
  Processor (BMP).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="ChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ChipInfo</a></th>
 <td class="colLast">
 <div class="block">Represents the system variables for a chip, received from the chip SDRAM.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="ChipSummaryInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ChipSummaryInfo</a></th>
 <td class="colLast">
 <div class="block">Represents the chip summary information read via an SCP command.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="CPUInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">CPUInfo</a></th>
 <td class="colLast">
 <div class="block">Represents information about the state of a CPU.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="DiagnosticFilter.html" title="class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter</a></th>
 <td class="colLast">
 <div class="block">A router diagnostic counter filter, which counts packets passing through the
  router with certain properties.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="ExecutableTargets.html" title="class in uk.ac.manchester.spinnaker.messages.model">ExecutableTargets</a></th>
 <td class="colLast">
 <div class="block">Encapsulate the binaries and cores on which to execute them.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="FirmwareDescriptor.html" title="class in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptor</a></th>
+<td class="colLast">
+<div class="block">A firmware descriptor.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -252,6 +264,42 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="FirmwareDescriptors.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptors</a></th>
+<td class="colLast">
+<div class="block">Basic information about firmware.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a></th>
+<td class="colLast">
+<div class="block">Identifiers for the FPGAs on a SpiNNaker board, as managed by BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a></th>
+<td class="colLast">
+<div class="block">FPGA registers within a register bank.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a></th>
+<td class="colLast">
+<div class="block">Main FPGA registers.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a></th>
+<td class="colLast">
+<div class="block">FPGA link receive counters.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a></th>
+<td class="colLast">
+<div class="block">FPGA link send counters.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="IPTagCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">IPTagCommand</a></th>
 <td class="colLast">
 <div class="block">SCP IP tag Commands.</div>
@@ -349,6 +397,13 @@ loadScripts(document, 'script');</script>
 <td class="colLast">
 <div class="block">Indicate that a response code returned from the board was unexpected for the
  current operation.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="UnroutableMessageException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnroutableMessageException</a></th>
+<td class="colLast">
+<div class="block">Indicate that the board (or BMP) was unable to send a message on to its
+ final destination.</div>
 </td>
 </tr>
 </tbody>

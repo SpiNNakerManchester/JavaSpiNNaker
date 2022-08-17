@@ -65,6 +65,7 @@ loadScripts(document, 'script');</script>
 <h2 title="Contents">Contents</h2>
 <ul>
 <li><a href="#class">Classes</a></li>
+<li><a href="#annotation.type">Annotation Types</a></li>
 <li><a href="#method">Methods</a></li>
 <li><a href="#enum.constant">Enum Constants</a></li>
 </ul>
@@ -88,7 +89,37 @@ loadScripts(document, 'script');</script>
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/front_end/download/DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download.DirectDataGatherer</a></th>
 <td class="colLast">
 <div class="deprecationComment">This class uses an unimplemented API call that needs to be fixed
-             but hasn't been yet.</div>
+             but hasn't been yet. It also assumes that there are no shared
+             regions.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</ul>
+<a id="annotation.type">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<div class="deprecatedSummary">
+<table>
+<caption><span>Annotation Types</span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Annotation Type</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/alloc/db/DatabaseEngine.Innocuous.html" title="annotation in uk.ac.manchester.spinnaker.alloc.db">uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Innocuous</a></th>
+<td class="colLast">
+<div class="deprecationComment">Consult the SQLite documentation on innocuous functions very
+             carefully before enabling this. Only disable the deprecation
+             warning if you're sure the security concerns it talks about
+             have been accounted for.</div>
 </td>
 </tr>
 </tbody>
@@ -112,28 +143,64 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/alloc/bmp/BMPController.html#getTestAPI()">uk.ac.manchester.spinnaker.alloc.bmp.BMPController.getTestAPI()</a></th>
+<td class="colLast">
+<div class="deprecationComment">This interface is just for testing.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/alloc/bmp/TransceiverFactory.html#getTestAPI()">uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory.getTestAPI()</a></th>
+<td class="colLast">
+<div class="deprecationComment">This interface is just for testing.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/alloc/compat/V1CompatService.html#getTestApi()">uk.ac.manchester.spinnaker.alloc.compat.V1CompatService.getTestApi()</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/alloc/security/LocalAuthenticationProvider.html#getTestAPI()">uk.ac.manchester.spinnaker.alloc.security.LocalAuthenticationProvider.getTestAPI()</a></th>
+<td class="colLast">
+<div class="deprecationComment">This interface is just for testing.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/alloc/security/LocalAuthProviderImpl.html#getTestAPI()">uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.getTestAPI()</a></th>
+<td class="colLast">
+<div class="deprecationComment">This interface is just for testing.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionCollection.html#add(uk.ac.manchester.spinnaker.data_spec.MemoryRegion)">uk.ac.manchester.spinnaker.data_spec.MemoryRegionCollection.add&#8203;(MemoryRegion)</a></th>
 <td class="colLast"></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionCollection.html#addAll(java.util.Collection)">uk.ac.manchester.spinnaker.data_spec.MemoryRegionCollection.addAll&#8203;(Collection&lt;? extends MemoryRegion&gt;)</a></th>
 <td class="colLast"></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionCollection.html#clear()">uk.ac.manchester.spinnaker.data_spec.MemoryRegionCollection.clear()</a></th>
 <td class="colLast"></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionCollection.html#remove(java.lang.Object)">uk.ac.manchester.spinnaker.data_spec.MemoryRegionCollection.remove&#8203;(Object)</a></th>
 <td class="colLast"></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionCollection.html#removeAll(java.util.Collection)">uk.ac.manchester.spinnaker.data_spec.MemoryRegionCollection.removeAll&#8203;(Collection&lt;?&gt;)</a></th>
 <td class="colLast"></td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/data_spec/MemoryRegionCollection.html#retainAll(java.util.Collection)">uk.ac.manchester.spinnaker.data_spec.MemoryRegionCollection.retainAll&#8203;(Collection&lt;?&gt;)</a></th>
 <td class="colLast"></td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/CreateJob.html#requireTorus()">uk.ac.manchester.spinnaker.spalloc.CreateJob.requireTorus()</a></th>
+<td class="colLast">
+<div class="deprecationComment">You probably can't use this sensibly with the hardware as
+             deployed (or you automatically get it when meaningful). The
+             default is fine.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(java.util.List,java.util.Map)">uk.ac.manchester.spinnaker.spalloc.SpallocAPI.createJob&#8203;(List&lt;Integer&gt;, Map&lt;String, Object&gt;)</a></th>
@@ -142,28 +209,74 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocClient.html#createJob(java.util.List,java.util.Map,java.lang.Integer)">uk.ac.manchester.spinnaker.spalloc.SpallocClient.createJob&#8203;(List&lt;Integer&gt;, Map&lt;String, Object&gt;, Integer)</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#deleteRegionContents(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int)">uk.ac.manchester.spinnaker.storage.BufferManagerStorage.deleteRegionContents&#8203;(HasCoreLocation, int)</a></th>
 <td class="colLast">
 <div class="deprecationComment">Currently unsupported; underlying database structure absent</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#getRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region)">uk.ac.manchester.spinnaker.storage.BufferManagerStorage.getRegionContents&#8203;(BufferManagerStorage.Region)</a></th>
 <td class="colLast">
 <div class="deprecationComment">Currently unsupported; underlying database structure absent</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#storeDSEContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,byte%5B%5D)">uk.ac.manchester.spinnaker.storage.BufferManagerStorage.storeDSEContents&#8203;(BufferManagerStorage.Region, byte[])</a></th>
 <td class="colLast">
 <div class="deprecationComment">Currently unsupported; underlying database structure absent</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html#storeRegionContents(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">uk.ac.manchester.spinnaker.storage.BufferManagerStorage.storeRegionContents&#8203;(BufferManagerStorage.Region, ByteBuffer)</a></th>
 <td class="colLast">
 <div class="deprecationComment">Currently unsupported; underlying database structure absent</div>
 </td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.chunkBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation)</a></th>
+<td class="colLast">
+<div class="deprecationComment">This operation should not be used directly.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.copyBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation, int)</a></th>
+<td class="colLast">
+<div class="deprecationComment">This operation should not be used directly.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.eraseBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation, int)</a></th>
+<td class="colLast">
+<div class="deprecationComment">This operation should not be used directly.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">uk.ac.manchester.spinnaker.transceiver.Transceiver.chunkBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation)</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">uk.ac.manchester.spinnaker.transceiver.Transceiver.copyBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation, int)</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">uk.ac.manchester.spinnaker.transceiver.Transceiver.eraseBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation, int)</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html#chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver.chunkBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation)</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver.copyBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation, int)</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">uk.ac.manchester.spinnaker.transceiver.UnimplementedBMPTransceiver.eraseBMPFlash&#8203;(BMPCoords, BMPBoard, MemoryLocation, int)</a></th>
+<td class="colLast"></td>
 </tr>
 <tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/Utils.html#sendPortTriggerMessage(uk.ac.manchester.spinnaker.connections.UDPConnection,java.net.InetAddress)">uk.ac.manchester.spinnaker.transceiver.Utils.sendPortTriggerMessage&#8203;(UDPConnection&lt;?&gt;, InetAddress)</a></th>
@@ -246,22 +359,14 @@ loadScripts(document, 'script');</script>
 <td class="colLast"></td>
 </tr>
 <tr class="altColor">
-<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_BMP_SF">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_SF</a></th>
-<td class="colLast"></td>
-</tr>
-<tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_BMP_TEST">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_TEST</a></th>
 <td class="colLast"></td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_RUN">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RUN</a></th>
 <td class="colLast">
 <div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a></div>
 </td>
-</tr>
-<tr class="rowColor">
-<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_XILINX">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_XILINX</a></th>
-<td class="colLast"></td>
 </tr>
 </tbody>
 </table>

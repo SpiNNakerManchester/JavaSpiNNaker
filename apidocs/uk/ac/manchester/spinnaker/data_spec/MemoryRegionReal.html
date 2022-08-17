@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -137,59 +137,40 @@ extends <a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.d
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMemoryPointer()">getMemoryPointer</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code><a href="Reference.html" title="class in uk.ac.manchester.spinnaker.data_spec">Reference</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getReference()">getReference</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the reference of the region.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegionBase()">getRegionBase</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Get the address of the first byte in the region.</div>
-</td>
-</tr>
-<tr class="altColor" id="i6">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegionData()">getRegionData</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRemainingSpace()">getRemainingSpace</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getWritePointer()">getWritePointer</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isUnfilled()">isUnfilled</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i10">
-<td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setRegionBase(int)">setRegionBase</a></span>&#8203;(int&nbsp;address)</code></th>
-<td class="colLast">
-<div class="block">Set the address of the first byte in the region.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i11">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setWritePointer(int)">setWritePointer</a></span>&#8203;(int&nbsp;address)</code></th>
 <td class="colLast">
 <div class="block">Set the write pointer.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeIntoRegionData(byte%5B%5D)">writeIntoRegionData</a></span>&#8203;(byte[]&nbsp;data)</code></th>
 <td class="colLast">
@@ -201,6 +182,11 @@ extends <a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.d
 </table>
 </div>
 </div>
+<div class="inheritedList">
+<h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.data_spec.<a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.data_spec.MemoryRegion">
+<!--   -->
+</a><code><a href="MemoryRegion.html#getRegionBase()">getRegionBase</a>, <a href="MemoryRegion.html#setRegionBase(uk.ac.manchester.spinnaker.machine.MemoryLocation)">setRegionBase</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -219,12 +205,6 @@ extends <a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.d
 </a>
 <h2>Method Details</h2>
 <ul class="blockList">
-<li class="blockList">
-<section class="detail">
-<h3><a id="getMemoryPointer()">getMemoryPointer</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getMemoryPointer</span>()</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getAllocatedSize()">getAllocatedSize</a></h3>
@@ -299,36 +279,8 @@ extends <a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.d
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getRegionBase()">getRegionBase</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getRegionBase</span>()</div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="MemoryRegion.html#getRegionBase()">MemoryRegion</a></code></span></div>
-<div class="block">Get the address of the first byte in the region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="MemoryRegion.html#getRegionBase()">getRegionBase</a></code>&nbsp;in class&nbsp;<code><a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The address.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setRegionBase(int)">setRegionBase</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setRegionBase</span>&#8203;(<span class="arguments">int&nbsp;address)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="MemoryRegion.html#setRegionBase(int)">MemoryRegion</a></code></span></div>
-<div class="block">Set the address of the first byte in the region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="MemoryRegion.html#setRegionBase(int)">setRegionBase</a></code>&nbsp;in class&nbsp;<code><a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>address</code> - The address to set.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getReference()">getReference</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getReference</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Reference.html" title="class in uk.ac.manchester.spinnaker.data_spec">Reference</a></span>&nbsp;<span class="memberName">getReference</span>()</div>
 <div class="block">Get the reference of the region.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>

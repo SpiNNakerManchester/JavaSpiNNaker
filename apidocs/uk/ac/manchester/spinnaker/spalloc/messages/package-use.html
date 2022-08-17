@@ -75,6 +75,30 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.compat">uk.ac.manchester.spinnaker.alloc.compat</a></th>
+<td class="colLast">
+<div class="block">Spalloc v1 compatibility interface.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.web">uk.ac.manchester.spinnaker.alloc.web</a></th>
+<td class="colLast">
+<div class="block">The web interface to the service.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.allocator">uk.ac.manchester.spinnaker.allocator</a></th>
+<td class="colLast">
+<div class="block">Java client for the SpiNNaker allocation service.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.spalloc">uk.ac.manchester.spinnaker.spalloc</a></th>
 <td class="colLast">
 <div class="block">SpiNNaker machine allocation client.</div>
@@ -97,6 +121,157 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="packageUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> used by <a href="../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BoardCoordinates.html#uk.ac.manchester.spinnaker.alloc.allocator">BoardCoordinates</a></th>
+<td class="colLast">
+<div class="block">The logical coordinates of a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/BoardPhysicalCoordinates.html#uk.ac.manchester.spinnaker.alloc.allocator">BoardPhysicalCoordinates</a></th>
+<td class="colLast">
+<div class="block">The physical coordinates of a board.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.compat">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> used by <a href="../../alloc/compat/package-summary.html">uk.ac.manchester.spinnaker.alloc.compat</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BoardCoordinates.html#uk.ac.manchester.spinnaker.alloc.compat">BoardCoordinates</a></th>
+<td class="colLast">
+<div class="block">The logical coordinates of a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/BoardPhysicalCoordinates.html#uk.ac.manchester.spinnaker.alloc.compat">BoardPhysicalCoordinates</a></th>
+<td class="colLast">
+<div class="block">The physical coordinates of a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/JobDescription.html#uk.ac.manchester.spinnaker.alloc.compat">JobDescription</a></th>
+<td class="colLast">
+<div class="block">A description of the state of a job.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/JobMachineInfo.html#uk.ac.manchester.spinnaker.alloc.compat">JobMachineInfo</a></th>
+<td class="colLast">
+<div class="block">A description of a machine associated with a job, in terms of width, height,
+ connections and its name.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/JobState.html#uk.ac.manchester.spinnaker.alloc.compat">JobState</a></th>
+<td class="colLast">
+<div class="block">A description of the state of a job, in terms of its state, whether its
+ boards are powered, the advised keep-alive polling interval and the reason
+ that the job died (if in the <a href="State.html#DESTROYED"><code>DESTROYED</code></a> state).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/Machine.html#uk.ac.manchester.spinnaker.alloc.compat">Machine</a></th>
+<td class="colLast">
+<div class="block">Describes a machine by its name, tags, width and height.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/WhereIs.html#uk.ac.manchester.spinnaker.alloc.compat">WhereIs</a></th>
+<td class="colLast">
+<div class="block">The description of where some resource is on a SpiNNaker system.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.web">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> used by <a href="../../alloc/web/package-summary.html">uk.ac.manchester.spinnaker.alloc.web</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BoardCoordinates.html#uk.ac.manchester.spinnaker.alloc.web">BoardCoordinates</a></th>
+<td class="colLast">
+<div class="block">The logical coordinates of a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/BoardPhysicalCoordinates.html#uk.ac.manchester.spinnaker.alloc.web">BoardPhysicalCoordinates</a></th>
+<td class="colLast">
+<div class="block">The physical coordinates of a board.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.allocator">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.spalloc.messages</a> used by <a href="../../allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BoardCoordinates.html#uk.ac.manchester.spinnaker.allocator">BoardCoordinates</a></th>
+<td class="colLast">
+<div class="block">The logical coordinates of a board.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.spalloc">
 <!--   -->

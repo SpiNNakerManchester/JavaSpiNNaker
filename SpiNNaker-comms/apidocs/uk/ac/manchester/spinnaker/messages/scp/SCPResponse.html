@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -194,16 +194,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#throwIfNotOK(java.lang.String,java.lang.String)">throwIfNotOK</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;command)</code></th>
-<td class="colLast">
-<div class="block">Throw an exception if the response is not an <a href="SCPResult.html#RC_OK">OK</a>.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#throwIfNotOK(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand)">throwIfNotOK</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#throwIfNotOK(java.lang.String,java.lang.Enum)">throwIfNotOK</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command)</code></th>
 <td class="colLast">
 <div class="block">Throw an exception if the response is not an <a href="SCPResult.html#RC_OK">OK</a>.</div>
 </td>
@@ -285,9 +277,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="throwIfNotOK(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand)">throwIfNotOK</a></h3>
+<h3><a id="throwIfNotOK(java.lang.String,java.lang.Enum)">throwIfNotOK</a></h3>
 <div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">throwIfNotOK</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command)</span>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command)</span>
                            throws <span class="exceptions"><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></span></div>
 <div class="block">Throw an exception if the response is not an <a href="SCPResult.html#RC_OK">OK</a>.</div>
 <dl>
@@ -296,22 +288,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <dd><code>command</code> - The particular command that this is a response to.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></code> - If the response was a failure.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="throwIfNotOK(java.lang.String,java.lang.String)">throwIfNotOK</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">throwIfNotOK</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;command)</span>
-                           throws <span class="exceptions"><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></span></div>
-<div class="block">Throw an exception if the response is not an <a href="SCPResult.html#RC_OK">OK</a>.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>operation</code> - The overall operation that was being done.</dd>
-<dd><code>command</code> - The particular command that this is a response to.</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="../model/UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a></code> - If the response was a failure.</dd>
+<dd><code><a href="../model/UnroutableMessageException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnroutableMessageException</a></code> - If the response was specifically that the message couldn't
+             be routed.</dd>
 </dl>
 </section>
 </li>

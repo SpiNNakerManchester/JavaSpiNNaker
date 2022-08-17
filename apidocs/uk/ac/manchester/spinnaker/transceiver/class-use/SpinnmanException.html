@@ -75,13 +75,19 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.bmp">uk.ac.manchester.spinnaker.alloc.bmp</a></th>
+<td class="colLast">
+<div class="block">The BMP control subsystem.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end">uk.ac.manchester.spinnaker.front_end</a></th>
 <td class="colLast">
 <div class="block">The front-end interface to the Java implementation of the SpiNNaker host
  libraries.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.transceiver">uk.ac.manchester.spinnaker.transceiver</a></th>
 <td class="colLast">
 <div class="block">How to actually talk to a SpiNNaker machine.</div>
@@ -92,6 +98,48 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.bmp">
+<!--   -->
+</a>
+<h2>Uses of <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a> in <a href="../../alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a> that throw <a href="../SpinnmanException.html" title="class in uk.ac.manchester.spinnaker.transceiver">SpinnmanException</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverFactory.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/TransceiverFactory.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getTransciever</a></span>&#8203;(<a href="../../alloc/allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machineDescription,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../alloc/bmp/TransceiverFactoryAPI.html" title="type parameter in TransceiverFactoryAPI">T</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverFactoryAPI.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/TransceiverFactoryAPI.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getTransciever</a></span>&#8203;(<a href="../../alloc/allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machineDescription,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">
+<div class="block">Get the transceiver for talking to a given machine's BMPs.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPController.TestAPI.</span><code><span class="memberNameLink"><a href="../../alloc/bmp/BMPController.TestAPI.html#processRequests(long)">processRequests</a></span>&#8203;(long&nbsp;millis)</code></th>
+<td class="colLast">
+<div class="block">The core of the scheduler.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.front_end">
 <!--   -->
@@ -232,6 +280,13 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.CallerProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.CallerProcessException</a></span></code></th>
+<td class="colLast">
+<div class="block">Marks an exception for errors in the message by the caller.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.DeadDestination.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.DeadDestination</a></span></code></th>
 <td class="colLast">
 <div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_DEAD"><code>SCPResult.RC_DEAD</code></a>
@@ -239,7 +294,7 @@ loadScripts(document, 'script');</script>
  messages from SCAMP.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.InvalidArguments.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.InvalidArguments</a></span></code></th>
 <td class="colLast">
@@ -247,7 +302,7 @@ loadScripts(document, 'script');</script>
  message, indicating that the arguments to the command are wrong.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.NoBufferAvailable.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoBufferAvailable</a></span></code></th>
 <td class="colLast">
@@ -255,7 +310,7 @@ loadScripts(document, 'script');</script>
  message, indicating that SCAMP had exhausted its supply of buffers.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.NoP2PRoute.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoP2PRoute</a></span></code></th>
 <td class="colLast">
@@ -264,7 +319,7 @@ loadScripts(document, 'script');</script>
  for some reason.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PBusy.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PBusy</a></span></code></th>
 <td class="colLast">
@@ -273,7 +328,7 @@ loadScripts(document, 'script');</script>
  the inter-SCAMP messaging was busy.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PNoReply.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PNoReply</a></span></code></th>
 <td class="colLast">
@@ -282,7 +337,7 @@ loadScripts(document, 'script');</script>
  messaging failed because the channel open failed.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PReject.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PReject</a></span></code></th>
 <td class="colLast">
@@ -291,7 +346,7 @@ loadScripts(document, 'script');</script>
  the inter-SCAMP messaging rejected the message.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.P2PTimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PTimedOut</a></span></code></th>
 <td class="colLast">
@@ -300,12 +355,19 @@ loadScripts(document, 'script');</script>
  the inter-SCAMP messaging did not respond.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.PacketTransmissionFailed.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.PacketTransmissionFailed</a></span></code></th>
 <td class="colLast">
 <div class="block">A process exception cause by the receipt of a <a href="../../messages/scp/SCPResult.html#RC_PKT_TX"><code>SCPResult.RC_PKT_TX</code></a>
  message, indicating that the packet transmission failed.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.PermanentProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.PermanentProcessException</a></span></code></th>
+<td class="colLast">
+<div class="block">Marks an exception for a permanent condition.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -315,6 +377,13 @@ loadScripts(document, 'script');</script>
 <div class="block">A process exception cause by the receipt of a
  <a href="../../messages/scp/SCPResult.html#RC_TIMEOUT"><code>SCPResult.RC_TIMEOUT</code></a> message, indicating that communications
  timed out.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../ProcessException.TransientProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.TransientProcessException</a></span></code></th>
+<td class="colLast">
+<div class="block">Marks an exception for a transient condition.</div>
 </td>
 </tr>
 </tbody>

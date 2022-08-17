@@ -97,12 +97,12 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;V&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;V&gt;</code>, <code><a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;V&gt;</code></dd>
 </dl>
 <hr>
 <pre>public final class <span class="typeNameLabel">DoubleMapIterable&lt;V&gt;</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
-implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;V&gt;</pre>
+implements <a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;V&gt;</pre>
 <div class="block">An Iterable for a Map or Collection of Maps.
  <p>
  The type of the Keys of the maps is irrelevant. It is not even required that
@@ -184,6 +184,11 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable
 <a id="methods.inherited.from.class.java.lang.Iterable">
 <!--   -->
 </a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="externalLink">forEach</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true#spliterator()" title="class or interface in java.lang" class="externalLink">spliterator</a></code></div>
+<div class="inheritedList">
+<h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.utils.<a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.utils.MappableIterable">
+<!--   -->
+</a><code><a href="MappableIterable.html#filter(java.util.function.Predicate)">filter</a>, <a href="MappableIterable.html#first()">first</a>, <a href="MappableIterable.html#first(int)">first</a>, <a href="MappableIterable.html#map(java.util.function.Function)">map</a>, <a href="MappableIterable.html#nth(int)">nth</a>, <a href="MappableIterable.html#toCollectingMap(java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="MappableIterable.html#toCollectingMap(java.util.function.Supplier,java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="MappableIterable.html#toCollectingMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a>, <a href="MappableIterable.html#toList()">toList</a>, <a href="MappableIterable.html#toList(java.util.function.Supplier)">toList</a>, <a href="MappableIterable.html#toMap(java.util.function.Function,java.util.function.Function)">toMap</a>, <a href="MappableIterable.html#toMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toMap</a>, <a href="MappableIterable.html#toSet()">toSet</a>, <a href="MappableIterable.html#toSet(java.util.function.Supplier)">toSet</a></code></div>
 </section>
 </li>
 </ul>

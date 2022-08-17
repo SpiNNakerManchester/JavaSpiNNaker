@@ -205,14 +205,14 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../messages/model/CPUInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">CPUInfo</a>&gt;</code></td>
+<td class="colFirst"><code>default <a href="../../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="../../messages/model/CPUInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">CPUInfo</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getCPUInformation()">getCPUInformation</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get information about the processors on the board.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../messages/model/IOBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.model">IOBuffer</a>&gt;</code></td>
+<td class="colFirst"><code>default <a href="../../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="../../messages/model/IOBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.model">IOBuffer</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getIobuf()">getIobuf</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the contents of the IOBUF buffer for all processors.</div>
@@ -236,45 +236,25 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
 <a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,int,int,java.util.Collection)">power</a></span>&#8203;(<a href="../../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
-int&nbsp;cabinet,
-int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Send a power request to the machine.</div>
 </td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
-<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#powerOffMachine()">powerOffMachine</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Send a power request to the machine.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#powerOff(int,int,java.util.Collection)">powerOff</a></span>&#8203;(int&nbsp;cabinet,
-int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Power off a set of boards in the machine.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#powerOff(int,java.util.Collection)">powerOff</a></span>&#8203;(int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Power off a set of boards in the machine.</div>
+<div class="block">Power off the whole machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -284,26 +264,9 @@ int&nbsp;frame,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#powerOffMachine()">powerOffMachine</a></span>()</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#powerOnMachine()">powerOnMachine</a></span>()</code></th>
 <td class="colLast">
-<div class="block">Power off the whole machine.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#powerOn(int,int,java.util.Collection)">powerOn</a></span>&#8203;(int&nbsp;cabinet,
-int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Power on a set of boards in the machine.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#powerOn(int,java.util.Collection)">powerOn</a></span>&#8203;(int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Power on a set of boards in the machine.</div>
+<div class="block">Power on the whole machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -312,64 +275,55 @@ int&nbsp;frame,
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#powerOnMachine()">powerOnMachine</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Power on the whole machine.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readADCData</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readADCData</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPVersion(java.lang.Iterable)">readBMPVersion</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">
+<div class="block">Read the BMP version.</div>
+</td>
+</tr>
 <tr class="altColor">
+<td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.lang.Iterable)">readBMPVersion</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">
+<div class="block">Read the BMP version.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readBMPVersion</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBMPVersion</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readBMPVersion(int,int,java.lang.Iterable)">readBMPVersion</a></span>&#8203;(int&nbsp;cabinet,
-int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Read the BMP version.</div>
-</td>
-</tr>
 <tr class="altColor">
-<td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.lang.Iterable)">readBMPVersion</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Read the BMP version.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readFPGARegister(int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
 <a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,int,int)">readNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="../../machine/Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
-int&nbsp;baseAddress,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;length)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#sendSignal(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.messages.model.Signal)">sendSignal</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 <a href="../../messages/model/Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a>&nbsp;signal)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#sendSignal(uk.ac.manchester.spinnaker.messages.model.AppID,uk.ac.manchester.spinnaker.messages.model.Signal)">sendSignal</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 <a href="../../messages/model/Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a>&nbsp;signal)</code></th>
@@ -377,34 +331,34 @@ int&nbsp;length)</code></th>
 <div class="block">Send a signal to an application.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
 <a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;board)</code></th>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setWatchDogTimeout(int)">setWatchDogTimeout</a></span>&#8203;(int&nbsp;watchdog)</code></th>
 <td class="colLast">
 <div class="block">Set the value of the watch dog timer.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#stopApplication(uk.ac.manchester.spinnaker.messages.model.AppID)">stopApplication</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#stopApplication(uk.ac.manchester.spinnaker.messages.model.AppID)">stopApplication</a></span>&#8203;(<a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">
 <div class="block">Sends a stop request for an application ID.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#updateProvenanceAndExit()">updateProvenanceAndExit</a></span>()</code></th>
 <td class="colLast">
@@ -413,85 +367,44 @@ int&nbsp;length)</code></th>
  <a href="../../messages/model/CPUState.html#FINISHED"><code>FINISHED</code></a> state.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#updateRuntime(java.lang.Integer)">updateRuntime</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;runTimesteps)</code></th>
 <td class="colLast">
 <div class="block">Set the running time information for all processors.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeFPGARegister(int,int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">writeFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
 int&nbsp;value,
 <a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemoryFlood(int,java.io.File)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemoryFlood(int,java.io.InputStream,int)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,int)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
 int&nbsp;numBytes)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemoryFlood(int,java.nio.ByteBuffer)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(int,byte%5B%5D)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
-byte[]&nbsp;data)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM of all chips.</div>
-</td>
-</tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(int,int)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
-int&nbsp;dataWord)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM of all chips.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(int,java.io.File)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM of all chips.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(int,java.io.InputStream,int)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
-int&nbsp;numBytes)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM of all chips.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(int,java.nio.ByteBuffer)">writeMemoryFlood</a></span>&#8203;(int&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM of all chips.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(long,byte%5B%5D)">writeMemoryFlood</a></span>&#8203;(long&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,byte%5B%5D)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 byte[]&nbsp;data)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM of all chips.</div>
@@ -499,23 +412,23 @@ byte[]&nbsp;data)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(long,int)">writeMemoryFlood</a></span>&#8203;(long&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;dataWord)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM of all chips.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(long,java.io.File)">writeMemoryFlood</a></span>&#8203;(long&nbsp;baseAddress,
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM of all chips.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(long,java.io.InputStream,int)">writeMemoryFlood</a></span>&#8203;(long&nbsp;baseAddress,
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,int)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
 int&nbsp;numBytes)</code></th>
 <td class="colLast">
@@ -523,8 +436,8 @@ int&nbsp;numBytes)</code></th>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(long,java.nio.ByteBuffer)">writeMemoryFlood</a></span>&#8203;(long&nbsp;baseAddress,
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemoryFlood(uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemoryFlood</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM of all chips.</div>
@@ -532,26 +445,26 @@ int&nbsp;numBytes)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,int,java.io.File)">writeNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="../../machine/Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
-int&nbsp;baseAddress,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,int,java.io.InputStream,int)">writeNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,int)">writeNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="../../machine/Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
-int&nbsp;baseAddress,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
 int&nbsp;numBytes)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,int,java.nio.ByteBuffer)">writeNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeNeighbourMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.Direction,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeNeighbourMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
 <a href="../../machine/Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&nbsp;link,
-int&nbsp;baseAddress,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>

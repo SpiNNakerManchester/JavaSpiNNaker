@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  @JsonFormat(shape = ARRAY)
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ChipBean" href="../../../../../../uk/ac/manchester/spinnaker/machine/bean/ChipBean.html#ChipBean">ChipBean</a> {
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<em class="jxr_javadoccomment">/** The location of this Chip. */</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="ChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a> location;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> ChipLocation location;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<em class="jxr_javadoccomment">/** The details for this Chip. */</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="ChipDetails" href="../../../../../../uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html#ChipDetails">ChipDetails</a> details;
@@ -68,12 +68,12 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  			@JsonProperty(value = <span class="jxr_string">"details"</span>, required = <strong class="jxr_keyword">true</strong>)
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  			ChipDetails details,
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  			@JsonProperty(value = <span class="jxr_string">"resources"</span>) <a name="ChipResources" href="../../../../../../uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#ChipResources">ChipResources</a> resources) {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		location = <strong class="jxr_keyword">new</strong> <a name="ChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a>(x, y);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		location = <strong class="jxr_keyword">new</strong> ChipLocation(x, y);
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  		<strong class="jxr_keyword">this</strong>.details = details;
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  		<strong class="jxr_keyword">this</strong>.resources = resources;
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  	}
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  	<strong class="jxr_keyword">public</strong> <a name="ChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a> getLocation() {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  	<strong class="jxr_keyword">public</strong> ChipLocation getLocation() {
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  		<strong class="jxr_keyword">return</strong> location;
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  	}
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  

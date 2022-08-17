@@ -65,13 +65,13 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  	<em class="jxr_javadoccomment">/** An SCP response to a request to allocate router entries. */</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> Response <strong class="jxr_keyword">extends</strong> <a name="CheckOKResponse" href="../../../../../../uk/ac/manchester/spinnaker/messages/scp/CheckOKResponse.html#CheckOKResponse">CheckOKResponse</a> {
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  		<em class="jxr_javadoccomment">/** The base address allocated, or 0 if none. */</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> baseAddress;
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  		<em class="jxr_javadoccomment">/** The base entry index allocated within the router, or 0 if none. */</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> baseIndex;
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  		Response(<strong class="jxr_keyword">int</strong> size, ByteBuffer buffer) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Router Allocation"</span>, CMD_ALLOC, buffer);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  			baseAddress = buffer.getInt();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  			<strong class="jxr_keyword">if</strong> (baseAddress == 0) {
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  			baseIndex = buffer.getInt();
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  			<strong class="jxr_keyword">if</strong> (baseIndex == 0) {
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="MemoryAllocationFailedException" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MemoryAllocationFailedException.html#MemoryAllocationFailedException">MemoryAllocationFailedException</a>(
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  						format(<span class="jxr_string">"Could not allocate %d router entries"</span>, size));
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  			}

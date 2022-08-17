@@ -138,7 +138,8 @@ extends <a href="SpinnakerRequest.html" title="class in uk.ac.manchester.spinnak
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.nio.ByteBuffer)">SDPMessage</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.nio.ByteBuffer,boolean)">SDPMessage</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer,
+boolean&nbsp;isBMP)</code></th>
 <td class="colLast">
 <div class="block">Deserialises an SDP message from a buffer.</div>
 </td>
@@ -314,12 +315,14 @@ int&nbsp;length)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.nio.ByteBuffer)">SDPMessage</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SDPMessage</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span></div>
+<h3><a id="&lt;init&gt;(java.nio.ByteBuffer,boolean)">SDPMessage</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SDPMessage</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer,
+boolean&nbsp;isBMP)</span></div>
 <div class="block">Deserialises an SDP message from a buffer.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>buffer</code> - The buffer holding the message.</dd>
+<dd><code>isBMP</code> - Whether we're really talking to a BMP</dd>
 </dl>
 </section>
 </li>

@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  	<strong class="jxr_keyword">void</strong> run(<a name="AppID" href="../../../../../uk/ac/manchester/spinnaker/messages/model/AppID.html#AppID">AppID</a> appID, <a name="CoreSubsets" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a> coreSubsets, <strong class="jxr_keyword">boolean</strong> wait)
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  			<strong class="jxr_keyword">throws</strong> ProcessException, IOException {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">for</strong> (<a name="ChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a> chip : coreSubsets.getChips()) {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">for</strong> (ChipLocation chip : coreSubsets.getChips()) {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  			sendRequest(<strong class="jxr_keyword">new</strong> <a name="ApplicationRun" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/ApplicationRun.html#ApplicationRun">ApplicationRun</a>(appID, chip,
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  					coreSubsets.pByChip(chip), wait));
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  		}

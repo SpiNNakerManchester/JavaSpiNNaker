@@ -81,6 +81,12 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model</a></th>
+<td class="colLast">
+<div class="block">Model support classes for the communication messages.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
@@ -112,6 +118,35 @@ loadScripts(document, 'script');</script>
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">
 <div class="block">Make a response object.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.model">
+<!--   -->
+</a>
+<h2>Uses of <a href="../UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Subclasses of <a href="../UnexpectedResponseCodeException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnexpectedResponseCodeException</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../UnroutableMessageException.html" title="class in uk.ac.manchester.spinnaker.messages.model">UnroutableMessageException</a></span></code></th>
+<td class="colLast">
+<div class="block">Indicate that the board (or BMP) was unable to send a message on to its
+ final destination.</div>
 </td>
 </tr>
 </tbody>
@@ -177,16 +212,8 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SCPResponse.</span><code><span class="memberNameLink"><a href="../../scp/SCPResponse.html#throwIfNotOK(java.lang.String,java.lang.String)">throwIfNotOK</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;command)</code></th>
-<td class="colLast">
-<div class="block">Throw an exception if the response is not an <a href="../../scp/SCPResult.html#RC_OK">OK</a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SCPResponse.</span><code><span class="memberNameLink"><a href="../../scp/SCPResponse.html#throwIfNotOK(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand)">throwIfNotOK</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="../../scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SCPResponse.</span><code><span class="memberNameLink"><a href="../../scp/SCPResponse.html#throwIfNotOK(java.lang.String,java.lang.Enum)">throwIfNotOK</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command)</code></th>
 <td class="colLast">
 <div class="block">Throw an exception if the response is not an <a href="../../scp/SCPResult.html#RC_OK">OK</a>.</div>
 </td>
@@ -205,15 +232,16 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/CheckOKResponse.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,java.nio.ByteBuffer)">CheckOKResponse</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="../../scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/CheckOKResponse.html#%3Cinit%3E(java.lang.String,java.lang.Enum,java.nio.ByteBuffer)">CheckOKResponse</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">
 <div class="block">Create an instance.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/NoResponse.html#%3Cinit%3E(java.lang.String,java.nio.ByteBuffer)">NoResponse</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../scp/NoResponse.html#%3Cinit%3E(java.lang.String,java.lang.Enum,java.nio.ByteBuffer)">NoResponse</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;?&gt;&nbsp;command,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
 <td class="colLast">
 <div class="block">Create an instance.</div>

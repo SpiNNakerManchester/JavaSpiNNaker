@@ -75,6 +75,18 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.bmp">uk.ac.manchester.spinnaker.alloc.bmp</a></th>
+<td class="colLast">
+<div class="block">The BMP control subsystem.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
 <td class="colLast">
 <div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
@@ -98,6 +110,62 @@ loadScripts(document, 'script');</script>
 <section class="packageUses">
 <ul class="blockList">
 <li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> used by <a href="../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPCoords.html#uk.ac.manchester.spinnaker.alloc.allocator">BMPCoords</a></th>
+<td class="colLast">
+<div class="block">A simple description of a BMP to talk to.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.bmp">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a> used by <a href="../../alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPBoard.html#uk.ac.manchester.spinnaker.alloc.bmp">BMPBoard</a></th>
+<td class="colLast">
+<div class="block">Wrapper for a board number so that it can't get mixed up with other integers.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPCoords.html#uk.ac.manchester.spinnaker.alloc.bmp">BMPCoords</a></th>
+<td class="colLast">
+<div class="block">A simple description of a BMP to talk to.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
 <!--   -->
 </a>
@@ -112,12 +180,18 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPBoard.html#uk.ac.manchester.spinnaker.connections">BMPBoard</a></th>
+<td class="colLast">
+<div class="block">Wrapper for a board number so that it can't get mixed up with other integers.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/BMPCoords.html#uk.ac.manchester.spinnaker.connections">BMPCoords</a></th>
 <td class="colLast">
 <div class="block">A simple description of a BMP to talk to.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/BMPRequest.html#uk.ac.manchester.spinnaker.connections">BMPRequest</a></th>
 <td class="colLast">
 <div class="block">The base class of a request following the BMP protocol.</div>
@@ -143,9 +217,21 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPBoard.html#uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a></th>
+<td class="colLast">
+<div class="block">Wrapper for a board number so that it can't get mixed up with other integers.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/BMPInfo.html#uk.ac.manchester.spinnaker.messages.bmp">BMPInfo</a></th>
 <td class="colLast">
 <div class="block">The SCP BMP Information Types.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPReadMemory.Response.html#uk.ac.manchester.spinnaker.messages.bmp">BMPReadMemory.Response</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request to read a region of memory on a chip.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -161,10 +247,20 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/EraseFlash.Response.html#uk.ac.manchester.spinnaker.messages.bmp">EraseFlash.Response</a></th>
+<td class="colLast">
+<div class="block">The response from a request to erase flash.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/GetBMPVersion.Response.html#uk.ac.manchester.spinnaker.messages.bmp">GetBMPVersion.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request for the version of software running.</div>
 </td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/GetFPGAResetStatus.Response.html#uk.ac.manchester.spinnaker.messages.bmp">GetFPGAResetStatus.Response</a></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/ReadADC.Response.html#uk.ac.manchester.spinnaker.messages.bmp">ReadADC.Response</a></th>
@@ -173,9 +269,51 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/ReadCANStatus.Response.html#uk.ac.manchester.spinnaker.messages.bmp">ReadCANStatus.Response</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request for the CAN status.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/ReadFPGARegister.Response.html#uk.ac.manchester.spinnaker.messages.bmp">ReadFPGARegister.Response</a></th>
 <td class="colLast">
 <div class="block">An SCP response to a request for the contents of an FPGA register.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/ReadIPAddress.Response.html#uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress.Response</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request for IP address information.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ReadSerialFlash.Response.html#uk.ac.manchester.spinnaker.messages.bmp">ReadSerialFlash.Response</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request to read a region of memory on a chip.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/ReadSerialFlashCRC.Response.html#uk.ac.manchester.spinnaker.messages.bmp">ReadSerialFlashCRC.Response</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request to get the CRC of serial flash.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ReadSerialVector.Response.html#uk.ac.manchester.spinnaker.messages.bmp">ReadSerialVector.Response</a></th>
+<td class="colLast">
+<div class="block">An SCP response to a request for serial data.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/ReadSerialVector.SerialVector.html#uk.ac.manchester.spinnaker.messages.bmp">ReadSerialVector.SerialVector</a></th>
+<td class="colLast">
+<div class="block">The data read from the serial vector.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/XilinxCommand.html#uk.ac.manchester.spinnaker.messages.bmp">XilinxCommand</a></th>
+<td class="colLast">
+<div class="block">Commands to send to the Xilinx FPGA handler.</div>
 </td>
 </tr>
 </tbody>
@@ -198,6 +336,12 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/BMPBoard.html#uk.ac.manchester.spinnaker.transceiver">BMPBoard</a></th>
+<td class="colLast">
+<div class="block">Wrapper for a board number so that it can't get mixed up with other integers.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/BMPCoords.html#uk.ac.manchester.spinnaker.transceiver">BMPCoords</a></th>
 <td class="colLast">
 <div class="block">A simple description of a BMP to talk to.</div>

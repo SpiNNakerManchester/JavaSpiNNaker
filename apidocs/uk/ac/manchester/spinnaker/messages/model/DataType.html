@@ -56,7 +56,7 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
 <li><a href="#enum.constant.summary">Enum Constants</a>&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
@@ -95,28 +95,19 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html?is-external=true" title="class or interface in java.io" class="externalLink">Serializable</a></code>, <code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Comparable</a>&lt;<a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a>&gt;</code>, <code>java.lang.constant.Constable</code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html?is-external=true" title="class or interface in java.io" class="externalLink">Serializable</a></code>, <code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Comparable</a>&lt;<a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a>&gt;</code></dd>
 </dl>
 <hr>
 <pre>public enum <span class="typeNameLabel">DataType</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;<a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a>&gt;</pre>
 <div class="block">Enum for data types of system variables.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model"><code>SystemVariableDefinition</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="blockList">
-<!-- ======== NESTED CLASS SUMMARY ======== -->
-<li class="blockList">
-<section class="nestedClassSummary"><a id="nested.class.summary">
-<!--   -->
-</a>
-<h2>Nested Class Summary</h2>
-<div class="inheritedList">
-<h2>Nested classes/interfaces inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a></h2>
-<a id="nested.classes.inherited.from.class.java.lang.Enum">
-<!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.EnumDesc.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum.EnumDesc</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.EnumDesc.html?is-external=true" title="class or interface in java.lang" class="externalLink">E</a> extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.EnumDesc.html?is-external=true" title="class or interface in java.lang" class="externalLink">E</a>&gt;&gt;</code></div>
-</section>
-</li>
 <!-- =========== ENUM CONSTANT SUMMARY =========== -->
 <li class="blockList">
 <section class="constantsSummary"><a id="enum.constant.summary">
@@ -134,33 +125,40 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#ADDRESS">ADDRESS</a></span></code></th>
+<td class="colLast">
+<div class="block">The value is four bytes, representing a <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">memory
+ location</a>.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#BYTE">BYTE</a></span></code></th>
 <td class="colLast">
-<div class="block">The value is one byte long.</div>
+<div class="block">The value is one byte long, a <code>byte</code>.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#BYTE_ARRAY">BYTE_ARRAY</a></span></code></th>
 <td class="colLast">
-<div class="block">The value is an array of bytes.</div>
-</td>
-</tr>
-<tr class="altColor">
-<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#INT">INT</a></span></code></th>
-<td class="colLast">
-<div class="block">The value is four bytes long.</div>
+<div class="block">The value is an array of bytes, a <code>byte[]</code>.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#LONG">LONG</a></span></code></th>
+<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#INT">INT</a></span></code></th>
 <td class="colLast">
-<div class="block">The value is eight bytes long.</div>
+<div class="block">The value is four bytes long, an <code>int</code>.</div>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#LONG">LONG</a></span></code></th>
+<td class="colLast">
+<div class="block">The value is eight bytes long, a <code>long</code>.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><code><span class="memberNameLink"><a href="#SHORT">SHORT</a></span></code></th>
 <td class="colLast">
-<div class="block">The value is two bytes long.</div>
+<div class="block">The value is two bytes long, a <code>short</code>.</div>
 </td>
 </tr>
 </tbody>
@@ -238,7 +236,7 @@ the order they are declared.</div>
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a></h3>
 <a id="methods.inherited.from.class.java.lang.Enum">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#compareTo(E)" title="class or interface in java.lang" class="externalLink">compareTo</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#describeConstable()" title="class or interface in java.lang" class="externalLink">describeConstable</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#getDeclaringClass()" title="class or interface in java.lang" class="externalLink">getDeclaringClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#name()" title="class or interface in java.lang" class="externalLink">name</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#ordinal()" title="class or interface in java.lang" class="externalLink">ordinal</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#valueOf(java.lang.Class,java.lang.String)" title="class or interface in java.lang" class="externalLink">valueOf</a></code></div>
+</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#compareTo(E)" title="class or interface in java.lang" class="externalLink">compareTo</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#getDeclaringClass()" title="class or interface in java.lang" class="externalLink">getDeclaringClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#name()" title="class or interface in java.lang" class="externalLink">name</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#ordinal()" title="class or interface in java.lang" class="externalLink">ordinal</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true#valueOf(java.lang.Class,java.lang.String)" title="class or interface in java.lang" class="externalLink">valueOf</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -261,35 +259,43 @@ the order they are declared.</div>
 <section class="detail">
 <h3><a id="BYTE">BYTE</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a></span>&nbsp;<span class="memberName">BYTE</span></div>
-<div class="block">The value is one byte long.</div>
+<div class="block">The value is one byte long, a <code>byte</code>.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="SHORT">SHORT</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a></span>&nbsp;<span class="memberName">SHORT</span></div>
-<div class="block">The value is two bytes long.</div>
+<div class="block">The value is two bytes long, a <code>short</code>.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="INT">INT</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a></span>&nbsp;<span class="memberName">INT</span></div>
-<div class="block">The value is four bytes long.</div>
+<div class="block">The value is four bytes long, an <code>int</code>.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="LONG">LONG</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a></span>&nbsp;<span class="memberName">LONG</span></div>
-<div class="block">The value is eight bytes long.</div>
+<div class="block">The value is eight bytes long, a <code>long</code>.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="BYTE_ARRAY">BYTE_ARRAY</a></h3>
 <div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a></span>&nbsp;<span class="memberName">BYTE_ARRAY</span></div>
-<div class="block">The value is an array of bytes.</div>
+<div class="block">The value is an array of bytes, a <code>byte[]</code>.</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="ADDRESS">ADDRESS</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="DataType.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DataType</a></span>&nbsp;<span class="memberName">ADDRESS</span></div>
+<div class="block">The value is four bytes, representing a <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">memory
+ location</a>.</div>
 </section>
 </li>
 </ul>
@@ -383,7 +389,7 @@ not permitted.)</div>
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
 <li><a href="#enum.constant.summary">Enum Constants</a>&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>

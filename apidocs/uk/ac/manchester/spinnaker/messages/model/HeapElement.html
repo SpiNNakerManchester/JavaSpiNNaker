@@ -124,7 +124,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#blockAddress">blockAddress</a></span></code></th>
 <td class="colLast">
 <div class="block">The address of the block.</div>
@@ -138,7 +138,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nextAddress">nextAddress</a></span></code></th>
 <td class="colLast">
 <div class="block">A pointer to the next block, or 0 if none.</div>
@@ -180,14 +180,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,int)">HeapElement</a></span>&#8203;(int&nbsp;blockAddress,
-int&nbsp;nextAddress,
-int&nbsp;free)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(long,int,int)">HeapElement</a></span>&#8203;(long&nbsp;blockAddress,
-int&nbsp;nextAddress,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">HeapElement</a></span>&#8203;(<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;blockAddress,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;nextAddress,
 int&nbsp;free)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -215,7 +209,7 @@ int&nbsp;free)</code></th>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDataAddress()">getDataAddress</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the address of the data in the heap element.</div>
@@ -246,7 +240,7 @@ int&nbsp;free)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="blockAddress">blockAddress</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">blockAddress</span></div>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span>&nbsp;<span class="memberName">blockAddress</span></div>
 <div class="block">The address of the block.</div>
 </section>
 </li>
@@ -254,7 +248,7 @@ int&nbsp;free)</code></th>
 <section class="detail">
 <h3><a id="nextAddress">nextAddress</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="SARKField.html" title="annotation in uk.ac.manchester.spinnaker.messages.model">@SARKField</a>("next")
-</span><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">nextAddress</span></div>
+</span><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span>&nbsp;<span class="memberName">nextAddress</span></div>
 <div class="block">A pointer to the next block, or 0 if none.</div>
 </section>
 </li>
@@ -301,23 +295,9 @@ int&nbsp;free)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(int,int,int)">HeapElement</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">HeapElement</span>&#8203;(<span class="arguments">int&nbsp;blockAddress,
-int&nbsp;nextAddress,
-int&nbsp;free)</span></div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>blockAddress</code> - The address of this element on the heap</dd>
-<dd><code>nextAddress</code> - The address of the next element on the heap</dd>
-<dd><code>free</code> - The "free" element of the block as read from the heap</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(long,int,int)">HeapElement</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">HeapElement</span>&#8203;(<span class="arguments">long&nbsp;blockAddress,
-int&nbsp;nextAddress,
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">HeapElement</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">HeapElement</span>&#8203;(<span class="arguments"><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;blockAddress,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;nextAddress,
 int&nbsp;free)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -340,7 +320,7 @@ int&nbsp;free)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getDataAddress()">getDataAddress</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getDataAddress</span>()</div>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></span>&nbsp;<span class="memberName">getDataAddress</span>()</div>
 <div class="block">Gets the address of the data in the heap element.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>

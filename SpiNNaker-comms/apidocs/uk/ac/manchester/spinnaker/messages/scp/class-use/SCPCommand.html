@@ -81,12 +81,6 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.model">uk.ac.manchester.spinnaker.messages.model</a></th>
-<td class="colLast">
-<div class="block">Model support classes for the communication messages.</div>
-</td>
-</tr>
-<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.scp">uk.ac.manchester.spinnaker.messages.scp</a></th>
 <td class="colLast">
 <div class="block">The messages of SpiNNaker Control Protocol (SCP).</div>
@@ -119,32 +113,6 @@ loadScripts(document, 'script');</script>
 <td class="colLast">
 <div class="block">Make a response object.</div>
 </td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.model">
-<!--   -->
-</a>
-<h2>Uses of <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a> in <a href="../../model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a></h2>
-<div class="useSummary">
-<table>
-<caption><span>Constructors in <a href="../../model/package-summary.html">uk.ac.manchester.spinnaker.messages.model</a> with parameters of type <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../model/UnexpectedResponseCodeException.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,uk.ac.manchester.spinnaker.messages.scp.SCPResult)">UnexpectedResponseCodeException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
-<a href="../SCPResult.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPResult</a>&nbsp;response)</code></th>
-<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -194,28 +162,6 @@ the order they are declared.</div>
 </div>
 <div class="useSummary">
 <table>
-<caption><span>Methods in <a href="../package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a> with parameters of type <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Method</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">SCPResponse.</span><code><span class="memberNameLink"><a href="../SCPResponse.html#throwIfNotOK(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand)">throwIfNotOK</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command)</code></th>
-<td class="colLast">
-<div class="block">Throw an exception if the response is not an <a href="../SCPResult.html#RC_OK">OK</a>.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="useSummary">
-<table>
 <caption><span>Constructors in <a href="../package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a> with parameters of type <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
@@ -225,21 +171,13 @@ the order they are declared.</div>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../CheckOKResponse.html#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,java.nio.ByteBuffer)">CheckOKResponse</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;operation,
-<a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
-<td class="colLast">
-<div class="block">Create an instance.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SCPRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.scp.SCPCommand)">SCPRequest</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command)</code></th>
 <td class="colLast">
 <div class="block">Create a new request that goes to the default port and needs a reply.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SCPRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,int)">SCPRequest</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
 int&nbsp;argument1)</code></th>
@@ -247,7 +185,7 @@ int&nbsp;argument1)</code></th>
 <div class="block">Create a new request that goes to the default port and needs a reply.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SCPRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,int,int)">SCPRequest</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
 int&nbsp;argument1,
@@ -256,7 +194,7 @@ int&nbsp;argument2)</code></th>
 <div class="block">Create a new request that goes to the default port and needs a reply.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SCPRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,int,int,int)">SCPRequest</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
 int&nbsp;argument1,
@@ -266,7 +204,7 @@ int&nbsp;argument3)</code></th>
 <div class="block">Create a new request that goes to the default port and needs a reply.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../SCPRequest.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.messages.scp.SCPCommand,int,int,int,java.nio.ByteBuffer)">SCPRequest</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 <a href="../SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a>&nbsp;command,
 int&nbsp;argument1,

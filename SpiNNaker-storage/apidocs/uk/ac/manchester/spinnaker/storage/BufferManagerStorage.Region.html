@@ -171,7 +171,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#startAddress">startAddress</a></span></code></th>
 <td class="colLast">
 <div class="block">Where should the data be downloaded from? <em>This is not necessarily
@@ -200,9 +200,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)">Region</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">Region</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 int&nbsp;regionIndex,
-int&nbsp;startAddress,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;startLocation,
 int&nbsp;size)</code></th>
 <td class="colLast">
 <div class="block">Create a region descriptor.</div>
@@ -287,7 +287,7 @@ int&nbsp;size)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="startAddress">startAddress</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">startAddress</span></div>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></span>&nbsp;<span class="memberName">startAddress</span></div>
 <div class="block">Where should the data be downloaded from? <em>This is not necessarily
  the start of the region.</em></div>
 </section>
@@ -335,10 +335,10 @@ int&nbsp;size)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)">Region</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">Region</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Region</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasCoreLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasCoreLocation</a>&nbsp;core,
 int&nbsp;regionIndex,
-int&nbsp;startAddress,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;startLocation,
 int&nbsp;size)</span></div>
 <div class="block">Create a region descriptor.</div>
 <dl>
@@ -347,7 +347,7 @@ int&nbsp;size)</span></div>
             retrieved from another core of the same chip.</dd>
 <dd><code>regionIndex</code> - What was the index of the region in the table of regions
             for the core?</dd>
-<dd><code>startAddress</code> - Where should the data be downloaded from? <em>This is not
+<dd><code>startLocation</code> - Where should the data be downloaded from? <em>This is not
             necessarily the start of the region.</em></dd>
 <dd><code>size</code> - How much data should be downloaded? <em>This is not
             necessarily the size of the region.</em></dd>

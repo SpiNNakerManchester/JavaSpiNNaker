@@ -115,30 +115,72 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/BMPReadMemory.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPReadMemory</a></span></code></th>
+<td class="colLast">
+<div class="block">An SCP request to read a region of memory from a BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/BMPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest</a>&lt;T extends <a href="../../bmp/BMPRequest.BMPResponse.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPRequest.BMPResponse</a>&gt;</span></code></th>
 <td class="colLast">
 <div class="block">The base class of a request following the BMP protocol.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/BMPSetLED.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPSetLED</a></span></code></th>
 <td class="colLast">
 <div class="block">A request to alter the LEDs on a board.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/BMPWriteMemory.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPWriteMemory</a></span></code></th>
+<td class="colLast">
+<div class="block">A request to write memory on a BMP.</div>
+</td>
+</tr>
 <tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/EraseFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">EraseFlash</a></span></code></th>
+<td class="colLast">
+<div class="block">A request to erase flash memory on a BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/GetBMPVersion.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">GetBMPVersion</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP request to read the version of software running on a board's BMP.</div>
 </td>
 </tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/GetFPGAResetStatus.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">GetFPGAResetStatus</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the reset status of a board's FPGAs.</div>
+</td>
+</tr>
 <tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/InitFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">InitFPGA</a></span></code></th>
+<td class="colLast">
+<div class="block">Start an initialisation of the FPGAs.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadADC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadADC</a></span></code></th>
 <td class="colLast">
 <div class="block">SCP Request for the data from the BMP including voltages and temperature.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadCANStatus.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadCANStatus</a></span></code></th>
+<td class="colLast">
+<div class="block">SCP Request for the CAN bus status data from the BMP.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -150,9 +192,65 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadIPAddress.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadIPAddress</a></span></code></th>
+<td class="colLast">
+<div class="block">SCP Request for the IP address data from a BMP.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadSerialFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialFlash</a></span></code></th>
+<td class="colLast">
+<div class="block">An SCP request to read a region of serial flash from a BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadSerialFlashCRC.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialFlashCRC</a></span></code></th>
+<td class="colLast">
+<div class="block">An SCP request to get the CRC of serial flash memory from a BMP.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ReadSerialVector.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ReadSerialVector</a></span></code></th>
+<td class="colLast">
+<div class="block">SCP Request for the serial data vector from the BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/ResetFPGA.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">ResetFPGA</a></span></code></th>
+<td class="colLast">
+<div class="block">Perform a reset of the FPGAs.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/SetPower.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">SetPower</a></span></code></th>
 <td class="colLast">
 <div class="block">An SCP request for the BMP to power on or power off a rack of boards.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/UpdateFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">UpdateFlash</a></span></code></th>
+<td class="colLast">
+<div class="block">A request to update flash memory on a BMP.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/WriteFlashBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">WriteFlashBuffer</a></span></code></th>
+<td class="colLast">
+<div class="block">A request to write memory to flash on a BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/WriteFPGAData.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">WriteFPGAData</a></span></code></th>
+<td class="colLast">
+<div class="block">Upload a chunk of FPGA initialisation data.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -160,6 +258,13 @@ loadScripts(document, 'script');</script>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/WriteFPGARegister.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">WriteFPGARegister</a></span></code></th>
 <td class="colLast">
 <div class="block">A request for writing data to a FPGA register.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../bmp/WriteSerialFlash.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">WriteSerialFlash</a></span></code></th>
+<td class="colLast">
+<div class="block">A request to write to serial flash on a BMP.</div>
 </td>
 </tr>
 </tbody>

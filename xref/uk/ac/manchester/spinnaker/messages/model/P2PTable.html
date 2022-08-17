@@ -94,7 +94,7 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  			P2PTableRoute route =
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  					P2PTableRoute.get((word &gt;&gt; (ROUTE_BITS * y)) &amp; ROUTE_MASK);
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  			<strong class="jxr_keyword">if</strong> (route != <strong class="jxr_keyword">null</strong> &amp;&amp; route != NONE) {
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  				routes.put(<strong class="jxr_keyword">new</strong> <a name="ChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a>(chipX, chipYBase + y), route);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  				routes.put(<strong class="jxr_keyword">new</strong> ChipLocation(chipX, chipYBase + y), route);
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  			}
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  		});
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  	}

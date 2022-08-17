@@ -172,7 +172,7 @@
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 	}
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> flag(DPRIFlags flag) {
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		<strong class="jxr_keyword">return</strong> (flags &amp; (1 &lt;&lt; flag.ordinal())) != 0;
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		<strong class="jxr_keyword">return</strong> (flags &amp; flag.mask()) != 0;
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 	}
 <a class="jxr_linenumber" name="L169" href="#L169">169</a> 
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 	<em class="jxr_javadoccomment">/** @return if re-injection of multicast packets is enabled. */</em>
@@ -197,14 +197,18 @@
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> 
 <a class="jxr_linenumber" name="L190" href="#L190">190</a> 	<strong class="jxr_keyword">private</strong> enum DPRIFlags {
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 		MULTICAST, POINT_TO_POINT, NEAREST_NEIGHBOUR, FIXED_ROUTE;
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 	}
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> 	@Override
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 	<strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 		<strong class="jxr_keyword">return</strong> <span class="jxr_string">"flags:"</span> + flags + <span class="jxr_string">",timeout:"</span> + timeout + <span class="jxr_string">",emergencyTimeout:"</span>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> 				+ emergencyTimeout + <span class="jxr_string">",drops:"</span> + droppedPackets;
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	}
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> }
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> mask() {
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 			<strong class="jxr_keyword">return</strong> 1 &lt;&lt; ordinal();
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 		}
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> 	}
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	@Override
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 	<strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> 		<strong class="jxr_keyword">return</strong> <span class="jxr_string">"flags:"</span> + flags + <span class="jxr_string">",timeout:"</span> + timeout + <span class="jxr_string">",emergencyTimeout:"</span>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 				+ emergencyTimeout + <span class="jxr_string">",drops:"</span> + droppedPackets;
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 	}
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

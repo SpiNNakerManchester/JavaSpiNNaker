@@ -75,6 +75,18 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.bmp">uk.ac.manchester.spinnaker.alloc.bmp</a></th>
+<td class="colLast">
+<div class="block">The BMP control subsystem.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
 <td class="colLast">
 <div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
@@ -91,6 +103,84 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<h2>Uses of <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a> in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a> with parameters of type <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Machine.html#getBMPAddress(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getBMPAddress</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">
+<div class="block">Get the address of a particular BMP of a machine.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpallocAPI.Machine.</span><code><span class="memberNameLink"><a href="../../../alloc/allocator/SpallocAPI.Machine.html#getBoardNumbers(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getBoardNumbers</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">
+<div class="block">Get the board numbers managed by a particular BMP of a machine.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.bmp">
+<!--   -->
+</a>
+<h2>Uses of <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a> in <a href="../../../alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Methods in <a href="../../../alloc/bmp/package-summary.html">uk.ac.manchester.spinnaker.alloc.bmp</a> with parameters of type <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../alloc/bmp/SpiNNakerControl.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">SpiNNakerControl</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SpiNNakerControl.Factory.</span><code><span class="memberNameLink"><a href="../../../alloc/bmp/SpiNNakerControl.Factory.html#create(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">create</a></span>&#8203;(<a href="../../../alloc/allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machine,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;coords)</code></th>
+<td class="colLast">
+<div class="block">Create a SpiNNaker board controller.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverFactory.</span><code><span class="memberNameLink"><a href="../../../alloc/bmp/TransceiverFactory.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getTransciever</a></span>&#8203;(<a href="../../../alloc/allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machineDescription,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../alloc/bmp/TransceiverFactoryAPI.html" title="type parameter in TransceiverFactoryAPI">T</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverFactoryAPI.</span><code><span class="memberNameLink"><a href="../../../alloc/bmp/TransceiverFactoryAPI.html#getTransciever(uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">getTransciever</a></span>&#8203;(<a href="../../../alloc/allocator/SpallocAPI.Machine.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Machine</a>&nbsp;machineDescription,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">
+<div class="block">Get the transceiver for talking to a given machine's BMPs.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
 <!--   -->
@@ -124,6 +214,35 @@ loadScripts(document, 'script');</script>
 <h2>Uses of <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a> in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></h2>
 <div class="useSummary">
 <table>
+<caption><span>Methods in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> that return <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Method</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#getBoundBMP()">getBoundBMP</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#getBoundBMP()">getBoundBMP</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#getBoundBMP()">getBoundBMP</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="useSummary">
+<table>
 <caption><span>Methods in <a href="../../../transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a> that return types with arguments of type <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
@@ -153,73 +272,472 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
-<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<td class="colFirst"><code><a href="../../../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#availableBoards(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">availableBoards</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">
+<div class="block">List which boards are actually available to be manipulated by a
+ particular BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#availableBoards(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">availableBoards</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#availableBoards(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">availableBoards</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">bind</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">
+<div class="block">Set the default BMP coordinates, at least for cabinet and frame.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#bind(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">bind</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#bind(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)">bind</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">chunkBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This operation should not be used directly.</div>
+</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">chunkBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#chunkBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">chunkBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">copyBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This operation should not be used directly.</div>
+</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">copyBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">copyBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">eraseBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This operation should not be used directly.</div>
+</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">eraseBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">eraseBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#getResetStatus(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getResetStatus</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Get the FPGA reset status.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#getResetStatus(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getResetStatus</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#getResetStatus(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getResetStatus</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#getSerialFlashBuffer(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Get the address of the serial flash buffer.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#getSerialFlashBuffer(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#getSerialFlashBuffer(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
 <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Send a power request to the machine.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readADCData</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../../model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readADCData</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readADCData</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the ADC data.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readADCData</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readBMPVersion</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<td class="colFirst"><code><a href="../../model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readADCData</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="../../model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readBMPVersion</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<td class="colFirst"><code>default <a href="../../model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readBlacklist(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBlacklist</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
-<div class="block">Read the BMP version.</div>
+<div class="block">Read the blacklist from a board.</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>default <a href="../../model/FirmwareDescriptor.html" title="class in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptor</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readBMPFirmwareDescriptor(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors)">readBMPFirmwareDescriptor</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../model/FirmwareDescriptors.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptors</a>&nbsp;type)</code></th>
+<td class="colLast">
+<div class="block">Read the BMP firmware descriptor.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">Read BMP memory.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readBMPMemoryWord(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">readBMPMemoryWord</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address)</code></th>
+<td class="colLast">
+<div class="block">Read BMP memory.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>default <a href="../../model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.lang.Iterable)">readBMPVersion</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.lang.Iterable)">readBMPVersion</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">
+<div class="block">Read the BMP version.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBMPVersion</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the BMP version.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readFPGARegister(int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
-<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<td class="colFirst"><code><a href="../../model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBMPVersion</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#readFPGARegister(int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
+<td class="colFirst"><code><a href="../../model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBMPVersion</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readBoardSerialNumber(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBoardSerialNumber</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read the BMP serial number from a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readBoardSerialNumber(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBoardSerialNumber</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readBoardSerialNumber(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBoardSerialNumber</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;linkNumber,
+<a href="../../model/FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a>&nbsp;counter,
 <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;linkNumber,
+<a href="../../model/FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a>&nbsp;counter,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;registerBank,
+<a href="../../model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">Read BMP serial flash memory.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#readSerialFlashCRC(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlashCRC</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">
+<div class="block">Read the CRC32 checksum of BMP serial flash memory.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#readSerialFlashCRC(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlashCRC</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address,
+int&nbsp;length)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#readSerialFlashCRC(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlashCRC</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;length)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#resetFPGA(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../transceiver/BMPTransceiverInterface.FPGAResetType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</code></th>
+<td class="colLast">
+<div class="block">Reset the FPGAs on a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#resetFPGA(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../transceiver/BMPTransceiverInterface.FPGAResetType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#resetFPGA(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../transceiver/BMPTransceiverInterface.FPGAResetType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
+<a href="../../model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
+<td class="colLast">
+<div class="block">Set the LED state of a board in the machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -227,38 +745,257 @@ int&nbsp;board)</code></th>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../../model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
 <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;board)</code></th>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../../model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
 <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;board)</code></th>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeBlacklist(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.messages.model.Blacklist)">writeBlacklist</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a>&nbsp;blacklist)</code></th>
 <td class="colLast">
-<div class="block">Set the LED state of a board in the machine.</div>
+<div class="block">Write a blacklist to a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
+<td class="colLast">
+<div class="block">Write a <a href="../WriteFlashBuffer.html#FLASH_CHUNK_SIZE">fixed size</a> chunk
+ to flash memory of a BMP with erase.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeFPGARegister(int,int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">writeFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
-int&nbsp;value,
-<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;address)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/TransceiverInterface.html#writeFPGARegister(int,int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">writeFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;dataWord)</code></th>
+<td class="colLast">
+<div class="block">Write BMP memory.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
+<td class="colLast">
+<div class="block">Write BMP memory from a file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Write BMP memory.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer,boolean)">writeFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
+boolean&nbsp;update)</code></th>
+<td class="colLast">
+<div class="block">Write a buffer to flash memory on the BMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;registerBank,
+<a href="../../model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 int&nbsp;value,
 <a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+int&nbsp;value,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board.</div>
 </td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
+int&nbsp;value,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+int&nbsp;value,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+int&nbsp;value,
+<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,java.io.InputStream)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;stream)</code></th>
+<td class="colLast">
+<div class="block">Write BMP serial flash memory from a stream.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
+<td class="colLast">
+<div class="block">Write BMP serial flash memory from a file.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../../../transceiver/BMPTransceiverInterface.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Write BMP serial flash memory.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,java.io.InputStream)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;stream)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/Transceiver.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,java.io.InputStream)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+int&nbsp;size,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;stream)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;file)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">UnimplementedBMPTransceiver.</span><code><span class="memberNameLink"><a href="../../../transceiver/UnimplementedBMPTransceiver.html#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></span>&#8203;(<a href="../BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>

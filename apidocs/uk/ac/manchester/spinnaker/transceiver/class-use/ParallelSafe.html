@@ -366,8 +366,8 @@ boolean&nbsp;wait)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,int,int,uk.ac.manchester.spinnaker.transceiver.FillDataType)">fillMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int,uk.ac.manchester.spinnaker.transceiver.FillDataType)">fillMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;repeatValue,
 int&nbsp;size,
 <a href="../FillDataType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">FillDataType</a>&nbsp;dataType)</code></th>
@@ -375,8 +375,8 @@ int&nbsp;size,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,int,int)">fillMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">fillMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;repeatValue,
 int&nbsp;size)</code></th>
 <td class="colLast">
@@ -385,8 +385,8 @@ int&nbsp;size)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,int,int,uk.ac.manchester.spinnaker.transceiver.FillDataType)">fillMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#fillMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int,uk.ac.manchester.spinnaker.transceiver.FillDataType)">fillMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;repeatValue,
 int&nbsp;size,
 <a href="../FillDataType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">FillDataType</a>&nbsp;dataType)</code></th>
@@ -396,8 +396,8 @@ int&nbsp;size,
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,int)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
@@ -408,21 +408,13 @@ int&nbsp;baseAddress)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,int)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress)</code></th>
 <td class="colLast">
 <div class="block">Free allocated SDRAM.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,long)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;baseAddress)</code></th>
-<td class="colLast">
-<div class="block">Free allocated SDRAM.</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#freeSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">freeSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
@@ -430,27 +422,27 @@ long&nbsp;baseAddress)</code></th>
 <div class="block">Free all SDRAM allocated to a given application ID.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="../../messages/model/CPUInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">CPUInfo</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getCPUInformation(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getCPUInformation</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Get information about a specific processor on the board.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../messages/model/HeapElement.html" title="class in uk.ac.manchester.spinnaker.messages.model">HeapElement</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getHeap(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition)">getHeap</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a>&nbsp;heap)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../messages/model/HeapElement.html" title="class in uk.ac.manchester.spinnaker.messages.model">HeapElement</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getHeap(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getHeap</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Get the contents of the SDRAM heap on a given chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../messages/model/HeapElement.html" title="class in uk.ac.manchester.spinnaker.messages.model">HeapElement</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getHeap(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition)">getHeap</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a>&nbsp;heap)</code></th>
@@ -458,27 +450,27 @@ long&nbsp;baseAddress)</code></th>
 <div class="block">Get the contents of the given heap on a given chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="../../messages/model/IOBuffer.html" title="class in uk.ac.manchester.spinnaker.messages.model">IOBuffer</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getIobuf(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getIobuf</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Get the contents of IOBUF for a given core.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/MulticastRoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">MulticastRoutingEntry</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">getMulticastRoutes</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/MulticastRoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">MulticastRoutingEntry</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getMulticastRoutes</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</code></th>
 <td class="colLast">
 <div class="block">Get the current multicast routes set up on a chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../machine/MulticastRoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">MulticastRoutingEntry</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.messages.model.AppID)">getMulticastRoutes</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
@@ -486,29 +478,35 @@ long&nbsp;baseAddress)</code></th>
 <div class="block">Get the current multicast routes set up on a chip.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>,&#8203;<a href="../../messages/model/ReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.model">ReinjectionStatus</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getReinjectionStatus(uk.ac.manchester.spinnaker.machine.CoreSubsets)">getReinjectionStatus</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/ReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.model">ReinjectionStatus</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getReinjectionStatus(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getReinjectionStatus</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a>,&#8203;<a href="../../messages/model/ReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.model">ReinjectionStatus</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getReinjectionStatus(uk.ac.manchester.spinnaker.machine.CoreSubsets)">getReinjectionStatus</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">
 <div class="block">Get the packet reinjection status of some monitor processes.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/ReinjectionStatus.html" title="class in uk.ac.manchester.spinnaker.messages.model">ReinjectionStatus</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getReinjectionStatus(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getReinjectionStatus</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore)</code></th>
 <td class="colLast">
 <div class="block">Get the packet reinjection status of a monitor process.</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#getResetStatus(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getResetStatus</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../messages/model/DiagnosticFilter.html" title="class in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter</a></code></td>
@@ -586,69 +584,90 @@ int&nbsp;position)</code></th>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>default int</code></td>
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser0RegisterAddress(int)">getUser0RegisterAddress</a></span>&#8203;(int&nbsp;p)</code></th>
 <td class="colLast">
 <div class="block">Get the address of user<sub>0</sub> for a given processor on the board.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default int</code></td>
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser0RegisterAddress(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getUser0RegisterAddress</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Get the address of user<sub>0</sub> for a given processor on the board.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>default int</code></td>
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser0RegisterAddress(uk.ac.manchester.spinnaker.machine.Processor)">getUser0RegisterAddress</a></span>&#8203;(<a href="../../machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&nbsp;processor)</code></th>
+<td class="colLast">
+<div class="block">Get the address of user<sub>0</sub> for a given processor on the board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser1RegisterAddress(int)">getUser1RegisterAddress</a></span>&#8203;(int&nbsp;p)</code></th>
 <td class="colLast">
 <div class="block">Get the address of user<sub>1</sub> for a given processor on the board.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default int</code></td>
+<tr class="altColor">
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser1RegisterAddress(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getUser1RegisterAddress</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Get the address of user<sub>1</sub> for a given processor on the board.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser1RegisterAddress(uk.ac.manchester.spinnaker.machine.Processor)">getUser1RegisterAddress</a></span>&#8203;(<a href="../../machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&nbsp;processor)</code></th>
+<td class="colLast">
+<div class="block">Get the address of user<sub>1</sub> for a given processor on the board.</div>
+</td>
+</tr>
 <tr class="altColor">
-<td class="colFirst"><code>default int</code></td>
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser2RegisterAddress(int)">getUser2RegisterAddress</a></span>&#8203;(int&nbsp;p)</code></th>
 <td class="colLast">
 <div class="block">Get the address of user<sub>2</sub> for a given processor on the board.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default int</code></td>
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser2RegisterAddress(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">getUser2RegisterAddress</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core)</code></th>
 <td class="colLast">
 <div class="block">Get the address of user<sub>2</sub> for a given processor on the board.</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#getUser2RegisterAddress(uk.ac.manchester.spinnaker.machine.Processor)">getUser2RegisterAddress</a></span>&#8203;(<a href="../../machine/Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&nbsp;processor)</code></th>
+<td class="colLast">
+<div class="block">Get the address of user<sub>2</sub> for a given processor on the board.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>default boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#isConnected()">isConnected</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Determines if the board can be contacted.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#isConnected(uk.ac.manchester.spinnaker.connections.model.Connection)">isConnected</a></span>&#8203;(<a href="../../connections/model/Connection.html" title="interface in uk.ac.manchester.spinnaker.connections.model">Connection</a>&nbsp;connection)</code></th>
 <td class="colLast">
 <div class="block">Determines if the board can be contacted.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#loadFixedRoute(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.RoutingEntry,uk.ac.manchester.spinnaker.messages.model.AppID)">loadFixedRoute</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../machine/RoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">RoutingEntry</a>&nbsp;fixedRoute,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#loadFixedRoute(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.RoutingEntry)">loadFixedRoute</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../machine/RoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">RoutingEntry</a>&nbsp;fixedRoute)</code></th>
@@ -656,7 +675,7 @@ int&nbsp;position)</code></th>
 <div class="block">Loads a fixed route routing table entry onto a chip's router.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#loadFixedRoute(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.RoutingEntry,uk.ac.manchester.spinnaker.messages.model.AppID)">loadFixedRoute</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="../../machine/RoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">RoutingEntry</a>&nbsp;fixedRoute,
@@ -665,14 +684,14 @@ int&nbsp;position)</code></th>
 <div class="block">Loads a fixed route routing table entry onto a chip's router.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#loadMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,uk.ac.manchester.spinnaker.messages.model.AppID)">loadMulticastRoutes</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/MulticastRoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">MulticastRoutingEntry</a>&gt;&nbsp;routes,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#loadMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection)">loadMulticastRoutes</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/MulticastRoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">MulticastRoutingEntry</a>&gt;&nbsp;routes)</code></th>
@@ -681,7 +700,7 @@ int&nbsp;position)</code></th>
  application ID.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#loadMulticastRoutes(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.util.Collection,uk.ac.manchester.spinnaker.messages.model.AppID)">loadMulticastRoutes</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../machine/MulticastRoutingEntry.html" title="class in uk.ac.manchester.spinnaker.machine">MulticastRoutingEntry</a>&gt;&nbsp;routes,
@@ -690,36 +709,36 @@ int&nbsp;position)</code></th>
 <div class="block">Load a set of multicast routes on to a chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#locateSpinnakerConnection(java.net.InetAddress)">locateSpinnakerConnection</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#locateSpinnakerConnection(java.net.InetAddress)">locateSpinnakerConnection</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;boardAddress)</code></th>
 <td class="colLast">
 <div class="block">Find a connection that matches the given board IP address.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>int</code></td>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#mallocSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID,int)">mallocSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 int&nbsp;size,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
 int&nbsp;tag)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default int</code></td>
+<tr class="altColor">
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#mallocSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,int)">mallocSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 int&nbsp;size)</code></th>
 <td class="colLast">
 <div class="block">Allocates a chunk of SDRAM on a chip on the machine.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>default int</code></td>
+<tr class="rowColor">
+<td class="colFirst"><code>default <a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#mallocSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID)">mallocSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 int&nbsp;size,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID)</code></th>
@@ -727,8 +746,8 @@ int&nbsp;size,
 <div class="block">Allocates a chunk of SDRAM on a chip on the machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code>int</code></td>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#mallocSDRAM(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,uk.ac.manchester.spinnaker.messages.model.AppID,int)">mallocSDRAM</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 int&nbsp;size,
 <a href="../../messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a>&nbsp;appID,
@@ -737,36 +756,24 @@ int&nbsp;tag)</code></th>
 <div class="block">Allocates a chunk of SDRAM on a chip on the machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default <a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readADCData(int,int,int)">readADCData</a></span>&#8203;(int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
-<td class="colLast">
-<div class="block">Read the ADC data.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readADCData</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readADCData</a></span>&#8203;(<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the ADC data.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readBMPVersion(int,int,int)">readBMPVersion</a></span>&#8203;(int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<td class="colFirst"><code><a href="../../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readADCData</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
-<div class="block">Read the BMP version.</div>
+<div class="block">Read the ADC data.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readBMPVersion</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<td class="colFirst"><code>default <a href="../../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBMPVersion</a></span>&#8203;(<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read the BMP version.</div>
 </td>
@@ -794,66 +801,136 @@ int&nbsp;board)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readFPGARegister(int,int,int,int,int)">readFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;linkNumber,
+<a href="../../messages/model/FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a>&nbsp;counter,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a link counter on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGARecevingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;linkNumber,
+<a href="../../messages/model/FPGARecevingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGARecevingLinkCounters</a>&nbsp;counter,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;linkNumber,
+<a href="../../messages/model/FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a>&nbsp;counter,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a link counter on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGALinkCounter(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGASendingLinkCounters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGALinkCounter</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;linkNumber,
+<a href="../../messages/model/FPGASendingLinkCounters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGASendingLinkCounters</a>&nbsp;counter,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;registerBank,
+<a href="../../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;registerBank,
+<a href="../../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readFPGARegister(int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">readFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
 <a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Read a register on a FPGA of a board.</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default int</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Read a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#readMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;length)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;length)</code></th>
 <td class="colLast">
 <div class="block">Read some areas of SDRAM from the board.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;baseAddress,
-int&nbsp;length)</code></th>
-<td class="colLast">
-<div class="block">Read some areas of SDRAM from the board.</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;length)</code></th>
 <td class="colLast">
-<div class="block">Read some areas of SDRAM from the board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#readMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,long,int)">readMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-long&nbsp;baseAddress,
-int&nbsp;length)</code></th>
-<td class="colLast">
-<div class="block">Read some areas of SDRAM from the board.</div>
+<div class="block">Read some areas of SDRAM (or System RAM) from the board.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -881,17 +958,24 @@ int&nbsp;length)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#resetReinjectionCounters(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">resetReinjectionCounters</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#resetFPGA(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
+<a href="../BMPTransceiverInterface.FPGAResetType.html" title="enum in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface.FPGAResetType</a>&nbsp;resetType)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#resetReinjectionCounters(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">resetReinjectionCounters</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#resetReinjectionCounters(uk.ac.manchester.spinnaker.machine.HasCoreLocation)">resetReinjectionCounters</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;monitorCore)</code></th>
 <td class="colLast">
 <div class="block">Reset the packet reinjection counters of a monitor process.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#sendSCPMessage(uk.ac.manchester.spinnaker.messages.scp.SCPRequest,uk.ac.manchester.spinnaker.connections.SCPConnection)">sendSCPMessage</a></span>&#8203;(<a href="../../messages/scp/SCPRequest.html" title="class in uk.ac.manchester.spinnaker.messages.scp">SCPRequest</a>&lt;?&gt;&nbsp;message,
 <a href="../../connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a>&nbsp;connection)</code></th>
@@ -899,14 +983,14 @@ int&nbsp;length)</code></th>
 <div class="block">Sends an SCP message, without expecting a response.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#sendSDPMessage(uk.ac.manchester.spinnaker.messages.sdp.SDPMessage)">sendSDPMessage</a></span>&#8203;(<a href="../../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&nbsp;message)</code></th>
 <td class="colLast">
 <div class="block">Sends an SDP message using one of the connections.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#sendSDPMessage(uk.ac.manchester.spinnaker.messages.sdp.SDPMessage,uk.ac.manchester.spinnaker.connections.SDPConnection)">sendSDPMessage</a></span>&#8203;(<a href="../../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&nbsp;message,
 <a href="../../connections/SDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SDPConnection</a>&nbsp;connection)</code></th>
@@ -914,56 +998,21 @@ int&nbsp;length)</code></th>
 <div class="block">Sends an SDP message using one of the connections.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setLED(int,uk.ac.manchester.spinnaker.messages.model.LEDAction,int,int,int)">setLED</a></span>&#8203;(int&nbsp;led,
-<a href="../../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
-<td class="colLast">
-<div class="block">Set the LED state of a board in the machine.</div>
-</td>
-</tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setLED(int,uk.ac.manchester.spinnaker.messages.model.LEDAction,int,int,java.util.Collection)">setLED</a></span>&#8203;(int&nbsp;led,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
-int&nbsp;cabinet,
-int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
-<td class="colLast">
-<div class="block">Set the LED state of a board in the machine.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,int,int,int)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
-<a href="../../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
-<td class="colLast">
-<div class="block">Set the LED state of a board in the machine.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,int,int,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
-<a href="../../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
-int&nbsp;cabinet,
-int&nbsp;frame,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;boards)</code></th>
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Set the LED state of a board in the machine.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
 <a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;board)</code></th>
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&gt;&nbsp;boards)</code></th>
 <td class="colLast">
 <div class="block">Set the LED state of a board in the machine.</div>
 </td>
@@ -1146,53 +1195,99 @@ int&nbsp;watchdog)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeFPGARegister(int,int,int,int,int,int)">writeFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;registerBank,
+<a href="../../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 int&nbsp;value,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
-<div class="block">Write a register on a FPGA of a board.</div>
+<div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeFPGARegister(int,int,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,int)">writeFPGARegister</a></span>&#8203;(int&nbsp;fpgaNumber,
-int&nbsp;register,
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,int,uk.ac.manchester.spinnaker.messages.model.FPGALinkRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+int&nbsp;registerBank,
+<a href="../../messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a>&nbsp;register,
 int&nbsp;value,
 <a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
-int&nbsp;board)</code></th>
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+int&nbsp;value,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Write a register on a FPGA of a board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;register,
+int&nbsp;value,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">
 <div class="block">Write a register on a FPGA of a board.</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
+int&nbsp;value,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>default void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">BMPTransceiverInterface.</span><code><span class="memberNameLink"><a href="../BMPTransceiverInterface.html#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="../../messages/model/FPGAMainRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGAMainRegisters</a>&nbsp;register,
+int&nbsp;value,
+<a href="../../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
+<a href="../../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
+<td class="colLast">
+<div class="block">Write a register on a FPGA of a board, assuming the standard FPGA
+ configuration.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
 int&nbsp;numBytes)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">Transceiver.</span><code><span class="memberNameLink"><a href="../Transceiver.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,byte%5B%5D)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,byte%5B%5D)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 byte[]&nbsp;data)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM on the board.</div>
@@ -1200,8 +1295,8 @@ byte[]&nbsp;data)</code></th>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;dataWord)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM on the board.</div>
@@ -1209,8 +1304,8 @@ int&nbsp;dataWord)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM on the board.</div>
@@ -1218,8 +1313,8 @@ int&nbsp;baseAddress,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
 int&nbsp;numBytes)</code></th>
 <td class="colLast">
@@ -1228,8 +1323,8 @@ int&nbsp;numBytes)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,int,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-int&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM on the board.</div>
@@ -1237,8 +1332,8 @@ int&nbsp;baseAddress,
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,byte%5B%5D)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,byte%5B%5D)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 byte[]&nbsp;data)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM on the board.</div>
@@ -1246,118 +1341,26 @@ byte[]&nbsp;data)</code></th>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 int&nbsp;dataWord)</code></th>
 <td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
+<div class="block">Write to the SDRAM (or System RAM) on the board.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;baseAddress,
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
-int&nbsp;numBytes)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
-long&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,byte%5B%5D)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
-byte[]&nbsp;data)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
-int&nbsp;dataWord)</code></th>
 <td class="colLast">
 <div class="block">Write to the SDRAM on the board.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
-int&nbsp;numBytes)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-int&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,long,byte%5B%5D)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-long&nbsp;baseAddress,
-byte[]&nbsp;data)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,long,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-long&nbsp;baseAddress,
-int&nbsp;dataWord)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,long,java.io.File)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-long&nbsp;baseAddress,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;dataFile)</code></th>
-<td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,long,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-long&nbsp;baseAddress,
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.InputStream,int)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">InputStream</a>&nbsp;dataStream,
 int&nbsp;numBytes)</code></th>
 <td class="colLast">
@@ -1365,12 +1368,12 @@ int&nbsp;numBytes)</code></th>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>default void</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,long,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
-long&nbsp;baseAddress,
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">TransceiverInterface.</span><code><span class="memberNameLink"><a href="../TransceiverInterface.html#writeMemory(uk.ac.manchester.spinnaker.machine.HasCoreLocation,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeMemory</a></span>&#8203;(<a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;baseAddress,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
 <td class="colLast">
-<div class="block">Write to the SDRAM on the board.</div>
+<div class="block">Write to the SDRAM (or System RAM) on the board.</div>
 </td>
 </tr>
 </tbody>

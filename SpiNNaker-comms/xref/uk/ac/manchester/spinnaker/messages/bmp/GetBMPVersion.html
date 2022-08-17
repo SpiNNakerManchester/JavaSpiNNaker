@@ -39,7 +39,7 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">	 * @param board</em>
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">	 *            The board to get the version from</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<strong class="jxr_keyword">public</strong> <a name="GetBMPVersion" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/GetBMPVersion.html#GetBMPVersion">GetBMPVersion</a>(<strong class="jxr_keyword">int</strong> board) {
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<strong class="jxr_keyword">public</strong> <a name="GetBMPVersion" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/GetBMPVersion.html#GetBMPVersion">GetBMPVersion</a>(<a name="BMPBoard" href="../../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPBoard.html#BMPBoard">BMPBoard</a> board) {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  		<strong class="jxr_keyword">super</strong>(board, CMD_VER);
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  	}
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  
@@ -55,8 +55,8 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  		<strong class="jxr_keyword">private</strong> Response(ByteBuffer buffer)
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  				<strong class="jxr_keyword">throws</strong> <a name="UnexpectedResponseCodeException" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/UnexpectedResponseCodeException.html#UnexpectedResponseCodeException">UnexpectedResponseCodeException</a> {
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Read ADC"</span>, CMD_VER, buffer);
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  			versionInfo = <strong class="jxr_keyword">new</strong> <a name="VersionInfo" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/VersionInfo.html#VersionInfo">VersionInfo</a>(buffer);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  			<strong class="jxr_keyword">super</strong>(<span class="jxr_string">"Read Version"</span>, CMD_VER, buffer);
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  			versionInfo = <strong class="jxr_keyword">new</strong> <a name="VersionInfo" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/VersionInfo.html#VersionInfo">VersionInfo</a>(buffer, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  		}
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  	}
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  }

@@ -205,8 +205,8 @@ boolean&nbsp;loadSystemCores)</code></th>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,int,int,int)">saveLoadingMetadata</a></span>&#8203;(<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;core,
-int&nbsp;startAddress,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata</a></span>&#8203;(<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;core,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;start,
 int&nbsp;memoryUsed,
 int&nbsp;memoryWritten)</code></th>
 <td class="colLast">
@@ -336,20 +336,20 @@ boolean&nbsp;loadSystemCores)</span>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,int,int,int)">saveLoadingMetadata</a></h3>
+<h3><a id="saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">saveLoadingMetadata</span>&#8203;(<span class="arguments"><a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;core,
-int&nbsp;startAddress,
+<a href="../../machine/MemoryLocation.html" title="class in uk.ac.manchester.spinnaker.machine">MemoryLocation</a>&nbsp;start,
 int&nbsp;memoryUsed,
 int&nbsp;memoryWritten)</span>
                          throws <span class="exceptions"><a href="../StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../DSEStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,int,int,int)">DSEStorage</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../DSEStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">DSEStorage</a></code></span></div>
 <div class="block">Record the results of loading a core.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../DSEStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,int,int,int)">saveLoadingMetadata</a></code>&nbsp;in interface&nbsp;<code><a href="../DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></code></dd>
+<dd><code><a href="../DSEStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata</a></code>&nbsp;in interface&nbsp;<code><a href="../DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>core</code> - The instruction to load a particular core.</dd>
-<dd><code>startAddress</code> - Where the load metadata starts.</dd>
+<dd><code>start</code> - Where the load metadata starts.</dd>
 <dd><code>memoryUsed</code> - How much memory was allocated by loading.</dd>
 <dd><code>memoryWritten</code> - How much memory was written by loading.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>

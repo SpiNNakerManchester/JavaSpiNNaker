@@ -19,8 +19,8 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":42,"i11":42,"i12":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -157,7 +157,7 @@ int&nbsp;z)</code></th>
 </a>
 <h2>Method Summary</h2>
 <div class="memberSummary">
-<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button></div>
+<div role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="memberSummary_tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="activeTableTab">All Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="tableTab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="tableTab" onclick="show(8);">Concrete Methods</button><button role="tab" aria-selected="false" aria-controls="memberSummary_tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t6" class="tableTab" onclick="show(32);">Deprecated Methods</button></div>
 <div id="memberSummary_tabpanel" role="tabpanel">
 <table aria-labelledby="t0">
 <thead>
@@ -192,42 +192,55 @@ int&nbsp;z)</code></th>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machine(java.lang.String)">machine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.time.Duration)">keepAlive</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepalive)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadBoards(int)">maxDeadBoards</a></span>&#8203;(int&nbsp;maxDeadBoards)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machine(java.lang.String)">machine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadLinks(int)">maxDeadLinks</a></span>&#8203;(int&nbsp;maxDeadLinks)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadBoards(int)">maxDeadBoards</a></span>&#8203;(int&nbsp;maxDeadBoards)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#minRatio(double)">minRatio</a></span>&#8203;(double&nbsp;minRatio)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadLinks(int)">maxDeadLinks</a></span>&#8203;(int&nbsp;maxDeadLinks)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#owner(java.lang.String)">owner</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#minRatio(double)">minRatio</a></span>&#8203;(double&nbsp;minRatio)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i9">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#requireTorus()">requireTorus</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Equivalent to: <a href="#requireTorus(boolean)"><code>requireTorus(true)</code></a>.</div>
-</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#owner(java.lang.String)">owner</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</code></th>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#requireTorus(boolean)">requireTorus</a></span>&#8203;(boolean&nbsp;requireTorus)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#requireTorus()">requireTorus</a></span>()</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">You probably can't use this sensibly with the hardware as
+             deployed (or you automatically get it when meaningful).</div>
+</div>
+</td>
 </tr>
 <tr class="rowColor" id="i11">
+<td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#requireTorus(boolean)">requireTorus</a></span>&#8203;(boolean&nbsp;requireTorus)</code></th>
+<td class="colLast">
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">You probably can't use this sensibly with the hardware as
+             deployed (or you automatically get it when meaningful).</div>
+</div>
+</td>
+</tr>
+<tr class="altColor" id="i12">
 <td class="colFirst"><code><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#tags(java.lang.String...)">tags</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>...&nbsp;tags)</code></th>
 <td class="colLast">&nbsp;</td>
@@ -367,6 +380,20 @@ int&nbsp;z)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="keepAlive(java.time.Duration)">keepAlive</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepalive)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>keepalive</code> - The maximum amount of time which may elapse between a query on
+            this job before it is automatically destroyed. (Default: 60
+            seconds)</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd><code>this</code> (fluent interface)</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="machine(java.lang.String)">machine</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">machine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</span></div>
 <dl>
@@ -447,7 +474,13 @@ int&nbsp;z)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="requireTorus()">requireTorus</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">requireTorus</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">requireTorus</span>()</div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">You probably can't use this sensibly with the hardware as
+             deployed (or you automatically get it when meaningful). The
+             default is fine.</div>
+</div>
 <div class="block">Equivalent to: <a href="#requireTorus(boolean)"><code>requireTorus(true)</code></a>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -458,7 +491,13 @@ int&nbsp;z)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="requireTorus(boolean)">requireTorus</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">requireTorus</span>&#8203;(<span class="arguments">boolean&nbsp;requireTorus)</span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Deprecated.html?is-external=true" title="class or interface in java.lang" class="externalLink">@Deprecated</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></span>&nbsp;<span class="memberName">requireTorus</span>&#8203;(<span class="arguments">boolean&nbsp;requireTorus)</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">You probably can't use this sensibly with the hardware as
+             deployed (or you automatically get it when meaningful). The
+             default is fine.</div>
+</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>requireTorus</code> - If <code>true</code>, only allocate blocks with torus connectivity.

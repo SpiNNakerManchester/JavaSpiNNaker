@@ -87,8 +87,9 @@ loadScripts(document, 'script');</script>
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Target</a>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html?is-external=true#METHOD" title="class or interface in java.lang.annotation" class="externalLink">METHOD</a>)
 public @interface <span class="memberNameLabel">ParallelSafeWithCare</span></pre>
 <div class="block">Documents a transceiver operation that may be used from multiple threads in
- parallel provided those threads are accessing different boards, and care is
- taken to use this method in a way that only accesses a single board via it.</div>
+ parallel provided those threads are accessing different boards (or different
+ BMPs, for BMP-based operations), and care is taken to use this method in a
+ way that only accesses a single board via it.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>

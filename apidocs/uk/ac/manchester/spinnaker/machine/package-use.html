@@ -75,6 +75,30 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.allocator">uk.ac.manchester.spinnaker.alloc.allocator</a></th>
+<td class="colLast">
+<div class="block">The core allocation system.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.model">uk.ac.manchester.spinnaker.alloc.model</a></th>
+<td class="colLast">
+<div class="block">Model classes.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.web">uk.ac.manchester.spinnaker.alloc.web</a></th>
+<td class="colLast">
+<div class="block">The web interface to the service.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.allocator">uk.ac.manchester.spinnaker.allocator</a></th>
+<td class="colLast">
+<div class="block">Java client for the SpiNNaker allocation service.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.connections">uk.ac.manchester.spinnaker.connections</a></th>
 <td class="colLast">
 <div class="block">Classes used to model types of connections that talk to SpiNNaker.</div>
@@ -85,70 +109,82 @@ loadScripts(document, 'script');</script>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.data_spec">uk.ac.manchester.spinnaker.data_spec</a></th>
+<td class="colLast">
+<div class="block">Data specification generator and executor.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end">uk.ac.manchester.spinnaker.front_end</a></th>
 <td class="colLast">
 <div class="block">The front-end interface to the Java implementation of the SpiNNaker host
  libraries.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download">uk.ac.manchester.spinnaker.front_end.download</a></th>
 <td class="colLast">
 <div class="block">The buffer manager and support classes.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download.request">uk.ac.manchester.spinnaker.front_end.download.request</a></th>
 <td class="colLast">
 <div class="block">Classes used to describe the JSON requests to the data transfer code.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
 <td class="colLast">
 <div class="block">Data specification execution interface.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.iobuf">uk.ac.manchester.spinnaker.front_end.iobuf</a></th>
 <td class="colLast">
 <div class="block">Utility for retrieving IOBUF contents.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.io">uk.ac.manchester.spinnaker.io</a></th>
 <td class="colLast">
 <div class="block">Pretending that a SpiNNaker machine is simple I/O.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine">uk.ac.manchester.spinnaker.machine</a></th>
 <td class="colLast">
 <div class="block">Describes a SpiNNaker machine.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.bean">uk.ac.manchester.spinnaker.machine.bean</a></th>
 <td class="colLast">
 <div class="block">Beans to describes a SpiNNaker machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.datalinks">uk.ac.manchester.spinnaker.machine.datalinks</a></th>
 <td class="colLast">
 <div class="block">Describes a datalink.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.reports">uk.ac.manchester.spinnaker.machine.reports</a></th>
 <td class="colLast">
 <div class="block">User-facing reports about the allocated machine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.machine.tags">uk.ac.manchester.spinnaker.machine.tags</a></th>
 <td class="colLast">
 <div class="block">Describes IPtags and reverse IPtags.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.messages.bmp">uk.ac.manchester.spinnaker.messages.bmp</a></th>
+<td class="colLast">
+<div class="block">Messages that talk to the BMP.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -217,6 +253,124 @@ loadScripts(document, 'script');</script>
 <section class="packageUses">
 <ul class="blockList">
 <li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.allocator">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.machine</a> used by <a href="../alloc/allocator/package-summary.html">uk.ac.manchester.spinnaker.alloc.allocator</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ChipLocation.html#uk.ac.manchester.spinnaker.alloc.allocator">ChipLocation</a></th>
+<td class="colLast">
+<div class="block">The location of a Chip as an X and Y tuple.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/HasChipLocation.html#uk.ac.manchester.spinnaker.alloc.allocator">HasChipLocation</a></th>
+<td class="colLast">
+<div class="block">The interface supported by any object that is associated with a chip.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.model">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.machine</a> used by <a href="../alloc/model/package-summary.html">uk.ac.manchester.spinnaker.alloc.model</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ChipLocation.html#uk.ac.manchester.spinnaker.alloc.model">ChipLocation</a></th>
+<td class="colLast">
+<div class="block">The location of a Chip as an X and Y tuple.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/HasChipLocation.html#uk.ac.manchester.spinnaker.alloc.model">HasChipLocation</a></th>
+<td class="colLast">
+<div class="block">The interface supported by any object that is associated with a chip.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.web">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.machine</a> used by <a href="../alloc/web/package-summary.html">uk.ac.manchester.spinnaker.alloc.web</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ChipLocation.html#uk.ac.manchester.spinnaker.alloc.web">ChipLocation</a></th>
+<td class="colLast">
+<div class="block">The location of a Chip as an X and Y tuple.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.allocator">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.machine</a> used by <a href="../allocator/package-summary.html">uk.ac.manchester.spinnaker.allocator</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/ChipLocation.html#uk.ac.manchester.spinnaker.allocator">ChipLocation</a></th>
+<td class="colLast">
+<div class="block">The location of a Chip as an X and Y tuple.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/HasChipLocation.html#uk.ac.manchester.spinnaker.allocator">HasChipLocation</a></th>
+<td class="colLast">
+<div class="block">The interface supported by any object that is associated with a chip.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.connections">
 <!--   -->
 </a>
@@ -277,6 +431,31 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/ChipLocation.html#uk.ac.manchester.spinnaker.connections.model">ChipLocation</a></th>
 <td class="colLast">
 <div class="block">The location of a Chip as an X and Y tuple.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.data_spec">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.machine</a> used by <a href="../data_spec/package-summary.html">uk.ac.manchester.spinnaker.data_spec</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.data_spec">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
 </td>
 </tr>
 </tbody>
@@ -353,6 +532,12 @@ loadScripts(document, 'script');</script>
 <div class="block">A representation of a SpiNNaker Machine with a number of Chips.</div>
 </td>
 </tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.front_end.download">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -382,6 +567,12 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/HasCoreLocation.html#uk.ac.manchester.spinnaker.front_end.download.request">HasCoreLocation</a></th>
 <td class="colLast">
 <div class="block">The interface supported by any object that is associated with a core.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.front_end.download.request">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
 </td>
 </tr>
 </tbody>
@@ -425,6 +616,12 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/Machine.html#uk.ac.manchester.spinnaker.front_end.dse">Machine</a></th>
 <td class="colLast">
 <div class="block">A representation of a SpiNNaker Machine with a number of Chips.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.front_end.dse">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
 </td>
 </tr>
 </tbody>
@@ -481,6 +678,12 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/HasChipLocation.html#uk.ac.manchester.spinnaker.io">HasChipLocation</a></th>
 <td class="colLast">
 <div class="block">The interface supported by any object that is associated with a chip.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.io">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
 </td>
 </tr>
 </tbody>
@@ -565,28 +768,34 @@ loadScripts(document, 'script');</script>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.machine">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/Processor.html#uk.ac.manchester.spinnaker.machine">Processor</a></th>
 <td class="colLast">
 <div class="block">A processor object included in a SpiNNaker chip.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/RegionLocation.html#uk.ac.manchester.spinnaker.machine">RegionLocation</a></th>
 <td class="colLast">
 <div class="block">Holding case for a CoreLocation (X, Y and P) and the recording region ID.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/Router.html#uk.ac.manchester.spinnaker.machine">Router</a></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="class-use/RoutingEntry.html#uk.ac.manchester.spinnaker.machine">RoutingEntry</a></th>
 <td class="colLast">
 <div class="block">A basic SpiNNaker routing entry.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/SpiNNakerTriadGeometry.html#uk.ac.manchester.spinnaker.machine">SpiNNakerTriadGeometry</a></th>
 <td class="colLast">
 <div class="block">Geometry of a "triad" of SpiNNaker boards.</div>
@@ -742,6 +951,43 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.messages.bmp">
+<!--   -->
+</a>
+<div class="useSummary">
+<table>
+<caption><span>Classes in <a href="package-summary.html">uk.ac.manchester.spinnaker.machine</a> used by <a href="../messages/bmp/package-summary.html">uk.ac.manchester.spinnaker.messages.bmp</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Class</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/HasChipLocation.html#uk.ac.manchester.spinnaker.messages.bmp">HasChipLocation</a></th>
+<td class="colLast">
+<div class="block">The interface supported by any object that is associated with a chip.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/HasCoreLocation.html#uk.ac.manchester.spinnaker.messages.bmp">HasCoreLocation</a></th>
+<td class="colLast">
+<div class="block">The interface supported by any object that is associated with a core.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.messages.bmp">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.messages.boot">
 <!--   -->
 </a>
@@ -849,6 +1095,12 @@ loadScripts(document, 'script');</script>
 <div class="block">Represents the size of a machine in chips.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.messages.model">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -897,6 +1149,12 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.messages.scp">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/RoutingEntry.html#uk.ac.manchester.spinnaker.messages.scp">RoutingEntry</a></th>
 <td class="colLast">
 <div class="block">A basic SpiNNaker routing entry.</div>
@@ -1032,6 +1290,12 @@ loadScripts(document, 'script');</script>
 <div class="block">The interface supported by any object that is associated with a core.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.storage">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1061,6 +1325,12 @@ loadScripts(document, 'script');</script>
 <th class="colFirst" scope="row"><a href="class-use/HasCoreLocation.html#uk.ac.manchester.spinnaker.storage.sqlite">HasCoreLocation</a></th>
 <td class="colLast">
 <div class="block">The interface supported by any object that is associated with a core.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.storage.sqlite">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
 </td>
 </tr>
 </tbody>
@@ -1133,9 +1403,21 @@ loadScripts(document, 'script');</script>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/MemoryLocation.html#uk.ac.manchester.spinnaker.transceiver">MemoryLocation</a></th>
+<td class="colLast">
+<div class="block">A location in SpiNNaker or BMP memory.</div>
+</td>
+</tr>
+<tr class="altColor">
 <th class="colFirst" scope="row"><a href="class-use/MulticastRoutingEntry.html#uk.ac.manchester.spinnaker.transceiver">MulticastRoutingEntry</a></th>
 <td class="colLast">
 <div class="block">A multicast packet routing table entry.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colFirst" scope="row"><a href="class-use/Processor.html#uk.ac.manchester.spinnaker.transceiver">Processor</a></th>
+<td class="colLast">
+<div class="block">A processor object included in a SpiNNaker chip.</div>
 </td>
 </tr>
 <tr class="altColor">

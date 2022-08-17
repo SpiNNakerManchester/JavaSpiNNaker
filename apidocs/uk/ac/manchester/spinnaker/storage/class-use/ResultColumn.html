@@ -75,6 +75,12 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.alloc.db">uk.ac.manchester.spinnaker.alloc.db</a></th>
+<td class="colLast">
+<div class="block">SQLite database support.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.storage">uk.ac.manchester.spinnaker.storage</a></th>
 <td class="colLast">
 <div class="block">Storage management.</div>
@@ -85,6 +91,234 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="classUses">
 <ul class="blockList">
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.alloc.db">
+<!--   -->
+</a>
+<h2>Uses of <a href="../ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">ResultColumn</a> in <a href="../../alloc/db/package-summary.html">uk.ac.manchester.spinnaker.alloc.db</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Fields in <a href="../../alloc/db/package-summary.html">uk.ac.manchester.spinnaker.alloc.db</a> with annotations of type <a href="../ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage">ResultColumn</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>protected org.springframework.core.io.Resource</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#copyAllocsToHistoricalData">copyAllocsToHistoricalData</a></span></code></th>
+<td class="colLast">
+<div class="block">Copy board allocation data to the historical data DB, and return the IDs
+ of the allocation records that were copied (which will now be safe to
+ delete).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected org.springframework.core.io.Resource</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#copyJobsToHistoricalData">copyJobsToHistoricalData</a></span></code></th>
+<td class="colLast">
+<div class="block">Copy jobs to the historical data DB, and return the IDs of the jobs that
+ were copied (which will now be safe to delete).</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#COUNT_PENDING_CHANGES">COUNT_PENDING_CHANGES</a></span></code></th>
+<td class="colLast">
+<div class="block">Get how many requests to change the power state of a board are currently
+ waiting to be processed.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#COUNT_POWERED_BOARDS">COUNT_POWERED_BOARDS</a></span></code></th>
+<td class="colLast">
+<div class="block">Counts the number of powered-on boards of a job.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected org.springframework.core.io.Resource</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#countConnected">countConnected</a></span></code></th>
+<td class="colLast">
+<div class="block">Count the number of <em>connected</em> boards (i.e., have at least one
+ path over enabled links to the root board of the allocation) within a
+ rectangle of triads.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#DELETE_GROUP">DELETE_GROUP</a></span></code></th>
+<td class="colLast">
+<div class="block">Delete a single group record and returns the name of the deleted group.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#FIND_EXPIRED_JOBS">FIND_EXPIRED_JOBS</a></span></code></th>
+<td class="colLast">
+<div class="block">Find jobs that have expired their keepalive interval.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_AVAILABLE_BOARD_NUMBERS">GET_AVAILABLE_BOARD_NUMBERS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the boards that are available for allocation.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_BMP_ADDRESS">GET_BMP_ADDRESS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the address of the BMP of the root board of the machine.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_BMP_BOARD_NUMBERS">GET_BMP_BOARD_NUMBERS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the boards of a BMP that can be used.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_BOARD_ADDRESS">GET_BOARD_ADDRESS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the address of the root chip of a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_BOARD_BY_COORDS">GET_BOARD_BY_COORDS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get a board's ID by its coordinates.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_BOARD_JOB">GET_BOARD_JOB</a></span></code></th>
+<td class="colLast">
+<div class="block">Get What job is allocated to a board.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_BOARD_NUMBERS">GET_BOARD_NUMBERS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the boards of a machine that can be used.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_CURRENT_USAGE">GET_CURRENT_USAGE</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the current non-consolidated usage for a group.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_FUNCTIONING_FIELD">GET_FUNCTIONING_FIELD</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the value of a board's <code>functioning</code> column.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_GROUP_BY_NAME_AND_MEMBER">GET_GROUP_BY_NAME_AND_MEMBER</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the ID of a particular group that a particular user must be a member
+ of.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_GROUP_QUOTA">GET_GROUP_QUOTA</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the quota for a group.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_JOB_BOARDS">GET_JOB_BOARDS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get what boards are allocated to a job (that is queued or ready).</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_ROOT_BMP_ADDRESS">GET_ROOT_BMP_ADDRESS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the address of the BMP of the root board of the machine.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_SUM_BOARDS_POWERED">GET_SUM_BOARDS_POWERED</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the number of boards that are allocated to a job that are switched
+ on.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_TAGS">GET_TAGS</a></span></code></th>
+<td class="colLast">
+<div class="block">Get a machine's tags.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#GET_USER_ID">GET_USER_ID</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the ID of a user.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected org.springframework.core.io.Resource</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#getConnectedBoards">getConnectedBoards</a></span></code></th>
+<td class="colLast">
+<div class="block">Get the set of boards at some coordinates within a triad rectangle that
+ are connected (i.e., have at least one path over enableable links) to the
+ root board.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected org.springframework.core.io.Resource</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#getJobsWithChanges">getJobsWithChanges</a></span></code></th>
+<td class="colLast">
+<div class="block">Get jobs on a machine that have changes that can be processed.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#IS_BOARD_BLACKLIST_CURRENT">IS_BOARD_BLACKLIST_CURRENT</a></span></code></th>
+<td class="colLast">
+<div class="block">Asks whether the blacklist model for a board is believed to be
+ synchronised to the hardware.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#MARK_LOGIN_FAILURE">MARK_LOGIN_FAILURE</a></span></code></th>
+<td class="colLast">
+<div class="block">Note the login failure.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">SQLQueries.</span><code><span class="memberNameLink"><a href="../../alloc/db/SQLQueries.html#UNLOCK_LOCKED_USERS">UNLOCK_LOCKED_USERS</a></span></code></th>
+<td class="colLast">
+<div class="block">Unlock accounts.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail"><a id="uk.ac.manchester.spinnaker.storage">
 <!--   -->

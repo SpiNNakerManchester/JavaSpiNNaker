@@ -97,7 +97,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="ProcessException.BadChecksum.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadChecksum</a></code>, <code><a href="ProcessException.BadCommand.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadCommand</a></code>, <code><a href="ProcessException.BadCPUNumber.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadCPUNumber</a></code>, <code><a href="ProcessException.BadPacketLength.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadPacketLength</a></code>, <code><a href="ProcessException.BadSCPPort.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.BadSCPPort</a></code>, <code><a href="ProcessException.DeadDestination.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.DeadDestination</a></code>, <code><a href="ProcessException.InvalidArguments.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.InvalidArguments</a></code>, <code><a href="ProcessException.NoBufferAvailable.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoBufferAvailable</a></code>, <code><a href="ProcessException.NoP2PRoute.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoP2PRoute</a></code>, <code><a href="ProcessException.P2PBusy.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PBusy</a></code>, <code><a href="ProcessException.P2PNoReply.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PNoReply</a></code>, <code><a href="ProcessException.P2PReject.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PReject</a></code>, <code><a href="ProcessException.P2PTimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PTimedOut</a></code>, <code><a href="ProcessException.PacketTransmissionFailed.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.PacketTransmissionFailed</a></code>, <code><a href="ProcessException.TimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.TimedOut</a></code></dd>
+<dd><code><a href="ProcessException.CallerProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.CallerProcessException</a></code>, <code><a href="ProcessException.PermanentProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.PermanentProcessException</a></code>, <code><a href="ProcessException.TransientProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.TransientProcessException</a></code></dd>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">ProcessException</span>
@@ -170,6 +170,13 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.CallerProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.CallerProcessException</a></span></code></th>
+<td class="colLast">
+<div class="block">Marks an exception for errors in the message by the caller.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.DeadDestination.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.DeadDestination</a></span></code></th>
 <td class="colLast">
 <div class="block">A process exception cause by the receipt of a <a href="../messages/scp/SCPResult.html#RC_DEAD"><code>SCPResult.RC_DEAD</code></a>
@@ -177,7 +184,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  messages from SCAMP.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.InvalidArguments.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.InvalidArguments</a></span></code></th>
 <td class="colLast">
@@ -185,7 +192,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  message, indicating that the arguments to the command are wrong.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.NoBufferAvailable.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoBufferAvailable</a></span></code></th>
 <td class="colLast">
@@ -193,7 +200,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  message, indicating that SCAMP had exhausted its supply of buffers.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.NoP2PRoute.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.NoP2PRoute</a></span></code></th>
 <td class="colLast">
@@ -202,7 +209,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  for some reason.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.P2PBusy.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PBusy</a></span></code></th>
 <td class="colLast">
@@ -211,7 +218,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  the inter-SCAMP messaging was busy.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.P2PNoReply.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PNoReply</a></span></code></th>
 <td class="colLast">
@@ -220,7 +227,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  messaging failed because the channel open failed.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.P2PReject.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PReject</a></span></code></th>
 <td class="colLast">
@@ -229,7 +236,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  the inter-SCAMP messaging rejected the message.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.P2PTimedOut.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.P2PTimedOut</a></span></code></th>
 <td class="colLast">
@@ -238,12 +245,19 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
  the inter-SCAMP messaging did not respond.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.PacketTransmissionFailed.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.PacketTransmissionFailed</a></span></code></th>
 <td class="colLast">
 <div class="block">A process exception cause by the receipt of a <a href="../messages/scp/SCPResult.html#RC_PKT_TX"><code>SCPResult.RC_PKT_TX</code></a>
  message, indicating that the packet transmission failed.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.PermanentProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.PermanentProcessException</a></span></code></th>
+<td class="colLast">
+<div class="block">Marks an exception for a permanent condition.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -253,6 +267,13 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
 <div class="block">A process exception cause by the receipt of a
  <a href="../messages/scp/SCPResult.html#RC_TIMEOUT"><code>SCPResult.RC_TIMEOUT</code></a> message, indicating that communications
  timed out.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static class&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="ProcessException.TransientProcessException.html" title="class in uk.ac.manchester.spinnaker.transceiver">ProcessException.TransientProcessException</a></span></code></th>
+<td class="colLast">
+<div class="block">Marks an exception for a transient condition.</div>
 </td>
 </tr>
 </tbody>
@@ -278,7 +299,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></code></td>
+<td class="colFirst"><code><a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#core">core</a></span></code></th>
 <td class="colLast">
 <div class="block">Where does the code believe this exception originated?</div>
@@ -328,7 +349,7 @@ extends <a href="SpinnmanException.html" title="class in uk.ac.manchester.spinna
 <li class="blockList">
 <section class="detail">
 <h3><a id="core">core</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">CoreLocation</a></span>&nbsp;<span class="memberName">core</span></div>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></span>&nbsp;<span class="memberName">core</span></div>
 <div class="block">Where does the code believe this exception originated?</div>
 </section>
 </li>

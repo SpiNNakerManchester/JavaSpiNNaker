@@ -177,9 +177,9 @@ extends <a href="BMPRequest.html" title="class in uk.ac.manchester.spinnaker.mes
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,int)">ReadFPGARegister</a></span>&#8203;(int&nbsp;fpgaNum,
-int&nbsp;register,
-int&nbsp;board)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">ReadFPGARegister</a></span>&#8203;(<a href="../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
+<a href="BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -246,16 +246,18 @@ int&nbsp;board)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(int,int,int)">ReadFPGARegister</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ReadFPGARegister</span>&#8203;(<span class="arguments">int&nbsp;fpgaNum,
-int&nbsp;register,
-int&nbsp;board)</span></div>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">ReadFPGARegister</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ReadFPGARegister</span>&#8203;(<span class="arguments"><a href="../model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
+<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
+<a href="BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>fpgaNum</code> - FPGA number (0, 1 or 2 on SpiNN-5 board) to communicate with.</dd>
-<dd><code>register</code> - Register address to read to (will be rounded down to the
-            nearest 32-bit word boundary).</dd>
+<dd><code>fpga</code> - FPGA (0, 1 or 2 on SpiNN-5 board) to communicate with.</dd>
+<dd><code>register</code> - Register address to read to. Must be aligned</dd>
 <dd><code>board</code> - which board to request the ADC register from</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If <a href="../model/FPGA.html#FPGA_ALL"><code>FPGA.FPGA_ALL</code></a> is used or the register address is
+             not aligned.</dd>
 </dl>
 </section>
 </li>

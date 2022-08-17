@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="MachineBean" href="../../../../../../uk/ac/manchester/spinnaker/machine/bean/MachineBean.html#MachineBean">MachineBean</a> {
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="MachineDimensions" href="../../../../../../uk/ac/manchester/spinnaker/machine/MachineDimensions.html#MachineDimensions">MachineDimensions</a> dimensions;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="ChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a> root;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> ChipLocation root;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="ChipResources" href="../../../../../../uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#ChipResources">ChipResources</a> ethernetResources;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
@@ -66,7 +66,7 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  	<strong class="jxr_keyword">public</strong> <a name="MachineBean" href="../../../../../../uk/ac/manchester/spinnaker/machine/bean/MachineBean.html#MachineBean">MachineBean</a>(
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  			@JsonProperty(value = <span class="jxr_string">"height"</span>, required = <strong class="jxr_keyword">true</strong>) <strong class="jxr_keyword">int</strong> height,
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  			@JsonProperty(value = <span class="jxr_string">"width"</span>, required = <strong class="jxr_keyword">true</strong>) <strong class="jxr_keyword">int</strong> width,
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  			@JsonProperty(value = <span class="jxr_string">"root"</span>, required = <strong class="jxr_keyword">true</strong>) <a name="ChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a> root,
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  			@JsonProperty(value = <span class="jxr_string">"root"</span>, required = <strong class="jxr_keyword">true</strong>) ChipLocation root,
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  			@JsonProperty(value = <span class="jxr_string">"ethernetResources"</span>, required = <strong class="jxr_keyword">true</strong>)
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  			ChipResources ethernetResources,
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  			@JsonProperty(value = <span class="jxr_string">"standardResources"</span>, required = <strong class="jxr_keyword">true</strong>)
@@ -85,7 +85,7 @@
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  		<strong class="jxr_keyword">return</strong> dimensions;
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  	}
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  	<strong class="jxr_keyword">public</strong> <a name="ChipLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/ChipLocation.html#ChipLocation">ChipLocation</a> getRoot() {
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  	<strong class="jxr_keyword">public</strong> ChipLocation getRoot() {
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  		<strong class="jxr_keyword">return</strong> root;
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  	}
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  

@@ -25,16 +25,16 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.front_end.download;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Integer.toUnsignedLong;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Long.toHexString;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Collections.unmodifiableList;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Collections.unmodifiableList;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.MemoryLocation;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.ProcessException;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
@@ -85,21 +85,21 @@
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">	 * The data memory address. (32-bits; unsigned)</em>
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> data;
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="MemoryLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> data;
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  	<strong class="jxr_keyword">private</strong> <a name="RecordingRegion" href="../../../../../../uk/ac/manchester/spinnaker/front_end/download/RecordingRegion.html#RecordingRegion">RecordingRegion</a>(ByteBuffer buffer) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  		space = toUnsignedLong(buffer.getInt());
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  		<strong class="jxr_keyword">long</strong> missingAndSize = toUnsignedLong(buffer.getInt());
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  		missing = (missingAndSize &amp; MISSING_MASK) != 0;
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  		size = missingAndSize &amp; SIZE_MASK;
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		data = toUnsignedLong(buffer.getInt());
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		data = <strong class="jxr_keyword">new</strong> <a name="MemoryLocation" href="../../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a>(buffer.getInt());
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  	}
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  	@Override
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  	<strong class="jxr_keyword">public</strong> String toString() {
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  		StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"Recording Channel:{"</span>)
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  				.append(<span class="jxr_string">"space:"</span>).append(space).append(<span class="jxr_string">",size:"</span>).append(size)
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  				.append(<span class="jxr_string">",data:0x"</span>).append(toHexString(data));
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  				.append(<span class="jxr_string">",data:"</span>).append(data);
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  		<strong class="jxr_keyword">if</strong> (missing) {
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  			sb.append(<span class="jxr_string">",missing"</span>);
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  		}
@@ -123,14 +123,14 @@
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> List&lt;RecordingRegion&gt; getRecordingRegionDescriptors(
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> 			TransceiverInterface txrx, <a name="Placement" href="../../../../../../uk/ac/manchester/spinnaker/front_end/download/request/Placement.html#Placement">Placement</a> placement)
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L118" href="#L118">118</a> 		<strong class="jxr_keyword">long</strong> recordingDataAddress = placement.getVertex().getBaseAddress();
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 		MemoryLocation recordingDataAddress = placement.getVertex().getBase();
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> 		<em class="jxr_comment">// Get the size of the list of recordings</em>
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 		<strong class="jxr_keyword">int</strong> nRegions = txrx.readMemory(placement.getScampCore(),
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> 				recordingDataAddress, WORD_SIZE).getInt();
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> 
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 		<em class="jxr_comment">// Read all the channels' metadata</em>
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 		ByteBuffer channelData = txrx.readMemory(placement.getScampCore(),
-<a class="jxr_linenumber" name="L125" href="#L125">125</a> 				recordingDataAddress + WORD_SIZE, SIZE * nRegions);
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> 				recordingDataAddress.add(WORD_SIZE), SIZE * nRegions);
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 		<em class="jxr_comment">// Parse the data</em>
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> 		List&lt;RecordingRegion&gt; regions = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(nRegions);

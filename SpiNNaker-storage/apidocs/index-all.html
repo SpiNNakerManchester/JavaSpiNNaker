@@ -63,7 +63,7 @@ loadScripts(document, 'script');</script>
 <div class="header">
 <h1>Index</h1>
 </div>
-<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><a id="I:A">
+<div class="contentContainer"><a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><a id="I:A">
 <!--   -->
 </a>
 <h2 class="title">A</h2>
@@ -317,9 +317,24 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#listEthernetsToLoad()">listEthernetsToLoad()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/ResourceLoader.html#loadResource(java.lang.String)">loadResource(String)</a></span> - Static method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/ResourceLoader.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">ResourceLoader</a></dt>
+<dd>
+<div class="block">Load a text resource from the given name using this class's class loader.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html#location">location</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a></dt>
 <dd>
 <div class="block">The virtual location of this ethernet.</div>
+</dd>
+</dl>
+<a id="I:O">
+<!--   -->
+</a>
+<h2 class="title">O</h2>
+<dl>
+<dt><a href="uk/ac/manchester/spinnaker/storage/threading/OneThread.html" title="class in uk.ac.manchester.spinnaker.storage.threading"><span class="typeNameLink">OneThread</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/threading/package-summary.html">uk.ac.manchester.spinnaker.storage.threading</a></dt>
+<dd>
+<div class="block">A wrapper for an SQL connection that enforces that it is only used from its
+ creating thread.</div>
 </dd>
 </dl>
 <a id="I:P">
@@ -345,7 +360,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">How much data was originally requested?</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,int,int)">Region(HasCoreLocation, int, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasCoreLocation,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">Region(HasCoreLocation, int, MemoryLocation, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
 <dd>
 <div class="block">Create a region descriptor.</div>
 </dd>
@@ -353,6 +368,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">What was the index of the region in the table of regions for the
  core?</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/sqlite/ResourceLoader.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite"><span class="typeNameLink">ResourceLoader</span></a> - Class in <a href="uk/ac/manchester/spinnaker/storage/sqlite/package-summary.html">uk.ac.manchester.spinnaker.storage.sqlite</a></dt>
+<dd>
+<div class="block">Factoring out of correct resource loading pattern.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/storage/ResultColumn.html" title="annotation in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">ResultColumn</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
 <dd>
@@ -368,12 +387,16 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">S</h2>
 <dl>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,int,int,int)">saveLoadingMetadata(DSEStorage.CoreToLoad, int, int, int)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata(DSEStorage.CoreToLoad, MemoryLocation, int, int)</a></span> - Method in interface uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></dt>
 <dd>
 <div class="block">Record the results of loading a core.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,int,int,int)">saveLoadingMetadata(DSEStorage.CoreToLoad, int, int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata(DSEStorage.CoreToLoad, MemoryLocation, int, int)</a></span> - Method in class uk.ac.manchester.spinnaker.storage.sqlite.<a href="uk/ac/manchester/spinnaker/storage/sqlite/SQLiteDataSpecStorage.html" title="class in uk.ac.manchester.spinnaker.storage.sqlite">SQLiteDataSpecStorage</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/SingleRowResult.html" title="annotation in uk.ac.manchester.spinnaker.storage"><span class="typeNameLink">SingleRowResult</span></a> - Annotation Type in <a href="uk/ac/manchester/spinnaker/storage/package-summary.html">uk.ac.manchester.spinnaker.storage</a></dt>
+<dd>
+<div class="block">Marks a query that will only produce <em>at most</em> one row.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#size">size</a></span> - Variable in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
 <dd>
 <div class="block">How much data should be downloaded? <em>This is not necessarily the
@@ -430,6 +453,10 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">T</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/threading/OneThread.html#threadBound(java.sql.Connection)">threadBound(Connection)</a></span> - Static method in class uk.ac.manchester.spinnaker.storage.threading.<a href="uk/ac/manchester/spinnaker/storage/threading/OneThread.html" title="class in uk.ac.manchester.spinnaker.storage.threading">OneThread</a></dt>
+<dd>
+<div class="block">Create the wrapper.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.storage.<a href="uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html" title="class in uk.ac.manchester.spinnaker.storage">BufferManagerStorage.Region</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -445,6 +472,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/storage/sqlite/package-summary.html">uk.ac.manchester.spinnaker.storage.sqlite</a> - package uk.ac.manchester.spinnaker.storage.sqlite</dt>
 <dd>
 <div class="block">Storage management implementation that uses SQLite.</div>
+</dd>
+<dt><a href="uk/ac/manchester/spinnaker/storage/threading/package-summary.html">uk.ac.manchester.spinnaker.storage.threading</a> - package uk.ac.manchester.spinnaker.storage.threading</dt>
+<dd>
+<div class="block">Thread management.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/storage/threading/OneThread.html#uncloseableThreadBound(java.sql.Connection)">uncloseableThreadBound(Connection)</a></span> - Static method in class uk.ac.manchester.spinnaker.storage.threading.<a href="uk/ac/manchester/spinnaker/storage/threading/OneThread.html" title="class in uk.ac.manchester.spinnaker.storage.threading">OneThread</a></dt>
+<dd>
+<div class="block">Create the wrapper.</div>
 </dd>
 </dl>
 <a id="I:V">
@@ -471,7 +506,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Describes what columns are expected in the result.</div>
 </dd>
 </dl>
-<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></div>
+<a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes</a><span class="verticalSeparator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></div>
 </main>
 <footer role="contentinfo">
 <nav role="navigation">

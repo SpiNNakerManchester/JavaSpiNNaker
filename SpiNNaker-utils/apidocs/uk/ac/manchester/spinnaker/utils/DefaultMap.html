@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":9};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -211,13 +211,34 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.htm
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#compute(K,java.util.function.BiFunction)">compute</a></span>&#8203;(<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;remappingFunction)</code></th>
+</tr>
+<tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#computeIfAbsent(K,java.util.function.Function)">computeIfAbsent</a></span>&#8203;(<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;mappingFunction)</code></th>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#computeIfPresent(K,java.util.function.BiFunction)">computeIfPresent</a></span>&#8203;(<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;remappingFunction)</code></th>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#get(java.lang.Object)">get</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&nbsp;key)</code></th>
 <td class="colLast">
 <div class="block">Gets a value from the dictionary, inserting a newly manufactured value if
  the key has no mapping.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i4">
+<td class="colFirst"><code><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#merge(K,V,java.util.function.BiFunction)">merge</a></span>&#8203;(<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&nbsp;value,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;remappingFunction)</code></th>
+</tr>
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>static &lt;K,&#8203;
 V&gt;&nbsp;<a href="DefaultMap.html" title="class in uk.ac.manchester.spinnaker.utils">DefaultMap</a>&lt;K,&#8203;V&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#newAdvancedDefaultMap(uk.ac.manchester.spinnaker.utils.DefaultMap.KeyAwareFactory)">newAdvancedDefaultMap</a></span>&#8203;(<a href="DefaultMap.KeyAwareFactory.html" title="interface in uk.ac.manchester.spinnaker.utils">DefaultMap.KeyAwareFactory</a>&lt;? super K,&#8203;? extends V&gt;&nbsp;keyAwareFactory)</code></th>
@@ -234,7 +255,7 @@ V&gt;&nbsp;<a href="DefaultMap.html" title="class in uk.ac.manchester.spinnaker.
 <h3>Methods inherited from class&nbsp;java.util.<a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a></h3>
 <a id="methods.inherited.from.class.java.util.HashMap">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#clear()" title="class or interface in java.util" class="externalLink">clear</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#clone()" title="class or interface in java.util" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#compute(K,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">compute</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#computeIfAbsent(K,java.util.function.Function)" title="class or interface in java.util" class="externalLink">computeIfAbsent</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#computeIfPresent(K,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">computeIfPresent</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#containsKey(java.lang.Object)" title="class or interface in java.util" class="externalLink">containsKey</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#containsValue(java.lang.Object)" title="class or interface in java.util" class="externalLink">containsValue</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#entrySet()" title="class or interface in java.util" class="externalLink">entrySet</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#forEach(java.util.function.BiConsumer)" title="class or interface in java.util" class="externalLink">forEach</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#getOrDefault(java.lang.Object,V)" title="class or interface in java.util" class="externalLink">getOrDefault</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#isEmpty()" title="class or interface in java.util" class="externalLink">isEmpty</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#keySet()" title="class or interface in java.util" class="externalLink">keySet</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#merge(K,V,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">merge</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#put(K,V)" title="class or interface in java.util" class="externalLink">put</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#putAll(java.util.Map)" title="class or interface in java.util" class="externalLink">putAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#putIfAbsent(K,V)" title="class or interface in java.util" class="externalLink">putIfAbsent</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#remove(java.lang.Object)" title="class or interface in java.util" class="externalLink">remove</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#remove(java.lang.Object,java.lang.Object)" title="class or interface in java.util" class="externalLink">remove</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#replace(K,V)" title="class or interface in java.util" class="externalLink">replace</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#replace(K,V,V)" title="class or interface in java.util" class="externalLink">replace</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#replaceAll(java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">replaceAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#size()" title="class or interface in java.util" class="externalLink">size</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#values()" title="class or interface in java.util" class="externalLink">values</a></code></div>
+</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#clear()" title="class or interface in java.util" class="externalLink">clear</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#clone()" title="class or interface in java.util" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#containsKey(java.lang.Object)" title="class or interface in java.util" class="externalLink">containsKey</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#containsValue(java.lang.Object)" title="class or interface in java.util" class="externalLink">containsValue</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#entrySet()" title="class or interface in java.util" class="externalLink">entrySet</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#forEach(java.util.function.BiConsumer)" title="class or interface in java.util" class="externalLink">forEach</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#getOrDefault(java.lang.Object,V)" title="class or interface in java.util" class="externalLink">getOrDefault</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#isEmpty()" title="class or interface in java.util" class="externalLink">isEmpty</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#keySet()" title="class or interface in java.util" class="externalLink">keySet</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#put(K,V)" title="class or interface in java.util" class="externalLink">put</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#putAll(java.util.Map)" title="class or interface in java.util" class="externalLink">putAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#putIfAbsent(K,V)" title="class or interface in java.util" class="externalLink">putIfAbsent</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#remove(java.lang.Object)" title="class or interface in java.util" class="externalLink">remove</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#remove(java.lang.Object,java.lang.Object)" title="class or interface in java.util" class="externalLink">remove</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#replace(K,V)" title="class or interface in java.util" class="externalLink">replace</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#replace(K,V,V)" title="class or interface in java.util" class="externalLink">replace</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#replaceAll(java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">replaceAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#size()" title="class or interface in java.util" class="externalLink">size</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#values()" title="class or interface in java.util" class="externalLink">values</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.util.<a href="https://docs.oracle.com/javase/8/docs/api/java/util/AbstractMap.html?is-external=true" title="class or interface in java.util" class="externalLink">AbstractMap</a></h3>
 <a id="methods.inherited.from.class.java.util.AbstractMap">
@@ -276,7 +297,7 @@ V&gt;&nbsp;<a href="DefaultMap.html" title="class in uk.ac.manchester.spinnaker.
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>defaultValue</code> - The default value to use in the map. This should be an
             immutable value as it can be potentially inserted for many
-            keys.</dd>
+            keys. <em>Must not be <code>null</code>.</em></dd>
 </dl>
 </section>
 </li>
@@ -286,15 +307,15 @@ V&gt;&nbsp;<a href="DefaultMap.html" title="class in uk.ac.manchester.spinnaker.
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">DefaultMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;defaultFactory)</span></div>
 <div class="block">Create a new map.
  <p>
- The defaultFactory can be a method or an Object.
- If V is mutable it is HIGHLY recommended to pass in a method and not an
-     Object.
- For example use ArrayList::new and not new ArrayList() otherwise the
-     Single will be used every time and values added after one get will
-     be in the default for the next get.</div>
+ The <code>defaultFactory</code> is a method to generate an object. If the
+ default value is mutable it is <em>highly</em> recommended to pass in a
+ method like this, and not an object. For example use
+ <code>ArrayList::new</code> and not <code>new ArrayList()</code> otherwise the
+ single value will be used every time and values added after one get will
+ be in the default for the next get.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>defaultFactory</code> - A method to create a new value/ an Object to insert in the map.</dd>
+<dd><code>defaultFactory</code> - A method to create a new value/object to insert in the map.</dd>
 </dl>
 </section>
 </li>
@@ -318,7 +339,8 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="DefaultMap.html" title="clas
  otherwise it clashes with the more common case of the unaware factory.
  <p>
  The Factory can be a lambda method to create a me value based on the key.
- <br>For example:
+ <br>
+ For example:
  <p>
  <code>DefaultMap.newAdvancedDefaultMap(i -&gt; i*2);</code>
  <p>
@@ -346,6 +368,83 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="DefaultMap.html" title="clas
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true#get(java.lang.Object)" title="class or interface in java.util" class="externalLink">get</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#get(java.lang.Object)" title="class or interface in java.util" class="externalLink">get</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="compute(java.lang.Object,java.util.function.BiFunction)">
+<!--   -->
+</a><a id="compute(K,java.util.function.BiFunction)">compute</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></span>&nbsp;<span class="memberName">compute</span>&#8203;(<span class="arguments"><a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;remappingFunction)</span></div>
+<div class="block">
+ <p>
+ <strong>NB:</strong> This converts <code>null</code>s into the correct default
+ value.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true#compute(K,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">compute</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#compute(K,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">compute</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="computeIfAbsent(java.lang.Object,java.util.function.Function)">
+<!--   -->
+</a><a id="computeIfAbsent(K,java.util.function.Function)">computeIfAbsent</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></span>&nbsp;<span class="memberName">computeIfAbsent</span>&#8203;(<span class="arguments"><a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;mappingFunction)</span></div>
+<div class="block">
+ <p>
+ <strong>NB:</strong> This converts <code>null</code>s into the correct default
+ value.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true#computeIfAbsent(K,java.util.function.Function)" title="class or interface in java.util" class="externalLink">computeIfAbsent</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#computeIfAbsent(K,java.util.function.Function)" title="class or interface in java.util" class="externalLink">computeIfAbsent</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="computeIfPresent(java.lang.Object,java.util.function.BiFunction)">
+<!--   -->
+</a><a id="computeIfPresent(K,java.util.function.BiFunction)">computeIfPresent</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></span>&nbsp;<span class="memberName">computeIfPresent</span>&#8203;(<span class="arguments"><a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;remappingFunction)</span></div>
+<div class="block">
+ <p>
+ <strong>NB:</strong> This converts <code>null</code>s into the correct default
+ value.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true#computeIfPresent(K,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">computeIfPresent</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#computeIfPresent(K,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">computeIfPresent</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="merge(java.lang.Object,java.lang.Object,java.util.function.BiFunction)">
+<!--   -->
+</a><a id="merge(K,V,java.util.function.BiFunction)">merge</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DefaultMap.html" title="type parameter in DefaultMap">V</a></span>&nbsp;<span class="memberName">merge</span>&#8203;(<span class="arguments"><a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>&nbsp;key,
+<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&nbsp;value,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? super <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>,&#8203;? extends <a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;&nbsp;remappingFunction)</span></div>
+<div class="block">
+ <p>
+ <strong>NB:</strong> This converts <code>null</code>s into the correct default
+ value.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true#merge(K,V,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">merge</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true#merge(K,V,java.util.function.BiFunction)" title="class or interface in java.util" class="externalLink">merge</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;<a href="DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;<a href="DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
