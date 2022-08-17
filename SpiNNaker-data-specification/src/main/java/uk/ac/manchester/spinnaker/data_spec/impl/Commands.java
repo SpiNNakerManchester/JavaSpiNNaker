@@ -18,10 +18,7 @@ package uk.ac.manchester.spinnaker.data_spec.impl;
 
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import uk.ac.manchester.spinnaker.data_spec.Commands;
 
 /**
  * Set of opcodes for the spec executor. All names come from the Data

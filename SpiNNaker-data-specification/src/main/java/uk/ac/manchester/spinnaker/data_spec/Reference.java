@@ -26,8 +26,6 @@ public final class Reference {
 	/**
 	 * Create a reference to another region.
 	 *
-	 * @param index
-	 *            The index of this region.
 	 * @param reference
 	 *            The reference to make.
 	 */
