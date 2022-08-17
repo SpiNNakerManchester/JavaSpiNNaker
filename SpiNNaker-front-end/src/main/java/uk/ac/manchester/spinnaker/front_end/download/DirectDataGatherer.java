@@ -42,7 +42,8 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  * @deprecated This class uses an unimplemented API call that needs to be fixed
- *             but hasn't been yet.
+ *             but hasn't been yet. It also assumes that there are no shared
+ *             regions.
  * @see RecordingRegionDataGatherer
  */
 @Deprecated
@@ -132,7 +133,7 @@ public class DirectDataGatherer extends DataGatherer {
 			throws IOException, ProcessException {
 		var b = getCoreRegionTable(placement.asCoreLocation(),
 				placement.getVertex());
-		// TODO This is probably wrong!
+		// TODO This is wrong because of shared regions!
 		int size = b.get(regionID + 1) - b.get(regionID);
 		return List.of(new Region(placement, regionID,
 				new MemoryLocation(b.get(regionID)), size));

@@ -16,9 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Comparator.comparing;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT;
+
+import java.util.Comparator;
 
 /**
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
@@ -74,29 +77,16 @@ public class RegionLocation
 		return y;
 	}
 
+	/** Comparator for region locations. */
+	public static final Comparator<RegionLocation> COMPARATOR =
+			comparing(RegionLocation::getX) //
+					.thenComparing(RegionLocation::getY)
+					.thenComparing(RegionLocation::getP)
+					.thenComparing(rl -> rl.region);
+
 	@Override
-	public int compareTo(RegionLocation other) {
-		if (x < other.x) {
-			return -1;
-		} else if (x > other.x) {
-			return 1;
-		}
-		if (y < other.y) {
-			return -1;
-		} else if (y > other.y) {
-			return 1;
-		}
-		if (p < other.p) {
-			return -1;
-		} else if (p > other.p) {
-			return 1;
-		}
-		if (region < other.region) {
-			return -1;
-		} else if (region > other.region) {
-			return 1;
-		}
-		return 0;
+	public int compareTo(RegionLocation o) {
+		return COMPARATOR.compare(this, o);
 	}
 
 	@Override

@@ -149,14 +149,9 @@ public final class Processor implements Comparable<Processor> {
 			return cmp;
 		}
 		// Check the other parameters for consistency with equals.
-		if (isMonitor) {
-			if (!other.isMonitor) {
-				return 1;
-			}
-		} else {
-			if (other.isMonitor) {
-				return -1;
-			}
+		cmp = Boolean.compare(this.isMonitor, other.isMonitor);
+		if (cmp != 0) {
+			return cmp;
 		}
 		cmp = compare(this.dtcmAvailable, other.dtcmAvailable);
 		if (cmp != 0) {
