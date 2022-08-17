@@ -73,7 +73,7 @@ class TestOKResponse {
 	}
 
 	@Test
-	void testNotOKResponse() throws UnexpectedResponseCodeException {
+	void testNotOKResponse() {
 		short result = RC_TIMEOUT.value;
 		byte flags = REPLY_NOT_EXPECTED.value;
 		byte tag = 0x01;

@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.HOSTNAME_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
@@ -180,25 +182,29 @@ public class Configuration {
 
 	private static final String NULL_MARKER = "None";
 
+	private static boolean isNull(String value) {
+		return NULL_MARKER.equals(value);
+	}
+
 	private Double readNoneOrFloat(String prop) {
 		String val = section.getString(prop);
-		if (NULL_MARKER.equals(val)) {
+		if (isNull(val)) {
 			return null;
 		}
-		return Double.parseDouble(val);
+		return parseDouble(val);
 	}
 
 	private Integer readNoneOrInt(String prop) {
 		String val = section.getString(prop);
-		if (NULL_MARKER.equals(val)) {
+		if (isNull(val)) {
 			return null;
 		}
-		return Integer.parseInt(val);
+		return parseInt(val);
 	}
 
 	private String readNoneOrString(String prop) {
 		String val = section.getString(prop);
-		if (NULL_MARKER.equals(val)) {
+		if (isNull(val)) {
 			return null;
 		}
 		return val;
@@ -225,7 +231,7 @@ public class Configuration {
 			defaults.put(MACHINE_PROPERTY, readNoneOrString(MACHINE_PROPERTY));
 		}
 		if (section.containsKey(TAGS_PROPERTY)) {
-			if (NULL_MARKER.equals(section.getString(TAGS_PROPERTY))) {
+			if (isNull(section.getString(TAGS_PROPERTY))) {
 				defaults.put(TAGS_PROPERTY, null);
 			} else {
 				defaults.put(TAGS_PROPERTY,

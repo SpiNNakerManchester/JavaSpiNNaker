@@ -50,11 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
+			<artifactId>junit-jupiter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>

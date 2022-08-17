@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -43,7 +42,6 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
-import uk.ac.manchester.spinnaker.messages.scp.SCPRequestHeader;
 import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
@@ -61,13 +59,20 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 class BMPCommandProcess<R extends BMPResponse> {
 	private static final Logger log = getLogger(BMPCommandProcess.class);
 
+	/*
+	 * The weird casts in this class are OK; they're narrowing return types in
+	 * accordance with the guarantees we can make (but the compiler can't
+	 * prove).
+	 */
+
 	/** How long to wait for a BMP to respond. */
 	private static final int DEFAULT_TIMEOUT =
 			(int) (MSEC_PER_SEC * BMP_TIMEOUT);
 
 	private static final String TIMEOUT_TOKEN = "BMP timed out";
 
-	private static final int BMP_RETRIES = 3;
+	/** Number of times we retry a BMP action. */
+	static final int BMP_RETRIES = 3;
 
 	private final ConnectionSelector<BMPConnection> connectionSelector;
 
@@ -113,6 +118,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * Do a synchronous call of a BMP operation, sending the given message and
 	 * completely processing the interaction before returning its response.
 	 *
+	 * @param <T>
+	 *            The real type of the response
 	 * @param request
 	 *            The request to send
 	 * @return The successful response to the request
@@ -121,7 +128,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	 * @throws ProcessException
 	 *             If the other side responds with a failure code
 	 */
-	R execute(BMPRequest<R> request) throws IOException, ProcessException {
+	@SuppressWarnings("unchecked")
+	<T extends R> T execute(BMPRequest<T> request)
+			throws IOException, ProcessException {
 		ValueHolder<R> holder = new ValueHolder<>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
@@ -129,13 +138,136 @@ class BMPCommandProcess<R extends BMPResponse> {
 		 */
 		RequestPipeline requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
-		requestPipeline.sendRequest(request, holder::setValue);
+		requestPipeline.sendRequest((BMPRequest<R>) request, holder::setValue);
 		requestPipeline.finish();
 		if (exception != null) {
 			throw makeInstance(errorRequest.sdpHeader.getDestination(),
 					exception);
 		}
-		return holder.getValue();
+		return (T) holder.getValue();
+	}
+
+	/**
+	 * Do a synchronous call of a BMP operation, sending the given message and
+	 * completely processing the interaction before returning its response.
+	 *
+	 * @param <T>
+	 *            The real type of the response
+	 * @param request
+	 *            The request to send
+	 * @param retries
+	 *            The number of times to retry
+	 * @return The successful response to the request
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 */
+	@SuppressWarnings("unchecked")
+	<T extends R> T execute(BMPRequest<T> request, int retries)
+			throws IOException, ProcessException {
+		ValueHolder<R> holder = new ValueHolder<>();
+		/*
+		 * If no pipeline built yet, build one on the connection selected for
+		 * it.
+		 */
+		RequestPipeline requestPipeline = new RequestPipeline(
+				connectionSelector.getNextConnection(request));
+		requestPipeline.sendRequest((BMPRequest<R>) request, retries,
+				holder::setValue);
+		requestPipeline.finish();
+		if (exception != null) {
+			throw makeInstance(errorRequest.sdpHeader.getDestination(),
+					exception);
+		}
+		return (T) holder.getValue();
+	}
+
+	/**
+	 * Do a synchronous call of a sequence of BMP operations, sending each of
+	 * the given messages and completely processing the interaction before doing
+	 * the next one.
+	 *
+	 * @param <T>
+	 *            The real type of the responses
+	 * @param requests
+	 *            The sequence of requests to send; note that these are handled
+	 *            sequentially, as the BMP typically cannot handle parallel
+	 *            access. This will be iterated over exactly once.
+	 * @return The list of successful responses.
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 */
+	@SuppressWarnings("unchecked")
+	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
+			throws IOException, ProcessException {
+		List<R> results = new ArrayList<>();
+		RequestPipeline requestPipeline = null;
+		for (BMPRequest<T> request : requests) {
+			if (requestPipeline == null) {
+				/*
+				 * If no pipeline built yet, build one on the connection
+				 * selected for it.
+				 */
+
+				requestPipeline = new RequestPipeline(
+						connectionSelector.getNextConnection(request));
+			}
+			requestPipeline.sendRequest((BMPRequest<R>) request, results::add);
+			requestPipeline.finish();
+		}
+		if (exception != null) {
+			throw makeInstance(errorRequest.sdpHeader.getDestination(),
+					exception);
+		}
+		return (List<T>) results;
+	}
+
+	/**
+	 * Do a synchronous call of a sequence of BMP operations, sending each of
+	 * the given messages and completely processing the interaction before doing
+	 * the next one.
+	 *
+	 * @param <T>
+	 *            The real type of the response
+	 * @param requests
+	 *            The sequence of requests to send; note that these are handled
+	 *            sequentially, as the BMP typically cannot handle parallel
+	 *            access. This will be iterated over exactly once.
+	 * @param retries
+	 *            The number of times to retry
+	 * @return The list of successful responses.
+	 * @throws IOException
+	 *             If the communications fail
+	 * @throws ProcessException
+	 *             If the other side responds with a failure code
+	 */
+	@SuppressWarnings("unchecked")
+	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
+			int retries) throws IOException, ProcessException {
+		List<R> results = new ArrayList<>();
+		RequestPipeline requestPipeline = null;
+		for (BMPRequest<T> request : requests) {
+			if (requestPipeline == null) {
+				/*
+				 * If no pipeline built yet, build one on the connection
+				 * selected for it.
+				 */
+
+				requestPipeline = new RequestPipeline(
+						connectionSelector.getNextConnection(request));
+			}
+			requestPipeline.sendRequest((BMPRequest<R>) request, retries,
+					results::add);
+			requestPipeline.finish();
+		}
+		if (exception != null) {
+			throw makeInstance(errorRequest.sdpHeader.getDestination(),
+					exception);
+		}
+		return (List<T>) results;
 	}
 
 	/**
@@ -182,6 +314,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 				this.request = request;
 				this.requestData = request.getMessageData(connection.getChip());
 				this.callback = callback;
+			}
+
+			private Request(BMPRequest<R> request, int retries,
+					Consumer<R> callback) {
+				this(request, callback);
+				this.retries = retries;
 			}
 
 			private void send() throws IOException {
@@ -257,6 +395,35 @@ class BMPCommandProcess<R extends BMPResponse> {
 		}
 
 		/**
+		 * Add a BMP request to the set to be sent.
+		 *
+		 * @param request
+		 *            The BMP request to be sent
+		 * @param retries
+		 *            The number of times to retry on failure.
+		 * @param callback
+		 *            A callback function to call when the response has been
+		 *            received; takes an SCPResponse as a parameter, or a
+		 *            {@code null} if the response doesn't need to be processed.
+		 * @throws IOException
+		 *             If things go really wrong.
+		 */
+		private void sendRequest(BMPRequest<R> request, int retries,
+				Consumer<R> callback) throws IOException {
+			// Get the next sequence to be used and store it in the header
+			int sequence = request.scpRequestHeader
+					.issueSequenceNumber(requests.keySet());
+
+			// Send the request, keeping track of how many are sent
+			Request req = new Request(request, retries, callback);
+			if (requests.put(sequence, req) != null) {
+				throw new RuntimeException(
+						"duplicate sequence number catastrophe");
+			}
+			req.send();
+		}
+
+		/**
 		 * Indicate the end of the packets to be sent. This must be called to
 		 * ensure that all responses are received and handled.
 		 *
@@ -284,6 +451,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 				// Only process responses which have matching requests
 				log.info("discarding message with unknown sequence number: {}",
 						msg.getSequenceNumber());
+				log.info("discarded message: {}", msg);
 				return;
 			}
 
@@ -332,44 +500,17 @@ class BMPCommandProcess<R extends BMPResponse> {
 			if (!req.hasRetries()) {
 				// Report timeouts as timeout exception
 				if (req.allTimeoutFailures()) {
-					throw new SendTimedOutException(
+					throw new BMPSendTimedOutException(
 							req.request.scpRequestHeader, timeout);
 				}
 
 				// Report any other exception
-				throw new SendFailedException(req.request.scpRequestHeader,
+				throw new BMPSendFailedException(req.request.scpRequestHeader,
 						req.dest(), req.retryReason);
 			}
 
 			// If the request can be retried, retry it
 			req.resend(reason.toString());
-		}
-	}
-
-	/**
-	 * Indicates that message sending timed out.
-	 */
-	static final class SendTimedOutException extends SocketTimeoutException {
-		private static final long serialVersionUID = 1660563278795501381L;
-
-		SendTimedOutException(SCPRequestHeader hdr, int timeout) {
-			super(format("Operation %s timed out after %f seconds", hdr.command,
-					timeout / (double) MSEC_PER_SEC));
-		}
-	}
-
-	/**
-	 * Indicates that message sending failed for various reasons.
-	 */
-	static final class SendFailedException extends IOException {
-		private static final long serialVersionUID = -7806549580351626377L;
-
-		SendFailedException(SCPRequestHeader hdr, HasCoreLocation core,
-				List<String> retryReason) {
-			super(format(
-					"Errors sending request %s to %d,%d,%d over %d retries: %s",
-					hdr.command, core.getX(), core.getY(), core.getP(),
-					BMP_RETRIES, retryReason));
 		}
 	}
 }

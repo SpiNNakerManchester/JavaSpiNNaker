@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.nio.ByteBuffer.wrap;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE1;
 import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE2;
@@ -24,6 +25,8 @@ import static uk.ac.manchester.spinnaker.messages.scp.Bits.BYTE3;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FFD;
 
 import java.nio.ByteBuffer;
+
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** A request to start a flood fill of data. */
 public class FloodFillData extends SCPRequest<CheckOKResponse> {
@@ -46,7 +49,7 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 *            divisible by 4.
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
-			int baseAddress, byte[] data) {
+			MemoryLocation baseAddress, byte[] data) {
 		this(nearestNeighbourID, blockNumber, baseAddress, data, 0,
 				data.length);
 	}
@@ -67,10 +70,10 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 *            The length of the data; must be divisible by 4.
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
-			int baseAddress, byte[] data, int offset, int length) {
+			MemoryLocation baseAddress, byte[] data, int offset, int length) {
 		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
-				argument2(blockNumber, length), baseAddress,
-				ByteBuffer.wrap(data, offset, length));
+				argument2(blockNumber, length), baseAddress.address,
+				wrap(data, offset, length));
 	}
 
 	/**
@@ -86,9 +89,10 @@ public class FloodFillData extends SCPRequest<CheckOKResponse> {
 	 *            must be divisible by 4
 	 */
 	public FloodFillData(byte nearestNeighbourID, int blockNumber,
-			int baseAddress, ByteBuffer data) {
+			MemoryLocation baseAddress, ByteBuffer data) {
 		super(BOOT_MONITOR_CORE, CMD_FFD, argument1(nearestNeighbourID),
-				argument2(blockNumber, data.remaining()), baseAddress, data);
+				argument2(blockNumber, data.remaining()), baseAddress.address,
+				data);
 	}
 
 	private static int argument1(byte nearestNeighbourID) {

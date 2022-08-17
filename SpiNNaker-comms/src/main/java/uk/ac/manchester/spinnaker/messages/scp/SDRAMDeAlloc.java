@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_ALLOC;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.MemoryAllocationFailedException;
 
@@ -54,9 +55,9 @@ public class SDRAMDeAlloc extends SCPRequest<SDRAMDeAlloc.Response> {
 	 *            The start address in SDRAM to which the block needs to be
 	 *            deallocated
 	 */
-	public SDRAMDeAlloc(HasChipLocation chip, int baseAddress) {
-		super(chip.getScampCore(), CMD_ALLOC, (int) FREE_SDRAM_BY_POINTER.value,
-				baseAddress);
+	public SDRAMDeAlloc(HasChipLocation chip, MemoryLocation baseAddress) {
+		super(chip.getScampCore(), CMD_ALLOC, FREE_SDRAM_BY_POINTER.value,
+				baseAddress.address);
 		readNumFreedBlocks = false;
 	}
 

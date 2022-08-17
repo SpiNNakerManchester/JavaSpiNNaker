@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillData;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillEnd;
 import uk.ac.manchester.spinnaker.messages.scp.FloodFillStart;
@@ -70,8 +71,8 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeMemory(byte nearestNeighbourID, int baseAddress, ByteBuffer data)
-			throws IOException, ProcessException {
+	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
+			ByteBuffer data) throws IOException, ProcessException {
 		data = data.asReadOnlyBuffer();
 		int numBytes = data.remaining();
 		synchronousCall(
@@ -86,7 +87,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 					baseAddress, tmp));
 			blockID++;
 			numBytes -= chunk;
-			baseAddress += chunk;
+			baseAddress = baseAddress.add(chunk);
 			data.position(data.position() + chunk);
 		}
 		finish();
@@ -114,7 +115,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeMemory(byte nearestNeighbourID, int baseAddress,
+	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		synchronousCall(
@@ -133,7 +134,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 					baseAddress, buffer, 0, chunk));
 			blockID++;
 			numBytes -= chunk;
-			baseAddress += chunk;
+			baseAddress = baseAddress.add(chunk);
 		}
 		finish();
 		checkForError();
@@ -155,8 +156,8 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void writeMemory(byte nearestNeighbourID, int baseAddress, File dataFile)
-			throws IOException, ProcessException {
+	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
+			File dataFile) throws IOException, ProcessException {
 		try (InputStream s =
 				new BufferedInputStream(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,

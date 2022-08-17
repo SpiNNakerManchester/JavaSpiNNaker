@@ -30,6 +30,10 @@ class NeighbourIterator implements Iterator<ChipLocation> {
 		this.linksIter = linksIter;
 	}
 
+	NeighbourIterator(Iterable<Link> linksIterable) {
+		this.linksIter = linksIterable.iterator();
+	}
+
 	@Override
 	public boolean hasNext() {
 		return linksIter.hasNext();

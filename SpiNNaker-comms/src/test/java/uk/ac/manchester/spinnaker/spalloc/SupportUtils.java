@@ -31,6 +31,7 @@ abstract class SupportUtils {
 	}
 
 	private static final long MIN_TIMEOUT = 100;
+
 	private static final long MAX_TIMEOUT = 400;
 
 	static final void assertTimeout(long before, long after) {
@@ -42,6 +43,7 @@ abstract class SupportUtils {
 
 	/** Overall test timeout. */
 	static final Duration OVERALL_TEST_TIMEOUT = Duration.ofSeconds(10);
+
 	/** Requested timeout. */
 	static final int TIMEOUT = 101;
 
@@ -75,13 +77,17 @@ abstract class SupportUtils {
 
 	interface IServer extends AutoCloseable {
 		void send(JSONObject obj);
+
 		default void send(String jsonString) {
 			send(new JSONObject(jsonString));
 		}
+
 		JSONObject recv() throws JSONException, IOException;
+
 		void advancedEmulationMode(BlockingDeque<String> send,
 				BlockingDeque<JSONObject> received,
 				BlockingDeque<JSONObject> keepalives, Joinable bgAccept);
+
 		int getPort();
 	}
 
@@ -91,14 +97,14 @@ abstract class SupportUtils {
 	}
 
 	static void withConnection(WithConn op) throws Exception {
-		try (MockServer s = new MockServer()) {
-			SpallocClient c = new SpallocClient("localhost", s.getPort(), null);
+		try (MockServer s = new MockServer();
+				SpallocClient c =
+						new SpallocClient("localhost", s.getPort(), null)) {
 			Joinable bgAccept = backgroundAccept(s);
 			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
 				op.act(s, c, bgAccept);
 			});
 			bgAccept.join();
-			c.close();
 		}
 	}
 }

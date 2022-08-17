@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.util.Collections.unmodifiableMap;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_CONTROL;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_DIAGNOSTICS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_ERROR;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -49,12 +52,6 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private static final int REGISTER = 4;
 
 	private static final int NUM_REGISTERS = 16;
-
-	private static final int ROUTER_CONTROL_REGISTER = 0xe1000000;
-
-	private static final int ROUTER_ERROR_STATUS = 0xe1000014;
-
-	private static final int ROUTER_REGISTERS = 0xe1000300;
 
 	/**
 	 * @param connectionSelector
@@ -445,12 +442,14 @@ class RouterControlProcess extends MultiConnectionProcess<SCPConnection> {
 		ValueHolder<Integer> es = new ValueHolder<>();
 		int[] reg = new int[NUM_REGISTERS];
 
-		sendRequest(new ReadMemory(chip, ROUTER_CONTROL_REGISTER, REGISTER),
+		sendRequest(
+				new ReadMemory(chip, ROUTER_CONTROL, REGISTER),
 				response -> cr.setValue(response.data.getInt()));
-		sendRequest(new ReadMemory(chip, ROUTER_ERROR_STATUS, REGISTER),
+		sendRequest(
+				new ReadMemory(chip, ROUTER_ERROR, REGISTER),
 				response -> es.setValue(response.data.getInt()));
 		sendRequest(
-				new ReadMemory(chip, ROUTER_REGISTERS,
+				new ReadMemory(chip, ROUTER_DIAGNOSTICS,
 						NUM_REGISTERS * REGISTER),
 				response -> response.data.asIntBuffer().get(reg));
 

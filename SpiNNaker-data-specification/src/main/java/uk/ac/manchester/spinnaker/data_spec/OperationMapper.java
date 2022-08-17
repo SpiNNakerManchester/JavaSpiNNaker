@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
@@ -89,16 +88,13 @@ abstract class OperationMapper {
 	private static void manufactureCallables(Map<Commands, Callable> map,
 			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
 		// Note that getOperations() below ensures the safety of this
-		for (Entry<Commands, Method> e : ops.entrySet()) {
-			Commands c = e.getKey();
-			Method m = e.getValue();
-			Class<?> rt = m.getReturnType();
-			if (rt.equals(Void.TYPE)) {
+		ops.forEach((c, m) -> {
+			if (m.getReturnType().equals(Void.TYPE)) {
 				map.put(c, cmd -> doVoidCall(objref.get(), m, c, cmd));
 			} else {
 				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
 			}
-		}
+		});
 	}
 
 	private static Map<Commands, Method> getOperations(

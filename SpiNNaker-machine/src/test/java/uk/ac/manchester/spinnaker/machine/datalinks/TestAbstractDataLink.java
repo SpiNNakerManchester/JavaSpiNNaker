@@ -29,29 +29,26 @@ import uk.ac.manchester.spinnaker.machine.Direction;
  */
 public class TestAbstractDataLink {
 
-    ChipLocation location00 = new ChipLocation(0,0);
-    ChipLocation location01 = new ChipLocation(0,1);
+	private ChipLocation location00 = new ChipLocation(0, 0);
 
-    private InetAddress createInetAddress() throws UnknownHostException {
-        byte[] bytes = {127,0,0,0};
-        return InetAddress.getByAddress(bytes);
-    }
+	private InetAddress createInetAddress() throws UnknownHostException {
+		byte[] bytes = {127, 0, 0, 0};
+		return InetAddress.getByAddress(bytes);
+	}
 
+	public TestAbstractDataLink() {
+	}
 
-    public TestAbstractDataLink() {
-    }
-
-
-    @Test
-    public void testEquals() throws UnknownHostException {
-        AbstractDataLink link1 = new AbstractDataLink(location00,
-                Direction.NORTHEAST, createInetAddress());
-        AbstractDataLink link2= new AbstractDataLink(location00,
-                Direction.NORTHEAST, createInetAddress());
-        assertEquals(link1, link2);
-        assertEquals(link1, link1);
-        assertNotEquals(link1, null);
-        assertNotEquals(link1, "link1");
-    }
+	@Test
+	public void testEquals() throws UnknownHostException {
+		AbstractDataLink link1 = new AbstractDataLink(location00,
+				Direction.NORTHEAST, createInetAddress());
+		AbstractDataLink link2 = new AbstractDataLink(location00,
+				Direction.NORTHEAST, createInetAddress());
+		assertEquals(link1, link2);
+		assertEquals(link1, link1);
+		assertNotEquals(link1, null);
+		assertNotEquals(link1, "link1");
+	}
 
 }

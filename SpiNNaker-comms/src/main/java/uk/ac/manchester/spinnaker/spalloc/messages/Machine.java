@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import java.util.Collections;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
@@ -34,9 +33,9 @@ public class Machine {
 
 	private int height;
 
-	private List<BoardCoordinates> deadBoards = Collections.emptyList();
+	private List<BoardCoordinates> deadBoards = emptyList();
 
-	private List<BoardLink> deadLinks = Collections.emptyList();
+	private List<BoardLink> deadLinks = emptyList();
 
 	public String getName() {
 		return name;

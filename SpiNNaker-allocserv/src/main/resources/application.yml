@@ -1,0 +1,275 @@
+# Copyright (c) 2021 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+logging:
+  file:
+    name: spalloc.log
+    path: ${spalloc.working-directory}
+  level:
+    root: INFO
+    # "[org.apache.catalina]": DEBUG
+    # "[org.springframework.security.web]": TRACE
+
+    "[org.springframework.security.web.csrf.CsrfFilter]": DEBUG
+    # Because when that filter says no it is MYSTERIOUS otherwise!
+
+    # Next, two loggers that are unacceptably noisy by default
+    "[org.apache.jasper.servlet.TldScanner]": WARN
+    "[javax.persistence.spi]": ERROR
+
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: spalloc
+  mvc:
+    servlet:
+      path: /spalloc
+  task:
+    scheduling:
+      pool:
+        # Default thread pool size. Note that the thread pool is shared by many
+        # things inside the service; if this value is too small, performance
+        # may be severely impacted or requests may fail.
+        size: 16
+  mail:
+    # Configuring email is fiddly; see docs for how.
+    # See https://www.baeldung.com/spring-email
+    # See https://docs.spring.io/spring-boot/docs/2.0.6.RELEASE/reference/html/boot-features-email.html
+    host: smtp.gmail.com
+    port: 587
+    username: "${EMAIL_USER:}"
+    password: "${EMAIL_PASS:}"
+    properties:
+      "[mail.smtp.auth]": true
+      "[mail.smtp.starttls.enable]": true
+
+server:
+  port: 8080
+  servlet:
+    session:
+      # NOTE: Make sure this is longer than spalloc.keepalive.max
+      timeout: 30m
+
+cxf:
+  path: /spalloc/srv
+  servlet.init: 
+    service-list-path: info
+  jaxrs:
+    component-scan: true
+    classes-scan-packages:
+      uk.ac.manchester.spinnaker.alloc,org.apache.cxf.jaxrs.swagger,org.apache.cxf.metrics
+
+spalloc:
+  # Where we hold files that we write to
+  working-directory: "."
+  # Where's the database?
+  database-path: ${spalloc.working-directory}/spalloc.sqlite3
+  # How long should long calls take before returning anyway?
+  wait: 30s
+  # Whether to pause ALL periodic callbacks; probably only useful for debugging
+  pause: false
+  proxy:
+    # Whether to enable proxying
+    enable: true
+    # Whether to log the number of proxied packets when connections are clsoed
+    log-write-counts: false
+    # The local host IP address for listening for messages from multiple boards
+    # for EIEIO listeners. If the empty string (default) such listeners are
+    # disabled.
+    local-host: ""
+  historical-data:
+    # Where to we back up old jobs to?
+    path: ${spalloc.working-directory}/spalloc-history.sqlite3
+    # How long before we move old jobs to the historical data
+    # Defaults to 14 days (or thereabouts)
+    grace-period: 14d
+    # Cron-like expression to say when to run the migration task.
+    # Defaults to overnight at 02:00 every day
+    schedule: "0 0 2 * * *"
+  keepalive:
+    # How long between runs of the keepalive-expiry algorithm
+    expiry-period: 30s
+    # Minimum keepalive period
+    min: 30s
+    # Maximum keepalive period
+    max: 300s
+  allocator:
+    # How long between runs of the allocator algorithm
+    period: 5s
+    # What span of importance will be considered when allocating jobs
+    importance-span: 10000
+    # Priority is the rate at which importance is accrued
+    priority-scale:
+      # Priority scaling factor for jobs specified by number of boards
+      # Will be multiplied by the number of boards
+      size: 1.0
+      # Priority scaling factor for jobs specified by rectangular dimensions
+      # Will be multiplied by the area of the allocation
+      dimensions: 1.5
+      # Priority scaling factor for jobs requesting a specific board
+      specific-board: 65.0
+    # Number of reports of board problems at which the board is taken out of service.
+    report-action-threshold: 2
+  # Sending of emails relating to board problems: where to, etc.
+  report-email:
+    # In addition to configuring the email sender, you need to turn on
+    # sending here too.
+    send: false
+    from: spalloc@localhost
+    to: SPINNAKER@listserv.manchester.ac.uk
+    subject: Spalloc Board Issue
+  auth:
+    # Support HTTP Basic Authentication (bad for browsers, OK for code, slow)
+    basic: true
+    # The authentication realm, used for both Basic and Bearer (openid) auth
+    realm: SpallocService
+    # Support HTTP Form Authentication (pretty necessary)
+    local-form: true
+    # Force a known local admin user to exist with a known password
+    add-dummy-user: false
+    # Whether to generate a random password for the above user.
+    # If so, the password will be written to the log.
+    dummy-random-pass: true
+    # Provide extra information to callers on auth failures
+    debug-failures: false
+    # Number of login failures before lock-out
+    max-login-failures: 3
+    # Duration of automatic log-out
+    account-lock-duration: 24h
+    # How often do we look for users to unlock
+    unlock-period: 60s
+    openid:
+      # Support OIDC
+      enable: true
+      domain: https://iam.ebrains.eu/auth/realms/hbp
+      scopes: [ openid, profile, roles, email, team, group ]
+      # The credentials for HBP/EBRAINS go here
+      id: spalloc
+      secret: XYZZY_OVERRIDE_THIS
+      # Prefix all OpenID-sourced names with this
+      username-prefix: "openid."
+      # These are generated during build by maven; don't change
+      truststore-type: PKCS12
+      truststore-path: classpath:/truststore.p12
+      truststore-password: hunter2
+  quota:
+    # Default user quota in board-seconds
+    default-quota: 130
+    # Default quota for organisations inflated from OpenID
+    default-org-quota: 0
+    # Default quota for collabratories inflated from OpenID
+    default-collab-quota: 3600000
+    # When do we consolidate job quotas into the main quota table
+    consolidation-schedule: "0 0 * * * *"
+  transceiver:
+    # How long between when we send requests to the BMP control tasks
+    period: 10s
+    # The basic wait time used by the BMP control tasks
+    probe-interval: 15s
+    # Number of attempts that will be made to switch on a board
+    power-attempts: 2
+    # Number of attempts that will be made to bring up an FPGA
+    fpga-attempts: 3
+    # Number of attempts that will be made to bring up a transceiver, provided
+    # the failures are due to timeouts and not outright network errors.
+    build-attempts: 5
+    # Whether to use dummy BMPs; GREAT for testing!
+    dummy: false
+  sqlite:
+    # How long to wait to get a DB lock
+    timeout: 1s
+    # Whether to send details of SQL-related exceptions to users
+    debug-failures: false
+    # Amount of effort to spend on DB optimization on application close
+    analysis-limit: 400
+    # Whether to record and report statement execution time statistics
+    performance-log: false
+    # Number of nanoseconds below which statement execution time is not important
+    performance-threshold: 1e6
+    # How many times to try to get a lock
+    lock-tries: 3
+    # Delay between a lock failure and the next attempt
+    lock-failed-delay: 100ms
+    # When to note (INFO) that a lock is being held for a long time
+    lock-note-threshold: 50ms
+    # When to warn (WARN) that a lock was held for a long time
+    lock-warn-threshold: 100ms
+  compat:
+    # Settings relating to the v1 spalloc compatibility interface
+
+    # Whether to turn the service interface on
+    enable: false
+    # The number of threads to use for the API (including notification handlers)
+    # Use 0 for no hard limit.
+    thread-pool-size: 0
+    # What host to run the service on
+    host: 0.0.0.0
+    # What port to run the service on
+    port: 22244
+    # How long to wait for a message to be received;
+    # Tune: timeout cost vs responsiveness to shutdown requests
+    receive-timeout: 2000ms
+    # What user to run as; recommended that this user exists but is disabled
+    service-user: ""
+    # What group to run against; service-user must be a member of this group
+    service-group: ""
+    # How long to wait for the compat service to shut down
+    shutdown-timeout: 3s
+    # How long to wait in the spalloc core for a state change notification
+    notify-wait-time: 1m
+    # Jobs' default keepalive property duration
+    default-keepalive: 1m
+  state-control:
+    # Settings relating to overall system (admin) state
+    
+    # How long to wait between polls of the BMP controller 
+    blacklist-poll: 15s
+    # How long to wait for a BMP controller operation to complete 
+    blacklist-timeout: 120s
+    # Max number of board serial numbers to read in a batch 
+    serial-read-batch-size: 24
+    # Max number of board blacklists to read in a batch 
+    blacklist-read-batch-size: 6
+
+---
+# Only enable the OpenID Connect stuff in production. This is because of the
+# sheer nastiness of interacting with Keycloak and the fact that it is done
+# during application boot. Putting it here makes things more reliable.
+spring:
+  config:
+    activate:
+      on-profile: default
+  security:
+    oauth2:
+      client:
+        registration:
+          hbp-ebrains:
+            client-id: ${spalloc.auth.openid.id}
+            client-secret: ${spalloc.auth.openid.secret}
+            # Repeated from spalloc.auth.openid.scopes, but can't share!
+            scope: [ openid, profile, roles, email, team, group ]
+            authorization-grant-type: authorization_code
+            redirect-uri: https://{baseHost}{basePort}{basePath}/system/perform_oidc/{action}/code/{registrationId}
+        provider:
+          hbp-ebrains:
+            issuer-uri: ${spalloc.auth.openid.domain}
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: ${spalloc.auth.openid.domain}
+        opaquetoken:
+          client-id: ${spalloc.auth.openid.id}
+          client-secret: ${spalloc.auth.openid.secret}

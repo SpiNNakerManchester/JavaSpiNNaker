@@ -16,12 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus.encodeTimeout;
 import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.SET_ROUTER_TIMEOUT;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
-import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 
 /**
  * An SCP Request to the extra monitor core to set the router timeout for
@@ -39,9 +39,7 @@ public class SetRouterTimeout extends SCPRequest<CheckOKResponse> {
 	public SetRouterTimeout(HasCoreLocation core, int timeoutMantissa,
 			int timeoutExponent) {
 		super(new ReinjectionSDPHeader(core), SET_ROUTER_TIMEOUT,
-				ReinjectionStatus.encodeTimeout(timeoutMantissa,
-						timeoutExponent),
-				0, 0, null);
+				encodeTimeout(timeoutMantissa, timeoutExponent), 0, 0, null);
 	}
 
 	@Override

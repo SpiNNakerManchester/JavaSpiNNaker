@@ -70,11 +70,11 @@ class TestJob {
 		send.offer("{\"return\": null}");
 		send.offer("{\"jobs_changed\": [123]}");
 		send.offer("{\"return\": {\"state\": 3, \"power\": true}}");
-        send.offer("{\"return\": {\"connections\":[[[0,0],\"10.11.223.33\"]],"
-            + "\"width\":8,"
-            + "\"machine_name\":\"Spin24b-223\","
-            + "\"boards\":[[4,5,6], [7,8,9]],"
-            + "\"height\":8}}");
+		send.offer("{\"return\": {\"connections\":[[[0,0],\"10.11.223.33\"]],"
+				+ "\"width\":8,"
+				+ "\"machine_name\":\"Spin24b-223\","
+				+ "\"boards\":[[4,5,6], [7,8,9]],"
+				+ "\"height\":8}}");
 		send.offer("{\"return\": null}");
 		send.offer(STOP);
 

@@ -52,7 +52,7 @@ jobs:
         
       - name: Build Documentation
         run: |
-          mvn site site:stage --settings $SETTINGS_FILE
+          mvn site site:stage --settings $SETTINGS_FILE -P "!jsp-precompile"
           touch $SITE_DIR/.nojekyll
 
       - name: Deploy to GitHub Pages

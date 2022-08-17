@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
+import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
+
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
@@ -57,7 +59,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
-		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
+		loadFixedRoute(chip, fixedRoute, DEFAULT);
 	}
 
 	/**
@@ -93,7 +95,7 @@ class FixedRouteControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
-		return readFixedRoute(chip, AppID.DEFAULT);
+		return readFixedRoute(chip, DEFAULT);
 	}
 
 	/**

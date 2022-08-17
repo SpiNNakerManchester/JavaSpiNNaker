@@ -17,8 +17,21 @@
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.lang.System.arraycopy;
+import static java.lang.System.currentTimeMillis;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_CONTENT;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_EXTRA_CONTENT;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.FETCH_EXTRA_RECORDING;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.FETCH_RECORDING;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_CORES_WITH_STORAGE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_LOCATION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_MAIN_CONTENT_AVAILABLE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.GET_REGIONS_WITH_STORAGE;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_LOCATION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.INSERT_REGION;
+import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.PREP_EXTRA_CONTENT;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -71,7 +84,7 @@ public class SQLiteBufferStorage
 
 	private static int getRecordingCore(Connection conn, CoreLocation core)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.GET_LOCATION)) {
+		try (PreparedStatement s = conn.prepareStatement(GET_LOCATION)) {
 			// x, y, processor
 			s.setInt(FIRST, core.getX());
 			s.setInt(SECOND, core.getY());
@@ -82,7 +95,7 @@ public class SQLiteBufferStorage
 				}
 			}
 		}
-		try (PreparedStatement s = conn.prepareStatement(SQL.INSERT_LOCATION,
+		try (PreparedStatement s = conn.prepareStatement(INSERT_LOCATION,
 				RETURN_GENERATED_KEYS)) {
 			// x, y, processor
 			s.setInt(FIRST, core.getX());
@@ -101,7 +114,7 @@ public class SQLiteBufferStorage
 
 	private static int getRecordingRegion(Connection conn, int coreID,
 			Region region) throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.GET_REGION)) {
+		try (PreparedStatement s = conn.prepareStatement(GET_REGION)) {
 			// core_id, local_region_index
 			s.setInt(FIRST, coreID);
 			s.setInt(SECOND, region.regionIndex);
@@ -111,12 +124,12 @@ public class SQLiteBufferStorage
 				}
 			}
 		}
-		try (PreparedStatement s = conn.prepareStatement(SQL.INSERT_REGION,
+		try (PreparedStatement s = conn.prepareStatement(INSERT_REGION,
 				RETURN_GENERATED_KEYS)) {
 			// core_id, local_region_index, address
 			s.setInt(FIRST, coreID);
 			s.setInt(SECOND, region.regionIndex);
-			s.setInt(THIRD, region.startAddress);
+			s.setInt(THIRD, region.startAddress.address);
 			s.executeUpdate();
 			try (ResultSet keys = s.getGeneratedKeys()) {
 				while (keys.next()) {
@@ -132,7 +145,7 @@ public class SQLiteBufferStorage
 			byte[] content) throws SQLException {
 		int chunkLen = content.length;
 		ByteArrayInputStream chunk = new ByteArrayInputStream(content);
-		long timestamp = System.currentTimeMillis();
+		long timestamp = currentTimeMillis();
 		if (useMainTable(conn, regionID)) {
 			log.debug("adding chunk of {} bytes to region table for region {}",
 					chunkLen, regionID);
@@ -148,7 +161,7 @@ public class SQLiteBufferStorage
 	private void addContentToMainRow(Connection conn, int regionID,
 			int chunkLen, ByteArrayInputStream chunk, long timestamp)
 			throws SQLException {
-		try (PreparedStatement s = conn.prepareStatement(SQL.ADD_CONTENT)) {
+		try (PreparedStatement s = conn.prepareStatement(ADD_CONTENT)) {
 			// content, append_time, region_id
 			s.setBinaryStream(FIRST, chunk, chunkLen);
 			s.setInt(SECOND, chunkLen);
@@ -160,8 +173,7 @@ public class SQLiteBufferStorage
 
 	private void prepareExtraContent(Connection conn, int regionID,
 			long timestamp) throws SQLException {
-		try (PreparedStatement s =
-				conn.prepareStatement(SQL.PREP_EXTRA_CONTENT)) {
+		try (PreparedStatement s = conn.prepareStatement(PREP_EXTRA_CONTENT)) {
 			// append_time, region_id
 			s.setLong(FIRST, timestamp);
 			s.setInt(SECOND, regionID);
@@ -171,8 +183,7 @@ public class SQLiteBufferStorage
 
 	private void addExtraContentRow(Connection conn, int regionID, int chunkLen,
 			ByteArrayInputStream chunk) throws SQLException {
-		try (PreparedStatement s =
-				conn.prepareStatement(SQL.ADD_EXTRA_CONTENT)) {
+		try (PreparedStatement s = conn.prepareStatement(ADD_EXTRA_CONTENT)) {
 			// region_id, content
 			s.setInt(FIRST, regionID);
 			s.setBinaryStream(SECOND, chunk, chunkLen);
@@ -184,7 +195,7 @@ public class SQLiteBufferStorage
 	private boolean useMainTable(Connection conn, int regionID)
 			throws SQLException {
 		try (PreparedStatement s =
-				conn.prepareStatement(SQL.GET_MAIN_CONTENT_AVAILABLE)) {
+				conn.prepareStatement(GET_MAIN_CONTENT_AVAILABLE)) {
 			s.setInt(FIRST, regionID);
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
@@ -243,8 +254,7 @@ public class SQLiteBufferStorage
 		ByteArrayOutputStream accum = new ByteArrayOutputStream();
 		try {
 			int regionID = -1;
-			try (PreparedStatement s =
-					conn.prepareStatement(SQL.FETCH_RECORDING)) {
+			try (PreparedStatement s = conn.prepareStatement(FETCH_RECORDING)) {
 				// x, y, processor, local_region_index
 				s.setInt(FIRST, region.core.getX());
 				s.setInt(SECOND, region.core.getY());
@@ -262,7 +272,7 @@ public class SQLiteBufferStorage
 						+ " has no data for region " + region.regionIndex);
 			}
 			try (PreparedStatement s =
-					conn.prepareStatement(SQL.FETCH_EXTRA_RECORDING)) {
+					conn.prepareStatement(FETCH_EXTRA_RECORDING)) {
 				// region_id
 				s.setInt(FIRST, regionID);
 				try (ResultSet rs = s.executeQuery()) {
@@ -281,7 +291,7 @@ public class SQLiteBufferStorage
 	public List<CoreLocation> getCoresWithStorage() throws StorageException {
 		return callR(conn -> {
 			try (PreparedStatement s =
-					conn.prepareStatement(SQL.GET_CORES_WITH_STORAGE);
+					conn.prepareStatement(GET_CORES_WITH_STORAGE);
 					ResultSet rs = s.executeQuery()) {
 				ArrayList<CoreLocation> result = new ArrayList<>();
 				while (rs.next()) {
@@ -300,7 +310,7 @@ public class SQLiteBufferStorage
 			throws StorageException {
 		return callR(conn -> {
 			try (PreparedStatement s =
-					conn.prepareStatement(SQL.GET_REGIONS_WITH_STORAGE)) {
+					conn.prepareStatement(GET_REGIONS_WITH_STORAGE)) {
 				s.setInt(FIRST, core.getX());
 				s.setInt(SECOND, core.getY());
 				s.setInt(THIRD, core.getP());

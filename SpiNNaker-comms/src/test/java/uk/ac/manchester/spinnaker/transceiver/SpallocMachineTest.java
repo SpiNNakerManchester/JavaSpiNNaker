@@ -28,6 +28,7 @@ import java.net.URL;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,10 +52,13 @@ class SpallocMachineTest {
 	}
 
 	private static final String SPALLOC = "spinnaker.cs.man.ac.uk";
+
 	private static final int PORT = 22245;
+
 	private static final int TEN_S = 10000;
 
 	@Test
+	@Timeout(120) // Two minutes is enough
 	@Disabled("https://github.com/SpiNNakerManchester/JavaSpiNNaker/issues/53")
 	void testSpallocMachine() throws Exception {
 		assumeTrue(ping(SPALLOC) == 0);

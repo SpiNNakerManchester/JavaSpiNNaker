@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.io;
 
 import static java.lang.Math.max;
 import static java.lang.System.arraycopy;
+import static uk.ac.manchester.spinnaker.io.AbstractIO.Seek.CUR;
 import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
 import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
@@ -146,7 +148,7 @@ public interface AbstractIO extends AutoCloseable {
 	int tell() throws IOException, ProcessException;
 
 	/** @return the current absolute address within the region. */
-	int getAddress();
+	MemoryLocation getAddress();
 
 	/**
 	 * Read the rest of the data.
@@ -323,7 +325,7 @@ public interface AbstractIO extends AutoCloseable {
 			public long skip(long n) throws IOException {
 				try {
 					int before = tell();
-					seek(max((int) n, 0), Seek.CUR);
+					seek(max((int) n, 0), CUR);
 					int after = tell();
 					return after - before;
 				} catch (ProcessException e) {

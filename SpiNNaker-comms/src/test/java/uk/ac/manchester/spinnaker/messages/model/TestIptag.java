@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 
 class TestIptag {
 	private static BoardTestConfiguration boardConfig;
+
 	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	@BeforeAll

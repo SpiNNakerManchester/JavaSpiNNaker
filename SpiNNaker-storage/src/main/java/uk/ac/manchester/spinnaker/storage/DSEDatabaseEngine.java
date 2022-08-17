@@ -16,11 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.io.IOUtils.resourceToString;
+import static uk.ac.manchester.spinnaker.storage.sqlite.ResourceLoader.loadResource;
 
 import java.io.File;
-import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
 
@@ -30,16 +28,7 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteDataSpecStorage;
  * @author Donal Fellows
  */
 public class DSEDatabaseEngine extends DatabaseEngine<DSEStorage> {
-	private static String sqlDDL;
-
-	static {
-		try {
-			sqlDDL = resourceToString("/dse.sql", UTF_8);
-		} catch (IOException e) {
-			throw new RuntimeException(
-					"failed to read DSE database definition SQL", e);
-		}
-	}
+	private static String sqlDDL = loadResource("dse.sql");
 
 	/**
 	 * Create an engine interface for an in-memory database.

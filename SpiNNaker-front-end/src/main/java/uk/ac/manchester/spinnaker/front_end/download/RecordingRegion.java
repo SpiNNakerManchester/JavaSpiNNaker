@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.front_end.download;
 
 import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Long.toHexString;
 import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
@@ -77,21 +77,21 @@ public final class RecordingRegion {
 	/**
 	 * The data memory address. (32-bits; unsigned)
 	 */
-	public final long data;
+	public final MemoryLocation data;
 
 	private RecordingRegion(ByteBuffer buffer) {
 		space = toUnsignedLong(buffer.getInt());
 		long missingAndSize = toUnsignedLong(buffer.getInt());
 		missing = (missingAndSize & MISSING_MASK) != 0;
 		size = missingAndSize & SIZE_MASK;
-		data = toUnsignedLong(buffer.getInt());
+		data = new MemoryLocation(buffer.getInt());
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Recording Channel:{")
 				.append("space:").append(space).append(",size:").append(size)
-				.append(",data:0x").append(toHexString(data));
+				.append(",data:").append(data);
 		if (missing) {
 			sb.append(",missing");
 		}
@@ -115,14 +115,14 @@ public final class RecordingRegion {
 	public static List<RecordingRegion> getRecordingRegionDescriptors(
 			TransceiverInterface txrx, Placement placement)
 			throws IOException, ProcessException {
-		long recordingDataAddress = placement.getVertex().getBaseAddress();
+		MemoryLocation recordingDataAddress = placement.getVertex().getBase();
 		// Get the size of the list of recordings
 		int nRegions = txrx.readMemory(placement.getScampCore(),
 				recordingDataAddress, WORD_SIZE).getInt();
 
 		// Read all the channels' metadata
 		ByteBuffer channelData = txrx.readMemory(placement.getScampCore(),
-				recordingDataAddress + WORD_SIZE, SIZE * nRegions);
+				recordingDataAddress.add(WORD_SIZE), SIZE * nRegions);
 
 		// Parse the data
 		List<RecordingRegion> regions = new ArrayList<>(nRegions);

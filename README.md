@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/SpiNNakerManchester/JavaSpiNNaker/badge.svg?branch=master)](https://coveralls.io/github/SpiNNakerManchester/JavaSpiNNaker?branch=master)
 
 # JavaSpiNNaker
-This is an implementation of the SpiNNaker host software in Java. It requires at least Java 8. We test regularly with OpenJDK 8 and OpenJDK 11.
+This is an implementation of the SpiNNaker host software in Java. It requires at least Java 8. We test regularly with OpenJDK 8, 11 and 14.
 
 This code currently supports these operations:
 
@@ -40,6 +40,9 @@ This option says how to run the Java language runtime. You only need to specify 
 This option says where to find the built version of JavaSpiNNaker. If you have followed the build and usage instructions above, you shouldn't need to specify this (as the built-in autodiscovery code in SpiNNFrontEndCommon handles it). Otherwise, the path needs to be the full path to the `spinnaker-exe.jar` file produced by the JavaSpiNNaker build.
 
     java_spinnaker_path = /path/to/spinnaker-exe.jar
+
+# Spalloc Server
+[Spalloc Server](https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-allocserv) is its own sub-project.
 
 # Documentation
 [API documentation](http://spinnakermanchester.github.io/JavaSpiNNaker/apidocs/) (Javadoc)

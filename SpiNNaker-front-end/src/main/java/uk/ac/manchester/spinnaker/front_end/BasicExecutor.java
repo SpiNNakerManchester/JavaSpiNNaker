@@ -17,12 +17,14 @@
 package uk.ac.manchester.spinnaker.front_end;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
+import static java.util.concurrent.TimeUnit.DAYS;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -61,6 +63,45 @@ public class BasicExecutor implements AutoCloseable {
 	/**
 	 * Submit some tasks to the pool.
 	 *
+	 * @param <T>
+	 *            The type of the items.
+	 * @param items
+	 *            The items representing tasks to submit. <em>Should not</em> be
+	 *            a parallel stream.
+	 * @param taskMapper
+	 *            How to convert the item to a task.
+	 * @return The future holding the results of the execution.
+	 */
+	public <T> Tasks submitTasks(Stream<T> items,
+			Function<T, SimpleCallable> taskMapper) {
+		Tasks collector = new Tasks();
+		items.map(taskMapper).forEach(t -> collector
+				.add(executor.submit(() -> collectExceptions(t))));
+		return collector;
+	}
+
+	/**
+	 * Submit some tasks to the pool.
+	 *
+	 * @param <T>
+	 *            The type of the items.
+	 * @param items
+	 *            The items representing tasks to submit.
+	 * @param taskMapper
+	 *            How to convert the item to a task.
+	 * @return The future holding the results of the execution.
+	 */
+	public <T> Tasks submitTasks(Collection<T> items,
+			Function<T, SimpleCallable> taskMapper) {
+		Tasks collector = new Tasks();
+		items.stream().map(taskMapper).forEach(t -> collector
+				.add(executor.submit(() -> collectExceptions(t))));
+		return collector;
+	}
+
+	/**
+	 * Submit some tasks to the pool.
+	 *
 	 * @param tasks
 	 *            The tasks to submit.
 	 * @return The future holding the results of the execution.
@@ -84,7 +125,7 @@ public class BasicExecutor implements AutoCloseable {
 	@Override
 	public void close() throws InterruptedException {
 		executor.shutdown();
-		executor.awaitTermination(1, TimeUnit.DAYS);
+		executor.awaitTermination(1, DAYS);
 	}
 
 	/**

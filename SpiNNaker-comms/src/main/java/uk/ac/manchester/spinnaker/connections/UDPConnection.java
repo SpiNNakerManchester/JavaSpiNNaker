@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
+import static java.lang.String.format;
 import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
@@ -374,11 +375,10 @@ public abstract class UDPConnection<T>
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
 		ByteBuffer buffer = allocate(receivePacketSize);
-		DatagramPacket pkt = new DatagramPacket(
-				buffer.array(), receivePacketSize);
+		DatagramPacket pkt =
+				new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
-		buffer.position(pkt.getLength());
-		buffer.flip();
+		buffer.position(pkt.getLength()).flip();
 		logRecv(buffer, pkt.getSocketAddress());
 		return buffer.order(LITTLE_ENDIAN);
 	}
@@ -425,13 +425,13 @@ public abstract class UDPConnection<T>
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
 		ByteBuffer buffer = allocate(receivePacketSize);
-		DatagramPacket pkt = new DatagramPacket(
-				buffer.array(), receivePacketSize);
+		DatagramPacket pkt =
+				new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
-		buffer.position(pkt.getLength());
-		buffer.flip();
+		buffer.position(pkt.getLength()).flip();
 		logRecv(buffer, pkt.getSocketAddress());
-		return new UDPPacket(buffer.order(LITTLE_ENDIAN), remoteAddress);
+		return new UDPPacket(buffer.order(LITTLE_ENDIAN),
+				(InetSocketAddress) pkt.getSocketAddress());
 	}
 
 	/**
@@ -445,7 +445,7 @@ public abstract class UDPConnection<T>
 	 */
 	private static DatagramPacket formSendPacket(
 			ByteBuffer data, InetSocketAddress remoteAddress) {
-		if (data.isReadOnly() || !data.hasArray()) {
+		if (!data.hasArray()) {
 			// Yuck; must copy because can't touch the backing array
 			byte[] buffer = new byte[data.remaining()];
 			data.duplicate().get(buffer);
@@ -704,7 +704,7 @@ public abstract class UDPConnection<T>
 			ra = getRemoteAddress();
 		} catch (IOException ignore) {
 		}
-		return String.format("%s(%s <-%s-> %s)",
+		return format("%s(%s <-%s-> %s)",
 				getClass().getSimpleName().replaceAll("^.*\\.", ""), la,
 				isClosed() ? "|" : "", ra);
 	}

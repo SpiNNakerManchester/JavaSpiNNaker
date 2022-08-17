@@ -6,6 +6,12 @@ a free-standing executable called from Python code with full user permissions
 problems are expected to be minimal; there's no privilege separation in the
 first place by design.
 
+Security issues with an impact on
+[Spalloc Server](https://github.com/SpiNNakerManchester/JavaSpiNNaker/tree/master/SpiNNaker-allocserv)
+are not expected to have wide impact; there are not expected to be many
+deployments of that service. However, it is one of the more security-exposed
+parts of the stack.
+
 Other SpiNNaker software may have its own security policies.
 
 ## Supported Versions

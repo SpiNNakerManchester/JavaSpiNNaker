@@ -26,17 +26,15 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestRawConfigParser {
 
-    public TestRawConfigParser() {
-    }
+	public TestRawConfigParser() {
+	}
 
-    @Test
-    public void testSimple() {
-        URL url = TestRawConfigParser.class.getResource("/testconfig/test.cfg");
-        RawConfigParser parser = new RawConfigParser(url);
-        assertEquals((Integer)5, parser.getInt("Machine", "version"));
-        assertTrue(parser.getBoolean("Other", "alan_is_scotish"));
-    }
-
-
+	@Test
+	public void testSimple() {
+		URL url = TestRawConfigParser.class.getResource("/testconfig/test.cfg");
+		RawConfigParser parser = new RawConfigParser(url);
+		assertEquals((Integer) 5, parser.getInt("Machine", "version"));
+		assertTrue(parser.getBoolean("Other", "alan_is_scotish"));
+	}
 
 }
