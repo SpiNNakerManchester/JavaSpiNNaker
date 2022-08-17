@@ -21,6 +21,7 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_FILL;
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** An SCP request to fill a region of memory on a chip with repeated data. */
 public final class FillRequest extends SCPRequest<CheckOKResponse> {
@@ -34,9 +35,9 @@ public final class FillRequest extends SCPRequest<CheckOKResponse> {
 	 * @param size
 	 *            The number of bytes to fill in
 	 */
-	public FillRequest(HasChipLocation chip, int baseAddress, int data,
-			int size) {
-		super(chip.getScampCore(), CMD_FILL, baseAddress, data, size);
+	public FillRequest(HasChipLocation chip, MemoryLocation baseAddress,
+			int data, int size) {
+		super(chip.getScampCore(), CMD_FILL, baseAddress.address, data, size);
 	}
 
 	@Override

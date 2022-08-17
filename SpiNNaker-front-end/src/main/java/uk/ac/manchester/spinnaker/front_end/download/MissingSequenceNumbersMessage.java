@@ -33,6 +33,7 @@ import java.util.List;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * A message used to describe what sequence numbers are missing from a fast data
@@ -102,7 +103,7 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	 *            The transaction id of this stream.
 	 * @return Iterable of the messages to send.
 	 */
-	static Iterable<MissingSequenceNumbersMessage> createMessages(
+	static MappableIterable<MissingSequenceNumbersMessage> createMessages(
 			HasCoreLocation destination, List<Integer> missingSeqs,
 			int transactionId) {
 		List<Integer> work = reduce(missingSeqs);

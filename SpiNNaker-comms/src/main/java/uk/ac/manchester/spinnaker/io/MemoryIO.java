@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.io;
 import java.io.IOException;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
@@ -41,12 +42,13 @@ public class MemoryIO extends BaseIO {
 	 *            address just outside the region
 	 */
 	public MemoryIO(Transceiver transceiver, HasChipLocation chip,
-			int startAddress, int endAddress) {
+			MemoryLocation startAddress, MemoryLocation endAddress) {
 		super(startAddress, endAddress);
 		io = ChipMemoryIO.getInstance(transceiver, chip);
 	}
 
-	private MemoryIO(ChipMemoryIO io, int startAddress, int endAddress) {
+	private MemoryIO(ChipMemoryIO io, MemoryLocation startAddress,
+			MemoryLocation endAddress) {
 		super(startAddress, endAddress);
 		this.io = io;
 	}
@@ -63,7 +65,7 @@ public class MemoryIO extends BaseIO {
 		if (slice < 0 || slice >= size()) {
 			throw new ArrayIndexOutOfBoundsException(slice);
 		}
-		return new MemoryIO(io, start + slice, start + slice + 1);
+		return new MemoryIO(io, start.add(slice), start.add(slice + 1));
 	}
 
 	@Override

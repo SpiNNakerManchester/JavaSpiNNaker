@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 /**
@@ -26,14 +26,14 @@ public class UDPPacket {
 
 	private final ByteBuffer byteBuffer;
 
-	private final SocketAddress address;
+	private final InetSocketAddress address;
 
 	/**
 	 * Create a buffer with an address.
 	 * @param byteBuffer The buffer
 	 * @param address The address
 	 */
-	public UDPPacket(ByteBuffer byteBuffer, SocketAddress address) {
+	public UDPPacket(ByteBuffer byteBuffer, InetSocketAddress address) {
 		this.byteBuffer = byteBuffer;
 		this.address = address;
 	}
@@ -50,7 +50,7 @@ public class UDPPacket {
 	 * Get the address.
 	 * @return The address
 	 */
-	public SocketAddress getAddress() {
+	public InetSocketAddress getAddress() {
 		return address;
 	}
 }

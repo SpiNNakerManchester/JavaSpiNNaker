@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
+import static java.net.InetAddress.getByName;
 import static java.util.Collections.emptySet;
 
 import java.net.InetAddress;
@@ -78,7 +79,7 @@ public class ChipDetails {
 		this.ethernet = ethernet;
 		this.links = links;
 		if (ipAddress != null) {
-			this.ipAddress = InetAddress.getByName(ipAddress);
+			this.ipAddress = getByName(ipAddress);
 		} else {
 			this.ipAddress = null;
 		}

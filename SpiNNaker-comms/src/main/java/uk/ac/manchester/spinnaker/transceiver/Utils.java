@@ -19,15 +19,18 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_BYTES;
-import static uk.ac.manchester.spinnaker.messages.Constants.CPU_INFO_OFFSET;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.CPU_INFO;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.zip.CRC32;
 
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 
 /**
@@ -69,8 +72,8 @@ public abstract class Utils {
 	 *            The core number
 	 * @return the address
 	 */
-	public static int getVcpuAddress(int p) {
-		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * p);
+	public static MemoryLocation getVcpuAddress(int p) {
+		return CPU_INFO.add(CPU_INFO_BYTES * p);
 	}
 
 	/**
@@ -80,8 +83,8 @@ public abstract class Utils {
 	 *            The core
 	 * @return the address
 	 */
-	public static int getVcpuAddress(HasCoreLocation core) {
-		return CPU_INFO_OFFSET + (CPU_INFO_BYTES * core.getP());
+	public static MemoryLocation getVcpuAddress(HasCoreLocation core) {
+		return CPU_INFO.add(CPU_INFO_BYTES * core.getP());
 	}
 
 	/**
@@ -95,7 +98,7 @@ public abstract class Utils {
 	 *            The address of the SpiNNaker board to which the message should
 	 *            be sent
 	 * @deprecated Call
-     *             {@link UDPConnection#sendPortTriggerMessage(InetAddress)}
+	 *             {@link UDPConnection#sendPortTriggerMessage(InetAddress)}
 	 *             directly instead.
 	 * @throws IOException
 	 *             If anything goes wrong
@@ -113,5 +116,49 @@ public abstract class Utils {
 	public static ByteBuffer newMessageBuffer() {
 		// TODO How big should this buffer be? 256 or (256 + header size)?
 		return allocate(SPINNAKER_MESSAGE_BUFFER_SIZE).order(LITTLE_ENDIAN);
+	}
+
+	/**
+	 * Fill a section of a buffer with a constant value.
+	 *
+	 * @param buffer
+	 *            The buffer to fill a chunk of.
+	 * @param start
+	 *            Where in the buffer to start.
+	 * @param len
+	 *            How many bytes to write.
+	 * @param value
+	 *            The value to write.
+	 */
+	static void fill(ByteBuffer buffer, int start, int len, byte value) {
+		if (buffer.hasArray()) {
+			Arrays.fill(buffer.array(), start, start + len, value);
+		} else {
+			byte[] work = new byte[len];
+			Arrays.fill(work, value);
+			ByteBuffer buf = buffer.duplicate();
+			buf.position(start);
+			buf.put(work);
+		}
+	}
+
+	/**
+	 * Compute the CRC of a section of buffer.
+	 *
+	 * @param buffer
+	 *            The buffer.
+	 * @param start
+	 *            Where in the buffer to start.
+	 * @param len
+	 *            How many bytes to get the CRC of.
+	 * @return The CRC (as a signed integer).
+	 */
+	static int crc(ByteBuffer buffer, int start, int len) {
+		ByteBuffer crcbuf = buffer.duplicate();
+		crcbuf.position(start);
+		crcbuf.limit(start + len);
+		CRC32 crc = new CRC32();
+		crc.update(crcbuf);
+		return (int) crc.getValue();
 	}
 }

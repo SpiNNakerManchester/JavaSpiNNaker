@@ -18,7 +18,9 @@ package uk.ac.manchester.spinnaker.front_end.download;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.String.format;
+import static java.lang.System.getProperty;
 import static java.lang.Thread.sleep;
+import static java.nio.ByteBuffer.allocate;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -62,8 +64,9 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -118,9 +121,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 			+ "machine (please try removing firewalls)";
 
 	private static final String SPINNAKER_COMPARE_DOWNLOAD =
-			System.getProperty("spinnaker.compare.download");
+			getProperty("spinnaker.compare.download");
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final BasicExecutor pool;
 
@@ -143,7 +146,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public DataGatherer(Transceiver transceiver, Machine machine)
+	public DataGatherer(TransceiverInterface transceiver, Machine machine)
 			throws IOException, ProcessException {
 		super(machine);
 		this.txrx = transceiver;
@@ -502,18 +505,6 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	}
 
 	/**
-	 * Hack. Make BufferManagerStorage used for checkstyle.
-	 *
-	 * @param hack
-	 *            this is a hack
-	 * @return this is a hack.
-	 */
-	@Deprecated
-	Class<?> hack(BufferManagerStorage hack) {
-		return hack.getClass();
-	}
-
-	/**
 	 * Work out exactly where is going to be downloaded. The elements of the
 	 * list this method returns will end up directing what calls to
 	 * {@link #storeData(BufferManagerStorage.Region,ByteBuffer) storeData(...)}
@@ -535,6 +526,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws StorageException
 	 *             If the database doesn't like something.
 	 */
+	@UsedInJavadocOnly(BufferManagerStorage.class)
 	protected abstract List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, StorageException;
 
@@ -631,7 +623,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		ByteBuffer doDownload(Monitor extraMonitor, Region region)
 				throws IOException, TimeoutException, ProcessException {
 			monitorCore = extraMonitor;
-			dataReceiver = ByteBuffer.allocate(region.size);
+			dataReceiver = allocate(region.size);
 			/*
 			 * Tricky point: where an amount of data to be downloaded is exactly
 			 * a multiple of the number of payload words per packet, we need an
@@ -768,8 +760,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 
 		/**
 		 * Process the fact that the message queue was in a timeout state.
+		 *
 		 * @param transactionId
-         *             The transaction id of this stream
+		 *            The transaction id of this stream
 		 * @return True if we have finished.
 		 * @throws IOException
 		 *             If there are packets outstanding, and the retransmission

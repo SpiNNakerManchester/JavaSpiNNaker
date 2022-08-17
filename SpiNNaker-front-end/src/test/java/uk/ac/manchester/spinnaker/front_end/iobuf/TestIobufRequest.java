@@ -66,7 +66,7 @@ public class TestIobufRequest {
 	}
 
 	@Test
-	public void testIncorrect() throws IOException {
+	public void testIncorrect() {
 		// Overlap between the core subsets; THIS IS BAD and shouldn't happen
 		String input = "{\n"
 				+ "  \"/some/path/abc.aplx\": [ [0,0,1], [0,0,2], [0,0,3] ],\n"

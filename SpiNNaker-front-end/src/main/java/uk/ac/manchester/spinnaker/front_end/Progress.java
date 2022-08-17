@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
+import static java.lang.Boolean.getBoolean;
+
 import uk.ac.manchester.spinnaker.utils.progress.ProgressBar;
 
 /**
@@ -34,8 +36,7 @@ public final class Progress implements AutoCloseable {
 	 */
 	public static final String PROGRESS_PROP = "spinnaker.progress_bar";
 
-	private static final boolean DO_PROGRESS =
-			Boolean.getBoolean(PROGRESS_PROP);
+	private static final boolean DO_PROGRESS = getBoolean(PROGRESS_PROP);
 
 	/**
 	 * Create a progress bar that writes to {@code System.out} with the given

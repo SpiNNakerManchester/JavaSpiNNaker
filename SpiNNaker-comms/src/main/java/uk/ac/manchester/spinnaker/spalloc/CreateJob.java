@@ -25,7 +25,9 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.MIN_RATIO_PROPERTY
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.REQUIRE_TORUS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +120,6 @@ public class CreateJob {
 	 * @return {@code this} (fluent interface)
 	 */
 	public CreateJob owner(String owner) {
-
 		kwargs.put(USER_PROPERTY, owner);
 		setOwner = true;
 		return this;
@@ -145,6 +146,20 @@ public class CreateJob {
 	 */
 	public CreateJob keepAlive(double keepalive) {
 		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
+		return this;
+	}
+
+	/**
+	 * @param keepalive
+	 *            The maximum amount of time which may elapse between a query on
+	 *            this job before it is automatically destroyed. (Default: 60
+	 *            seconds)
+	 * @return {@code this} (fluent interface)
+	 */
+	public CreateJob keepAlive(Duration keepalive) {
+		double t = keepalive.getSeconds();
+		t += keepalive.getNano() / (double) NSEC_PER_SEC;
+		kwargs.put(KEEPALIVE_PROPERTY, t);
 		return this;
 	}
 
@@ -229,7 +244,11 @@ public class CreateJob {
 	 * Equivalent to: {@link #requireTorus(boolean) requireTorus(true)}.
 	 *
 	 * @return {@code this} (fluent interface)
+	 * @deprecated You probably can't use this sensibly with the hardware as
+	 *             deployed (or you automatically get it when meaningful). The
+	 *             default is fine.
 	 */
+	@Deprecated
 	public CreateJob requireTorus() {
 		return requireTorus(true);
 	}
@@ -241,7 +260,11 @@ public class CreateJob {
 	 *            entire machine (when the machine is otherwise not in use!).
 	 *            Must be {@code false} (the default) when allocating boards.
 	 * @return {@code this} (fluent interface)
+	 * @deprecated You probably can't use this sensibly with the hardware as
+	 *             deployed (or you automatically get it when meaningful). The
+	 *             default is fine.
 	 */
+	@Deprecated
 	public CreateJob requireTorus(boolean requireTorus) {
 		kwargs.put(REQUIRE_TORUS_PROPERTY, requireTorus);
 		return this;

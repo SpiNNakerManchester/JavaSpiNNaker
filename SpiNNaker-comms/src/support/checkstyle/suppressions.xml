@@ -15,7 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<!DOCTYPE suppressions PUBLIC "-//Puppy Crawl//DTD Suppressions 1.1//EN" "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.1//EN"
+    "https://checkstyle.org/dtds/suppressions_1_1.dtd">
 <suppressions>
 	<!-- suppress files="[\/]TransceiverInterface.java" checks="FileLength" /-->
 	<suppress files="src/test" checks=".*" />

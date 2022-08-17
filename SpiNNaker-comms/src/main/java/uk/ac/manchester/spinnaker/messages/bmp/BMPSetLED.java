@@ -38,7 +38,7 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 	 *            The boards to talk to
 	 */
 	public BMPSetLED(Collection<Integer> leds, LEDAction action,
-			Collection<Integer> boards) {
+			Collection<BMPBoard> boards) {
 		super(boards, CMD_LED, argument1(action, leds), argument2(boards));
 	}
 
@@ -46,8 +46,8 @@ public class BMPSetLED extends BMPRequest<BMPRequest.BMPResponse> {
 		return leds.stream().mapToInt(led -> action.value << (led * 2)).sum();
 	}
 
-	private static int argument2(Collection<Integer> boards) {
-		return boards.stream().mapToInt(board -> 1 << board).sum();
+	private static int argument2(Collection<BMPBoard> boards) {
+		return boards.stream().mapToInt(board -> 1 << board.board).sum();
 	}
 
 	@Override

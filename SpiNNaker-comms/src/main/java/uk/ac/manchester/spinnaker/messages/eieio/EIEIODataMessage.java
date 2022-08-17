@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import static java.lang.Integer.toUnsignedLong;
 import static java.lang.Math.floorDiv;
+import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
@@ -28,6 +29,8 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
+
 /**
  * An EIEIO message containing data.
  *
@@ -35,7 +38,7 @@ import java.util.NoSuchElementException;
  * @author Donal Fellows
  */
 public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
-		Iterable<AbstractDataElement> {
+		MappableIterable<AbstractDataElement> {
 	private final Header header;
 
 	private ByteBuffer elements;
@@ -344,7 +347,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 				switch (eieioType) {
 				case KEY_PAYLOAD_16_BIT:
 				case KEY_16_BIT:
-					payloadBase = Short.toUnsignedInt(buffer.getShort());
+					payloadBase = toUnsignedInt(buffer.getShort());
 					break;
 				case KEY_PAYLOAD_32_BIT:
 				case KEY_32_BIT:

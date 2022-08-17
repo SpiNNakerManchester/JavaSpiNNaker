@@ -16,18 +16,25 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.emptySet;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.FOUR_CHIP_DOWN_LINKS;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
+import static uk.ac.manchester.spinnaker.utils.InetFactory.getByAddress;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import uk.ac.manchester.spinnaker.utils.InetFactory;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * A representation of a SpiNNaker Machine with a number of {@link Chip}s. This
@@ -66,13 +73,13 @@ public class VirtualMachine extends Machine {
 			Set<ChipLocation> ignoreChips,
 			Map<ChipLocation, Set<Integer>> ignoreCores,
 			Map<ChipLocation, Set<Direction>> ignoreLinks) {
-		super(machineDimensions, ChipLocation.ZERO_ZERO);
+		super(machineDimensions, ZERO_ZERO);
 
 		if (ignoreChips == null) {
-			ignoreChips = Collections.emptySet();
+			ignoreChips = emptySet();
 		}
 		if (ignoreCores == null) {
-			ignoreCores = Collections.emptyMap();
+			ignoreCores = emptyMap();
 		}
 		if (ignoreLinks == null) {
 			ignoreLinks = new HashMap<>();
@@ -80,8 +87,7 @@ public class VirtualMachine extends Machine {
 
 		addVersionIgnores(ignoreLinks);
 
-		SpiNNakerTriadGeometry geometry =
-				SpiNNakerTriadGeometry.getSpinn5Geometry();
+		SpiNNakerTriadGeometry geometry = getSpinn5Geometry();
 
 		// Get all the root and therefore ethernet locations
 		Set<ChipLocation> roots =
@@ -129,14 +135,14 @@ public class VirtualMachine extends Machine {
 	private void addVersionIgnores(
 			Map<ChipLocation, Set<Direction>> ignoreLinks) {
 		if (version.isFourChip) {
-			ignoreLinks.putAll(MachineDefaults.FOUR_CHIP_DOWN_LINKS);
+			ignoreLinks.putAll(FOUR_CHIP_DOWN_LINKS);
 		}
 	}
 
 	private Router getRouter(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips,
 			Map<ChipLocation, Set<Direction>> ignoreLinks) {
-		Iterable<Link> links;
+		MappableIterable<Link> links;
 		if (ignoreLinks.containsKey(location)) {
 			links = getLinks(location, allChips, ignoreLinks.get(location));
 		} else {
@@ -145,7 +151,7 @@ public class VirtualMachine extends Machine {
 		return new Router(links);
 	}
 
-	private Iterable<Link> getLinks(ChipLocation location,
+	private MappableIterable<Link> getLinks(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips) {
 		List<Link> links = new ArrayList<>();
 		for (Direction direction : Direction.values()) {
@@ -154,10 +160,10 @@ public class VirtualMachine extends Machine {
 				links.add(new Link(location, direction, destination));
 			}
 		}
-		return links;
+		return links::iterator;
 	}
 
-	private Iterable<Link> getLinks(ChipLocation location,
+	private MappableIterable<Link> getLinks(ChipLocation location,
 			Map<ChipLocation, ChipLocation> allChips,
 			Set<Direction> ignoreLinks) {
 		List<Link> links = new ArrayList<>();
@@ -169,7 +175,7 @@ public class VirtualMachine extends Machine {
 				}
 			}
 		}
-		return links;
+		return links::iterator;
 	}
 
 	private Chip getChip(ChipLocation location, Router router,
@@ -182,7 +188,7 @@ public class VirtualMachine extends Machine {
 			if (!ignoreProcessors.contains(0)) {
 				processors.add(Processor.factory(0, true));
 			}
-			for (int i = 1; i < MachineDefaults.PROCESSORS_PER_CHIP; i++) {
+			for (int i = 1; i < PROCESSORS_PER_CHIP; i++) {
 				if (!ignoreProcessors.contains(i)) {
 					processors.add(Processor.factory(i, false));
 				}
@@ -194,28 +200,20 @@ public class VirtualMachine extends Machine {
 	}
 
 	// Hide magic numbers
-	private static final int BYTES_PER_IP_ADDRESS = 4;
-
 	private static final int LOCAL_HOST_ONE = 127;
-
-	private static final int FIRST_BYTE = 0;
-
-	private static final int SECOND_BYTE = 1;
-
-	private static final int THIRD_BYTE = 2;
-
-	private static final int FOURTH_BYTE = 3;
 
 	private Inet4Address getIpaddress(ChipLocation location,
 			Set<ChipLocation> roots) {
 		if (roots.contains(location)) {
-			byte[] bytes = new byte[BYTES_PER_IP_ADDRESS];
-			bytes[FIRST_BYTE] = LOCAL_HOST_ONE;
-			bytes[SECOND_BYTE] = 0;
-			bytes[THIRD_BYTE] = (byte) location.getX();
-			bytes[FOURTH_BYTE] = (byte) location.getY();
+			// Addr is 127.0.X.Y
+			byte[] bytes = new byte[] {
+				// Fixed prefix
+				LOCAL_HOST_ONE, 0,
+				// Variable suffix
+				(byte) location.getX(), (byte) location.getY()
+			};
 			try {
-				return InetFactory.getByAddress(bytes);
+				return getByAddress(bytes);
 			} catch (UnknownHostException ex) {
 				// Should never happen so convert to none catchable
 				throw new Error(ex);

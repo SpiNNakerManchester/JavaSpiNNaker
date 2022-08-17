@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.lang.String.format;
 import static java.net.InetAddress.getByAddress;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableCollection;
@@ -118,5 +119,13 @@ public class BMPConnectionData {
 			boards = unmodifiableCollection(
 					range(0, numBoards).boxed().collect(toList()));
 		}
+	}
+
+	@Override
+	public String toString() {
+		return format(
+				"(c:%d,f:%d,b:%s...; %s)", cabinet, frame, boards.stream()
+						.findFirst().map(i -> Integer.toString(i)).orElse(""),
+				ipAddress);
 	}
 }

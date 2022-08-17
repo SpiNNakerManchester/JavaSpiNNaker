@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
-import java.util.concurrent.TimeUnit;
+import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  *
@@ -57,21 +58,18 @@ public final class UnitConstants {
 	 * @return A formatted String with only the relative units.
 	 */
 	public static String formatDuration(long durationInMillis) {
-		long hr = TimeUnit.MILLISECONDS.toHours(durationInMillis);
-		long min = TimeUnit.MILLISECONDS.toMinutes(durationInMillis)
-				% MINUTE_PER_HOUR;
-		long sec = TimeUnit.MILLISECONDS.toSeconds(durationInMillis)
-				% SEC_PER_MINUTE;
-		long ms =
-				TimeUnit.MILLISECONDS.toMillis(durationInMillis) % MSEC_PER_SEC;
+		long hr = MILLISECONDS.toHours(durationInMillis);
+		long min = MILLISECONDS.toMinutes(durationInMillis) % MINUTE_PER_HOUR;
+		long sec = MILLISECONDS.toSeconds(durationInMillis) % SEC_PER_MINUTE;
+		long ms = MILLISECONDS.toMillis(durationInMillis) % MSEC_PER_SEC;
 		if (hr > 0) {
-			return String.format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
+			return format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
 		}
 		if (min > 0) {
-			return String.format("%d:%02d.%03d m", min, sec, ms);
+			return format("%d:%02d.%03d m", min, sec, ms);
 		}
 		if (sec > 0) {
-			return String.format("%d.%03d s", sec, ms);
+			return format("%d.%03d s", sec, ms);
 		}
 		return durationInMillis + " ms";
 	}

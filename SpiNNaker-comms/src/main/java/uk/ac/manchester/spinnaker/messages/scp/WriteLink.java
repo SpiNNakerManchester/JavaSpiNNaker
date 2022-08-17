@@ -22,6 +22,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** A request to write memory on a neighbouring chip. */
 public class WriteLink extends SCPRequest<CheckOKResponse> {
@@ -36,10 +37,10 @@ public class WriteLink extends SCPRequest<CheckOKResponse> {
 	 *            The data to write (up to 256 bytes); the <i>position</i> of
 	 *            the buffer must be the point where the data starts.
 	 */
-	public WriteLink(HasCoreLocation core, Direction link, int baseAddress,
-			ByteBuffer data) {
-		super(core, CMD_LINK_WRITE, baseAddress, data.remaining(), link.id,
-				data);
+	public WriteLink(HasCoreLocation core, Direction link,
+			MemoryLocation baseAddress, ByteBuffer data) {
+		super(core, CMD_LINK_WRITE, baseAddress.address, data.remaining(),
+				link.id, data);
 	}
 
 	@Override

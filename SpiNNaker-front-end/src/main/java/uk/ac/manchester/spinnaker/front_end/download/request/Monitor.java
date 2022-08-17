@@ -18,10 +18,9 @@ package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import static java.util.Collections.emptyList;
-import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static java.util.Collections.unmodifiableList;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,7 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * Extra monitor core information.
@@ -122,17 +121,16 @@ public class Monitor implements HasCoreLocation {
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 */
-	public void updateTransactionIdFromMachine(Transceiver txrx)
+	public void updateTransactionIdFromMachine(TransceiverInterface txrx)
 			throws IOException, ProcessException {
-		int address = txrx.getUser1RegisterAddress(this);
-		transactionId = txrx.readMemory(this, address, WORD_SIZE).getInt();
+		transactionId = txrx.readUser1(this);
 	}
 
 	/**
 	 * @return the placements
 	 */
 	public List<Placement> getPlacements() {
-		return Collections.unmodifiableList(placements);
+		return unmodifiableList(placements);
 	}
 
 	@Override

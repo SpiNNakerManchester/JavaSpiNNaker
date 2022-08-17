@@ -26,10 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+
+		<!-- What does the CheckForFIXME profile look for? -->
+		<forbidden.keywords.re>FIXME|Auto-generated method stub</forbidden.keywords.re>
 
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
@@ -43,6 +44,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<spring.version>5.3.22</spring.version>
 		<spring.boot.version>2.7.2</spring.boot.version>
+		<!--
+		DKF: if you update spring.boot.version, also update the annotation
+		  processor binding in Eclipse for SpiNNaker-allocserv:
+
+		  Properties => Java Compiler => Annotation Processing => Factory Path
+
+		  Failure to do this leads to strange misbehaviour in tooltips when
+		  editing application.yml
+		-->
 		<spring.security.version>5.7.2</spring.security.version>
 
 		<cxf.version>3.5.3</cxf.version>
@@ -52,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<swagger.version>4.13.2</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.2</jython.version>
-  	</properties>
+	</properties>
 
 	<dependencyManagement>
 		<dependencies>
@@ -86,7 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-engine</artifactId>
+				<artifactId>junit-jupiter</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -100,27 +110,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>uk.ac.manchester.spinnaker</groupId>
 				<artifactId>SpiNNaker-utils</artifactId>
-				<version>${spinnaker.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>uk.ac.manchester.spinnaker</groupId>
 				<artifactId>SpiNNaker-machine</artifactId>
-				<version>${spinnaker.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>uk.ac.manchester.spinnaker</groupId>
 				<artifactId>SpiNNaker-storage</artifactId>
-				<version>${spinnaker.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>uk.ac.manchester.spinnaker</groupId>
 				<artifactId>SpiNNaker-comms</artifactId>
-				<version>${spinnaker.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>uk.ac.manchester.spinnaker</groupId>
 				<artifactId>SpiNNaker-data-specification</artifactId>
-				<version>${spinnaker.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -280,11 +290,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.3.0</version>
+					<configuration>
+						<!-- This is weird, but needed. -->
+						<propertiesEncoding>ISO-8859-1</propertiesEncoding>
+						<nonFilteredFileExtensions>
+							<nonFilteredFileExtension>p12</nonFilteredFileExtension>
+						</nonFilteredFileExtensions>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
 					<version>3.3.0</version>
+					<configuration>
+						<filters>
+							<filter>
+								<artifact>*:*</artifact>
+								<excludes>
+									<!-- Strip unwanted junk -->
+									<exclude>module-info.class</exclude>
+									<exclude>META-INF/MANIFEST.MF</exclude>
+									<exclude>META-INF/LICENSE</exclude>
+									<exclude>META-INF/LICENSE.txt</exclude>
+									<exclude>META-INF/NOTICE</exclude>
+									<exclude>META-INF/NOTICE.txt</exclude>
+									<exclude>META-INF/DEPENDENCIES</exclude>
+									<exclude>META-INF/*.SF</exclude>
+									<exclude>META-INF/*.DSA</exclude>
+									<exclude>META-INF/*.RSA</exclude>
+								</excludes>
+							</filter>
+						</filters>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -343,7 +380,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</group>
 							<group>
 								<title>Utilities</title>
-								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*</packages>
+								<packages>uk.ac.manchester.spinnaker.utils*:uk.ac.manchester.spinnaker.storage*:uk.ac.manchester.spinnaker.py2json</packages>
+							</group>
+							<group>
+								<title>Allocation Service</title>
+								<packages>uk.ac.manchester.spinnaker.alloc*</packages>
 							</group>
 						</groups>
 						<notimestamp>true</notimestamp>
@@ -401,7 +442,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>com.github.blutorange</groupId>
 					<artifactId>closure-compiler-maven-plugin</artifactId>
-					<version>2.23.0</version>
+					<version>2.21.0</version>
+					<!-- 2.22 and 2.23 require Java 11 -->
 				</plugin>
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
@@ -416,9 +458,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.sling</groupId>
 					<artifactId>jspc-maven-plugin</artifactId>
+					<!-- <version>2.3.0</version> -->
+					<!-- 2.3.2 is BROKEN, and we don't need it anyway -->
 					<version>2.3.4</version>
+					<!--
 					<dependencies>
+					-->
 						<!-- WHY ARE THESE NOT JUST PROVIDED BY DEFAULT?! -->
+					<!--
 						<dependency>
 							<groupId>org.apache.sling</groupId>
 							<artifactId>org.apache.sling.feature</artifactId>
@@ -430,6 +477,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<version>1.10.0</version>
 						</dependency>
 					</dependencies>
+					-->
 				</plugin>
 				<plugin>
 					<groupId>org.apache.rat</groupId>
@@ -444,12 +492,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<exclude>**/*.json</exclude>
 							<exclude>**/*.txt</exclude>
 							<exclude>**/*.csv</exclude>
+							<exclude>**/*.fig</exclude>
+							<exclude>**/*.bit</exclude>
 							<exclude>**/nbproject/**</exclude>
 							<exclude>**/target/**</exclude>
-							<exclude>README.md</exclude>
-							<exclude>SECURITY.md</exclude>
+							<!-- Fooling markdown parsers and RAT is hard -->
+							<exclude>**/*.md</exclude>
 							<exclude>**/dependency-reduced-pom.xml</exclude>
 							<exclude>.gitattributes</exclude>
+							<exclude>**/.dbeaver/**</exclude>
+							<exclude>**/*.erd</exclude>
+							<exclude>**/node_modules/**</exclude>
 						</excludes>
 						<consoleOutput>true</consoleOutput>
 					</configuration>
@@ -464,12 +517,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>
-											org.commonjava.maven.plugins
-										</groupId>
-										<artifactId>
-											directory-maven-plugin
-										</artifactId>
+										<groupId>org.commonjava.maven.plugins</groupId>
+										<artifactId>directory-maven-plugin</artifactId>
 										<versionRange>[0.1,)</versionRange>
 										<goals>
 											<goal>highest-basedir</goal>
@@ -479,12 +528,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										<execute />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>uk.co.automatictester</groupId>
+										<artifactId>truststore-maven-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>generate-truststore</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-antrun-plugin</artifactId>
+										<versionRange>[1.0,)</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute/>
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
@@ -501,6 +577,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>jsp/**/*.class</exclude>
+						<exclude>views/**/*.class</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.rat</groupId>
@@ -542,6 +624,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-pacman</module>
 		<module>SpiNNaker-data-specification</module>
 		<module>SpiNNaker-front-end</module>
+		<module>SpiNNaker-allocserv</module>
+		<module>SpiNNaker-py2json</module>
+		<module>SpiNNaker-allocator</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
@@ -687,7 +772,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${javadoc.version}</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -763,6 +847,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<activation>
 				<jdk>[1.9,)</jdk>
 			</activation>
+			<properties>
+				<maven.compiler.release>8</maven.compiler.release>
+			</properties>
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -793,11 +880,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
-			<id>JDK8</id>
-			<!-- work around a stupid JDK bug -->
+			<!-- This module needs Java 11 to build at all. -->
+			<id>JDK11AndLater</id>
 			<activation>
-				<jdk>1.8</jdk>
+				<jdk>[1.11,)</jdk>
 			</activation>
+			<modules>
+				<module>keycloak-management-client</module>
+			</modules>
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -806,11 +896,78 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<artifactId>maven-javadoc-plugin</artifactId>
 							<version>${javadoc.version}</version>
 							<configuration>
-								<doclint>none</doclint>
+								<source>1.11</source>
 							</configuration>
 						</plugin>
 					</plugins>
 				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>JDK8</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<properties>
+				<java.version>1.8</java.version>
+				<maven.compiler.source>${java.version}</maven.compiler.source>
+				<maven.compiler.target>${java.version}</maven.compiler.target>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>${javadoc.version}</version>
+							<configuration>
+								<!-- work around a stupid JDK bug -->
+								<doclint>none</doclint>
+							</configuration>
+						</plugin>
+						<!-- Newer has incompatible bytecode -->
+						<plugin>
+							<groupId>com.github.blutorange</groupId>
+							<artifactId>closure-compiler-maven-plugin</artifactId>
+							<version>2.21.0</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>CheckForFIXME</id>
+			<!-- See https://stackoverflow.com/q/18129106/301832-->
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>${exec.version}</version>
+						<executions>
+							<execution>
+								<id>check-for-fixme</id>
+								<phase>process-sources</phase>
+								<configuration>
+									<executable>egrep</executable>
+									<successCodes>
+										<successCode>1</successCode>
+									</successCodes>
+									<arguments>
+										<argument>-rn</argument>
+										<!-- Forbidden Keywords -->
+										<argument>${forbidden.keywords.re}</argument>
+										<!-- search path -->
+										<argument>src</argument>
+									</arguments>
+								</configuration>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 	</profiles>

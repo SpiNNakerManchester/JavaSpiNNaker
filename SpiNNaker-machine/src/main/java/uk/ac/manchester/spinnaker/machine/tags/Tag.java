@@ -16,7 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine.tags;
 
+import static java.lang.Integer.compare;
+
 import java.net.InetAddress;
+import java.util.Objects;
 
 /** Common properties of SpiNNaker IP tags and reverse IP tags. */
 public abstract class Tag implements Comparable<Tag> {
@@ -102,9 +105,7 @@ public abstract class Tag implements Comparable<Tag> {
 	protected final boolean partialEquals(Tag otherTag) {
 		return tagID == otherTag.tagID
 				&& boardAddress.equals(otherTag.boardAddress)
-				&& (port == null ? otherTag.port == null
-						: (otherTag.port != null
-								&& port.equals(otherTag.port)));
+				&& Objects.equals(port, otherTag.port);
 	}
 
 	private static final int MAGIC1 = 43;
@@ -126,7 +127,7 @@ public abstract class Tag implements Comparable<Tag> {
 	}
 
 	/**
-	 * Compare this tag to another one for ordering <strong>Note:</strong> this
+	 * Compare this tag to another one for ordering. <strong>Note:</strong> this
 	 * class has a natural ordering that is inconsistent with equals; ordering
 	 * is by the tag ID only (this is fine for tags obtained from the same chip
 	 * at the same time, which is the primary use case).
@@ -135,6 +136,6 @@ public abstract class Tag implements Comparable<Tag> {
 	 */
 	@Override
 	public int compareTo(Tag o) {
-		return getTag() - o.getTag();
+		return compare(tagID, o.tagID);
 	}
 }

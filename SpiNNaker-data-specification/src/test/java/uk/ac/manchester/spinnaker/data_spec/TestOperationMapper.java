@@ -27,10 +27,11 @@ import java.nio.channels.AcceptPendingException;
 import org.junit.jupiter.api.Test;
 
 class TestOperationMapper {
-	static final int KEY = PRINT_STRUCT.value << COMMAND.offset;
-	static final int BAD_CMD = 0xEE << COMMAND.offset;
+	private static final int KEY = PRINT_STRUCT.value << COMMAND.offset;
 
-	static class MockFunctions implements FunctionAPI {
+	private static final int BAD_CMD = 0xEE << COMMAND.offset;
+
+	private static class MockFunctions implements FunctionAPI {
 		int cmd;
 
 		@Override
@@ -40,7 +41,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test0() throws DataSpecificationException {
+	void testUnimplemented() {
 		MockFunctions mock = new MockFunctions();
 		assertThrows(UnimplementedDSECommandException.class,
 				() -> mock.getOperation(KEY, 0));
@@ -49,7 +50,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test1() throws DataSpecificationException {
+	void testBadResultType() {
 		MockFunctions mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public double foo() {
@@ -61,7 +62,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test2() throws DataSpecificationException {
+	void testArgumentNotAllowed() {
 		MockFunctions mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo(int xy) {
@@ -73,7 +74,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test3() throws DataSpecificationException {
+	void testUnexpectedCheckedExceptionInCall() {
 		MockFunctions mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() throws IOException {
@@ -89,7 +90,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test4() throws DataSpecificationException {
+	void testUncheckedExceptionInCall() {
 		MockFunctions mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() {
@@ -102,7 +103,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test5() throws DataSpecificationException {
+	void testErrorInCall() {
 		MockFunctions mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() {
@@ -115,7 +116,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test6() throws DataSpecificationException {
+	void testExpectedCheckedExceptionInCall() {
 		MockFunctions mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() throws DataSpecificationException {
@@ -129,7 +130,7 @@ class TestOperationMapper {
 	}
 
 	@Test
-	void test7() throws DataSpecificationException {
+	void testWorkingCall() throws DataSpecificationException {
 		class MockFunctions7 extends MockFunctions {
 			int act;
 
@@ -138,6 +139,7 @@ class TestOperationMapper {
 				act = 123454321;
 			}
 		}
+
 		MockFunctions7 mock = new MockFunctions7();
 		Callable op = mock.getOperation(KEY, 0);
 		assertEquals(0, mock.cmd);

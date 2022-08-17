@@ -16,6 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static java.lang.Integer.compare;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateCoreLocation;
+
+import java.io.Serializable;
+
 /**
  * The location of a Core as an X, Y, P tuple.
  * <p>
@@ -25,7 +32,9 @@ package uk.ac.manchester.spinnaker.machine;
  * @author dkf
  */
 public final class CoreLocation
-		implements HasCoreLocation, Comparable<CoreLocation> {
+		implements HasCoreLocation, Comparable<CoreLocation>, Serializable {
+	private static final long serialVersionUID = 2930811082362121057L;
+
 	private final int x;
 
 	private final int y;
@@ -43,7 +52,7 @@ public final class CoreLocation
 	 *            The P coordinate, in range 0..17
 	 */
 	public CoreLocation(int x, int y, int p) {
-		MachineDefaults.validateCoreLocation(x, y, p);
+		validateCoreLocation(x, y, p);
 		this.x = x;
 		this.y = y;
 		this.p = p;
@@ -75,8 +84,7 @@ public final class CoreLocation
 
 	@Override
 	public int hashCode() {
-		return (((x << MachineDefaults.COORD_SHIFT)
-				^ y) << MachineDefaults.CORE_SHIFT) ^ p;
+		return (((x << COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p;
 	}
 
 	@Override
@@ -105,22 +113,14 @@ public final class CoreLocation
 	}
 
 	@Override
-	public int compareTo(CoreLocation o) {
-		if (this.x < o.x) {
-			return -1;
-		} else if (this.x > o.x) {
-			return 1;
+	public int compareTo(CoreLocation other) {
+		int cmp = compare(this.x, other.x);
+		if (cmp == 0) {
+			cmp = compare(this.y, other.y);
+			if (cmp == 0) {
+				cmp = compare(this.p, other.p);
+			}
 		}
-		if (this.y < o.y) {
-			return -1;
-		} else if (this.y > o.y) {
-			return 1;
-		}
-		if (this.p < o.p) {
-			return -1;
-		} else if (this.p > o.p) {
-			return 1;
-		}
-		return 0;
+		return cmp;
 	}
 }

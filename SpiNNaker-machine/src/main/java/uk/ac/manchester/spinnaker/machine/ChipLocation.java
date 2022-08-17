@@ -18,7 +18,15 @@ package uk.ac.manchester.spinnaker.machine;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.lang.Integer.compare;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
+
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -30,8 +38,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author dkf
  */
 @JsonFormat(shape = ARRAY)
+/*
+ * This is needed in Java 8, but not by Java 10 (which can find the @JsonIgnore
+ * annotation on the default property all by itself.
+ */
+@JsonIgnoreProperties({"scamp-core", "scamp_core", "scampCore"})
 public final class ChipLocation
-		implements HasChipLocation, Comparable<ChipLocation> {
+		implements HasChipLocation, Comparable<ChipLocation>, Serializable {
+	private static final long serialVersionUID = -2343484354316378507L;
+
 	private final int x;
 
 	private final int y;
@@ -63,7 +78,7 @@ public final class ChipLocation
 	@JsonCreator
 	public ChipLocation(@JsonProperty(value = "x", required = true) int x,
 			@JsonProperty(value = "y", required = true) int y) {
-		MachineDefaults.validateChipLocation(x, y);
+		validateChipLocation(x, y);
 		this.x = x;
 		this.y = y;
 	}
@@ -82,18 +97,16 @@ public final class ChipLocation
 
 	@Override
 	public int hashCode() {
-		return (x << MachineDefaults.COORD_SHIFT) ^ y;
+		return (x << COORD_SHIFT) ^ y;
 	}
 
 	@Override
 	public int compareTo(ChipLocation o) {
-		if (this.x < o.x) {
-			return -1;
+		int cmp = compare(this.x, o.x);
+		if (cmp == 0) {
+			cmp = compare(this.y, o.y);
 		}
-		if (this.x > o.x) {
-			return 1;
-		}
-		return Integer.compare(this.y, o.y);
+		return cmp;
 	}
 
 	@Override

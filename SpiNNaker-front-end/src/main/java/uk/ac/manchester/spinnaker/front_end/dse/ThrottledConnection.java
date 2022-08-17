@@ -46,7 +46,7 @@ import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * An SDP connection that uses a throttle to stop SCAMP from overloading. Note
@@ -98,8 +98,8 @@ class ThrottledConnection implements Closeable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the reprogramming.
 	 */
-	ThrottledConnection(Transceiver transceiver, Ethernet board, IPTag iptag)
-			throws IOException, ProcessException {
+	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
+			IPTag iptag) throws IOException, ProcessException {
 		location = board.location;
 		addr = getByName(board.ethernetAddress);
 		connection = new SCPConnection(location, addr, SCP_SCAMP_PORT);

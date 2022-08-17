@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
+import static java.lang.Short.toUnsignedInt;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.Instant.ofEpochSecond;
 import static java.time.ZoneOffset.UTC;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPLocation;
 
 /**
  * Decodes SC&amp;MP/SARK version information as returned by the SVER command.
@@ -74,24 +76,42 @@ public final class VersionInfo {
 				m.group("revision"));
 	}
 
+	private static String decodeFromBuffer(ByteBuffer buffer) {
+		if (buffer.hasArray()) {
+			return new String(buffer.array(),
+					buffer.arrayOffset() + buffer.position(),
+					buffer.remaining(), UTF_8);
+		} else {
+			byte[] tmp = new byte[buffer.remaining()];
+			buffer.get(tmp);
+			return new String(tmp, UTF_8);
+		}
+	}
+
 	/**
 	 * @param buffer
 	 *            buffer holding an SCP packet containing version information
+	 * @param isBMP
+	 *            Are we really processing the result of a request to get a
+	 *            BMP's version.
 	 * @throws IllegalArgumentException
 	 *             If the buffer contains an unsupported format of data
 	 */
-	public VersionInfo(ByteBuffer buffer) {
+	public VersionInfo(ByteBuffer buffer, boolean isBMP) {
 		int p = toUnsignedInt(buffer.get());
 		physicalCPUID = toUnsignedInt(buffer.get());
 		int y = toUnsignedInt(buffer.get());
 		int x = toUnsignedInt(buffer.get());
-		core = new CoreLocation(x, y, p);
+		if (isBMP) {
+			core = new BMPLocation(x, y, p);
+		} else {
+			core = new CoreLocation(x, y, p);
+		}
 		buffer.getShort(); // Ignore 2 bytes
-		int vn = Short.toUnsignedInt(buffer.getShort());
+		int vn = toUnsignedInt(buffer.getShort());
 		buildDate = buffer.getInt();
 
-		String decoded = new String(buffer.array(), buffer.position(),
-				buffer.remaining(), UTF_8);
+		String decoded = decodeFromBuffer(buffer);
 		String original = decoded;
 		if (vn < MAGIC_VERSION) {
 			versionString = decoded;

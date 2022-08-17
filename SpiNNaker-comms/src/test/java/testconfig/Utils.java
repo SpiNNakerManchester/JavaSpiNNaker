@@ -39,6 +39,7 @@ public abstract class Utils {
 	}
 
 	private static final int BITS_IN_WORD = 32;
+
 	private static final int IN_TENS = 10;
 
 	public static void printWordAsBinary(String name, int word,
@@ -92,7 +93,9 @@ public abstract class Utils {
 	 * @author Donal Fellows
 	 */
 	public static class Field {
-		private int from, to;
+		private int from;
+
+		private int to;
 
 		/**
 		 * Make a field one bit wide.

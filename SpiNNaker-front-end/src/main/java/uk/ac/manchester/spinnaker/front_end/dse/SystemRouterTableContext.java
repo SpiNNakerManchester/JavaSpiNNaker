@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A context class that loads up the system router tables while it is active.
@@ -41,7 +41,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 
 	private final CoreSubsets monitorCores;
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final ChipLocation firstChip;
 
@@ -58,11 +58,11 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public SystemRouterTableContext(Transceiver txrx, CoreSubsets monitorCores)
-			throws IOException, ProcessException {
+	public SystemRouterTableContext(TransceiverInterface txrx,
+			CoreSubsets monitorCores) throws IOException, ProcessException {
 		this.txrx = txrx;
 		this.monitorCores = monitorCores;
-		CoreLocation firstCore = monitorCores.iterator().next();
+		CoreLocation firstCore = monitorCores.first().get();
 		firstChip = firstCore.asChipLocation();
 
 		log.info("switching multicast routing on board at {} to system mode",
@@ -91,7 +91,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public SystemRouterTableContext(Transceiver txrx,
+	public SystemRouterTableContext(TransceiverInterface txrx,
 			List<? extends HasCoreLocation> monitorCoreLocations)
 			throws IOException, ProcessException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations));
@@ -110,7 +110,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
-	public SystemRouterTableContext(Transceiver txrx,
+	public SystemRouterTableContext(TransceiverInterface txrx,
 			Stream<? extends HasCoreLocation> monitorCoreLocations)
 			throws IOException, ProcessException {
 		this(txrx, convertToCoreSubset(monitorCoreLocations));

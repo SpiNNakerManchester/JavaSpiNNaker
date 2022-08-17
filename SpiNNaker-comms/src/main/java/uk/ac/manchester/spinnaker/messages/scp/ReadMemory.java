@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /** An SCP request to read a region of memory. */
@@ -45,8 +46,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadMemory(HasCoreLocation core, int address, int size) {
-		super(core, CMD_READ, address, validate(size),
+	public ReadMemory(HasCoreLocation core, MemoryLocation address, int size) {
+		super(core, CMD_READ, address.address, validate(size),
 				efficientTransferUnit(address, size).value);
 	}
 
@@ -58,8 +59,8 @@ public class ReadMemory extends SCPRequest<ReadMemory.Response> {
 	 * @param size
 	 *            The number of bytes to read, between 1 and 256
 	 */
-	public ReadMemory(HasChipLocation chip, int address, int size) {
-		super(chip.getScampCore(), CMD_READ, address, validate(size),
+	public ReadMemory(HasChipLocation chip, MemoryLocation address, int size) {
+		super(chip.getScampCore(), CMD_READ, address.address, validate(size),
 				efficientTransferUnit(address, size).value);
 	}
 

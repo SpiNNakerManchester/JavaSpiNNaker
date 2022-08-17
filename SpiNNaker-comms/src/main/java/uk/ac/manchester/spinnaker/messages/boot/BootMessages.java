@@ -20,6 +20,7 @@ import static java.lang.Integer.reverseBytes;
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.BIG_ENDIAN;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -38,7 +39,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
@@ -71,7 +71,7 @@ public class BootMessages {
 		SystemVariableBootValues specific =
 				bootVars == null ? new SystemVariableBootValues()
 						: new SystemVariableBootValues(bootVars);
-		int currentTime = (int) (System.currentTimeMillis() / MSEC_PER_SEC);
+		int currentTime = (int) (currentTimeMillis() / MSEC_PER_SEC);
 		specific.setValue(unix_timestamp, currentTime);
 		specific.setValue(boot_signature, currentTime);
 		specific.setValue(is_root_chip, 1);
@@ -82,10 +82,7 @@ public class BootMessages {
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		bootVariables = initFlags(bootVariables);
 		if (extraBootValues != null) {
-			for (Entry<SystemVariableDefinition, Object> entry : extraBootValues
-					.entrySet()) {
-				bootVariables.setValue(entry.getKey(), entry.getValue());
-			}
+			extraBootValues.forEach(bootVariables::setValue);
 		}
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
 		injectBootVariableBlock(bootVariables);

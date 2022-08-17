@@ -45,7 +45,7 @@ class TestMemoryRegionCollection {
 		assertEquals(1, c.size());
 		assertFalse(c.isEmpty());
 		assertTrue(new MemoryRegionCollection(0).isEmpty());
-		MemoryRegionReal mr = new MemoryRegionReal(0, 123, false, 5);
+		MemoryRegionReal mr = new MemoryRegionReal(0, false, 5);
 		c.set(mr);
 		assertThrows(RegionInUseException.class, () -> c.set(mr));
 		assertFalse(c.isEmpty(0));
@@ -69,8 +69,8 @@ class TestMemoryRegionCollection {
 	@Test
 	void testMultiRegions() throws RegionInUseException {
 		MemoryRegionCollection c = new MemoryRegionCollection(6);
-		MemoryRegionReal mr1 = new MemoryRegionReal(2, 123, true, 5);
-		MemoryRegionReal mr2 = new MemoryRegionReal(4, 123, false, 7);
+		MemoryRegionReal mr1 = new MemoryRegionReal(2, true, 5);
+		MemoryRegionReal mr2 = new MemoryRegionReal(4, false, 7);
 		c.set(mr1);
 		c.set(mr2);
 		assertTrue(c.needsToWriteRegion(1));
@@ -81,7 +81,7 @@ class TestMemoryRegionCollection {
 			null, null, mr1, null, mr2, null, null
 		}, c.toArray(new Object[7]));
 		assertFalse(c.containsAll(Arrays.asList(mr1, mr2,
-				new MemoryRegionReal(5, 123, true, 123))));
+				new MemoryRegionReal(5, true, 123))));
 		assertThrows(IllegalArgumentException.class,
 				() -> c.needsToWriteRegion(6));
 	}

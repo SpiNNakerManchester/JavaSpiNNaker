@@ -25,6 +25,7 @@ import static uk.ac.manchester.spinnaker.messages.sdp.SDPPort.EXTRA_MONITOR_CORE
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * A message used to request fast data transfer from SpiNNaker to Host.
@@ -46,13 +47,13 @@ public final class StartSendingMessage extends GatherProtocolMessage {
 	 *            the transaction ID needed
 	 * @return The created message.
 	 */
-	static StartSendingMessage create(HasCoreLocation destination, int address,
-			int length, int transactionId) {
+	static StartSendingMessage create(HasCoreLocation destination,
+			MemoryLocation address, int length, int transactionId) {
 		ByteBuffer payload =
 				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
 		payload.putInt(START_SENDING_DATA.value);
 		payload.putInt(transactionId);
-		payload.putInt(address);
+		payload.putInt(address.address);
 		payload.putInt(length);
 		payload.flip();
 		return new StartSendingMessage(destination, payload);

@@ -59,8 +59,10 @@ public class TestMockClient {
 	private static final int SECOND = 1000;
 
 	private static int timeout = SECOND;
+
 	private static MockConnectedClient client =
 			new MockConnectedClient(timeout);
+
 	private static final Logger log = getLogger(TestMockClient.class);
 
 	@Test
@@ -110,12 +112,11 @@ public class TestMockClient {
 				WhereIs whereis2 =
 						client.whereIs(machineName, physical, timeout);
 				ChipLocation chip = whereis1.getChip();
-				@SuppressWarnings("unused")
 				WhereIs whereis3 = client.whereIs(machineName, chip, timeout);
 				// check only work if all real or all mock
 				if (previous == client.isActual()) {
 					assertEquals(whereis1, whereis2);
-					assertEquals(whereis1, whereis2);
+					assertEquals(whereis1, whereis3);
 				}
 			}
 		}

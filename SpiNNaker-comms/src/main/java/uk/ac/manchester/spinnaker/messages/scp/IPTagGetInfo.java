@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagCommand.TTO;
 import static uk.ac.manchester.spinnaker.messages.scp.IPTagFieldDefinitions.COMMAND_FIELD;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_IPTAG;
@@ -62,8 +63,8 @@ public class IPTagGetInfo extends SCPRequest<IPTagGetInfo.Response> {
 			super("Get IP Tag Info", CMD_IPTAG, buffer);
 			transientTimeout = IPTagTimeOutWaitTime.get(buffer.get());
 			buffer.get(); // skip 1
-			poolSize = Byte.toUnsignedInt(buffer.get());
-			fixedSize = Byte.toUnsignedInt(buffer.get());
+			poolSize = toUnsignedInt(buffer.get());
+			fixedSize = toUnsignedInt(buffer.get());
 		}
 	}
 }

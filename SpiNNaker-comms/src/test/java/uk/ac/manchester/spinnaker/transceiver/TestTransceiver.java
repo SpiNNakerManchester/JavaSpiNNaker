@@ -28,8 +28,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static testconfig.BoardTestConfiguration.NOHOST;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
-import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
@@ -44,6 +44,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import net.jcip.annotations.NotThreadSafe;
 import testconfig.BoardTestConfiguration;
@@ -57,6 +58,7 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.VirtualMachine;
 import uk.ac.manchester.spinnaker.utils.InetFactory;
 
@@ -221,9 +223,7 @@ class TestTransceiver {
 					MockWriteTransceiver.Write write =
 							txrx.writtenMemory.get(writeItem++);
 					assertEquals(chip.getScampCore(), write.core);
-					assertEquals(
-							SYSTEM_VARIABLE_BASE_ADDRESS
-									+ software_watchdog_count.offset,
+					assertEquals(SYS_VARS.add(software_watchdog_count.offset),
 							write.address);
 					assertArrayEquals(expectedData, write.data);
 				}
@@ -234,6 +234,7 @@ class TestTransceiver {
 	private static final int REPETITIONS = 10;
 
 	@Test
+	@Timeout(120) // Two minutes is enough
 	void testReliableMachine() throws Exception {
 		boardConfig.setUpRemoteBoard();
 		Machine first = null;
@@ -263,12 +264,17 @@ class TestTransceiver {
 class MockWriteTransceiver extends Transceiver {
 	static class Write {
 		final CoreLocation core;
+
 		final byte[] data;
-		final int address;
+
+		final MemoryLocation address;
+
 		final int offset;
+
 		final int numBytes;
 
-		Write(HasCoreLocation core, int baseAddress, ByteBuffer data) {
+		Write(HasCoreLocation core, MemoryLocation baseAddress,
+				ByteBuffer data) {
 			this.core = core.asCoreLocation();
 			this.address = baseAddress;
 			this.data = data.array().clone();
@@ -304,7 +310,7 @@ class MockWriteTransceiver extends Transceiver {
 	}
 
 	@Override
-	public void writeMemory(HasCoreLocation core, int baseAddress,
+	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) {
 		writtenMemory.add(new Write(core, baseAddress, data));
 	}

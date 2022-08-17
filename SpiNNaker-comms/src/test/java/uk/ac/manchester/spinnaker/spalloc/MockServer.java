@@ -36,14 +36,21 @@ import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
 class MockServer implements SupportUtils.IServer {
 	private static final Charset UTF8 = Charset.forName("UTF-8");
+
 	private static final int BUFFER_SIZE = 1024;
+
 	private static final int QUEUE_LENGTH = 1;
 
 	private ServerSocket serverSocket;
+
 	private int port;
+
 	private final OneShotEvent started;
+
 	private Socket sock;
+
 	private PrintWriter out;
+
 	private BufferedReader in;
 
 	MockServer() throws IOException {
@@ -129,8 +136,7 @@ class MockServer implements SupportUtils.IServer {
 	private static void launchKeepaliveListener(
 			BlockingDeque<JSONObject> keepaliveQueue) {
 		new SupportUtils.Daemon(() -> {
-			try {
-				MockServer s = new MockServer();
+			try (MockServer s = new MockServer()) {
 				s.connect();
 				while (true) {
 					JSONObject o = s.recv();
@@ -140,7 +146,6 @@ class MockServer implements SupportUtils.IServer {
 					keepaliveQueue.offer(o);
 					s.send("{\"return\": null}");
 				}
-				s.close();
 			} catch (EOFException e) {
 				// do nothing
 			} catch (Exception e) {

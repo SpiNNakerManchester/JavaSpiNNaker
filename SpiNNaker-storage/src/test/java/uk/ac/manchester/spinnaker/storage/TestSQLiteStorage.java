@@ -16,14 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +35,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 
 class TestSQLiteStorage {
-	File db;
+	private File db;
 
 	@BeforeEach
 	void makeDB() {
@@ -46,7 +48,7 @@ class TestSQLiteStorage {
 	}
 
 	private static ByteBuffer bytes(String str) {
-		return ByteBuffer.wrap(str.getBytes(UTF_8));
+		return wrap(str.getBytes(UTF_8));
 	}
 
 	private static String str(byte[] bytes) {
@@ -59,15 +61,16 @@ class TestSQLiteStorage {
 				new BufferManagerDatabaseEngine(db).getStorageInterface();
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
-		assertEquals(Collections.emptyList(), storage.getCoresWithStorage());
+		assertEquals(emptyList(), storage.getCoresWithStorage());
 
-		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 0, 0, 100);
+		BufferManagerStorage.Region rr =
+				new BufferManagerStorage.Region(core, 0, NULL, 100);
 		storage.appendRecordingContents(rr, bytes("def"));
 		assertArrayEquals("def".getBytes(UTF_8),
 				storage.getRecordingRegionContents(rr));
 
-		assertEquals(Arrays.asList(core), storage.getCoresWithStorage());
-		assertEquals(Arrays.asList(0), storage.getRegionsWithStorage(core));
+		assertEquals(asList(core), storage.getCoresWithStorage());
+		assertEquals(asList(0), storage.getRegionsWithStorage(core));
 	}
 
 	@Test
@@ -77,7 +80,8 @@ class TestSQLiteStorage {
 		HasCoreLocation core = new CoreLocation(0, 0, 0);
 
 		// append creates
-		BufferManagerStorage.Region rr = new BufferManagerStorage.Region(core, 1, 0, 100);
+		BufferManagerStorage.Region rr =
+				new BufferManagerStorage.Region(core, 1, NULL, 100);
 		storage.appendRecordingContents(rr, bytes("ab"));
 		storage.appendRecordingContents(rr, bytes("cd"));
 		storage.appendRecordingContents(rr, bytes("ef"));

@@ -20,6 +20,7 @@ import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableCollection;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.FileUtils.openInputStream;
 import static org.apache.commons.io.IOUtils.toByteArray;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,6 +30,7 @@ import static uk.ac.manchester.spinnaker.data_spec.Constants.DSE_VERSION;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.END_SPEC_EXECUTOR;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.INT_SIZE;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.MAX_MEM_REGIONS;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.io.Closeable;
 import java.io.File;
@@ -37,9 +39,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
+
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * Used to execute a SpiNNaker data specification language file to produce a
@@ -115,8 +118,7 @@ public class Executor implements Closeable {
 		b.get(a);
 		if (log.isDebugEnabled()) {
 			log.debug("processing input: {}",
-					stream(a).mapToObj(Integer::toHexString)
-							.collect(Collectors.toList()));
+					stream(a).mapToObj(Integer::toHexString).collect(toList()));
 		}
 	}
 
@@ -177,12 +179,12 @@ public class Executor implements Closeable {
 	 *
 	 * @param startAddress The base address to set.
 	 */
-	public void setBaseAddress(int startAddress) {
+	public void setBaseAddress(MemoryLocation startAddress) {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
 		for (MemoryRegion reg : memRegions) {
 			if (reg instanceof MemoryRegionReal) {
 				MemoryRegionReal r = (MemoryRegionReal) reg;
-				r.setRegionBase(nextOffset + startAddress);
+				r.setRegionBase(startAddress.add(nextOffset));
 				nextOffset += r.getAllocatedSize();
 			}
 		}
@@ -210,15 +212,13 @@ public class Executor implements Closeable {
 		assert buffer.order() == LITTLE_ENDIAN;
 		for (MemoryRegion reg : memRegions) {
 			if (reg != null) {
-				buffer.putInt(reg.getRegionBase());
+				buffer.putInt(reg.getRegionBase().address);
 				if (reg instanceof MemoryRegionReal) {
 					// Work out the checksum
 					MemoryRegionReal regReal = (MemoryRegionReal) reg;
-					int nWords = (int) Math.ceil(regReal.getMaxWritePointer()
-							/ INT_SIZE);
-					ByteBuffer bytebuf = (ByteBuffer) regReal.getRegionData()
-							.duplicate().order(LITTLE_ENDIAN).rewind();
-					IntBuffer buf = bytebuf.asIntBuffer();
+					int nWords =
+							ceildiv(regReal.getMaxWritePointer(), INT_SIZE);
+					IntBuffer buf = asIntBuffer(regReal.getRegionData());
 					long sum = 0;
 					for (int i = 0; i < nWords; i++) {
 						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
@@ -238,6 +238,12 @@ public class Executor implements Closeable {
 				buffer.putInt(0);
 			}
 		}
+	}
+
+	private static IntBuffer asIntBuffer(ByteBuffer buffer) {
+		buffer = buffer.duplicate().order(LITTLE_ENDIAN);
+		buffer.rewind();
+		return buffer.asIntBuffer();
 	}
 
 	/** @return the size of the data that will be written to memory. */

@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,6 +70,8 @@ class Replacer {
 		if (dictPath.toFile().isFile()) {
 			try (Stream<String> lines = Files.lines(dictPath)) {
 				lines.forEachOrdered(this::parseLine);
+			} catch (UncheckedIOException e) {
+				throw new WrappedException(e.getCause());
 			} catch (IOException e) {
 				throw new WrappedException(e);
 			}
