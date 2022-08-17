@@ -16,8 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Arrays.asList;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import static java.util.Collections.unmodifiableCollection;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.HALF_SIZE;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_X_OF_ONE_BOARD;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SIZE_Y_OF_ONE_BOARD;
@@ -29,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -106,7 +109,7 @@ public final class SpiNNakerTriadGeometry {
 		this.yCentre = yCentre;
 
 		localChipCoordinates = new HashMap<>();
-		singleBoardCoordinates = new ArrayList<>();
+		singleBoardCoordinates = new LinkedHashSet<>();
 
 		for (int x = 0; x < triadHeight; x++) {
 			for (int y = 0; y < triadWidth; y++) {
@@ -146,8 +149,7 @@ public final class SpiNNakerTriadGeometry {
 			float yCentre) {
 		float dx = x - xCentre;
 		float dy = y - yCentre;
-		return Math.max(Math.abs(dx),
-				Math.max(Math.abs(dy), Math.abs(dx - dy)));
+		return max(abs(dx), max(abs(dy), abs(dx - dy)));
 	}
 
 	/**
@@ -175,7 +177,7 @@ public final class SpiNNakerTriadGeometry {
 		float bestDistance = Float.MAX_VALUE;
 		for (var ethernet : roots) {
 			float calc = hexagonalMetricDistance(x, y,
-					ethernet.x + (float) xCentre, ethernet.y + (float) yCentre);
+					ethernet.x + xCentre, ethernet.y + yCentre);
 			if (calc < bestDistance) {
 				bestDistance = calc;
 				bestCalc = ethernet;
@@ -253,12 +255,10 @@ public final class SpiNNakerTriadGeometry {
 			maxWidth = dimensions.width;
 			maxHeight = dimensions.height;
 		} else {
-			maxWidth =
-					dimensions.width - MachineDefaults.SIZE_X_OF_ONE_BOARD + 1;
-			maxHeight =
-					dimensions.height - MachineDefaults.SIZE_Y_OF_ONE_BOARD + 1;
+			maxWidth = dimensions.width - SIZE_X_OF_ONE_BOARD + 1;
+			maxHeight = dimensions.height - SIZE_Y_OF_ONE_BOARD + 1;
 			if (maxWidth < 0 || maxHeight < 0) {
-				results.add(ChipLocation.ZERO_ZERO);
+				results.add(ZERO_ZERO);
 				return results;
 			}
 		}
@@ -311,14 +311,13 @@ public final class SpiNNakerTriadGeometry {
 	 */
 	public static SpiNNakerTriadGeometry getSpinn5Geometry() {
 		if (spinn5TriadGeometry == null) {
-			var roots = asList(
+			var roots = List.of(
 					new ChipLocation(0, 0),
 					new ChipLocation(HALF_SIZE, SIZE_Y_OF_ONE_BOARD),
 					new ChipLocation(SIZE_X_OF_ONE_BOARD, HALF_SIZE));
 
-			spinn5TriadGeometry = new SpiNNakerTriadGeometry(
-					TRIAD_HEIGHT, TRIAD_WIDTH,
-					roots, VIRTUAL_CENTRE_X, VIRTUAL_CENTRE_Y);
+			spinn5TriadGeometry = new SpiNNakerTriadGeometry(TRIAD_HEIGHT,
+					TRIAD_WIDTH, roots, VIRTUAL_CENTRE_X, VIRTUAL_CENTRE_Y);
 		}
 		return spinn5TriadGeometry;
 	}

@@ -16,13 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
-import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -116,7 +115,7 @@ public class DiagnosticFilter {
 	private static <T> Collection<T> convert(Collection<T> collection,
 			T[] defaults) {
 		if (collection == null || collection.isEmpty()) {
-			return unmodifiableList(asList(defaults));
+			return List.of(defaults);
 		}
 		return unmodifiableCollection(collection);
 	}
@@ -252,18 +251,12 @@ public class DiagnosticFilter {
 
 		private final int value;
 
-		private static final Map<Integer, DefaultRoutingStatus> MAP;
+		private static final Map<Integer, DefaultRoutingStatus> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		DefaultRoutingStatus(int value) {
 			this.bit = value + DEFAULT_ROUTE_OFFSET;
 			this.value = value;
-		}
-
-		static {
-			MAP = new HashMap<>();
-			for (var d : values()) {
-				MAP.put(d.value, d);
-			}
 		}
 
 		/**
@@ -305,18 +298,12 @@ public class DiagnosticFilter {
 
 		private final int value;
 
-		private static final Map<Integer, Destination> MAP;
+		private static final Map<Integer, Destination> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		Destination(int value) {
 			this.bit = value + DESTINATION_OFFSET;
 			this.value = value;
-		}
-
-		static {
-			MAP = new HashMap<>();
-			for (var d : values()) {
-				MAP.put(d.value, d);
-			}
 		}
 
 		/**
@@ -357,18 +344,12 @@ public class DiagnosticFilter {
 
 		private final int value;
 
-		private static final Map<Integer, EmergencyRoutingStatus> MAP;
+		private static final Map<Integer, EmergencyRoutingStatus> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		EmergencyRoutingStatus(int value) {
 			this.bit = value + EMERGENCY_ROUTE_OFFSET;
 			this.value = value;
-		}
-
-		static {
-			MAP = new HashMap<>();
-			for (var e : values()) {
-				MAP.put(e.value, e);
-			}
 		}
 
 		/**
@@ -400,18 +381,12 @@ public class DiagnosticFilter {
 
 		private final int value;
 
-		private static final Map<Integer, PacketType> MAP;
+		private static final Map<Integer, PacketType> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		PacketType(int value) {
 			this.bit = value + PACKET_TYPE_OFFSET;
 			this.value = value;
-		}
-
-		static {
-			MAP = new HashMap<>();
-			for (var p : values()) {
-				MAP.put(p.value, p);
-			}
 		}
 
 		/**
@@ -439,18 +414,12 @@ public class DiagnosticFilter {
 
 		private final int value;
 
-		private static final Map<Integer, PayloadStatus> MAP;
+		private static final Map<Integer, PayloadStatus> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		PayloadStatus(int value) {
 			this.bit = value + PAYLOAD_OFFSET;
 			this.value = value;
-		}
-
-		static {
-			MAP = new HashMap<>();
-			for (var p : values()) {
-				MAP.put(p.value, p);
-			}
 		}
 
 		/**
@@ -478,18 +447,12 @@ public class DiagnosticFilter {
 
 		private final int value;
 
-		private static final Map<Integer, Source> MAP;
+		private static final Map<Integer, Source> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		Source(int value) {
 			this.bit = value + SOURCE_OFFSET;
 			this.value = value;
-		}
-
-		static {
-			MAP = new HashMap<>();
-			for (var s : values()) {
-				MAP.put(s.value, s);
-			}
 		}
 
 		/**

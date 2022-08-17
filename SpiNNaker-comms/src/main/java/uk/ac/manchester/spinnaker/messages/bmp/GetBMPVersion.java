@@ -31,7 +31,7 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	 * @param board
 	 *            The board to get the version from
 	 */
-	public GetBMPVersion(int board) {
+	public GetBMPVersion(BMPBoard board) {
 		super(board, CMD_VER);
 	}
 
@@ -47,8 +47,8 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 
 		private Response(ByteBuffer buffer)
 				throws UnexpectedResponseCodeException {
-			super("Read ADC", CMD_VER, buffer);
-			versionInfo = new VersionInfo(buffer);
+			super("Read Version", CMD_VER, buffer);
+			versionInfo = new VersionInfo(buffer, true);
 		}
 	}
 }

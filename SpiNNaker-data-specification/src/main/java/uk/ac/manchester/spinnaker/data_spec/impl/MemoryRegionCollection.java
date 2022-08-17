@@ -19,12 +19,14 @@ package uk.ac.manchester.spinnaker.data_spec.impl;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOf;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.range;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
@@ -159,12 +161,12 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 
 	@Override
 	public boolean contains(Object o) {
-		return stream().anyMatch(r -> r.equals(o));
+		return stream().anyMatch(r -> Objects.equals(r, o));
 	}
 
 	@Override
 	public Iterator<MemoryRegion> iterator() {
-		return asList(regions).iterator();
+		return unmodifiableList(asList(regions)).iterator();
 	}
 
 	@Override
@@ -200,7 +202,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		return stream().allMatch(c::contains);
+		return c.stream().allMatch(this::contains);
 	}
 
 	/**
@@ -282,8 +284,8 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 			a = ((MemoryRegionCollection) o).regions;
 		} else if (o instanceof Collection) {
 			a = ((Collection<?>) o).toArray();
-		} else if (o instanceof MemoryRegionReal[]) {
-			a = (MemoryRegionReal[]) o;
+		} else if (o instanceof MemoryRegion[]) {
+			a = (MemoryRegion[]) o;
 		} else {
 			return false;
 		}

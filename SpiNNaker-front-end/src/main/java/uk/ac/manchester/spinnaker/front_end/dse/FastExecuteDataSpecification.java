@@ -18,7 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static difflib.DiffUtils.diff;
 import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Long.toHexString;
+import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.lang.System.nanoTime;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
@@ -26,10 +26,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
+import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.BufferedWriter;
@@ -42,11 +43,11 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.BitSet;
 
 import org.slf4j.Logger;
 
@@ -68,6 +69,7 @@ import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DSEStorage;
@@ -78,7 +80,6 @@ import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
 import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
-import uk.ac.manchester.spinnaker.utils.UnitConstants;
 
 /**
  * Implementation of the Data Specification Executor that uses the Fast Data In
@@ -220,9 +221,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets.stream().map(
-					board -> () -> loadBoard(board, storage, bar)))
-					.awaitAndCombineExceptions();
+			executor.submitTasks(ethernets, board -> {
+				return () -> loadBoard(board, storage, bar);
+			}).awaitAndCombineExceptions();
 		} catch (StorageException | IOException | ProcessException
 				| DataSpecificationException | RuntimeException e) {
 			throw e;
@@ -241,11 +242,10 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 		log.info("loading data onto {} cores on board", cores.size());
 		try (var worker = new BoardWorker(board, storage, bar)) {
-			var addresses = new HashMap<CoreToLoad, Integer>();
+			var addresses = new HashMap<CoreToLoad, MemoryLocation>();
 			for (var ctl : cores) {
-				int start = malloc(ctl, ctl.sizeToWrite);
-				int user0 = txrx.getUser0RegisterAddress(ctl.core);
-				txrx.writeMemory(ctl.core.getScampCore(), user0, start);
+				var start = malloc(ctl, ctl.sizeToWrite);
+				txrx.writeUser0(ctl.core, start.address);
 				addresses.put(ctl, start);
 			}
 
@@ -264,7 +264,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 	}
 
-	private int malloc(CoreToLoad ctl, Integer bytesUsed)
+	private MemoryLocation malloc(CoreToLoad ctl, Integer bytesUsed)
 			throws IOException, ProcessException {
 		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
 				new AppID(ctl.appID),
@@ -318,7 +318,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If IO fails.
 	 */
 	public synchronized void writeReport(HasChipLocation chip, long timeDiff,
-			int size, int baseAddress, Object missingNumbers)
+			int size, MemoryLocation baseAddress, Object missingNumbers)
 			throws IOException {
 		if (!reportPath.exists()) {
 			try (var w = open(reportPath, false)) {
@@ -328,18 +328,18 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 		}
 
-		float timeTaken = timeDiff / (float) UnitConstants.NSEC_PER_SEC;
+		float timeTaken = timeDiff / (float) NSEC_PER_SEC;
 		float megabits = (size * (long) NBBY) / (float) (ONE_KI * ONE_KI);
 		String mbs;
 		if (timeDiff == 0) {
 			mbs = "unknown, below threshold";
 		} else {
-			mbs = String.format("%f", megabits / timeTaken);
+			mbs = format("%f", megabits / timeTaken);
 		}
 		try (var w = open(reportPath, true)) {
-			w.printf("%d\t%d\t%#08x\t%d\t%f\t%s\t%s\n", chip.getX(),
-					chip.getY(), toUnsignedLong(baseAddress),
-					toUnsignedLong(size), timeTaken, mbs, missingNumbers);
+			w.printf("%d\t%d\t%s\t%d\t%f\t%s\t%s\n", chip.getX(), chip.getY(),
+					baseAddress, toUnsignedLong(size), timeTaken, mbs,
+					missingNumbers);
 		}
 	}
 
@@ -450,14 +450,14 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws StorageException
 		 *             If the database access fails.
 		 */
-		protected void loadCore(CoreToLoad ctl, Gather gather, int start)
-				throws IOException, ProcessException,
+		protected void loadCore(CoreToLoad ctl, Gather gather,
+				MemoryLocation start) throws IOException, ProcessException,
 				DataSpecificationException, StorageException {
 			ByteBuffer ds;
 			try {
 				ds = ctl.getDataSpec();
 			} catch (StorageException e) {
-				throw new DataSpecificationException(String.format(
+				throw new DataSpecificationException(format(
 						"failed to read data specification on "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
@@ -469,17 +469,17 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 				log.info("loaded {} memory regions (including metadata "
 						+ "pseudoregion) for {}", writes, ctl.core);
 			} catch (DataSpecificationException e) {
-				throw new DataSpecificationException(String.format(
+				throw new DataSpecificationException(format(
 						"failed to execute data specification on "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
 			} catch (IOException e) {
-				throw new IOException(String.format(
+				throw new IOException(format(
 						"failed to upload built data to "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
 			} catch (StorageException e) {
-				throw new StorageException(String.format(
+				throw new StorageException(format(
 						"failed to record results of data specification for "
 								+ "core %s of board %s (%s)",
 						ctl.core, board.location, board.ethernetAddress), e);
@@ -487,16 +487,16 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		private int loadCoreFromExecutor(CoreToLoad ctl, Gather gather,
-				int start, Executor executor, ExecutionContext execContext)
-				throws DataSpecificationException, IOException,
-				ProcessException, StorageException {
+				MemoryLocation start, Executor executor,
+				ExecutionContext execContext) throws DataSpecificationException,
+				IOException, ProcessException, StorageException {
 			execContext.execute(executor, ctl.core, start);
 			int size = executor.getConstructedDataSize();
 			if (log.isInfoEnabled()) {
 				log.info(
 						"generated {} bytes to load onto {} into memory "
-								+ "starting at 0x{}",
-						size, ctl.core, toHexString(toUnsignedLong(start)));
+								+ "starting at {}",
+						size, ctl.core, start);
 			}
 			int written = APP_PTR_TABLE_BYTE_SIZE;
 			int writeCount = 1;
@@ -542,7 +542,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			 * @return The bitfield.
 			 */
 			BitSet issueNew(int expectedMax) {
-				BitSet s = new BitSet(expectedMax);
+				var s = new BitSet(expectedMax);
 				addLast(s);
 				return s;
 			}
@@ -561,8 +561,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			 * @throws IOException
 			 *             If anything goes wrong with writing.
 			 */
-			void report(CoreLocation core, long time, int size, int addr)
-					throws IOException {
+			void report(CoreLocation core, long time, int size,
+					MemoryLocation addr) throws IOException {
 				if (writeReports) {
 					writeReport(core, time, size, addr, this);
 				}
@@ -589,7 +589,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		private int writeRegion(CoreLocation core, MemoryRegionReal region,
 				Gather gather) throws IOException, ProcessException {
 			var data = region.getRegionData().duplicate();
-			int baseAddress = region.getRegionBase();
+			MemoryLocation baseAddress = region.getRegionBase();
 
 			data.flip();
 			int written = data.remaining();
@@ -652,7 +652,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws IOException
 		 *             If IO fails.
 		 */
-		private void fastWrite(CoreLocation core, int baseAddress,
+		private void fastWrite(CoreLocation core, MemoryLocation baseAddress,
 				ByteBuffer data, Gather gather) throws IOException {
 			int timeoutCount = 0;
 			int numPackets = computeNumPackets(data);
@@ -727,8 +727,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 							 */
 							if (flags.seenAll || flags.seenEnd) {
 								retransmitMissingPackets(protocol, data,
-										missing, transactionId, baseAddress,
-										numPackets);
+										missing, transactionId);
 								missing.clear();
 							}
 						} catch (IllegalArgumentException e) {
@@ -759,7 +758,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 								timeoutCount, transactionId, core,
 								gather.asCoreLocation());
 						retransmitMissingPackets(protocol, data, missing,
-								transactionId, baseAddress, numPackets);
+								transactionId);
 						missing.clear();
 					}
 				}
@@ -801,9 +800,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			return flags;
 		}
 
-		private int sendInitialPackets(int baseAddress, ByteBuffer data,
-				GathererProtocol protocol, int transactionId, int numPackets)
-				throws IOException {
+		private int sendInitialPackets(MemoryLocation baseAddress,
+				ByteBuffer data, GathererProtocol protocol, int transactionId,
+				int numPackets) throws IOException {
 			log.info("streaming {} bytes in {} packets using transaction {}",
 					data.remaining(), numPackets, transactionId);
 			log.debug("sending packet #{}", 0);
@@ -819,8 +818,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		}
 
 		private void retransmitMissingPackets(GathererProtocol protocol,
-				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId,
-				int baseAddress, int numPackets) throws IOException {
+				ByteBuffer dataToSend, BitSet missingSeqNums, int transactionId)
+				throws IOException {
 			log.info("retransmitting {} packets", missingSeqNums.cardinality());
 
 			missingSeqNums.stream().forEach(seqNum -> {

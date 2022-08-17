@@ -16,11 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.utils.progress;
 
+import static java.lang.System.out;
+
 import java.io.Closeable;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * An {@link Iterable} wrapper that will start a {@link ProgressBar} for each
@@ -40,7 +44,7 @@ import java.util.Iterator;
  * @param <E>
  *            Type of elements to be iterated over.
  */
-public class ProgressIterable<E> implements Iterable<E>, Closeable {
+public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
 	private final Collection<E> things;
 
 	private final String description;
@@ -84,7 +88,7 @@ public class ProgressIterable<E> implements Iterable<E>, Closeable {
 	 *            duration.
 	 */
 	public ProgressIterable(Collection<E> things, String description) {
-		this(things, description, System.out);
+		this(things, description, out);
 	}
 
 	/**

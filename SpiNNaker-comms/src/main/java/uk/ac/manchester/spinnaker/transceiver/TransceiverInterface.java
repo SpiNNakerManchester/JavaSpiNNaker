@@ -20,9 +20,7 @@ import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_0_START_ADDRESS;
@@ -30,11 +28,10 @@ import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_1_START_ADD
 import static uk.ac.manchester.spinnaker.messages.Constants.CPU_USER_2_START_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.model.AppID.DEFAULT;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.READY;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.WATCHDOG;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
-import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.START;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.sdram_heap_address;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
@@ -47,7 +44,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,13 +61,13 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
+import uk.ac.manchester.spinnaker.machine.Processor;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
-import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
-import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
@@ -79,7 +76,6 @@ import uk.ac.manchester.spinnaker.messages.model.ExecutableTargets;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
-import uk.ac.manchester.spinnaker.messages.model.PowerCommand;
 import uk.ac.manchester.spinnaker.messages.model.ReinjectionStatus;
 import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics;
 import uk.ac.manchester.spinnaker.messages.model.RouterTimeout;
@@ -90,6 +86,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * The interface supported by the {@link Transceiver}. Emulates a lot of default
@@ -99,29 +96,33 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
  *
  * @author Donal Fellows
  */
-public interface TransceiverInterface {
+public interface TransceiverInterface extends BMPTransceiverInterface {
 	/**
 	 * Delay between starting a program on a core and checking to see if the
 	 * core is ready for operational use. In milliseconds.
 	 */
 	int LAUNCH_DELAY = 500;
+
 	/**
 	 * A marker to indicate that no timeout applies.
 	 */
 	Integer TIMEOUT_DISABLED = null;
+
 	/**
 	 * How often to poll by default.
 	 */
 	int DEFAULT_POLL_INTERVAL = 100;
+
 	/**
 	 * The set of states that indicate a core in a failure state.
 	 */
-	Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
-			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
+	Set<CPUState> DEFAULT_ERROR_STATES = Set.of(RUN_TIME_EXCEPTION, WATCHDOG);
+
 	/**
 	 * What proportion of checks are to be expensive full checks.
 	 */
 	int DEFAULT_CHECK_INTERVAL = 100;
+
 	/** How many times to try booting a board. */
 	int BOARD_BOOT_RETRIES = 5;
 
@@ -442,7 +443,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default Iterable<CPUInfo> getCPUInformation()
+	default MappableIterable<CPUInfo> getCPUInformation()
 			throws IOException, ProcessException {
 		return getCPUInformation((CoreSubsets) null);
 	}
@@ -461,9 +462,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
-		var coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		return getCPUInformation(coreSubsets).iterator().next();
+		return getCPUInformation(new CoreSubsets(core)).first().get();
 	}
 
 	/**
@@ -485,7 +484,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
+	MappableIterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
 	/**
@@ -498,8 +497,8 @@ public interface TransceiverInterface {
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
 	@ParallelSafe
-	default int getUser0RegisterAddress(HasCoreLocation core) {
-		return getVcpuAddress(core) + CPU_USER_0_START_ADDRESS;
+	default MemoryLocation getUser0RegisterAddress(HasCoreLocation core) {
+		return getVcpuAddress(core).add(CPU_USER_0_START_ADDRESS);
 	}
 
 	/**
@@ -511,8 +510,22 @@ public interface TransceiverInterface {
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
 	@ParallelSafe
-	default int getUser0RegisterAddress(int p) {
-		return getVcpuAddress(p) + CPU_USER_0_START_ADDRESS;
+	default MemoryLocation getUser0RegisterAddress(int p) {
+		return getVcpuAddress(p).add(CPU_USER_0_START_ADDRESS);
+	}
+
+	/**
+	 * Get the address of user<sub>0</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param processor
+	 *            the processor to get the user<sub>0</sub> address for
+	 * @return The address for user<sub>0</sub> register for this processor
+	 */
+	@ParallelSafe
+	default MemoryLocation getUser0RegisterAddress(Processor processor) {
+		return getVcpuAddress(processor.processorId)
+				.add(CPU_USER_0_START_ADDRESS);
 	}
 
 	/**
@@ -525,8 +538,8 @@ public interface TransceiverInterface {
 	 * @return The address for user<sub>1</sub> register for this processor
 	 */
 	@ParallelSafe
-	default int getUser1RegisterAddress(HasCoreLocation core) {
-		return getVcpuAddress(core) + CPU_USER_1_START_ADDRESS;
+	default MemoryLocation getUser1RegisterAddress(HasCoreLocation core) {
+		return getVcpuAddress(core).add(CPU_USER_1_START_ADDRESS);
 	}
 
 	/**
@@ -535,11 +548,29 @@ public interface TransceiverInterface {
 	 *
 	 * @param p
 	 *            the processor ID to get the user<sub>1</sub> address for
-	 * @return The address for user<sub>1</sub> register for this processor
+	 * @return The address for user<sub>1</sub> register for this processor;
+	 *         this will be in System RAM and be accessible from any core of the
+	 *         chip.
 	 */
 	@ParallelSafe
-	default int getUser1RegisterAddress(int p) {
-		return getVcpuAddress(p) + CPU_USER_1_START_ADDRESS;
+	default MemoryLocation getUser1RegisterAddress(int p) {
+		return getVcpuAddress(p).add(CPU_USER_1_START_ADDRESS);
+	}
+
+	/**
+	 * Get the address of user<sub>1</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param processor
+	 *            the processor to get the user<sub>1</sub> address for
+	 * @return The address for user<sub>1</sub> register for this processor;
+	 *         this will be in System RAM and be accessible from any core of the
+	 *         chip.
+	 */
+	@ParallelSafe
+	default MemoryLocation getUser1RegisterAddress(Processor processor) {
+		return getVcpuAddress(processor.processorId)
+				.add(CPU_USER_1_START_ADDRESS);
 	}
 
 	/**
@@ -549,11 +580,13 @@ public interface TransceiverInterface {
 	 * @param core
 	 *            the coordinates of the core to get the user<sub>2</sub>
 	 *            address for
-	 * @return The address for user<sub>2</sub> register for this processor
+	 * @return The address for user<sub>2</sub> register for this processor;
+	 *         this will be in System RAM and be accessible from any core of the
+	 *         chip.
 	 */
 	@ParallelSafe
-	default int getUser2RegisterAddress(HasCoreLocation core) {
-		return getVcpuAddress(core) + CPU_USER_2_START_ADDRESS;
+	default MemoryLocation getUser2RegisterAddress(HasCoreLocation core) {
+		return getVcpuAddress(core).add(CPU_USER_2_START_ADDRESS);
 	}
 
 	/**
@@ -565,8 +598,22 @@ public interface TransceiverInterface {
 	 * @return The address for user<sub>0</sub> register for this processor
 	 */
 	@ParallelSafe
-	default int getUser2RegisterAddress(int p) {
-		return getVcpuAddress(p) + CPU_USER_2_START_ADDRESS;
+	default MemoryLocation getUser2RegisterAddress(int p) {
+		return getVcpuAddress(p).add(CPU_USER_2_START_ADDRESS);
+	}
+
+	/**
+	 * Get the address of user<sub>2</sub> for a given processor on the board.
+	 * <i>This does not read from the processor.</i>
+	 *
+	 * @param processor
+	 *            the processor to get the user<sub>2</sub> address for
+	 * @return The address for user<sub>0</sub> register for this processor
+	 */
+	@ParallelSafe
+	default MemoryLocation getUser2RegisterAddress(Processor processor) {
+		return getVcpuAddress(processor.processorId)
+				.add(CPU_USER_2_START_ADDRESS);
 	}
 
 	/**
@@ -579,7 +626,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default Iterable<IOBuffer> getIobuf() throws IOException, ProcessException {
+	default MappableIterable<IOBuffer> getIobuf()
+			throws IOException, ProcessException {
 		return getIobuf((CoreSubsets) null);
 	}
 
@@ -597,9 +645,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		var coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		return getIobuf(coreSubsets).iterator().next();
+		return getIobuf(new CoreSubsets(core)).first().get();
 	}
 
 	/**
@@ -615,7 +661,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
+	MappableIterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
 	/**
@@ -644,9 +690,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void clearIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		var coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		clearIobuf(coreSubsets);
+		clearIobuf(new CoreSubsets(core));
 	}
 
 	/**
@@ -776,7 +820,7 @@ public interface TransceiverInterface {
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, numBytes, appID);
+		execute(core, Set.of(core.getP()), executable, numBytes, appID);
 	}
 
 	/**
@@ -834,7 +878,7 @@ public interface TransceiverInterface {
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, numBytes, appID,
+		execute(core, Set.of(core.getP()), executable, numBytes, appID,
 				wait);
 	}
 
@@ -888,7 +932,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void execute(HasCoreLocation core, File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, false);
+		execute(core, Set.of(core.getP()), executable, appID, false);
 	}
 
 	/**
@@ -942,7 +986,7 @@ public interface TransceiverInterface {
 	default void execute(HasCoreLocation core, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, wait);
+		execute(core, Set.of(core.getP()), executable, appID, wait);
 	}
 
 	/**
@@ -993,7 +1037,7 @@ public interface TransceiverInterface {
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, false);
+		execute(core, Set.of(core.getP()), executable, appID, false);
 	}
 
 	/**
@@ -1045,7 +1089,7 @@ public interface TransceiverInterface {
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, wait);
+		execute(core, Set.of(core.getP()), executable, appID, wait);
 	}
 
 	/**
@@ -1297,13 +1341,14 @@ public interface TransceiverInterface {
 			var coresNotReady = getCoresNotInState(
 					executableTargets.getAllCoreSubsets(), READY);
 			if (!coresNotReady.isEmpty()) {
-				var b = new StringBuilder(String.format(
-						"Only %d of %d cores reached ready state:", count,
-						executableTargets.getTotalProcessors()));
-				for (var info : coresNotReady.values()) {
-					b.append('\n').append(info.getStatusDescription());
+				try (var f = new Formatter()) {
+					f.format("Only %d of %d cores reached ready state:", count,
+							executableTargets.getTotalProcessors());
+					for (var info : coresNotReady.values()) {
+						f.format("\n%s", info.getStatusDescription());
+					}
+					throw new SpinnmanException(f.toString());
 				}
-				throw new SpinnmanException(b.toString());
 			}
 		}
 
@@ -1346,9 +1391,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void updateRuntime(Integer runTimesteps, HasCoreLocation core)
 			throws IOException, ProcessException {
-		var coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		updateRuntime(runTimesteps, coreSubsets);
+		updateRuntime(runTimesteps, new CoreSubsets(core));
 	}
 
 	/**
@@ -1400,9 +1443,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void updateProvenanceAndExit(HasCoreLocation core)
 			throws IOException, ProcessException {
-		var coreSubsets = new CoreSubsets();
-		coreSubsets.addCore(core.asCoreLocation());
-		updateProvenanceAndExit(coreSubsets);
+		updateProvenanceAndExit(new CoreSubsets(core));
 	}
 
 	/**
@@ -1422,686 +1463,6 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException;
 
 	/**
-	 * Power on the whole machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	void powerOnMachine()
-			throws InterruptedException, IOException, ProcessException;
-
-	/**
-	 * Power on a set of boards in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the boards, or 0
-	 *            if the boards are not in a frame
-	 * @param boards
-	 *            The board or boards to power on
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	default void powerOn(int frame, Collection<Integer> boards)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, new BMPCoords(0, frame), boards);
-	}
-
-	/**
-	 * Power on a set of boards in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param cabinet
-	 *            the ID of the cabinet containing the frame, or 0 if the frame
-	 *            is not in a cabinet
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the boards, or 0
-	 *            if the boards are not in a frame
-	 * @param boards
-	 *            The board or boards to power on
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	default void powerOn(int cabinet, int frame, Collection<Integer> boards)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, new BMPCoords(cabinet, frame), boards);
-	}
-
-	/**
-	 * Power on a board in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param board
-	 *            The board to power off (in cabinet 0, frame 0)
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelSafeWithCare
-	default void powerOn(int board)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, new BMPCoords(0, 0), singleton(board));
-	}
-
-	/**
-	 * Power on a board in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the board, or 0
-	 *            if the board is not in a frame
-	 * @param board
-	 *            The board to power on
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelSafeWithCare
-	default void powerOn(int board, int frame)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, new BMPCoords(0, frame), singleton(board));
-	}
-
-	/**
-	 * Power on a board in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param cabinet
-	 *            the ID of the cabinet containing the frame, or 0 if the frame
-	 *            is not in a cabinet
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the board, or 0
-	 *            if the board is not in a frame
-	 * @param board
-	 *            The board to power on
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelSafeWithCare
-	default void powerOn(int cabinet, int frame, int board)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, new BMPCoords(cabinet, frame), singleton(board));
-	}
-
-	/**
-	 * Power off the whole machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	void powerOffMachine()
-			throws InterruptedException, IOException, ProcessException;
-
-	/**
-	 * Power off a set of boards in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the board(s), or
-	 *            0 if the board is not in a frame
-	 * @param boards
-	 *            The board or boards to power off
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	default void powerOff(int frame, Collection<Integer> boards)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, new BMPCoords(0, frame), boards);
-	}
-
-	/**
-	 * Power off a set of boards in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param cabinet
-	 *            the ID of the cabinet containing the frame, or 0 if the frame
-	 *            is not in a cabinet
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the board(s), or
-	 *            0 if the board is not in a frame
-	 * @param boards
-	 *            The board or boards to power off
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	default void powerOff(int cabinet, int frame, Collection<Integer> boards)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, new BMPCoords(cabinet, frame), boards);
-	}
-
-	/**
-	 * Power off a board in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param board
-	 *            The board to power off (in cabinet 0, frame 0)
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelSafeWithCare
-	default void powerOff(int board)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, new BMPCoords(0, 0), singleton(board));
-	}
-
-	/**
-	 * Power off a board in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the board, or 0
-	 *            if the board is not in a frame
-	 * @param board
-	 *            The board to power off
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelSafeWithCare
-	default void powerOff(int frame, int board)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, new BMPCoords(0, frame), singleton(board));
-	}
-
-	/**
-	 * Power off a board in the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param cabinet
-	 *            the ID of the cabinet containing the frame, or 0 if the frame
-	 *            is not in a cabinet
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the board, or 0
-	 *            if the board is not in a frame
-	 * @param board
-	 *            The board to power off
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelSafeWithCare
-	default void powerOff(int cabinet, int frame, int board)
-			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, new BMPCoords(cabinet, frame), singleton(board));
-	}
-
-	/**
-	 * Send a power request to the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param powerCommand
-	 *            The power command to send
-	 * @param cabinet
-	 *            the ID of the cabinet containing the frame, or 0 if the frame
-	 *            is not in a cabinet
-	 * @param frame
-	 *            the ID of the frame in the cabinet containing the board(s), or
-	 *            0 if the board is not in a frame
-	 * @param boards
-	 *            The boards to send the command to
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	default void power(PowerCommand powerCommand, int cabinet, int frame,
-			Collection<Integer> boards)
-			throws InterruptedException, IOException, ProcessException {
-		power(powerCommand, new BMPCoords(cabinet, frame), boards);
-	}
-
-	/**
-	 * Send a power request to the machine.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context.
-	 *
-	 * @param powerCommand
-	 *            The power command to send
-	 * @param bmp
-	 *            the coordinates of the BMP; components are zero for a board
-	 *            not in a frame of a cabinet
-	 * @param boards
-	 *            The boards to send the command to
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 * @throws InterruptedException
-	 *             If the thread is interrupted while waiting.
-	 */
-	@ParallelUnsafe
-	void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<Integer> boards)
-			throws InterruptedException, IOException, ProcessException;
-
-	/**
-	 * Set the LED state of a board in the machine.
-	 *
-	 * @param leds
-	 *            Collection of LED numbers to set the state of (0-7)
-	 * @param action
-	 *            State to set the LED to, either on, off or toggle
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param boards
-	 *            Specifies the board to control the LEDs of. The command will
-	 *            actually be sent to the first board in the collection.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void setLED(Collection<Integer> leds, LEDAction action, int cabinet,
-			int frame, Collection<Integer> boards)
-			throws IOException, ProcessException {
-		setLED(leds, action, new BMPCoords(cabinet, frame), boards);
-	}
-
-	/**
-	 * Set the LED state of a board in the machine.
-	 *
-	 * @param leds
-	 *            Collection of LED numbers to set the state of (0-7)
-	 * @param action
-	 *            State to set the LED to, either on, off or toggle
-	 * @param bmp
-	 *            the coordinates of the BMP this is targeting
-	 * @param board
-	 *            Specifies the board to control the LEDs of. The command will
-	 *            actually be sent to the first board in the collection.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	void setLED(Collection<Integer> leds, LEDAction action, BMPCoords bmp,
-			Collection<Integer> board) throws IOException, ProcessException;
-
-	/**
-	 * Set the LED state of a board in the machine.
-	 *
-	 * @param leds
-	 *            Collection of LED numbers to set the state of (0-7)
-	 * @param action
-	 *            State to set the LED to, either on, off or toggle
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            Specifies the board to control the LEDs of.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void setLED(Collection<Integer> leds, LEDAction action, int cabinet,
-			int frame, int board) throws IOException, ProcessException {
-		setLED(leds, action, new BMPCoords(cabinet, frame), singleton(board));
-	}
-
-	/**
-	 * Set the LED state of a board in the machine.
-	 *
-	 * @param led
-	 *            Number of the LED to set the state of (0-7)
-	 * @param action
-	 *            State to set the LED to, either on, off or toggle
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param boards
-	 *            Specifies the board to control the LEDs of. The command will
-	 *            actually be sent to the first board in the collection.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void setLED(int led, LEDAction action, int cabinet, int frame,
-			Collection<Integer> boards) throws IOException, ProcessException {
-		setLED(singleton(led), action, new BMPCoords(cabinet, frame), boards);
-	}
-
-	/**
-	 * Set the LED state of a board in the machine.
-	 *
-	 * @param led
-	 *            Number of the LED to set the state of (0-7)
-	 * @param action
-	 *            State to set the LED to, either on, off or toggle
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            Specifies the board to control the LEDs of.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void setLED(int led, LEDAction action, int cabinet, int frame,
-			int board) throws IOException, ProcessException {
-		setLED(singleton(led), action, new BMPCoords(cabinet, frame),
-				singleton(board));
-	}
-
-	/**
-	 * Read a register on a FPGA of a board. The meaning of the register's
-	 * contents will depend on the FPGA's configuration.
-	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
-	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to request the FPGA register from
-	 * @return the register data
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default int readFPGARegister(int fpgaNumber, int register, int cabinet,
-			int frame, int board) throws IOException, ProcessException {
-		return readFPGARegister(fpgaNumber, register,
-				new BMPCoords(cabinet, frame), board);
-	}
-
-	/**
-	 * Read a register on a FPGA of a board. The meaning of the register's
-	 * contents will depend on the FPGA's configuration.
-	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
-	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
-	 * @param bmp
-	 *            the coordinates of the BMP this is targeting
-	 * @param board
-	 *            which board to request the FPGA register from
-	 * @return the register data
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp, int board)
-			throws IOException, ProcessException;
-
-	/**
-	 * Write a register on a FPGA of a board. The meaning of setting the
-	 * register's contents will depend on the FPGA's configuration.
-	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
-	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
-	 * @param value
-	 *            the value to write into the FPGA register
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to write the FPGA register to
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeFPGARegister(int fpgaNumber, int register, int value,
-			int cabinet, int frame, int board)
-			throws IOException, ProcessException {
-		writeFPGARegister(fpgaNumber, register, value,
-				new BMPCoords(cabinet, frame), board);
-	}
-
-	/**
-	 * Write a register on a FPGA of a board. The meaning of setting the
-	 * register's contents will depend on the FPGA's configuration.
-	 *
-	 * @param fpgaNumber
-	 *            FPGA number (0, 1 or 2) to communicate with.
-	 * @param register
-	 *            Register address to read to (will be rounded down to the
-	 *            nearest 32-bit word boundary).
-	 * @param value
-	 *            the value to write into the FPGA register
-	 * @param bmp
-	 *            the coordinates of the BMP this is targeting
-	 * @param board
-	 *            which board to write the FPGA register to
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, int board) throws IOException, ProcessException;
-
-	/**
-	 * Read the ADC data.
-	 *
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to request the ADC data from
-	 * @return the FPGA's ADC data object
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default ADCInfo readADCData(int cabinet, int frame, int board)
-			throws IOException, ProcessException {
-		return readADCData(new BMPCoords(cabinet, frame), board);
-	}
-
-	/**
-	 * Read the ADC data.
-	 *
-	 * @param bmp
-	 *            the coordinates of the BMP this is targeting
-	 * @param board
-	 *            which board to request the ADC data from
-	 * @return the FPGA's ADC data object
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	ADCInfo readADCData(BMPCoords bmp, int board)
-			throws IOException, ProcessException;
-
-	/**
-	 * Read the BMP version.
-	 *
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param boards
-	 *            which board to request the data from; the first board in the
-	 *            collection will be queried
-	 * @return the parsed SVER from the BMP
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelUnsafe
-	default VersionInfo readBMPVersion(int cabinet, int frame,
-			Iterable<Integer> boards) throws IOException, ProcessException {
-		return readBMPVersion(new BMPCoords(cabinet, frame),
-				boards.iterator().next());
-	}
-
-	/**
-	 * Read the BMP version.
-	 *
-	 * @param cabinet
-	 *            the cabinet this is targeting
-	 * @param frame
-	 *            the frame this is targeting
-	 * @param board
-	 *            which board to request the data from
-	 * @return the parsed SVER from the BMP
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default VersionInfo readBMPVersion(int cabinet, int frame, int board)
-			throws IOException, ProcessException {
-		return readBMPVersion(new BMPCoords(cabinet, frame), board);
-	}
-
-	/**
-	 * Read the BMP version.
-	 *
-	 * @param bmp
-	 *            the coordinates of the BMP this is targeting
-	 * @param boards
-	 *            which board to request the data from; the first board in the
-	 *            collection will be queried
-	 * @return the parsed SVER from the BMP
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelUnsafe
-	default VersionInfo readBMPVersion(BMPCoords bmp, Iterable<Integer> boards)
-			throws IOException, ProcessException {
-		return readBMPVersion(bmp, boards.iterator().next());
-	}
-
-	/**
-	 * Read the BMP version.
-	 *
-	 * @param bmp
-	 *            the coordinates of the BMP this is targeting
-	 * @param board
-	 *            which board to request the data from
-	 * @return the parsed SVER from the BMP
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	VersionInfo readBMPVersion(BMPCoords bmp, int board)
-			throws IOException, ProcessException;
-
-	/**
 	 * Write to the SDRAM on the board.
 	 *
 	 * @param chip
@@ -2121,33 +1482,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, long baseAddress,
-			InputStream dataStream, int numBytes)
-			throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), dataStream, numBytes);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or reading from the
-	 *             input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, int baseAddress,
+	default void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataStream, numBytes);
@@ -2173,33 +1508,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasCoreLocation core, long baseAddress,
-			InputStream dataStream, int numBytes)
-			throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), dataStream, numBytes);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or reading from the
-	 *             input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	void writeMemory(HasCoreLocation core, int baseAddress,
+	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
 
@@ -2221,30 +1530,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, long baseAddress,
-			File dataFile) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), dataFile);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The file holding the data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or reading from the
-	 *             file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, int baseAddress,
+	default void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			File dataFile) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataFile);
 	}
@@ -2267,31 +1553,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasCoreLocation core, long baseAddress,
-			File dataFile) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), dataFile);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The file holding the data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or reading from the
-	 *             file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	void writeMemory(HasCoreLocation core, int baseAddress, File dataFile)
-			throws IOException, ProcessException;
+	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
+			File dataFile) throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM on the board.
@@ -2310,35 +1573,13 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, long baseAddress,
-			int dataWord) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), dataWord);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written (as 4 bytes).
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, int baseAddress,
+	default void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			int dataWord) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, dataWord);
 	}
 
 	/**
-	 * Write to the SDRAM on the board.
+	 * Write to the SDRAM (or System RAM) on the board.
 	 *
 	 * @param core
 	 *            The coordinates of the core where the memory is that is to be
@@ -2354,29 +1595,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasCoreLocation core, long baseAddress,
-			int dataWord) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), dataWord);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written (as 4 bytes).
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeMemory(HasCoreLocation core, int baseAddress,
+	default void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			int dataWord) throws IOException, ProcessException {
 		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
@@ -2400,30 +1619,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, long baseAddress,
+	default void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			byte[] data) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), wrap(data));
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, int baseAddress, byte[] data)
-			throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, wrap(data));
 	}
 
@@ -2444,30 +1641,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasCoreLocation core, long baseAddress,
+	default void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			byte[] data) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeMemory(HasCoreLocation core, int baseAddress, byte[] data)
-			throws IOException, ProcessException {
 		writeMemory(core, baseAddress, wrap(data));
 	}
 
@@ -2489,36 +1664,13 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, long baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
-		writeMemory(chip, Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the SDRAM on the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the core where the memory is that is to be
-	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. The data should be from the
-	 *            <i>position</i> to the <i>limit</i>.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default void writeMemory(HasChipLocation chip, int baseAddress,
+	default void writeMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
 		writeMemory(chip.getScampCore(), baseAddress, data);
 	}
 
 	/**
-	 * Write to the SDRAM on the board.
+	 * Write to the SDRAM (or System RAM) on the board.
 	 *
 	 * @param core
 	 *            The coordinates of the core where the memory is that is to be
@@ -2535,65 +1687,61 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void writeMemory(HasCoreLocation core, long baseAddress,
-			ByteBuffer data) throws IOException, ProcessException {
-		writeMemory(core, Address.convert(baseAddress), data);
+	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
+			ByteBuffer data) throws IOException, ProcessException;
+
+	/**
+	 * Write to the user<sub>0</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core whose register is to be
+	 *            written to
+	 * @param value
+	 *            The word of data that is to be written.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default void writeUser0(HasCoreLocation core, int value)
+			throws ProcessException, IOException {
+		writeMemory(core.getScampCore(), getUser0RegisterAddress(core), value);
 	}
 
 	/**
-	 * Write to the SDRAM on the board.
+	 * Write to the user<sub>1</sub> register of a core.
 	 *
 	 * @param core
-	 *            The coordinates of the core where the memory is that is to be
+	 *            The coordinates of the core whose register is to be
 	 *            written to
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. The data should be from the
-	 *            <i>position</i> to the <i>limit</i>.
+	 * @param value
+	 *            The word of data that is to be written.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	@ParallelSafe
-	void writeMemory(HasCoreLocation core, int baseAddress, ByteBuffer data)
-			throws IOException, ProcessException;
+	default void writeUser1(HasCoreLocation core, int value)
+			throws ProcessException, IOException {
+		writeMemory(core.getScampCore(), getUser1RegisterAddress(core), value);
+	}
 
 	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
+	 * Write to the user<sub>2</sub> register of a core.
 	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
+	 * @param core
+	 *            The coordinates of the core whose register is to be
+	 *            written to
+	 * @param value
+	 *            The word of data that is to be written.
 	 * @throws IOException
-	 *             If anything goes wrong with networking or with reading from
-	 *             the input stream.
+	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			long baseAddress, InputStream dataStream, int numBytes)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
-				dataStream, numBytes);
+	default void writeUser2(HasCoreLocation core, int value)
+			throws ProcessException, IOException {
+		writeMemory(core.getScampCore(), getUser2RegisterAddress(core), value);
 	}
 
 	/**
@@ -2625,7 +1773,7 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			int baseAddress, InputStream dataStream, int numBytes)
+			MemoryLocation baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataStream,
 				numBytes);
@@ -2660,44 +1808,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			long baseAddress, InputStream dataStream, int numBytes)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress),
-				dataStream, numBytes);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or with reading from
-	 *             the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, InputStream dataStream, int numBytes)
+			MemoryLocation baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException;
 
 	/**
@@ -2727,40 +1839,7 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			long baseAddress, File dataFile)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
-				dataFile);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The file holding the data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or with reading from
-	 *             the file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			int baseAddress, File dataFile)
+			MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataFile);
 	}
@@ -2792,42 +1871,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			long baseAddress, File dataFile)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress),
-				dataFile);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The name of the file holding the data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or with reading from
-	 *             the file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, File dataFile)
+			MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException;
 
 	/**
@@ -2856,39 +1901,7 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			long baseAddress, int dataWord)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress),
-				dataWord);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			int baseAddress, int dataWord)
+			MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, dataWord);
 	}
@@ -2920,40 +1933,7 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			long baseAddress, int dataWord)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress),
-				dataWord);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, int dataWord)
+			MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
@@ -2986,38 +1966,8 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			long baseAddress, byte[] data)
+			MemoryLocation baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
 
@@ -3048,39 +1998,8 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			long baseAddress, byte[] data)
+			MemoryLocation baseAddress, byte[] data)
 			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, byte[] data) throws IOException, ProcessException {
 		writeNeighbourMemory(core, link, baseAddress, wrap(data));
 	}
 
@@ -3111,39 +2030,7 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			long baseAddress, ByteBuffer data)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(chip, link, Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be written
-	 *            to
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. The data should be from the
-	 *            <i>position</i> to the <i>limit</i>.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasChipLocation chip, Direction link,
-			int baseAddress, ByteBuffer data)
+			MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		writeNeighbourMemory(chip.getScampCore(), link, baseAddress, data);
 	}
@@ -3175,41 +2062,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
-	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			long baseAddress, ByteBuffer data)
-			throws IOException, ProcessException {
-		writeNeighbourMemory(core, link, Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the memory of a neighbouring chip using a LINK_WRITE SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param core
-	 *            The coordinates of the core whose neighbour is to be written
-	 *            to; the CPU to use is typically 0 (or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. The data should be from the
-	 *            <i>position</i> to the <i>limit</i>.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
 	void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, ByteBuffer data)
+			MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException;
 
 	/**
@@ -3233,34 +2087,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default void writeMemoryFlood(long baseAddress, InputStream dataStream,
-			int numBytes) throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), dataStream, numBytes);
-	}
-
-	/**
-	 * Write to the SDRAM of all chips.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context. It has interlocking, but you should not rely on
-	 * it.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataStream
-	 *            The stream of data that is to be written.
-	 * @param numBytes
-	 *            The amount of data to be written in bytes.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or with reading from
-	 *             the input stream.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelUnsafe
-	void writeMemoryFlood(int baseAddress, InputStream dataStream, int numBytes)
-			throws IOException, ProcessException;
+	void writeMemoryFlood(MemoryLocation baseAddress, InputStream dataStream,
+			int numBytes) throws IOException, ProcessException;
 
 	/**
 	 * Write to the SDRAM of all chips.
@@ -3281,31 +2109,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default void writeMemoryFlood(long baseAddress, File dataFile)
-			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), dataFile);
-	}
-
-	/**
-	 * Write to the SDRAM of all chips.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context. It has interlocking, but you should not rely on
-	 * it.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataFile
-	 *            The name of the file holding the data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking or with reading from
-	 *             the file.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelUnsafe
-	void writeMemoryFlood(int baseAddress, File dataFile)
+	void writeMemoryFlood(MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException;
 
 	/**
@@ -3326,30 +2130,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default void writeMemoryFlood(long baseAddress, int dataWord)
-			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), dataWord);
-	}
-
-	/**
-	 * Write to the SDRAM of all chips.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context. It has interlocking, but you should not rely on
-	 * it.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param dataWord
-	 *            The word that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelUnsafe
-	default void writeMemoryFlood(int baseAddress, int dataWord)
+	default void writeMemoryFlood(MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
 		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
@@ -3374,30 +2155,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default void writeMemoryFlood(long baseAddress, byte[] data)
-			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the SDRAM of all chips.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context. It has interlocking, but you should not rely on
-	 * it.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelUnsafe
-	default void writeMemoryFlood(int baseAddress, byte[] data)
+	default void writeMemoryFlood(MemoryLocation baseAddress, byte[] data)
 			throws IOException, ProcessException {
 		writeMemoryFlood(baseAddress, wrap(data));
 	}
@@ -3421,31 +2179,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
-	default void writeMemoryFlood(long baseAddress, ByteBuffer data)
-			throws IOException, ProcessException {
-		writeMemoryFlood(Address.convert(baseAddress), data);
-	}
-
-	/**
-	 * Write to the SDRAM of all chips.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context. It has interlocking, but you should not rely on
-	 * it.
-	 *
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory is to be
-	 *            written
-	 * @param data
-	 *            The data that is to be written. The data should be from the
-	 *            <i>position</i> to the <i>limit</i>.
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelUnsafe
-	void writeMemoryFlood(int baseAddress, ByteBuffer data)
+	void writeMemoryFlood(MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException;
 
 	/**
@@ -3467,13 +2201,14 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default ByteBuffer readMemory(HasChipLocation chip, int baseAddress,
-			int length) throws IOException, ProcessException {
+	default ByteBuffer readMemory(HasChipLocation chip,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		return readMemory(chip.getScampCore(), baseAddress, length);
 	}
 
 	/**
-	 * Read some areas of SDRAM from the board.
+	 * Read some areas of SDRAM (or System RAM) from the board.
 	 *
 	 * @param core
 	 *            The coordinates of the core where the memory is to be read
@@ -3491,56 +2226,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	ByteBuffer readMemory(HasCoreLocation core, int baseAddress, int length)
-			throws IOException, ProcessException;
-
-	/**
-	 * Read some areas of SDRAM from the board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip where the memory is to be read
-	 *            from
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return A little-endian buffer of data read, positioned at the start of
-	 *         the data
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default ByteBuffer readMemory(HasChipLocation chip, long baseAddress,
-			int length) throws IOException, ProcessException {
-		return readMemory(chip, Address.convert(baseAddress), length);
-	}
-
-	/**
-	 * Read some areas of SDRAM from the board.
-	 *
-	 * @param core
-	 *            The coordinates of the core where the memory is to be read
-	 *            from
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return A little-endian buffer of data read, positioned at the start of
-	 *         the data
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	default ByteBuffer readMemory(HasCoreLocation core, long baseAddress,
-			int length) throws IOException, ProcessException {
-		return readMemory(core, Address.convert(baseAddress), length);
-	}
+	ByteBuffer readMemory(HasCoreLocation core, MemoryLocation baseAddress,
+			int length) throws IOException, ProcessException;
 
 	/**
 	 * Read the contents of an allocated block on the heap from the board. The
@@ -3591,6 +2278,57 @@ public interface TransceiverInterface {
 			throws IOException, ProcessException, StorageException;
 
 	/**
+	 * Read the user<sub>0</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core to read the register of
+	 * @return The contents of the register
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default int readUser0(HasCoreLocation core)
+			throws ProcessException, IOException {
+		var user0 = getUser0RegisterAddress(core);
+		return readMemory(core.getScampCore(), user0, WORD_SIZE).getInt();
+	}
+
+	/**
+	 * Read the user<sub>1</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core to read the register of
+	 * @return The contents of the register
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default int readUser1(HasCoreLocation core)
+			throws ProcessException, IOException {
+		var user1 = getUser1RegisterAddress(core);
+		return readMemory(core.getScampCore(), user1, WORD_SIZE).getInt();
+	}
+
+	/**
+	 * Read the user<sub>2</sub> register of a core.
+	 *
+	 * @param core
+	 *            The coordinates of the core to read the register of
+	 * @return The contents of the register
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	default int readUser2(HasCoreLocation core)
+			throws ProcessException, IOException {
+		var user2 = getUser2RegisterAddress(core);
+		return readMemory(core.getScampCore(), user2, WORD_SIZE).getInt();
+	}
+
+	/**
 	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
 	 * command. If sent to a BMP, this command can be used to communicate with
 	 * the FPGAs' debug registers; in that case, the link must be the direction
@@ -3617,7 +2355,8 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	default ByteBuffer readNeighbourMemory(HasChipLocation chip, Direction link,
-			int baseAddress, int length) throws IOException, ProcessException {
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		return readNeighbourMemory(chip.getScampCore(), link, baseAddress,
 				length);
 	}
@@ -3651,73 +2390,8 @@ public interface TransceiverInterface {
 	 */
 	@ParallelSafeWithCare
 	ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, int length) throws IOException, ProcessException;
-
-	/**
-	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip whose neighbour is to be read from
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return A little-endian buffer of data that has been read, positioned at
-	 *         the start of the data
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default ByteBuffer readNeighbourMemory(HasChipLocation chip, Direction link,
-			long baseAddress, int length) throws IOException, ProcessException {
-		return readNeighbourMemory(chip, link, Address.convert(baseAddress),
-				length);
-	}
-
-	/**
-	 * Read some areas of memory on a neighbouring chip using a LINK_READ SCP
-	 * command. If sent to a BMP, this command can be used to communicate with
-	 * the FPGAs' debug registers; in that case, the link must be the direction
-	 * with the same ID as the ID of the FPGA to communicate with.
-	 * <p>
-	 * <strong>WARNING!</strong> This operation is <em>unsafe</em> in a
-	 * multi-threaded context if the link leaves the current board.
-	 *
-	 * @param core
-	 *            The coordinates of the chip whose neighbour is to be read
-	 *            from, plus the CPU to use (typically 0, or if a BMP, the slot
-	 *            number)
-	 * @param link
-	 *            The link direction to send the request along
-	 * @param baseAddress
-	 *            The address in SDRAM where the region of memory to be read
-	 *            starts
-	 * @param length
-	 *            The length of the data to be read in bytes
-	 * @return A little-endian buffer of data that has been read, positioned at
-	 *         the start of the data
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafeWithCare
-	default ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
-			long baseAddress, int length) throws IOException, ProcessException {
-		return readNeighbourMemory(core, link, Address.convert(baseAddress),
-				length);
-	}
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException;
 
 	/**
 	 * Sends a stop request for an application ID.
@@ -3826,7 +2500,7 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			CPUState state) throws IOException, ProcessException {
-		return getCoresInState(allCoreSubsets, singleton(state));
+		return getCoresInState(allCoreSubsets, Set.of(state));
 	}
 
 	/**
@@ -3849,14 +2523,9 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, ProcessException {
-		var coreInfos = getCPUInformation(allCoreSubsets);
-		var coresInState = new CoreSubsets();
-		for (var coreInfo : coreInfos) {
-			if (states.contains(coreInfo.getState())) {
-				coresInState.addCore(coreInfo.asCoreLocation());
-			}
-		}
-		return coresInState;
+		return new CoreSubsets(getCPUInformation(allCoreSubsets)
+				.filter(info -> states.contains(info.getState()))
+				.map(CPUInfo::asCoreLocation));
 	}
 
 	/**
@@ -3880,7 +2549,7 @@ public interface TransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
 			throws IOException, ProcessException {
-		return getCoresNotInState(allCoreSubsets, singleton(state));
+		return getCoresNotInState(allCoreSubsets, Set.of(state));
 	}
 
 	/**
@@ -3904,14 +2573,9 @@ public interface TransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
 			throws IOException, ProcessException {
-		var coreInfos = getCPUInformation(allCoreSubsets);
-		var coresNotInState = new TreeMap<CoreLocation, CPUInfo>();
-		for (var coreInfo : coreInfos) {
-			if (!states.contains(coreInfo.getState())) {
-				coresNotInState.put(coreInfo.asCoreLocation(), coreInfo);
-			}
-		}
-		return coresNotInState;
+		return getCPUInformation(allCoreSubsets)
+				.filter(info -> !states.contains(info.getState()))
+				.toMap(TreeMap::new, CPUInfo::asCoreLocation, identity());
 	}
 
 	/**
@@ -4160,9 +2824,9 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int mallocSDRAM(HasChipLocation chip, int size)
+	default MemoryLocation mallocSDRAM(HasChipLocation chip, int size)
 			throws IOException, ProcessException {
-		return mallocSDRAM(chip, size, AppID.DEFAULT, 0);
+		return mallocSDRAM(chip, size, DEFAULT, 0);
 	}
 
 	/**
@@ -4181,8 +2845,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default int mallocSDRAM(HasChipLocation chip, int size, AppID appID)
-			throws IOException, ProcessException {
+	default MemoryLocation mallocSDRAM(HasChipLocation chip, int size,
+			AppID appID) throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, appID, 0);
 	}
 
@@ -4206,8 +2870,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
-			throws IOException, ProcessException;
+	MemoryLocation mallocSDRAM(HasChipLocation chip, int size, AppID appID,
+			int tag) throws IOException, ProcessException;
 
 	/**
 	 * Free allocated SDRAM.
@@ -4222,25 +2886,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void freeSDRAM(HasChipLocation chip, long baseAddress)
-			throws IOException, ProcessException {
-		freeSDRAM(chip, Address.convert(baseAddress));
-	}
-
-	/**
-	 * Free allocated SDRAM.
-	 *
-	 * @param chip
-	 *            The coordinates of the chip onto which to free memory
-	 * @param baseAddress
-	 *            The base address of the allocated memory
-	 * @throws IOException
-	 *             If anything goes wrong with networking.
-	 * @throws ProcessException
-	 *             If SpiNNaker rejects a message.
-	 */
-	@ParallelSafe
-	void freeSDRAM(HasChipLocation chip, int baseAddress)
+	void freeSDRAM(HasChipLocation chip, MemoryLocation baseAddress)
 			throws IOException, ProcessException;
 
 	/**
@@ -4277,7 +2923,7 @@ public interface TransceiverInterface {
 	default void loadMulticastRoutes(HasChipLocation chip,
 			Collection<MulticastRoutingEntry> routes)
 			throws IOException, ProcessException {
-		loadMulticastRoutes(chip, routes, AppID.DEFAULT);
+		loadMulticastRoutes(chip, routes, DEFAULT);
 	}
 
 	/**
@@ -4314,7 +2960,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default void loadFixedRoute(HasChipLocation chip, RoutingEntry fixedRoute)
 			throws IOException, ProcessException {
-		loadFixedRoute(chip, fixedRoute, AppID.DEFAULT);
+		loadFixedRoute(chip, fixedRoute, DEFAULT);
 	}
 
 	/**
@@ -4349,7 +2995,7 @@ public interface TransceiverInterface {
 	@ParallelSafe
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
-		return readFixedRoute(chip, AppID.DEFAULT);
+		return readFixedRoute(chip, DEFAULT);
 	}
 
 	/**
@@ -4605,7 +3251,7 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	default void fillMemory(HasChipLocation chip, int baseAddress,
+	default void fillMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			int repeatValue, int size) throws ProcessException, IOException {
 		fillMemory(chip, baseAddress, repeatValue, size, WORD);
 	}
@@ -4631,8 +3277,8 @@ public interface TransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
-	void fillMemory(HasChipLocation chip, int baseAddress, int repeatValue,
-			int size, FillDataType dataType)
+	void fillMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			int repeatValue, int size, FillDataType dataType)
 			throws ProcessException, IOException;
 
 	/**
@@ -5080,34 +3726,4 @@ public interface TransceiverInterface {
 	@ParallelSafeWithCare
 	void loadSystemRouterTables(CoreSubsets monitorCores)
 			throws IOException, ProcessException;
-}
-
-/**
- * Constants used by the transceiver, but not exported by it.
- *
- * @author Donal Fellows
- */
-abstract class Address {
-	private Address() {
-	}
-
-	/** Maximum legal SpiNNaker address. */
-	private static final long MAX_ADDR = 0xFFFFFFFFL;
-
-	/**
-	 * Convert an address to a 32-bit integer.
-	 *
-	 * @param baseAddress
-	 *            The address as a long.
-	 * @return the address as an int.
-	 * @throws IllegalArgumentException
-	 *             if the value is outside the unsigned 32-bit integer range.
-	 */
-	static int convert(long baseAddress) {
-		if (baseAddress < 0 || baseAddress > MAX_ADDR) {
-			throw new IllegalArgumentException(
-					"address must be in 32-bit unsigned integer range");
-		}
-		return (int) baseAddress;
-	}
 }

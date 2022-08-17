@@ -28,7 +28,7 @@ public class JobState {
 
 	private double keepAlive;
 
-	private float startTime;
+	private double startTime;
 
 	private String reason;
 
@@ -69,16 +69,16 @@ public class JobState {
 	/**
 	 * @return the startTime
 	 */
-	public float getStartTime() {
+	public double getStartTime() {
 		return startTime;
 	}
 
 	/**
-	 * @param startTime
+	 * @param d
 	 *            the startTime to set
 	 */
-	public void setStartTime(float startTime) {
-		this.startTime = startTime;
+	public void setStartTime(double d) {
+		this.startTime = d;
 	}
 
 	/**

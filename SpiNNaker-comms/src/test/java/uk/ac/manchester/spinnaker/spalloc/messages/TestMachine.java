@@ -32,46 +32,46 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
  */
 public class TestMachine {
 
-    @Test
-    void testFromJson() throws IOException {
-        var json = "{\"name\":\"power-monitor\","
-                + "\"tags\":[\"power-monitor\",\"machine-room\"],"
-                + "\"width\":1,\"height\":1,"
-                + "\"dead_boards\":[[0,0,1],[0,0,2]],\"dead_links\":[]}";
-        var mapper = SpallocClient.createMapper();
-        var fromJson = mapper.readValue(json, Machine.class);
-        assertEquals("power-monitor", fromJson.getName());
-        assertThat(fromJson.getTags(),
-        		contains("power-monitor", "machine-room"));
-        assertEquals(1, fromJson.getWidth());
-        assertEquals(1, fromJson.getHeight());
-        assertThat(fromJson.getDeadBoards(), contains(
-                new BoardCoordinates(0, 0, 1), new BoardCoordinates(0, 0, 2)));
-        assertEquals(0, fromJson.getDeadLinks().size());
-        assertNotNull(fromJson.toString());
-    }
+	@Test
+	void testFromJson() throws IOException {
+		var json = "{\"name\":\"power-monitor\","
+				+ "\"tags\":[\"power-monitor\",\"machine-room\"],"
+				+ "\"width\":1,\"height\":1,"
+				+ "\"dead_boards\":[[0,0,1],[0,0,2]],\"dead_links\":[]}";
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, Machine.class);
+		assertEquals("power-monitor", fromJson.getName());
+		assertThat(fromJson.getTags(),
+				contains("power-monitor", "machine-room"));
+		assertEquals(1, fromJson.getWidth());
+		assertEquals(1, fromJson.getHeight());
+		assertThat(fromJson.getDeadBoards(), contains(
+				new BoardCoordinates(0, 0, 1), new BoardCoordinates(0, 0, 2)));
+		assertEquals(0, fromJson.getDeadLinks().size());
+		assertNotNull(fromJson.toString());
+	}
 
-    @Test
-    void testAssumedDeadLinks() throws IOException {
-        var json = "{\"name\":\"power-monitor\","
-                + "\"tags\":[\"power-monitor\",\"machine-room\"],"
-                + "\"width\":1,\"height\":1,"
-                + "\"dead_boards\":[[1,2,3],[4,5,6]],"
-                + "\"dead_links\":[[7,8,9,10],[11,12,13,14]]}";
-        var mapper = SpallocClient.createMapper();
-        var fromJson = mapper.readValue(json, Machine.class);
-        assertEquals("power-monitor", fromJson.getName());
-        assertThat(fromJson.getTags(),
-        		contains("power-monitor", "machine-room"));
-        assertEquals(1, fromJson.getWidth());
-        assertEquals(1, fromJson.getHeight());
-        assertThat(fromJson.getDeadBoards(), contains(
-                new BoardCoordinates(1, 2, 3), new BoardCoordinates(4, 5, 6)));
-        assertEquals(2, fromJson.getDeadLinks().size());
-        assertEquals(7, fromJson.getDeadLinks().get(0).getX());
-        assertEquals(14, fromJson.getDeadLinks().get(1).getLink());
-        assertNotNull(fromJson.toString());
-    }
+	@Test
+	void testAssumedDeadLinks() throws IOException {
+		var json = "{\"name\":\"power-monitor\","
+				+ "\"tags\":[\"power-monitor\",\"machine-room\"],"
+				+ "\"width\":1,\"height\":1,"
+				+ "\"dead_boards\":[[1,2,3],[4,5,6]],"
+				+ "\"dead_links\":[[7,8,9,10],[11,12,13,14]]}";
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, Machine.class);
+		assertEquals("power-monitor", fromJson.getName());
+		assertThat(fromJson.getTags(),
+				contains("power-monitor", "machine-room"));
+		assertEquals(1, fromJson.getWidth());
+		assertEquals(1, fromJson.getHeight());
+		assertThat(fromJson.getDeadBoards(), contains(
+				new BoardCoordinates(1, 2, 3), new BoardCoordinates(4, 5, 6)));
+		assertEquals(2, fromJson.getDeadLinks().size());
+		assertEquals(7, fromJson.getDeadLinks().get(0).getX());
+		assertEquals(14, fromJson.getDeadLinks().get(1).getLink());
+		assertNotNull(fromJson.toString());
+	}
 
 	@Test
 	void testNullJson() throws IOException {

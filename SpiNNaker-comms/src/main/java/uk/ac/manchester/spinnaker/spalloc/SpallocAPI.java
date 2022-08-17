@@ -95,6 +95,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
+	@Deprecated
 	default int createJob(List<Integer> args, Map<String, Object> kwargs)
 			throws IOException, SpallocServerException {
 		return createJob(args, kwargs, null);
@@ -158,6 +159,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
+	@Deprecated
 	int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;

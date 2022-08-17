@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import static java.nio.ByteBuffer.allocate;
 import static uk.ac.manchester.spinnaker.messages.scp.ReinjectorCommand.SET_PACKET_TYPES;
 
 import java.nio.ByteBuffer;
@@ -47,7 +48,7 @@ public class SetReinjectionPacketTypes extends SCPRequest<CheckOKResponse> {
 	}
 
 	private static ByteBuffer encodeAsBA(boolean flag) {
-		var b = ByteBuffer.allocate(1);
+		var b = allocate(1);
 		b.put(encode(flag));
 		return b.flip();
 	}

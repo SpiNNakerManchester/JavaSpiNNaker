@@ -21,15 +21,11 @@ import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getLocalHost;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.sort;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.abort;
 import static org.slf4j.LoggerFactory.getLogger;
 import static testconfig.Utils.printEnumCollection;
 import static testconfig.Utils.printWordAsBinary;
@@ -47,6 +43,7 @@ import static uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter.PacketT
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.EXT_PP;
 import static uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegister.LOC_PP;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.STOP;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFERED_SDRAM_START;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,6 +57,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 
@@ -69,6 +67,7 @@ import testconfig.Utils.Field;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
@@ -80,6 +79,7 @@ import uk.ac.manchester.spinnaker.messages.model.RouterDiagnostics.RouterRegiste
 import uk.ac.manchester.spinnaker.messages.model.Signal;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
+import uk.ac.manchester.spinnaker.spalloc.exceptions.JobDestroyedException;
 
 /**
  * Communications integration test.
@@ -87,27 +87,37 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocJob;
  * @author Andrew Rowley
  * @author Donal Fellows
  */
+@org.junit.jupiter.api.Tag("integration")
 @NotThreadSafe
 public class TransceiverITCase {
 	private static final Logger log = getLogger(TransceiverITCase.class);
+
 	// TODO Stop printing to System.out
 	private static BoardTestConfiguration boardConfig;
+
 	private static SpallocJob job;
 
 	private static Set<ChipLocation> downChips;
+
 	private static CoreSubsets coreSubsets;
+
 	private static Map<ChipLocation, Set<Integer>> downCores;
 
 	@BeforeAll
+	@Timeout(60) // Two minutes is enough
 	static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
-		job = boardConfig.setUpSpallocedBoard();
+		try {
+			job = boardConfig.setUpSpallocedBoard();
+		} catch (JobDestroyedException e) {
+			abort("could not set up job: " + e.getMessage());
+		}
 		coreSubsets = new CoreSubsets();
 		coreSubsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
 
 		downCores = new HashMap<>();
-		downCores.put(new ChipLocation(0, 0), singleton(5));
+		downCores.put(new ChipLocation(0, 0), Set.of(5));
 
 		downChips = new HashSet<>();
 		downChips.add(new ChipLocation(0, 1));
@@ -166,14 +176,15 @@ public class TransceiverITCase {
 	}
 
 	private void section(String title, Call call) throws Exception {
-		try (Section s = new Section(title)) {
+		try (var s = new Section(title)) {
 			call.call();
 		}
 	}
 
 	private static final ChipLocation SCAMP = ZERO_ZERO;
+
 	/** Where we like to read and write when testing. */
-	private static final int MEM = 0x70000000;
+	private static final MemoryLocation MEM = BUFFERED_SDRAM_START;
 
 	private void boardReady(Transceiver txrx) throws Exception {
 		var versionInfo = txrx.ensureBoardIsReady();
@@ -281,10 +292,9 @@ public class TransceiverITCase {
 	}
 
 	private void routes(Transceiver txrx, AppID appID) throws Exception {
-		var routes = singletonList(
-				new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
-						asList(1, 2, 3, 4, 5), asList(EAST, NORTHEAST, NORTH),
-						false));
+		var routes = List.of(new MulticastRoutingEntry(0x10000000, 0xFFFF7000,
+				List.of(1, 2, 3, 4, 5), List.of(EAST, NORTHEAST, NORTH),
+				false));
 		txrx.loadMulticastRoutes(SCAMP, routes, appID);
 
 		routes = txrx.getMulticastRoutes(SCAMP, appID);
@@ -305,17 +315,17 @@ public class TransceiverITCase {
 
 	private void diagnostics(Transceiver txrx) throws Exception {
 		// Set Router Diagnostic Filter
-		var destinations = asList(LINK_0, LINK_1, LINK_2, LINK_5);
+		var destinations = List.of(LINK_0, LINK_1, LINK_2, LINK_5);
 		for (int i = 0; i < destinations.size(); i++) {
 			var filter = new DiagnosticFilter(false, true,
-					singletonList(destinations.get(i)), null, null, emptyList(),
-					emptyList(), singletonList(POINT_TO_POINT));
+					List.of(destinations.get(i)), null, null, List.of(),
+					List.of(), List.of(POINT_TO_POINT));
 			txrx.setRouterDiagnosticFilter(SCAMP, i + 12, filter);
 		}
 
 		// Clear Router Diagnostics
 		txrx.clearRouterDiagnosticCounters(SCAMP,
-				asList(LOC_PP.ordinal(), EXT_PP.ordinal()));
+				List.of(LOC_PP.ordinal(), EXT_PP.ordinal()));
 		var diagnostics = txrx.getRouterDiagnostics(SCAMP);
 		for (var register : RouterRegister.values()) {
 			System.out.printf("%s: %x\n", register.name(),
@@ -358,6 +368,7 @@ public class TransceiverITCase {
 	}
 
 	@Test
+	@Timeout(120) // Two minutes is enough
 	@Disabled("not working right")
 	public void testTransceiver() throws Exception {
 		try (var txrx = new Transceiver(boardConfig.remotehost,

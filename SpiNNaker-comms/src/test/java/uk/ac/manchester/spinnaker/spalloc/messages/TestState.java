@@ -30,35 +30,35 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
  */
 public class TestState {
 
-    @Test
-    void testFromJson() throws IOException {
-        var json = "{\"state\":2,"
-            + "\"power\":true,"
-            + "\"keepalive\":60.0,"
-            + "\"reason\":null,"
-            + "\"start_time\":1.537284307847865E9,"
-            + "\"keepalivehost\":\"86.82.216.229\"}";
-        var mapper = SpallocClient.createMapper();
-        var fromJson = mapper.readValue(json, JobState.class);
-        assertEquals(State.POWER, fromJson.getState());
-        assertEquals(true, fromJson.getPower());
-        assertEquals(1537284307.847865f, fromJson.getStartTime());
-        assertEquals(60, fromJson.getKeepalive());
-        assertNull(fromJson.getReason());
-        assertEquals("86.82.216.229", fromJson.getKeepalivehost());
-        assertNotNull(fromJson.toString());
-    }
+	@Test
+	void testFromJson() throws IOException {
+		var json = "{\"state\":2,"
+				+ "\"power\":true,"
+				+ "\"keepalive\":60.0,"
+				+ "\"reason\":null,"
+				+ "\"start_time\":1.125,"
+				+ "\"keepalivehost\":\"86.82.216.229\"}";
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, JobState.class);
+		assertEquals(State.POWER, fromJson.getState());
+		assertEquals(true, fromJson.getPower());
+		assertEquals(1.125, fromJson.getStartTime());
+		assertEquals(60, fromJson.getKeepalive());
+		assertNull(fromJson.getReason());
+		assertEquals("86.82.216.229", fromJson.getKeepalivehost());
+		assertNotNull(fromJson.toString());
+	}
 
-    @Test
-    void testNullJson() throws IOException {
-        var json = "{\"reason\":null}";
-        var mapper = SpallocClient.createMapper();
-        var fromJson = mapper.readValue(json, JobState.class);
-        assertNull(fromJson.getState());
-        assertNull(fromJson.getPower());
-        assertNull(fromJson.getReason());
-        assertEquals(0.0, fromJson.getStartTime());
-        assertNull(fromJson.getKeepalivehost());
-        assertNotNull(fromJson.toString());
-    }
+	@Test
+	void testNullJson() throws IOException {
+		var json = "{\"reason\":null}";
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, JobState.class);
+		assertNull(fromJson.getState());
+		assertNull(fromJson.getPower());
+		assertNull(fromJson.getReason());
+		assertEquals(0.0, fromJson.getStartTime());
+		assertNull(fromJson.getKeepalivehost());
+		assertNotNull(fromJson.toString());
+	}
 }

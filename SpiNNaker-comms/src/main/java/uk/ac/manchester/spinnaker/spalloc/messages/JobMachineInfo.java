@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import java.util.Collections;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
 import java.util.List;
@@ -31,11 +29,11 @@ public class JobMachineInfo {
 
 	private int height;
 
-	private List<Connection> connections = Collections.emptyList();
+	private List<Connection> connections = List.of();
 
 	private String machineName;
 
-	private List<BoardCoordinates> boards = Collections.emptyList();
+	private List<BoardCoordinates> boards = List.of();
 
 	/** Number of boards/Connections to list individually in the toString. */
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
@@ -61,7 +59,7 @@ public class JobMachineInfo {
 	}
 
 	public void setConnections(List<Connection> connections) {
-		this.connections = connections == null ? emptyList()
+		this.connections = connections == null ? List.of()
 				: unmodifiableList(connections);
 	}
 
@@ -78,12 +76,12 @@ public class JobMachineInfo {
 	}
 
 	public void setBoards(List<BoardCoordinates> boards) {
-		this.boards = boards == null ? emptyList() : unmodifiableList(boards);
+		this.boards = boards == null ? List.of() : unmodifiableList(boards);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("width: ").append(width);
 		builder.append(" height: ").append(height);
 		builder.append(" machineName: ").append(machineName);

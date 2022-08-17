@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 
 import java.io.File;
@@ -83,7 +88,7 @@ public class RawConfigParser {
 	public RawConfigParser(URL resource) {
 		this();
 		try {
-			if (resource != null) {
+			if (nonNull(resource)) {
 				read(resource);
 			}
 		} catch (IOException e) {
@@ -104,7 +109,7 @@ public class RawConfigParser {
 	public RawConfigParser(File file) {
 		this();
 		try {
-			if (file != null) {
+			if (nonNull(file)) {
 				read(file);
 			}
 		} catch (IOException e) {
@@ -174,23 +179,20 @@ public class RawConfigParser {
 			var m = sectRE.matcher(line);
 			if (m.matches()) {
 				sect = normaliseSectionName(m.group("name"));
-				if (!map.containsKey(sect)) {
-					map.put(sect, new HashMap<>());
-				}
+				map.computeIfAbsent(sect, key -> new HashMap<>());
 				continue;
-			} else if (sect == null) {
+			} else if (isNull(sect)) {
 				throw new IllegalArgumentException(
 						"content before first section starts, at line " + ln);
 			}
 			m = optRE.matcher(line);
-			if (m.matches()) {
-				var key = normaliseOptionName(m.group("key"));
-				var value = m.group("value");
-				map.get(sect).put(key, value);
-				continue;
+			if (!m.matches()) {
+				throw new IllegalArgumentException(
+						"unknown line format, at line " + ln);
 			}
-			throw new IllegalArgumentException(
-					"unknown line format, at line " + ln);
+			var key = normaliseOptionName(m.group("key"));
+			var value = m.group("value");
+			map.get(requireNonNull(sect)).put(key, value);
 		}
 	}
 
@@ -217,7 +219,7 @@ public class RawConfigParser {
 	 * @return True iff the value is a {@code null}-equivalent.
 	 */
 	protected boolean isNone(String value) {
-		return value == null || "None".equalsIgnoreCase(value);
+		return isNull(value) || "None".equalsIgnoreCase(value);
 	}
 
 	/**
@@ -234,7 +236,7 @@ public class RawConfigParser {
 		if (isNone(value)) {
 			return null;
 		}
-		return Integer.parseInt(value);
+		return parseInt(value);
 	}
 
 	/**
@@ -251,7 +253,7 @@ public class RawConfigParser {
 		if (isNone(value)) {
 			return null;
 		}
-		return Boolean.parseBoolean(value);
+		return parseBoolean(value);
 	}
 
 	/**
@@ -265,11 +267,8 @@ public class RawConfigParser {
 	 */
 	public String get(String section, String option) {
 		var sect = map.get(normaliseSectionName(section));
-		if (sect != null) {
-			var value = sect.get(normaliseOptionName(option));
-			if (value != null) {
-				return value;
-			}
+		if (nonNull(sect)) {
+			return sect.get(normaliseOptionName(option));
 		}
 		// TODO should this fail with an exception?
 		return null;

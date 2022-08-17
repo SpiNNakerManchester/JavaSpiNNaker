@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.HOST_SEND_SEQUENCED_DATA;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOMessageFactory.readDataMessage;
 
@@ -60,8 +61,8 @@ public class HostSendSequencedData extends EIEIOCommandMessage {
 	HostSendSequencedData(ByteBuffer data) {
 		super(data);
 
-		regionID = Byte.toUnsignedInt(data.get());
-		sequenceNum = Byte.toUnsignedInt(data.get());
+		regionID = toUnsignedInt(data.get());
+		sequenceNum = toUnsignedInt(data.get());
 		eieioDataMessage = readDataMessage(data);
 	}
 

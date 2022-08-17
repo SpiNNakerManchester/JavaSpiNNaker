@@ -45,6 +45,8 @@ import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReference;
+import uk.ac.manchester.spinnaker.data_spec.Reference;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Functions that implement {@linkplain Operation operations} for the
@@ -54,6 +56,7 @@ import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReference;
  * @see OperationMapper
  */
 @SuppressWarnings("unused")
+@UsedInJavadocOnly(Executor.class)
 public class Functions implements FunctionAPI {
 	private static final int SIZE_FIELD = 28;
 
@@ -243,11 +246,11 @@ public class Functions implements FunctionAPI {
 							+ " (inclusive)");
 		}
 		if (!referenceable) {
-			memRegions.set(new MemoryRegionReal(region, 0, unfilled, size));
+			memRegions.set(new MemoryRegionReal(region, unfilled, size));
 		} else {
-			int reference = spec.getInt();
+			var reference = new Reference(spec.getInt());
 			memRegions.set(
-					new MemoryRegionReal(region, 0, unfilled, size, reference));
+					new MemoryRegionReal(region, unfilled, size, reference));
 			referenceableRegions.add(region);
 		}
 		spaceAllocated = getSpaceAllocated() + size;
@@ -266,7 +269,7 @@ public class Functions implements FunctionAPI {
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
 		}
-		int reference = spec.getInt();
+		var reference = new Reference(spec.getInt());
 		memRegions.set(new MemoryRegionReference(region, reference));
 		regionsToFill.add(region);
 	}
@@ -429,7 +432,7 @@ public class Functions implements FunctionAPI {
 				b.putInt((int) value);
 				break;
 			case LONG_SIZE:
-				b.putLong((long) value);
+				b.putLong(value);
 				break;
 			default:
 				throw new UnknownTypeLengthException(dataLen, command);
@@ -484,9 +487,5 @@ public class Functions implements FunctionAPI {
 
 	public int getSpaceAllocated() {
 		return spaceAllocated;
-	}
-
-	static {
-		Executor.class.getClass();
 	}
 }

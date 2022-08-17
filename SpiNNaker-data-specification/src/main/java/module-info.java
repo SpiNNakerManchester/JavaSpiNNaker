@@ -22,6 +22,7 @@
  */
 module spinnaker.data_spec {
 	requires spinnaker.utils;
+	requires transitive spinnaker.machine;
 	requires spinnaker.comms;
 	requires spinnaker.storage;
 

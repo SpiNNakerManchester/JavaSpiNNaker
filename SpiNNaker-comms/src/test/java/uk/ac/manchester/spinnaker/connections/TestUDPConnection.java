@@ -16,17 +16,18 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.util.Collections.emptySet;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFERED_SDRAM_START;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,9 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPResultMessage;
 
 public class TestUDPConnection {
 	private static BoardTestConfiguration boardConfig;
+
 	private static final CoreLocation ZERO_CORE = new CoreLocation(0, 0, 0);
+
 	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	private static final Integer TIMEOUT = 10000;
@@ -55,7 +58,7 @@ public class TestUDPConnection {
 	public void testSCPVersionWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
 		var scpReq = new GetVersion(ZERO_CORE);
-		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
+		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
 		try (var connection = new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
@@ -70,14 +73,14 @@ public class TestUDPConnection {
 		assertEquals(scpResponse.result, RC_OK);
 	}
 
-	private static final int ADDR = 0x70000000;
 	private static final int LINK_SIZE = 250;
 
 	@Test
 	public void testSCPReadLinkWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		var scpReq = new ReadLink(ZERO_CHIP, EAST, ADDR, LINK_SIZE);
-		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
+		var scpReq =
+				new ReadLink(ZERO_CHIP, EAST, BUFFERED_SDRAM_START, LINK_SIZE);
+		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
 		try (var connection = new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
@@ -93,8 +96,9 @@ public class TestUDPConnection {
 	@Test
 	public void testSCPReadMemoryWithBoard() throws Exception {
 		boardConfig.setUpRemoteBoard();
-		var scpReq = new ReadMemory(ZERO_CHIP, ADDR, UDP_MESSAGE_MAX_SIZE);
-		scpReq.scpRequestHeader.issueSequenceNumber(emptySet());
+		var scpReq = new ReadMemory(ZERO_CHIP, BUFFERED_SDRAM_START,
+				UDP_MESSAGE_MAX_SIZE);
+		scpReq.scpRequestHeader.issueSequenceNumber(Set.of());
 		SCPResultMessage result;
 		try (var connection = new SCPConnection(boardConfig.remotehost)) {
 			connection.send(scpReq);
@@ -113,8 +117,8 @@ public class TestUDPConnection {
 		boardConfig.setUpNonexistentBoard();
 		assertThrows(IOException.class, () -> {
 			try (var connection = new SCPConnection(boardConfig.remotehost)) {
-				var scp = new ReadMemory(ZERO_CHIP, 0, UDP_MESSAGE_MAX_SIZE);
-				scp.scpRequestHeader.issueSequenceNumber(emptySet());
+				var scp = new ReadMemory(ZERO_CHIP, NULL, UDP_MESSAGE_MAX_SIZE);
+				scp.scpRequestHeader.issueSequenceNumber(Set.of());
 				connection.send(scp);
 				connection.receiveSCPResponse(2);
 			}

@@ -19,14 +19,15 @@ package uk.ac.manchester.spinnaker.messages.sdp;
 import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPLocation;
 
 /**
  * Represents the header of an SDP message.
@@ -116,12 +117,14 @@ public class SDPHeader implements SerializableMessage {
 	 *
 	 * @param buffer
 	 *            The buffer to read from.
+	 * @param isBMP
+	 *            Whether we're really talking to a BMP.
 	 */
-	public SDPHeader(ByteBuffer buffer) {
+	public SDPHeader(ByteBuffer buffer, boolean isBMP) {
 		// Caller MUST have stripped the leading padding
 		assert buffer.position() == 2 : "leading padding must be skipped";
 		flags = Flag.get(buffer.get());
-		tag = Byte.toUnsignedInt(buffer.get());
+		tag = toUnsignedInt(buffer.get());
 		int dpc = toUnsignedInt(buffer.get());
 		int spc = toUnsignedInt(buffer.get());
 		int dcy = toUnsignedInt(buffer.get());
@@ -130,8 +133,13 @@ public class SDPHeader implements SerializableMessage {
 		int scx = toUnsignedInt(buffer.get());
 		destinationPort = (dpc >> CPU_ADDR_BITS) & PORT_MASK;
 		sourcePort = (spc >> CPU_ADDR_BITS) & PORT_MASK;
-		destination = allocCoreLocation(dcx, dcy, dpc & CPU_MASK);
-		source = allocCoreLocation(scx, scy, spc & CPU_MASK);
+		if (isBMP) {
+			destination = new BMPLocation(dcx, dcy, dpc & CPU_MASK);
+			source = new BMPLocation(scx, scy, spc & CPU_MASK);
+		} else {
+			destination = allocCoreLocation(dcx, dcy, dpc & CPU_MASK);
+			source = allocCoreLocation(scx, scy, spc & CPU_MASK);
+		}
 	}
 
 	private HasCoreLocation allocCoreLocation(int x, int y, int p) {
@@ -276,7 +284,7 @@ public class SDPHeader implements SerializableMessage {
 	}
 
 	public void setTag(byte tag) {
-		this.tag = Byte.toUnsignedInt(tag);
+		this.tag = toUnsignedInt(tag);
 	}
 
 	/** The meanings of individual flag bits in {@link SDPHeader.Flag}. */
@@ -321,16 +329,11 @@ public class SDPHeader implements SerializableMessage {
 		/** The SDP-encoded form of the flag. */
 		public final byte value;
 
-		private static final Map<Byte, Flag> MAP = new HashMap<>();
+		private static final Map<Byte, Flag> MAP =
+				makeEnumBackingMap(values(), v -> v.value);
 
 		Flag(int value) {
 			this.value = (byte) value;
-		}
-
-		static {
-			for (Flag flag : values()) {
-				MAP.put(flag.value, flag);
-			}
 		}
 
 		public static Flag get(byte value) {

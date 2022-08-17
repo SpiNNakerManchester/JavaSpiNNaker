@@ -67,9 +67,10 @@ public class DatabaseConfirmation extends AbstractNotificationMessage {
 	DatabaseConfirmation(ByteBuffer data) {
 		super(data);
 		if (data.remaining() > 0) {
-			if (data.hasArray() && !data.isReadOnly()) {
-				databasePath = new String(data.array(), data.position(),
-						data.remaining(), CHARSET);
+			if (data.hasArray()) {
+				databasePath = new String(data.array(),
+						data.arrayOffset() + data.position(), data.remaining(),
+						CHARSET);
 			} else {
 				// Must copy; ugh!
 				var ary = new byte[data.remaining()];

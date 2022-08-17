@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.io;
 
 import static java.lang.Math.max;
 import static java.lang.System.arraycopy;
+import static uk.ac.manchester.spinnaker.io.AbstractIO.Seek.CUR;
 import static uk.ac.manchester.spinnaker.messages.Constants.BYTE_MASK;
 import static uk.ac.manchester.spinnaker.transceiver.FillDataType.WORD;
 
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
@@ -146,7 +148,7 @@ public interface AbstractIO extends AutoCloseable {
 	int tell() throws IOException, ProcessException;
 
 	/** @return the current absolute address within the region. */
-	int getAddress();
+	MemoryLocation getAddress();
 
 	/**
 	 * Read the rest of the data.
@@ -277,7 +279,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public int read() throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(1);
+					var b = AbstractIO.this.read(1);
 					return b[0];
 				} catch (EOFException e) {
 					return -1;
@@ -291,7 +293,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public int read(byte[] buffer) throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(buffer.length);
+					var b = AbstractIO.this.read(buffer.length);
 					arraycopy(b, 0, buffer, 0, b.length);
 					return b.length;
 				} catch (EOFException e) {
@@ -307,7 +309,7 @@ public interface AbstractIO extends AutoCloseable {
 			public int read(byte[] buffer, int offset, int length)
 					throws IOException {
 				try {
-					byte[] b = AbstractIO.this.read(length);
+					var b = AbstractIO.this.read(length);
 					arraycopy(b, 0, buffer, offset, b.length);
 					return b.length;
 				} catch (EOFException e) {
@@ -323,7 +325,7 @@ public interface AbstractIO extends AutoCloseable {
 			public long skip(long n) throws IOException {
 				try {
 					int before = tell();
-					seek(max((int) n, 0), Seek.CUR);
+					seek(max((int) n, 0), CUR);
 					int after = tell();
 					return after - before;
 				} catch (ProcessException e) {
@@ -344,7 +346,7 @@ public interface AbstractIO extends AutoCloseable {
 		return new OutputStream() {
 			@Override
 			public void write(int b) throws IOException {
-				byte[] buffer = new byte[1];
+				var buffer = new byte[1];
 				buffer[0] = (byte) (b & BYTE_MASK);
 				try {
 					AbstractIO.this.write(buffer);
@@ -369,7 +371,7 @@ public interface AbstractIO extends AutoCloseable {
 			@Override
 			public void write(byte[] bytes, int offset, int length)
 					throws IOException {
-				byte[] buffer = new byte[length];
+				var buffer = new byte[length];
 				arraycopy(bytes, offset, buffer, 0, length);
 				try {
 					AbstractIO.this.write(buffer);

@@ -25,110 +25,113 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Christian-B
  */
+@SuppressWarnings("resource")
 public class TestBar {
 
-    private static final String PERCENTS =
-            "|0%                          50%                         100%|";
-    private static final String DASHES =
-            " ------------------------------------------------------------";
+	private static final String PERCENTS =
+			"|0%                          50%                         100%|";
 
+	private static final String DASHES =
+			" ------------------------------------------------------------";
 
-    public TestBar() {
-    }
+	private static final String NEWLINE = "\\r?\\n";
 
-    @Test
-    public void testBasic() {
+	public TestBar() {
+	}
+
+	@Test
+	public void testBasic() {
 		var pb = new ProgressBar(5, null,
 				new PrintStream(new ByteArrayOutputStream()));
-        for (int i = 0; i < 3 ; i++){
-            pb.update();
-        }
-        pb.close();
-        //closed so error even if not at end.
-        assertThrows(IllegalStateException.class, () -> {
-            pb.update();
-        });
-        pb.close();
+		for (int i = 0; i < 3; i++) {
+			pb.update();
+		}
+		pb.close();
+		// closed so error even if not at end.
+		assertThrows(IllegalStateException.class, () -> {
+			pb.update();
+		});
+		pb.close();
 
-    }
+	}
 
-    @Test
-    public void testToMany() {
-        var description = "tooMany";
+	@Test
+	public void testToMany() {
+		var description = "tooMany";
 		var pb = new ProgressBar(5, description,
 				new PrintStream(new ByteArrayOutputStream()));
-        for (int i = 0; i < 5 ; i++){
-            pb.update();
-        }
-        assertThrows(IllegalStateException.class, () -> {
-            pb.update();
-        });
-        pb.close();
-    }
+		for (int i = 0; i < 5; i++) {
+			pb.update();
+		}
+		assertThrows(IllegalStateException.class, () -> {
+			pb.update();
+		});
+		pb.close();
+	}
 
-    @Test
-    public void testSimple() {
-        var baos = new ByteArrayOutputStream();
-        var description = "Easiest";
+	@Test
+	public void testSimple() {
+		var baos = new ByteArrayOutputStream();
+		var description = "Easiest";
 		var pb = new ProgressBar(5, description, new PrintStream(baos));
-        for (int i = 0; i < 5 ; i++){
-            pb.update();
-        }
-        pb.close();
-        var lines = baos.toString().split("\\r?\\n");
-        assertEquals(4, lines.length);
-        assertEquals(description, lines[0]);
-        assertEquals(PERCENTS, lines[1]);
-        assertEquals(DASHES, lines[2]);
-    }
+		for (int i = 0; i < 5; i++) {
+			pb.update();
+		}
+		pb.close();
+		var lines = baos.toString().split(NEWLINE);
+		assertEquals(4, lines.length);
+		assertEquals(description, lines[0]);
+		assertEquals(PERCENTS, lines[1]);
+		assertEquals(DASHES, lines[2]);
+	}
 
-    @Test
-    public void testNoDivSmall() {
-        var baos = new ByteArrayOutputStream();
-        var description = "Thirteen";
+	@Test
+	public void testNoDivSmall() {
+		var baos = new ByteArrayOutputStream();
+		var description = "Thirteen";
 		try (var pb = new ProgressBar(13, description, new PrintStream(baos))) {
-            for (int i = 0; i < 13 ; i++){
-                pb.update();
-            }
-        }
-        var lines = baos.toString().split("\\r?\\n");
-        // Include duration as try calls close.
-        assertEquals(4, lines.length);
-        assertEquals(description, lines[0]);
-        assertEquals(PERCENTS, lines[1]);
-        assertEquals(DASHES, lines[2]);
-    }
+			for (int i = 0; i < 13; i++) {
+				pb.update();
+			}
+		}
+		var lines = baos.toString().split(NEWLINE);
+		// Include duration as try calls close.
+		assertEquals(4, lines.length);
+		assertEquals(description, lines[0]);
+		assertEquals(PERCENTS, lines[1]);
+		assertEquals(DASHES, lines[2]);
+	}
 
-    @Test
-    public void testNoDivBig() {
-        var baos = new ByteArrayOutputStream();
-        var description = "Big";
+	@Test
+	public void testNoDivBig() {
+		var baos = new ByteArrayOutputStream();
+		var description = "Big";
 		var pb = new ProgressBar(133, description, new PrintStream(baos));
-        for (int i = 0; i < 133 ; i++){
-            pb.update();
-        }
-        var lines = baos.toString().split("\\r?\\n");
-        // No close so no duration
-        assertEquals(3, lines.length);
-        assertEquals(description, lines[0]);
-        assertEquals(PERCENTS, lines[1]);
-        assertEquals(DASHES, lines[2]);
-        pb.close();
-    }
+		for (int i = 0; i < 133; i++) {
+			pb.update();
+		}
+		var lines = baos.toString().split(NEWLINE);
+		// No close so no duration
+		assertEquals(3, lines.length);
+		assertEquals(description, lines[0]);
+		assertEquals(PERCENTS, lines[1]);
+		assertEquals(DASHES, lines[2]);
+		pb.close();
+	}
 
-    @Test
-    public void testStopEarly() {
-        var baos = new ByteArrayOutputStream();
-        var description = "Early";
+	@Test
+	public void testStopEarly() {
+		var baos = new ByteArrayOutputStream();
+		var description = "Early";
 		var pb = new ProgressBar(10, description, new PrintStream(baos));
-        for (int i = 0; i < 3 ; i++){
-            pb.update();
-        }
-        pb.close();
-        var lines = baos.toString().split("\\r?\\n");
-        assertEquals(4, lines.length);
-        assertEquals(description, lines[0]);
-        assertEquals(PERCENTS, lines[1]);
-        assertEquals(60 / 10 * 3 + 1, lines[2].length());
-    }
+		for (int i = 0; i < 3; i++) {
+			pb.update();
+		}
+		pb.close();
+		var lines = baos.toString().split(NEWLINE);
+		assertEquals(4, lines.length);
+		assertEquals(description, lines[0]);
+		assertEquals(PERCENTS, lines[1]);
+		assertEquals(60 / 10 * 3 + 1, lines[2].length());
+	}
 }

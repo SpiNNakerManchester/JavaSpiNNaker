@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,13 +45,8 @@ public enum P2PTableRoute {
 	/** The SpiNNaker value. */
 	public final int value;
 
-	private static final Map<Integer, P2PTableRoute> MAP = new HashMap<>();
-
-	static {
-		for (var r : values()) {
-			MAP.put(r.value, r);
-		}
-	}
+	private static final Map<Integer, P2PTableRoute> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	P2PTableRoute(int value) {
 		this.value = value;

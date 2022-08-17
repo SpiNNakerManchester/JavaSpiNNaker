@@ -20,8 +20,7 @@ import static java.util.stream.IntStream.range;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -53,19 +52,16 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 *
 	 * @param connection
 	 *            The connection that the tags are associated with.
-	 * @return A list of allocated tags in ID order. Unallocated tags are
-	 *         absent.
+	 * @return The allocated tags in ID order. Unallocated tags are absent.
 	 * @throws IOException
 	 *             If anything goes wrong with networking.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	List<Tag> getTags(SCPConnection connection)
+	Collection<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
-		var tagInfo = synchronousCall(new IPTagGetInfo(connection.getChip()));
-		int numTags = tagInfo.poolSize + tagInfo.fixedSize;
 		var tags = new TreeMap<Integer, Tag>();
-		for (var tag : range(0, numTags).toArray()) {
+		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
 				if (response.isInUse()) {
 					tags.put(tag, createTag(connection.getRemoteIPAddress(),
@@ -75,7 +71,13 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 		finish();
 		checkForError();
-		return new ArrayList<>(tags.values());
+		return tags.values();
+	}
+
+	private int getTagCount(SCPConnection connection)
+			throws IOException, ProcessException {
+		var tagInfo = synchronousCall(new IPTagGetInfo(connection.getChip()));
+		return tagInfo.poolSize + tagInfo.fixedSize;
 	}
 
 	private static Tag createTag(InetAddress host, int tag,
@@ -103,10 +105,8 @@ class GetTagsProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException {
-		var tagInfo = synchronousCall(new IPTagGetInfo(connection.getChip()));
-		int numTags = tagInfo.poolSize + tagInfo.fixedSize;
 		var tagUsages = new TreeMap<Tag, Integer>();
-		for (var tag : range(0, numTags).toArray()) {
+		for (var tag : range(0, getTagCount(connection)).toArray()) {
 			sendRequest(new IPTagGet(connection.getChip(), tag), response -> {
 				if (response.isInUse()) {
 					tagUsages.put(createTag(connection.getRemoteIPAddress(),

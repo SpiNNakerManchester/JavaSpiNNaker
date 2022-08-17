@@ -17,38 +17,43 @@
 package uk.ac.manchester.spinnaker.storage.sqlite;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.isNull;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 
 import org.apache.commons.io.IOUtils;
 
 /**
- * Loads resources. In particular, it knows which is the correct class loader to
- * handle looking them up.
- *
- * @author Donal Fellows
+ * Factoring out of correct resource loading pattern.
  */
 public abstract class ResourceLoader {
 	private ResourceLoader() {
 	}
 
+	private static InputStream open(String name) throws FileNotFoundException {
+		var stream = ResourceLoader.class.getResourceAsStream(name);
+		if (isNull(stream)) {
+			throw new FileNotFoundException(name);
+		}
+		return stream;
+	}
+
 	/**
-	 * Get the contents of a (text) resource. The resource <em>must</em> be in
-	 * this package.
+	 * Load a text resource from the given name using this class's class loader.
 	 *
 	 * @param name
-	 *            The name of the resource.
-	 * @return The contents of the file.
-	 * @throws UncheckedIOException
-	 *             If the file can't be read.
+	 *            The name of the resource to load.
+	 * @return The content of the resource.
+	 * @throws RuntimeException
+	 *             If things don't work. Shouldn't happen if build is correct.
 	 */
-	public static String resourceToString(String name) {
-		try (InputStream is = ResourceLoader.class.getResourceAsStream(name)) {
-			return IOUtils.toString(is, UTF_8);
+	public static String loadResource(String name) {
+		try (var stream = open(name)) {
+			return IOUtils.toString(stream, UTF_8);
 		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			throw new RuntimeException("failed to read resource", e);
 		}
 	}
 }

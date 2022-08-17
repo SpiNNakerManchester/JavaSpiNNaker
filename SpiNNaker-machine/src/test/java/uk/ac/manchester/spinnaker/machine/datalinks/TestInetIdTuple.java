@@ -27,53 +27,53 @@ import org.junit.jupiter.api.Test;
  */
 public class TestInetIdTuple {
 
-    public TestInetIdTuple() {
-    }
+	public TestInetIdTuple() {
+	}
 
-    @Test
-    public void testEquals() throws UnknownHostException {
-        byte[] bytes1 = {127,0,0,0};
-        var addr1 = InetAddress.getByAddress(bytes1);
-        var addr2 = InetAddress.getByAddress(bytes1);
-        var t1 = new InetIdTuple(addr1, 23);
-        var t2 = new InetIdTuple(addr2, 23);
+	@Test
+	public void testEquals() throws UnknownHostException {
+		byte[] bytes1 = {127, 0, 0, 0};
+		var addr1 = InetAddress.getByAddress(bytes1);
+		var addr2 = InetAddress.getByAddress(bytes1);
+		var t1 = new InetIdTuple(addr1, 23);
+		var t2 = new InetIdTuple(addr2, 23);
 
-        assertEquals(t1, t1);
-        assertEquals(t1, t2);
-        assertEquals(t1.hashCode(), t2.hashCode());
-    }
+		assertEquals(t1, t1);
+		assertEquals(t1, t2);
+		assertEquals(t1.hashCode(), t2.hashCode());
+	}
 
-    @Test
-    public void testEqualsWithNull() throws UnknownHostException {
-        var t1 = new InetIdTuple(null, 23);
-        var t2 = new InetIdTuple(null, 23);
+	@Test
+	public void testEqualsWithNull() {
+		var t1 = new InetIdTuple(null, 23);
+		var t2 = new InetIdTuple(null, 23);
 
-        assertEquals(t1, t2);
-        assertEquals(t1.hashCode(), t2.hashCode());
-    }
+		assertEquals(t1, t2);
+		assertEquals(t1.hashCode(), t2.hashCode());
+	}
 
-    @Test
-    public void testDifferent() throws UnknownHostException {
-        byte[] bytes1 = {127,0,0,0};
-        var addr1 = InetAddress.getByAddress(bytes1);
-        byte[] bytes2 = {127,0,0,1};
-        var addr2 = InetAddress.getByAddress(bytes2);
+	@Test
+	public void testDifferent() throws UnknownHostException {
+		byte[] bytes1 = {127, 0, 0, 0};
+		var addr1 = InetAddress.getByAddress(bytes1);
+		byte[] bytes2 = {127, 0, 0, 1};
+		var addr2 = InetAddress.getByAddress(bytes2);
 
-        var t1 = new InetIdTuple(addr1, 23);
-        var t2 = new InetIdTuple(addr2, 23);
-        var t3 = new InetIdTuple(null, 23);
-        var t4 = new InetIdTuple(addr1, 24);
+		var t1 = new InetIdTuple(addr1, 23);
+		var t2 = new InetIdTuple(addr2, 23);
+		var t3 = new InetIdTuple(null, 23);
+		var t4 = new InetIdTuple(addr1, 24);
 
-        assertNotEquals(t1, t2);
-        assertNotEquals(t1.hashCode(), t2.hashCode());
-        assertNotEquals(t1, t3);
-        assertNotEquals(t1.hashCode(), t3.hashCode());
-        assertNotEquals(t1, t4);
-        assertNotEquals(t1.hashCode(), t4.hashCode());
+		assertNotEquals(t1, t2);
+		assertNotEquals(t1.hashCode(), t2.hashCode());
+		assertNotEquals(t1, t3);
+		assertNotEquals(t1.hashCode(), t3.hashCode());
+		assertNotEquals(t1, t4);
+		assertNotEquals(t1.hashCode(), t4.hashCode());
 
-        assertNotEquals(t3, null);
-        assertNotEquals(t1, "t1");
+		assertNotEquals(t3, null);
+		assertNotEquals(t1, "t1");
 
-    }
+	}
 
 }

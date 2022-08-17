@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.OVERALL_TEST_TIMEOUT;
 import static uk.ac.manchester.spinnaker.spalloc.SupportUtils.TIMEOUT;
@@ -37,19 +36,13 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
-import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
@@ -159,11 +152,11 @@ class TestClient {
 			assertEquals("bar", ((ExceptionResponse) c.receiveResponse(null))
 					.getException());
 			s.send("{\"machines_changed\": [\"foo\",\"bar\"]}");
-			assertEquals(asList("foo", "bar"),
+			assertEquals(List.of("foo", "bar"),
 					((MachinesChangedNotification) c.receiveResponse(null))
 							.getMachinesChanged());
 			s.send("{\"jobs_changed\": [1, 2]}");
-			assertEquals(asList(1, 2),
+			assertEquals(List.of(1, 2),
 					((JobsChangedNotification) c.receiveResponse(null))
 							.getJobsChanged());
 
@@ -242,7 +235,7 @@ class TestClient {
 
 			// Exceptions should transfer
 			s.send("{\"exception\": \"something informative\"}");
-			Throwable t = assertThrows(SpallocServerException.class,
+			var t = assertThrows(SpallocServerException.class,
 					() -> c.call(new MockCommand("foo", 1, "bar", 2), TIMEOUT));
 			assertEquals("something informative", t.getMessage());
 		});
@@ -295,7 +288,7 @@ class TestClient {
 			Map<String, Object> kwargs = new HashMap<>();
 			kwargs.put("bar", 2);
 			kwargs.put("owner", "dummy");
-			assertEquals(123, c.createJob(asList(1), kwargs));
+			assertEquals(123, c.createJob(List.of(1), kwargs));
 			JSONAssert.assertEquals(
 					"{\"command\": \"create_job\", \"args\": [1], "
 							+ "\"kwargs\": {\"owner\": \"dummy\"}}",
@@ -318,7 +311,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":[{\"job_id\":123},{\"job_id\":99}]}");
-			List<JobDescription> result = c.listJobs();
+			var result = c.listJobs();
 			assertEquals(2, result.size());
 			assertEquals(123, result.get(0).getJobID());
 			assertEquals(99, result.get(1).getJobID());
@@ -334,7 +327,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":[{\"name\":\"foo\"},{\"name\":\"bar\"}]}");
-			List<Machine> result = c.listMachines();
+			var result = c.listMachines();
 			assertEquals(2, result.size());
 			assertEquals("foo", result.get(0).getName());
 			assertEquals("bar", result.get(1).getName());
@@ -365,8 +358,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":[4,5,6]}");
-			BoardPhysicalCoordinates pc =
-					c.getBoardPosition("gorp", new BoardCoordinates(1, 2, 3));
+			var pc = c.getBoardPosition("gorp", new BoardCoordinates(1, 2, 3));
 			assertEquals(new BoardPhysicalCoordinates(4, 5, 6), pc);
 			JSONAssert.assertEquals("{\"command\": \"get_board_position\", "
 					+ "\"args\": [], \"kwargs\": "
@@ -374,7 +366,7 @@ class TestClient {
 					s.recv(), true);
 
 			s.send("{\"return\":[7,8,9]}");
-			BoardCoordinates lc = c.getBoardPosition("gorp", pc);
+			var lc = c.getBoardPosition("gorp", pc);
 			assertEquals(new BoardCoordinates(7, 8, 9), lc);
 			JSONAssert.assertEquals("{\"command\": \"get_board_at_position\", "
 					+ "\"args\": [], \"kwargs\": "
@@ -391,11 +383,11 @@ class TestClient {
 
 			s.send("{\"return\":{\"boards\": [[1,2,3]],"
 					+ "\"connections\": [[[1,2],\"gorp\"]]}}");
-			JobMachineInfo result = c.getJobMachineInfo(123);
-			List<BoardCoordinates> boards = result.getBoards();
+			var result = c.getJobMachineInfo(123);
+			var boards = result.getBoards();
 			assertEquals(1, boards.size());
 			assertEquals(new BoardCoordinates(1, 2, 3), boards.get(0));
-			List<Connection> conns = result.getConnections();
+			var conns = result.getConnections();
 			assertEquals(1, conns.size());
 			assertEquals(new ChipLocation(1, 2), conns.get(0).getChip());
 			assertEquals("gorp", conns.get(0).getHostname());
@@ -413,7 +405,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":{\"state\":3,\"power\":true}}");
-			JobState result = c.getJobState(123);
+			var result = c.getJobState(123);
 			assertEquals(true, result.getPower());
 			assertEquals(READY, result.getState());
 			JSONAssert.assertEquals(
@@ -493,7 +485,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":\"1.2.3\"}");
-			Version result = c.version();
+			var result = c.version();
 			assertEquals(1, result.majorVersion);
 			assertEquals(2, result.minorVersion);
 			assertEquals(3, result.revision);

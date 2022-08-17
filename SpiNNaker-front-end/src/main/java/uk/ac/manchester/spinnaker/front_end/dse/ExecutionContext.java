@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.IOException;
@@ -30,10 +31,12 @@ import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReference;
+import uk.ac.manchester.spinnaker.data_spec.Reference;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A context for the execution of multiple data specifications with
@@ -41,13 +44,13 @@ import uk.ac.manchester.spinnaker.transceiver.Transceiver;
  */
 class ExecutionContext implements AutoCloseable {
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
-	private final Map<Integer, RegionToRef> regionsToRef = new HashMap<>();
+	private final Map<Reference, RegionToRef> regionsToRef = new HashMap<>();
 
 	private final List<CoreToFill> regionsToFill = new ArrayList<>();
 
-	ExecutionContext(Transceiver txrx) {
+	ExecutionContext(TransceiverInterface txrx) {
 		this.txrx = txrx;
 	}
 
@@ -70,7 +73,7 @@ class ExecutionContext implements AutoCloseable {
 	 * @throws IOException
 	 *             If there's a problem with I/O.
 	 */
-	void execute(Executor executor, CoreLocation core, int start)
+	void execute(Executor executor, CoreLocation core, MemoryLocation start)
 			throws DataSpecificationException, ProcessException, IOException {
 		executor.execute();
 		executor.setBaseAddress(start);
@@ -84,10 +87,11 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	private CoreToFill linkRegionReferences(Executor executor,
-			CoreLocation core, int start) throws DataSpecificationException {
+			CoreLocation core, MemoryLocation start)
+			throws DataSpecificationException {
 		for (int region : executor.getReferenceableRegions()) {
 			var r = (MemoryRegionReal) executor.getRegion(region);
-			int ref = r.getReference();
+			var ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
 				var reg = regionsToRef.get(ref);
 				throw new DataSpecificationException(
@@ -100,7 +104,7 @@ class ExecutionContext implements AutoCloseable {
 		var coreToFill = new CoreToFill(executor, start, core);
 		for (int region : executor.getRegionsToFill()) {
 			var r = (MemoryRegionReference) executor.getRegion(region);
-			int ref = r.getReference();
+			var ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
 				var reg = regionsToRef.get(ref);
 				if (!reg.core.onSameChipAs(core)) {
@@ -116,7 +120,7 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	private void writeHeader(HasCoreLocation core, Executor executor,
-			int startAddress) throws IOException, ProcessException {
+			MemoryLocation startAddress) throws IOException, ProcessException {
 		var b = allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
 
 		executor.addHeader(b);
@@ -133,27 +137,9 @@ class ExecutionContext implements AutoCloseable {
 		var errors = new ArrayList<String>();
 		for (var toFill : regionsToFill) {
 			for (var ref : toFill.refs) {
-				int reference = ref.getReference();
-				if (!regionsToRef.containsKey(reference)) {
-					var potentialRefs = "";
-					for (int r : regionsToRef.keySet()) {
-						var reg = regionsToRef.get(r);
-						if (reg.core.onSameChipAs(toFill.core)) {
-							potentialRefs += ref
-									+ "(from core " + reg.core + "); ";
-						}
-					}
-					errors.add("Reference " + reference + " from " + toFill
-							+ " not found from " + potentialRefs);
-				}
-				var reg = regionsToRef.get(reference);
-				if (!reg.core.onSameChipAs(toFill.core)) {
-					errors.add("Region " + ref + " on " + reg + " cannot be"
-							+ " referenced from " + toFill);
-				}
+				checkForCrossReferenceError(errors, toFill, ref);
 			}
 		}
-
 		if (!errors.isEmpty()) {
 			throw new DataSpecificationException(errors.toString());
 		}
@@ -161,20 +147,43 @@ class ExecutionContext implements AutoCloseable {
 		// Finish filling things in and write header
 		for (var toFill : regionsToFill) {
 			for (var ref : toFill.refs) {
-				int reference = ref.getReference();
-				var reg = regionsToRef.get(reference);
+				var reg = regionsToRef.get(ref.getReference());
 				ref.setRegionBase(reg.pointer);
 			}
 			writeHeader(toFill.core, toFill.executor, toFill.start);
 		}
 	}
 
+	private void checkForCrossReferenceError(List<String> errors,
+			CoreToFill toFill, MemoryRegionReference ref) {
+		var reference = ref.getReference();
+		var reg = regionsToRef.get(reference);
+
+		if (isNull(reg)) {
+			var potentialRefs = new StringBuilder("Reference ")
+					.append(reference).append(" from ").append(toFill)
+					.append(" not found from ");
+			regionsToRef.values().forEach(region -> {
+				if (region.core.onSameChipAs(toFill.core)) {
+					potentialRefs.append(ref).append(" (from core ")
+							.append(region.core).append("); ");
+				}
+			});
+			errors.add(potentialRefs.toString().trim());
+		} else {
+			if (!reg.core.onSameChipAs(toFill.core)) {
+				errors.add("Region " + ref + " on " + reg
+						+ " cannot be referenced from " + toFill);
+			}
+		}
+	}
+
 	static class DanglingReferenceException
 			extends DataSpecificationException {
-		private static final long serialVersionUID = 3954605254603357775L;
+		private static final long serialVersionUID = -5070252348099737363L;
 
-		DanglingReferenceException(int ref, RegionToRef reg, CoreLocation core,
-				int region) {
+		DanglingReferenceException(Reference ref, RegionToRef reg,
+				CoreLocation core, int region) {
 			super("Region " + ref + " on " + reg + " cannot be"
 					+ " referenced from " + core + ", " + region);
 		}
@@ -190,9 +199,9 @@ class ExecutionContext implements AutoCloseable {
 	private static class RegionToRef {
 		final CoreLocation core;
 
-		final int pointer;
+		final MemoryLocation pointer;
 
-		RegionToRef(CoreLocation core, int pointer) {
+		RegionToRef(CoreLocation core, MemoryLocation pointer) {
 			this.core = core;
 			this.pointer = pointer;
 		}
@@ -207,13 +216,13 @@ class ExecutionContext implements AutoCloseable {
 	private static class CoreToFill {
 		final Executor executor;
 
-		final int start;
+		final MemoryLocation start;
 
 		final CoreLocation core;
 
 		final List<MemoryRegionReference> refs = new ArrayList<>();
 
-		CoreToFill(Executor executor, int start, CoreLocation core) {
+		CoreToFill(Executor executor, MemoryLocation start, CoreLocation core) {
 			this.executor = executor;
 			this.start = start;
 			this.core = core;

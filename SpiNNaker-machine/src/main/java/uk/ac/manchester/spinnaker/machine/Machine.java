@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
@@ -28,6 +27,7 @@ import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +47,7 @@ import uk.ac.manchester.spinnaker.machine.datalinks.FpgaId;
 import uk.ac.manchester.spinnaker.machine.datalinks.InetIdTuple;
 import uk.ac.manchester.spinnaker.machine.datalinks.SpinnakerLinkData;
 import uk.ac.manchester.spinnaker.utils.DoubleMapIterable;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
 
 /**
@@ -60,7 +61,7 @@ import uk.ac.manchester.spinnaker.utils.TripleMapIterable;
  *
  * @author Christian-B
  */
-public class Machine implements Iterable<Chip> {
+public class Machine implements MappableIterable<Chip> {
 	private static final Logger log = getLogger(Link.class);
 
 	/** Size of the machine along the x and y axes in Chips. */
@@ -309,7 +310,6 @@ public class Machine implements Iterable<Chip> {
 		return unmodifiableSet(chips.keySet());
 	}
 
-	@Override
 	/**
 	 * Returns an iterator over the Chips in this Machine.
 	 * <p>
@@ -317,6 +317,7 @@ public class Machine implements Iterable<Chip> {
 	 *
 	 * @return An iterator over the Chips in this Machine.
 	 */
+	@Override
 	public final Iterator<Chip> iterator() {
 		return chips.values().iterator();
 	}
@@ -717,7 +718,7 @@ public class Machine implements Iterable<Chip> {
 	 *
 	 * @return All added FPGA link data items.
 	 */
-	public final Iterable<FPGALinkData> getFpgaLinks() {
+	public final MappableIterable<FPGALinkData> getFpgaLinks() {
 		return new TripleMapIterable<>(fpgaLinks);
 	}
 
@@ -731,10 +732,11 @@ public class Machine implements Iterable<Chip> {
 	 *            The board address that this FPGA link is associated with.
 	 * @return All added FPGA link data items for this address.
 	 */
-	public final Iterable<FPGALinkData> getFpgaLinks(InetAddress address) {
+	public final MappableIterable<FPGALinkData>
+			getFpgaLinks(InetAddress address) {
 		var byAddress = fpgaLinks.get(address);
 		if (byAddress == null) {
-			return emptyList();
+			return Collections::emptyIterator;
 		}
 		return new DoubleMapIterable<>(byAddress);
 	}
@@ -815,7 +817,7 @@ public class Machine implements Iterable<Chip> {
 	 *            x and y coordinates for any chip on the board
 	 * @return A Stream over the destination locations.
 	 */
-	public final Iterable<Chip> iterChipsOnBoard(Chip chip) {
+	public final MappableIterable<Chip> iterChipsOnBoard(Chip chip) {
 		return () -> new ChipOnBoardIterator(chip.nearestEthernet);
 	}
 
@@ -1004,7 +1006,7 @@ public class Machine implements Iterable<Chip> {
 			return "bootEthernetAddress " + bootEthernetAddress + " != "
 					+ other.bootEthernetAddress;
 		}
-		for (ChipLocation loc : chips.keySet()) {
+		for (var loc : chips.keySet()) {
 			var c1 = chips.get(loc);
 			var c2 = other.chips.get(loc);
 			if (c1.equals(c2)) {

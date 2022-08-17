@@ -1,0 +1,16 @@
+{
+	"name": "spalloc-support",
+	"version": "0.0.1",
+	"description": "Support code for JavaSpiNNaker's Spalloc Service implementation",
+	"license": "GPL-3.0",
+	"repository": "github:SpiNNakerManchester/JavaSpiNNaker",
+	"author": "Donal K. Fellows",
+	"dependencies": {
+		"typescript": "4.3.5"
+	},
+	"browser": "Chrome",
+	"scripts": {
+		"build": "tsc ${TYPESCRIPT_SRC_DIR:=../typescript}/*.ts --target ${TYPESCRIPT_TARGET:=es6} --removeComments --outFile ${MAVEN_BUILD_DIR:=../../../target}/js/spinnaker.js",
+		"build-win": "tsc %TYPESCRIPT_SRC_DIR%\\spinnaker.ts --target %TYPESCRIPT_TARGET% --removeComments --outFile %MAVEN_BUILD_DIR%\\js\\spinnaker.js"
+	}
+}

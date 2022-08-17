@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import static java.util.Arrays.asList;
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.HOSTNAME_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
@@ -41,6 +42,7 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration2.INIConfiguration;
@@ -86,7 +88,7 @@ public class Configuration {
 			 */
 			var params = new Parameters().ini()
 					.setLocationStrategy(new CombinedLocationStrategy(
-							asList(new ProvidedURLLocationStrategy(),
+							List.of(new ProvidedURLLocationStrategy(),
 									new HomeDirectoryLocationStrategy(),
 									new ClasspathLocationStrategy())))
 					.setListDelimiterHandler(
@@ -179,25 +181,29 @@ public class Configuration {
 
 	private static final String NULL_MARKER = "None";
 
+	private static boolean isNull(String value) {
+		return NULL_MARKER.equals(value);
+	}
+
 	private Double readNoneOrFloat(String prop) {
 		var val = section.getString(prop);
-		if (NULL_MARKER.equals(val)) {
+		if (isNull(val)) {
 			return null;
 		}
-		return Double.parseDouble(val);
+		return parseDouble(val);
 	}
 
 	private Integer readNoneOrInt(String prop) {
 		var val = section.getString(prop);
-		if (NULL_MARKER.equals(val)) {
+		if (isNull(val)) {
 			return null;
 		}
-		return Integer.parseInt(val);
+		return parseInt(val);
 	}
 
 	private String readNoneOrString(String prop) {
 		var val = section.getString(prop);
-		if (NULL_MARKER.equals(val)) {
+		if (isNull(val)) {
 			return null;
 		}
 		return val;
@@ -224,7 +230,7 @@ public class Configuration {
 			defaults.put(MACHINE_PROPERTY, readNoneOrString(MACHINE_PROPERTY));
 		}
 		if (section.containsKey(TAGS_PROPERTY)) {
-			if (NULL_MARKER.equals(section.getString(TAGS_PROPERTY))) {
+			if (isNull(section.getString(TAGS_PROPERTY))) {
 				defaults.put(TAGS_PROPERTY, null);
 			} else {
 				defaults.put(TAGS_PROPERTY,

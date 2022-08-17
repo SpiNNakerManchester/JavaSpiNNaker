@@ -70,26 +70,24 @@ abstract class OperationMapper {
 	 */
 	static Callable getOperationImpl(FunctionAPI funcs, Commands opcode) {
 		// Note that MAP is using the object identity; this is by design
-		var map = MAP.get(requireNonNull(funcs,
-				"can only look up method implementations of real objects"));
-		if (map == null) {
-			map = new HashMap<>();
-			MAP.put(funcs, map);
-
-			/*
-			 * Careful! Must only pass in references to funcs as a weak so that
-			 * it doesn't compromise the weak hash map. But we can use the same
-			 * weak reference for all the method wrappers that we create.
-			 */
-			manufactureCallables(map, new WeakReference<>(funcs),
-					getOperations(funcs.getClass()));
-		}
-		return map.get(opcode);
+		return MAP.computeIfAbsent(requireNonNull(funcs,
+				"can only look up method implementations of real objects"),
+				/*
+				 * Careful! Must only pass in references to funcs as a weak so
+				 * that it doesn't compromise the weak hash map. But we can use
+				 * the same weak reference for all the method wrappers that we
+				 * create.
+				 */
+				f -> manufactureCallables(new WeakReference<>(f),
+						OPS_MAP.computeIfAbsent(f.getClass(),
+								OperationMapper::discoverAndValidate)))
+				.get(opcode);
 	}
 
-	private static void manufactureCallables(Map<Commands, Callable> map,
+	private static Map<Commands, Callable> manufactureCallables(
 			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
-		// Note that getOperations() below ensures the safety of this
+		var map = new HashMap<Commands, Callable>();
+		// Note that discoverAndValidate() below ensures the safety of this
 		for (var e : ops.entrySet()) {
 			var c = e.getKey();
 			var m = e.getValue();
@@ -100,16 +98,13 @@ abstract class OperationMapper {
 				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
 			}
 		}
+		return map;
 	}
 
-	private static Map<Commands, Method> getOperations(
+	private static Map<Commands, Method> discoverAndValidate(
 			Class<? extends FunctionAPI> cls) {
-		var ops = OPS_MAP.get(cls);
-		if (ops != null) {
-			return ops;
-		}
-		ops = new HashMap<>();
-		for (Method m : cls.getMethods()) {
+		var ops = new HashMap<Commands, Method>();
+		for (var m : cls.getMethods()) {
 			// Skip methods without the annotation. They're no problem.
 			if (!m.isAnnotationPresent(Operation.class)) {
 				continue;
@@ -136,7 +131,6 @@ abstract class OperationMapper {
 			}
 			ops.put(c, m);
 		}
-		OPS_MAP.put(cls, ops);
 		return ops;
 	}
 

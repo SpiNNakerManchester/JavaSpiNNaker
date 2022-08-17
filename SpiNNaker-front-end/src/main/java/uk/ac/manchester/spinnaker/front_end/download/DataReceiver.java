@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
+import static java.nio.ByteBuffer.allocate;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.download.RecordingRegion.getRecordingRegionDescriptors;
 
@@ -23,7 +24,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -31,14 +31,14 @@ import org.slf4j.Logger;
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
@@ -51,7 +51,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  * @author Christian-B
  */
 public class DataReceiver extends BoardLocalSupport {
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final BufferedReceivingData receivedData;
 
@@ -69,7 +69,7 @@ public class DataReceiver extends BoardLocalSupport {
 	 * @param storage
 	 *            How to talk to the database.
 	 */
-	public DataReceiver(Transceiver tranceiver, Machine machine,
+	public DataReceiver(TransceiverInterface tranceiver, Machine machine,
 			BufferManagerStorage storage) {
 		super(machine);
 		txrx = tranceiver;
@@ -78,10 +78,9 @@ public class DataReceiver extends BoardLocalSupport {
 		this.machine = machine;
 	}
 
-	private Stream<List<Placement>> partitionByBoard(
+	private Stream<? extends List<Placement>> partitionByBoard(
 			List<Placement> placements) {
-		Map<ChipLocation, List<Placement>> map =
-				new DefaultMap<>(ArrayList::new);
+		var map = new DefaultMap<>(ArrayList<Placement>::new);
 		for (var p : placements) {
 			map.get(machine.getChipAt(p).nearestEthernet).add(p);
 		}
@@ -106,16 +105,10 @@ public class DataReceiver extends BoardLocalSupport {
 			int parallelFactor)
 			throws IOException, StorageException, ProcessException {
 		try (var exec = new BasicExecutor(parallelFactor)) {
-			/*
-			 * Checkstyle gets the indentation rules wrong for the next
-			 * statement.
-			 */
-			// CHECKSTYLE:OFF
 			// get data on a by-the-board basis
-			var tasks = exec.submitTasks(partitionByBoard(placements)
-					.map(places -> () -> getDataForPlacements(places)));
-			// CHECKSTYLE:ON
-			tasks.awaitAndCombineExceptions();
+			exec.submitTasks(partitionByBoard(placements), places -> {
+				return () -> getDataForPlacements(places);
+			}).awaitAndCombineExceptions();
 		} catch (IOException | StorageException | ProcessException
 				| RuntimeException e) {
 			throw e;
@@ -183,17 +176,17 @@ public class DataReceiver extends BoardLocalSupport {
 		return value >= 0 && value <= MAX_UINT;
 	}
 
-	private void readSomeData(RegionLocation location, long address,
+	private void readSomeData(RegionLocation location, MemoryLocation address,
 			long length)
 			throws IOException, StorageException, ProcessException {
-		if (!is32bit(address) || !is32bit(length)) {
+		if (!is32bit(length)) {
 			throw new IllegalArgumentException("non-32-bit argument");
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("< Reading {} bytes from {} at {}", length, location,
 					address);
 		}
-		var data = requestData(location, (int) address, (int) length);
+		var data = requestData(location, address, (int) length);
 		receivedData.flushingDataFromRegion(location, data);
 	}
 
@@ -210,11 +203,12 @@ public class DataReceiver extends BoardLocalSupport {
 	 * @throws IOException
 	 *             if communications fail
 	 */
-	private ByteBuffer requestData(HasCoreLocation location, long address,
-			int length) throws IOException, ProcessException {
+	private ByteBuffer requestData(HasCoreLocation location,
+			MemoryLocation address, int length)
+			throws IOException, ProcessException {
 		if (length < 1) {
 			// Crazy negative lengths get an exception
-			return ByteBuffer.allocate(length);
+			return allocate(length);
 		}
 		return txrx.readMemory(location.getScampCore(), address, length);
 	}

@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /** A request to write memory on a chip. */
 public class WriteMemory extends SCPRequest<CheckOKResponse> {
@@ -30,13 +31,14 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 * @param core
 	 *            the core to write via
 	 * @param baseAddress
-	 *            The positive base address to start the read from
+	 *            The positive base address to start the write at
 	 * @param data
 	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
 	 *            buffer must be the point where the data starts.
 	 */
-	public WriteMemory(HasCoreLocation core, int baseAddress, ByteBuffer data) {
-		super(core, CMD_WRITE, baseAddress, data.remaining(),
+	public WriteMemory(HasCoreLocation core, MemoryLocation baseAddress,
+			ByteBuffer data) {
+		super(core, CMD_WRITE, baseAddress.address, data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}
@@ -50,8 +52,10 @@ public class WriteMemory extends SCPRequest<CheckOKResponse> {
 	 *            Between 1 and 256 bytes to write; the <i>position</i> of the
 	 *            buffer must be the point where the data starts.
 	 */
-	public WriteMemory(HasChipLocation chip, int baseAddress, ByteBuffer data) {
-		super(chip.getScampCore(), CMD_WRITE, baseAddress, data.remaining(),
+	public WriteMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			ByteBuffer data) {
+		super(chip.getScampCore(), CMD_WRITE, baseAddress.address,
+				data.remaining(),
 				efficientTransferUnit(baseAddress, data.remaining()).value,
 				data);
 	}

@@ -18,8 +18,11 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.utils.DefaultMap.KeyAwareFactory;
 
 /**
  *
@@ -27,70 +30,74 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestDefaultMap {
 
-    public TestDefaultMap() {
-    }
+	public TestDefaultMap() {
+	}
 
-    @SuppressWarnings({
-    	"unchecked", "rawtypes"
-	})
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-    public void testUntyped() {
-        var instance = new DefaultMap(ArrayList::new);
-        var foo = instance.get("foo");
-        assertTrue(foo instanceof ArrayList);
-        var fooList = (ArrayList)foo;
-        fooList.add("a");
-        fooList.add(1);
-    }
+	public void testUntyped() {
+		var instance = new DefaultMap(ArrayList::new);
+		var foo = instance.get("foo");
+		assertTrue(foo instanceof ArrayList);
+		var fooList = (ArrayList) foo;
+		fooList.add("a");
+		fooList.add(1);
+	}
 
-    @Test
-    public void testTyped() {
-        DefaultMap<String, List<Integer>> instance =
-                new DefaultMap<>(ArrayList<Integer>::new);
-        var foo = instance.get("foo");
-        assertTrue(foo instanceof ArrayList);
-        //foo.add("a");
-        foo.add(1);
-    }
+	@Test
+	public void testTyped() {
+		// Explicit to work around weird issue in Java 14 compiler
+		Map<String, List<Integer>> instance = new DefaultMap<>(ArrayList::new);
+		var foo = instance.get("foo");
+		assertTrue(foo instanceof ArrayList);
+		// foo.add("a");
+		foo.add(1);
+		var bar = instance.get("bar");
+		assertNotEquals(foo, bar);
+		assertEquals(1, foo.size());
+		assertEquals(0, bar.size());
+		var bar2 = instance.get("bar");
+		bar2.add(123);
+		assertEquals(bar, bar2);
+	}
 
-    /**
-     * Instead it demonstrates the if you pass in an Object the same
-     *      instance of this Object is used every time.
-     */
-    @Test
-    public void testBad() {
-        DefaultMap<String, List<Integer>> instance =
-                new DefaultMap<>(new ArrayList<Integer>());
-        var foo = instance.get("one");
-        foo.add(11);
-        var bar = instance.get("two");
-        bar.add(12);
-        assertEquals(2, bar.size());
-        assertTrue(foo == bar);
-    }
+	/**
+	 * Instead it demonstrates the if you pass in an Object the same instance of
+	 * this Object is used every time.
+	 */
+	@Test
+	public void testBad() {
+		Map<String, List<Integer>> instance =
+				DefaultMap.newMapWithDefault(new ArrayList<>());
+		var foo = instance.get("one");
+		foo.add(11);
+		var bar = instance.get("two");
+		bar.add(12);
+		assertEquals(2, bar.size());
+		assertTrue(foo == bar);
+	}
 
-    @Test
-    public void testKeyAware() {
-        DefaultMap<Integer, Integer> instance =
-                DefaultMap.newAdvancedDefaultMap(new Doubler());
-        var two = instance.get(1);
-        assertEquals(2, two.intValue());
-    }
+	@Test
+	public void testKeyAware() {
+		DefaultMap<Integer, Integer> instance =
+				DefaultMap.newAdvancedDefaultMap(new Doubler());
+		var two = instance.get(1);
+		assertEquals(2, two.intValue());
+	}
 
-    @Test
-    public void testKeyAware2() {
-    	DefaultMap<Integer, Integer> instance =
-                DefaultMap.newAdvancedDefaultMap(i -> i*2);
-        var two = instance.get(1);
-        assertEquals(2, two.intValue());
-    }
+	@Test
+	public void testKeyAware2() {
+		DefaultMap<Integer, Integer> instance =
+				DefaultMap.newAdvancedDefaultMap(i -> i * 2);
+		var two = instance.get(1);
+		assertEquals(2, two.intValue());
+	}
 
-    public static class Doubler
-    		implements DefaultMap.KeyAwareFactory<Integer, Integer> {
-        @Override
-        public Integer createValue(Integer key) {
-            return Integer.valueOf(key.intValue() * 2);
-        }
-    }
+	public class Doubler implements KeyAwareFactory<Integer, Integer> {
+		@Override
+		public Integer createValue(Integer key) {
+			return Integer.valueOf(key.intValue() * 2);
+		}
+	}
 
 }

@@ -17,11 +17,11 @@
 package uk.ac.manchester.spinnaker.messages.scp;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 
 import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
+import uk.ac.manchester.spinnaker.messages.model.UnroutableMessageException;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 
 /** Represents an abstract SCP response. */
@@ -47,7 +47,7 @@ public abstract class SCPResponse {
 		assert buffer.order() == LITTLE_ENDIAN : "buffer.order="
 				+ buffer.order();
 		buffer.getShort(); // SKIP TWO PADDING BYTES
-		sdpHeader = new SDPHeader(buffer);
+		sdpHeader = new SDPHeader(buffer, false);
 		result = SCPResult.get(buffer.getShort());
 		sequence = buffer.getShort();
 	}
@@ -62,31 +62,21 @@ public abstract class SCPResponse {
 	 *            The particular command that this is a response to.
 	 * @throws UnexpectedResponseCodeException
 	 *             If the response was a failure.
+	 * @throws UnroutableMessageException
+	 *             If the response was specifically that the message couldn't
+	 *             be routed.
 	 */
-	protected final void throwIfNotOK(String operation, SCPCommand command)
+	protected final void throwIfNotOK(String operation, Enum<?> command)
 			throws UnexpectedResponseCodeException {
-		if (result != RC_OK) {
+		switch (result) {
+		case RC_OK:
+			return;
+		case RC_ROUTE:
+			throw new UnroutableMessageException(operation, command,
+					sdpHeader);
+		default:
 			throw new UnexpectedResponseCodeException(operation, command,
 					result);
-		}
-	}
-
-	/**
-	 * Throw an exception if the response is not an {@linkplain SCPResult#RC_OK
-	 * OK}.
-	 *
-	 * @param operation
-	 *            The overall operation that was being done.
-	 * @param command
-	 *            The particular command that this is a response to.
-	 * @throws UnexpectedResponseCodeException
-	 *             If the response was a failure.
-	 */
-	protected final void throwIfNotOK(String operation, String command)
-			throws UnexpectedResponseCodeException {
-		if (result != RC_OK) {
-			throw new UnexpectedResponseCodeException(operation, command,
-					result.name());
 		}
 	}
 }

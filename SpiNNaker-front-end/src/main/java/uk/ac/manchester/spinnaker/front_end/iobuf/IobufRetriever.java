@@ -19,17 +19,17 @@ package uk.ac.manchester.spinnaker.front_end.iobuf;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -101,34 +101,31 @@ public class IobufRetriever extends BoardLocalSupport {
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws RuntimeException
+	 *             If an unexpected exception happens.
 	 */
 	public NotableMessages retrieveIobufContents(IobufRequest request,
 			String provenanceDir) throws IOException, ProcessException {
 		var provDir = new File(provenanceDir);
-		if (!provDir.isDirectory() || !provDir.canWrite()) {
-			throw new IOException(
-					"provenance location must be writable directory");
-		}
+		validateProvenanceDirectory(provDir);
 		var errorEntries = new ArrayList<String>();
 		var warnEntries = new ArrayList<String>();
+		var mapping = request.getRequestDetails();
 		try {
-			var mapping = request.getRequestDetails();
-			var tasks = executor
-					.submitTasks(mapping.keySet().stream().flatMap(binary -> {
-						var r = new Replacer(binary);
-						return partitionByBoard(mapping.get(binary))
-								.map(cores -> () -> retrieveIobufContents(cores,
-										r, provDir, errorEntries, warnEntries));
-					}));
-			try {
-				tasks.awaitAndCombineExceptions();
-			} catch (IOException | ProcessException | RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("unexpected exception", e);
-			}
+			executor.submitTasks(mapping.entrySet().stream()
+					.map(this::partitionByBoard).flatMap(entry -> {
+						var r = new Replacer(entry.getKey());
+						return entry.getValue().stream().map(cs -> {
+							return () -> retrieveIobufContents(cs, r, provDir,
+									errorEntries, warnEntries);
+						});
+					})).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {
 			e.rethrow();
+		} catch (IOException | ProcessException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
 		}
 		return new NotableMessages(errorEntries, warnEntries);
 	}
@@ -136,7 +133,7 @@ public class IobufRetriever extends BoardLocalSupport {
 	/**
 	 * Retrieve and translate some IOBUFs.
 	 *
-	 * @param coreSubsets
+	 * @param cores
 	 *            The cores from which the IOBUFs are to be extracted. They must
 	 *            be running the executable contained in {@code binaryFile} or
 	 *            the buffers will contain the wrong information.
@@ -151,54 +148,64 @@ public class IobufRetriever extends BoardLocalSupport {
 	 *             If network IO fails or the mapping dictionary is absent.
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
+	 * @throws RuntimeException
+	 *             If an unexpected exception happens.
 	 */
-	public NotableMessages retrieveIobufContents(CoreSubsets coreSubsets,
+	public NotableMessages retrieveIobufContents(CoreSubsets cores,
 			File binaryFile, File provenanceDir)
 			throws IOException, ProcessException {
-		if (!provenanceDir.isDirectory() || !provenanceDir.canWrite()) {
-			throw new IOException(
-					"provenance location must be writable directory");
-		}
+		validateProvenanceDirectory(provenanceDir);
 		var errorEntries = new ArrayList<String>();
 		var warnEntries = new ArrayList<String>();
 		try {
 			var replacer = new Replacer(binaryFile);
-			var tasks = executor.submitTasks(partitionByBoard(coreSubsets)
-					.map(boardSubset -> () -> retrieveIobufContents(boardSubset,
-							replacer, provenanceDir, errorEntries,
-							warnEntries)));
-			try {
-				tasks.awaitAndCombineExceptions();
-			} catch (IOException | ProcessException | RuntimeException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new RuntimeException("unexpected exception", e);
-			}
+			executor.submitTasks(partitionByBoard(cores), boards -> {
+				return () -> retrieveIobufContents(boards, replacer,
+						provenanceDir, errorEntries, warnEntries);
+			}).awaitAndCombineExceptions();
 		} catch (Replacer.WrappedException e) {
 			e.rethrow();
+		} catch (IOException | ProcessException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new RuntimeException("unexpected exception", e);
 		}
 		return new NotableMessages(errorEntries, warnEntries);
 	}
 
-	private Stream<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
-		var map = new DefaultMap<>(CoreSubsets::new);
+	private static void validateProvenanceDirectory(File provDir)
+			throws IOException {
+		if (!provDir.isDirectory() || !provDir.canWrite()) {
+			throw new IOException(
+					"provenance location must be writable directory");
+		}
+	}
+
+	private <K> Map.Entry<K, Collection<CoreSubsets>> partitionByBoard(
+			Map.Entry<K, CoreSubsets> entry) {
+		var map = new DefaultMap<Object, CoreSubsets>(CoreSubsets::new);
+		for (var core : entry.getValue()) {
+			map.get(machine.getChipAt(core).nearestEthernet).addCore(core);
+		}
+		return Map.entry(entry.getKey(), map.values());
+	}
+
+	private Collection<CoreSubsets> partitionByBoard(CoreSubsets coreSubsets) {
+		var map = new DefaultMap<Object, CoreSubsets>(CoreSubsets::new);
 		for (var core : coreSubsets) {
 			map.get(machine.getChipAt(core).nearestEthernet).addCore(core);
 		}
-		return map.values().stream();
+		return map.values();
 	}
 
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
 			File provenanceDir, List<String> errorEntries,
 			List<String> warnEntries) throws IOException, ProcessException {
-		try (var bl = new BoardLocal(cores.iterator().next())) {
-			// extract iobuf
-			var ioBuffers = txrx.getIobuf(cores);
-
-			// write iobuf to file and check for errors for provenance
-			for (var iobuf : ioBuffers) {
+		try (var bl = new BoardLocal(cores.first().get())) {
+			// extract iobuf, write to file and check for errors for provenance
+			for (var iobuf : txrx.getIobuf(cores)) {
 				var file = getProvenanceFile(provenanceDir, iobuf);
-				try (var w = openFileForAppending(file)) {
+				try (var w = buffer(new FileWriter(file, UTF_8, true))) {
 					log.info("storing iobuf from {} (running {}) in {}",
 							iobuf.asCoreLocation(), replacer.origin, file);
 					// ISO 8859-1: bytes are zero-extended to chars
@@ -218,14 +225,8 @@ public class IobufRetriever extends BoardLocalSupport {
 
 	private static File getProvenanceFile(File provenanceDir, IOBuffer iobuf) {
 		return new File(provenanceDir,
-				format("iobuf_for_chip_%d_%d_processor_id_%d.txt",
-						iobuf.getX(), iobuf.getY(), iobuf.getP()));
-	}
-
-	private static BufferedWriter openFileForAppending(File file)
-			throws IOException {
-		return new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(file, true), UTF_8));
+				format("iobuf_for_chip_%d_%d_processor_id_%d.txt", iobuf.getX(),
+						iobuf.getY(), iobuf.getP()));
 	}
 
 	private static void addValueIfMatch(Pattern regex, String line,
@@ -233,7 +234,7 @@ public class IobufRetriever extends BoardLocalSupport {
 		var match = regex.matcher(line);
 		if (match.matches()) {
 			synchronized (entries) {
-				entries.add(String.format("%d, %d, %d: %s (%s)", core.getX(),
+				entries.add(format("%d, %d, %d: %s (%s)", core.getX(),
 						core.getY(), core.getP(), match.group(ENTRY_TEXT),
 						match.group(ENTRY_FILE)));
 			}

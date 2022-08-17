@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.lang.System.getProperty;
+import static java.lang.Thread.sleep;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -36,7 +39,7 @@ public abstract class Ping {
 	}
 
 	private static ProcessBuilder pingCmd(String address, int count, int wait) {
-		if (System.getProperty("os.name").toLowerCase().contains("win")) {
+		if (getProperty("os.name").toLowerCase().contains("win")) {
 			return new ProcessBuilder("ping", "-n", Integer.toString(count),
 					"-w", Integer.toString(wait), address);
 		} else {
@@ -83,7 +86,7 @@ public abstract class Ping {
 				break;
 			}
 			try {
-				Thread.sleep(PING_DELAY);
+				sleep(PING_DELAY);
 			} catch (InterruptedException e) {
 				break;
 			}

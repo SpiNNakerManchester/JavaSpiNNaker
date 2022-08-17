@@ -26,34 +26,38 @@ import uk.ac.manchester.spinnaker.utils.InetFactory.Inet6NotSupportedException;
  * @author Christian-B
  */
 public class TestInetFactory {
+	/** Name of a host that isn't going away soon because we control it. */
+	private static final String WELL_KNOWN_NAME = "apt.cs.manchester.ac.uk";
 
-    public TestInetFactory() {
-    }
+	public TestInetFactory() {
+	}
 
-    @Test
-    public void testByBytes() throws UnknownHostException {
-        byte[] bytes = {1, 2, 3, 4};
-        InetFactory.getByAddress(bytes);
-    }
+	@Test
+	public void testByBytes() throws UnknownHostException {
+		byte[] bytes = {1, 2, 3, 4};
+		InetFactory.getByAddress(bytes);
+	}
 
-    public void testByName() throws UnknownHostException {
-        InetFactory.getByName("apt.cs.manchester.ac.uk");
-    }
+	public void testByName() throws UnknownHostException {
+		InetFactory.getByName(WELL_KNOWN_NAME);
+	}
 
-    @Test
-    public void testByBytes6() {
-        byte[] bytes = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        assertThrows(Inet6NotSupportedException.class, () -> {
-            InetFactory.getByAddress(bytes);
-        });
-    }
+	@Test
+	public void testByBytes6() {
+		byte[] bytes = {
+			1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+		};
+		assertThrows(Inet6NotSupportedException.class, () -> {
+			InetFactory.getByAddress(bytes);
+		});
+	}
 
-    @Test
-    public void testByName6() {
-        String bytes = "3731:54:65fe:2::a7";
-        assertThrows(Inet6NotSupportedException.class, () -> {
-            InetFactory.getByName(bytes);
-        });
-    }
+	@Test
+	public void testByName6() {
+		var bytes = "3731:54:65fe:2::a7";
+		assertThrows(Inet6NotSupportedException.class, () -> {
+			InetFactory.getByName(bytes);
+		});
+	}
 
 }

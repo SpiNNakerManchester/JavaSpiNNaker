@@ -1,0 +1,18 @@
+{
+  "groups": [{
+    "name": "spalloc",
+    "description": "Configuration of the Spalloc service."
+  }],
+  "properties": [
+    {
+      "name": "cxf.jaxrs.component-scan",
+      "type": "java.lang.Boolean",
+      "description": "Whether to scan for Spring components."
+    },
+    {
+      "name": "cxf.jaxrs.classes-scan-packages",
+      "type": "java.lang.String",
+      "description": "Comma-separated list (in a string) of package names to scan."
+    }
+  ]
+}

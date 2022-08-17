@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
+import static java.util.Objects.isNull;
+
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -33,7 +36,7 @@ public class BoardPhysicalCoordinates {
 
 	private int frame;
 
-	private int board;
+	private Integer board;
 
 	/**
 	 * Create with default coordinates.
@@ -51,7 +54,7 @@ public class BoardPhysicalCoordinates {
 	 * @param board
 	 *            the board ID within the frame
 	 */
-	public BoardPhysicalCoordinates(int cabinet, int frame, int board) {
+	public BoardPhysicalCoordinates(int cabinet, int frame, Integer board) {
 		this.cabinet = cabinet;
 		this.frame = frame;
 		this.board = board;
@@ -73,27 +76,28 @@ public class BoardPhysicalCoordinates {
 		this.frame = frame;
 	}
 
-	public int getBoard() {
+	public Integer getBoard() {
 		return board;
 	}
 
-	public void setBoard(int board) {
+	public void setBoard(Integer board) {
 		this.board = board;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof BoardPhysicalCoordinates) {
-			BoardPhysicalCoordinates other = (BoardPhysicalCoordinates) o;
+			var other = (BoardPhysicalCoordinates) o;
 			return cabinet == other.cabinet && frame == other.frame
-					&& board == other.board;
+					&& Objects.equals(board, other.board);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return 9 * (cabinet * 1234567 + frame * 56789 + board);
+		return 9 * (cabinet * 1234567 + frame * 56789
+				+ (isNull(board) ? 0 : board));
 	}
 
 	@Override

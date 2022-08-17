@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.boot;
 
-import java.util.HashMap;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
 import java.util.Map;
 
 /** Boot message operation codes. */
@@ -33,16 +34,11 @@ public enum BootOpCode {
 	/** The encoded form of the opcode. */
 	public final int value;
 
-	private static final Map<Integer, BootOpCode> MAP = new HashMap<>();
+	private static final Map<Integer, BootOpCode> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	BootOpCode(int value) {
 		this.value = value;
-	}
-
-	static {
-		for (var c : values()) {
-			MAP.put(c.value, c);
-		}
 	}
 
 	/**

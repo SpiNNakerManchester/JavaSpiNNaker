@@ -49,7 +49,7 @@ import java.util.NoSuchElementException;
  * @author Donal Fellows
  * @author Christian
  */
-public class ReaderLineIterable implements Iterable<String>, Closeable {
+public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 	private final BufferedReader r;
 
 	private boolean closed = false;

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.SerializableMessage;
 import uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition;
 
@@ -88,6 +89,11 @@ public class SystemVariableBootValues implements SerializableMessage {
 			if (newbytes.length != defbytes.length) {
 				throw new IllegalArgumentException(
 						"byte array length must be " + defbytes.length);
+			}
+			break;
+		case ADDRESS:
+			if (!(value instanceof MemoryLocation)) {
+				throw new IllegalArgumentException("need a memory location");
 			}
 			break;
 		default:

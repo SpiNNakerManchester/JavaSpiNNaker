@@ -21,6 +21,8 @@ import static java.lang.Integer.parseInt;
 
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * A three-part semantic version description.
  *
@@ -51,7 +53,9 @@ public final class Version implements Comparable<Version> {
 	 * @param rev
 	 *            the revision number
 	 */
-	public Version(int major, int minor, int rev) {
+	public Version(@JsonProperty("major-version") int major,
+			@JsonProperty("minor-version") int minor,
+			@JsonProperty("revision") int rev) {
 		majorVersion = major;
 		minorVersion = minor;
 		revision = rev;

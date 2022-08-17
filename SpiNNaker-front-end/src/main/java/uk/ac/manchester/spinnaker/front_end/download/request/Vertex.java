@@ -17,8 +17,12 @@
 package uk.ac.manchester.spinnaker.front_end.download.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 
 /**
  * Vertex recording region information.
@@ -41,6 +45,17 @@ public class Vertex {
 	 * buffers).
 	 */
 	private final long recordingRegionBaseAddress;
+
+	/**
+	 * Address at which to find recording metadata. This was allocated during
+	 * data specification execution, and contains a description of <i>all</i>
+	 * the recording regions owned by a vertex (it may well have several, e.g.,
+	 * spikes and voltages). This points to a structure that includes the
+	 * addresses of the per-region metadata, and those point in turn to the
+	 * actual buffers used to do the recording (which are <i>circular</i>
+	 * buffers).
+	 */
+	private final MemoryLocation base;
 
 	/** The IDs of the regions recording. */
 	private final int[] recordedRegionIds;
@@ -65,6 +80,7 @@ public class Vertex {
 		this.label = label;
 		this.recordingRegionBaseAddress = recordingRegionBaseAddress;
 		this.recordedRegionIds = recordedRegionIds;
+		this.base = new MemoryLocation(recordingRegionBaseAddress);
 	}
 
 	/**
@@ -85,6 +101,16 @@ public class Vertex {
 	 */
 	public long getBaseAddress() {
 		return recordingRegionBaseAddress;
+	}
+
+	/**
+	 * Get the recording region base address.
+	 *
+	 * @return the base address of the recording region
+	 */
+	@JsonIgnore
+	public MemoryLocation getBase() {
+		return base;
 	}
 
 	/**

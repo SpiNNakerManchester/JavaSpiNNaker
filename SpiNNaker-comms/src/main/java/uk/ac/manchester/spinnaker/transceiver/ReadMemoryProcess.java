@@ -16,11 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.transceiver;
 
-import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static java.nio.ByteBuffer.allocate;
-import static java.nio.ByteBuffer.wrap;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
 import java.io.File;
@@ -32,10 +28,13 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.scp.ReadLink;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.transceiver.Accumulator.BufferAccumulator;
+import uk.ac.manchester.spinnaker.transceiver.Accumulator.FileAccumulator;
 
 /** A process for reading memory on a SpiNNaker chip. */
 class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
@@ -52,89 +51,73 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		super(connectionSelector, retryTracker);
 	}
 
-	private static class Accumulator {
-		private final ByteBuffer buffer;
-
-		private boolean done = false;
-
-		private int maxpos = 0;
-
-		Accumulator(int size) {
-			buffer = allocate(size);
+	/**
+	 * Read memory into an accumulator.
+	 *
+	 * @param <T>
+	 *            Type of the result of the accumulator.
+	 * @param chip
+	 *            What chip has the memory to read from.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            how much to read
+	 * @param a
+	 *            The accumulator to receive the data.
+	 * @return The result of the accumulator.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
+	 */
+	private <T> T readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			int size, Accumulator<T> a) throws IOException, ProcessException {
+		for (int offset = 0, chunk; offset < size; offset += chunk) {
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
+			final int thisOffset = offset;
+			sendRequest(new ReadMemory(chip, baseAddress.add(offset), chunk),
+					response -> a.add(thisOffset, response.data));
 		}
-
-		Accumulator(byte[] receivingBuffer) {
-			buffer = wrap(receivingBuffer);
-		}
-
-		Accumulator(ByteBuffer receivingBuffer) {
-			buffer = receivingBuffer.slice();
-		}
-
-		synchronized void add(int position, ByteBuffer otherBuffer) {
-			if (done) {
-				throw new IllegalStateException(
-						"writing to fully written buffer");
-			}
-			var b = buffer.duplicate();
-			b.position(position);
-			int after = position + otherBuffer.remaining();
-			b.put(otherBuffer);
-			maxpos = max(maxpos, after);
-		}
-
-		synchronized ByteBuffer finish() {
-			if (!done) {
-				done = true;
-				buffer.limit(maxpos);
-			}
-			return buffer.asReadOnlyBuffer().order(LITTLE_ENDIAN);
-		}
+		finish();
+		checkForError();
+		return a.finish();
 	}
 
 	/**
-	 * This is complicated because the writes to the file can happen out of
-	 * order if the other end serves up the responses out of order. To handle
-	 * this, we need a seekable stream, and we need to make sure that we're not
-	 * stomping on our own toes when we do the seek.
+	 * Read memory over a link into an accumulator.
+	 *
+	 * @param <T>
+	 *            Type of the result of the accumulator.
+	 * @param chip
+	 *            What chip does the link start at.
+	 * @param linkDirection
+	 *            The direction of the link to traverse.
+	 * @param baseAddress
+	 *            where to read from.
+	 * @param size
+	 *            how much to read
+	 * @param a
+	 *            The accumulator to receive the data.
+	 * @return The result of the accumulator.
+	 * @throws IOException
+	 *             If anything goes wrong with networking.
+	 * @throws ProcessException
+	 *             If SpiNNaker rejects a message.
 	 */
-	private static class FileAccumulator {
-		private final RandomAccessFile file;
-
-		private final long initOffset;
-
-		private boolean done = false;
-
-		private IOException exception;
-
-		FileAccumulator(RandomAccessFile dataStream) throws IOException {
-			file = dataStream;
-			initOffset = dataStream.getFilePointer();
+	private <T> T readLink(HasChipLocation chip, Direction linkDirection,
+			MemoryLocation baseAddress, int size, Accumulator<T> a)
+			throws IOException, ProcessException {
+		for (int offset = 0, chunk; offset < size; offset += chunk) {
+			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
+			int thisOffset = offset;
+			sendRequest(
+					new ReadLink(chip, linkDirection, baseAddress.add(offset),
+							chunk),
+					response -> a.add(thisOffset, response.data));
 		}
-
-		synchronized void add(int position, ByteBuffer buffer) {
-			if (done) {
-				throw new IllegalStateException(
-						"writing to fully written buffer");
-			}
-			try {
-				file.seek(position + initOffset);
-				file.write(buffer.array(), buffer.position(),
-						buffer.remaining());
-			} catch (IOException e) {
-				if (exception == null) {
-					exception = e;
-				}
-			}
-		}
-
-		synchronized void finish() throws IOException {
-			done = true;
-			if (exception != null) {
-				throw exception;
-			}
-			file.seek(initOffset);
-		}
+		finish();
+		checkForError();
+		return a.finish();
 	}
 
 	/**
@@ -155,22 +138,10 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, ByteBuffer receivingBuffer)
+			MemoryLocation baseAddress, ByteBuffer receivingBuffer)
 			throws IOException, ProcessException {
-		int size = receivingBuffer.remaining();
-		var a = new Accumulator(receivingBuffer);
-		int chunk;
-		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = offset;
-			sendRequest(
-					new ReadLink(chip, linkDirection, baseAddress + offset,
-							chunk),
-					response -> a.add(thisOffset, response.data));
-		}
-		finish();
-		checkForError();
-		a.finish();
+		readLink(chip, linkDirection, baseAddress, receivingBuffer.remaining(),
+				new BufferAccumulator(receivingBuffer));
 	}
 
 	/**
@@ -188,20 +159,10 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void readMemory(HasChipLocation chip, int baseAddress,
+	void readMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			ByteBuffer receivingBuffer) throws IOException, ProcessException {
-		int size = receivingBuffer.remaining();
-		var a = new Accumulator(receivingBuffer);
-		int chunk;
-		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = offset;
-			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
-					response -> a.add(thisOffset, response.data));
-		}
-		finish();
-		checkForError();
-		a.finish();
+		readMemory(chip, baseAddress, receivingBuffer.remaining(),
+				new BufferAccumulator(receivingBuffer));
 	}
 
 	/**
@@ -222,20 +183,10 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	ByteBuffer readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, int size) throws IOException, ProcessException {
-		var a = new Accumulator(size);
-		int chunk;
-		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = offset;
-			sendRequest(
-					new ReadLink(chip, linkDirection, baseAddress + offset,
-							chunk),
-					response -> a.add(thisOffset, response.data));
-		}
-		finish();
-		checkForError();
-		return a.finish();
+			MemoryLocation baseAddress, int size)
+			throws IOException, ProcessException {
+		return readLink(chip, linkDirection, baseAddress, size,
+				new BufferAccumulator(size));
 	}
 
 	/**
@@ -253,19 +204,9 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	ByteBuffer readMemory(HasChipLocation chip, int baseAddress, int size)
-			throws IOException, ProcessException {
-		var a = new Accumulator(size);
-		int chunk;
-		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = offset;
-			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
-					response -> a.add(thisOffset, response.data));
-		}
-		finish();
-		checkForError();
-		return a.finish();
+	ByteBuffer readMemory(HasChipLocation chip, MemoryLocation baseAddress,
+			int size) throws IOException, ProcessException {
+		return readMemory(chip, baseAddress, size, new BufferAccumulator(size));
 	}
 
 	/**
@@ -289,21 +230,10 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, int size, RandomAccessFile dataFile)
+			MemoryLocation baseAddress, int size, RandomAccessFile dataFile)
 			throws IOException, ProcessException {
-		var a = new FileAccumulator(dataFile);
-		int chunk;
-		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = offset;
-			sendRequest(
-					new ReadLink(chip, linkDirection, baseAddress + offset,
-							chunk),
-					response -> a.add(thisOffset, response.data));
-		}
-		finish();
-		checkForError();
-		a.finish();
+		readLink(chip, linkDirection, baseAddress, size,
+				new FileAccumulator(dataFile));
 	}
 
 	/**
@@ -324,19 +254,9 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void readMemory(HasChipLocation chip, int baseAddress, int size,
+	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
 			RandomAccessFile dataFile) throws IOException, ProcessException {
-		var a = new FileAccumulator(dataFile);
-		int chunk;
-		for (int offset = 0; offset < size; offset += chunk) {
-			chunk = min(size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = offset;
-			sendRequest(new ReadMemory(chip, baseAddress + offset, chunk),
-					response -> a.add(thisOffset, response.data));
-		}
-		finish();
-		checkForError();
-		a.finish();
+		readMemory(chip, baseAddress, size, new FileAccumulator(dataFile));
 	}
 
 	/**
@@ -359,10 +279,11 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If SpiNNaker rejects a message.
 	 */
 	void readLink(HasChipLocation chip, Direction linkDirection,
-			int baseAddress, int size, File dataFile)
+			MemoryLocation baseAddress, int size, File dataFile)
 			throws IOException, ProcessException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
-			readLink(chip, linkDirection, baseAddress, size, s);
+			readLink(chip, linkDirection, baseAddress, size,
+					new FileAccumulator(s));
 		}
 	}
 
@@ -383,7 +304,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	void readMemory(HasChipLocation chip, int baseAddress, int size,
+	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
 			File dataFile) throws IOException, ProcessException {
 		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readMemory(chip, baseAddress, size, s);
@@ -411,19 +332,8 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
 		var buffer = new byte[region.size];
-		var a = new Accumulator(buffer);
-		int chunk;
-		for (int offset = 0; offset < region.size; offset += chunk) {
-			chunk = min(region.size - offset, UDP_MESSAGE_MAX_SIZE);
-			int thisOffset = offset;
-			sendRequest(
-					new ReadMemory(region.core.asChipLocation(),
-							region.startAddress + offset, chunk),
-					response -> a.add(thisOffset, response.data));
-		}
-		finish();
-		checkForError();
-		a.finish();
+		readMemory(region.core.asChipLocation(), region.startAddress,
+				region.size, new BufferAccumulator(buffer));
 		storage.appendRecordingContents(region, buffer);
 	}
 }

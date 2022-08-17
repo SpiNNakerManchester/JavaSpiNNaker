@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
-import java.util.HashMap;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
 import java.util.Map;
 
 /** The SCP Result codes. */
@@ -57,16 +58,11 @@ public enum SCPResult {
 	/** The encoded result value. */
 	public final short value;
 
-	private static final Map<Short, SCPResult> MAP = new HashMap<>();
+	private static final Map<Short, SCPResult> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	SCPResult(int value) {
 		this.value = (short) value;
-	}
-
-	static {
-		for (var r : values()) {
-			MAP.put(r.value, r);
-		}
 	}
 
 	/**

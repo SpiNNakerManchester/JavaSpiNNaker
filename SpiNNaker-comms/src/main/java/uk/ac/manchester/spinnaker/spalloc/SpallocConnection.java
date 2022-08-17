@@ -113,7 +113,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * Context adapter. Allows this code to be used like this:
 	 *
 	 * <pre>
-	 * try (AutoCloseable c = client.withConnection()) {
+	 * try (var c = client.withConnection()) {
 	 *     ...
 	 * }
 	 * </pre>
@@ -132,14 +132,14 @@ public abstract class SpallocConnection implements Closeable {
 		var key = currentThread();
 		/*
 		 * This loop will keep trying to connect until the socket exists and is
-		 * in a connected state. It's labelled just for clarity.
+		 * in a connected state.
 		 */
-		while (sock == null) {
+		do {
 			if (dead) {
 				throw new EOFException("not connected");
 			}
 			sock = getConnectedSocket(key, timeout);
-		}
+		} while (sock == null);
 
 		if (timeout != null) {
 			sock.setSoTimeout(timeout);
@@ -231,6 +231,7 @@ public abstract class SpallocConnection implements Closeable {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	private void closeThreadConnection(Thread key) throws IOException {
 		Socket sock;
 		synchronized (socksLock) {
@@ -298,7 +299,7 @@ public abstract class SpallocConnection implements Closeable {
 		if (timeout == null || timeout < 0) {
 			timeout = 0;
 		}
-		TextSocket sock = getConnection(timeout);
+		var sock = getConnection(timeout);
 
 		// Wait for some data to arrive
 		var line = readLine(sock);

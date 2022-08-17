@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import static java.lang.System.nanoTime;
+import static java.lang.Thread.yield;
 
 /**
  * Utilities for waiting very short periods of time.
@@ -41,7 +42,7 @@ public abstract class WaitUtils {
 		// BUSY LOOP! https://stackoverflow.com/q/11498585/301832
 		while (nanoTime() < nanoTimestamp) {
 			// The yield makes this a bit less CPU intensive
-			Thread.yield();
+			yield();
 		}
 	}
 }

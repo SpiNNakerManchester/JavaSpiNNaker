@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.messages.scp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_VER;
 
 import org.junit.jupiter.api.Test;
@@ -37,28 +38,28 @@ class TestSCPMessageAssembly {
 
 	@Test
 	void testCreateNewVerSCPPacket() {
-        var scp = new GetVersion(ZERO_CORE);
-        assertEquals(0, scp.argument1);
-        assertEquals(0, scp.argument2);
-        assertEquals(0, scp.argument3);
-        assertNull(scp.data);
+		var scp = new GetVersion(ZERO_CORE);
+		assertEquals(0, scp.argument1);
+		assertEquals(0, scp.argument2);
+		assertEquals(0, scp.argument3);
+		assertNull(scp.data);
 	}
 
 	@Test
 	void testCreateNewLinkSCPPacket() {
-        var scp = new ReadLink(ZERO_CORE, EAST, 0, 252);
-        assertEquals(0, scp.argument1);
-        assertEquals(252, scp.argument2);
-        assertEquals(0, scp.argument3);
-        assertNull(scp.data);
+		var scp = new ReadLink(ZERO_CORE, EAST, NULL, 252);
+		assertEquals(0, scp.argument1);
+		assertEquals(252, scp.argument2);
+		assertEquals(0, scp.argument3);
+		assertNull(scp.data);
 	}
 
 	@Test
 	void testCreateNewMemorySCPPacket() {
-        var scp = new ReadMemory(ZERO_CORE, 0, 252);
-        assertEquals(0, scp.argument1);
-        assertEquals(252, scp.argument2);
-        assertEquals(2, scp.argument3);
-        assertNull(scp.data);
+		var scp = new ReadMemory(ZERO_CORE, NULL, 252);
+		assertEquals(0, scp.argument1);
+		assertEquals(252, scp.argument2);
+		assertEquals(2, scp.argument3);
+		assertNull(scp.data);
 	}
 }

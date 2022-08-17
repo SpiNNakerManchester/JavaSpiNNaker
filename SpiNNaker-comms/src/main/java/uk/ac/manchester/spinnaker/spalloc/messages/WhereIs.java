@@ -25,7 +25,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 public class WhereIs {
 	private ChipLocation jobChip;
 
-	private int jobId;
+	private Integer jobId;
 
 	private ChipLocation chip;
 
@@ -61,7 +61,7 @@ public class WhereIs {
 	 * @param physical
 	 *            the physical coordinates of the board
 	 */
-	public WhereIs(ChipLocation jobChip, int jobId, ChipLocation chip,
+	public WhereIs(ChipLocation jobChip, Integer jobId, ChipLocation chip,
 			BoardCoordinates logical, String machine, ChipLocation boardChip,
 			BoardPhysicalCoordinates physical) {
 		this.jobChip = jobChip;
@@ -97,7 +97,7 @@ public class WhereIs {
 	 *
 	 * @return the job id
 	 */
-	public int getJobId() {
+	public Integer getJobId() {
 		return jobId;
 	}
 
@@ -107,7 +107,7 @@ public class WhereIs {
 	 * @param jobId
 	 *            the job id to set
 	 */
-	public void setJobId(int jobId) {
+	public void setJobId(Integer jobId) {
 		this.jobId = jobId;
 	}
 
@@ -209,9 +209,10 @@ public class WhereIs {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof WhereIs) {
-			WhereIs other = (WhereIs) o;
+			var other = (WhereIs) o;
 			return Objects.equals(jobChip, other.jobChip)
-					&& jobId == other.jobId && Objects.equals(chip, other.chip)
+					&& Objects.equals(jobId, other.jobId)
+					&& Objects.equals(chip, other.chip)
 					&& Objects.equals(logical, other.logical)
 					&& Objects.equals(machine, other.machine)
 					&& Objects.equals(boardChip, other.boardChip)

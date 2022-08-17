@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.storage;
 
-import static uk.ac.manchester.spinnaker.storage.sqlite.ResourceLoader.resourceToString;
+import static uk.ac.manchester.spinnaker.storage.sqlite.ResourceLoader.loadResource;
 
 import java.io.File;
 
@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.storage.sqlite.SQLiteBufferStorage;
  */
 public final class BufferManagerDatabaseEngine
 		extends DatabaseEngine<BufferManagerStorage> {
-	private static String sqlDDL = resourceToString("buffer_manager.sql");
+	private static String sqlDDL = loadResource("buffer_manager.sql");
 
 	/**
 	 * Create an engine interface for an in-memory database.

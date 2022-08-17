@@ -17,24 +17,25 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import static java.util.Collections.unmodifiableCollection;
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.joining;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  *
  * @author Christian-B
  */
-public final class Router implements Iterable<Link> {
-
+public final class Router implements MappableIterable<Link> {
 	private final EnumMap<Direction, Link> links =
 			new EnumMap<>(Direction.class);
 
@@ -58,7 +59,7 @@ public final class Router implements Iterable<Link> {
 	 * Default Constructor to add links later using default values.
 	 */
 	public Router() {
-		this(MachineDefaults.ROUTER_AVAILABLE_ENTRIES);
+		this(ROUTER_AVAILABLE_ENTRIES);
 	}
 
 	/**
@@ -163,10 +164,10 @@ public final class Router implements Iterable<Link> {
 		var ignoreDirections = details.getDeadDirections();
 		for (var direction : Direction.values()) {
 			if (!ignoreDirections.contains(direction)) {
-				var destination =
-						details.getLinkDestination(direction, source, machine);
+				var destination = details.getLinkDestination(direction, source,
+						machine);
 				addLink(new Link(source, direction,
-						Objects.requireNonNull(destination)));
+						requireNonNull(destination)));
 			}
 		}
 	}
@@ -256,8 +257,8 @@ public final class Router implements Iterable<Link> {
 	 *
 	 * @return A Stream over the destination locations.
 	 */
-	public Iterable<ChipLocation> iterNeighbouringChipsCoords() {
-		return () -> new NeighbourIterator(links.values().iterator());
+	public MappableIterable<ChipLocation> iterNeighbouringChipsCoords() {
+		return () -> new NeighbourIterator(links.values());
 	}
 
 	/**
@@ -269,26 +270,15 @@ public final class Router implements Iterable<Link> {
 	 * @return The destination locations
 	 */
 	public List<ChipLocation> neighbouringChipsCoords() {
-		var neighbours = new ArrayList<ChipLocation>();
-		for (Link link : links.values()) {
-			neighbours.add(link.destination);
-		}
-		return neighbours;
+		return links.values().stream().map(link -> link.destination)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public String toString() {
-		var result = new StringBuilder("Router[");
-		String sep = "";
-		for (var entry : links.entrySet()) {
-			result.append(sep);
-			result.append(entry.getKey());
-			result.append(":");
-			result.append(entry.getValue().destination);
-			sep = " ";
-		}
-		result.append("]");
-		return result.toString();
+		return links.entrySet().stream().map(
+				entry -> entry.getKey() + ":" + entry.getValue().destination)
+				.collect(joining(" ", "Router[", "]"));
 	}
 
 	@Override

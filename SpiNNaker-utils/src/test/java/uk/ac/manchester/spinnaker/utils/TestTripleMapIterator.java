@@ -16,8 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
@@ -30,114 +30,62 @@ import static org.junit.jupiter.api.Assertions.*;
 @SuppressWarnings("unused")
 public class TestTripleMapIterator {
 
-    @Test
-    public void testMultiple() {
-        Map<Float, Map<Double, Map<String, Integer>>> bigMap = new HashMap<>();
+	@Test
+	public void testMultiple() {
+		var bigMap = Map.of(//
+				0.5f, Map.of(//
+						23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+						43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12)),
+				2.5f, Map.of(//
+						423.2, Map.of("Un", -1, "Duex", -2, "Trois", -3), //
+						4.6, Map.of("Dix", -10, "Onze", -11, "Douze", -12)));
 
-        Map<Double, Map<String, Integer>> aMap = new HashMap<>();
+		var instance = new TripleMapIterator<>(bigMap);
+		int count = 0;
+		while (instance.hasNext()) {
+			var value = instance.next();
+			count += 1;
+		}
+		assertEquals(12, count);
+		assertThrows(NoSuchElementException.class, () -> {
+			instance.next();
+		});
 
-        var inner = new HashMap<String, Integer>();
-        inner.put("One", 1);
-        inner.put("Two", 2);
-        inner.put("Three", 3);
-        aMap.put(23.2, inner);
+	}
 
-        var inner2 = new HashMap<String, Integer>();
-        inner2.put("Ten", 10);
-        inner2.put("Eleven", 11);
-        inner2.put("Twelve", 12);
-        aMap.put(43.6, inner2);
+	@Test
+	public void testList() {
+		var aList = List.of(//
+				Map.of(//
+						23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+						43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12)), //
+				Map.of(//
+						423.2, Map.of("Un", -1, "Duex", -2, "Trois", -3), //
+						4.6, Map.of("Dix", -10, "Onze", -11, "Douze", -12)));
 
-        bigMap.put((float)0.5, aMap);
+		var instance = new TripleMapIterator<>(aList);
+		int count = 0;
+		while (instance.hasNext()) {
+			var value = instance.next();
+			count += 1;
+		}
+		assertEquals(12, count);
+		assertThrows(NoSuchElementException.class, () -> {
+			instance.next();
+		});
 
-        Map<Double, Map<String, Integer>> aMap2 = new HashMap<>();
+	}
 
-        var inner11 = new HashMap<String, Integer>();
-        inner.put("Un", -1);
-        inner.put("Duex", -2);
-        inner.put("Trois", -3);
-        aMap2.put(423.2, inner11);
+	@Test
+	public void testEmpty() {
+		var bigMap = new HashMap<Float, Map<Double, Map<String, Integer>>>();
 
-        var inner12 = new HashMap<String, Integer>();
-        inner2.put("Dix", -10);
-        inner2.put("Onze", -11);
-        inner2.put("Douze", -12);
-        aMap2.put(4.6, inner12);
-
-        bigMap.put((float)2.5, aMap2);
-
-        var instance = new TripleMapIterator<>(bigMap);
-        int count = 0;
-        while (instance.hasNext()) {
-            Integer value = instance.next();
-            count += 1;
-        }
-        assertEquals(12, count);
-        assertThrows(NoSuchElementException.class, () -> {
-            instance.next();
-        });
-
-    }
-
-    @Test
-    public void testList() {
-        ArrayList<Map<Double, Map<String, Integer>>> aList = new ArrayList<>();
-
-        Map<Double, Map<String, Integer>> aMap = new HashMap<>();
-
-        var inner = new HashMap<String, Integer>();
-        inner.put("One", 1);
-        inner.put("Two", 2);
-        inner.put("Three", 3);
-        aMap.put(23.2, inner);
-
-        var inner2 = new HashMap<String, Integer>();
-        inner2.put("Ten", 10);
-        inner2.put("Eleven", 11);
-        inner2.put("Twelve", 12);
-        aMap.put(43.6, inner2);
-
-        aList.add(aMap);
-
-        Map<Double, Map<String, Integer>> aMap2 = new HashMap<>();
-
-        var inner11 = new HashMap<String, Integer>();
-        inner.put("Un", -1);
-        inner.put("Duex", -2);
-        inner.put("Trois", -3);
-        aMap2.put(423.2, inner11);
-
-        var inner12 = new HashMap<String, Integer>();
-        inner2.put("Dix", -10);
-        inner2.put("Onze", -11);
-        inner2.put("Douze", -12);
-        aMap2.put(4.6, inner12);
-
-        aList.add(aMap2);
-
-        var instance = new TripleMapIterator<>(aList);
-        int count = 0;
-        while (instance.hasNext()) {
-            var value = instance.next();
-            count += 1;
-        }
-        assertEquals(12, count);
-        assertThrows(NoSuchElementException.class, () -> {
-            instance.next();
-        });
-
-    }
-
-    @Test
-    public void testEmpty() {
-        Map<Float, Map<Double, Map<String, Integer>>> bigMap = new HashMap<>();
-
-        var instance = new TripleMapIterator<>(bigMap);
-        int count = 0;
-        while (instance.hasNext()) {
-            var value = instance.next();
-            count += 1;
-        }
-        assertEquals(0, count);
-    }
+		var instance = new TripleMapIterator<>(bigMap);
+		int count = 0;
+		while (instance.hasNext()) {
+			var value = instance.next();
+			count += 1;
+		}
+		assertEquals(0, count);
+	}
 }

@@ -20,12 +20,10 @@ import static java.lang.String.join;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_VER;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_OK;
 import static uk.ac.manchester.spinnaker.messages.sdp.SDPHeader.Flag.REPLY_NOT_EXPECTED;
-
-import java.io.UnsupportedEncodingException;
 
 import org.junit.jupiter.api.Test;
 
@@ -45,8 +43,8 @@ class TestVersion {
 	}
 
 	@Test
-	void testParseVersionResponseFormat1() throws UnsupportedEncodingException,
-			UnexpectedResponseCodeException {
+	void testParseVersionResponseFormat1()
+			throws UnexpectedResponseCodeException {
 		// SCP Stuff
 		short rc = RC_OK.value;
 		short seq = 105;
@@ -84,8 +82,8 @@ class TestVersion {
 	}
 
 	@Test
-	void testParseVersionResponseFormat2() throws UnsupportedEncodingException,
-			UnexpectedResponseCodeException {
+	void testParseVersionResponseFormat2()
+			throws UnexpectedResponseCodeException {
 		// SCP Stuff
 		short rc = RC_OK.value;
 		short seq = 105;

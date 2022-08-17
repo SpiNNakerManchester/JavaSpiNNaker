@@ -21,11 +21,8 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.net.InetAddress.getByAddress;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singletonList;
+import static java.nio.ByteBuffer.allocate;
+import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -38,12 +35,10 @@ import static uk.ac.manchester.spinnaker.messages.Constants.BMP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.NO_ROUTER_DIAGNOSTIC_FILTERS;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DEFAULT_FILTERS_MAX_POSITION;
 import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_DIAGNOSTIC_FILTER_SIZE;
-import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_FILTER_CONTROLS_OFFSET;
-import static uk.ac.manchester.spinnaker.messages.Constants.ROUTER_REGISTER_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
-import static uk.ac.manchester.spinnaker.messages.Constants.SYSTEM_VARIABLE_BASE_ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_DEFAULT_PORT;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
+import static uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector.SerialVector.SERIAL_LENGTH;
 import static uk.ac.manchester.spinnaker.messages.model.IPTagTimeOutWaitTime.TIMEOUT_2560_ms;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
@@ -53,10 +48,17 @@ import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.software_watchdog_count;
 import static uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.y_size;
 import static uk.ac.manchester.spinnaker.messages.scp.SCPRequest.BOOT_CHIP;
+import static uk.ac.manchester.spinnaker.transceiver.BMPCommandProcess.BMP_RETRIES;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.EXECUTABLE_ADDRESS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_DIAGNOSTIC_COUNTER;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.ROUTER_FILTERS;
+import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_VARS;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -64,7 +66,6 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -100,19 +101,29 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.machine.MachineVersion;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.MulticastRoutingEntry;
 import uk.ac.manchester.spinnaker.machine.RoutingEntry;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 import uk.ac.manchester.spinnaker.machine.tags.ReverseIPTag;
 import uk.ac.manchester.spinnaker.machine.tags.Tag;
+import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPSetLED;
+import uk.ac.manchester.spinnaker.messages.bmp.EraseFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.GetBMPVersion;
+import uk.ac.manchester.spinnaker.messages.bmp.GetFPGAResetStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadADC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadCANStatus;
 import uk.ac.manchester.spinnaker.messages.bmp.ReadFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialFlashCRC;
+import uk.ac.manchester.spinnaker.messages.bmp.ReadSerialVector;
+import uk.ac.manchester.spinnaker.messages.bmp.ResetFPGA;
 import uk.ac.manchester.spinnaker.messages.bmp.SetPower;
+import uk.ac.manchester.spinnaker.messages.bmp.UpdateFlash;
 import uk.ac.manchester.spinnaker.messages.bmp.WriteFPGARegister;
+import uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer;
 import uk.ac.manchester.spinnaker.messages.boot.BootMessages;
 import uk.ac.manchester.spinnaker.messages.model.ADCInfo;
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -120,6 +131,7 @@ import uk.ac.manchester.spinnaker.messages.model.BMPConnectionData;
 import uk.ac.manchester.spinnaker.messages.model.CPUInfo;
 import uk.ac.manchester.spinnaker.messages.model.CPUState;
 import uk.ac.manchester.spinnaker.messages.model.DiagnosticFilter;
+import uk.ac.manchester.spinnaker.messages.model.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.HeapElement;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.model.LEDAction;
@@ -149,6 +161,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SetLED;
 import uk.ac.manchester.spinnaker.messages.sdp.SDPMessage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.StorageException;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * An encapsulation of various communications with the SpiNNaker board.
@@ -171,19 +184,13 @@ public class Transceiver extends UDPTransceiver
 		implements TransceiverInterface, RetryTracker {
 	private static final Logger log = getLogger(Transceiver.class);
 
-	/**
-	 * Where executables are written to prior to launching them.
-	 */
-	private static final int EXECUTABLE_ADDRESS = 0x67800000;
-
 	private static final String SCAMP_NAME = "SC&MP";
 
 	private static final Version SCAMP_VERSION = new Version(3, 0, 1);
 
 	private static final String BMP_NAME = "BC&MP";
 
-	private static final Set<Integer> BMP_MAJOR_VERSIONS =
-			unmodifiableSet(new HashSet<>(asList(1, 2)));
+	private static final Set<Integer> BMP_MAJOR_VERSIONS = Set.of(1, 2);
 
 	/**
 	 * How many times do we try to find SCAMP?
@@ -207,11 +214,6 @@ public class Transceiver extends UDPTransceiver
 	private static final int POST_POWER_ON_DELAY = 2000;
 
 	private static final int ENABLE_SHIFT = 16;
-
-	/**
-	 * Where to read router diagnostic counters from.
-	 */
-	private static final int ROUTER_DIAGNOSTIC_COUNTER_ADDR = 0xf100002c;
 
 	/**
 	 * How much data to pile into SCAMP before reducing the number of messages
@@ -340,6 +342,8 @@ public class Transceiver extends UDPTransceiver
 
 	private long retryCount = 0L;
 
+	private BMPCoords boundBMP = new BMPCoords(0, 0);
+
 	/**
 	 * Create a Transceiver by creating a UDPConnection to the given hostname on
 	 * port 17893 (the default SCAMP port), and a BootConnection on port 54321
@@ -408,7 +412,7 @@ public class Transceiver extends UDPTransceiver
 		if (version != null && !version.isFourChip && autodetectBMP
 				&& (bmpConnectionData == null || bmpConnectionData.isEmpty())) {
 			bmpConnectionData =
-					singletonList(defaultBMPforMachine(host, numberOfBoards));
+					List.of(defaultBMPforMachine(host, numberOfBoards));
 		}
 
 		// handle BMP connections
@@ -424,7 +428,7 @@ public class Transceiver extends UDPTransceiver
 
 		// handle the SpiNNaker connection
 		if (scampConnections == null) {
-			scampConnections = emptyList();
+			scampConnections = List.of();
 		}
 		if (scampConnections.isEmpty()) {
 			connections.add(new SCPConnection(host));
@@ -479,8 +483,8 @@ public class Transceiver extends UDPTransceiver
 	 */
 	public Transceiver(InetAddress hostname, MachineVersion version)
 			throws IOException, SpinnmanException {
-		this(hostname, version, null, 0, emptySet(), emptyMap(), emptyMap(),
-				false, null, null, null);
+		this(hostname, version, null, 0, Set.of(), Map.of(), Map.of(), false,
+				null, null, null);
 	}
 
 	/**
@@ -560,7 +564,9 @@ public class Transceiver extends UDPTransceiver
 	 *            be assumed to be always already booted.
 	 * @param connections
 	 *            The connections to use in the transceiver. Note that the
-	 *            transceiver may make additional connections.
+	 *            transceiver may make additional connections. <em>This should
+	 *            be modifiable (or {@code null}) if {@code scampConnections}
+	 *            supplied and not empty.</em>
 	 * @param ignoredChips
 	 *            Blacklisted chips.
 	 * @param ignoredCores
@@ -596,7 +602,8 @@ public class Transceiver extends UDPTransceiver
 		this.maxSDRAMSize = maxSDRAMSize;
 
 		if (connections == null) {
-			connections = emptyList();
+			// Needs to be modifiable
+			connections = new ArrayList<>();
 		}
 		originalConnections.addAll(connections);
 		allConnections.addAll(connections);
@@ -688,9 +695,9 @@ public class Transceiver extends UDPTransceiver
 		}
 		var connection = locateSpinnakerConnection(boardAddress);
 		if (connection == null) {
-			return emptyList();
+			return List.of();
 		}
-		return singletonList(connection);
+		return List.of(connection);
 	}
 
 	/**
@@ -706,14 +713,13 @@ public class Transceiver extends UDPTransceiver
 		if (connection == null) {
 			return scpConnections;
 		}
-		return singletonList(connection);
+		return List.of(connection);
 	}
 
 	private Object getSystemVariable(HasChipLocation chip,
 			SystemVariableDefinition dataItem)
 			throws IOException, ProcessException {
-		var buffer = readMemory(chip,
-				SYSTEM_VARIABLE_BASE_ADDRESS + dataItem.offset,
+		var buffer = readMemory(chip, SYS_VARS.add(dataItem.offset),
 				dataItem.type.value);
 		switch (dataItem.type) {
 		case BYTE:
@@ -728,6 +734,8 @@ public class Transceiver extends UDPTransceiver
 			byte[] dst = (byte[]) dataItem.getDefault();
 			buffer.get(dst);
 			return dst;
+		case ADDRESS:
+			return new MemoryLocation(buffer.getInt());
 		default:
 			// Unreachable
 			throw new IllegalStateException();
@@ -941,7 +949,7 @@ public class Transceiver extends UDPTransceiver
 		 * that supports SCP - this is done via the machine
 		 */
 		if (scpConnections.isEmpty()) {
-			return Collections.emptyList();
+			return List.of();
 		}
 
 		// Get the machine dimensions
@@ -1016,8 +1024,7 @@ public class Transceiver extends UDPTransceiver
 	public MachineDimensions getMachineDimensions()
 			throws IOException, ProcessException {
 		if (dimensions == null) {
-			var data = readMemory(BOOT_CHIP,
-					SYSTEM_VARIABLE_BASE_ADDRESS + y_size.offset, 2);
+			var data = readMemory(BOOT_CHIP, SYS_VARS.add(y_size.offset), 2);
 			int height = toUnsignedInt(data.get());
 			int width = toUnsignedInt(data.get());
 			dimensions = new MachineDimensions(width, height);
@@ -1305,7 +1312,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafeWithCare
-	public Iterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
+	public MappableIterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// Get all the cores if the subsets are not given
 		if (coreSubsets == null) {
@@ -1317,7 +1324,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafeWithCare
-	public Iterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
+	public MappableIterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
 		// making the assumption that all chips have the same iobuf size.
 		if (iobufSize == null) {
@@ -1375,34 +1382,28 @@ public class Transceiver extends UDPTransceiver
 				.updateProvenanceAndExit(coreSubsets);
 	}
 
+	private static ByteBuffer oneByte(int value) {
+		var data = allocate(1);
+		data.put((byte) value).flip();
+		return data;
+	}
+
 	@Override
 	@ParallelSafe
 	public void setWatchDogTimeoutOnChip(HasChipLocation chip, int watchdog)
 			throws IOException, ProcessException {
-		// build data holder
-		var data = ByteBuffer.allocate(1);
-		data.put((byte) watchdog).flip();
-
 		// write data
-		writeMemory(chip,
-				SYSTEM_VARIABLE_BASE_ADDRESS + software_watchdog_count.offset,
-				data);
+		writeMemory(chip, SYS_VARS.add(software_watchdog_count.offset),
+				oneByte(watchdog));
 	}
 
 	@Override
 	@ParallelSafe
 	public void enableWatchDogTimerOnChip(HasChipLocation chip,
 			boolean watchdog) throws IOException, ProcessException {
-		// build data holder
-		var data = ByteBuffer.allocate(1);
-		data.put((byte) (watchdog
-				? (Integer) software_watchdog_count.getDefault()
-				: 0)).flip();
-
 		// write data
-		writeMemory(chip,
-				SYSTEM_VARIABLE_BASE_ADDRESS + software_watchdog_count.offset,
-				data);
+		writeMemory(chip, SYS_VARS.add(software_watchdog_count.offset), oneByte(
+				watchdog ? (Integer) software_watchdog_count.getDefault() : 0));
 	}
 
 	@Override
@@ -1605,10 +1606,10 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	private <T extends BMPRequest.BMPResponse> T bmpCall(BMPCoords bmp,
-			int timeout, BMPRequest<T> request)
+			int timeout, int retries, BMPRequest<T> request)
 			throws IOException, ProcessException {
 		return new BMPCommandProcess<T>(bmpConnection(bmp), timeout, this)
-				.execute(request);
+				.execute(request, retries);
 	}
 
 	@Override
@@ -1638,13 +1639,13 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void power(PowerCommand powerCommand, BMPCoords bmp,
-			Collection<Integer> boards)
+			Collection<BMPBoard> boards)
 			throws InterruptedException, IOException, ProcessException {
 		int timeout = (int) (MSEC_PER_SEC
 				* (powerCommand == POWER_ON ? BMP_POWER_ON_TIMEOUT
 						: BMP_TIMEOUT));
-		requireNonNull(
-				bmpCall(bmp, timeout, new SetPower(powerCommand, boards, 0.0)));
+		requireNonNull(bmpCall(bmp, timeout, 0,
+				new SetPower(powerCommand, boards, 0.0)));
 		machineOff = powerCommand == POWER_OFF;
 
 		// Sleep for 5 seconds if the machine has just been powered on
@@ -1656,38 +1657,183 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void setLED(Collection<Integer> leds, LEDAction action,
-			BMPCoords bmp, Collection<Integer> board)
+			BMPCoords bmp, Collection<BMPBoard> board)
 			throws IOException, ProcessException {
 		bmpCall(bmp, new BMPSetLED(leds, action, board));
 	}
 
 	@Override
 	@ParallelUnsafe
-	public int readFPGARegister(int fpgaNumber, int register, BMPCoords bmp,
-			int board) throws IOException, ProcessException {
+	public int readFPGARegister(FPGA fpga, MemoryLocation register,
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
 		return bmpCall(bmp,
-				new ReadFPGARegister(fpgaNumber, register, board)).fpgaRegister;
+				new ReadFPGARegister(fpga, register, board)).fpgaRegister;
 	}
 
 	@Override
 	@ParallelUnsafe
-	public void writeFPGARegister(int fpgaNumber, int register, int value,
-			BMPCoords bmp, int board) throws IOException, ProcessException {
-		bmpCall(bmp, new WriteFPGARegister(fpgaNumber, register, value, board));
+	public void writeFPGARegister(FPGA fpga, MemoryLocation register, int value,
+			BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFPGARegister(fpga, register, value, board));
 	}
 
 	@Override
 	@ParallelUnsafe
-	public ADCInfo readADCData(BMPCoords bmp, int board)
+	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new ReadADC(board)).adcInfo;
 	}
 
 	@Override
 	@ParallelUnsafe
-	public VersionInfo readBMPVersion(BMPCoords bmp, int board)
+	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new GetBMPVersion(board)).versionInfo;
+	}
+
+	@Override
+	@ParallelSafeWithCare
+	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length)
+			throws ProcessException, IOException {
+		return new BMPReadMemoryProcess(bmpConnection(bmp), this).read(board,
+				baseAddress, length);
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data)
+			throws IOException, ProcessException {
+		new BMPWriteMemoryProcess(bmpConnection(bmp), this).writeMemory(board,
+				baseAddress, data);
+	}
+
+	@Override
+	public void writeBMPMemory(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, File file)
+			throws IOException, ProcessException {
+		var wmp = new BMPWriteMemoryProcess(bmpConnection(bmp), this);
+		try (var f = new BufferedInputStream(new FileInputStream(file))) {
+			// The file had better fit...
+			wmp.writeMemory(board, baseAddress, f, (int) file.length());
+		}
+	}
+
+	@Override
+	public MemoryLocation getSerialFlashBuffer(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new ReadSerialVector(board)).vector
+				.getFlashBuffer();
+	}
+
+	@Override
+	public String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		var serialNumber = new int[SERIAL_LENGTH];
+		bmpCall(bmp, new ReadSerialVector(board)).vector.getSerialNumber()
+				.get(serialNumber);
+		return format("%08x-%08x-%08x-%08x",
+				stream(serialNumber).mapToObj(Integer::valueOf).toArray());
+	}
+
+	@Override
+	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
+		return new BMPReadSerialFlashProcess(bmpConnection(bmp), this)
+				.read(board, baseAddress, length);
+	}
+
+	// CRC calculations of megabytes can take a bit
+	private static final int CRC_TIMEOUT = 2000;
+
+	@Override
+	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
+			MemoryLocation address, int length)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, CRC_TIMEOUT, BMP_RETRIES /* =default */,
+				new ReadSerialFlashCRC(board, address, length)).crc;
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, ByteBuffer data)
+			throws ProcessException, IOException {
+		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
+				baseAddress, data);
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size, InputStream stream)
+			throws ProcessException, IOException {
+		new BMPWriteSerialFlashProcess(bmpConnection(bmp), this).write(board,
+				baseAddress, stream, size);
+	}
+
+	@Override
+	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, File file)
+			throws ProcessException, IOException {
+		try (var f = new BufferedInputStream(new FileInputStream(file))) {
+			// The file had better fit...
+			new BMPWriteSerialFlashProcess(bmpConnection(bmp), this)
+					.write(board, baseAddress, f, (int) file.length());
+		}
+	}
+
+	@Override
+	public void writeBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation address) throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFlashBuffer(board, address, true));
+	}
+
+	@Deprecated
+	@Override
+	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new EraseFlash(board, baseAddress, size)).address;
+	}
+
+	@Deprecated
+	@Override
+	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation address) throws IOException, ProcessException {
+		bmpCall(bmp, new WriteFlashBuffer(board, address, false));
+	}
+
+	@Deprecated
+	@Override
+	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
+			MemoryLocation baseAddress, int size)
+			throws IOException, ProcessException {
+		// NB: no retries of this! Not idempotent!
+		bmpCall(bmp, (int) (MSEC_PER_SEC * BMP_TIMEOUT), 0,
+				new UpdateFlash(board, baseAddress, size));
+	}
+
+	@Override
+	@ParallelSafe
+	public boolean getResetStatus(BMPCoords bmp, BMPBoard board)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new GetFPGAResetStatus(board)).isReset();
+	}
+
+	@Override
+	@ParallelSafe
+	public void resetFPGA(BMPCoords bmp, BMPBoard board,
+			FPGAResetType resetType) throws IOException, ProcessException {
+		bmpCall(bmp, new ResetFPGA(board, resetType));
+	}
+
+	@Override
+	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
+			throws IOException, ProcessException {
+		return bmpCall(bmp, new ReadCANStatus()).availableBoards()
+				.map(BMPBoard::new);
 	}
 
 	private WriteMemoryProcess writeProcess(long size) {
@@ -1706,7 +1852,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafe
-	public void writeMemory(HasCoreLocation core, int baseAddress,
+	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeProcess(numBytes).writeMemory(core, baseAddress, dataStream,
@@ -1715,7 +1861,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafe
-	public void writeMemory(HasCoreLocation core, int baseAddress,
+	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			File dataFile) throws IOException, ProcessException {
 		writeProcess(dataFile.length()).writeMemory(core, baseAddress,
 				dataFile);
@@ -1723,7 +1869,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafe
-	public void writeMemory(HasCoreLocation core, int baseAddress,
+	public void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			ByteBuffer data) throws IOException, ProcessException {
 		writeProcess(data.remaining()).writeMemory(core, baseAddress, data);
 	}
@@ -1731,7 +1877,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, InputStream dataStream, int numBytes)
+			MemoryLocation baseAddress, InputStream dataStream, int numBytes)
 			throws IOException, ProcessException {
 		writeProcess(numBytes).writeLink(core, link, baseAddress, dataStream,
 				numBytes);
@@ -1740,7 +1886,7 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, File dataFile)
+			MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		writeProcess(dataFile.length()).writeLink(core, link, baseAddress,
 				dataFile);
@@ -1749,15 +1895,16 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public void writeNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, ByteBuffer data)
+			MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		writeProcess(data.remaining()).writeLink(core, link, baseAddress, data);
 	}
 
 	@Override
 	@ParallelUnsafe
-	public void writeMemoryFlood(int baseAddress, InputStream dataStream,
-			int numBytes) throws IOException, ProcessException {
+	public void writeMemoryFlood(MemoryLocation baseAddress,
+			InputStream dataStream, int numBytes)
+			throws IOException, ProcessException {
 		var process = new WriteMemoryFloodProcess(scpSelector, this);
 		// Ensure only one flood fill occurs at any one time
 		synchronized (floodWriteLock) {
@@ -1769,7 +1916,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public void writeMemoryFlood(int baseAddress, File dataFile)
+	public void writeMemoryFlood(MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException {
 		var process = new WriteMemoryFloodProcess(scpSelector, this);
 		// Ensure only one flood fill occurs at any one time
@@ -1782,7 +1929,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelUnsafe
-	public void writeMemoryFlood(int baseAddress, ByteBuffer data)
+	public void writeMemoryFlood(MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
 		var process = new WriteMemoryFloodProcess(scpSelector, this);
 		// Ensure only one flood fill occurs at any one time
@@ -1794,8 +1941,9 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafe
-	public ByteBuffer readMemory(HasCoreLocation core, int baseAddress,
-			int length) throws IOException, ProcessException {
+	public ByteBuffer readMemory(HasCoreLocation core,
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		return new ReadMemoryProcess(scpSelector, this).readMemory(core,
 				baseAddress, length);
 	}
@@ -1811,7 +1959,8 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	@ParallelUnsafe
 	public ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
-			int baseAddress, int length) throws IOException, ProcessException {
+			MemoryLocation baseAddress, int length)
+			throws IOException, ProcessException {
 		return new ReadMemoryProcess(scpSelector, this).readLink(core, link,
 				baseAddress, length);
 	}
@@ -2040,15 +2189,15 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafe
-	public int mallocSDRAM(HasChipLocation chip, int size, AppID appID, int tag)
-			throws IOException, ProcessException {
+	public MemoryLocation mallocSDRAM(HasChipLocation chip, int size,
+			AppID appID, int tag) throws IOException, ProcessException {
 		return simpleProcess()
 				.execute(new SDRAMAlloc(chip, appID, size, tag)).baseAddress;
 	}
 
 	@Override
 	@ParallelSafe
-	public void freeSDRAM(HasChipLocation chip, int baseAddress)
+	public void freeSDRAM(HasChipLocation chip, MemoryLocation baseAddress)
 			throws IOException, ProcessException {
 		simpleProcess().execute(new SDRAMDeAlloc(chip, baseAddress));
 	}
@@ -2090,7 +2239,8 @@ public class Transceiver extends UDPTransceiver
 	@ParallelSafe
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			AppID appID) throws IOException, ProcessException {
-		int address = (int) getSystemVariable(chip, router_table_copy_address);
+		var address = (MemoryLocation) getSystemVariable(chip,
+				router_table_copy_address);
 		return new MulticastRoutesControlProcess(scpSelector, this)
 				.getRoutes(chip, address, appID);
 	}
@@ -2130,9 +2280,8 @@ public class Transceiver extends UDPTransceiver
 					+ "the end user knows what they are doing.");
 		}
 
-		int address =
-				(ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
-						+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
+		var address =
+				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
 		writeMemory(chip, address, diagnosticFilter.getFilterWord());
 	}
 
@@ -2145,9 +2294,8 @@ public class Transceiver extends UDPTransceiver
 					"router filter positions must be between 0 and "
 							+ NO_ROUTER_DIAGNOSTIC_FILTERS);
 		}
-		int address =
-				ROUTER_REGISTER_BASE_ADDRESS + ROUTER_FILTER_CONTROLS_OFFSET
-						+ position * ROUTER_DIAGNOSTIC_FILTER_SIZE;
+		var address =
+				ROUTER_FILTERS.add(position * ROUTER_DIAGNOSTIC_FILTER_SIZE);
 		var response = simpleProcess()
 				.execute(new ReadMemory(chip, address, WORD_SIZE));
 		return new DiagnosticFilter(response.data.getInt());
@@ -2171,7 +2319,7 @@ public class Transceiver extends UDPTransceiver
 				clearData |= 1 << counterID + ENABLE_SHIFT;
 			}
 		}
-		writeMemory(chip, ROUTER_DIAGNOSTIC_COUNTER_ADDR, clearData);
+		writeMemory(chip, ROUTER_DIAGNOSTIC_COUNTER, clearData);
 	}
 
 	@Override
@@ -2285,7 +2433,7 @@ public class Transceiver extends UDPTransceiver
 
 	@Override
 	@ParallelSafe
-	public void fillMemory(HasChipLocation chip, int baseAddress,
+	public void fillMemory(HasChipLocation chip, MemoryLocation baseAddress,
 			int repeatValue, int size, FillDataType dataType)
 			throws ProcessException, IOException {
 		if (repeatValue < 1) {
@@ -2418,5 +2566,15 @@ public class Transceiver extends UDPTransceiver
 	@Override
 	protected void addConnection(Connection connection) {
 		this.allConnections.add(connection);
+	}
+
+	@Override
+	public void bind(BMPCoords bmp) {
+		boundBMP = bmp;
+	}
+
+	@Override
+	public BMPCoords getBoundBMP() {
+		return boundBMP;
 	}
 }

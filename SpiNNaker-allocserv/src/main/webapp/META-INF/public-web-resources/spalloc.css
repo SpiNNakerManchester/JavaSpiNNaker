@@ -1,0 +1,99 @@
+/*
+Copyright (c) 2021 The University of Manchester
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+body {
+	font-size: 16pt;
+	text-size-adjust: none;
+	font-family: Times, "Times New Roman", serif;
+	background-color: white;
+}
+h1 {
+	font-family: Helvetica, Arial, sans-serif;
+}
+h2 {
+	font-family: Helvetica, Arial, sans-serif;
+}
+h3 {
+	font-family: Helvetica, Arial, sans-serif;
+}
+footer {
+	font-size: small;
+}
+
+.minordetail {
+	font-size: small;
+	color: #909090;
+}
+.version {
+	font-size: x-small;
+	opacity: 50%;
+	font-family: Helvetica, Arial, sans-serif;
+}
+.warningbutton {
+	background-color: #f44336;
+}
+canvas.overlink {
+	cursor: pointer;
+}
+
+.quotawarning {
+	font-style: italic;
+	color: #800000;
+	background-color: #ffffe0;
+	border: 2px solid red;
+	border-radius: 3px;
+}
+
+.componentenabled {
+	color: #60e060;
+}
+.componentdisabled {
+	color: #c04040;
+}
+
+.hiddensubmit {
+    border: 0 none;
+    height: 0;
+    width: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    visibility: hidden;
+}
+
+.subheading {
+	font-size: smaller;
+}
+/* Used to mark columns of tables as semantically containing numbers or text. */
+.numberColumn {
+	text-align: right;
+}
+.textColumn {
+	text-align: left;
+}
+.lineTitle {
+	text-align: right;
+	vertical-align: text-top;
+}
+
+#tooltip {
+	background-color: white;
+	border: 1px solid blue;
+	position: absolute;
+	left: -200px;
+	top: 100px;
+}

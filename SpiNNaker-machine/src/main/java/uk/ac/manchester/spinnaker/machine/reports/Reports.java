@@ -28,7 +28,6 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Link;
 import uk.ac.manchester.spinnaker.machine.Machine;
@@ -62,9 +61,9 @@ public abstract class Reports {
 	public static void generateMachineReport(File reportDirectory,
 			Machine machine, Collection<?> connections) throws IOException {
 		var file = new File(reportDirectory, FILENAME);
-		var timestamp = Calendar.getInstance().toString();
-		try (var f =
-				new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
+		var timestamp = Calendar.getInstance();
+		try (var f = new PrintWriter(
+				new BufferedWriter(new FileWriter(file)))) {
 			writeHeader(f, timestamp, machine, connections);
 			for (int x = 0; x <= machine.maxChipX(); x++) {
 				for (int y = 0; y <= machine.maxChipY(); y++) {
@@ -77,7 +76,7 @@ public abstract class Reports {
 		}
 	}
 
-	private static void writeHeader(PrintWriter f, String timestamp,
+	private static void writeHeader(PrintWriter f, Calendar timestamp,
 			Machine machine, Collection<?> connections) {
 		f.println("\t\tTarget SpiNNaker Machine Structure");
 		f.println("\t\t==================================");
@@ -91,7 +90,7 @@ public abstract class Reports {
 
 	private static void writeChipRouterReport(PrintWriter f, Machine machine,
 			int x, int y) {
-		Chip chip = machine.getChipAt(new ChipLocation(x, y));
+		var chip = machine.getChipAt(new ChipLocation(x, y));
 		if (chip != null) {
 			f.printf("\nInformation for chip %d:%d\n", chip.getX(),
 					chip.getY());

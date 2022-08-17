@@ -18,9 +18,10 @@ package uk.ac.manchester.spinnaker.spalloc.messages;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class JobDescription {
 
 	private String owner;
 
-	private double startTime;
+	private Double startTime;
 
 	private State state;
 
@@ -51,7 +52,7 @@ public class JobDescription {
 
 	private Map<String, Object> kwargs;
 
-	private List<BoardCoordinates> boards = Collections.emptyList();
+	private List<BoardCoordinates> boards = List.of();
 
 	private String keepAliveHost;
 
@@ -109,11 +110,11 @@ public class JobDescription {
 	}
 
 	@JsonProperty("start_time")
-	public double getStartTime() {
+	public Double getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(double startTime) {
+	public void setStartTime(Double startTime) {
 		this.startTime = startTime;
 	}
 
@@ -161,16 +162,18 @@ public class JobDescription {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("Job: ").append(jobID);
+		var builder = new StringBuilder("Job: ").append(jobID);
 		builder.append(" owner: ").append(owner);
-		builder.append(" startTime: ")
-				.append(new Date((long) (startTime * MSEC_PER_SEC)));
+		if (nonNull(startTime)) {
+			builder.append(" startTime: ")
+					.append(new Date((long) (startTime * MSEC_PER_SEC)));
+		}
 		builder.append(" power: ").append(power);
 		builder.append(" reason: ").append(reason);
 		builder.append(" machine: ").append(machine);
 		builder.append(" args: ").append(args);
 		builder.append(" kwargs: ").append(kwargs);
-		if (boards == null) {
+		if (isNull(boards)) {
 			builder.append("No Boards");
 		} else if (boards.size() < PRINT_EXACT_BOARDS_THRESHOLD) {
 			builder.append(" boards: ").append(boards);

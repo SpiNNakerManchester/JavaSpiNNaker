@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -28,98 +29,71 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestDoubleMapIterator {
 
-    @Test
-    public void testSingle() {
-        Map<Double, Map<String, Integer>> aMap = new HashMap<>();
+	@Test
+	public void testSingle() {
+		var aMap = Map.of(23.2, Map.of("One", 1, "Two", 2, "Three", 3));
 
-        Map<String, Integer> inner = new HashMap<>();
-        inner.put("One", 1);
-        inner.put("Two", 2);
-        inner.put("Three", 3);
-        aMap.put(23.2, inner);
+		var instance = new DoubleMapIterator<>(aMap);
+		int count = 0;
+		while (instance.hasNext()) {
+			int value = instance.next();
+			assertEquals(value, value); // TODO real test
+			count += 1;
+		}
+		assertEquals(3, count);
+	}
 
-        var instance = new DoubleMapIterator<>(aMap);
-        int count = 0;
-        while (instance.hasNext()) {
-            int value = instance.next();
-            assertEquals(value, value); // TODO real test
-            count += 1;
-        }
-        assertEquals(3, count);
-    }
+	@Test
+	public void testMultiple() {
+		var aMap = Map.of(//
+				23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+				43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
 
-    @Test
-    public void testMultiple() {
-        Map<Double, Map<String, Integer>> aMap = new HashMap<>();
+		var instance = new DoubleMapIterator<>(aMap);
+		int count = 0;
+		while (instance.hasNext()) {
+			int value = instance.next();
+			assertEquals(value, value); // TODO real test
+			count += 1;
+		}
+		assertEquals(6, count);
 
-        Map<String, Integer> inner = new HashMap<>();
-        inner.put("One", 1);
-        inner.put("Two", 2);
-        inner.put("Three", 3);
-        aMap.put(23.2, inner);
+		assertThrows(NoSuchElementException.class, () -> {
+			instance.next();
+		});
 
-        Map<String, Integer> inner2 = new HashMap<>();
-        inner2.put("Ten", 10);
-        inner2.put("Eleven", 11);
-        inner2.put("Twelve", 12);
-        aMap.put(43.6, inner2);
+	}
 
-        var instance = new DoubleMapIterator<>(aMap);
-        int count = 0;
-        while (instance.hasNext()) {
-            int value = instance.next();
-            assertEquals(value, value); // TODO real test
-            count += 1;
-        }
-        assertEquals(6, count);
+	@Test
+	public void testEmptyWhole() {
+		// Compiler solver needs type hint
+		var aMap = new HashMap<Double, Map<String, Integer>>();
+		var instance = new DoubleMapIterator<>(aMap);
+		int count = 0;
+		while (instance.hasNext()) {
+			int value = instance.next();
+			assertEquals(value, value); // TODO real test
+			// System.out.println(value);
+			count += 1;
+		}
+		assertEquals(0, count);
+	}
 
-        assertThrows(NoSuchElementException.class, () -> {
-            instance.next();
-        });
+	@Test
+	public void testOneEmpty() {
+		// Compiler solver needs type hint
+		var aMap = Map.of(343.2, new HashMap<String, Integer>(), //
+				23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+				43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
 
-    }
-
-    @Test
-    public void testEmptyWhole() {
-        Map<Double, Map<String, Integer>> aMap = new HashMap<>();
-        var instance = new DoubleMapIterator<>(aMap);
-        int count = 0;
-        while (instance.hasNext()) {
-            int value = instance.next();
-            assertEquals(value, value); // TODO real test
-            //System.out.println(value);
-            count += 1;
-        }
-        assertEquals(0, count);
-    }
-
-    @Test
-    public void testOneEmpty() {
-        Map<Double, Map<String, Integer>> aMap = new HashMap<>();
-
-        var inner0 = new HashMap<String, Integer>();
-        aMap.put(343.2, inner0);
-
-        var inner = new HashMap<String, Integer>();
-        inner.put("One", 1);
-        inner.put("Two", 2);
-        inner.put("Three", 3);
-        aMap.put(23.2, inner);
-
-        var inner2 = new HashMap<String, Integer>();
-        inner2.put("Ten", 10);
-        inner2.put("Eleven", 11);
-        inner2.put("Twelve", 12);
-        aMap.put(43.6, inner2);
-
-        var instance = new DoubleMapIterator<>(aMap);
-        int count = 0;
-        while (instance.hasNext()) {
-            int value = instance.next();
-            assertEquals(value, value); // TODO real test
-            count += 1;
-        }
-        assertEquals(6, count);
-    }
+		var instance = new DoubleMapIterator<>(aMap);
+		int count = 0;
+		while (instance.hasNext()) {
+			int value = instance.next();
+			assertEquals(value, value); // TODO real test
+			count += 1;
+		}
+		assertEquals(6, count);
+	}
 
 }

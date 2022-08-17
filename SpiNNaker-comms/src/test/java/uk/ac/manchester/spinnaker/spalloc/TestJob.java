@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Thread.sleep;
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static testconfig.BoardTestConfiguration.OWNER;
 import static uk.ac.manchester.spinnaker.spalloc.MockServer.STOP;
@@ -41,12 +40,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
 
 class TestJob {
 	@BeforeAll
-	private static void setupConfiguration() {
+	static void setupConfiguration() {
 		setConfigurationSource("spalloc-test.ini");
 	}
 
 	@AfterAll
-	private static void resetConfiguration() {
+	static void resetConfiguration() {
 		setConfigurationSource(DEFAULT_CONFIGURATION_SOURCE);
 	}
 
@@ -69,11 +68,11 @@ class TestJob {
 		send.offer("{\"return\": null}");
 		send.offer("{\"jobs_changed\": [123]}");
 		send.offer("{\"return\": {\"state\": 3, \"power\": true}}");
-        send.offer("{\"return\": {\"connections\":[[[0,0],\"10.11.223.33\"]],"
-            + "\"width\":8,"
-            + "\"machine_name\":\"Spin24b-223\","
-            + "\"boards\":[[4,5,6], [7,8,9]],"
-            + "\"height\":8}}");
+		send.offer("{\"return\": {\"connections\":[[[0,0],\"10.11.223.33\"]],"
+				+ "\"width\":8,"
+				+ "\"machine_name\":\"Spin24b-223\","
+				+ "\"boards\":[[4,5,6], [7,8,9]],"
+				+ "\"height\":8}}");
 		send.offer("{\"return\": null}");
 		send.offer(STOP);
 
@@ -104,7 +103,7 @@ class TestJob {
 			sleep(1200);
 
 			assertEquals(123, id);
-			assertEquals(asList(new BoardCoordinates(4, 5, 6),
+			assertEquals(List.of(new BoardCoordinates(4, 5, 6),
 					new BoardCoordinates(7, 8, 9)), boards);
 			assertEquals(READY, state);
 			assertEquals(true, power);

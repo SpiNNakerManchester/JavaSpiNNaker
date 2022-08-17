@@ -39,38 +39,38 @@ class TestCountState {
 
 	@Test
 	void testNewStateResponse() throws UnexpectedResponseCodeException {
-        // SCP Stuff
-        var rc = SCPResult.RC_OK;
-        int seq = 105;
+		// SCP Stuff
+		var rc = SCPResult.RC_OK;
+		int seq = 105;
 
-        int argumentCount = 5;
+		int argumentCount = 5;
 
-        // SDP stuff
-        var flags = SDPHeader.Flag.REPLY_NOT_EXPECTED;
-        int tag = 5;
-        int destPortCPU = 0x4f;
-        int srcPortCPU = 0x6a;
-        int destX = 0x11;
-        int destY = 0xab;
-        int srcX = 0x7;
-        int srcY = 0x0;
+		// SDP stuff
+		var flags = SDPHeader.Flag.REPLY_NOT_EXPECTED;
+		int tag = 5;
+		int destPortCPU = 0x4f;
+		int srcPortCPU = 0x6a;
+		int destX = 0x11;
+		int destY = 0xab;
+		int srcX = 0x7;
+		int srcY = 0x0;
 
-        var data = allocate(18).order(LITTLE_ENDIAN).putShort(PADDING);
-        data.put(flags.value);
-        data.put((byte) tag);
-        data.put((byte) destPortCPU);
-        data.put((byte) srcPortCPU);
-        data.put((byte) destY);
-        data.put((byte) destX);
-        data.put((byte) srcY);
-        data.put((byte) srcX);
-        data.putShort(rc.value);
-        data.putShort((short) seq);
-        data.putInt(argumentCount);
-        data.flip();
+		var data = allocate(18).order(LITTLE_ENDIAN).putShort(PADDING);
+		data.put(flags.value);
+		data.put((byte) tag);
+		data.put((byte) destPortCPU);
+		data.put((byte) srcPortCPU);
+		data.put((byte) destY);
+		data.put((byte) destX);
+		data.put((byte) srcY);
+		data.put((byte) srcX);
+		data.putShort(rc.value);
+		data.putShort((short) seq);
+		data.putInt(argumentCount);
+		data.flip();
 
-        var response = new CountState.Response(data);
-        assertEquals(5, response.count);
+		var response = new CountState.Response(data);
+		assertEquals(5, response.count);
 	}
 
 	@Test

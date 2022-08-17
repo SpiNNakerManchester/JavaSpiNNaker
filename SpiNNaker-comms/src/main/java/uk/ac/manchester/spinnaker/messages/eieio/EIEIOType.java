@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.messages.eieio;
 
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /** Possible types of EIEIO packets. */
@@ -33,19 +33,17 @@ public enum EIEIOType {
 	/** Indicates that data is keys and payloads of 32 bits. */
 	KEY_PAYLOAD_32_BIT(3, 4, 4);
 
-	private static final Map<Integer, EIEIOType> MAP;
-	static {
-		MAP = new HashMap<>();
-		for (EIEIOType v : values()) {
-			MAP.put(v.value, v);
-		}
-	}
+	private static final Map<Integer, EIEIOType> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	private final int value;
+
 	/** The number of bytes used by each key element. */
 	public final int keyBytes;
+
 	/** The number of bytes used by each payload element. */
 	public final int payloadBytes;
+
 	/** The maximum value of the key or payload (if there is a payload). */
 	public final long maxValue;
 

@@ -39,6 +39,7 @@ public class UpdateProvenanceAndExit extends SCPRequest<NoResponse> {
 	@Override
 	public NoResponse getSCPResponse(ByteBuffer buffer)
 			throws UnexpectedResponseCodeException {
-		return new NoResponse("update provenance and exit", buffer);
+		return new NoResponse("update provenance and exit",
+				UPDATE_PROVENCE_REGION_AND_EXIT, buffer);
 	}
 }

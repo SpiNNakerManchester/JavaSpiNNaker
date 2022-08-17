@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.eieio;
 
+import static java.lang.Byte.toUnsignedInt;
 import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.SPINNAKER_REQUEST_READ_DATA;
 
 import java.nio.ByteBuffer;
@@ -128,10 +129,10 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 	SpinnakerRequestReadData(ByteBuffer data) {
 		super(data);
 
-		int x = Byte.toUnsignedInt(data.get());
-		int y = Byte.toUnsignedInt(data.get());
-		int pr = Byte.toUnsignedInt(data.get());
-		this.sequenceNumber = Byte.toUnsignedInt(data.get());
+		int x = toUnsignedInt(data.get());
+		int y = toUnsignedInt(data.get());
+		int pr = toUnsignedInt(data.get());
+		this.sequenceNumber = toUnsignedInt(data.get());
 
 		byte p = (byte) (pr >>> CORE_SHIFT);
 		int n = pr & N_REQUESTS_MASK;
@@ -147,8 +148,8 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 				// Skip two bytes
 				data.getShort();
 			}
-			channel[i] = Byte.toUnsignedInt(data.get());
-			regionID[i] = Byte.toUnsignedInt(data.get());
+			channel[i] = toUnsignedInt(data.get());
+			regionID[i] = toUnsignedInt(data.get());
 			startAddress[i] = data.getInt();
 			spaceRead[i] = data.getInt();
 		}

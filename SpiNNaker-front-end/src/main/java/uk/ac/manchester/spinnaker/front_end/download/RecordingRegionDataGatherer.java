@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.front_end.download;
 
-import static java.lang.Integer.toUnsignedLong;
-import static java.lang.Long.toHexString;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -42,7 +40,7 @@ import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A data gatherer that pulls the data from a recording region. Internally, this
@@ -63,7 +61,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	protected static final Logger log =
 			getLogger(RecordingRegionDataGatherer.class);
 
-	private final Transceiver txrx;
+	private final TransceiverInterface txrx;
 
 	private final BufferManagerStorage database;
 
@@ -89,8 +87,8 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
-	public RecordingRegionDataGatherer(Transceiver transceiver, Machine machine,
-			BufferManagerStorage database)
+	public RecordingRegionDataGatherer(TransceiverInterface transceiver,
+			Machine machine, BufferManagerStorage database)
 			throws IOException, ProcessException {
 		super(transceiver, machine);
 		this.txrx = transceiver;
@@ -123,7 +121,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 				index, region);
 		var regionPieces = new ArrayList<Region>(1);
 		if (region.size > 0) {
-			regionPieces.add(new Region(placement, index, (int) region.data,
+			regionPieces.add(new Region(placement, index, region.data,
 					(int) region.size));
 		}
 		return regionPieces;
@@ -131,15 +129,14 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	@Override
 	protected void storeData(Region r, ByteBuffer data) {
-		var addr = toHexString(toUnsignedLong(r.startAddress));
 		if (data == null) {
-			log.warn("failed to download data for {} R:{} from 0x{}:{}", r.core,
-					r.regionIndex, addr, r.size);
+			log.warn("failed to download data for {} R:{} from {}:{}", r.core,
+					r.regionIndex, r.startAddress, r.size);
 			return;
 		}
 		dbWorker.execute(() -> {
-			log.info("storing region data for {} R:{} from 0x{} as {} bytes",
-					r.core, r.regionIndex, addr, data.remaining());
+			log.info("storing region data for {} R:{} from {} as {} bytes",
+					r.core, r.regionIndex, r.startAddress, data.remaining());
 			try {
 				database.appendRecordingContents(r, data);
 				numWrites++;

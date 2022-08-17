@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
@@ -58,7 +56,7 @@ public class Chip implements HasChipLocation {
 	public final Router router;
 
 	// Changed from an Object to just an int as Object only had a single value
-	/** The size of the sdram. */
+	/** The size of the SDRAM. */
 	public final int sdram;
 
 	/** The IP address of the chip or None if no Ethernet attached. */
@@ -80,7 +78,7 @@ public class Chip implements HasChipLocation {
 			Processor> DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
 
 	private static final List<Integer> DEFAULT_ETHERNET_TAG_IDS =
-			asList(1, 2, 3, 4, 5, 6, 7);
+			List.of(1, 2, 3, 4, 5, 6, 7);
 
 	// Note: emergency_routing_enabled not implemented as not used
 	// TODO convert_routing_table_entry_to_spinnaker_route
@@ -120,10 +118,9 @@ public class Chip implements HasChipLocation {
 		userProcessors = new TreeMap<>();
 		processors.forEach(processor -> {
 			if (monitorProcessors.containsKey(processor.processorId)) {
-				throw new IllegalArgumentException();
-			}
-			if (userProcessors.containsKey(processor.processorId)) {
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("duplicate processor");
+			} else if (userProcessors.containsKey(processor.processorId)) {
+				throw new IllegalArgumentException("duplicate processor");
 			}
 			if (processor.isMonitor) {
 				monitorProcessors.put(processor.processorId, processor);
@@ -137,7 +134,7 @@ public class Chip implements HasChipLocation {
 		this.virtual = virtual;
 		if (tagIds == null) {
 			if (ipAddress == null) {
-				this.tagIds = emptyList();
+				this.tagIds = List.of();
 			} else {
 				this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
 			}
@@ -240,13 +237,13 @@ public class Chip implements HasChipLocation {
 
 		virtual = false;
 		if (ipAddress == null) {
-			tagIds = emptyList();
+			tagIds = List.of();
 		} else {
 			tagIds = DEFAULT_ETHERNET_TAG_IDS;
 		}
 
 		this.nearestEthernet = nearestEthernet;
-		if (this.virtual) {
+		if (virtual) {
 			assert this.nearestEthernet == null;
 		} else {
 			assert this.nearestEthernet != null;
@@ -277,8 +274,8 @@ public class Chip implements HasChipLocation {
 		userProcessors =
 				provideUserProcesses(resources.getMonitors(), details.cores);
 
-		router = new Router(location, resources.getRouterEntries(),
-				details, machine);
+		router = new Router(location, resources.getRouterEntries(), details,
+				machine);
 
 		sdram = resources.getSdram();
 		ipAddress = details.getIpAddress();

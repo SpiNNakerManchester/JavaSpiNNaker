@@ -32,75 +32,75 @@ public class TestOneShotEvent {
 		}
 	}
 
-    public TestOneShotEvent() {
-    }
+	public TestOneShotEvent() {
+	}
 
-    Runnable hanger = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                var event = new OneShotEvent();
-                event.await();
-                event.fire();
-            } catch (InterruptedException ex) {
-                // Do nothing should be required;
-            }
-        }
-    };
+	private Runnable hanger = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				var event = new OneShotEvent();
+				event.await();
+				event.fire();
+			} catch (InterruptedException ex) {
+				// Do nothing should be required;
+			}
+		}
+	};
 
-    Runnable inOrder = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                var event = new OneShotEvent();
-                event.fire();
-                event.await();
-            } catch (InterruptedException ex) {
-                // Do nothing should be required;
-            }
-        }
-    };
+	private Runnable inOrder = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				var event = new OneShotEvent();
+				event.fire();
+				event.await();
+			} catch (InterruptedException ex) {
+				// Do nothing should be required;
+			}
+		}
+	};
 
-    Runnable firer = new Runnable() {
-        @Override
-        public void run() {
-            var event = new OneShotEvent();
-            event.fire();
-        }
-    };
+	private Runnable firer = new Runnable() {
+		@Override
+		public void run() {
+			var event = new OneShotEvent();
+			event.fire();
+		}
+	};
 
-    Runnable multiple = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                var event = new OneShotEvent();
-                event.fire();
-                event.fire();
-                event.await();
-                event.await();
-                event.fire();
-                event.await();
-            } catch (InterruptedException ex) {
-                // Do nothing should be required;
-            }
-        }
-    };
+	private Runnable multiple = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				var event = new OneShotEvent();
+				event.fire();
+				event.fire();
+				event.await();
+				event.await();
+				event.fire();
+				event.await();
+			} catch (InterruptedException ex) {
+				// Do nothing should be required;
+			}
+		}
+	};
 
-    OneShotEvent event1 = new OneShotEvent();
+	private OneShotEvent event1 = new OneShotEvent();
 
-    Runnable waiter = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                event1.await();
-            } catch (InterruptedException ex) {
-                // Do nothing should be required;
-            }
-        }
-    };
+	private Runnable waiter = new Runnable() {
+		@Override
+		public void run() {
+			try {
+				event1.await();
+			} catch (InterruptedException ex) {
+				// Do nothing should be required;
+			}
+		}
+	};
 
 	@Test
-	public void testMultiple() throws InterruptedException {
+	public void testMultiple() {
 		var thanger = new Thread(hanger);
 		thanger.start();
 		var tinOrder = new Thread(inOrder);

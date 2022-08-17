@@ -17,6 +17,8 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.Integer.rotateLeft;
+import static java.net.InetAddress.getByName;
+import static uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier.DEFAULT;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -31,8 +33,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  */
 public final class IPTag extends Tag {
 	/** Default traffic identifier. */
-	public static final TrafficIdentifier DEFAULT_TRAFFIC_IDENTIFIER =
-			TrafficIdentifier.DEFAULT;
+	public static final TrafficIdentifier DEFAULT_TRAFFIC_IDENTIFIER = DEFAULT;
 
 	private static final boolean DEFAULT_STRIP_SDP = false;
 
@@ -191,10 +192,10 @@ public final class IPTag extends Tag {
 			@JsonProperty(value = "trafficIdentifier")
 			String trafficIdentifier)
 			throws UnknownHostException {
-		super(InetAddress.getByName(boardAddress), tagID,
+		super(getByName(boardAddress), tagID,
 				(port == null ? DEFAULT_PORT : port));
 		destination = new ChipLocation(x, y);
-		ipAddress = InetAddress.getByName(targetAddress);
+		ipAddress = getByName(targetAddress);
 		if (stripSDP == null) {
 			this.stripSDP = DEFAULT_STRIP_SDP;
 		} else {

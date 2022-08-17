@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.front_end;
 
+import static java.lang.System.err;
+import static java.lang.System.exit;
+import static java.lang.System.out;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
@@ -75,15 +78,20 @@ public final class CommandLineInterface {
 		var cls = CommandLineInterface.class;
 		var prop = new Properties();
 		try {
-			prop.load(cls.getClassLoader()
-					.getResourceAsStream("command-line.properties"));
-		} catch (IOException e) {
+			prop.load(cls.getResourceAsStream("command-line.properties"));
+		} catch (IOException | NullPointerException e) {
 			getLogger(cls).error("failed to read properties", e);
-			System.exit(2);
+			exit(2);
 		}
 		JAR_FILE = prop.getProperty("jar");
 		MAIN_CLASS = prop.getProperty("mainClass");
 		VERSION = prop.getProperty("version");
+	}
+
+	private static void wrongArgs(String cmd, String args) {
+		err.printf("wrong # args: must be \"java -jar %s %s %s\"\n",
+				JAR_FILE, cmd, args);
+		exit(1);
 	}
 
 	/**
@@ -95,101 +103,76 @@ public final class CommandLineInterface {
 	 */
 	public static void main(String... args) {
 		if (args.length < 1) {
-			System.err.printf(
+			err.printf(
 					"wrong # args: must be \"java -jar %s <command> ...\"\n",
 					JAR_FILE);
-			System.exit(1);
+			exit(1);
 		}
 		try {
 			switch (args[0]) {
 			case CLICommands.GATHER:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
-					System.err.printf("wrong # args: must be \"java -jar %s %s "
-							+ "<gatherFile> <machineFile> <runFolder>\"\n",
-							JAR_FILE, CLICommands.GATHER);
-					System.exit(1);
+					wrongArgs(CLICommands.GATHER,
+							"<gatherFile> <machineFile> <runFolder>");
 				}
 				setLoggerDir(args[THIRD]);
 				gatherRun(args[1], args[2], args[THIRD]);
-				System.exit(0);
+				exit(0);
 
 			case CLICommands.DOWNLOAD:
 				if (args.length != NUM_DOWNLOAD_ARGS) {
-					System.err.printf(
-							"wrong # args: must be \"java -jar %s %s "
-									+ "<placementFile> <machineFile> "
-									+ "<runFolder>\"\n",
-							JAR_FILE, CLICommands.DOWNLOAD);
-					System.exit(1);
+					wrongArgs(CLICommands.DOWNLOAD,
+							"<placementFile> <machineFile> <runFolder>");
 				}
 				setLoggerDir(args[THIRD]);
 				downloadRun(args[1], args[2], args[THIRD]);
-				System.exit(0);
+				exit(0);
 
 			case CLICommands.DSE:
 				if (args.length != NUM_DSE_ARGS) {
-					System.err.printf(
-							"wrong # args: must be \"java -jar %s %s "
-									+ "<machineFile> <runFolder>\"\n",
-							JAR_FILE, CLICommands.DSE);
-					System.exit(1);
+					wrongArgs(CLICommands.DSE, "<machineFile> <runFolder>");
 				}
 				setLoggerDir(args[2]);
 				dseRun(args[1], args[2], null);
-				System.exit(0);
+				exit(0);
 
 			case CLICommands.DSE_SYS:
 				if (args.length != NUM_DSE_ARGS) {
-					System.err.printf(
-							"wrong # args: must be \"java -jar %s %s "
-									+ "<machineFile> <runFolder>\"\n",
-							JAR_FILE, CLICommands.DSE_SYS);
-					System.exit(1);
+					wrongArgs(CLICommands.DSE_SYS, "<machineFile> <runFolder>");
 				}
 				setLoggerDir(args[2]);
 				dseRun(args[1], args[2], false);
-				System.exit(0);
+				exit(0);
 
 			case CLICommands.DSE_APP:
 				if (args.length != NUM_DSE_ARGS) {
-					System.err.printf(
-							"wrong # args: must be \"java -jar %s %s "
-									+ "<machineFile> <runFolder>\"\n",
-							JAR_FILE, CLICommands.DSE_APP);
-					System.exit(1);
+					wrongArgs(CLICommands.DSE_APP, "<machineFile> <runFolder>");
 				}
 				setLoggerDir(args[2]);
 				dseRun(args[1], args[2], true);
-				System.exit(0);
+				exit(0);
 
 			case CLICommands.DSE_APP_MON:
 				if (args.length != NUM_DSE_APP_MON_ARGS
 						&& args.length != NUM_DSE_APP_MON_ARGS + 1) {
-					System.err.printf(
-							"wrong # args: must be \"java -jar %s %s "
-									+ "<gatherFile> <machineFile> "
-									+ "<runFolder> ?<reportFolder>?\"\n",
-							JAR_FILE, CLICommands.DSE_APP_MON);
-					System.exit(1);
+					wrongArgs(CLICommands.DSE_APP_MON,
+							"<gatherFile> <machineFile> <runFolder> "
+									+ "?<reportFolder>?");
 				}
 				setLoggerDir(args[THIRD]);
 				dseAppMonRun(args[1], args[2], args[THIRD],
 						args.length > NUM_DSE_APP_MON_ARGS ? args[FOURTH]
 								: null);
-				System.exit(0);
+				exit(0);
 
 			case CLICommands.IOBUF:
 				if (args.length != NUM_IOBUF_ARGS) {
-					System.err.printf(
-							"wrong # args: must be \"java -jar %s %s "
-									+ "<machineFile> <iobufMapFile> "
-									+ "<runFolder>\"\n",
-							JAR_FILE, CLICommands.IOBUF);
-					System.exit(1);
+					wrongArgs(CLICommands.IOBUF,
+							"<machineFile> <iobufMapFile> <runFolder>");
 				}
 				setLoggerDir(args[THIRD]);
 				iobufRun(args[1], args[2], args[THIRD]);
-				System.exit(0);
+				exit(0);
 
 			case CLICommands.LISTEN:
 				LocateConnectedMachineIPAddress.main(args);
@@ -197,16 +180,16 @@ public final class CommandLineInterface {
 
 			case CLICommands.VERSION:
 				System.out.println(VERSION);
-				System.exit(0);
+				exit(0);
 
 			default:
-				System.err.printf("unknown command \"%s\": must be one of %s\n",
+				err.printf("unknown command \"%s\": must be one of %s\n",
 						args[0], CLICommands.list());
-				System.exit(1);
+				exit(1);
 			}
 		} catch (Throwable t) {
-			t.printStackTrace(System.err);
-			System.exit(2);
+			t.printStackTrace(err);
+			exit(2);
 		}
 	}
 
@@ -333,7 +316,7 @@ public final class CommandLineInterface {
 		var retriever = new IobufRetriever(new Transceiver(machine),
 				machine, PARALLEL_SIZE);
 		var result = retriever.retrieveIobufContents(request, runFolder);
-		MAPPER.writeValue(System.out, result);
+		MAPPER.writeValue(out, result);
 	}
 
 	/**
@@ -480,7 +463,7 @@ interface CLICommands {
 	 */
 	static String list() {
 		var sb = new StringBuilder();
-		String sep = "";
+		var sep = "";
 		for (var item : ALL) {
 			sb.append(sep);
 			sep = ", ";

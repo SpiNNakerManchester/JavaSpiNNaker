@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.io;
 import java.io.EOFException;
 import java.io.IOException;
 
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.utils.Slice;
@@ -30,16 +31,16 @@ import uk.ac.manchester.spinnaker.utils.Slice;
  */
 abstract class BaseIO implements AbstractIO {
 	/** The start address of the region to write to. */
-	final int start;
+	final MemoryLocation start;
 
 	/** The end of the region to write to. */
-	final int end;
+	final MemoryLocation end;
 
 	/** The current pointer where read and writes are taking place. */
-	int current;
+	MemoryLocation current;
 
-	BaseIO(int start, int end) {
-		if (start >= end) {
+	BaseIO(MemoryLocation start, MemoryLocation end) {
+		if (!start.lessThan(end)) {
 			throw new IllegalArgumentException(
 					"start address must precede end address");
 		}
@@ -50,13 +51,13 @@ abstract class BaseIO implements AbstractIO {
 
 	@Override
 	public int size() {
-		return end - start;
+		return end.diff(start);
 	}
 
 	@Override
 	public void seek(int numBytes) {
-		int position = start + numBytes;
-		if (position < start || position > end) {
+		var position = start.add(numBytes);
+		if (position.lessThan(start) || position.greaterThan(end)) {
 			throw new IllegalArgumentException(
 					"Attempt to seek to a position of " + position
 							+ " which is outside of the region");
@@ -66,11 +67,11 @@ abstract class BaseIO implements AbstractIO {
 
 	@Override
 	public int tell() {
-		return current - start;
+		return current.diff(start);
 	}
 
 	@Override
-	public int getAddress() {
+	public MemoryLocation getAddress() {
 		return current;
 	}
 
@@ -121,44 +122,46 @@ abstract class BaseIO implements AbstractIO {
 	abstract void doFill(int value, FillDataType type, int len)
 			throws IOException, ProcessException;
 
+	private void inRange(int delta) throws EOFException {
+		var newAddr = current.add(delta);
+		if (!newAddr.lessThan(end)) {
+			throw new EOFException();
+		}
+	}
+
 	@Override
 	public byte[] read(Integer numBytes) throws IOException, ProcessException {
 		if (numBytes != null && numBytes == 0) {
 			return new byte[0];
 		}
-		int n = (numBytes == null || numBytes < 0) ? (end - current) : numBytes;
-		if (current + n > end) {
-			throw new EOFException();
-		}
+		int n = (numBytes == null || numBytes < 0) ? end.diff(current)
+				: numBytes;
+		inRange(n);
 		var data = doRead(n);
-		current += n;
+		current = current.add(n);
 		return data;
 	}
 
 	@Override
 	public int write(byte[] data) throws IOException, ProcessException {
 		int n = data.length;
-		if (current + n > end) {
-			throw new EOFException();
-		}
+		inRange(n);
 		doWrite(data, 0, n);
-		current += n;
+		current = current.add(n);
 		return n;
 	}
 
 	@Override
 	public void fill(int value, Integer size, FillDataType type)
 			throws IOException, ProcessException {
-		int len = (size == null) ? (end - current) : size;
-		if (current + len > end) {
-			throw new EOFException();
-		}
+		int len = (size == null) ? end.diff(current) : size;
+		inRange(len);
 		if (len < 0 || len % type.size != 0) {
 			throw new IllegalArgumentException(
 					"length to fill must be multiple of fill unit size");
 		}
 		doFill(value, type, len);
-		current += len;
+		current = current.add(len);
 	}
 
 	/**
@@ -179,7 +182,7 @@ abstract class BaseIO implements AbstractIO {
 		 *            Where the slice ends. Greater than {@code from}.
 		 * @return The sliced object.
 		 */
-		V call(int from, int to);
+		V call(MemoryLocation from, MemoryLocation to);
 	}
 
 	/**
@@ -199,20 +202,20 @@ abstract class BaseIO implements AbstractIO {
 	 */
 	final <IO extends AbstractIO> IO get(Slice slice,
 			SliceFactory<IO> factory) {
-		int from = start;
-		int to = end;
+		var from = start;
+		var to = end;
 		if (slice.start != null) {
 			if (slice.start < 0) {
-				from = end + slice.start;
+				from = end.add(slice.start);
 			} else {
-				from += slice.start;
+				from = from.add(slice.start);
 			}
 		}
 		if (slice.stop != null) {
 			if (slice.stop < 0) {
-				to = end + slice.stop;
+				to = end.add(slice.stop);
 			} else {
-				to += slice.stop;
+				to = to.add(slice.stop);
 			}
 		}
 		/*
@@ -221,13 +224,13 @@ abstract class BaseIO implements AbstractIO {
 		 *
 		 * An equivalent argument holds for slice.stop.
 		 */
-		if (from < start || from > end) {
+		if (from.lessThan(start) || from.greaterThan(end)) {
 			throw new ArrayIndexOutOfBoundsException(slice.start);
 		}
-		if (to < start || to > end) {
+		if (to.lessThan(start) || to.greaterThan(end)) {
 			throw new ArrayIndexOutOfBoundsException(slice.stop);
 		}
-		if (from == to) {
+		if (from.equals(to)) {
 			throw new ArrayIndexOutOfBoundsException(
 					"zero-sized regions are not supported");
 		}

@@ -21,8 +21,6 @@ import static java.lang.Thread.sleep;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,19 +32,12 @@ import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
-import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
  * Tests the Spalloc Client ideally using an actual connection but with a backup
@@ -59,8 +50,10 @@ public class TestMockClient {
 	private static final int SECOND = 1000;
 
 	private static int timeout = SECOND;
+
 	private static MockConnectedClient client =
 			new MockConnectedClient(timeout);
+
 	private static final Logger log = getLogger(TestMockClient.class);
 
 	@Test
@@ -109,12 +102,11 @@ public class TestMockClient {
 				var whereis1 = client.whereIs(machineName, coords, timeout);
 				var whereis2 = client.whereIs(machineName, physical, timeout);
 				var chip = whereis1.getChip();
-				@SuppressWarnings("unused")
 				var whereis3 = client.whereIs(machineName, chip, timeout);
 				// check only work if all real or all mock
 				if (previous == client.isActual()) {
 					assertEquals(whereis1, whereis2);
-					assertEquals(whereis1, whereis2);
+					assertEquals(whereis1, whereis3);
 				}
 			}
 		}
@@ -131,6 +123,7 @@ public class TestMockClient {
 			var args = new ArrayList<Integer>();
 			var kwargs = new HashMap<String, Object>();
 			kwargs.put("owner", "Unittest. OK to kill after 1 minute.");
+			@SuppressWarnings("deprecation")
 			int jobId = client.createJob(args, kwargs, timeout);
 			if (client.isActual()) {
 				assertThat("Jobid > 0", jobId, greaterThan(0));
@@ -153,7 +146,7 @@ public class TestMockClient {
 			assertEquals(State.POWER, state.getState());
 			assertTrue(state.getPower());
 			var machineInfo = client.getJobMachineInfo(jobId, timeout);
-			String machineName = machineInfo.getMachineName();
+			var machineName = machineInfo.getMachineName();
 			if (client.isActual()) {
 				assert !machineName.isEmpty() : "must have a machine name";
 			} else {

@@ -36,13 +36,15 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
+import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.model.IOBuffer;
 import uk.ac.manchester.spinnaker.messages.scp.ClearIOBUF;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory;
-import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.messages.scp.ReadMemory.Response;
 import uk.ac.manchester.spinnaker.messages.scp.UpdateProvenanceAndExit;
+import uk.ac.manchester.spinnaker.messages.scp.UpdateRuntime;
 import uk.ac.manchester.spinnaker.utils.DefaultMap;
+import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * A process for controlling an application running on a SpiNNaker core. The
@@ -172,15 +174,15 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
-	Iterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
+	MappableIterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws ProcessException, IOException {
 		// Get the IOBuf address for each core
 		for (var core : requireNonNull(cores,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new ReadMemory(core.getScampCore(),
-					CPU_IOBUF_ADDRESS_OFFSET + getVcpuAddress(core), WORD),
+					getVcpuAddress(core).add(CPU_IOBUF_ADDRESS_OFFSET), WORD),
 					response -> issueReadForIOBufHead(core, 0,
-							response.data.getInt(),
+							new MemoryLocation(response.data.getInt()),
 							chunk(size + BUF_HEADER_BYTES)));
 		}
 		finish();
@@ -198,7 +200,8 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 				var read = nextReads.remove();
 				sendRequest(read.message(), response -> {
 					// Unpack the IOBuf header
-					int nextAddress = response.data.getInt();
+					var nextAddress =
+							new MemoryLocation(response.data.getInt());
 					response.data.getLong(); // Ignore 8 bytes
 					int bytesToRead = response.data.getInt();
 
@@ -208,7 +211,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 
 					// Ask for the rest of the IOBuf buffer to be copied over
 					issueReadsForIOBufTail(read, bytesToRead,
-							read.base + packetBytes + BLOCK_HEADER_BYTES,
+							read.base.add(packetBytes + BLOCK_HEADER_BYTES),
 							packetBytes);
 
 					// If there is another IOBuf buffer, read this next
@@ -221,31 +224,26 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 			checkForError();
 		}
 
-		return new Iterable<IOBuffer>() {
+		return () -> new Iterator<IOBuffer>() {
+			private final Iterator<CoreLocation> cores =
+					iobuf.keySet().iterator();
+
 			@Override
-			public Iterator<IOBuffer> iterator() {
-				return new Iterator<IOBuffer>() {
-					private final Iterator<CoreLocation> cores =
-							iobuf.keySet().iterator();
+			public boolean hasNext() {
+				return cores.hasNext();
+			}
 
-					@Override
-					public boolean hasNext() {
-						return cores.hasNext();
-					}
-
-					@Override
-					public IOBuffer next() {
-						var core = cores.next();
-						return new IOBuffer(core, iobuf.get(core).values());
-					}
-				};
+			@Override
+			public IOBuffer next() {
+				var core = cores.next();
+				return new IOBuffer(core, iobuf.get(core).values());
 			}
 		};
 	}
 
-	private void issueReadForIOBufHead(CoreLocation core, int blockID, int next,
-			int size) {
-		if (next != 0) {
+	private void issueReadForIOBufHead(CoreLocation core, int blockID,
+			MemoryLocation next, int size) {
+		if (!next.isNull()) {
 			nextReads.add(new NextRead(core, blockID, next, size));
 		}
 	}
@@ -265,14 +263,14 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	private void issueReadsForIOBufTail(NextRead read, int bytesToRead,
-			int baseAddress, int readOffset) {
+			MemoryLocation baseAddress, int readOffset) {
 		bytesToRead -= readOffset;
 		// While more reads need to be done to read the data
 		while (bytesToRead > 0) {
 			// Read the next bit of memory making up the buffer
 			int next = chunk(bytesToRead);
 			extraReads.add(new ExtraRead(read, baseAddress, next, readOffset));
-			baseAddress += next;
+			baseAddress = baseAddress.add(next);
 			readOffset += next;
 			bytesToRead -= next;
 		}
@@ -291,11 +289,12 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 
 		final int blockID;
 
-		final int base;
+		final MemoryLocation base;
 
 		final int size;
 
-		NextRead(CoreLocation core, int blockID, int base, int size) {
+		NextRead(CoreLocation core, int blockID, MemoryLocation base,
+				int size) {
 			this.core = core;
 			this.blockID = blockID;
 			this.base = base;
@@ -315,13 +314,13 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 
 		final int blockID;
 
-		final int base;
+		final MemoryLocation base;
 
 		final int size;
 
 		final int offset;
 
-		ExtraRead(NextRead head, int base, int size, int offset) {
+		ExtraRead(NextRead head, MemoryLocation base, int size, int offset) {
 			this.core = head.core;
 			this.blockID = head.blockID;
 			this.base = base;

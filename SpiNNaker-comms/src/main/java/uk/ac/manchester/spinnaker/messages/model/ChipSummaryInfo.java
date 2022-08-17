@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
+import static java.lang.Byte.toUnsignedInt;
 import static java.net.InetAddress.getByAddress;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableSet;
@@ -139,8 +140,8 @@ public final class ChipSummaryInfo {
 		coreStates = parseStates(states);
 
 		chip = source;
-		int neY = Byte.toUnsignedInt(buffer.get());
-		int neX = Byte.toUnsignedInt(buffer.get());
+		int neY = toUnsignedInt(buffer.get());
+		int neX = toUnsignedInt(buffer.get());
 		nearestEthernetChip = new ChipLocation(neX, neY);
 
 		var ia = new byte[ADDRESS_SIZE];

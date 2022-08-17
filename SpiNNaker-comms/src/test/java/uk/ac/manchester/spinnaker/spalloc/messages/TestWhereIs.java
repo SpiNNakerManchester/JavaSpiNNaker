@@ -31,6 +31,7 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
  */
 public class TestWhereIs {
 
+	@Test
 	void testFromJson() throws IOException {
 		var jobChip = new ChipLocation(1, 2);
 		var chip = new ChipLocation(3, 4);
@@ -49,7 +50,8 @@ public class TestWhereIs {
 		assertEquals(logical, fromJson.getLogical());
 		assertEquals("Spin24b-001", fromJson.getMachine());
 		assertEquals(boardChip, fromJson.getBoardChip());
-		assertEquals(boardChip, fromJson.getPhysical());
+		var physical2 = fromJson.getPhysical();
+		assertEquals(physical, physical2);
 
 		var direct = new WhereIs(jobChip, 666, chip, logical, "Spin24b-001",
 				boardChip, physical);
@@ -71,14 +73,14 @@ public class TestWhereIs {
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertNull(fromJson.getJobChip());
-		assertEquals(0, fromJson.getJobId());
+		assertNull(fromJson.getJobId());
 		assertEquals(chip, fromJson.getChip());
 		assertEquals(logical, fromJson.getLogical());
 		assertEquals("Spin24b-001", fromJson.getMachine());
 		assertEquals(boardChip, fromJson.getBoardChip());
 		assertEquals(physical, fromJson.getPhysical());
 
-		var direct = new WhereIs(null, 0, chip, logical, "Spin24b-001",
+		var direct = new WhereIs(null, null, chip, logical, "Spin24b-001",
 				boardChip, physical);
 		assertEquals(direct, fromJson);
 		// assertEquals(direct.hashCode(), fromJson.hashCode());
@@ -94,14 +96,14 @@ public class TestWhereIs {
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, WhereIs.class);
 		assertNull(fromJson.getJobChip());
-		assertEquals(0, fromJson.getJobId());
+		assertNull(fromJson.getJobId());
 		assertNull(fromJson.getChip());
 		assertNull(fromJson.getLogical());
 		assertNull(fromJson.getMachine());
 		assertNull(fromJson.getBoardChip());
 		assertNull(fromJson.getPhysical());
 
-		var direct = new WhereIs(null, 0, null, null, null, null, null);
+		var direct = new WhereIs(null, null, null, null, null, null, null);
 		assertEquals(direct, fromJson);
 		// assertEquals(direct.hashCode(), fromJson.hashCode());
 		assertEquals(direct.toString(), fromJson.toString());

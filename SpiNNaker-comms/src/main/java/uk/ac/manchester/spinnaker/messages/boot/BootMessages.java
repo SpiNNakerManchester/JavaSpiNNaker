@@ -81,9 +81,7 @@ public class BootMessages {
 			Map<SystemVariableDefinition, Object> extraBootValues) {
 		bootVariables = initFlags(bootVariables);
 		if (extraBootValues != null) {
-			for (var entry : extraBootValues.entrySet()) {
-				bootVariables.setValue(entry.getKey(), entry.getValue());
-			}
+			extraBootValues.forEach(bootVariables::setValue);
 		}
 		bootData = readBootImage(getClass().getResource(BOOT_IMAGE));
 		injectBootVariableBlock(bootVariables);
