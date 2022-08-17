@@ -46,7 +46,11 @@ import java.nio.ByteBuffer;
 import uk.ac.manchester.spinnaker.data_spec.impl.Commands;
 
 /** Severely cut down version of the DSG, for testing only. */
-public class Generator {
+public final class Generator {
+	private static final int SPACE = 32;
+
+	private static final int KB = 1024;
+
 	private ByteBuffer buffer;
 
 	public static ByteBuffer makeSpec(SpecGen specGen) {
@@ -79,7 +83,7 @@ public class Generator {
 	}
 
 	private Generator() {
-		buffer = allocate(32 * 1024).order(LITTLE_ENDIAN);
+		buffer = allocate(SPACE * KB).order(LITTLE_ENDIAN);
 	}
 
 	/**
@@ -110,6 +114,7 @@ public class Generator {
 		/** immediate value field. */
 		IMMEDIATE(0);
 
+		/** Bit offset. */
 		public final int offset;
 
 		Field(int offset) {
@@ -118,9 +123,23 @@ public class Generator {
 	}
 
 	public enum DataType {
-		INT8(1, LEN2), INT16(2, LEN2), INT32(4, LEN2), INT64(8, LEN3);
+		/** A byte. */
+		INT8(1, LEN2),
 
-		final int size, writeLength;
+		/** A short. */
+		INT16(2, LEN2),
+
+		/** A word. */
+		INT32(4, LEN2),
+
+		/** A double-word. */
+		INT64(8, LEN3);
+
+		/** Size, in bytes. */
+		final int size;
+
+		/** Instruction payload size. */
+		final int writeLength;
 
 		DataType(int size, int writeLength) {
 			this.size = size;
@@ -141,6 +160,8 @@ public class Generator {
 			case INT64:
 				buffer.putLong(n.longValue());
 				break;
+			default:
+				throw new Error("unhandled enum case");
 			}
 		}
 
@@ -164,6 +185,8 @@ public class Generator {
 			case INT64:
 				buffer.putLong(n.longValue());
 				break;
+			default:
+				throw new Error("unhandled enum case");
 			}
 		}
 	}
