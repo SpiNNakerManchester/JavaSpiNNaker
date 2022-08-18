@@ -33,7 +33,7 @@ module spinnaker.allocator.server {
 	// Base dependencies
 	requires java.annotation;
 	requires java.desktop;
-	requires java.mail;
+	requires jakarta.mail;
 	requires java.validation;
 	requires java.ws.rs;
 
@@ -89,13 +89,14 @@ module spinnaker.allocator.server {
 	requires spring.security.oauth2.jose;
 	requires spring.security.oauth2.resource.server;
 
-	opens uk.ac.manchester.spinnaker.alloc
-			to com.fasterxml.jackson.databind,
-				spring.core, spring.beans, spring.context;
-	opens uk.ac.manchester.spinnaker.alloc.db
-			to spring.core, spring.beans, spring.context;
-	opens uk.ac.manchester.spinnaker.alloc.model
-			to com.fasterxml.jackson.databind;
-	opens uk.ac.manchester.spinnaker.alloc.web
-			to com.fasterxml.jackson.databind;
+	opens uk.ac.manchester.spinnaker.alloc;
+	opens uk.ac.manchester.spinnaker.alloc.admin;
+	opens uk.ac.manchester.spinnaker.alloc.allocator;
+	opens uk.ac.manchester.spinnaker.alloc.bmp;
+	opens uk.ac.manchester.spinnaker.alloc.compat;
+	opens uk.ac.manchester.spinnaker.alloc.db;
+	opens uk.ac.manchester.spinnaker.alloc.model;
+	opens uk.ac.manchester.spinnaker.alloc.proxy;
+	opens uk.ac.manchester.spinnaker.alloc.security;
+	opens uk.ac.manchester.spinnaker.alloc.web;
 }
