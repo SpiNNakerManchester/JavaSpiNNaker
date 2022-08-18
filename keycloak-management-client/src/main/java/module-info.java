@@ -24,12 +24,16 @@
  * @author Donal Fellows
  */
 module spinnaker.keycloak_management_tool {
+	requires java.sql;
+
 	// External dependencies
+	requires keycloak.core;
 	requires keycloak.client.registration.api;
 	requires org.xerial.sqlitejdbc;
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
 	requires org.slf4j;
+	requires org.apache.httpcomponents.httpcore;
 
 	opens uk.ac.manchester.spinnaker.tools
 			to com.fasterxml.jackson.databind;

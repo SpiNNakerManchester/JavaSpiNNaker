@@ -30,13 +30,60 @@
  * @author Donal Fellows
  */
 module spinnaker.allocator.server {
+	// Base dependencies
+	requires java.annotation;
+	requires java.desktop;
+	requires java.validation;
+	requires java.ws.rs;
+
+	// Internal dependencies
+	requires spinnaker.utils;
+	requires spinnaker.machine;
+	requires spinnaker.comms;
+	requires spinnaker.storage;
+
 	// External dependencies
-	requires org.xerial.sqlitejdbc;
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
+	requires com.fasterxml.jackson.jaxrs.json;
 	requires org.slf4j;
+
 	requires org.apache.commons.io;
-	requires spinnaker.comms;
+	requires org.apache.commons.lang3;
+	requires commons.math3;
+
+	requires spring.core;
+	requires spring.beans;
+	requires spring.context;
+	requires spring.context.support;
+	requires spring.expression;
+	requires spring.boot;
+	requires spring.boot.autoconfigure;
+
+	requires spring.jdbc;
+	requires spring.tx;
+	requires org.xerial.sqlitejdbc;
+
+	requires spring.web;
+	requires spring.webmvc;
+	requires spring.websocket;
+	requires org.apache.cxf.core;
+	requires org.apache.cxf.frontend.jaxrs;
+	requires org.apache.cxf.rs.wadl;
+	requires org.apache.cxf.rs.openapi.v3;
+	requires org.apache.cxf.transport.http;
+	requires spring.boot.starter.websocket;
+	requires org.apache.tomcat.embed.core;
+	requires io.swagger.v3.oas.annotations;
+
+	requires spring.security.core;
+	requires spring.security.config;
+	requires spring.security.crypto;
+	requires spring.security.web;
+	requires spring.security.oauth2.core;
+	requires spring.security.oauth2.client;
+	requires spring.security.oauth2.jose;
+	requires spring.security.oauth2.resource.server;
 
 	opens uk.ac.manchester.spinnaker.alloc
 			to com.fasterxml.jackson.databind;

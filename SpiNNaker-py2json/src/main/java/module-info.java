@@ -27,7 +27,6 @@ module spinnaker.allocator.py2json {
 	// External dependencies
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
-	requires spinnaker.comms;
 	requires info.picocli;
 	requires jython.slim;
 

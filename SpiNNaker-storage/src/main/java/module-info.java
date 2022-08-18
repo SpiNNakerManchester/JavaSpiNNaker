@@ -30,4 +30,5 @@ open module spinnaker.storage {
 	requires java.base;
 
 	exports uk.ac.manchester.spinnaker.storage;
+	exports uk.ac.manchester.spinnaker.storage.threading;
 }
