@@ -33,6 +33,7 @@ module spinnaker.allocator.server {
 	// Base dependencies
 	requires java.annotation;
 	requires java.desktop;
+	requires java.mail;
 	requires java.validation;
 	requires java.ws.rs;
 
@@ -52,6 +53,7 @@ module spinnaker.allocator.server {
 	requires org.apache.commons.lang3;
 	requires commons.math3;
 
+	requires spring.aop;
 	requires spring.core;
 	requires spring.beans;
 	requires spring.context;
@@ -70,7 +72,9 @@ module spinnaker.allocator.server {
 	requires org.apache.cxf.core;
 	requires org.apache.cxf.frontend.jaxrs;
 	requires org.apache.cxf.rs.wadl;
+	requires org.apache.cxf.rs.common.openapi;
 	requires org.apache.cxf.rs.openapi.v3;
+	requires org.apache.cxf.rs.swagger.ui;
 	requires org.apache.cxf.transport.http;
 	requires spring.boot.starter.websocket;
 	requires org.apache.tomcat.embed.core;
@@ -86,7 +90,10 @@ module spinnaker.allocator.server {
 	requires spring.security.oauth2.resource.server;
 
 	opens uk.ac.manchester.spinnaker.alloc
-			to com.fasterxml.jackson.databind;
+			to com.fasterxml.jackson.databind,
+				spring.core, spring.beans, spring.context;
+	opens uk.ac.manchester.spinnaker.alloc.db
+			to spring.core, spring.beans, spring.context;
 	opens uk.ac.manchester.spinnaker.alloc.model
 			to com.fasterxml.jackson.databind;
 	opens uk.ac.manchester.spinnaker.alloc.web
