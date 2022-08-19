@@ -31,5 +31,5 @@ module spinnaker.allocator.py2json {
 	requires jython.slim;
 
 	opens uk.ac.manchester.spinnaker.py2json
-			to com.fasterxml.jackson.databind;
+			to com.fasterxml.jackson.databind, info.picocli;
 }
