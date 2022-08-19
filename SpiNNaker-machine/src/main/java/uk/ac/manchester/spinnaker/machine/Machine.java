@@ -21,6 +21,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Collections.unmodifiableSortedMap;
+import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 
@@ -73,11 +74,11 @@ public class Machine implements MappableIterable<Chip> {
 	private final ArrayList<Chip> ethernetConnectedChips;
 
 	// This may change to a map of maps
-	private final HashMap<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
+	private final Map<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
 
 	/** Map of map of map implementation done to allow access to submaps. */
 	// If never required this could be changed to single map with tuple key.
-	private final HashMap<InetAddress,
+	private final Map<InetAddress,
 			Map<FpgaId, Map<Integer, FPGALinkData>>> fpgaLinks;
 
 	/** The coordinates of the chip used to boot the machine. */
@@ -747,12 +748,11 @@ public class Machine implements MappableIterable<Chip> {
 					rootY + fpgaEnum.getY());
 			if (hasChipAt(location)
 					&& !hasLinkAt(location, fpgaEnum.direction)) {
-				var byId = fpgaLinks
-						.computeIfAbsent(address, k -> new HashMap<>())
-						.computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>());
-				byId.put(fpgaEnum.id,
-						new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId, location,
-								fpgaEnum.direction, address));
+				fpgaLinks.computeIfAbsent(address, k -> new HashMap<>())
+						.computeIfAbsent(fpgaEnum.fpgaId, k -> new HashMap<>())
+						.put(fpgaEnum.id,
+								new FPGALinkData(fpgaEnum.id, fpgaEnum.fpgaId,
+										location, fpgaEnum.direction, address));
 			}
 		}
 	}
@@ -936,13 +936,9 @@ public class Machine implements MappableIterable<Chip> {
 	 * @return A set (hopefully empty) of ChipLocations to remove.
 	 */
 	public Set<ChipLocation> findAbnormalChips() {
-		var abnormalCores = new HashSet<ChipLocation>();
-		for (var chip : chips.values()) {
-			if (chip.router.size() == 0) {
-				abnormalCores.add(chip.asChipLocation());
-			}
-		}
-		return unmodifiableSet(abnormalCores);
+		return chips.values().stream().filter(chip -> chip.router.size() == 0)
+				.map(Chip::asChipLocation)
+				.collect(toUnmodifiableSet());
 	}
 
 	@Override

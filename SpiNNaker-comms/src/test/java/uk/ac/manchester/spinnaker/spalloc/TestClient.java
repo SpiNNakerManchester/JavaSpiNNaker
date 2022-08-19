@@ -26,7 +26,6 @@ import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
 import java.io.EOFException;
 import java.net.ConnectException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -285,9 +284,7 @@ class TestClient {
 
 			// Old style create_job
 			s.send("{\"return\": 123}");
-			Map<String, Object> kwargs = new HashMap<>();
-			kwargs.put("bar", 2);
-			kwargs.put("owner", "dummy");
+			Map<String, Object> kwargs = Map.of("bar", 2, "owner", "dummy");
 			assertEquals(123, c.createJob(List.of(1), kwargs));
 			JSONAssert.assertEquals(
 					"{\"command\": \"create_job\", \"args\": [1], "

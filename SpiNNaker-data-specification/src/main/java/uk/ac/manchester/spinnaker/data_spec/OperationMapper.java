@@ -68,25 +68,23 @@ abstract class OperationMapper {
 	 */
 	static Callable getOperationImpl(FunctionAPI funcs, Commands opcode) {
 		// Note that MAP is using the object identity; this is by design
-		var map = MAP.get(requireNonNull(funcs,
-				"can only look up method implementations of real objects"));
-		if (map == null) {
-			map = new HashMap<>();
-			MAP.put(funcs, map);
-
-			/*
-			 * Careful! Must only pass in references to funcs as a weak so that
-			 * it doesn't compromise the weak hash map. But we can use the same
-			 * weak reference for all the method wrappers that we create.
-			 */
-			manufactureCallables(map, new WeakReference<>(funcs),
-					getOperations(funcs.getClass()));
-		}
+		var map = MAP.computeIfAbsent(requireNonNull(funcs,
+				"can only look up method implementations of real objects"),
+				/*
+				 * Careful! Must only pass in references to funcs as a weak so
+				 * that it doesn't compromise the weak hash map. But we can use
+				 * the same weak reference for all the method wrappers that we
+				 * create.
+				 */
+				k -> manufactureCallables(new WeakReference<>(k),
+						OPS_MAP.computeIfAbsent(k.getClass(),
+								OperationMapper::getOperations)));
 		return map.get(opcode);
 	}
 
-	private static void manufactureCallables(Map<Commands, Callable> map,
+	private static Map<Commands, Callable> manufactureCallables(
 			WeakReference<FunctionAPI> objref, Map<Commands, Method> ops) {
+		Map<Commands, Callable> map = new HashMap<>();
 		// Note that getOperations() below ensures the safety of this
 		ops.forEach((c, m) -> {
 			if (m.getReturnType().equals(Void.TYPE)) {
@@ -95,15 +93,12 @@ abstract class OperationMapper {
 				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
 			}
 		});
+		return map;
 	}
 
 	private static Map<Commands, Method> getOperations(
 			Class<? extends FunctionAPI> cls) {
-		var ops = OPS_MAP.get(cls);
-		if (ops != null) {
-			return ops;
-		}
-		ops = new HashMap<>();
+		var ops = new HashMap<Commands, Method>();
 		for (var m : cls.getMethods()) {
 			// Skip methods without the annotation. They're no problem.
 			if (!m.isAnnotationPresent(Operation.class)) {
@@ -126,12 +121,12 @@ abstract class OperationMapper {
 			}
 			if (log.isDebugEnabled()) {
 				log.debug(
-						"discovered operation {} on {} is implemented by {}()",
+						"discovered operation {} on {} is "
+								+ "implemented by {}()",
 						c.name(), cls, m.getName());
 			}
 			ops.put(c, m);
 		}
-		OPS_MAP.put(cls, ops);
 		return ops;
 	}
 

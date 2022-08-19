@@ -16,17 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import org.hamcrest.collection.IsEmptyCollection;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
@@ -36,8 +28,13 @@ import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.BOTTOM;
 import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.TOP_RIGHT;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.Set;
+
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.Test;
-import uk.ac.manchester.spinnaker.machine.datalinks.FPGALinkData;
 
 /**
  *
@@ -54,7 +51,7 @@ public class TestVirtualMachine {
 	@Test
 	public void testSmallBoards() {
 		var instance = new VirtualMachine(new MachineDimensions(2, 2),
-				new HashSet<>(), new HashMap<>(), new HashMap<>());
+				Set.of(), Map.of(), Map.of());
 		assertEquals(MachineVersion.THREE, instance.version);
 		assertEquals(4, instance.chips().size());
 		for (var chip : instance.chips()) {
@@ -72,8 +69,7 @@ public class TestVirtualMachine {
 		assertNotNull(address00);
 
 		instance.addFpgaLinks();
-		var fpgalinks = new ArrayList<FPGALinkData>();
-		instance.getFpgaLinks().forEach(fpgalinks::add);
+		var fpgalinks = instance.getFpgaLinks().toList();
 		assertEquals(0, fpgalinks.size());
 
 		var empty = instance.spinnakerLinks();
@@ -113,8 +109,7 @@ public class TestVirtualMachine {
 		assertEquals(BOTTOM, link.fpgaId);
 		assertEquals(3, link.fpgaLinkId);
 
-		var links = new ArrayList<FPGALinkData>();
-		instance.getFpgaLinks().forEach(links::add);
+		var links = instance.getFpgaLinks().toList();
 		assertEquals(3 * 16, links.size());
 	}
 
@@ -125,8 +120,7 @@ public class TestVirtualMachine {
 		assertEquals(3 * 48 * 17, instance.totalAvailableUserCores());
 
 		instance.addFpgaLinks();
-		var links = new ArrayList<FPGALinkData>();
-		instance.getFpgaLinks().forEach(links::add);
+		var links = instance.getFpgaLinks().toList();
 		assertEquals(0, links.size());
 	}
 
@@ -197,8 +191,7 @@ public class TestVirtualMachine {
 				instance.coresAndLinkOutputString());
 		assertFalse(instance.hasLinkAt(new ChipLocation(7, 2), NORTH));
 		instance.addFpgaLinks();
-		var links = new ArrayList<FPGALinkData>();
-		instance.getFpgaLinks().forEach(links::add);
+		var links = instance.getFpgaLinks().toList();
 		assertEquals(3, links.size());
 
 	}
@@ -210,8 +203,7 @@ public class TestVirtualMachine {
 		assertEquals(3 * 48, instance.chips().size());
 
 		instance.addFpgaLinks();
-		var links = new ArrayList<FPGALinkData>();
-		instance.getFpgaLinks().forEach(links::add);
+		var links = instance.getFpgaLinks().toList();
 		// 16 links per fpga
 		// each board has 2 fpga open (one connected to other board)
 		// There are three boards
@@ -258,8 +250,7 @@ public class TestVirtualMachine {
 
 	@Test
 	public void testIgnoreRootChips() {
-		var ignoreChips = new HashSet<ChipLocation>();
-		ignoreChips.add(new ChipLocation(8, 4));
+		var ignoreChips = Set.of(new ChipLocation(8, 4));
 		// Note future Machine may disallow a null ethernet chip
 		var instance = new VirtualMachine(new MachineDimensions(12, 12),
 				ignoreChips, null, null);
@@ -299,7 +290,7 @@ public class TestVirtualMachine {
 	@Test
 	public void testBiggestWrapAround() {
 		var instance = new VirtualMachine(new MachineDimensions(252, 252),
-				new HashSet<>(), new HashMap<>(), new HashMap<>());
+				Set.of(), Map.of(), Map.of());
 		assertEquals(252 * 252, instance.chips().size());
 		assertEquals(MachineVersion.TRIAD_WITH_WRAPAROUND, instance.version);
 	}
@@ -307,7 +298,7 @@ public class TestVirtualMachine {
 	@Test
 	public void testBiggestNoneWrapAround() {
 		var instance = new VirtualMachine(new MachineDimensions(244, 244),
-				new HashSet<>(), new HashMap<>(), new HashMap<>());
+				Set.of(), Map.of(), Map.of());
 		assertEquals(57600, instance.chips().size());
 		assertEquals(MachineVersion.TRIAD_NO_WRAPAROUND, instance.version);
 	}

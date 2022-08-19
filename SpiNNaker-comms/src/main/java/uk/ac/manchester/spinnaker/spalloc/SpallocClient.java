@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TAGS_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -238,6 +239,8 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		var unwanted = new HashSet<>(kwargs.keySet());
 		unwanted.removeAll(ALLOWED_KWARGS);
 		if (!unwanted.isEmpty()) {
+			// Duplicate; original might be unmodifiable
+			kwargs = new HashMap<>(kwargs);
 			kwargs.keySet().removeAll(unwanted);
 			log.warn("removing unsupported keyword arguments ({}) to createJob",
 					unwanted);

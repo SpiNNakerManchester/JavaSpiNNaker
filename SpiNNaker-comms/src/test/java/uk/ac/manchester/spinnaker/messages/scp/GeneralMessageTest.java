@@ -30,9 +30,9 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.CONTINUE;
 import static uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType.PULSE;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Nested;
@@ -140,7 +140,7 @@ class GeneralMessageTest {
 		@Test
 		void setLed() {
 			assertEquals(NO_PAYLOAD,
-					length(new SetLED(ZERO_ZERO_ZERO, new HashMap<>())));
+					length(new SetLED(ZERO_ZERO_ZERO, Map.of())));
 		}
 
 		@Test

@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,9 +30,13 @@ import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
 import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP;
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.TRIAD_WITH_VERTICAL_WRAP;
+import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.*;
+import static java.net.InetAddress.getByAddress;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -95,7 +98,7 @@ public class TestMachine {
 
 	private List<Chip> createdChips(List<Processor> processors)
 			throws UnknownHostException {
-		var address = InetAddress.getByAddress(BYTES);
+		var address = getByAddress(BYTES);
 		var chips = new ArrayList<Chip>();
 		for (int x = 0; x < 5; x++) {
 			for (int y = 0; y < 5; y++) {
@@ -127,7 +130,7 @@ public class TestMachine {
 	public void testCreateNewMachine() throws UnknownHostException {
 		var processors = createProcessors();
 		var chips = createdChips(processors);
-		var address = InetAddress.getByAddress(BYTES);
+		var address = getByAddress(BYTES);
 
 		var instance =
 				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
@@ -151,17 +154,17 @@ public class TestMachine {
 		assertEquals(25, instance.nChips());
 		/*
 		 * Not implemented as Java has no len and size() could be boards, chips,
-		 * processors ect so a bad call anyway
+		 * processors etc so a bad call anyway
 		 */
 		// self.assertEqual(len(new_machine), 25)
 		/*
 		 * Not implemented as Java has no iter and iter() could be boards,
-		 * chips, processors ect so a bad call anyway
+		 * chips, processors etc so a bad call anyway
 		 */
 		// self.assertEqual(next(x[1].ip_address for x in new_machine),
 		// self._ip)
 		assertEquals(CHIP00, instance.chipCoordinates().iterator().next());
-		// String is simplified to assumje each link unique and bi directional
+		// String is simplified to assume each link unique and bidirectional
 		assertEquals("450 cores and 50.0 links",
 				instance.coresAndLinkOutputString());
 		assertEquals("[Machine: max_x=7, max_y=7, n_chips=25]",
@@ -202,9 +205,8 @@ public class TestMachine {
 	@Test
 	public void testAddChip() {
 		var processors = createProcessors();
-		var chips = new ArrayList<Chip>();
 		var instance =
-				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
+				new Machine(new MachineDimensions(8, 8), List.of(), BOOT_CHIP);
 		var chip00 =
 				new Chip(CHIP00, processors, ROUTER, SDRAM, null, BOOT_CHIP);
 		instance.addChip(chip00);
@@ -282,18 +284,14 @@ public class TestMachine {
 		for (int i = 2; i < 18; i++) {
 			processors.add(Processor.factory(i));
 		}
-		var chips = new ArrayList<Chip>();
 		var chip00 = new Chip(CHIP00, processors, null, SDRAM,
-				InetAddress.getByAddress(BYTES00), BOOT_CHIP);
-		chips.add(chip00);
+				getByAddress(BYTES00), BOOT_CHIP);
 		var chip01 = new Chip(new ChipLocation(0, 1), processors, null, SDRAM,
 				null, BOOT_CHIP);
-		chips.add(chip01);
 		var chip02 = new Chip(new ChipLocation(0, 2), Set.of(), null, SDRAM,
 				null, BOOT_CHIP);
-		chips.add(chip02);
-		var instance =
-				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
+		var instance = new Machine(new MachineDimensions(8, 8),
+				List.of(chip00, chip01, chip02), BOOT_CHIP);
 		// Already 2 cores reserved.
 		assertEquals(processors.size() - 2, instance.maximumUserCoresOnChip());
 		assertEquals((processors.size() - 2) * 2,
@@ -336,8 +334,7 @@ public class TestMachine {
 		var chip = new Chip(new ChipLocation(23, 23), processors, ROUTER, SDRAM,
 				null, BOOT_CHIP);
 		instance.addChip(chip);
-		assertEquals(chip,
-				instance.getChipOverLink(CHIP00, SOUTHWEST));
+		assertEquals(chip, instance.getChipOverLink(CHIP00, SOUTHWEST));
 	}
 
 	@Test
@@ -356,7 +353,7 @@ public class TestMachine {
 	public void testNormalizeWithWrapVertical() {
 		var instance =
 				new Machine(new MachineDimensions(40, 24), List.of(), CHIP00);
-		assertEquals(MachineVersion.TRIAD_WITH_VERTICAL_WRAP, instance.version);
+		assertEquals(TRIAD_WITH_VERTICAL_WRAP, instance.version);
 		assertEquals(new ChipLocation(24, 0),
 				instance.normalizedLocation(24, 24));
 		assertEquals(new ChipLocation(24, 1),
@@ -367,8 +364,7 @@ public class TestMachine {
 	public void testNormalizeWithWrapHorizontal() {
 		var instance =
 				new Machine(new MachineDimensions(48, 16), List.of(), CHIP00);
-		assertEquals(MachineVersion.TRIAD_WITH_HORIZONTAL_WRAP,
-				instance.version);
+		assertEquals(TRIAD_WITH_HORIZONTAL_WRAP, instance.version);
 		assertEquals(new ChipLocation(4, 14),
 				instance.normalizedLocation(52, 14));
 	}
@@ -386,24 +382,20 @@ public class TestMachine {
 	@Test
 	public void testEthernetChip() throws UnknownHostException {
 		var processors = createProcessors();
-		var chips = new ArrayList<Chip>();
 		var chip00 = new Chip(CHIP00, processors, null, SDRAM,
-				InetAddress.getByAddress(BYTES00), BOOT_CHIP);
-		chips.add(chip00);
+				getByAddress(BYTES00), BOOT_CHIP);
 		var chip84 = new Chip(new ChipLocation(8, 4), processors, null, SDRAM,
-				InetAddress.getByAddress(BYTES84), BOOT_CHIP);
-		chips.add(chip84);
+				getByAddress(BYTES84), BOOT_CHIP);
 		var chip01 = new Chip(new ChipLocation(0, 1), processors, null, SDRAM,
 				null, BOOT_CHIP);
-		chips.add(chip01);
-		var instance =
-				new Machine(new MachineDimensions(12, 12), chips, BOOT_CHIP);
+		var instance = new Machine(new MachineDimensions(12, 12),
+				List.of(chip00, chip84, chip01), BOOT_CHIP);
 		assertEquals(3, instance.nChips());
 		assertThat(instance.ethernetConnectedChips(),
 				containsInAnyOrder(chip00, chip84));
 
 		var chip48 = new Chip(new ChipLocation(4, 8), processors, null, SDRAM,
-				InetAddress.getByAddress(BYTES48), BOOT_CHIP);
+				getByAddress(BYTES48), BOOT_CHIP);
 		instance.addChip(chip48);
 		var chip02 = new Chip(new ChipLocation(0, 2), processors, null, SDRAM,
 				null, BOOT_CHIP);
@@ -415,16 +407,15 @@ public class TestMachine {
 
 	@Test
 	public void testHole() throws UnknownHostException {
-		var geometry = SpiNNakerTriadGeometry.getSpinn5Geometry();
+		var geometry = getSpinn5Geometry();
 
 		var processors = createProcessors();
 		var chips = new ArrayList<Chip>();
-		var all = new ArrayList<>(geometry.singleBoard());
-		for (var location : all) {
-			var router = createRouter(location, all);
+		for (var location : geometry.singleBoard()) {
+			var router = createRouter(location, geometry.singleBoard());
 			if (location.equals(new ChipLocation(0, 0))) {
 				chips.add(new Chip(location, processors, router, SDRAM,
-						InetAddress.getByAddress(BYTES00), BOOT_CHIP));
+						getByAddress(BYTES00), BOOT_CHIP));
 			} else if (location.equals(new ChipLocation(3, 3))) {
 				// Leave a hole
 				continue;
@@ -453,23 +444,23 @@ public class TestMachine {
 
 	@Test
 	public void testUnreachable() throws UnknownHostException {
-		var geometry = SpiNNakerTriadGeometry.getSpinn5Geometry();
+		var geometry = getSpinn5Geometry();
 
 		var processors = createProcessors();
 		var chips = new ArrayList<Chip>();
-		var all = new ArrayList<>(geometry.singleBoard());
-		for (var location : all) {
+		for (var location : geometry.singleBoard()) {
 			if (location.equals(new ChipLocation(0, 0))) {
 				chips.add(new Chip(location, processors,
-						createRouter(location, all), SDRAM,
-						InetAddress.getByAddress(BYTES00), BOOT_CHIP));
+						createRouter(location, geometry.singleBoard()), SDRAM,
+						getByAddress(BYTES00), BOOT_CHIP));
 			} else if (location.equals(new ChipLocation(3, 3))) {
 				chips.add(new Chip(location, processors, new Router(), SDRAM,
 						null, BOOT_CHIP));
 				// Leave a hole
 			} else {
 				chips.add(new Chip(location, processors,
-						createRouter(location, all), SDRAM, null, BOOT_CHIP));
+						createRouter(location, geometry.singleBoard()), SDRAM,
+						null, BOOT_CHIP));
 			}
 		}
 
@@ -514,20 +505,16 @@ public class TestMachine {
 	public void testEquals() throws UnknownHostException {
 		var processors = createProcessors();
 		var chips = createdChips(processors);
-		/* var address = */ InetAddress.getByAddress(BYTES);
+		/* var address = */ getByAddress(BYTES);
+		var d8x8 = new MachineDimensions(8, 8);
 
-		var instance1 =
-				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
-
-		var instance2 =
-				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
+		var instance1 = new Machine(d8x8, chips, BOOT_CHIP);
+		var instance2 = new Machine(d8x8, chips, BOOT_CHIP);
 
 		assertEquals(instance1, instance2);
 
 		chips.remove(3);
-
-		var missingChip =
-				new Machine(new MachineDimensions(8, 8), chips, BOOT_CHIP);
+		var missingChip = new Machine(d8x8, chips, BOOT_CHIP);
 
 		assertNotEquals(instance1, missingChip);
 		assertNotNull(instance1.difference(missingChip));

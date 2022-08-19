@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.IntConsumer;
@@ -466,7 +465,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 				@Override
 				public Collection<? extends GrantedAuthority> getAuthorities() {
-					return new ArrayList<>();
+					return List.of();
 				}
 
 				@Override

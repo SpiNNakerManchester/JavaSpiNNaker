@@ -31,7 +31,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -189,7 +188,7 @@ public class ServiceConfig extends Application {
 		factory.setStaticSubresourceResolution(true);
 		factory.setAddress("/");
 		factory.setBus(bus);
-		factory.setProviders(new ArrayList<>(
+		factory.setProviders(List.of(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
 		factory.setFeatures(List.of(new OpenApiFeature()));
 		factory.setInInterceptors(List

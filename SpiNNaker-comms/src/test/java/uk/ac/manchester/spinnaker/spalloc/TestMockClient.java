@@ -16,20 +16,21 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import java.io.IOException;
 import static java.lang.Thread.sleep;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
@@ -121,10 +122,10 @@ public class TestMockClient {
 		Notification notification = null;
 		try (var c = client.withConnection()) {
 			var args = new ArrayList<Integer>();
-			var kwargs = new HashMap<String, Object>();
-			kwargs.put("owner", "Unittest. OK to kill after 1 minute.");
 			@SuppressWarnings("deprecation")
-			int jobId = client.createJob(args, kwargs, timeout);
+			int jobId = client.createJob(args,
+					Map.of("owner", "Unittest. OK to kill after 1 minute."),
+					timeout);
 			if (client.isActual()) {
 				assertThat("Jobid > 0", jobId, greaterThan(0));
 			} else {

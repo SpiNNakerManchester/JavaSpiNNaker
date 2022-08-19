@@ -1578,10 +1578,8 @@ public class BMPController extends DatabaseAwareBean {
 	 */
 	private Map<BMPCoords, SpiNNakerControl> getControllersForBlacklisting(
 			BlacklistRequest request) {
-		var map = new HashMap<BMPCoords, SpiNNakerControl>(1);
-		map.put(request.bmp,
+		return Map.of(request.bmp,
 				controllerFactory.create(request.machine, request.bmp));
-		return map;
 	}
 
 	/**
