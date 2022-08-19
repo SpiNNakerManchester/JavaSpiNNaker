@@ -36,12 +36,15 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * Manages the login session. This allows us to avoid the (heavy) cost of the
  * password hashing algorithm used, at least most of the time.
  *
  * @author Donal Fellows
  */
+@UsedInJavadocOnly(URLConnection.class)
 final class ClientSession {
 	private static final Logger log = getLogger(ClientSession.class);
 
