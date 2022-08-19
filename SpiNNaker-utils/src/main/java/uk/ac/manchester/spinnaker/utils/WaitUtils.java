@@ -27,6 +27,7 @@ import java.util.concurrent.locks.LockSupport;
  * @author Donal Fellows
  */
 public abstract class WaitUtils {
+	@UsedInJavadocOnly(LockSupport.class)
 	private WaitUtils() {
 	}
 
