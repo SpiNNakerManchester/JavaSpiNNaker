@@ -27,6 +27,7 @@ module spinnaker.allocator.client {
 	requires com.fasterxml.jackson.databind;
 	requires org.slf4j;
 	requires org.apache.commons.io;
+	requires java.xml.bind;
 
 	requires spinnaker.comms;
 
