@@ -25,7 +25,6 @@ module spinnaker.allocator.client {
 	requires org.xerial.sqlitejdbc;
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
-	requires javax.xml.bind;
 	requires org.slf4j;
 	requires org.apache.commons.io;
 
