@@ -388,6 +388,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							</group>
 						</groups>
 						<detectLinks>true</detectLinks>
+						<links>
+							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
+							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
+							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+							<link>https://docs.oracle.com/javaee/7/api/</link>
+						</links>
 						<notimestamp>true</notimestamp>
 					</configuration>
 				</plugin>
