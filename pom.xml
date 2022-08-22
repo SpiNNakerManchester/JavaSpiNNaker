@@ -392,7 +392,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
 							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
-							<link>https://docs.oracle.com/javaee/7/api/</link>
+							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 						</links>
 						<notimestamp>true</notimestamp>
 					</configuration>
