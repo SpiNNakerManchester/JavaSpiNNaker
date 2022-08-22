@@ -485,6 +485,9 @@ public interface AdminController {
 	ModelAndView defineMachine(
 			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
 
+	/**
+	 * The model of a blacklist used by the administration web interface.
+	 */
 	class BlacklistData {
 		private int id;
 

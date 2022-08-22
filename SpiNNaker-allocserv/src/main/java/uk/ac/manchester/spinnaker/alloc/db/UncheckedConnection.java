@@ -52,7 +52,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 @UsedInJavadocOnly(DataAccessException.class)
-class UncheckedConnection implements Connection {
+public class UncheckedConnection implements Connection {
 	private final Connection c;
 
 	private final DB realDB;

@@ -117,6 +117,7 @@ final class ClientSession {
 		// This does the actual logging in process
 		renew(false);
 	}
+	// TODO make a constructor that takes a bearer token
 
 	/**
 	 * An action used by {@link ClientSession#withRenewal(Action)
