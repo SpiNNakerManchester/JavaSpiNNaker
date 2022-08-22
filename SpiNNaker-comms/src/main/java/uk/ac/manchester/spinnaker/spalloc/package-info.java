@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * SpiNNaker machine allocation client.
+ * SpiNNaker old-style machine allocation client.
  */
 package uk.ac.manchester.spinnaker.spalloc;
