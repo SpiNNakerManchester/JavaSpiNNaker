@@ -16,10 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ONE_ZERO;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -46,19 +48,16 @@ public class TestCoreSubsets {
 		assertEquals(1, instance.size());
 		assertFalse(instance.isEmpty());
 
-		var processors = new ArrayList<Integer>();
-		processors.add(1);
-		instance.addCores(0, 0, processors);
+		instance.addCores(0, 0, List.of(1));
 		assertEquals(1, instance.size());
 		assertFalse(instance.isEmpty());
-		assertFalse(instance.isChip(ChipLocation.ONE_ZERO));
+		assertFalse(instance.isChip(ONE_ZERO));
 
-		processors.add(2);
-		instance.addCores(1, 0, processors);
+		instance.addCores(1, 0, List.of(1, 2));
 		assertEquals(3, instance.size());
 		assertFalse(instance.isEmpty());
 
-		assertTrue(instance.isChip(ChipLocation.ONE_ZERO));
+		assertTrue(instance.isChip(ONE_ZERO));
 		assertTrue(instance.isCore(new CoreLocation(0, 0, 1)));
 		assertFalse(instance.isCore(new CoreLocation(2, 0, 1)));
 		assertFalse(instance.isChip(new ChipLocation(3, 1)));
@@ -110,7 +109,7 @@ public class TestCoreSubsets {
 		assertEquals(9, count);
 
 		count = 0;
-		for (var coreLocation : css.coreByChip(ChipLocation.ZERO_ZERO)) {
+		for (var coreLocation : css.coreByChip(ZERO_ZERO)) {
 			count += 1;
 			assertEquals(0, coreLocation.getX());
 			assertEquals(0, coreLocation.getY());
@@ -209,10 +208,10 @@ public class TestCoreSubsets {
 		}
 		assertEquals(0, count);
 
-		var empty = css1.coreByChip(ChipLocation.ZERO_ZERO);
+		var empty = css1.coreByChip(ZERO_ZERO);
 		assertEquals(0, empty.size());
 
-		var emptyP = css1.pByChip(ChipLocation.ZERO_ZERO);
+		var emptyP = css1.pByChip(ZERO_ZERO);
 		assertEquals(0, emptyP.size());
 
 		assertThrows(NoSuchElementException.class, () -> {

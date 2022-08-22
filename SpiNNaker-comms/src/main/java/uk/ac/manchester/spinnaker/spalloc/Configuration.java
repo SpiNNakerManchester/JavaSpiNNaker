@@ -163,7 +163,8 @@ public class Configuration {
 	 * Set up the default values in the map, so the configuration file doesn't
 	 * need to have everything listed in it.
 	 *
-	 * @return a map loaded with default configuration values.
+	 * @return a <em>modifiable</em> map loaded with default configuration
+	 *         values.
 	 */
 	private static Map<String, Object> initDefaultValues() {
 		var defaults = new HashMap<String, Object>();

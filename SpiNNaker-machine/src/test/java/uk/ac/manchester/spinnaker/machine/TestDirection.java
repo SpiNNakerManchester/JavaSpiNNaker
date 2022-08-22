@@ -16,8 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.HashSet;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -67,10 +69,8 @@ public class TestDirection {
 	 */
 	@Test
 	public void testInverse() {
-		var inverses = new HashSet<Direction>();
-		for (var direction : Direction.values()) {
-			inverses.add(direction.inverse());
-		}
+		var inverses = stream(Direction.values()).map(Direction::inverse)
+				.collect(toSet());
 		assertEquals(Direction.values().length, inverses.size());
 	}
 

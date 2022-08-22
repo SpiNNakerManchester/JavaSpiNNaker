@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.tools;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Base64.getEncoder;
+import static java.util.Map.entry;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.encodeForm;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.makeBasicAuth;
@@ -28,7 +29,6 @@ import static uk.ac.manchester.spinnaker.tools.GetDevId.REALM;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -83,12 +83,8 @@ interface EBRAINSDevCredentials {
 		// UGLY!
 		http.setRequestProperty("Authorization", makeBasicAuth("developer:"));
 
-		var arguments = new HashMap<String, String>();
-		arguments.put("grant_type", "password");
-		arguments.put("username", user);
-		arguments.put("password", pass);
-
-		var out = encodeForm(arguments);
+		var out = encodeForm(Map.ofEntries(entry("grant_type", "password"),
+				entry("username", user), entry("password", pass)));
 		http.setFixedLengthStreamingMode(out.length);
 		http.setRequestProperty("Content-Type", FORM_ENCODED);
 		try (var os = http.getOutputStream()) {

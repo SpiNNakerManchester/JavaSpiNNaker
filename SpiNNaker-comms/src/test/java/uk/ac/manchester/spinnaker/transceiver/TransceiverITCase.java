@@ -47,8 +47,6 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.BUFFE
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,11 +114,9 @@ public class TransceiverITCase {
 		coreSubsets.addCores(0, 0, range(1, 11).boxed().collect(toSet()));
 		coreSubsets.addCores(1, 1, range(1, 11).boxed().collect(toSet()));
 
-		downCores = new HashMap<>();
-		downCores.put(new ChipLocation(0, 0), Set.of(5));
+		downCores = Map.of(new ChipLocation(0, 0), Set.of(5));
 
-		downChips = new HashSet<>();
-		downChips.add(new ChipLocation(0, 1));
+		downChips = Set.of(new ChipLocation(0, 1));
 	}
 
 	@AfterAll

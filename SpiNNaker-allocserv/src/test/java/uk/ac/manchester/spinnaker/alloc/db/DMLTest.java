@@ -16,8 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.db;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BLACKLIST_OP;
@@ -29,7 +28,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_JOB;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_MACHINE;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_NAME;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_USER;
-import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertSetEquals;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertThrowsCheck;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assertThrowsFK;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assumeWritable;
@@ -449,7 +447,7 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (var u = c.query(ADJUST_QUOTA)) {
 			assertEquals(2, u.getNumArguments());
-			assertSetEquals(Set.of("group_name", "quota"),
+			assertEquals(Set.of("group_name", "quota"),
 					u.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(u.call1(0, NO_GROUP).isPresent());
@@ -474,7 +472,7 @@ class DMLTest extends SQLQueries {
 		// Tricky! Has a RETURNING clause
 		try (var u = c.query(MARK_LOGIN_FAILURE)) {
 			assertEquals(2, u.getNumArguments());
-			assertSetEquals(Set.of("locked"), u.getRowColumnNames());
+			assertEquals(Set.of("locked"), u.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(u.call1(0, NO_USER).isPresent());
 			});
@@ -487,7 +485,7 @@ class DMLTest extends SQLQueries {
 		// Tricky! Has a RETURNING clause
 		try (var u = c.query(UNLOCK_LOCKED_USERS)) {
 			assertEquals(1, u.getNumArguments());
-			assertSetEquals(Set.of("user_name"), u.getRowColumnNames());
+			assertEquals(Set.of("user_name"), u.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(u.call1(Duration.ofDays(1000)).isPresent());
 			});
@@ -604,7 +602,7 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (var u = c.query(UPDATE_GROUP)) {
 			assertEquals(3, u.getNumArguments());
-			assertSetEquals(
+			assertEquals(
 					Set.of("group_id", "group_name", "quota", "group_type"),
 					u.getRowColumnNames());
 			c.transaction(() -> {
@@ -618,7 +616,7 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (var u = c.query(DELETE_GROUP)) {
 			assertEquals(1, u.getNumArguments());
-			assertSetEquals(Set.of("group_name"), u.getRowColumnNames());
+			assertEquals(Set.of("group_name"), u.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(u.call1(NO_GROUP).isPresent());
 			});
@@ -712,7 +710,7 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (var q = c.query(copyAllocsToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(Set.of("alloc_id"), q.getRowColumnNames());
+			assertEquals(Set.of("alloc_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(A_LONG_TIME).isPresent());
 			});
@@ -724,7 +722,7 @@ class DMLTest extends SQLQueries {
 		assumeWritable(c);
 		try (var q = c.query(copyJobsToHistoricalData)) {
 			assertEquals(1, q.getNumArguments());
-			assertSetEquals(Set.of("job_id"), q.getRowColumnNames());
+			assertEquals(Set.of("job_id"), q.getRowColumnNames());
 			c.transaction(() -> {
 				assertFalse(q.call1(A_LONG_TIME).isPresent());
 			});

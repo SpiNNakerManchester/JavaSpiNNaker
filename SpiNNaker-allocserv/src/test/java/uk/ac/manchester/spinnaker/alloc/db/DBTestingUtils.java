@@ -17,13 +17,11 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.String.format;
-import static java.util.Collections.sort;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_FOREIGNKEY;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.junit.jupiter.api.function.Executable;
@@ -121,34 +119,13 @@ abstract class DBTestingUtils {
 	static final Set<String> MEMBER_COLUMNS = Set.of("group_id", "group_name",
 			"user_id", "user_name", "membership_id");
 
-	/** Classes used in Javadoc. Technically not needed, but... */
-	static final Class<?>[] JAVADOC_ONLY_CLASSES = {
+	// @formatter:off
+	@UsedInJavadocOnly({
 		BoardState.class, BoardLocation.class, BoardCoords.class,
 		UserRecord.class, GroupRecord.class, MemberRecord.class
-	};
-
+	})
+	// @formatter:on
 	private DBTestingUtils() {
-	}
-
-	/**
-	 * {@linkplain org.junit.jupiter.api.Assertions Assert} that two sets are
-	 * equal by converting them into sorted lists and comparing those. This
-	 * produces the most comprehensible results.
-	 *
-	 * @param <T>
-	 *            The type of elements in the sets.
-	 * @param expected
-	 *            The set of expected elements.
-	 * @param actual
-	 *            The actual results of the operation.
-	 */
-	static <T extends Comparable<T>> void assertSetEquals(Set<T> expected,
-			Set<T> actual) {
-		var e = new ArrayList<>(expected);
-		sort(e);
-		var a = new ArrayList<>(actual);
-		sort(a);
-		assertEquals(e, a);
 	}
 
 	/**

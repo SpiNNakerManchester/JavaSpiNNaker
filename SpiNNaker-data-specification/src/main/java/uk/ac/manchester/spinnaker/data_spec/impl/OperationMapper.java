@@ -93,9 +93,9 @@ abstract class OperationMapper {
 			var m = e.getValue();
 			var rt = m.getReturnType();
 			if (rt.equals(Void.TYPE)) {
-				map.put(c, cmd -> doVoidCall(objref.get(), m, c, cmd));
+				map.put(c, cmd -> doVoidCall(objref, m, c, cmd));
 			} else {
-				map.put(c, cmd -> doIntCall(objref.get(), m, c, cmd));
+				map.put(c, cmd -> doIntCall(objref, m, c, cmd));
 			}
 		}
 		return map;
@@ -134,22 +134,29 @@ abstract class OperationMapper {
 		return ops;
 	}
 
+	private static FunctionAPI preamble(WeakReference<FunctionAPI> objref,
+			Commands command, int encodedOpcode) {
+		var funcs =
+				requireNonNull(objref.get(), "unexpectedly early deallocation");
+		funcs.unpack(encodedOpcode);
+		if (log.isDebugEnabled()) {
+			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
+		}
+		return funcs;
+	}
+
 	/**
 	 * Ugly stuff to wrap methods as {@link Callable}. The truly nasty part is
 	 * the handling of exceptions, which have to be unwrapped from the dynamic
 	 * method calling machinery.
 	 */
-	private static int doIntCall(FunctionAPI funcs, Method method,
-			Commands command, int encodedOpcode)
+	private static int doIntCall(WeakReference<FunctionAPI> objref,
+			Method method, Commands command, int encodedOpcode)
 			throws DataSpecificationException {
-		requireNonNull(funcs, "unexpectedly early deallocation");
-		funcs.unpack(encodedOpcode);
-		if (log.isDebugEnabled()) {
-			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
-		}
 		try {
 			try {
-				return (int) method.invoke(funcs);
+				return (int) method
+						.invoke(preamble(objref, command, encodedOpcode));
 			} catch (InvocationTargetException innerException) {
 				// Unwrap the inner exception
 				throw innerException.getTargetException();
@@ -169,17 +176,12 @@ abstract class OperationMapper {
 	 * the handling of exceptions, which have to be unwrapped from the dynamic
 	 * method calling machinery.
 	 */
-	private static int doVoidCall(FunctionAPI funcs, Method method,
-			Commands command, int encodedOpcode)
+	private static int doVoidCall(WeakReference<FunctionAPI> objref,
+			Method method, Commands command, int encodedOpcode)
 			throws DataSpecificationException {
-		requireNonNull(funcs, "unexpectedly early deallocation");
-		funcs.unpack(encodedOpcode);
-		if (log.isDebugEnabled()) {
-			log.debug("EXEC: {} ({})", command, format("%08x", encodedOpcode));
-		}
 		try {
 			try {
-				method.invoke(funcs);
+				method.invoke(preamble(objref, command, encodedOpcode));
 				return 0;
 			} catch (InvocationTargetException innerException) {
 				// Unwrap the inner exception

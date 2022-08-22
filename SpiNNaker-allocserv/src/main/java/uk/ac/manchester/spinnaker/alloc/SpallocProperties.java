@@ -20,7 +20,6 @@ import static java.util.Objects.nonNull;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -981,7 +980,7 @@ public class SpallocProperties {
 				@DefaultValue("") String truststorePassword) {
 			this.enable = enable;
 			this.domain = domain;
-			this.setScopes(scopes != null ? scopes : new HashSet<>());
+			this.setScopes(scopes != null ? scopes : Set.of());
 			this.id = id;
 			this.secret = secret;
 			this.usernamePrefix = usernamePrefix;

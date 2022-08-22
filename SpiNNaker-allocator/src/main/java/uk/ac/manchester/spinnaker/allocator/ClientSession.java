@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.asDir;
@@ -29,12 +31,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLConnection;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
+
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages the login session. This allows us to avoid the (heavy) cost of the
@@ -42,6 +45,7 @@ import org.slf4j.Logger;
  *
  * @author Donal Fellows
  */
+@UsedInJavadocOnly(URLConnection.class)
 final class ClientSession {
 	private static final Logger log = getLogger(ClientSession.class);
 
@@ -337,15 +341,12 @@ final class ClientSession {
 	 *             If things go wrong.
 	 */
 	private void logSessionIn(String tempCsrf) throws IOException {
-		var form = new HashMap<String, String>();
-		form.put("_csrf", tempCsrf);
-		form.put("username", username);
-		form.put("password", password);
-		form.put("submit", "submit");
-
 		var c = connection(LOGIN_HANDLER, true);
 		c.setRequestMethod("POST");
-		writeForm(c, form);
+		writeForm(c,
+				ofEntries(entry("_csrf", tempCsrf), entry("submit", "submit"),
+						entry("username", username),
+						entry("password", password)));
 		checkForError(c, "login failed");
 		// There should be a new session cookie after login
 		if (!trackCookie(c)) {

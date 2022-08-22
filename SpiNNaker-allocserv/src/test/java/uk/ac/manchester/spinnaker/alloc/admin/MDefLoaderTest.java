@@ -21,8 +21,6 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -79,15 +77,6 @@ class MDefLoaderTest {
 
 	private Connection c;
 
-	private static <T extends Comparable<T>> void
-			assertSetEquals(Set<T> expected, Set<T> actual) {
-		var e = new ArrayList<>(expected);
-		Collections.sort(e);
-		var a = new ArrayList<>(actual);
-		Collections.sort(a);
-		assertEquals(e, a);
-	}
-
 	@BeforeAll
 	void makeMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
 		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
@@ -113,12 +102,12 @@ class MDefLoaderTest {
 		assertEquals(1, machines.size());
 		var m = machines.get(0);
 		assertEquals("my-board", m.getName());
-		assertSetEquals(Set.of(new TriadCoords(0, 0, 0)),
+		assertEquals(Set.of(new TriadCoords(0, 0, 0)),
 				m.getBoardLocations().keySet());
-		assertSetEquals(Set.of(new TriadCoords(0, 0, 0)),
+		assertEquals(Set.of(new TriadCoords(0, 0, 0)),
 				m.getSpinnakerIPs().keySet());
-		assertSetEquals(Set.of(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
-		assertSetEquals(Set.of(new BoardPhysicalCoords(0, 0, 0)),
+		assertEquals(Set.of(new BMPCoords(0, 0)), m.getBmpIPs().keySet());
+		assertEquals(Set.of(new BoardPhysicalCoords(0, 0, 0)),
 				new HashSet<>(m.getBoardLocations().values()));
 	}
 

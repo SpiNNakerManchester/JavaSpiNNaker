@@ -36,7 +36,7 @@ public class TestMachineDefaults {
 	// }
 
 	@Test
-	public void testFoutChipDownLinks() {
+	public void testFourChipDownLinks() {
 		// Misuses of CoreLocation!
 		var fromPython = List.of(//
 				new CoreLocation(0, 0, 3), new CoreLocation(0, 0, 4),
