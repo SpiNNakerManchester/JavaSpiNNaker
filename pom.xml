@@ -387,6 +387,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<packages>uk.ac.manchester.spinnaker.alloc*</packages>
 							</group>
 						</groups>
+						<detectLinks>true</detectLinks>
 						<notimestamp>true</notimestamp>
 					</configuration>
 				</plugin>

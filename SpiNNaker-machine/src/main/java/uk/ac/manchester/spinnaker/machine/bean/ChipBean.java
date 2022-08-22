@@ -20,13 +20,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
+ * Used for converting JSON into a {@link Chip}.
  *
  * @author Christian-B
  */
 @JsonFormat(shape = ARRAY)
+@UsedInJavadocOnly(Chip.class)
 public class ChipBean {
 	/** The location of this Chip. */
 	public final ChipLocation location;

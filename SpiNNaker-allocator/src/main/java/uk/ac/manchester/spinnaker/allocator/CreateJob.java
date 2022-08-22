@@ -49,9 +49,15 @@ public final class CreateJob {
 
 		private int height;
 
-		public Dimensions(int w, int h) {
-			width = w;
-			height = h;
+		/**
+		 * @param width
+		 *            The width of rectangle to ask for, in boards.
+		 * @param height
+		 *            The height of rectangle to ask for, in boards.
+		 */
+		public Dimensions(int width, int height) {
+			this.width = width;
+			this.height = height;
 		}
 
 		/** @return The width of the allocation, in boards. */
@@ -94,7 +100,7 @@ public final class CreateJob {
 		public SpecificBoard() {
 		}
 
-		SpecificBoard(boolean type, int a, int b, int c) {
+		private SpecificBoard(boolean type, int a, int b, int c) {
 			if (type) {
 				x = a;
 				y = b;
@@ -106,7 +112,7 @@ public final class CreateJob {
 			}
 		}
 
-		SpecificBoard(String addr) {
+		private SpecificBoard(String addr) {
 			address = addr;
 		}
 
@@ -173,6 +179,8 @@ public final class CreateJob {
 			this.address = address;
 		}
 	}
+
+	// TODO Support a request for dimensions rooted at a board
 
 	/**
 	 * Create a request to run on a single board using the default machine
@@ -253,15 +261,12 @@ public final class CreateJob {
 	 *
 	 * @param machine
 	 *            Which machine of the service to use?
-	 * @param cabinet
-	 *            The cabinet number of the board to request.
-	 * @param frame
-	 *            The frame number of the board to request.
-	 * @param board
-	 *            The board number of the board to request.
+	 * @param coords
+	 *            The physical coordinates of the board to request.
 	 */
-	public CreateJob(String machine, int cabinet, int frame, int board) {
-		this.board = new SpecificBoard(false, cabinet, frame, board);
+	public CreateJob(String machine, Physical coords) {
+		this.board = new SpecificBoard(false, coords.getCabinet(),
+				coords.getFrame(), coords.getBoard());
 		machineName = machine;
 	}
 

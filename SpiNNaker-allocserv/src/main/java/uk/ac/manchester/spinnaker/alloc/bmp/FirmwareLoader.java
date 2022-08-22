@@ -166,6 +166,7 @@ public class FirmwareLoader {
 		this.board = board;
 	}
 
+	/** Base class of exceptions thrown by the firmware loader. */
 	public abstract static class FirmwareLoaderException
 			extends RuntimeException {
 		private static final long serialVersionUID = -7057612243855126410L;
@@ -175,6 +176,7 @@ public class FirmwareLoader {
 		}
 	}
 
+	/** An update of the firmware on a BMP failed. */
 	public static class UpdateFailedException extends FirmwareLoaderException {
 		private static final long serialVersionUID = 7925582707336953554L;
 
@@ -188,6 +190,7 @@ public class FirmwareLoader {
 		}
 	}
 
+	/** A CRC check failed. */
 	public static class CRCFailedException extends FirmwareLoaderException {
 		private static final long serialVersionUID = -4111893327837084643L;
 
@@ -200,6 +203,7 @@ public class FirmwareLoader {
 		}
 	}
 
+	/** A data chunk was too large for the firmware loader to handle. */
 	public static class TooLargeException extends FirmwareLoaderException {
 		private static final long serialVersionUID = -9025065456329109710L;
 

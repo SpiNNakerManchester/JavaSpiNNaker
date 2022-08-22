@@ -63,6 +63,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 		return new File(cl.getResource("enum.py").getFile());
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void close() {
 		sys.close();
@@ -92,9 +93,11 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	}
 
 	/**
+	 * How we write JSON.
+	 *
 	 * @return A service for writing objects as JSON.
 	 */
-	public static ObjectWriter getJsonWriter() {
+	protected static ObjectWriter getJsonWriter() {
 		return JsonMapper.builder().findAndAddModules()
 				.disable(WRITE_DATES_AS_TIMESTAMPS)
 				.propertyNamingStrategy(KEBAB_CASE).build().writer()

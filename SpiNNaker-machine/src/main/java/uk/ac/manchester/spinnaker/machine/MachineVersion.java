@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_HEIGHT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.TRIAD_WIDTH;
 
 /**
+ * Known types of machine. Properly this should be an open set.
  *
  * @author Christian-B
  */

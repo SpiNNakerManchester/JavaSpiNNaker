@@ -1054,35 +1054,24 @@ public interface SpallocAPI {
 		Job getJob();
 	}
 
+	/** A view of part of a machine that is allocated to a job. */
 	interface SubMachine {
-		/**
-		 * @return The machine that this sub-machine is part of.
-		 */
+		/** @return The machine that this sub-machine is part of. */
 		Machine getMachine();
 
-		/**
-		 * @return The root X coordinate of this sub-machine.
-		 */
+		/** @return The root X coordinate of this sub-machine. */
 		int getRootX();
 
-		/**
-		 * @return The root Y coordinate of this sub-machine.
-		 */
+		/** @return The root Y coordinate of this sub-machine. */
 		int getRootY();
 
-		/**
-		 * @return The root Z coordinate of this sub-machine.
-		 */
+		/** @return The root Z coordinate of this sub-machine. */
 		int getRootZ();
 
-		/**
-		 * @return The width of this sub-machine, in triads.
-		 */
+		/** @return The width of this sub-machine, in triads. */
 		int getWidth();
 
-		/**
-		 * @return The height of this sub-machine, in triads.
-		 */
+		/** @return The height of this sub-machine, in triads. */
 		int getHeight();
 
 		/**
@@ -1091,19 +1080,13 @@ public interface SpallocAPI {
 		 */
 		int getDepth();
 
-		/**
-		 * @return The connection details of this sub-machine.
-		 */
+		/** @return The connection details of this sub-machine. */
 		List<ConnectionInfo> getConnections();
 
-		/**
-		 * @return The board locations of this sub-machine.
-		 */
+		/** @return The board locations of this sub-machine. */
 		List<BoardCoordinates> getBoards();
 
-		/**
-		 * @return Whether this sub-machine is switched on.
-		 */
+		/** @return Whether this sub-machine is switched on. */
 		PowerState getPower();
 
 		/**
