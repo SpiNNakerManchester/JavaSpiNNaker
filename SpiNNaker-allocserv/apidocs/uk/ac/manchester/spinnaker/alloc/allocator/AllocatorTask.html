@@ -104,6 +104,12 @@ loadScripts(document, 'script');</script>
 public class <span class="typeNameLabel">AllocatorTask</span>
 extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean</a>
 implements <a href="PowerController.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">PowerController</a></pre>
+<div class="block">The allocation engine. Allocations are performed by running suitable
+ (non-trivial) SQL queries on a periodic basis, putting jobs that cannot be
+ allocated back on the queue for a later attempt (and increasing their
+ priority when it does so). This class is also responsible for destroying jobs
+ that are not kept alive sufficiently frequently, and eventually migrating
+ records of dead jobs to long-term storage ("tombstoning").</div>
 </section>
 <section class="summary">
 <ul class="blockList">

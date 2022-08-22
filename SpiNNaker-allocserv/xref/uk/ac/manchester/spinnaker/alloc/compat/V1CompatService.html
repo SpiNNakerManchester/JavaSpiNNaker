@@ -241,9 +241,9 @@
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> 		<strong class="jxr_keyword">return</strong> !interrupted();
 <a class="jxr_linenumber" name="L234" href="#L234">234</a> 	}
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 	<em class="jxr_javadoccomment">/** Operations for testing only. */</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 	<em class="jxr_javadoccomment">/** Not a public API! Operations for testing only. */</em>
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 	<strong class="jxr_keyword">interface</strong> TestAPI {
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> TestAPI {
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> 		<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">		 * Make an instance of {@link V1CompatTask} that we can talk to.</em>
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">		 *</em>
@@ -261,22 +261,28 @@
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> 				<strong class="jxr_keyword">throws</strong> Exception;
 <a class="jxr_linenumber" name="L254" href="#L254">254</a> 	}
 <a class="jxr_linenumber" name="L255" href="#L255">255</a> 
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 	@ForTestingOnly
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 	@Deprecated
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestApi() {
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 			@Override
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 			<strong class="jxr_keyword">public</strong> Future&lt;?&gt; launchInstance(PipedWriter in, PipedReader out)
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 					<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 				V1CompatTask service =
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 						taskFactory.getObject(V1CompatService.<strong class="jxr_keyword">this</strong>,
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 								<strong class="jxr_keyword">new</strong> PipedReader(in), <strong class="jxr_keyword">new</strong> PipedWriter(out));
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 				<strong class="jxr_keyword">return</strong> executor.submit(() -&gt; service.handleConnection());
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 			}
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		};
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 	}
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> }
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">	 * Not a public API!</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">	 * @return Test interface.</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">	 * @deprecated Only for testing.</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 	@ForTestingOnly
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 	@Deprecated
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 	<strong class="jxr_keyword">public</strong> TestAPI getTestApi() {
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 		ForTestingOnly.Utils.checkForTestClassOnStack();
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TestAPI() {
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 			@Override
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 			<strong class="jxr_keyword">public</strong> Future&lt;?&gt; launchInstance(PipedWriter in, PipedReader out)
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 					<strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 				V1CompatTask service =
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 						taskFactory.getObject(V1CompatService.<strong class="jxr_keyword">this</strong>,
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 								<strong class="jxr_keyword">new</strong> PipedReader(in), <strong class="jxr_keyword">new</strong> PipedWriter(out));
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 				<strong class="jxr_keyword">return</strong> executor.submit(() -&gt; service.handleConnection());
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 			}
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 		};
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 	}
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

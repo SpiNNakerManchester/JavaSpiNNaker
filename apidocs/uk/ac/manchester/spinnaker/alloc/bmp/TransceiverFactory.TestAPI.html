@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre><a href="../ForTestingOnly.html" title="annotation in uk.ac.manchester.spinnaker.alloc">@ForTestingOnly</a>
 public static interface <span class="typeNameLabel">TransceiverFactory.TestAPI</span></pre>
-<div class="block">Operations for testing only.</div>
+<div class="block">Not a public API! Operations for testing only.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -119,7 +119,9 @@ public static interface <span class="typeNameLabel">TransceiverFactory.TestAPI</
 <tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="TransceiverFactory.TestAPI.TestTransceiverFactory.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">TransceiverFactory.TestAPI.TestTransceiverFactory</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Not a public API! A factory for transceivers.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -175,12 +177,20 @@ public static interface <span class="typeNameLabel">TransceiverFactory.TestAPI</
 <section class="detail">
 <h3><a id="getCurrentBlacklist()">getCurrentBlacklist</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="../../messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></span>&nbsp;<span class="memberName">getCurrentBlacklist</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The current blacklist.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setFactory(uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory.TestAPI.TestTransceiverFactory)">setFactory</a></h3>
 <div class="memberSignature"><span class="returnType">void</span>&nbsp;<span class="memberName">setFactory</span>&#8203;(<span class="arguments"><a href="TransceiverFactory.TestAPI.TestTransceiverFactory.html" title="interface in uk.ac.manchester.spinnaker.alloc.bmp">TransceiverFactory.TestAPI.TestTransceiverFactory</a>&nbsp;factory)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>factory</code> - The mock transceiver factory to use.</dd>
+</dl>
 </section>
 </li>
 </ul>

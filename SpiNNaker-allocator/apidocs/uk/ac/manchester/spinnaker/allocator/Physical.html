@@ -93,7 +93,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="typeNameLabel">Physical</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">Physical coordinates of a board.</div>
+<div class="block">Physical coordinates of a board. SpiNNaker boards are arranged in frames
+ (multi-unit racks that share a management layer) and frames are arranged in
+ cabinets (full 19" server cabinets).</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -115,6 +117,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tbody>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">Physical</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,int)">Physical</a></span>&#8203;(int&nbsp;cabinet,
+int&nbsp;frame,
+int&nbsp;board)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -203,6 +211,20 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Physical</span>()</div>
 </section>
 </li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="&lt;init&gt;(int,int,int)">Physical</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Physical</span>&#8203;(<span class="arguments">int&nbsp;cabinet,
+int&nbsp;frame,
+int&nbsp;board)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>cabinet</code> - The cabinet number.</dd>
+<dd><code>frame</code> - The frame number.</dd>
+<dd><code>board</code> - The board number.</dd>
+</dl>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -217,6 +239,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getCabinet()">getCabinet</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getCabinet</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The cabinet number.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -229,6 +255,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getFrame()">getFrame</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getFrame</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The frame number.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -241,6 +271,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getBoard()">getBoard</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">getBoard</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The board number.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

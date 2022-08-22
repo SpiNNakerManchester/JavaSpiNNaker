@@ -176,18 +176,16 @@ int&nbsp;height)</code></th>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int,int,int)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.String)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;ipAddress)</code></th>
 <td class="colLast">
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.String)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;ipAddress)</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.allocator.Physical)">CreateJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
+<a href="Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a>&nbsp;coords)</code></th>
 <td class="colLast">
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.</div>
@@ -379,11 +377,9 @@ int&nbsp;height)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,int,int,int)">CreateJob</a></h3>
+<h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.allocator.Physical)">CreateJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine,
-int&nbsp;cabinet,
-int&nbsp;frame,
-int&nbsp;board)</span></div>
+<a href="Physical.html" title="class in uk.ac.manchester.spinnaker.allocator">Physical</a>&nbsp;coords)</span></div>
 <div class="block">Create a request to run on a specific board of a specific machine
  operated by the Spalloc service.
  <p>
@@ -391,9 +387,7 @@ int&nbsp;board)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>machine</code> - Which machine of the service to use?</dd>
-<dd><code>cabinet</code> - The cabinet number of the board to request.</dd>
-<dd><code>frame</code> - The frame number of the board to request.</dd>
-<dd><code>board</code> - The board number of the board to request.</dd>
+<dd><code>coords</code> - The physical coordinates of the board to request.</dd>
 </dl>
 </section>
 </li>

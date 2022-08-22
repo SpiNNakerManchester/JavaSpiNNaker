@@ -254,6 +254,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getState()">getState</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="State.html" title="enum in uk.ac.manchester.spinnaker.allocator">State</a></span>&nbsp;<span class="memberName">getState</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The state of the job.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -266,6 +270,11 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getOwner()">getOwner</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getOwner</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Who owns the job. <code>null</code> if the information is shrouded
+         from you.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -278,6 +287,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getStartTime()">getStartTime</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a></span>&nbsp;<span class="memberName">getStartTime</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>When the job started.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -290,6 +303,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getFinishTime()">getFinishTime</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a></span>&nbsp;<span class="memberName">getFinishTime</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>When the job was destroyed. <code>null</code> if not yet finished.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -302,6 +319,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getReason()">getReason</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getReason</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Why the job was destroyed. <code>null</code> if the job is alive.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -314,6 +335,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getKeepaliveHost()">getKeepaliveHost</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getKeepaliveHost</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Which host is believed to be keeping a job alive. May be
+         <code>null</code> if the information is not known or shrouded from
+         you.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -326,6 +353,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getKeepaliveTime()">getKeepaliveTime</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a></span>&nbsp;<span class="memberName">getKeepaliveTime</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The most recent keepalive timestamp.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

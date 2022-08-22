@@ -103,6 +103,15 @@ loadScripts(document, 'script');</script>
 public class <span class="typeNameLabel">SpallocServiceImpl</span>
 extends <a href="BackgroundSupport.html" title="class in uk.ac.manchester.spinnaker.alloc.web">BackgroundSupport</a>
 implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></pre>
+<div class="block">The implementation of the user-facing REST API. Operations are delegated to
+ <a href="../allocator/SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator"><code>SpallocAPI</code></a> for fulfilment; this class is responsible for turning the
+ operations described by users into the form understood by the service core,
+ and for converting the responses. It also handles the transfer of calls onto
+ suitable worker threads, where appropriate.</div>
+<dl>
+<dt><span class="simpleTagLabel">Author:</span></dt>
+<dd>Donal Fellows</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="blockList">

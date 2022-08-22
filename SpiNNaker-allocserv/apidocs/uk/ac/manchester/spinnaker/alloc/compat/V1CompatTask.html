@@ -132,7 +132,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colFirst"><code>protected </code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.compat.V1CompatService,java.net.Socket)">V1CompatTask</a></span>&#8203;(<a href="V1CompatService.html" title="class in uk.ac.manchester.spinnaker.alloc.compat">V1CompatService</a>&nbsp;srv,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/net/Socket.html?is-external=true" title="class or interface in java.net" class="externalLink">Socket</a>&nbsp;sock)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Make an instance that wraps a socket.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -259,7 +261,9 @@ int&nbsp;board)</code></th>
 <tr class="rowColor" id="i13">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#host()">host</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">What host is connected to this service instance?</div>
+</td>
 </tr>
 <tr class="altColor" id="i14">
 <td class="colFirst"><code>protected abstract void</code></td>
@@ -334,7 +338,9 @@ boolean&nbsp;wantNotify)</code></th>
 <tr class="rowColor" id="i23">
 <td class="colFirst"><code>protected abstract <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#version()">version</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the service version.</div>
+</td>
 </tr>
 <tr class="altColor" id="i24">
 <td class="colFirst"><code>protected abstract <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/spalloc/messages/WhereIs.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.spalloc.messages" class="externalLink">WhereIs</a></code></td>
@@ -430,6 +436,7 @@ int&nbsp;board)</code></th>
 <div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">V1CompatTask</span>&#8203;(<span class="arguments"><a href="V1CompatService.html" title="class in uk.ac.manchester.spinnaker.alloc.compat">V1CompatService</a>&nbsp;srv,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/net/Socket.html?is-external=true" title="class or interface in java.net" class="externalLink">Socket</a>&nbsp;sock)</span>
                 throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Make an instance that wraps a socket.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>srv</code> - The overall service, used for looking up shared resources that
@@ -477,6 +484,7 @@ int&nbsp;board)</code></th>
 <section class="detail">
 <h3><a id="host()">host</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">host</span>()</div>
+<div class="block">What host is connected to this service instance?</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The remote host that this task is serving.</dd>
@@ -857,6 +865,7 @@ boolean&nbsp;wantNotify)</span>
 <h3><a id="version()">version</a></h3>
 <div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">version</span>()
                            throws <span class="exceptions">uk.ac.manchester.spinnaker.alloc.compat.TaskException</span></div>
+<div class="block">Get the service version.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The service version. Never <code>null</code>.</dd>

@@ -236,7 +236,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Constructor for a virtual Chip with the default processors.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/bean/ChipBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean"><span class="typeNameLink">ChipBean</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/bean/package-summary.html">uk.ac.manchester.spinnaker.machine.bean</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Used for converting JSON into a <a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Chip</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipBean.html#%3Cinit%3E(int,int,uk.ac.manchester.spinnaker.machine.bean.ChipDetails,uk.ac.manchester.spinnaker.machine.bean.ChipResources)">ChipBean(int, int, ChipDetails, ChipResources)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipBean</a></dt>
 <dd>
 <div class="block">Main constructor with all values as properties.</div>
@@ -246,7 +248,9 @@ loadScripts(document, 'script');</script>
 <div class="block">A Set of all the Locations of the Chips.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html" title="class in uk.ac.manchester.spinnaker.machine.bean"><span class="typeNameLink">ChipDetails</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/bean/package-summary.html">uk.ac.manchester.spinnaker.machine.bean</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The details of a <a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Chip</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html#%3Cinit%3E(int,uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.String,java.util.List,java.util.List)">ChipDetails(int, ChipLocation, String, List&lt;LinkBean&gt;, List&lt;Integer&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipDetails</a></dt>
 <dd>
 <div class="block">Creates a Chip Details bean with the required fields leaving optional
@@ -309,7 +313,7 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#COORD_SHIFT">COORD_SHIFT</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
 <div class="block">Width of field of hashcode for holding (one dimension of the) chip
- co-ordinate.</div>
+ coordinate.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#CORE_SHIFT">CORE_SHIFT</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
@@ -333,7 +337,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html#cores">cores</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipDetails</a></dt>
 <dd>
-<div class="block">Total number of working core on this Chip.</div>
+<div class="block">Total number of working core on this chip.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#coresAndLinkOutputString()">coresAndLinkOutputString()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
@@ -414,7 +418,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Direction of the link as it comes out of the source Chip.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/Direction.html" title="enum in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">Direction</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A direction from one SpiNNaker chip to another.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#DTCM_AVAILABLE">DTCM_AVAILABLE</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
 <div class="block">DTCM available on each standard Processor.</div>
@@ -488,7 +494,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html#ethernet">ethernet</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipDetails.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipDetails</a></dt>
 <dd>
-<div class="block">Location of the nearest Ethernet Chip.</div>
+<div class="block">Location of the nearest Ethernet-enabled chip.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#ethernetConnectedChips()">ethernetConnectedChips()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
@@ -1067,7 +1073,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Main Constructor which sets all parameters.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/bean/LinkBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean"><span class="typeNameLink">LinkBean</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/bean/package-summary.html">uk.ac.manchester.spinnaker.machine.bean</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A <a href="uk/ac/manchester/spinnaker/machine/Link.html" title="class in uk.ac.manchester.spinnaker.machine">link</a> between two <a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">chips</a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/LinkBean.html#%3Cinit%3E(int,int,int)">LinkBean(int, int, int)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/LinkBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">LinkBean</a></dt>
 <dd>
 <div class="block">Create a link description.</div>
@@ -1107,13 +1115,18 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates an empty machine.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/bean/MachineBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean"><span class="typeNameLink">MachineBean</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/bean/package-summary.html">uk.ac.manchester.spinnaker.machine.bean</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Used to build a <a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine"><code>Machine</code></a> from JSON.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/MachineBean.html#%3Cinit%3E(int,int,uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.machine.bean.ChipResources,uk.ac.manchester.spinnaker.machine.bean.ChipResources,java.util.List)">MachineBean(int, int, ChipLocation, ChipResources, ChipResources, List&lt;ChipBean&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/MachineBean.html" title="class in uk.ac.manchester.spinnaker.machine.bean">MachineBean</a></dt>
 <dd>
 <div class="block">Main Constructor that sets all values.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">MachineDefaults</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Default values for a SpiNNaker machine comprised of SpiNNaker-1 chips running
+ on boards of version 2 through 5.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#machineDimensions">machineDimensions</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
 <div class="block">Size of the machine along the x and y axes in Chips.</div>
@@ -1132,7 +1145,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Create a new instance.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/MachineVersion.html" title="enum in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">MachineVersion</span></a> - Enum in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Known types of machine.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/bean/MapperFactory.html" title="class in uk.ac.manchester.spinnaker.machine.bean"><span class="typeNameLink">MapperFactory</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/bean/package-summary.html">uk.ac.manchester.spinnaker.machine.bean</a></dt>
 <dd>
 <div class="block">Creates a mapper that can handle the sort of JSON mappings used in SpiNNaker
@@ -1140,7 +1155,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#MAX_LINKS_PER_ROUTER">MAX_LINKS_PER_ROUTER</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
-<div class="block">Max links available on a standard Router.</div>
+<div class="block">Maximum links available on a standard Router.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#MAX_NUM_CORES">MAX_NUM_CORES</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
@@ -1148,11 +1163,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#MAX_X">MAX_X</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
-<div class="block">Max x coordinate for a chip regardless of the type of machine.</div>
+<div class="block">Maximum X coordinate for a chip regardless of the type of machine.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#MAX_Y">MAX_Y</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
-<div class="block">Max y coordinate for a chip regardless of the type of machine.</div>
+<div class="block">Maximum Y coordinate for a chip regardless of the type of machine.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Machine.html#maxChipX()">maxChipX()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a></dt>
 <dd>
@@ -1387,7 +1402,10 @@ loadScripts(document, 'script');</script>
 <div class="block">A router for the chip.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/machine/Router.html" title="class in uk.ac.manchester.spinnaker.machine"><span class="typeNameLink">Router</span></a> - Class in <a href="uk/ac/manchester/spinnaker/machine/package-summary.html">uk.ac.manchester.spinnaker.machine</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Routers are parts of SpiNNaker chips responsible for directing where
+ on-machine messages are delivered to.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Router.html#%3Cinit%3E()">Router()</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a></dt>
 <dd>
 <div class="block">Default Constructor to add links later using default values.</div>
@@ -1445,7 +1463,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html#SDRAM_PER_CHIP">SDRAM_PER_CHIP</a></span> - Static variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/MachineDefaults.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDefaults</a></dt>
 <dd>
-<div class="block">Default sdram per chip after scamp has reserved space for itself.</div>
+<div class="block">Default SDRAM per chip after SCAMP has reserved space for itself.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#setCores(int)">setCores(int)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
 <dd>&nbsp;</dd>
