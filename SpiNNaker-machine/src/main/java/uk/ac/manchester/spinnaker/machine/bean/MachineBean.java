@@ -76,32 +76,28 @@ public class MachineBean {
 		this.standardResources = standardResources;
 	}
 
+	/** @return The dimensions of the machine. */
 	@JsonIgnore
 	public MachineDimensions getMachineDimensions() {
 		return dimensions;
 	}
 
+	/** @return The root chip of the machine. */
 	public ChipLocation getRoot() {
 		return root;
 	}
 
-	/**
-	 * @return the default ethernet resources
-	 */
+	/** @return the default resources of ethernet-enabled chips */
 	public ChipResources getEthernetResources() {
 		return ethernetResources;
 	}
 
-	/**
-	 * @return the default non-ethernet resources
-	 */
+	/** @return the default resources of chips that are not ethernet-enabled */
 	public ChipResources getStandardResources() {
 		return standardResources;
 	}
 
-	/**
-	 * @return the chips
-	 */
+	/** @return the chips */
 	public List<ChipBean> getChips() {
 		return chips;
 	}

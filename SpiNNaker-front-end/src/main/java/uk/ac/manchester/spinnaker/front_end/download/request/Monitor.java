@@ -101,12 +101,13 @@ public class Monitor implements HasCoreLocation {
 	}
 
 	/**
-	 * Updates the transaction id by 1 and wraps with the cap.
+	 * Updates the transaction ID by 1 and wraps with the cap.
 	 */
 	public void updateTransactionId() {
 		transactionId = (transactionId + 1) & TRANSACTION_ID_CAP;
 	}
 
+	/** @return The current transaction ID. */
 	public int getTransactionId() {
 		return transactionId;
 	}
