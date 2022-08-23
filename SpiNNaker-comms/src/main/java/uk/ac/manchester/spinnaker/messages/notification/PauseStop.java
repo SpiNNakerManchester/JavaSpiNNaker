@@ -24,11 +24,12 @@ import java.nio.ByteBuffer;
  * Packet which indicates that the toolchain has paused or stopped.
  */
 public class PauseStop extends AbstractNotificationMessage {
+	/** Create an instance. */
 	public PauseStop() {
 		super(STOP_PAUSE_NOTIFICATION);
 	}
 
-	public PauseStop(ByteBuffer buffer) {
+	PauseStop(ByteBuffer buffer) {
 		super(buffer);
 	}
 }
