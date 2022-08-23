@@ -471,6 +471,15 @@ public final class Blacklist implements Serializable {
 		return unmodifiableMap(links);
 	}
 
+	/**
+	 * Test if a chip is known about by the blacklist.
+	 *
+	 * @param chip
+	 *            The chip to look for. Coordinates must be board-local.
+	 * @return Whether the chip is mentioned in the blacklist. That could be if
+	 *         it is blacklisted, if it has a blacklisted core, of if one of its
+	 *         links is blacklisted.
+	 */
 	public boolean isChipMentioned(ChipLocation chip) {
 		return chips.contains(chip) || cores.containsKey(chip)
 				|| links.containsKey(chip);

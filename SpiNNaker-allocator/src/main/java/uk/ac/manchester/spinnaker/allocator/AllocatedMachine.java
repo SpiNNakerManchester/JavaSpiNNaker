@@ -52,6 +52,7 @@ public class AllocatedMachine {
 		return width;
 	}
 
+	/** @param width Rectangle width. */
 	public void setWidth(int width) {
 		this.width = width;
 	}
@@ -61,6 +62,7 @@ public class AllocatedMachine {
 		return height;
 	}
 
+	/** @param height Rectangle height. */
 	public void setHeight(int height) {
 		this.height = height;
 	}
@@ -70,6 +72,7 @@ public class AllocatedMachine {
 		return depth;
 	}
 
+	/** @param depth Depth of rectangle. 1 or 3. */
 	public void setDepth(int depth) {
 		this.depth = depth;
 	}
@@ -79,6 +82,7 @@ public class AllocatedMachine {
 		return machineName;
 	}
 
+	/** @param machineName On what machine. */
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
@@ -88,6 +92,7 @@ public class AllocatedMachine {
 		return machine;
 	}
 
+	/** @param machine The hosting SpiNNaker machine. */
 	void setMachine(Machine machine) {
 		this.machine = machine;
 	}
@@ -97,6 +102,7 @@ public class AllocatedMachine {
 		return connections;
 	}
 
+	/** @param connections How to talk to boards. */
 	public void setConnections(List<ConnectionInfo> connections) {
 		this.connections = connections;
 	}
@@ -106,6 +112,7 @@ public class AllocatedMachine {
 		return boards;
 	}
 
+	/** @param boards Where the boards are. */
 	public void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards;
 	}
@@ -125,6 +132,7 @@ public class AllocatedMachine {
 			return chip;
 		}
 
+		/** @param chip Which root chip (of a board) is this about? */
 		public void setChip(ChipLocation chip) {
 			this.chip = chip;
 		}
@@ -134,6 +142,7 @@ public class AllocatedMachine {
 			return hostname;
 		}
 
+		/** @param hostname What's the IP address of the chip? */
 		public void setHostname(String hostname) {
 			this.hostname = hostname;
 		}
