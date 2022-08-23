@@ -16,9 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.lang.String.format;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -27,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * cabinets (full 19" server cabinets).
  */
 @JsonFormat(shape = ARRAY)
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class Physical {
 	private int cabinet;
 
@@ -34,7 +37,7 @@ public class Physical {
 
 	private Integer board;
 
-	public Physical() {
+	Physical() {
 	}
 
 	/**
@@ -56,7 +59,7 @@ public class Physical {
 		return cabinet;
 	}
 
-	public void setCabinet(int cabinet) {
+	void setCabinet(int cabinet) {
 		this.cabinet = cabinet;
 	}
 
@@ -65,7 +68,7 @@ public class Physical {
 		return frame;
 	}
 
-	public void setFrame(int frame) {
+	void setFrame(int frame) {
 		this.frame = frame;
 	}
 
@@ -75,7 +78,7 @@ public class Physical {
 		return board;
 	}
 
-	public void setBoard(Integer board) {
+	void setBoard(Integer board) {
 		this.board = board;
 	}
 

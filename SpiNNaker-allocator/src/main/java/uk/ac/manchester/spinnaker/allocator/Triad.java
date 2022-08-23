@@ -16,13 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.lang.String.format;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /** Logical coordinates of a board. */
 @JsonFormat(shape = ARRAY)
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class Triad {
 	private int x;
 
@@ -30,11 +33,20 @@ public class Triad {
 
 	private int z;
 
+	Triad() {
+	}
+
+	public Triad(int x, int y, int z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+
 	public int getX() {
 		return x;
 	}
 
-	public void setX(int x) {
+	void setX(int x) {
 		this.x = x;
 	}
 
@@ -42,7 +54,7 @@ public class Triad {
 		return y;
 	}
 
-	public void setY(int y) {
+	void setY(int y) {
 		this.y = y;
 	}
 
@@ -50,7 +62,7 @@ public class Triad {
 		return z;
 	}
 
-	public void setZ(int z) {
+	void setZ(int z) {
 		this.z = z;
 	}
 

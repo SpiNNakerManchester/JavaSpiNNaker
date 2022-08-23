@@ -16,15 +16,19 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
 import java.net.URI;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /** A description of where a board is and what it is doing. */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class WhereIs {
 	@JsonAlias("job-id")
 	private Integer jobId;
@@ -54,7 +58,7 @@ public class WhereIs {
 		return jobId;
 	}
 
-	public void setJobId(Integer jobId) {
+	void setJobId(Integer jobId) {
 		this.jobId = jobId;
 	}
 
@@ -62,7 +66,7 @@ public class WhereIs {
 		return jobRef;
 	}
 
-	public void setJobRef(URI jobRef) {
+	void setJobRef(URI jobRef) {
 		this.jobRef = jobRef;
 	}
 
@@ -70,7 +74,7 @@ public class WhereIs {
 		return jobChip;
 	}
 
-	public void setJobChip(ChipLocation jobChip) {
+	void setJobChip(ChipLocation jobChip) {
 		this.jobChip = jobChip;
 	}
 
@@ -78,7 +82,7 @@ public class WhereIs {
 		return chip;
 	}
 
-	public void setChip(ChipLocation chip) {
+	void setChip(ChipLocation chip) {
 		this.chip = chip;
 	}
 
@@ -86,7 +90,7 @@ public class WhereIs {
 		return machineHandle;
 	}
 
-	public void setMachineHandle(Machine machineHandle) {
+	void setMachineHandle(Machine machineHandle) {
 		this.machineHandle = machineHandle;
 	}
 
@@ -95,7 +99,7 @@ public class WhereIs {
 		return machineName;
 	}
 
-	public void setMachineName(String machineName) {
+	void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
 
@@ -103,7 +107,7 @@ public class WhereIs {
 		return machineRef;
 	}
 
-	public void setMachineRef(URI machineRef) {
+	void setMachineRef(URI machineRef) {
 		this.machineRef = machineRef;
 	}
 
@@ -111,7 +115,7 @@ public class WhereIs {
 		return boardChip;
 	}
 
-	public void setBoardChip(ChipLocation boardChip) {
+	void setBoardChip(ChipLocation boardChip) {
 		this.boardChip = boardChip;
 	}
 
@@ -120,7 +124,7 @@ public class WhereIs {
 		return logicalCoords;
 	}
 
-	public void setLogicalCoords(Triad logicalCoords) {
+	void setLogicalCoords(Triad logicalCoords) {
 		this.logicalCoords = logicalCoords;
 	}
 
@@ -129,7 +133,7 @@ public class WhereIs {
 		return physicalCoords;
 	}
 
-	public void setPhysicalCoords(Physical physicalCoords) {
+	void setPhysicalCoords(Physical physicalCoords) {
 		this.physicalCoords = physicalCoords;
 	}
 }

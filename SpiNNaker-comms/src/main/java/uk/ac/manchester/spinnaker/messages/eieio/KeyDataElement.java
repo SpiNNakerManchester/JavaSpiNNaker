@@ -22,6 +22,10 @@ import java.nio.ByteBuffer;
 public class KeyDataElement implements AbstractDataElement {
 	private final int key;
 
+	/**
+	 * Create a data element.
+	 * @param key The key in the element.
+	 */
 	public KeyDataElement(int key) {
 		this.key = key;
 	}

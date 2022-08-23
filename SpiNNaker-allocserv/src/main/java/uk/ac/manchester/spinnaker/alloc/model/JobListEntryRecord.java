@@ -91,137 +91,122 @@ public class JobListEntryRecord {
 
 	private String host;
 
-	public JobListEntryRecord() {
-	}
-
-	/**
-	 * @return the jobs ID
-	 */
+	/** @return the job's ID */
 	public int getId() {
 		return id;
 	}
 
+	/** @param id the job's ID */
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the URL for more details
-	 */
+	/** @return the URL for more details */
 	public Optional<URI> getDetailsUrl() {
 		return Optional.ofNullable(detailsUrl);
 	}
 
+	/** @param detailsUrl the URL for more details */
 	public void setDetailsUrl(URI detailsUrl) {
 		this.detailsUrl = detailsUrl;
 	}
 
-	/**
-	 * @return the job state
-	 */
+	/** @return the job state */
 	public JobState getState() {
 		return state;
 	}
 
+	/** @param state the job state */
 	public void setState(JobState state) {
 		this.state = state;
 	}
 
-	/**
-	 * @return whether the job's boards are powered on
-	 */
+	/** @return whether the job's boards are powered on */
 	public boolean isPowered() {
 		return powered;
 	}
 
+	/** @param powered whether the job's boards are powered on */
 	public void setPowered(boolean powered) {
 		this.powered = powered;
 	}
 
-	/**
-	 * @return the number of boards allocated to the job
-	 */
+	/** @return the number of boards allocated to the job */
 	public Optional<Integer> getNumBoards() {
 		return Optional.ofNullable(numBoards);
 	}
 
+	/** @param numBoards the number of boards allocated to the job */
 	public void setNumBoards(Integer numBoards) {
 		this.numBoards = numBoards;
 	}
 
-	/**
-	 * @return the ID of the machine that the job is using
-	 */
+	/** @return the ID of the machine that the job is using */
 	public int getMachineId() {
 		return machineId;
 	}
 
+	/** @param machineId the ID of the machine that the job is using */
 	public void setMachineId(int machineId) {
 		this.machineId = machineId;
 	}
 
-	/**
-	 * @return the name of the machine that the job is using
-	 */
+	/** @return the name of the machine that the job is using */
 	public String getMachineName() {
 		return machineName;
 	}
 
+	/** @param machineName the name of the machine that the job is using */
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
 
-	/**
-	 * @return the URL for machine info
-	 */
+	/** @return the URL for machine info */
 	public Optional<URI> getMachineUrl() {
 		return Optional.ofNullable(machineUrl);
 	}
 
+	/** @param machineUrl the URL for machine info */
 	public void setMachineUrl(URI machineUrl) {
 		this.machineUrl = machineUrl;
 	}
 
-	/**
-	 * @return the time of the job's creation
-	 */
+	/** @return the time of the job's creation */
 	public Instant getCreationTimestamp() {
 		return creationTimestamp;
 	}
 
+	/** @param creationTimestamp the time of the job's creation */
 	public void setCreationTimestamp(Instant creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
 
-	/**
-	 * @return the keepalive interval
-	 */
+	/** @return the keepalive interval */
 	public Duration getKeepaliveInterval() {
 		return keepaliveInterval;
 	}
 
+	/** @param keepaliveInterval the keepalive interval */
 	public void setKeepaliveInterval(Duration keepaliveInterval) {
 		this.keepaliveInterval = keepaliveInterval;
 	}
 
-	/**
-	 * @return the owner, if not shrouded
-	 */
+	/** @return the owner, if not shrouded */
 	public Optional<String> getOwner() {
 		return Optional.ofNullable(owner);
 	}
 
+	/** @param owner the owner */
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 
-	/**
-	 * @return the host keeping things alive, if not shrouded
-	 */
+	/** @return the host keeping things alive, if not shrouded */
 	public Optional<String> getHost() {
 		return Optional.ofNullable(host);
 	}
 
+	/** @param host the host keeping things alive */
 	public void setHost(String host) {
 		this.host = host;
 	}

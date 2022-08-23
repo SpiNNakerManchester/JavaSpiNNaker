@@ -79,11 +79,8 @@ class JsonTest {
 
 	@Test
 	void physical() throws Exception {
-		Physical p = new Physical();
-		p.setCabinet(1);
-		p.setFrame(2);
-		p.setBoard(3);
-		assertNotNull(serialize(p));
+		Physical p = new Physical(1, 2, 3);
+		assertEquals("[1,2,3]", serialize(p));
 		assertEquals(p.toString(),
 				deserialize(serialize(p), Physical.class).toString());
 	}
@@ -110,11 +107,8 @@ class JsonTest {
 
 	@Test
 	void triad() throws Exception {
-		Triad t = new Triad();
-		t.setX(1);
-		t.setY(2);
-		t.setZ(3);
-		assertNotNull(serialize(t));
+		Triad t = new Triad(1, 2, 3);
+		assertEquals("[1,2,3]", serialize(t));
 		assertEquals(t.toString(),
 				deserialize(serialize(t), Triad.class).toString());
 	}

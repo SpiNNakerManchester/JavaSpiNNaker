@@ -65,14 +65,19 @@ public class CoresNotInStateException extends SpinnmanException {
 		this.failedCores = failedCores;
 	}
 
+	/**
+	 * @return How long did we wait for the cores to enter the desired state?
+	 */
 	public float getTimeout() {
 		return timeout;
 	}
 
+	/** @return What were we attempting to do when the failure happened? */
 	public String getOperation() {
 		return operation;
 	}
 
+	/** @return What cores have failed? */
 	public CoreSubsets getFailedCores() {
 		return failedCores;
 	}

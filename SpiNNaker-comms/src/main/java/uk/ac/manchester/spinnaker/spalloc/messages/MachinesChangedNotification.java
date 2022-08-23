@@ -27,10 +27,12 @@ import java.util.List;
 public class MachinesChangedNotification implements Notification {
 	private List<String> machinesChanged = emptyList();
 
+	/** @return What machines have changed. */
 	public List<String> getMachinesChanged() {
 		return machinesChanged;
 	}
 
+	/** @param machinesChanged What jobs have changed. */
 	public void setMachinesChanged(List<String> machinesChanged) {
 		this.machinesChanged = machinesChanged == null ? emptyList()
 				: unmodifiableList(machinesChanged);
