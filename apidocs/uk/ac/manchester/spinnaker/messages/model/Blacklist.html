@@ -210,7 +210,9 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializab
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isChipMentioned(uk.ac.manchester.spinnaker.machine.ChipLocation)">isChipMentioned</a></span>&#8203;(<a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Test if a chip is known about by the blacklist.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
@@ -368,6 +370,15 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Serializab
 <section class="detail">
 <h3><a id="isChipMentioned(uk.ac.manchester.spinnaker.machine.ChipLocation)">isChipMentioned</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isChipMentioned</span>&#8203;(<span class="arguments"><a href="../../machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;chip)</span></div>
+<div class="block">Test if a chip is known about by the blacklist.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>chip</code> - The chip to look for. Coordinates must be board-local.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Whether the chip is mentioned in the blacklist. That could be if
+         it is blacklisted, if it has a blacklisted core, of if one of its
+         links is blacklisted.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

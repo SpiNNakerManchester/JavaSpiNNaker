@@ -295,7 +295,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?i
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>static <a href="Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#get(byte)">get</a></span>&#8203;(byte&nbsp;value)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Convert a byte to a signal value.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>static <a href="Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a></code></td>
@@ -506,6 +508,15 @@ not permitted.)</div>
 <section class="detail">
 <h3><a id="get(byte)">get</a></h3>
 <div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType"><a href="Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a></span>&nbsp;<span class="memberName">get</span>&#8203;(<span class="arguments">byte&nbsp;value)</span></div>
+<div class="block">Convert a byte to a signal value.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>value</code> - The value to decode.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The decoded value.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/NullPointerException.html?is-external=true" title="class or interface in java.lang" class="externalLink">NullPointerException</a></code> - If the value is unknown.</dd>
+</dl>
 </section>
 </li>
 </ul>

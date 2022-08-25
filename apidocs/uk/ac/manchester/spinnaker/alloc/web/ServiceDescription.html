@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -120,7 +120,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tbody>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">ServiceDescription</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -170,21 +172,6 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getVersion()">getVersion</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setJobsRef(java.net.URI)">setJobsRef</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;jobsRef)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i6">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setMachinesRef(java.net.URI)">setMachinesRef</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;machinesRef)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i7">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setVersion(uk.ac.manchester.spinnaker.messages.model.Version)">setVersion</a></span>&#8203;(<a href="../../messages/model/Version.html" title="class in uk.ac.manchester.spinnaker.messages.model">Version</a>&nbsp;version)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -211,6 +198,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="&lt;init&gt;()">ServiceDescription</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ServiceDescription</span>()</div>
+<div class="block">Create an instance.</div>
 </section>
 </li>
 </ul>
@@ -235,12 +223,6 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setVersion(uk.ac.manchester.spinnaker.messages.model.Version)">setVersion</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setVersion</span>&#8203;(<span class="arguments"><a href="../../messages/model/Version.html" title="class in uk.ac.manchester.spinnaker.messages.model">Version</a>&nbsp;version)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getJobsRef()">getJobsRef</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a></span>&nbsp;<span class="memberName">getJobsRef</span>()</div>
 <dl>
@@ -251,24 +233,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setJobsRef(java.net.URI)">setJobsRef</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setJobsRef</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;jobsRef)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getMachinesRef()">getMachinesRef</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a></span>&nbsp;<span class="memberName">getMachinesRef</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Where to work with machines</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setMachinesRef(java.net.URI)">setMachinesRef</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setMachinesRef</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;machinesRef)</span></div>
 </section>
 </li>
 <li class="blockList">

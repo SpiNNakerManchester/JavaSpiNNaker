@@ -95,6 +95,7 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="typeNameLabel">JobDescription</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">Descriptive detail for a job. Used for HTML generation, something like:
+
  <pre>
      Job ID: 6037654
       Owner: gorp
@@ -113,6 +114,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 Board power: on
  Running on: SpiNNaker1M
  </pre>
+
  (That's actually slightly edited output from <code>spalloc-job -info</code>)</div>
 </section>
 <section class="summary">
@@ -362,6 +364,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setId(int)">setId</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setId</span>&#8203;(<span class="arguments">int&nbsp;id)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>id</code> - the machine ID</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -378,6 +384,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setOwner(java.lang.String)">setOwner</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setOwner</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>owner</code> - the job's owner</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -394,6 +404,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setState(uk.ac.manchester.spinnaker.alloc.model.JobState)">setState</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setState</span>&#8203;(<span class="arguments"><a href="JobState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">JobState</a>&nbsp;state)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>state</code> - the job's state</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -410,6 +424,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setStartTime(java.time.Instant)">setStartTime</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setStartTime</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a>&nbsp;startTime)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>startTime</code> - when the job started</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -426,6 +444,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setKeepAlive(java.time.Duration)">setKeepAlive</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setKeepAlive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepAlive)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>keepAlive</code> - the maximum keepalive interval</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -442,6 +464,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setOwnerHost(java.lang.String)">setOwnerHost</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setOwnerHost</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;ownerHost)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ownerHost</code> - the owner's host (the one supplying keepalives)</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -458,6 +484,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setRequest(java.lang.String)">setRequest</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setRequest</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;request)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>request</code> - the request</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -475,6 +505,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setWidth(int)">setWidth</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setWidth</span>&#8203;(<span class="arguments">int&nbsp;width)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>width</code> - the width of the allocation in <em>chips</em>.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -492,6 +526,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setHeight(int)">setHeight</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setHeight</span>&#8203;(<span class="arguments">int&nbsp;height)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>height</code> - the height of the allocation in <em>chips</em>.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -509,6 +547,11 @@ Board power: on
 <section class="detail">
 <h3><a id="setPowered(boolean)">setPowered</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPowered</span>&#8203;(<span class="arguments">boolean&nbsp;powered)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>powered</code> - whether all boards are powered up; unallocated jobs are
+            considered unpowered.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -525,6 +568,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setMachine(java.lang.String)">setMachine</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machine)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machine</code> - the machine name</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -541,6 +588,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setBoards(java.util.List)">setBoards</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBoards</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="BoardCoords.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardCoords</a>&gt;&nbsp;boards)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>boards</code> - the board coordinates of all boards allocated to the job</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -557,6 +608,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setMachineUrl(java.net.URI)">setMachineUrl</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setMachineUrl</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/net/URI.html?is-external=true" title="class or interface in java.net" class="externalLink">URI</a>&nbsp;machineUrl)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineUrl</code> - the URL to get machine information</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -574,6 +629,10 @@ Board power: on
 <section class="detail">
 <h3><a id="setRequestBytes(byte[])">setRequestBytes</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setRequestBytes</span>&#8203;(<span class="arguments">byte[]&nbsp;bytes)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>bytes</code> - The serialized request.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

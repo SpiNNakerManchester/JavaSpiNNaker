@@ -92,15 +92,15 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <hr>
-<pre>@EnableWebSecurity
-@Role(0)
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+<pre><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/configuration/EnableWebSecurity.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.web.configuration" class="externalLink">@EnableWebSecurity</a>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Role.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Role</a>(0)
+<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/method/configuration/EnableGlobalMethodSecurity.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.method.configuration" class="externalLink">@EnableGlobalMethodSecurity</a>(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/method/configuration/EnableGlobalMethodSecurity.html?is-external=true#prePostEnabled()" title="class or interface in org.springframework.security.config.annotation.method.configuration" class="externalLink">prePostEnabled</a>=true)
 public class <span class="typeNameLabel">SecurityConfig</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">The security and administration configuration of the service.
  <p>
  <strong>Note:</strong> role expressions (<a href="#IS_USER"><code>IS_USER</code></a> and
- <a href="#IS_ADMIN"><code>IS_ADMIN</code></a>) must be applied (with <code>@</code><code>PreAuthorize</code>) to
+ <a href="#IS_ADMIN"><code>IS_ADMIN</code></a>) must be applied (with <code>@</code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink"><code>PreAuthorize</code></a>) to
  <em>interfaces</em> of classes (or methods of those interfaces) that are
  Spring Beans in order for the security interception to be applied correctly.
  This is the <em>only</em> combination that is known to work reliably.</div>
@@ -207,12 +207,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#configureGlobal(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)">configureGlobal</a></span>&#8203;(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder&nbsp;auth)</code></th>
-<td class="colLast">&nbsp;</td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#configureGlobal(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)">configureGlobal</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/authentication/builders/AuthenticationManagerBuilder.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.authentication.builders" class="externalLink">AuthenticationManagerBuilder</a>&nbsp;auth)</code></th>
+<td class="colLast">
+<div class="block">Configure things we plug into.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>org.springframework.security.web.SecurityFilterChain</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#securityFilter(org.springframework.security.config.annotation.web.builders.HttpSecurity)">securityFilter</a></span>&#8203;(org.springframework.security.config.annotation.web.builders.HttpSecurity&nbsp;http)</code></th>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/web/SecurityFilterChain.html?is-external=true" title="class or interface in org.springframework.security.web" class="externalLink">SecurityFilterChain</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#securityFilter(org.springframework.security.config.annotation.web.builders.HttpSecurity)">securityFilter</a></span>&#8203;(<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/builders/HttpSecurity.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.web.builders" class="externalLink">HttpSecurity</a>&nbsp;http)</code></th>
 <td class="colLast">
 <div class="block">Define our main security controls.</div>
 </td>
@@ -313,22 +315,22 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="configureGlobal(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)">configureGlobal</a></h3>
-<div class="memberSignature"><span class="annotations">@Autowired
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">configureGlobal</span>&#8203;(<span class="arguments">org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder&nbsp;auth)</span>
-                     throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Autowired.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Autowired</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">configureGlobal</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/authentication/builders/AuthenticationManagerBuilder.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.authentication.builders" class="externalLink">AuthenticationManagerBuilder</a>&nbsp;auth)</span></div>
+<div class="block">Configure things we plug into.</div>
 <dl>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>auth</code> - The authentication manager builder to configure.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="securityFilter(org.springframework.security.config.annotation.web.builders.HttpSecurity)">securityFilter</a></h3>
-<div class="memberSignature"><span class="annotations">@Bean
-@Role(1)
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.security.web.SecurityFilterChain</span>&nbsp;<span class="memberName">securityFilter</span>&#8203;(<span class="arguments">org.springframework.security.config.annotation.web.builders.HttpSecurity&nbsp;http)</span>
-                                                                    throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Bean.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Bean</a>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Role.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Role</a>(1)
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/web/SecurityFilterChain.html?is-external=true" title="class or interface in org.springframework.security.web" class="externalLink">SecurityFilterChain</a></span>&nbsp;<span class="memberName">securityFilter</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/config/annotation/web/builders/HttpSecurity.html?is-external=true" title="class or interface in org.springframework.security.config.annotation.web.builders" class="externalLink">HttpSecurity</a>&nbsp;http)</span>
+                                   throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
 <div class="block">Define our main security controls.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -336,7 +338,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The filter chain that implements the controls.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code> - If anything goes wrong with setting up.</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code> - If anything goes wrong with setting up. Not expected.</dd>
 </dl>
 </section>
 </li>

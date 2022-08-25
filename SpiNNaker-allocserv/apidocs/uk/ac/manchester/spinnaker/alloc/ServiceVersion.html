@@ -92,11 +92,11 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <hr>
-<pre>@Service
-@Role(1)
+<pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Service</a>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Role.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Role</a>(1)
 public class <span class="typeNameLabel">ServiceVersion</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
-<div class="block">The version of the service.</div>
+<div class="block">The version information of the service.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -119,7 +119,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.String)">ServiceVersion</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;version,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;buildTimestamp)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -184,10 +186,17 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,java.lang.String)">ServiceVersion</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ServiceVersion</span>&#8203;(<span class="arguments">@Value("${version}")
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ServiceVersion</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("${version}")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;version,
-@Value("${build-timestamp}")
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Value</a>("${build-timestamp}")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;buildTimestamp)</span></div>
+<div class="block">Create an instance.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>version</code> - The version, injected from the POM by the build process.</dd>
+<dd><code>buildTimestamp</code> - The build timestamp, injected from the POM by the build
+            process.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -204,18 +213,32 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getVersion()">getVersion</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/messages/model/Version.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.messages.model" class="externalLink">Version</a></span>&nbsp;<span class="memberName">getVersion</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The logical version number. Expected to at least
+         <em>approximately</em> follow semver rules.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getFullVersion()">getFullVersion</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getFullVersion</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The full version identifier. Conforms only to Maven conventions.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBuildTimestamp()">getBuildTimestamp</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getBuildTimestamp</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The build timestamp. The format of this is not intended for
+         further machine parsing.</dd>
+</dl>
 </section>
 </li>
 </ul>

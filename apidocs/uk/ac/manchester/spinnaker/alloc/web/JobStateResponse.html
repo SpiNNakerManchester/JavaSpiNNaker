@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -184,7 +184,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tbody>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">JobStateResponse</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Make an instance without any references to other resources.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -242,31 +244,6 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="../model/JobState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">JobState</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getState()">getState</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i7">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setKeepaliveHost(java.lang.String)">setKeepaliveHost</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;keepaliveHost)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i8">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setOwner(java.lang.String)">setOwner</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i9">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setReason(java.lang.String)">setReason</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i10">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStartTime(java.time.Instant)">setStartTime</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a>&nbsp;startTime)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i11">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setState(uk.ac.manchester.spinnaker.alloc.model.JobState)">setState</a></span>&#8203;(<a href="../model/JobState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">JobState</a>&nbsp;state)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -348,6 +325,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="&lt;init&gt;()">JobStateResponse</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">JobStateResponse</span>()</div>
+<div class="block">Make an instance without any references to other resources.</div>
 </section>
 </li>
 </ul>
@@ -372,24 +350,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setState(uk.ac.manchester.spinnaker.alloc.model.JobState)">setState</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setState</span>&#8203;(<span class="arguments"><a href="../model/JobState.html" title="enum in uk.ac.manchester.spinnaker.alloc.model">JobState</a>&nbsp;state)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getStartTime()">getStartTime</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a></span>&nbsp;<span class="memberName">getStartTime</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>When the job started.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setStartTime(java.time.Instant)">setStartTime</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setStartTime</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a>&nbsp;startTime)</span></div>
 </section>
 </li>
 <li class="blockList">
@@ -404,12 +370,6 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setReason(java.lang.String)">setReason</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setReason</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getKeepaliveHost()">getKeepaliveHost</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getKeepaliveHost</span>()</div>
 <dl>
@@ -420,24 +380,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setKeepaliveHost(java.lang.String)">setKeepaliveHost</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setKeepaliveHost</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;keepaliveHost)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getOwner()">getOwner</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getOwner</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Who created the job?</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setOwner(java.lang.String)">setOwner</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setOwner</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;owner)</span></div>
 </section>
 </li>
 <li class="blockList">

@@ -96,7 +96,7 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <hr>
-<pre>@Service
+<pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Service</a>
 public class <span class="typeNameLabel">UserControl</span>
 extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean</a></pre>
 <div class="block">User and group administration DAO.</div>
@@ -372,7 +372,7 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.alloc.db.<a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean">
 <!--   -->
-</a><code><a href="../db/DatabaseAwareBean.html#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a>, <a href="../db/DatabaseAwareBean.html#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a>, <a href="../db/DatabaseAwareBean.html#getConnection()">getConnection</a>, <a href="../db/DatabaseAwareBean.html#setDatabaseEngine(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine)">setDatabaseEngine</a></code></div>
+</a><code><a href="../db/DatabaseAwareBean.html#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a>, <a href="../db/DatabaseAwareBean.html#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a>, <a href="../db/DatabaseAwareBean.html#getConnection()">getConnection</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -553,7 +553,7 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 <section class="detail">
 <h3><a id="getUser(java.security.Principal)">getUser</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../model/PasswordChangeRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">PasswordChangeRecord</a></span>&nbsp;<span class="memberName">getUser</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</span>
-                             throws <span class="exceptions">org.springframework.security.core.AuthenticationException</span></div>
+                             throws <span class="exceptions"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/AuthenticationException.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">AuthenticationException</a></span></div>
 <div class="block">Get a model for updating the local password of the current user.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -561,7 +561,7 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>User model object. Password fields are unfilled.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>org.springframework.security.core.AuthenticationException</code> - If the user cannot change their password here for some
+<dd><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/AuthenticationException.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">AuthenticationException</a></code> - If the user cannot change their password here for some
              reason.</dd>
 </dl>
 </section>
@@ -571,7 +571,7 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 <h3><a id="updateUser(java.security.Principal,uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord)">updateUser</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../model/PasswordChangeRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">PasswordChangeRecord</a></span>&nbsp;<span class="memberName">updateUser</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal,
 <a href="../model/PasswordChangeRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">PasswordChangeRecord</a>&nbsp;user)</span>
-                                throws <span class="exceptions">org.springframework.security.core.AuthenticationException</span></div>
+                                throws <span class="exceptions"><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/AuthenticationException.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">AuthenticationException</a></span></div>
 <div class="block">Update the local password of the current user based on a filled out model
  previously provided.</div>
 <dl>
@@ -581,7 +581,7 @@ extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Replacement user model object. Password fields are unfilled.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>org.springframework.security.core.AuthenticationException</code> - If the user cannot change their password here for some
+<dd><code><a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/AuthenticationException.html?is-external=true" title="class or interface in org.springframework.security.core" class="externalLink">AuthenticationException</a></code> - If the user cannot change their password here for some
              reason.</dd>
 </dl>
 </section>

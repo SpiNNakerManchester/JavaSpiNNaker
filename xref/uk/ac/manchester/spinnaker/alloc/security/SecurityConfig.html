@@ -164,197 +164,202 @@
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 	@Autowired
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> 	<strong class="jxr_keyword">private</strong> URLPathMaker urlMaker;
 <a class="jxr_linenumber" name="L158" href="#L158">158</a> 
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> 	@Autowired
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configureGlobal(AuthenticationManagerBuilder auth)
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 			<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 		auth.authenticationProvider(localAuthProvider);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	}
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	<strong class="jxr_keyword">private</strong> String oidcPath(String suffix) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 		<strong class="jxr_keyword">return</strong> urlMaker.systemUrl(<span class="jxr_string">"perform_oidc/"</span> + suffix);
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 	}
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">	 * Set up access control policies where they're not done by method security.</em>
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">	 * The {@code /info} part reveals admin details; you need {@code ROLE_ADMIN}</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">	 * to view it. Everything to do with logging in &lt;strong&gt;must not&lt;/strong&gt;</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">	 * require being logged in. For anything else, as long as you are</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">	 * authenticated we're happy. &lt;em&gt;Some&lt;/em&gt; calls have additional</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">	 * requirements; those are annotated with {@link PreAuthorize @PreAuthorize}</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">	 * and a suitable auth expression.</em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">	 * @param http</em>
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up.</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineAccessPolicy(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 		http.authorizeRequests()
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 				<em class="jxr_comment">// General metadata pages require ADMIN access</em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 				.antMatchers(urlMaker.serviceUrl(<span class="jxr_string">"info*"</span>),
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> 						urlMaker.serviceUrl(<span class="jxr_string">"info/**"</span>))
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 				.hasRole(<span class="jxr_string">"ADMIN"</span>)
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> 				<em class="jxr_comment">// Login process and static resources are available to all</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> 				.antMatchers(urlMaker.systemUrl(<span class="jxr_string">"login*"</span>),
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> 						urlMaker.systemUrl(<span class="jxr_string">"perform_*"</span>), oidcPath(<span class="jxr_string">"**"</span>),
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 						urlMaker.systemUrl(<span class="jxr_string">"error"</span>),
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> 						urlMaker.systemUrl(<span class="jxr_string">"resources/*"</span>))
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> 				.permitAll()
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 				<em class="jxr_comment">// Everything else requires post-login</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 				.anyRequest().authenticated();
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> 	}
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">	 * How we handle the mechanics of login with the REST API.</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">	 * @param http</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up.</em>
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineAPILoginRules(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 		<strong class="jxr_keyword">if</strong> (properties.isBasic()) {
-<a class="jxr_linenumber" name="L209" href="#L209">209</a> 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> 		}
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<strong class="jxr_keyword">if</strong> (properties.getOpenid().isEnable()) {
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 			http.oauth2ResourceServer()
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 					.authenticationEntryPoint(authenticationEntryPoint).jwt()
-<a class="jxr_linenumber" name="L214" href="#L214">214</a> 					.jwtAuthenticationConverter(authConverter());
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">	 * Configure things we plug into.</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> <em class="jxr_javadoccomment">	 * @param auth</em>
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">	 *            The authentication manager builder to configure.</em>
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	@Autowired
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configureGlobal(AuthenticationManagerBuilder auth) {
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		auth.authenticationProvider(localAuthProvider);
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> 	}
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> 	<strong class="jxr_keyword">private</strong> String oidcPath(String suffix) {
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 		<strong class="jxr_keyword">return</strong> urlMaker.systemUrl(<span class="jxr_string">"perform_oidc/"</span> + suffix);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 	}
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">	 * Set up access control policies where they're not done by method security.</em>
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">	 * The {@code /info} part reveals admin details; you need {@code ROLE_ADMIN}</em>
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">	 * to view it. Everything to do with logging in &lt;strong&gt;must not&lt;/strong&gt;</em>
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">	 * require being logged in. For anything else, as long as you are</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">	 * authenticated we're happy. &lt;em&gt;Some&lt;/em&gt; calls have additional</em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">	 * requirements; those are annotated with {@link PreAuthorize @PreAuthorize}</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">	 * and a suitable auth expression.</em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> <em class="jxr_javadoccomment">	 * @param http</em>
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up.</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineAccessPolicy(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 		http.authorizeRequests()
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> 				<em class="jxr_comment">// General metadata pages require ADMIN access</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> 				.antMatchers(urlMaker.serviceUrl(<span class="jxr_string">"info*"</span>),
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> 						urlMaker.serviceUrl(<span class="jxr_string">"info/**"</span>))
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 				.hasRole(<span class="jxr_string">"ADMIN"</span>)
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> 				<em class="jxr_comment">// Login process and static resources are available to all</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 				.antMatchers(urlMaker.systemUrl(<span class="jxr_string">"login*"</span>),
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> 						urlMaker.systemUrl(<span class="jxr_string">"perform_*"</span>), oidcPath(<span class="jxr_string">"**"</span>),
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 						urlMaker.systemUrl(<span class="jxr_string">"error"</span>),
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 						urlMaker.systemUrl(<span class="jxr_string">"resources/*"</span>))
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 				.permitAll()
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> 				<em class="jxr_comment">// Everything else requires post-login</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 				.anyRequest().authenticated();
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 	}
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">	 * How we handle the mechanics of login with the REST API.</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">	 * @param http</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up. Not expected.</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineAPILoginRules(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">if</strong> (properties.isBasic()) {
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 			http.httpBasic().authenticationEntryPoint(authenticationEntryPoint);
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 		}
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> 	}
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> 
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">	 * How we handle the mechanics of login within the web UI.</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">	 * @param http</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up.</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineWebUILoginRules(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 		String loginUrl = urlMaker.systemUrl(<span class="jxr_string">"login.html"</span>);
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 		String rootPage = urlMaker.systemUrl(<span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 		<strong class="jxr_keyword">if</strong> (properties.getOpenid().isEnable()) {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> 			<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_comment">			 * We're both, so we can have logins AND tokens. The logins are for</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_comment">			 * using the HTML UI, and the tokens are for using from SpiNNaker</em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_comment">			 * tools (especially within the collabratory and the Jupyter</em>
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_comment">			 * notebook).</em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_comment">			 */</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 			http.oauth2Login().loginPage(loginUrl)
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 					.loginProcessingUrl(oidcPath(<span class="jxr_string">"login/code/*"</span>))
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 					.authorizationEndpoint().baseUri(oidcPath(<span class="jxr_string">"auth"</span>)).and()
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 					.defaultSuccessUrl(rootPage, <strong class="jxr_keyword">true</strong>)
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 					.failureUrl(loginUrl + <span class="jxr_string">"?error=true"</span>).userInfoEndpoint()
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> 					.userAuthoritiesMapper(userAuthoritiesMapper());
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			http.oauth2Client();
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 		}
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 		<strong class="jxr_keyword">if</strong> (properties.isLocalForm()) {
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 			http.formLogin().loginPage(loginUrl)
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 					.loginProcessingUrl(urlMaker.systemUrl(<span class="jxr_string">"perform_login"</span>))
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 					.defaultSuccessUrl(rootPage, <strong class="jxr_keyword">true</strong>)
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 					.failureUrl(loginUrl + <span class="jxr_string">"?error=true"</span>)
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 					.failureHandler(authenticationFailureHandler);
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 		}
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 	}
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">	 * Logging out is common code between the UI and the API, but pretty</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">	 * pointless for Basic Auth as browsers will just log straight back in</em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">	 * again. Still, it is meaningful (it invalidates the session).</em>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">	 * @param http</em>
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up.</em>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineLogoutRules(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 		String loginUrl = urlMaker.systemUrl(<span class="jxr_string">"login.html"</span>);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 		http.logout().logoutUrl(urlMaker.systemUrl(<span class="jxr_string">"perform_logout"</span>))
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 				.addLogoutHandler((req, resp, auth) -&gt; clearToken(req))
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(<strong class="jxr_keyword">true</strong>)
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 				.logoutSuccessUrl(loginUrl);
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 	}
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">	 * Define our main security controls.</em>
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">	 * @param http</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">	 *            Used to build the filter chain.</em>
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">	 * @return The filter chain that implements the controls.</em>
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up.</em>
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 	@Bean
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 	<strong class="jxr_keyword">public</strong> SecurityFilterChain securityFilter(HttpSecurity http)
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 			<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 		defineAccessPolicy(http);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> 		defineAPILoginRules(http);
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 		defineWebUILoginRules(http);
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 		defineLogoutRules(http);
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> 		http.addFilterAfter(authApplicationFilter,
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> 				BasicAuthenticationFilter.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> 		<strong class="jxr_keyword">return</strong> http.build();
-<a class="jxr_linenumber" name="L291" href="#L291">291</a> 	}
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> 
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> <em class="jxr_javadoccomment">	 * @return A converter that handles the initial extraction of collabratories</em>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> <em class="jxr_javadoccomment">	 *         and organisations from the info we have available with a bearer</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">	 *         token.</em>
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> <em class="jxr_javadoccomment">	 * @see LocalAuthProviderImpl#mapAuthorities(Jwt, Collection)</em>
-<a class="jxr_linenumber" name="L298" href="#L298">298</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 	@Bean(<span class="jxr_string">"hbp.collab-and-org.bearer-converter.shim"</span>)
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> 	Converter&lt;Jwt, ? <strong class="jxr_keyword">extends</strong> AbstractAuthenticationToken&gt; authConverter() {
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> 		JwtGrantedAuthoritiesConverter jgac =
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> 				<strong class="jxr_keyword">new</strong> JwtGrantedAuthoritiesConverter();
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> 		<strong class="jxr_keyword">return</strong> jwt -&gt; {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 			Collection&lt;GrantedAuthority&gt; mappedAuthorities = jgac.convert(jwt);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> 			<em class="jxr_comment">// ASSUME that this is a modifiable collection</em>
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 			localAuthProvider.mapAuthorities(jwt, mappedAuthorities);
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> JwtAuthenticationToken(jwt, mappedAuthorities);
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> 		};
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> 	}
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">	 * @return A converter that handles the initial extraction of collabratories</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">	 *         and organisations from the info we have available when a user</em>
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">	 *         logs in explicitly in the web UI.</em>
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">	 * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)</em>
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> 	@Bean(<span class="jxr_string">"hbp.collab-and-org.user-converter.shim"</span>)
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> 	GrantedAuthoritiesMapper userAuthoritiesMapper() {
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> 		SimpleAuthorityMapper sam = <strong class="jxr_keyword">new</strong> SimpleAuthorityMapper();
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> 		<strong class="jxr_keyword">return</strong> authorities -&gt; {
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> 			Collection&lt;GrantedAuthority&gt; mappedAuthorities =
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> 					sam.mapAuthorities(authorities);
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> 			authorities.forEach(authority -&gt; {
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> 				<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_comment">				 * Check for OidcUserAuthority because Spring Security 5.2</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_comment">				 * returns each scope as a GrantedAuthority, which we don't care</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_comment">				 * about.</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_comment">				 */</em>
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> 				<strong class="jxr_keyword">if</strong> (authority instanceof OidcUserAuthority) {
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> 					localAuthProvider.mapAuthorities(
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> 							(OidcUserAuthority) authority, mappedAuthorities);
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> 				}
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 				mappedAuthorities.add(authority);
-<a class="jxr_linenumber" name="L336" href="#L336">336</a> 			});
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> 			<strong class="jxr_keyword">return</strong> mappedAuthorities;
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> 		};
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> 	}
-<a class="jxr_linenumber" name="L340" href="#L340">340</a> 
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> 	@Bean
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> 	@Role(ROLE_SUPPORT)
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> 	LogoutHandler logoutHandler() {
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> 		SecurityContextLogoutHandler sclh = <strong class="jxr_keyword">new</strong> SecurityContextLogoutHandler();
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> 		sclh.setClearAuthentication(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 		sclh.setInvalidateHttpSession(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> 		<strong class="jxr_keyword">return</strong> sclh;
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 	}
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> }
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> 		<strong class="jxr_keyword">if</strong> (properties.getOpenid().isEnable()) {
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> 			http.oauth2ResourceServer()
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> 					.authenticationEntryPoint(authenticationEntryPoint).jwt()
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> 					.jwtAuthenticationConverter(authConverter());
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 		}
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 	}
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">	 * How we handle the mechanics of login within the web UI.</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">	 * @param http</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up. Not expected.</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineWebUILoginRules(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> 		String loginUrl = urlMaker.systemUrl(<span class="jxr_string">"login.html"</span>);
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> 		String rootPage = urlMaker.systemUrl(<span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> 		<strong class="jxr_keyword">if</strong> (properties.getOpenid().isEnable()) {
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 			<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_comment">			 * We're both, so we can have logins AND tokens. The logins are for</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_comment">			 * using the HTML UI, and the tokens are for using from SpiNNaker</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_comment">			 * tools (especially within the collabratory and the Jupyter</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_comment">			 * notebook).</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_comment">			 */</em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 			http.oauth2Login().loginPage(loginUrl)
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 					.loginProcessingUrl(oidcPath(<span class="jxr_string">"login/code/*"</span>))
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 					.authorizationEndpoint().baseUri(oidcPath(<span class="jxr_string">"auth"</span>)).and()
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 					.defaultSuccessUrl(rootPage, <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 					.failureUrl(loginUrl + <span class="jxr_string">"?error=true"</span>).userInfoEndpoint()
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> 					.userAuthoritiesMapper(userAuthoritiesMapper());
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 			http.oauth2Client();
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 		}
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 		<strong class="jxr_keyword">if</strong> (properties.isLocalForm()) {
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 			http.formLogin().loginPage(loginUrl)
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 					.loginProcessingUrl(urlMaker.systemUrl(<span class="jxr_string">"perform_login"</span>))
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 					.defaultSuccessUrl(rootPage, <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 					.failureUrl(loginUrl + <span class="jxr_string">"?error=true"</span>)
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> 					.failureHandler(authenticationFailureHandler);
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 		}
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 	}
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">	 * Logging out is common code between the UI and the API, but pretty</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">	 * pointless for Basic Auth as browsers will just log straight back in</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">	 * again. Still, it is meaningful (it invalidates the session).</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">	 * @param http</em>
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">	 *            Where the configuration is applied to.</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up. Not expected.</em>
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> defineLogoutRules(HttpSecurity http) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 		String loginUrl = urlMaker.systemUrl(<span class="jxr_string">"login.html"</span>);
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 		http.logout().logoutUrl(urlMaker.systemUrl(<span class="jxr_string">"perform_logout"</span>))
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 				.addLogoutHandler((req, resp, auth) -&gt; clearToken(req))
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(<strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 				.logoutSuccessUrl(loginUrl);
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 	}
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">	 * Define our main security controls.</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">	 * @param http</em>
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> <em class="jxr_javadoccomment">	 *            Used to build the filter chain.</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">	 * @return The filter chain that implements the controls.</em>
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">	 * @throws Exception</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with setting up. Not expected.</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> 	@Bean
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> 	<strong class="jxr_keyword">public</strong> SecurityFilterChain securityFilter(HttpSecurity http)
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 			<strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> 		defineAccessPolicy(http);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 		defineAPILoginRules(http);
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> 		defineWebUILoginRules(http);
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> 		defineLogoutRules(http);
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 		http.addFilterAfter(authApplicationFilter,
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 				BasicAuthenticationFilter.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> 		<strong class="jxr_keyword">return</strong> http.build();
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 	}
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> <em class="jxr_javadoccomment">	 * @return A converter that handles the initial extraction of collabratories</em>
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">	 *         and organisations from the info we have available with a bearer</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">	 *         token.</em>
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">	 * @see LocalAuthProviderImpl#mapAuthorities(Jwt, Collection)</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> 	@Bean(<span class="jxr_string">"hbp.collab-and-org.bearer-converter.shim"</span>)
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 	Converter&lt;Jwt, ? <strong class="jxr_keyword">extends</strong> AbstractAuthenticationToken&gt; authConverter() {
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 		JwtGrantedAuthoritiesConverter jgac =
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> 				<strong class="jxr_keyword">new</strong> JwtGrantedAuthoritiesConverter();
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 		<strong class="jxr_keyword">return</strong> jwt -&gt; {
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> 			Collection&lt;GrantedAuthority&gt; mappedAuthorities = jgac.convert(jwt);
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 			<em class="jxr_comment">// ASSUME that this is a modifiable collection</em>
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 			localAuthProvider.mapAuthorities(jwt, mappedAuthorities);
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> JwtAuthenticationToken(jwt, mappedAuthorities);
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> 		};
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 	}
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> 
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">	 * @return A converter that handles the initial extraction of collabratories</em>
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">	 *         and organisations from the info we have available when a user</em>
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">	 *         logs in explicitly in the web UI.</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">	 * @see LocalAuthProviderImpl#mapAuthorities(OidcUserAuthority, Collection)</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 	@Bean(<span class="jxr_string">"hbp.collab-and-org.user-converter.shim"</span>)
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 	GrantedAuthoritiesMapper userAuthoritiesMapper() {
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> 		SimpleAuthorityMapper sam = <strong class="jxr_keyword">new</strong> SimpleAuthorityMapper();
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> 		<strong class="jxr_keyword">return</strong> authorities -&gt; {
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> 			Collection&lt;GrantedAuthority&gt; mappedAuthorities =
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> 					sam.mapAuthorities(authorities);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> 			authorities.forEach(authority -&gt; {
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> 				<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_comment">				 * Check for OidcUserAuthority because Spring Security 5.2</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_comment">				 * returns each scope as a GrantedAuthority, which we don't care</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_comment">				 * about.</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_comment">				 */</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> 				<strong class="jxr_keyword">if</strong> (authority instanceof OidcUserAuthority) {
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> 					localAuthProvider.mapAuthorities(
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> 							(OidcUserAuthority) authority, mappedAuthorities);
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> 				}
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> 				mappedAuthorities.add(authority);
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> 			});
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> 			<strong class="jxr_keyword">return</strong> mappedAuthorities;
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> 		};
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> 	}
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> 
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 	@Bean
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> 	@Role(ROLE_SUPPORT)
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> 	LogoutHandler logoutHandler() {
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> 		SecurityContextLogoutHandler sclh = <strong class="jxr_keyword">new</strong> SecurityContextLogoutHandler();
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> 		sclh.setClearAuthentication(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> 		sclh.setInvalidateHttpSession(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 		<strong class="jxr_keyword">return</strong> sclh;
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 	}
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

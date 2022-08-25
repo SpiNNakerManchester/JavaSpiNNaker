@@ -100,8 +100,8 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></code></dd>
 </dl>
 <hr>
-<pre>@Controller("mvc.adminUI")
-@PreAuthorize("hasRole(\'ADMIN\')")
+<pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Controller.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Controller</a>("mvc.adminUI")
+<a href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/prepost/PreAuthorize.html?is-external=true" title="class or interface in org.springframework.security.access.prepost" class="externalLink">@PreAuthorize</a>("hasRole(\'ADMIN\')")
 public class <span class="typeNameLabel">AdminControllerImpl</span>
 extends <a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean</a>
 implements <a href="AdminController.html" title="interface in uk.ac.manchester.spinnaker.alloc.admin">AdminController</a></pre>
@@ -447,170 +447,170 @@ implements <a href="AdminController.html" title="interface in uk.ac.manchester.s
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addUserToGroup(int,java.lang.String,org.springframework.web.servlet.mvc.support.RedirectAttributes)">addUserToGroup</a></span>&#8203;(int&nbsp;id,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;user,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Add a user to a group.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#adjustGroupQuota(int,int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">adjustGroupQuota</a></span>&#8203;(int&nbsp;id,
 int&nbsp;delta,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Adjust the quota of a group.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;org.springframework.web.servlet.ModelAndView&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch</a></span>&#8203;(<a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
-org.springframework.ui.ModelMap&nbsp;model)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">Fetch the blacklist for a board from the machine.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;org.springframework.web.servlet.ModelAndView&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistPush</a></span>&#8203;(<a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
-org.springframework.ui.ModelMap&nbsp;model)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">Push the blacklist for a board to the machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistSave</a></span>&#8203;(<a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
-org.springframework.ui.ModelMap&nbsp;model)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">Manipulate a blacklist.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#board(uk.ac.manchester.spinnaker.alloc.model.BoardRecord,org.springframework.ui.ModelMap)">board</a></span>&#8203;(<a href="../model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a>&nbsp;board,
-org.springframework.ui.ModelMap&nbsp;model)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
 <div class="block">Manipulate a board.</div>
 </td>
 </tr>
 <tr class="altColor" id="i6">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#boards()">boards</a></span>()</code></th>
 <td class="colLast">
 <div class="block">UI for boards.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createGroup(uk.ac.manchester.spinnaker.alloc.admin.AdminController.CreateGroupModel,org.springframework.web.servlet.mvc.support.RedirectAttributes)">createGroup</a></span>&#8203;(<a href="AdminController.CreateGroupModel.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.CreateGroupModel</a>&nbsp;groupRequest,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Create a group.</div>
 </td>
 </tr>
 <tr class="altColor" id="i8">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createUser(uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,org.springframework.web.servlet.mvc.support.RedirectAttributes)">createUser</a></span>&#8203;(<a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
-org.springframework.ui.ModelMap&nbsp;model,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Create a user.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i9">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#defineMachine(org.springframework.web.multipart.MultipartFile)">defineMachine</a></span>&#8203;(org.springframework.web.multipart.MultipartFile&nbsp;file)</code></th>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#defineMachine(org.springframework.web.multipart.MultipartFile)">defineMachine</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/multipart/MultipartFile.html?is-external=true" title="class or interface in org.springframework.web.multipart" class="externalLink">MultipartFile</a>&nbsp;file)</code></th>
 <td class="colLast">
 <div class="block">Handle the upload of a machine definition.</div>
 </td>
 </tr>
 <tr class="altColor" id="i10">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteGroup(int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">deleteGroup</a></span>&#8203;(int&nbsp;id,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Delete a group.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i11">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteUser(int,java.security.Principal,org.springframework.web.servlet.mvc.support.RedirectAttributes)">deleteUser</a></span>&#8203;(int&nbsp;id,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Delete a user.</div>
 </td>
 </tr>
 <tr class="altColor" id="i12">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#disableMachine(java.lang.String)">disableMachine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</code></th>
 <td class="colLast">
 <div class="block">Mark a machine as out of service.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i13">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#enableMachine(java.lang.String)">enableMachine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</code></th>
 <td class="colLast">
 <div class="block">Mark a machine as in service.</div>
 </td>
 </tr>
 <tr class="altColor" id="i14">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getGroupCreationForm()">getGroupCreationForm</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the form for creating a group.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i15">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getUserCreationForm()">getUserCreationForm</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the form for creating a user.</div>
 </td>
 </tr>
 <tr class="altColor" id="i16">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listGroups()">listGroups</a></span>()</code></th>
 <td class="colLast">
 <div class="block">List all groups.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i17">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listUsers()">listUsers</a></span>()</code></th>
 <td class="colLast">
 <div class="block">List all users.</div>
 </td>
 </tr>
 <tr class="altColor" id="i18">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machineManagement()">machineManagement</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Provide the form for uploading a machine definition.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i19">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#mainUI()">mainUI</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get supported ops.</div>
 </td>
 </tr>
 <tr class="altColor" id="i20">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#removeUserFromGroup(int,int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">removeUserFromGroup</a></span>&#8203;(int&nbsp;id,
 int&nbsp;userid,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code></th>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Remove a user from a group.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i21">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retagMachine(java.lang.String,java.lang.String)">retagMachine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;newTags)</code></th>
 <td class="colLast">
@@ -618,24 +618,24 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</code
 </td>
 </tr>
 <tr class="altColor" id="i22">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#showGroupInfo(int)">showGroupInfo</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Get info about a particular group.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i23">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#showUserForm(int)">showUserForm</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Show user details.</div>
 </td>
 </tr>
 <tr class="altColor" id="i24">
-<td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#submitUserForm(int,uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,java.security.Principal)">submitUserForm</a></span>&#8203;(int&nbsp;id,
 <a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
-org.springframework.ui.ModelMap&nbsp;model,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</code></th>
 <td class="colLast">
 <div class="block">Modify user details.</div>
@@ -649,7 +649,7 @@ org.springframework.ui.ModelMap&nbsp;model,
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.alloc.db.<a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseAwareBean</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean">
 <!--   -->
-</a><code><a href="../db/DatabaseAwareBean.html#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a>, <a href="../db/DatabaseAwareBean.html#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a>, <a href="../db/DatabaseAwareBean.html#getConnection()">getConnection</a>, <a href="../db/DatabaseAwareBean.html#setDatabaseEngine(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine)">setDatabaseEngine</a></code></div>
+</a><code><a href="../db/DatabaseAwareBean.html#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a>, <a href="../db/DatabaseAwareBean.html#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a>, <a href="../db/DatabaseAwareBean.html#getConnection()">getConnection</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -1040,7 +1040,7 @@ org.springframework.ui.ModelMap&nbsp;model,
 <li class="blockList">
 <section class="detail">
 <h3><a id="mainUI()">mainUI</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">mainUI</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">mainUI</span>()</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#mainUI()">AdminController</a></code></span></div>
 <div class="block">Get supported ops.</div>
 <dl>
@@ -1054,7 +1054,7 @@ org.springframework.ui.ModelMap&nbsp;model,
 <li class="blockList">
 <section class="detail">
 <h3><a id="listUsers()">listUsers</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">listUsers</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">listUsers</span>()</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#listUsers()">AdminController</a></code></span></div>
 <div class="block">List all users.</div>
 <dl>
@@ -1068,7 +1068,7 @@ org.springframework.ui.ModelMap&nbsp;model,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getUserCreationForm()">getUserCreationForm</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">getUserCreationForm</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">getUserCreationForm</span>()</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#getUserCreationForm()">AdminController</a></code></span></div>
 <div class="block">Get the form for creating a user.</div>
 <dl>
@@ -1082,9 +1082,9 @@ org.springframework.ui.ModelMap&nbsp;model,
 <li class="blockList">
 <section class="detail">
 <h3><a id="createUser(uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,org.springframework.web.servlet.mvc.support.RedirectAttributes)">createUser</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">createUser</span>&#8203;(<span class="arguments"><a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
-org.springframework.ui.ModelMap&nbsp;model,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">createUser</span>&#8203;(<span class="arguments"><a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#createUser(uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Create a user.</div>
 <dl>
@@ -1103,7 +1103,7 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="showUserForm(int)">showUserForm</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">showUserForm</span>&#8203;(<span class="arguments">int&nbsp;id)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">showUserForm</span>&#8203;(<span class="arguments">int&nbsp;id)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#showUserForm(int)">AdminController</a></code></span></div>
 <div class="block">Show user details.</div>
 <dl>
@@ -1119,9 +1119,9 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="submitUserForm(int,uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,java.security.Principal)">submitUserForm</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">submitUserForm</span>&#8203;(<span class="arguments">int&nbsp;id,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">submitUserForm</span>&#8203;(<span class="arguments">int&nbsp;id,
 <a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
-org.springframework.ui.ModelMap&nbsp;model,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#submitUserForm(int,uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,java.security.Principal)">AdminController</a></code></span></div>
 <div class="block">Modify user details.</div>
@@ -1141,9 +1141,9 @@ org.springframework.ui.ModelMap&nbsp;model,
 <li class="blockList">
 <section class="detail">
 <h3><a id="deleteUser(int,java.security.Principal,org.springframework.web.servlet.mvc.support.RedirectAttributes)">deleteUser</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">deleteUser</span>&#8203;(<span class="arguments">int&nbsp;id,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">deleteUser</span>&#8203;(<span class="arguments">int&nbsp;id,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span></div>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#deleteUser(int,java.security.Principal,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Delete a user.</div>
 <dl>
@@ -1162,7 +1162,7 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="listGroups()">listGroups</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">listGroups</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">listGroups</span>()</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#listGroups()">AdminController</a></code></span></div>
 <div class="block">List all groups.</div>
 <dl>
@@ -1176,7 +1176,7 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="showGroupInfo(int)">showGroupInfo</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">showGroupInfo</span>&#8203;(<span class="arguments">int&nbsp;id)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">showGroupInfo</span>&#8203;(<span class="arguments">int&nbsp;id)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#showGroupInfo(int)">AdminController</a></code></span></div>
 <div class="block">Get info about a particular group.</div>
 <dl>
@@ -1192,7 +1192,7 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="getGroupCreationForm()">getGroupCreationForm</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">getGroupCreationForm</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">getGroupCreationForm</span>()</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#getGroupCreationForm()">AdminController</a></code></span></div>
 <div class="block">Get the form for creating a group.</div>
 <dl>
@@ -1206,8 +1206,8 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="createGroup(uk.ac.manchester.spinnaker.alloc.admin.AdminController.CreateGroupModel,org.springframework.web.servlet.mvc.support.RedirectAttributes)">createGroup</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">createGroup</span>&#8203;(<span class="arguments"><a href="AdminController.CreateGroupModel.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.CreateGroupModel</a>&nbsp;groupRequest,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">createGroup</span>&#8203;(<span class="arguments"><a href="AdminController.CreateGroupModel.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.CreateGroupModel</a>&nbsp;groupRequest,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#createGroup(uk.ac.manchester.spinnaker.alloc.admin.AdminController.CreateGroupModel,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Create a group.</div>
 <dl>
@@ -1225,9 +1225,9 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="addUserToGroup(int,java.lang.String,org.springframework.web.servlet.mvc.support.RedirectAttributes)">addUserToGroup</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">addUserToGroup</span>&#8203;(<span class="arguments">int&nbsp;id,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">addUserToGroup</span>&#8203;(<span class="arguments">int&nbsp;id,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;user,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span></div>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#addUserToGroup(int,java.lang.String,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Add a user to a group.</div>
 <dl>
@@ -1246,9 +1246,9 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="removeUserFromGroup(int,int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">removeUserFromGroup</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">removeUserFromGroup</span>&#8203;(<span class="arguments">int&nbsp;id,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">removeUserFromGroup</span>&#8203;(<span class="arguments">int&nbsp;id,
 int&nbsp;userid,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span></div>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#removeUserFromGroup(int,int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Remove a user from a group.</div>
 <dl>
@@ -1267,9 +1267,9 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="adjustGroupQuota(int,int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">adjustGroupQuota</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">adjustGroupQuota</span>&#8203;(<span class="arguments">int&nbsp;id,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">adjustGroupQuota</span>&#8203;(<span class="arguments">int&nbsp;id,
 int&nbsp;delta,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span></div>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#adjustGroupQuota(int,int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Adjust the quota of a group.</div>
 <dl>
@@ -1289,8 +1289,8 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="deleteGroup(int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">deleteGroup</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">deleteGroup</span>&#8203;(<span class="arguments">int&nbsp;id,
-org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">deleteGroup</span>&#8203;(<span class="arguments">int&nbsp;id,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#deleteGroup(int,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Delete a group. It is legal for a user to not be a member of any group;
  they just won't be able to submit jobs if that's the case.</div>
@@ -1309,7 +1309,7 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="boards()">boards</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">boards</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">boards</span>()</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#boards()">AdminController</a></code></span></div>
 <div class="block">UI for boards.</div>
 <dl>
@@ -1323,8 +1323,8 @@ org.springframework.web.servlet.mvc.support.RedirectAttributes&nbsp;attrs)</span
 <li class="blockList">
 <section class="detail">
 <h3><a id="board(uk.ac.manchester.spinnaker.alloc.model.BoardRecord,org.springframework.ui.ModelMap)">board</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">board</span>&#8203;(<span class="arguments"><a href="../model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a>&nbsp;board,
-org.springframework.ui.ModelMap&nbsp;model)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">board</span>&#8203;(<span class="arguments"><a href="../model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">BoardRecord</a>&nbsp;board,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#board(uk.ac.manchester.spinnaker.alloc.model.BoardRecord,org.springframework.ui.ModelMap)">AdminController</a></code></span></div>
 <div class="block">Manipulate a board.</div>
 <dl>
@@ -1341,8 +1341,8 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistSave</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">blacklistSave</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
-org.springframework.ui.ModelMap&nbsp;model)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">blacklistSave</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">AdminController</a></code></span></div>
 <div class="block">Manipulate a blacklist.</div>
 <dl>
@@ -1359,9 +1359,9 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch</a></h3>
-<div class="memberSignature"><span class="annotations">@Async
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;org.springframework.web.servlet.ModelAndView&gt;</span>&nbsp;<span class="memberName">blacklistFetch</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
-org.springframework.ui.ModelMap&nbsp;model)</span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html?is-external=true" title="class or interface in org.springframework.scheduling.annotation" class="externalLink">@Async</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</span>&nbsp;<span class="memberName">blacklistFetch</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">AdminController</a></code></span></div>
 <div class="block">Fetch the blacklist for a board from the machine.</div>
 <dl>
@@ -1378,9 +1378,9 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistPush</a></h3>
-<div class="memberSignature"><span class="annotations">@Async
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;org.springframework.web.servlet.ModelAndView&gt;</span>&nbsp;<span class="memberName">blacklistPush</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
-org.springframework.ui.ModelMap&nbsp;model)</span></div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html?is-external=true" title="class or interface in org.springframework.scheduling.annotation" class="externalLink">@Async</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</span>&nbsp;<span class="memberName">blacklistPush</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">AdminController</a></code></span></div>
 <div class="block">Push the blacklist for a board to the machine.</div>
 <dl>
@@ -1397,7 +1397,7 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="machineManagement()">machineManagement</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">machineManagement</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">machineManagement</span>()</div>
 <div class="block">Provide the form for uploading a machine definition.
  <p>
  <strong>Implementation note:</strong> This is the baseline information
@@ -1413,7 +1413,7 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="retagMachine(java.lang.String,java.lang.String)">retagMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">retagMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">retagMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;newTags)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#retagMachine(java.lang.String,java.lang.String)">AdminController</a></code></span></div>
 <div class="block">Handle the change of the tags of a machine.</div>
@@ -1431,7 +1431,7 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="disableMachine(java.lang.String)">disableMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">disableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">disableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#disableMachine(java.lang.String)">AdminController</a></code></span></div>
 <div class="block">Mark a machine as out of service.</div>
 <dl>
@@ -1447,7 +1447,7 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="enableMachine(java.lang.String)">enableMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">enableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">enableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#enableMachine(java.lang.String)">AdminController</a></code></span></div>
 <div class="block">Mark a machine as in service.</div>
 <dl>
@@ -1463,7 +1463,7 @@ org.springframework.ui.ModelMap&nbsp;model)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="defineMachine(org.springframework.web.multipart.MultipartFile)">defineMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">org.springframework.web.servlet.ModelAndView</span>&nbsp;<span class="memberName">defineMachine</span>&#8203;(<span class="arguments">org.springframework.web.multipart.MultipartFile&nbsp;file)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">defineMachine</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/multipart/MultipartFile.html?is-external=true" title="class or interface in org.springframework.web.multipart" class="externalLink">MultipartFile</a>&nbsp;file)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#defineMachine(org.springframework.web.multipart.MultipartFile)">AdminController</a></code></span></div>
 <div class="block">Handle the upload of a machine definition. Note that no user has any
  quota set on a newly defined machine; it's totally free to use by

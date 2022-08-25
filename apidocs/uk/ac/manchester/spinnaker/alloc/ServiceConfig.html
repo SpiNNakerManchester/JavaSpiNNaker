@@ -88,22 +88,22 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="contentContainer">
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
-<div class="inheritance">javax.ws.rs.core.Application
+<div class="inheritance"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Application.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">javax.ws.rs.core.Application</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.alloc.ServiceConfig</div>
 </div>
 </div>
 <section class="description">
 <hr>
-<pre>@Import({org.apache.cxf.jaxrs.spring.JaxRsConfig.class,<a href="web/MvcConfig.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MvcConfig.class</a>,<a href="security/SecurityConfig.html" title="class in uk.ac.manchester.spinnaker.alloc.security">SecurityConfig.class</a>})
-@PropertySource("classpath:service.properties")
-@EnableScheduling
-@EnableAsync
-@SpringBootApplication
-@ApplicationPath("spalloc")
-@Role(0)
-@EnableConfigurationProperties(<a href="SpallocProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.class</a>)
+<pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Import.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Import</a>({org.apache.cxf.jaxrs.spring.JaxRsConfig.class,<a href="web/MvcConfig.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MvcConfig.class</a>,<a href="security/SecurityConfig.html" title="class in uk.ac.manchester.spinnaker.alloc.security">SecurityConfig.class</a>})
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/PropertySource.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@PropertySource</a>("classpath:service.properties")
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/EnableScheduling.html?is-external=true" title="class or interface in org.springframework.scheduling.annotation" class="externalLink">@EnableScheduling</a>
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html?is-external=true" title="class or interface in org.springframework.scheduling.annotation" class="externalLink">@EnableAsync</a>
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/autoconfigure/SpringBootApplication.html?is-external=true" title="class or interface in org.springframework.boot.autoconfigure" class="externalLink">@SpringBootApplication</a>
+<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/ApplicationPath.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@ApplicationPath</a>("spalloc")
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Role.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Role</a>(0)
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/EnableConfigurationProperties.html?is-external=true" title="class or interface in org.springframework.boot.context.properties" class="externalLink">@EnableConfigurationProperties</a>(<a href="SpallocProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties.class</a>)
 public class <span class="typeNameLabel">ServiceConfig</span>
-extends javax.ws.rs.core.Application</pre>
+extends <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Application.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Application</a></pre>
 <div class="block">Builds the Spring beans in the application that are not auto-detected. There
  are no public methods in this class that can be called by non-framework code.</div>
 <dl>
@@ -200,10 +200,10 @@ extends javax.ws.rs.core.Application</pre>
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;javax.ws.rs.core.Application</h3>
+<h3>Methods inherited from class&nbsp;javax.ws.rs.core.<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Application.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Application</a></h3>
 <a id="methods.inherited.from.class.javax.ws.rs.core.Application">
 <!--   -->
-</a><code>getClasses, getProperties, getSingletons</code></div>
+</a><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Application.html?is-external=true#getClasses()" title="class or interface in javax.ws.rs.core" class="externalLink">getClasses</a>, <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Application.html?is-external=true#getProperties()" title="class or interface in javax.ws.rs.core" class="externalLink">getProperties</a>, <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Application.html?is-external=true#getSingletons()" title="class or interface in javax.ws.rs.core" class="externalLink">getSingletons</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">

@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -163,21 +163,6 @@ double&nbsp;specificBoard)</code></th>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpecificBoard()">getSpecificBoard</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i3">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDimensions(double)">setDimensions</a></span>&#8203;(double&nbsp;factor)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSize(double)">setSize</a></span>&#8203;(double&nbsp;factor)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSpecificBoard(double)">setSpecificBoard</a></span>&#8203;(double&nbsp;factor)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -203,12 +188,21 @@ double&nbsp;specificBoard)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(double,double,double)">PriorityScale</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">PriorityScale</span>&#8203;(<span class="arguments">@DefaultValue("1.0")
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">PriorityScale</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("1.0")
 double&nbsp;size,
-@DefaultValue("1.5")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("1.5")
 double&nbsp;dimensions,
-@DefaultValue("65.0")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("65.0")
 double&nbsp;specificBoard)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>size</code> - Priority scaling factor for jobs given by number of
+            boards.</dd>
+<dd><code>dimensions</code> - Priority scaling factor for jobs given by rectangular
+            dimensions.</dd>
+<dd><code>specificBoard</code> - Priority scaling factor for jobs requiring a specific
+            board.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -224,7 +218,7 @@ double&nbsp;specificBoard)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getSize()">getSize</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">getSize</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -234,14 +228,8 @@ double&nbsp;specificBoard)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setSize(double)">setSize</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setSize</span>&#8203;(<span class="arguments">double&nbsp;factor)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getDimensions()">getDimensions</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">getDimensions</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -252,25 +240,13 @@ double&nbsp;specificBoard)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setDimensions(double)">setDimensions</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDimensions</span>&#8203;(<span class="arguments">double&nbsp;factor)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getSpecificBoard()">getSpecificBoard</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive double</span>&nbsp;<span class="memberName">getSpecificBoard</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Priority scaling factor for jobs requiring a specific board.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setSpecificBoard(double)">setSpecificBoard</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setSpecificBoard</span>&#8203;(<span class="arguments">double&nbsp;factor)</span></div>
 </section>
 </li>
 </ul>

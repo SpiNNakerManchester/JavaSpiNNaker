@@ -153,7 +153,9 @@ implements <a href="../SerializableMessage.html" title="interface in uk.ac.manch
 <tbody>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.scp.CommandCode)">SCPRequestHeader</a></span>&#8203;(<a href="CommandCode.html" title="interface in uk.ac.manchester.spinnaker.messages.scp">CommandCode</a>&nbsp;command)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance that doesn't yet have a sequence number set.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -240,6 +242,13 @@ implements <a href="../SerializableMessage.html" title="interface in uk.ac.manch
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.scp.CommandCode)">SCPRequestHeader</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SCPRequestHeader</span>&#8203;(<span class="arguments"><a href="CommandCode.html" title="interface in uk.ac.manchester.spinnaker.messages.scp">CommandCode</a>&nbsp;command)</span></div>
+<div class="block">Create an instance that doesn't yet have a sequence number set.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>command</code> - The command to perform.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="#issueSequenceNumber(java.util.Set)"><code>issueSequenceNumber(Set)</code></a></dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -256,14 +265,16 @@ implements <a href="../SerializableMessage.html" title="interface in uk.ac.manch
 <section class="detail">
 <h3><a id="addToBuffer(java.nio.ByteBuffer)">addToBuffer</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">addToBuffer</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../SerializableMessage.html#addToBuffer(java.nio.ByteBuffer)">SerializableMessage</a></code></span></div>
 <div class="block">Writes this message into the given buffer as a contiguous range of bytes.
  This is so that a message can be sent. Implementors may assume that the
  buffer has been configured to be
  <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteOrder.html?is-external=true#LITTLE_ENDIAN" title="class or interface in java.nio" class="externalLink">little-endian</a> and that its
  <i>position</i> is at the point where they should begin writing. Once it
  has finished, the <i>position</i> should be immediately after the last
- byte written by this method.</div>
+ byte written by this method.
+ <p>
+ This must not be called until after a
+ <a href="#issueSequenceNumber(java.util.Set)">sequence number is set</a>.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../SerializableMessage.html#addToBuffer(java.nio.ByteBuffer)">addToBuffer</a></code>&nbsp;in interface&nbsp;<code><a href="../SerializableMessage.html" title="interface in uk.ac.manchester.spinnaker.messages">SerializableMessage</a></code></dd>
@@ -293,6 +304,10 @@ implements <a href="../SerializableMessage.html" title="interface in uk.ac.manch
 <section class="detail">
 <h3><a id="getSequence()">getSequence</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">short</span>&nbsp;<span class="memberName">getSequence</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The message's sequence number.</dd>
+</dl>
 </section>
 </li>
 </ul>

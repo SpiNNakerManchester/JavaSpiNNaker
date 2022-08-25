@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -148,33 +148,18 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getGracePeriod()">getGracePeriod</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPath()">getPath</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code>@NotBlank <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSchedule()">getSchedule</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i3">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setGracePeriod(java.time.Duration)">setGracePeriod</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;gracePeriod)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPath(java.io.File)">setPath</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;path)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSchedule(java.lang.String)">setSchedule</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;schedule)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -202,12 +187,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.io.File,java.time.Duration,java.lang.String)">HistoricalDataProperties</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">HistoricalDataProperties</span>&#8203;(<span class="arguments">@DefaultValue("spalloc-history.sqlite3")
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">HistoricalDataProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("spalloc-history.sqlite3")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;path,
-@DefaultValue("14d")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("14d")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;gracePeriod,
-@DefaultValue("0 0 2 * * *")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("0 0 2 * * *")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;schedule)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>path</code> - Path to the historical job database file. <em>Must be
+            distinct from the main database!</em></dd>
+<dd><code>gracePeriod</code> - How long after job completion should we wait before moving
+            the data?</dd>
+<dd><code>schedule</code> - Cron expression saying when to move completed jobs to the
+            historical database.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -223,25 +217,20 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="getPath()">getPath</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a></span>&nbsp;<span class="memberName">getPath</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a></span>&nbsp;<span class="memberName">getPath</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>Path to the historical job database file.</dd>
+<dd>Path to the historical job database file. <em>Must be
+         distinct from the main database!</em></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setPath(java.io.File)">setPath</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPath</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;path)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getGracePeriod()">getGracePeriod</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getGracePeriod</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getGracePeriod</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>How long after job completion should we wait before moving
@@ -251,26 +240,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setGracePeriod(java.time.Duration)">setGracePeriod</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setGracePeriod</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;gracePeriod)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getSchedule()">getSchedule</a></h3>
-<div class="memberSignature"><span class="annotations">@NotBlank
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotBlank <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getSchedule</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getSchedule</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Cron expression saying when to move completed jobs to the
          historical database.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setSchedule(java.lang.String)">setSchedule</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setSchedule</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;schedule)</span></div>
 </section>
 </li>
 </ul>

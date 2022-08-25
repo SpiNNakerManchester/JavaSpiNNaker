@@ -58,13 +58,13 @@ loadScripts(document, 'script');</script>
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
-<li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
-<li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
@@ -88,8 +88,8 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="contentContainer">
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
-<div class="inheritance">org.springframework.web.socket.handler.AbstractWebSocketHandler
-<div class="inheritance">org.springframework.web.socket.handler.BinaryWebSocketHandler
+<div class="inheritance"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">org.springframework.web.socket.handler.AbstractWebSocketHandler</a>
+<div class="inheritance"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/BinaryWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">org.springframework.web.socket.handler.BinaryWebSocketHandler</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.alloc.proxy.SpinWSHandler</div>
 </div>
 </div>
@@ -97,13 +97,13 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code>org.springframework.web.socket.server.HandshakeInterceptor</code>, <code>org.springframework.web.socket.WebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/server/HandshakeInterceptor.html?is-external=true" title="class or interface in org.springframework.web.socket.server" class="externalLink">HandshakeInterceptor</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a></code></dd>
 </dl>
 <hr>
-<pre>@Component
+<pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Component</a>
 public class <span class="typeNameLabel">SpinWSHandler</span>
-extends org.springframework.web.socket.handler.BinaryWebSocketHandler
-implements org.springframework.web.socket.server.HandshakeInterceptor</pre>
+extends <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/BinaryWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">BinaryWebSocketHandler</a>
+implements <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/server/HandshakeInterceptor.html?is-external=true" title="class or interface in org.springframework.web.socket.server" class="externalLink">HandshakeInterceptor</a></pre>
 <div class="block">Initial handler for web sockets. Maps a particular websocket to a
  <a href="ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">proxy handler</a> that processes messages received and
  sends messages the other way.</div>
@@ -143,31 +143,6 @@ implements org.springframework.web.socket.server.HandshakeInterceptor</pre>
 </div>
 </section>
 </li>
-<!-- ======== CONSTRUCTOR SUMMARY ======== -->
-<li class="blockList">
-<section class="constructorSummary"><a id="constructor.summary">
-<!--   -->
-</a>
-<h2>Constructor Summary</h2>
-<div class="memberSummary">
-<table>
-<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Constructor</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">SpinWSHandler</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li class="blockList">
 <section class="methodSummary"><a id="method.summary">
@@ -188,34 +163,34 @@ implements org.springframework.web.socket.server.HandshakeInterceptor</pre>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#afterConnectionClosed(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.CloseStatus)">afterConnectionClosed</a></span>&#8203;(org.springframework.web.socket.WebSocketSession&nbsp;session,
-org.springframework.web.socket.CloseStatus&nbsp;status)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#afterConnectionClosed(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.CloseStatus)">afterConnectionClosed</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/CloseStatus.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">CloseStatus</a>&nbsp;status)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#afterConnectionEstablished(org.springframework.web.socket.WebSocketSession)">afterConnectionEstablished</a></span>&#8203;(org.springframework.web.socket.WebSocketSession&nbsp;session)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#afterConnectionEstablished(org.springframework.web.socket.WebSocketSession)">afterConnectionEstablished</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#afterHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.lang.Exception)">afterHandshake</a></span>&#8203;(org.springframework.http.server.ServerHttpRequest&nbsp;request,
-org.springframework.http.server.ServerHttpResponse&nbsp;response,
-org.springframework.web.socket.WebSocketHandler&nbsp;wsHandler,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#afterHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.lang.Exception)">afterHandshake</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpRequest.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpRequest</a>&nbsp;request,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpResponse.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpResponse</a>&nbsp;response,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a>&nbsp;wsHandler,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&nbsp;exception)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#beforeHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.util.Map)">beforeHandshake</a></span>&#8203;(org.springframework.http.server.ServerHttpRequest&nbsp;request,
-org.springframework.http.server.ServerHttpResponse&nbsp;response,
-org.springframework.web.socket.WebSocketHandler&nbsp;wsHandler,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#beforeHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.util.Map)">beforeHandshake</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpRequest.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpRequest</a>&nbsp;request,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpResponse.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpResponse</a>&nbsp;response,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a>&nbsp;wsHandler,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;attributes)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#closed(org.springframework.web.socket.WebSocketSession,uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job)">closed</a></span>&#8203;(org.springframework.web.socket.WebSocketSession&nbsp;session,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#closed(org.springframework.web.socket.WebSocketSession,uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job)">closed</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
 <a href="ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">ProxyCore</a>&nbsp;proxy,
 <a href="../allocator/SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&nbsp;job)</code></th>
 <td class="colLast">
@@ -224,7 +199,7 @@ org.springframework.web.socket.WebSocketHandler&nbsp;wsHandler,
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#delegateToProxy(org.springframework.web.socket.BinaryMessage,uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore)">delegateToProxy</a></span>&#8203;(org.springframework.web.socket.BinaryMessage&nbsp;message,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#delegateToProxy(org.springframework.web.socket.BinaryMessage,uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore)">delegateToProxy</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/BinaryMessage.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">BinaryMessage</a>&nbsp;message,
 <a href="ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">ProxyCore</a>&nbsp;proxy)</code></th>
 <td class="colLast">
 <div class="block">Message was sent to us.</div>
@@ -232,19 +207,19 @@ org.springframework.web.socket.WebSocketHandler&nbsp;wsHandler,
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleBinaryMessage(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.BinaryMessage)">handleBinaryMessage</a></span>&#8203;(org.springframework.web.socket.WebSocketSession&nbsp;session,
-org.springframework.web.socket.BinaryMessage&nbsp;message)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleBinaryMessage(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.BinaryMessage)">handleBinaryMessage</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/BinaryMessage.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">BinaryMessage</a>&nbsp;message)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleTransportError(org.springframework.web.socket.WebSocketSession,java.lang.Throwable)">handleTransportError</a></span>&#8203;(org.springframework.web.socket.WebSocketSession&nbsp;session,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleTransportError(org.springframework.web.socket.WebSocketSession,java.lang.Throwable)">handleTransportError</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;exception)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#initProxyCore(org.springframework.web.socket.WebSocketSession,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job)">initProxyCore</a></span>&#8203;(org.springframework.web.socket.WebSocketSession&nbsp;session,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#initProxyCore(org.springframework.web.socket.WebSocketSession,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job)">initProxyCore</a></span>&#8203;(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
 <a href="../allocator/SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&nbsp;job)</code></th>
 <td class="colLast">
 <div class="block">Connection established and job looked up.</div>
@@ -255,15 +230,15 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</code></th>
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;org.springframework.web.socket.handler.BinaryWebSocketHandler</h3>
+<h3>Methods inherited from class&nbsp;org.springframework.web.socket.handler.<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/BinaryWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">BinaryWebSocketHandler</a></h3>
 <a id="methods.inherited.from.class.org.springframework.web.socket.handler.BinaryWebSocketHandler">
 <!--   -->
-</a><code>handleTextMessage</code></div>
+</a><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/BinaryWebSocketHandler.html?is-external=true#handleTextMessage(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.TextMessage)" title="class or interface in org.springframework.web.socket.handler" class="externalLink">handleTextMessage</a></code></div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;org.springframework.web.socket.handler.AbstractWebSocketHandler</h3>
+<h3>Methods inherited from class&nbsp;org.springframework.web.socket.handler.<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">AbstractWebSocketHandler</a></h3>
 <a id="methods.inherited.from.class.org.springframework.web.socket.handler.AbstractWebSocketHandler">
 <!--   -->
-</a><code>handleMessage, handlePongMessage, supportsPartialMessages</code></div>
+</a><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true#handleMessage(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.WebSocketMessage)" title="class or interface in org.springframework.web.socket.handler" class="externalLink">handleMessage</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true#handlePongMessage(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.PongMessage)" title="class or interface in org.springframework.web.socket.handler" class="externalLink">handlePongMessage</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true#supportsPartialMessages()" title="class or interface in org.springframework.web.socket.handler" class="externalLink">supportsPartialMessages</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -296,22 +271,6 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</code></th>
 </ul>
 </section>
 </li>
-<!-- ========= CONSTRUCTOR DETAIL ======== -->
-<li class="blockList">
-<section class="constructorDetails"><a id="constructor.detail">
-<!--   -->
-</a>
-<h2>Constructor Details</h2>
-<ul class="blockList">
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;()">SpinWSHandler</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpinWSHandler</span>()</div>
-</section>
-</li>
-</ul>
-</section>
-</li>
 <!-- ============ METHOD DETAIL ========== -->
 <li class="blockList">
 <section class="methodDetails"><a id="method.detail">
@@ -322,63 +281,63 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="beforeHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.util.Map)">beforeHandshake</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">beforeHandshake</span>&#8203;(<span class="arguments">org.springframework.http.server.ServerHttpRequest&nbsp;request,
-org.springframework.http.server.ServerHttpResponse&nbsp;response,
-org.springframework.web.socket.WebSocketHandler&nbsp;wsHandler,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">beforeHandshake</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpRequest.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpRequest</a>&nbsp;request,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpResponse.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpResponse</a>&nbsp;response,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a>&nbsp;wsHandler,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>&gt;&nbsp;attributes)</span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>beforeHandshake</code>&nbsp;in interface&nbsp;<code>org.springframework.web.socket.server.HandshakeInterceptor</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/server/HandshakeInterceptor.html?is-external=true#beforeHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.util.Map)" title="class or interface in org.springframework.web.socket.server" class="externalLink">beforeHandshake</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/server/HandshakeInterceptor.html?is-external=true" title="class or interface in org.springframework.web.socket.server" class="externalLink">HandshakeInterceptor</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="afterHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.lang.Exception)">afterHandshake</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">afterHandshake</span>&#8203;(<span class="arguments">org.springframework.http.server.ServerHttpRequest&nbsp;request,
-org.springframework.http.server.ServerHttpResponse&nbsp;response,
-org.springframework.web.socket.WebSocketHandler&nbsp;wsHandler,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">afterHandshake</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpRequest.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpRequest</a>&nbsp;request,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/server/ServerHttpResponse.html?is-external=true" title="class or interface in org.springframework.http.server" class="externalLink">ServerHttpResponse</a>&nbsp;response,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a>&nbsp;wsHandler,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a>&nbsp;exception)</span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>afterHandshake</code>&nbsp;in interface&nbsp;<code>org.springframework.web.socket.server.HandshakeInterceptor</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/server/HandshakeInterceptor.html?is-external=true#afterHandshake(org.springframework.http.server.ServerHttpRequest,org.springframework.http.server.ServerHttpResponse,org.springframework.web.socket.WebSocketHandler,java.lang.Exception)" title="class or interface in org.springframework.web.socket.server" class="externalLink">afterHandshake</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/server/HandshakeInterceptor.html?is-external=true" title="class or interface in org.springframework.web.socket.server" class="externalLink">HandshakeInterceptor</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="afterConnectionEstablished(org.springframework.web.socket.WebSocketSession)">afterConnectionEstablished</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">afterConnectionEstablished</span>&#8203;(<span class="arguments">org.springframework.web.socket.WebSocketSession&nbsp;session)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">afterConnectionEstablished</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session)</span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>afterConnectionEstablished</code>&nbsp;in interface&nbsp;<code>org.springframework.web.socket.WebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true#afterConnectionEstablished(org.springframework.web.socket.WebSocketSession)" title="class or interface in org.springframework.web.socket" class="externalLink">afterConnectionEstablished</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code>afterConnectionEstablished</code>&nbsp;in class&nbsp;<code>org.springframework.web.socket.handler.AbstractWebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true#afterConnectionEstablished(org.springframework.web.socket.WebSocketSession)" title="class or interface in org.springframework.web.socket.handler" class="externalLink">afterConnectionEstablished</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">AbstractWebSocketHandler</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="afterConnectionClosed(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.CloseStatus)">afterConnectionClosed</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">afterConnectionClosed</span>&#8203;(<span class="arguments">org.springframework.web.socket.WebSocketSession&nbsp;session,
-org.springframework.web.socket.CloseStatus&nbsp;status)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">afterConnectionClosed</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/CloseStatus.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">CloseStatus</a>&nbsp;status)</span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>afterConnectionClosed</code>&nbsp;in interface&nbsp;<code>org.springframework.web.socket.WebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true#afterConnectionClosed(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.CloseStatus)" title="class or interface in org.springframework.web.socket" class="externalLink">afterConnectionClosed</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code>afterConnectionClosed</code>&nbsp;in class&nbsp;<code>org.springframework.web.socket.handler.AbstractWebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true#afterConnectionClosed(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.CloseStatus)" title="class or interface in org.springframework.web.socket.handler" class="externalLink">afterConnectionClosed</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">AbstractWebSocketHandler</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="handleBinaryMessage(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.BinaryMessage)">handleBinaryMessage</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">handleBinaryMessage</span>&#8203;(<span class="arguments">org.springframework.web.socket.WebSocketSession&nbsp;session,
-org.springframework.web.socket.BinaryMessage&nbsp;message)</span>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">handleBinaryMessage</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/BinaryMessage.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">BinaryMessage</a>&nbsp;message)</span>
                             throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code>handleBinaryMessage</code>&nbsp;in class&nbsp;<code>org.springframework.web.socket.handler.AbstractWebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true#handleBinaryMessage(org.springframework.web.socket.WebSocketSession,org.springframework.web.socket.BinaryMessage)" title="class or interface in org.springframework.web.socket.handler" class="externalLink">handleBinaryMessage</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">AbstractWebSocketHandler</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code></dd>
 </dl>
@@ -387,14 +346,14 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="handleTransportError(org.springframework.web.socket.WebSocketSession,java.lang.Throwable)">handleTransportError</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">handleTransportError</span>&#8203;(<span class="arguments">org.springframework.web.socket.WebSocketSession&nbsp;session,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">handleTransportError</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;exception)</span>
                           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>handleTransportError</code>&nbsp;in interface&nbsp;<code>org.springframework.web.socket.WebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true#handleTransportError(org.springframework.web.socket.WebSocketSession,java.lang.Throwable)" title="class or interface in org.springframework.web.socket" class="externalLink">handleTransportError</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketHandler</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code>handleTransportError</code>&nbsp;in class&nbsp;<code>org.springframework.web.socket.handler.AbstractWebSocketHandler</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true#handleTransportError(org.springframework.web.socket.WebSocketSession,java.lang.Throwable)" title="class or interface in org.springframework.web.socket.handler" class="externalLink">handleTransportError</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/handler/AbstractWebSocketHandler.html?is-external=true" title="class or interface in org.springframework.web.socket.handler" class="externalLink">AbstractWebSocketHandler</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code></dd>
 </dl>
@@ -403,7 +362,7 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="initProxyCore(org.springframework.web.socket.WebSocketSession,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job)">initProxyCore</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">initProxyCore</span>&#8203;(<span class="arguments">org.springframework.web.socket.WebSocketSession&nbsp;session,
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">initProxyCore</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
 <a href="../allocator/SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&nbsp;job)</span></div>
 <div class="block">Connection established and job looked up. Make a proxy.</div>
 <dl>
@@ -419,7 +378,7 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="closed(org.springframework.web.socket.WebSocketSession,uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore,uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job)">closed</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">closed</span>&#8203;(<span class="arguments">org.springframework.web.socket.WebSocketSession&nbsp;session,
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">closed</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/WebSocketSession.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">WebSocketSession</a>&nbsp;session,
 <a href="ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">ProxyCore</a>&nbsp;proxy,
 <a href="../allocator/SpallocAPI.Job.html" title="interface in uk.ac.manchester.spinnaker.alloc.allocator">SpallocAPI.Job</a>&nbsp;job)</span></div>
 <div class="block">Connection closed.</div>
@@ -434,7 +393,7 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="delegateToProxy(org.springframework.web.socket.BinaryMessage,uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore)">delegateToProxy</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">delegateToProxy</span>&#8203;(<span class="arguments">org.springframework.web.socket.BinaryMessage&nbsp;message,
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">delegateToProxy</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/BinaryMessage.html?is-external=true" title="class or interface in org.springframework.web.socket" class="externalLink">BinaryMessage</a>&nbsp;message,
 <a href="ProxyCore.html" title="class in uk.ac.manchester.spinnaker.alloc.proxy">ProxyCore</a>&nbsp;proxy)</span>
                               throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Message was sent to us.</div>
@@ -482,13 +441,13 @@ org.springframework.web.socket.BinaryMessage&nbsp;message)</span>
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
-<li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
-<li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
+<li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
 </div>

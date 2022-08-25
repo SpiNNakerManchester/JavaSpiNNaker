@@ -193,11 +193,13 @@ loadScripts(document, 'script');</script>
 <ul class="blockList">
 <li class="blockList">
 <h5>code</h5>
-<pre>javax.ws.rs.core.Response.Status code</pre>
+<pre><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Response.Status.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Response.Status</a> code</pre>
+<div class="block">The status code.</div>
 </li>
 <li class="blockList">
 <h5>message</h5>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a> message</pre>
+<div class="block">The response message contents.</div>
 </li>
 </ul>
 </section>
@@ -273,6 +275,7 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <h5>responseCode</h5>
 <pre>int responseCode</pre>
+<div class="block">The HTTP response code that triggered the exception.</div>
 </li>
 </ul>
 </section>
@@ -428,6 +431,7 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <h5>e</h5>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a> e</pre>
+<div class="block">The wrapped exception.</div>
 </li>
 </ul>
 </section>
@@ -459,10 +463,12 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <h5>x</h5>
 <pre>int x</pre>
+<div class="block">The X coordinate.</div>
 </li>
 <li class="blockList">
 <h5>y</h5>
 <pre>int y</pre>
+<div class="block">The Y coordinate.</div>
 </li>
 </ul>
 </section>
@@ -487,14 +493,17 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <h5>p</h5>
 <pre>int p</pre>
+<div class="block">The P coordinate.</div>
 </li>
 <li class="blockList">
 <h5>x</h5>
 <pre>int x</pre>
+<div class="block">The X coordinate.</div>
 </li>
 <li class="blockList">
 <h5>y</h5>
 <pre>int y</pre>
+<div class="block">The Y coordinate.</div>
 </li>
 </ul>
 </section>
@@ -528,19 +537,27 @@ loadScripts(document, 'script');</script>
 <div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">readObject</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/ObjectInputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">ObjectInputStream</a>&nbsp;in)</span>
                  throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/ClassNotFoundException.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassNotFoundException</a></span></div>
+<div class="block">Set this object up by reading from the stream. This is standard except
+ for the special handling of the raw data.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/ClassNotFoundException.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassNotFoundException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If input fails.</dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/ClassNotFoundException.html?is-external=true" title="class or interface in java.lang" class="externalLink">ClassNotFoundException</a></code> - if the class of a serialized object could not be found.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="https://docs.oracle.com/javase/8/docs/api/java/io/ObjectInputStream.html?is-external=true#defaultReadObject()" title="class or interface in java.io" class="externalLink"><code>ObjectInputStream.defaultReadObject()</code></a></dd>
 </dl>
 </li>
 <li class="blockList">
 <h5>writeObject</h5>
 <div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">writeObject</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/ObjectOutputStream.html?is-external=true" title="class or interface in java.io" class="externalLink">ObjectOutputStream</a>&nbsp;out)</span>
                   throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Write this object to the stream. This is standard except for the special
+ handling of the raw data.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If output fails.</dd>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="https://docs.oracle.com/javase/8/docs/api/java/io/ObjectOutputStream.html?is-external=true#defaultWriteObject()" title="class or interface in java.io" class="externalLink"><code>ObjectOutputStream.defaultWriteObject()</code></a></dd>
 </dl>
 </li>
 </ul>
@@ -553,14 +570,17 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <h5>chips</h5>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&gt; chips</pre>
+<div class="block">The blacklisted chips.</div>
 </li>
 <li class="blockList">
 <h5>cores</h5>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&gt; cores</pre>
+<div class="block">The blacklisted cores.</div>
 </li>
 <li class="blockList">
 <h5>links</h5>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;<a href="uk/ac/manchester/spinnaker/machine/ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="uk/ac/manchester/spinnaker/machine/Direction.html" title="enum in uk.ac.manchester.spinnaker.machine">Direction</a>&gt;&gt; links</pre>
+<div class="block">The blacklisted links.</div>
 </li>
 </ul>
 </section>
@@ -755,14 +775,17 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <h5>failedCores</h5>
 <pre><a href="uk/ac/manchester/spinnaker/machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a> failedCores</pre>
+<div class="block">Which cores have failed.</div>
 </li>
 <li class="blockList">
 <h5>operation</h5>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a> operation</pre>
+<div class="block">What operation was being done.</div>
 </li>
 <li class="blockList">
 <h5>timeout</h5>
 <pre>float timeout</pre>
+<div class="block">What the timeout was.</div>
 </li>
 </ul>
 </section>
@@ -1033,20 +1056,15 @@ loadScripts(document, 'script');</script>
 <h4>Serialized Fields</h4>
 <ul class="blockList">
 <li class="blockList">
-<h5>advFactory</h5>
-<pre><a href="uk/ac/manchester/spinnaker/utils/DefaultMap.KeyAwareFactory.html" title="interface in uk.ac.manchester.spinnaker.utils">DefaultMap.KeyAwareFactory</a>&lt;? super <a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="type parameter in DefaultMap">K</a>,&#8203;? extends <a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt; advFactory</pre>
-</li>
-<li class="blockList">
-<h5>defFactory</h5>
-<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;? extends <a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="type parameter in DefaultMap">V</a>&gt; defFactory</pre>
-</li>
-<li class="blockList">
 <h5>defValue</h5>
 <pre><a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="type parameter in DefaultMap">V</a> defValue</pre>
+<div class="block">The default value.</div>
 </li>
 <li class="blockList">
 <h5>direct</h5>
 <pre>boolean direct</pre>
+<div class="block">Whether this is a direct default value map. Only direct maps are
+ serializable.</div>
 </li>
 </ul>
 </section>

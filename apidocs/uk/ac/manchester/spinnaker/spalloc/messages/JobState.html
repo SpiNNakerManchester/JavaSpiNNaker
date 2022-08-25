@@ -195,7 +195,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </tr>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStartTime(double)">setStartTime</a></span>&#8203;(double&nbsp;d)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setStartTime(double)">setStartTime</a></span>&#8203;(double&nbsp;startTime)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i11">
@@ -250,48 +250,80 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getState()">getState</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a></span>&nbsp;<span class="memberName">getState</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the state of the job</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setState(uk.ac.manchester.spinnaker.spalloc.messages.State)">setState</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setState</span>&#8203;(<span class="arguments"><a href="State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a>&nbsp;state)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>state</code> - the state of the job</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getPower()">getPower</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a></span>&nbsp;<span class="memberName">getPower</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>whether the job's boards are powered</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setPower(java.lang.Boolean)">setPower</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPower</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;power)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>power</code> - whether the job's boards are powered</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getKeepalive()">getKeepalive</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">getKeepalive</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the keepalive interval, in seconds</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setKeepalive(double)">setKeepalive</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setKeepalive</span>&#8203;(<span class="arguments">double&nbsp;keepAlive)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>keepAlive</code> - the keepalive interval, in seconds</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getReason()">getReason</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getReason</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the reason why the job was destroyed</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setReason(java.lang.String)">setReason</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setReason</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>reason</code> - the reason why the job was destroyed</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -300,17 +332,17 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">getStartTime</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the startTime</dd>
+<dd>the time the job started, in seconds from the epoch</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setStartTime(double)">setStartTime</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setStartTime</span>&#8203;(<span class="arguments">double&nbsp;d)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setStartTime</span>&#8203;(<span class="arguments">double&nbsp;startTime)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>d</code> - the startTime to set</dd>
+<dd><code>startTime</code> - the start time to set</dd>
 </dl>
 </section>
 </li>
@@ -320,7 +352,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getKeepalivehost</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the keepalivehost</dd>
+<dd>the host keeping the job alive</dd>
 </dl>
 </section>
 </li>
@@ -330,7 +362,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setKeepalivehost</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;keepalivehost)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>keepalivehost</code> - the keepalivehost to set</dd>
+<dd><code>keepalivehost</code> - the keepalive host to set</dd>
 </dl>
 </section>
 </li>

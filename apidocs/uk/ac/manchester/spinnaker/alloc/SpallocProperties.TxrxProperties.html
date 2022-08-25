@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -166,7 +166,7 @@ boolean&nbsp;dummy)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPeriod()">getPeriod</a></span>()</code></th>
 <td class="colLast">
 <div class="block">How long between when we send requests to the BMP control tasks.</div>
@@ -178,7 +178,7 @@ boolean&nbsp;dummy)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getProbeInterval()">getProbeInterval</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -192,41 +192,6 @@ boolean&nbsp;dummy)</code></th>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isFpgaReload()">isFpgaReload</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i7">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBuildAttempts(int)">setBuildAttempts</a></span>&#8203;(int&nbsp;value)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i8">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDummy(boolean)">setDummy</a></span>&#8203;(boolean&nbsp;dummy)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i9">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setFpgaAttempts(int)">setFpgaAttempts</a></span>&#8203;(int&nbsp;fpgaAttempts)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i10">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setFpgaReload(boolean)">setFpgaReload</a></span>&#8203;(boolean&nbsp;fpgaReload)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i11">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPeriod(java.time.Duration)">setPeriod</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;period)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i12">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPowerAttempts(int)">setPowerAttempts</a></span>&#8203;(int&nbsp;powerAttempts)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i13">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setProbeInterval(java.time.Duration)">setProbeInterval</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;probeInterval)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -254,20 +219,36 @@ boolean&nbsp;dummy)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.time.Duration,java.time.Duration,int,int,boolean,int,boolean)">TxrxProperties</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">TxrxProperties</span>&#8203;(<span class="arguments">@DefaultValue("10s")
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">TxrxProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("10s")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;period,
-@DefaultValue("15s")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("15s")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;probeInterval,
-@DefaultValue("2")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("2")
 int&nbsp;powerAttempts,
-@DefaultValue("3")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("3")
 int&nbsp;fpgaAttempts,
-@DefaultValue("false")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("false")
 boolean&nbsp;fpgaReload,
-@DefaultValue("5")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("5")
 int&nbsp;buildAttempts,
-@DefaultValue("false")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("false")
 boolean&nbsp;dummy)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>period</code> - How long between when we send requests to the BMP control
+            tasks.</dd>
+<dd><code>probeInterval</code> - The basic wait time used by the BMP control tasks.</dd>
+<dd><code>powerAttempts</code> - Number of attempts that will be made to switch on a board.</dd>
+<dd><code>fpgaAttempts</code> - Number of attempts that will be made to bring up an FPGA.</dd>
+<dd><code>fpgaReload</code> - Whether to reload the FPGA bitfiles when they don't come
+            up correctly.</dd>
+<dd><code>buildAttempts</code> - Number of attempts that will be made to bring up a
+            transceiver, provided the failures are due to timeouts and
+            not outright network errors. Note that a failure to bring
+            up a transceiver is lethal to the service.</dd>
+<dd><code>dummy</code> - Whether to use a dummy transceiver. Useful for testing
+            only.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -283,8 +264,8 @@ boolean&nbsp;dummy)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getPeriod()">getPeriod</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getPeriod</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getPeriod</span>()</div>
 <div class="block">How long between when we send requests to the BMP control tasks.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -295,15 +276,9 @@ boolean&nbsp;dummy)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setPeriod(java.time.Duration)">setPeriod</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPeriod</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;period)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getProbeInterval()">getProbeInterval</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getProbeInterval</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getProbeInterval</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The basic wait time used by the BMP control tasks.</dd>
@@ -312,14 +287,8 @@ boolean&nbsp;dummy)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setProbeInterval(java.time.Duration)">setProbeInterval</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setProbeInterval</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;probeInterval)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getPowerAttempts()">getPowerAttempts</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getPowerAttempts</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -329,25 +298,13 @@ boolean&nbsp;dummy)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setPowerAttempts(int)">setPowerAttempts</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPowerAttempts</span>&#8203;(<span class="arguments">int&nbsp;powerAttempts)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getFpgaAttempts()">getFpgaAttempts</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getFpgaAttempts</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Number of attempts that will be made to bring up an FPGA.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setFpgaAttempts(int)">setFpgaAttempts</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setFpgaAttempts</span>&#8203;(<span class="arguments">int&nbsp;fpgaAttempts)</span></div>
 </section>
 </li>
 <li class="blockList">
@@ -363,14 +320,8 @@ boolean&nbsp;dummy)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setFpgaReload(boolean)">setFpgaReload</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setFpgaReload</span>&#8203;(<span class="arguments">boolean&nbsp;fpgaReload)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getBuildAttempts()">getBuildAttempts</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getBuildAttempts</span>()</div>
 <div class="block">Number of attempts that will be made to bring up a transceiver,
  provided the failures are due to timeouts and not outright network
@@ -385,12 +336,6 @@ boolean&nbsp;dummy)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setBuildAttempts(int)">setBuildAttempts</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBuildAttempts</span>&#8203;(<span class="arguments">int&nbsp;value)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="isDummy()">isDummy</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isDummy</span>()</div>
 <div class="block">Useful for testing only.</div>
@@ -398,12 +343,6 @@ boolean&nbsp;dummy)</span></div>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Whether to use a dummy transceiver.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setDummy(boolean)">setDummy</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDummy</span>&#8203;(<span class="arguments">boolean&nbsp;dummy)</span></div>
 </section>
 </li>
 </ul>

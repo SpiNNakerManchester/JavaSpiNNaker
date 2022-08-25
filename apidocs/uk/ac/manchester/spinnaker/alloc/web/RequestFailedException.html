@@ -103,7 +103,7 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="typeNameLabel">RequestFailedException</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></pre>
 <div class="block">Thrown to indicate various sorts of problems with the service. Very much like
- a <code>WebApplicationException</code> except with a different handling strategy.</div>
+ a <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/WebApplicationException.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink"><code>WebApplicationException</code></a> except with a different handling strategy.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
@@ -187,37 +187,11 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeExce
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String)">RequestFailedException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Throwable)">RequestFailedException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.Throwable)">RequestFailedException</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(javax.ws.rs.core.Response.Status,java.lang.String)">RequestFailedException</a></span>&#8203;(javax.ws.rs.core.Response.Status&nbsp;code,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(javax.ws.rs.core.Response.Status,java.lang.String)">RequestFailedException</a></span>&#8203;(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Response.Status.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Response.Status</a>&nbsp;code,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(javax.ws.rs.core.Response.Status,java.lang.String,java.lang.Throwable)">RequestFailedException</a></span>&#8203;(javax.ws.rs.core.Response.Status&nbsp;code,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(javax.ws.rs.core.Response.Status,java.lang.Throwable)">RequestFailedException</a></span>&#8203;(javax.ws.rs.core.Response.Status&nbsp;code,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(javax.ws.rs.WebApplicationException)">RequestFailedException</a></span>&#8203;(javax.ws.rs.WebApplicationException&nbsp;exn)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -255,49 +229,15 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeExce
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(javax.ws.rs.core.Response.Status,java.lang.String,java.lang.Throwable)">RequestFailedException</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments">javax.ws.rs.core.Response.Status&nbsp;code,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(javax.ws.rs.WebApplicationException)">RequestFailedException</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments">javax.ws.rs.WebApplicationException&nbsp;exn)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String)">RequestFailedException</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="&lt;init&gt;(javax.ws.rs.core.Response.Status,java.lang.String)">RequestFailedException</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments">javax.ws.rs.core.Response.Status&nbsp;code,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Response.Status.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Response.Status</a>&nbsp;code,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.String,java.lang.Throwable)">RequestFailedException</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;message,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(java.lang.Throwable)">RequestFailedException</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="&lt;init&gt;(javax.ws.rs.core.Response.Status,java.lang.Throwable)">RequestFailedException</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RequestFailedException</span>&#8203;(<span class="arguments">javax.ws.rs.core.Response.Status&nbsp;code,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Throwable</a>&nbsp;cause)</span></div>
+<div class="block">Create an instance.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>code</code> - The status code.</dd>
+<dd><code>message</code> - The response message contents.</dd>
+</dl>
 </section>
 </li>
 </ul>

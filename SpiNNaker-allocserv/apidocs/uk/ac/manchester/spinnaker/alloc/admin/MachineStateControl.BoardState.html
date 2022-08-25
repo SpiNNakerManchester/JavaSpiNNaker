@@ -374,7 +374,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">getState</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The state of the board.</dd>
+<dd>The allocatable state of the board. If a board is not
+         allocatable, it will not be handed out in new allocations to
+         jobs, but can continue to be used by whatever job it is
+         currently allocated to (if any).</dd>
 </dl>
 </section>
 </li>
@@ -382,6 +385,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="setState(boolean)">setState</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setState</span>&#8203;(<span class="arguments">boolean&nbsp;newValue)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>newValue</code> - The allocatable state to set the board to.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

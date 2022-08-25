@@ -96,11 +96,11 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a></code>, <code><a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></code></dd>
 </dl>
 <hr>
-<pre>public class <span class="typeNameLabel">BMPLocation</span>
+<pre>public final class <span class="typeNameLabel">BMPLocation</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
 implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a></pre>
-<div class="block">Like a core location, but for BMPs. Note that board numbers are
- <em>not</em> restricted in range like core numbers.</div>
+<div class="block">Like a <a href="../../machine/CoreLocation.html" title="class in uk.ac.manchester.spinnaker.machine">core location</a>, but for BMPs. Note that board
+ numbers are <em>not</em> restricted in range like core numbers.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>
@@ -126,13 +126,17 @@ implements <a href="../../machine/HasCoreLocation.html" title="interface in uk.a
 <tbody>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int)">BMPLocation</a></span>&#8203;(int&nbsp;board)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance with cabinet and frame both zero.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,int)">BMPLocation</a></span>&#8203;(int&nbsp;cabinet,
 int&nbsp;frame,
 int&nbsp;board)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -218,6 +222,11 @@ int&nbsp;board)</code></th>
 <section class="detail">
 <h3><a id="&lt;init&gt;(int)">BMPLocation</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BMPLocation</span>&#8203;(<span class="arguments">int&nbsp;board)</span></div>
+<div class="block">Create an instance with cabinet and frame both zero.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>board</code> - The board number.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -226,6 +235,13 @@ int&nbsp;board)</code></th>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BMPLocation</span>&#8203;(<span class="arguments">int&nbsp;cabinet,
 int&nbsp;frame,
 int&nbsp;board)</span></div>
+<div class="block">Create an instance.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>cabinet</code> - The cabinet number.</dd>
+<dd><code>frame</code> - The frame number.</dd>
+<dd><code>board</code> - The board number.</dd>
+</dl>
 </section>
 </li>
 </ul>

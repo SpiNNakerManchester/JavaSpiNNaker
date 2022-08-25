@@ -117,7 +117,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors,java.nio.ByteBuffer)">FirmwareDescriptor</a></span>&#8203;(<a href="FirmwareDescriptors.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptors</a>&nbsp;type,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create a description of some firmware on a SpiNNaker system.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -179,6 +181,12 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.messages.model.FirmwareDescriptors,java.nio.ByteBuffer)">FirmwareDescriptor</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">FirmwareDescriptor</span>&#8203;(<span class="arguments"><a href="FirmwareDescriptors.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FirmwareDescriptors</a>&nbsp;type,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span></div>
+<div class="block">Create a description of some firmware on a SpiNNaker system.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>type</code> - What type of firmware is this.</dd>
+<dd><code>buffer</code> - What was the descriptor buffer read from the system?</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -195,12 +203,20 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="getVersion()">getVersion</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="Version.html" title="class in uk.ac.manchester.spinnaker.messages.model">Version</a></span>&nbsp;<span class="memberName">getVersion</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The version of the firmware.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getTimestamp()">getTimestamp</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html?is-external=true" title="class or interface in java.time" class="externalLink">Instant</a></span>&nbsp;<span class="memberName">getTimestamp</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The timestamp in the firmware.</dd>
+</dl>
 </section>
 </li>
 </ul>

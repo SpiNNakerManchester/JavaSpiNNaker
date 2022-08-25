@@ -164,7 +164,7 @@ protected static interface <span class="typeNameLabel">BackgroundSupport.Backgro
          generic 404 with no special message. Custom messages should
          be supported by throwing a suitable
          <a href="RequestFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.web"><code>RequestFailedException</code></a>. If the result is not a
-         <code>Response</code> and not a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Throwable</code></a>, it will be
+         <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Response.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink"><code>Response</code></a> and not a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Throwable</code></a>, it will be
          returned as the entity that populates a <code>200 OK</code> (and
          so must be convertible to JSON).</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>

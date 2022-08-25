@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -149,7 +149,7 @@ int&nbsp;blacklistReadBatchSize)</code></th>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBlacklistPoll()">getBlacklistPoll</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -159,33 +159,13 @@ int&nbsp;blacklistReadBatchSize)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code>@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBlacklistTimeout()">getBlacklistTimeout</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>@javax.validation.constraints.Positive int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSerialReadBatchSize()">getSerialReadBatchSize</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBlacklistPoll(java.time.Duration)">setBlacklistPoll</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;blacklistPoll)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBlacklistReadBatchSize(int)">setBlacklistReadBatchSize</a></span>&#8203;(int&nbsp;blacklistReadBatchSize)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i6">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setBlacklistTimeout(java.time.Duration)">setBlacklistTimeout</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;blacklistTimeout)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i7">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setSerialReadBatchSize(int)">setSerialReadBatchSize</a></span>&#8203;(int&nbsp;serialReadBatchSize)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -213,14 +193,23 @@ int&nbsp;blacklistReadBatchSize)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.time.Duration,java.time.Duration,int,int)">StateControlProperties</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">StateControlProperties</span>&#8203;(<span class="arguments">@DefaultValue("15s")
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">StateControlProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("15s")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;blacklistPoll,
-@DefaultValue("60s")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("60s")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;blacklistTimeout,
-@DefaultValue("24")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("24")
 int&nbsp;serialReadBatchSize,
-@DefaultValue("6")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("6")
 int&nbsp;blacklistReadBatchSize)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>blacklistPoll</code> - How long to wait between polls of the BMP controller.</dd>
+<dd><code>blacklistTimeout</code> - How long to wait for a blacklist operation to complete.</dd>
+<dd><code>serialReadBatchSize</code> - How many board serial numbers to read from a full machine
+            at once when synchronizing the overall state?</dd>
+<dd><code>blacklistReadBatchSize</code> - How many blacklists to read from a full machine at once
+            when synchronizing the overall state?</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -236,8 +225,8 @@ int&nbsp;blacklistReadBatchSize)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBlacklistPoll()">getBlacklistPoll</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getBlacklistPoll</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getBlacklistPoll</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>How long to wait between polls of the BMP controller.</dd>
@@ -246,15 +235,9 @@ int&nbsp;blacklistReadBatchSize)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setBlacklistPoll(java.time.Duration)">setBlacklistPoll</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBlacklistPoll</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;blacklistPoll)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getBlacklistTimeout()">getBlacklistTimeout</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getBlacklistTimeout</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">getBlacklistTimeout</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>How long to wait for a blacklist operation to complete.</dd>
@@ -263,14 +246,8 @@ int&nbsp;blacklistReadBatchSize)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setBlacklistTimeout(java.time.Duration)">setBlacklistTimeout</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBlacklistTimeout</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;blacklistTimeout)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getSerialReadBatchSize()">getSerialReadBatchSize</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getSerialReadBatchSize</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -281,26 +258,14 @@ int&nbsp;blacklistReadBatchSize)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setSerialReadBatchSize(int)">setSerialReadBatchSize</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setSerialReadBatchSize</span>&#8203;(<span class="arguments">int&nbsp;serialReadBatchSize)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getBlacklistReadBatchSize()">getBlacklistReadBatchSize</a></h3>
-<div class="memberSignature"><span class="annotations">@Positive
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.Positive int</span>&nbsp;<span class="memberName">getBlacklistReadBatchSize</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>How many blacklists to read from a full machine at once when
          synchronizing the overall state?</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setBlacklistReadBatchSize(int)">setBlacklistReadBatchSize</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBlacklistReadBatchSize</span>&#8203;(<span class="arguments">int&nbsp;blacklistReadBatchSize)</span></div>
 </section>
 </li>
 </ul>

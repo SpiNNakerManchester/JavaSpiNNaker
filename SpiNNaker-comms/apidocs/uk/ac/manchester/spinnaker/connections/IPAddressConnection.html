@@ -136,16 +136,24 @@ extends <a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.
 <tbody>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">IPAddressConnection</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create a connection listening on the default SpiNNaker pre-boot broadcast
+ port.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress)">IPAddressConnection</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create a connection listening on the default SpiNNaker pre-boot broadcast
+ port.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,int)">IPAddressConnection</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 int&nbsp;localPort)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create a connection.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -221,9 +229,11 @@ int&nbsp;localPort)</code></th>
 <h3><a id="&lt;init&gt;()">IPAddressConnection</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">IPAddressConnection</span>()
                     throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create a connection listening on the default SpiNNaker pre-boot broadcast
+ port.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If setting up the network fails.</dd>
 </dl>
 </section>
 </li>
@@ -232,9 +242,13 @@ int&nbsp;localPort)</code></th>
 <h3><a id="&lt;init&gt;(java.net.InetAddress)">IPAddressConnection</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">IPAddressConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create a connection listening on the default SpiNNaker pre-boot broadcast
+ port.</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>localHost</code> - Local hostname to bind to.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If setting up the network fails.</dd>
 </dl>
 </section>
 </li>
@@ -244,9 +258,13 @@ int&nbsp;localPort)</code></th>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">IPAddressConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 int&nbsp;localPort)</span>
                     throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create a connection.</div>
 <dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>localHost</code> - Local hostname to bind to.</dd>
+<dd><code>localPort</code> - Local port to bind to.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If setting up the network fails.</dd>
 </dl>
 </section>
 </li>

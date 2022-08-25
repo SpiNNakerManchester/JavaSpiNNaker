@@ -108,7 +108,9 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="typeNameLabel">DefaultMap&lt;K,&#8203;V&gt;</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html?is-external=true" title="class or interface in java.util" class="externalLink">HashMap</a>&lt;K,&#8203;V&gt;</pre>
 <div class="block">A map that will extend itself with new values (on get) when the key is
- otherwise absent from the map.</div>
+ otherwise absent from the map. Note that this map is <em>only</em> safely
+ serializable if the default value is literal and serializable, in addition to
+ the usual constraints of maps.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
 <dd>Donal Fellows</dd>

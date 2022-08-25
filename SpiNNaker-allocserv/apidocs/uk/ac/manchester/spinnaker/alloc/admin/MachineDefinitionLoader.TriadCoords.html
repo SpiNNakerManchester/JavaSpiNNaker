@@ -174,11 +174,15 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Comparab
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,int)">TriadCoords</a></span>&#8203;(int&nbsp;x,
 int&nbsp;y,
 int&nbsp;z)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String)">TriadCoords</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;serialForm)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance from its serial form.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -248,7 +252,7 @@ int&nbsp;z)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="x">x</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero(message="x coordinate must not be negative")
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="x coordinate must not be negative")
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero(message="x coordinate must not be negative") int</span>&nbsp;<span class="memberName">x</span></div>
 <div class="block">X coordinate.</div>
 </section>
@@ -256,7 +260,7 @@ int&nbsp;z)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="y">y</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero(message="y coordinate must not be negative")
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="y coordinate must not be negative")
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero(message="y coordinate must not be negative") int</span>&nbsp;<span class="memberName">y</span></div>
 <div class="block">Y coordinate.</div>
 </section>
@@ -264,10 +268,10 @@ int&nbsp;z)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="z">z</a></h3>
-<div class="memberSignature"><span class="annotations">@Min(value=0L,
-     message="z coordinate must not be negative")
-@Max(value=2L,
-     message="z coordinate must not be more than 2")
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Min.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Min</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Min.html?is-external=true#value()" title="class or interface in javax.validation.constraints" class="externalLink">value</a>=0L,
+     <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Min.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="z coordinate must not be negative")
+<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Max.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Max</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Max.html?is-external=true#value()" title="class or interface in javax.validation.constraints" class="externalLink">value</a>=2L,
+     <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Max.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="z coordinate must not be more than 2")
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.Min(value=0L, message="z coordinate must not be negative"),@javax.validation.constraints.Max(value=2L, message="z coordinate must not be more than 2") int</span>&nbsp;<span class="memberName">z</span></div>
 <div class="block">Z coordinate.</div>
 </section>
@@ -288,12 +292,31 @@ int&nbsp;z)</code></th>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">TriadCoords</span>&#8203;(<span class="arguments">int&nbsp;x,
 int&nbsp;y,
 int&nbsp;z)</span></div>
+<div class="block">Create an instance.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>x</code> - X coordinate.</dd>
+<dd><code>y</code> - Y coordinate.</dd>
+<dd><code>z</code> - Z coordinate.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String)">TriadCoords</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">TriadCoords</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;serialForm)</span></div>
+<div class="block">Create an instance from its serial form. The serial form (where the
+ numbers may vary) is:
+
+ <pre>
+ [x:34,y:56,z:2]
+ </pre></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>serialForm</code> - The form to deserialise.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If the string is not in the right form.</dd>
+</dl>
 </section>
 </li>
 </ul>

@@ -166,11 +166,15 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Comparab
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int)">BMPCoords</a></span>&#8203;(int&nbsp;c,
 int&nbsp;f)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String)">BMPCoords</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;serialForm)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance from its serial form.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -240,7 +244,7 @@ int&nbsp;f)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="c">c</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero(message="cabinet number must not be negative")
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="cabinet number must not be negative")
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero(message="cabinet number must not be negative") int</span>&nbsp;<span class="memberName">c</span></div>
 <div class="block">Cabinet number.</div>
 </section>
@@ -248,7 +252,7 @@ int&nbsp;f)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="f">f</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero(message="frame number must not be negative")
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="frame number must not be negative")
 </span><span class="modifiers">public final</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero(message="frame number must not be negative") int</span>&nbsp;<span class="memberName">f</span></div>
 <div class="block">Frame number.</div>
 </section>
@@ -268,12 +272,30 @@ int&nbsp;f)</code></th>
 <h3><a id="&lt;init&gt;(int,int)">BMPCoords</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BMPCoords</span>&#8203;(<span class="arguments">int&nbsp;c,
 int&nbsp;f)</span></div>
+<div class="block">Create an instance.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>c</code> - Cabinet number.</dd>
+<dd><code>f</code> - Frame number.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String)">BMPCoords</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">BMPCoords</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;serialForm)</span></div>
+<div class="block">Create an instance from its serial form. The serial form (where the
+ numbers may vary) is:
+
+ <pre>
+ [c:34,f:12]
+ </pre></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>serialForm</code> - The form to deserialise.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If the string is not in the right form.</dd>
+</dl>
 </section>
 </li>
 </ul>

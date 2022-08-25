@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -148,7 +148,7 @@ boolean&nbsp;logWriteCounts,
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>@NotNull <a href="model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a>(<a href="model/IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a>(<a href="model/IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocalHost()">getLocalHost</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -160,21 +160,6 @@ boolean&nbsp;logWriteCounts,
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isLogWriteCounts()">isLogWriteCounts</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i3">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setEnable(boolean)">setEnable</a></span>&#8203;(boolean&nbsp;enable)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLocalHost(java.lang.String)">setLocalHost</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;localHost)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLogWriteCounts(boolean)">setLogWriteCounts</a></span>&#8203;(boolean&nbsp;logWriteCounts)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -202,12 +187,21 @@ boolean&nbsp;logWriteCounts,
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(boolean,boolean,java.lang.String)">ProxyProperties</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ProxyProperties</span>&#8203;(<span class="arguments">@DefaultValue("true")
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ProxyProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("true")
 boolean&nbsp;enable,
-@DefaultValue("false")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("false")
 boolean&nbsp;logWriteCounts,
-@DefaultValue("")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;localHost)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>enable</code> - Whether to enable the UDP proxy subsystem.</dd>
+<dd><code>logWriteCounts</code> - Whether to log the number of packets read and written on
+            each channel.</dd>
+<dd><code>localHost</code> - The address for local proxied sockets to listen on if
+            they're not being bound to a specific board. If empty,
+            that type of socket will be disabled.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -232,12 +226,6 @@ boolean&nbsp;logWriteCounts,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setEnable(boolean)">setEnable</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setEnable</span>&#8203;(<span class="arguments">boolean&nbsp;enable)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="isLogWriteCounts()">isLogWriteCounts</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isLogWriteCounts</span>()</div>
 <dl>
@@ -249,28 +237,16 @@ boolean&nbsp;logWriteCounts,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setLogWriteCounts(boolean)">setLogWriteCounts</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setLogWriteCounts</span>&#8203;(<span class="arguments">boolean&nbsp;logWriteCounts)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getLocalHost()">getLocalHost</a></h3>
-<div class="memberSignature"><span class="annotations">@NotNull
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>
 <a href="model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a>(<a href="model/IPAddress.html#emptyOK()">emptyOK</a>=true)
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull <a href="model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a>(<a href="model/IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getLocalHost</span>()</div>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="model/IPAddress.html" title="annotation in uk.ac.manchester.spinnaker.alloc.model">@IPAddress</a>(<a href="model/IPAddress.html#emptyOK()">emptyOK</a>=true) <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getLocalHost</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The address for local proxied sockets to listen on if
          they're not being bound to a specific board. If empty, that
          type of socket will be disabled.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setLocalHost(java.lang.String)">setLocalHost</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setLocalHost</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;localHost)</span></div>
 </section>
 </li>
 </ul>

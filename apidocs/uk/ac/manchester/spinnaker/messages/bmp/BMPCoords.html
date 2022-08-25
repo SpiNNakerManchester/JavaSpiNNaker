@@ -95,7 +95,11 @@ loadScripts(document, 'script');</script>
 <pre>public final class <span class="typeNameLabel">BMPCoords</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">A simple description of a BMP to talk to. Supports equality and being used as
- a hash key.</div>
+ a hash key.
+ <p>
+ Although every board technically has a BMP, they are managed at the level of
+ a frame (when a sufficient quantity of boards is used, typically but not
+ necessarily 24). Cabinets contain frames.</div>
 </section>
 <section class="summary">
 <ul class="blockList">
@@ -221,12 +225,22 @@ int&nbsp;frame)</span></div>
 <section class="detail">
 <h3><a id="getCabinet()">getCabinet</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getCabinet</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The ID of the cabinet that contains the frame that contains the
+         BMPs.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getFrame()">getFrame</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getFrame</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The ID of the frame that contains the master BMP. Frames are
+         contained within a cabinet.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

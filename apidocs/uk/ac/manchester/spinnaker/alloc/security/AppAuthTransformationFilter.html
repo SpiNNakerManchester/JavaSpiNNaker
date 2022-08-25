@@ -88,8 +88,8 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="contentContainer">
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
-<div class="inheritance">org.springframework.web.filter.GenericFilterBean
-<div class="inheritance">org.springframework.web.filter.OncePerRequestFilter
+<div class="inheritance"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">org.springframework.web.filter.GenericFilterBean</a>
+<div class="inheritance"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">org.springframework.web.filter.OncePerRequestFilter</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter</div>
 </div>
 </div>
@@ -97,12 +97,12 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code>javax.servlet.Filter</code>, <code>org.springframework.beans.factory.Aware</code>, <code>org.springframework.beans.factory.BeanNameAware</code>, <code>org.springframework.beans.factory.DisposableBean</code>, <code>org.springframework.beans.factory.InitializingBean</code>, <code>org.springframework.context.EnvironmentAware</code>, <code>org.springframework.core.env.EnvironmentCapable</code>, <code>org.springframework.web.context.ServletContextAware</code></dd>
+<dd><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/Filter.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">Filter</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/Aware.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">Aware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/BeanNameAware.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">BeanNameAware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/DisposableBean.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">DisposableBean</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/InitializingBean.html?is-external=true" title="class or interface in org.springframework.beans.factory" class="externalLink">InitializingBean</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/EnvironmentAware.html?is-external=true" title="class or interface in org.springframework.context" class="externalLink">EnvironmentAware</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/EnvironmentCapable.html?is-external=true" title="class or interface in org.springframework.core.env" class="externalLink">EnvironmentCapable</a></code>, <code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/context/ServletContextAware.html?is-external=true" title="class or interface in org.springframework.web.context" class="externalLink">ServletContextAware</a></code></dd>
 </dl>
 <hr>
-<pre>@Component
+<pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Component.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Component</a>
 public class <span class="typeNameLabel">AppAuthTransformationFilter</span>
-extends org.springframework.web.filter.OncePerRequestFilter</pre>
+extends <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">OncePerRequestFilter</a></pre>
 <div class="block">A filter to apply authentication transformation as supplied by the
  <a href="LocalAuthenticationProvider.html" title="interface in uk.ac.manchester.spinnaker.alloc.security"><code>LocalAuthenticationProvider</code></a>. Relies on the session ID being updated
  to ensure that stale login information is not retained.</div>
@@ -120,15 +120,15 @@ extends org.springframework.web.filter.OncePerRequestFilter</pre>
 </a>
 <h2>Field Summary</h2>
 <div class="inheritedList">
-<h3>Fields inherited from class&nbsp;org.springframework.web.filter.OncePerRequestFilter</h3>
+<h3>Fields inherited from class&nbsp;org.springframework.web.filter.<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">OncePerRequestFilter</a></h3>
 <a id="fields.inherited.from.class.org.springframework.web.filter.OncePerRequestFilter">
 <!--   -->
-</a><code>ALREADY_FILTERED_SUFFIX</code></div>
+</a><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#ALREADY_FILTERED_SUFFIX" title="class or interface in org.springframework.web.filter" class="externalLink">ALREADY_FILTERED_SUFFIX</a></code></div>
 <div class="inheritedList">
-<h3>Fields inherited from class&nbsp;org.springframework.web.filter.GenericFilterBean</h3>
+<h3>Fields inherited from class&nbsp;org.springframework.web.filter.<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">GenericFilterBean</a></h3>
 <a id="fields.inherited.from.class.org.springframework.web.filter.GenericFilterBean">
 <!--   -->
-</a><code>logger</code></div>
+</a><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#logger" title="class or interface in org.springframework.web.filter" class="externalLink">logger</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -176,7 +176,7 @@ extends org.springframework.web.filter.OncePerRequestFilter</pre>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clearToken(javax.servlet.http.HttpServletRequest)">clearToken</a></span>&#8203;(javax.servlet.http.HttpServletRequest&nbsp;request)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#clearToken(javax.servlet.http.HttpServletRequest)">clearToken</a></span>&#8203;(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</code></th>
 <td class="colLast">
 <div class="block">Ensure that any authentication token that was bound into the session is
  removed.</div>
@@ -184,14 +184,14 @@ extends org.springframework.web.filter.OncePerRequestFilter</pre>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>protected void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)">doFilterInternal</a></span>&#8203;(javax.servlet.http.HttpServletRequest&nbsp;request,
-javax.servlet.http.HttpServletResponse&nbsp;response,
-javax.servlet.FilterChain&nbsp;chain)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)">doFilterInternal</a></span>&#8203;(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request,
+<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletResponse.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletResponse</a>&nbsp;response,
+<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/FilterChain.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">FilterChain</a>&nbsp;chain)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>protected boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#shouldNotFilter(javax.servlet.http.HttpServletRequest)">shouldNotFilter</a></span>&#8203;(javax.servlet.http.HttpServletRequest&nbsp;request)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#shouldNotFilter(javax.servlet.http.HttpServletRequest)">shouldNotFilter</a></span>&#8203;(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
@@ -199,15 +199,15 @@ javax.servlet.FilterChain&nbsp;chain)</code></th>
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;org.springframework.web.filter.OncePerRequestFilter</h3>
+<h3>Methods inherited from class&nbsp;org.springframework.web.filter.<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">OncePerRequestFilter</a></h3>
 <a id="methods.inherited.from.class.org.springframework.web.filter.OncePerRequestFilter">
 <!--   -->
-</a><code>doFilter, doFilterNestedErrorDispatch, getAlreadyFilteredAttributeName, isAsyncDispatch, isAsyncStarted, shouldNotFilterAsyncDispatch, shouldNotFilterErrorDispatch</code></div>
+</a><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#doFilter(javax.servlet.ServletRequest,javax.servlet.ServletResponse,javax.servlet.FilterChain)" title="class or interface in org.springframework.web.filter" class="externalLink">doFilter</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#doFilterNestedErrorDispatch(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)" title="class or interface in org.springframework.web.filter" class="externalLink">doFilterNestedErrorDispatch</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#getAlreadyFilteredAttributeName()" title="class or interface in org.springframework.web.filter" class="externalLink">getAlreadyFilteredAttributeName</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#isAsyncDispatch(javax.servlet.http.HttpServletRequest)" title="class or interface in org.springframework.web.filter" class="externalLink">isAsyncDispatch</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#isAsyncStarted(javax.servlet.http.HttpServletRequest)" title="class or interface in org.springframework.web.filter" class="externalLink">isAsyncStarted</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#shouldNotFilterAsyncDispatch()" title="class or interface in org.springframework.web.filter" class="externalLink">shouldNotFilterAsyncDispatch</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#shouldNotFilterErrorDispatch()" title="class or interface in org.springframework.web.filter" class="externalLink">shouldNotFilterErrorDispatch</a></code></div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;org.springframework.web.filter.GenericFilterBean</h3>
+<h3>Methods inherited from class&nbsp;org.springframework.web.filter.<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">GenericFilterBean</a></h3>
 <a id="methods.inherited.from.class.org.springframework.web.filter.GenericFilterBean">
 <!--   -->
-</a><code>addRequiredProperty, afterPropertiesSet, createEnvironment, destroy, getEnvironment, getFilterConfig, getFilterName, getServletContext, init, initBeanWrapper, initFilterBean, setBeanName, setEnvironment, setServletContext</code></div>
+</a><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#addRequiredProperty(java.lang.String)" title="class or interface in org.springframework.web.filter" class="externalLink">addRequiredProperty</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#afterPropertiesSet()" title="class or interface in org.springframework.web.filter" class="externalLink">afterPropertiesSet</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#createEnvironment()" title="class or interface in org.springframework.web.filter" class="externalLink">createEnvironment</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#destroy()" title="class or interface in org.springframework.web.filter" class="externalLink">destroy</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#getEnvironment()" title="class or interface in org.springframework.web.filter" class="externalLink">getEnvironment</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#getFilterConfig()" title="class or interface in org.springframework.web.filter" class="externalLink">getFilterConfig</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#getFilterName()" title="class or interface in org.springframework.web.filter" class="externalLink">getFilterName</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#getServletContext()" title="class or interface in org.springframework.web.filter" class="externalLink">getServletContext</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#init(javax.servlet.FilterConfig)" title="class or interface in org.springframework.web.filter" class="externalLink">init</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#initBeanWrapper(org.springframework.beans.BeanWrapper)" title="class or interface in org.springframework.web.filter" class="externalLink">initBeanWrapper</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#initFilterBean()" title="class or interface in org.springframework.web.filter" class="externalLink">initFilterBean</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#setBeanName(java.lang.String)" title="class or interface in org.springframework.web.filter" class="externalLink">setBeanName</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#setEnvironment(org.springframework.core.env.Environment)" title="class or interface in org.springframework.web.filter" class="externalLink">setEnvironment</a>, <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/GenericFilterBean.html?is-external=true#setServletContext(javax.servlet.ServletContext)" title="class or interface in org.springframework.web.filter" class="externalLink">setServletContext</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -245,37 +245,37 @@ javax.servlet.FilterChain&nbsp;chain)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="shouldNotFilter(javax.servlet.http.HttpServletRequest)">shouldNotFilter</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">shouldNotFilter</span>&#8203;(<span class="arguments">javax.servlet.http.HttpServletRequest&nbsp;request)</span>
-                           throws <span class="exceptions">javax.servlet.ServletException</span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">shouldNotFilter</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</span>
+                           throws <span class="exceptions"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code>shouldNotFilter</code>&nbsp;in class&nbsp;<code>org.springframework.web.filter.OncePerRequestFilter</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#shouldNotFilter(javax.servlet.http.HttpServletRequest)" title="class or interface in org.springframework.web.filter" class="externalLink">shouldNotFilter</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">OncePerRequestFilter</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>javax.servlet.ServletException</code></dd>
+<dd><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)">doFilterInternal</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">doFilterInternal</span>&#8203;(<span class="arguments">javax.servlet.http.HttpServletRequest&nbsp;request,
-javax.servlet.http.HttpServletResponse&nbsp;response,
-javax.servlet.FilterChain&nbsp;chain)</span>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">doFilterInternal</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request,
+<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletResponse.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletResponse</a>&nbsp;response,
+<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/FilterChain.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">FilterChain</a>&nbsp;chain)</span>
                          throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
-javax.servlet.ServletException</span></div>
+<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code>doFilterInternal</code>&nbsp;in class&nbsp;<code>org.springframework.web.filter.OncePerRequestFilter</code></dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true#doFilterInternal(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse,javax.servlet.FilterChain)" title="class or interface in org.springframework.web.filter" class="externalLink">doFilterInternal</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/filter/OncePerRequestFilter.html?is-external=true" title="class or interface in org.springframework.web.filter" class="externalLink">OncePerRequestFilter</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
-<dd><code>javax.servlet.ServletException</code></dd>
+<dd><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/ServletException.html?is-external=true" title="class or interface in javax.servlet" class="externalLink">ServletException</a></code></dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="clearToken(javax.servlet.http.HttpServletRequest)">clearToken</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">clearToken</span>&#8203;(<span class="arguments">javax.servlet.http.HttpServletRequest&nbsp;request)</span></div>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">clearToken</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;request)</span></div>
 <div class="block">Ensure that any authentication token that was bound into the session is
  removed.</div>
 <dl>

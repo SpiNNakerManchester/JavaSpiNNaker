@@ -24,20 +24,26 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.spalloc.messages;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> * A response to a request that indicates a failure.</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ExceptionResponse" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/ExceptionResponse.html#ExceptionResponse">ExceptionResponse</a> <strong class="jxr_keyword">implements</strong> <a name="Response" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/Response.html#Response">Response</a> {
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  	<strong class="jxr_keyword">private</strong> String exception;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  	<strong class="jxr_keyword">public</strong> String getException() {
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  		<strong class="jxr_keyword">return</strong> exception;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  	}
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setException(String exception) {
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  		<strong class="jxr_keyword">this</strong>.exception = exception == <strong class="jxr_keyword">null</strong> ? <span class="jxr_string">""</span> : exception.toString();
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  	}
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  }
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.annotation.JsonAutoDetect;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * A response to a request that indicates a failure.</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  @JsonAutoDetect(setterVisibility = NON_PRIVATE)
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ExceptionResponse" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/ExceptionResponse.html#ExceptionResponse">ExceptionResponse</a> <strong class="jxr_keyword">implements</strong> <a name="Response" href="../../../../../../uk/ac/manchester/spinnaker/spalloc/messages/Response.html#Response">Response</a> {
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  	<strong class="jxr_keyword">private</strong> String exception;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  	<em class="jxr_javadoccomment">/** @return The exception message. Should not include a stack trace. */</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<strong class="jxr_keyword">public</strong> String getException() {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  		<strong class="jxr_keyword">return</strong> exception;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	}
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	<strong class="jxr_keyword">void</strong> setException(String exception) {
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  		<strong class="jxr_keyword">this</strong>.exception = exception == <strong class="jxr_keyword">null</strong> ? <span class="jxr_string">""</span> : exception.toString();
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  	}
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

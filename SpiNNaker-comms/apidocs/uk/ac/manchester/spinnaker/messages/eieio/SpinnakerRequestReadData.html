@@ -192,7 +192,9 @@ int&nbsp;spaceRead)</code></th>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getChannel(int)">getChannel</a></span>&#8203;(int&nbsp;ackID)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the channel ID.</div>
+</td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>int</code></td>
@@ -207,7 +209,9 @@ int&nbsp;spaceRead)</code></th>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegionID(int)">getRegionID</a></span>&#8203;(int&nbsp;ackID)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the region ID.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>int</code></td>
@@ -217,12 +221,16 @@ int&nbsp;spaceRead)</code></th>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpaceRead(int)">getSpaceRead</a></span>&#8203;(int&nbsp;ackID)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the number of bytes to read.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getStartAddress(int)">getStartAddress</a></span>&#8203;(int&nbsp;ackID)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the start addresses to read from.</div>
+</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code>int</code></td>
@@ -362,36 +370,72 @@ int&nbsp;spaceRead)</span></div>
 <section class="detail">
 <h3><a id="getNumRequests()">getNumRequests</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getNumRequests</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The number of requests in the message.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getSequenceNumber()">getSequenceNumber</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getSequenceNumber</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The sequence number of the message.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getChannel(int)">getChannel</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getChannel</span>&#8203;(<span class="arguments">int&nbsp;ackID)</span></div>
+<div class="block">Get the channel ID.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ackID</code> - Which acknowledgement.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The channel ID.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getRegionID(int)">getRegionID</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getRegionID</span>&#8203;(<span class="arguments">int&nbsp;ackID)</span></div>
+<div class="block">Get the region ID.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ackID</code> - Which acknowledgement.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The region ID.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getStartAddress(int)">getStartAddress</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getStartAddress</span>&#8203;(<span class="arguments">int&nbsp;ackID)</span></div>
+<div class="block">Get the start addresses to read from.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ackID</code> - Which acknowledgement.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The start addresses to read from.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getSpaceRead(int)">getSpaceRead</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getSpaceRead</span>&#8203;(<span class="arguments">int&nbsp;ackID)</span></div>
+<div class="block">Get the number of bytes to read.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ackID</code> - Which acknowledgement.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The number of bytes to read.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

@@ -39,7 +39,6 @@ uk.ac.manchester.spinnaker.spalloc.messages
 uk.ac.manchester.spinnaker.storage
 uk.ac.manchester.spinnaker.storage.sqlite
 uk.ac.manchester.spinnaker.storage.threading
-uk.ac.manchester.spinnaker.tools
 uk.ac.manchester.spinnaker.transceiver
 uk.ac.manchester.spinnaker.utils
 uk.ac.manchester.spinnaker.utils.progress

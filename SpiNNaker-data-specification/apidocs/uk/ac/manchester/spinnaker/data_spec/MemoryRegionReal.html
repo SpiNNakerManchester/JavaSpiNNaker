@@ -208,24 +208,41 @@ extends <a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.d
 <section class="detail">
 <h3><a id="getAllocatedSize()">getAllocatedSize</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getAllocatedSize</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The size of the working buffer.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getRemainingSpace()">getRemainingSpace</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getRemainingSpace</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>How much space remains in the region's working buffer.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="isUnfilled()">isUnfilled</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isUnfilled</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Whether this is an unfilled region.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getRegionData()">getRegionData</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">getRegionData</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The region data. Note that this is a live buffer; its current
+         position may be anywhere.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -244,12 +261,20 @@ extends <a href="MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.d
 <section class="detail">
 <h3><a id="getWritePointer()">getWritePointer</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getWritePointer</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the current write pointer</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMaxWritePointer()">getMaxWritePointer</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getMaxWritePointer</span>()</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the maximum write pointer</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

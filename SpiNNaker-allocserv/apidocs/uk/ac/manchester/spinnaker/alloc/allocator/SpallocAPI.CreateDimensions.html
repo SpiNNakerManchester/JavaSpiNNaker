@@ -170,7 +170,9 @@ extends <a href="SpallocAPI.CreateDescriptor.html" title="class in uk.ac.manches
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(int,int,java.lang.Integer)">CreateDimensions</a></span>&#8203;(int&nbsp;width,
 int&nbsp;height,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;maxDeadBoards)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Request a rectangle of boards.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -259,6 +261,15 @@ int&nbsp;height,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">CreateDimensions</span>&#8203;(<span class="arguments">int&nbsp;width,
 int&nbsp;height,
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;maxDeadBoards)</span></div>
+<div class="block">Request a rectangle of boards. The service <em>may</em>
+ over-allocate.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>width</code> - The width of rectangle to request, in boards.</dd>
+<dd><code>height</code> - The height of rectangle to request, in boards.</dd>
+<dd><code>maxDeadBoards</code> - The number of dead boards that can be tolerated in that
+            rectangle.</dd>
+</dl>
 </section>
 </li>
 </ul>

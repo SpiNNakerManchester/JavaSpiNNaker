@@ -84,10 +84,10 @@ loadScripts(document, 'script');</script>
 <pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Target</a>({<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html?is-external=true#TYPE" title="class or interface in java.lang.annotation" class="externalLink">TYPE</a>,<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html?is-external=true#METHOD" title="class or interface in java.lang.annotation" class="externalLink">METHOD</a>})
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Retention</a>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/RetentionPolicy.html?is-external=true#RUNTIME" title="class or interface in java.lang.annotation" class="externalLink">RUNTIME</a>)
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Documented.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Documented</a>
-@Scope("prototype")
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Scope.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">@Scope</a>("prototype")
 public @interface <span class="memberNameLabel">Prototype</span></pre>
-<div class="block">A specialization of <code>@Scope</code> for a component whose lifecycle is
- <code>prototype</code>, with a new
+<div class="block">A specialization of <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Scope.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink"><code>@Scope</code></a> for a component whose lifecycle is
+ <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/config/ConfigurableBeanFactory.html?is-external=true#SCOPE_PROTOTYPE" title="class or interface in org.springframework.beans.factory.config" class="externalLink"><code>prototype</code></a>, with a new
  instance being made every time a bean is required.</div>
 </section>
 <section class="summary">
@@ -110,10 +110,10 @@ public @interface <span class="memberNameLabel">Prototype</span></pre>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>org.springframework.context.annotation.ScopedProxyMode</code></td>
+<td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/ScopedProxyMode.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">ScopedProxyMode</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#proxyMode()">proxyMode</a></span></code></th>
 <td class="colLast">
-<div class="block">Alias for <code>Scope.proxyMode()</code>.</div>
+<div class="block">Alias for <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Scope.html?is-external=true#proxyMode()" title="class or interface in org.springframework.context.annotation" class="externalLink"><code>Scope.proxyMode()</code></a>.</div>
 </td>
 </tr>
 </tbody>
@@ -135,9 +135,9 @@ public @interface <span class="memberNameLabel">Prototype</span></pre>
 <li class="blockList">
 <section class="detail">
 <h3><a id="proxyMode()">proxyMode</a></h3>
-<div class="memberSignature"><span class="annotations">@AliasFor(annotation=org.springframework.context.annotation.Scope.class)
-</span><span class="returnType">org.springframework.context.annotation.ScopedProxyMode</span>&nbsp;<span class="memberName">proxyMode</span></div>
-<div class="block">Alias for <code>Scope.proxyMode()</code>.</div>
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/annotation/AliasFor.html?is-external=true" title="class or interface in org.springframework.core.annotation" class="externalLink">@AliasFor</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/annotation/AliasFor.html?is-external=true#annotation()" title="class or interface in org.springframework.core.annotation" class="externalLink">annotation</a>=<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Scope.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">org.springframework.context.annotation.Scope.class</a>)
+</span><span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/ScopedProxyMode.html?is-external=true" title="class or interface in org.springframework.context.annotation" class="externalLink">ScopedProxyMode</a></span>&nbsp;<span class="memberName">proxyMode</span></div>
+<div class="block">Alias for <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Scope.html?is-external=true#proxyMode()" title="class or interface in org.springframework.context.annotation" class="externalLink"><code>Scope.proxyMode()</code></a>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the proxy mode</dd>

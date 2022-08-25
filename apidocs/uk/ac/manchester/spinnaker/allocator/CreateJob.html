@@ -433,6 +433,12 @@ int&nbsp;height)</span></div>
 <section class="detail">
 <h3><a id="setKeepaliveInterval(java.time.Duration)">setKeepaliveInterval</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setKeepaliveInterval</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a>&nbsp;keepaliveInterval)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>keepaliveInterval</code> - How long after a keepalive message will the job be
+            auto-deleted? <em>Required.</em> Must be between 30 and 300
+            seconds.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -450,6 +456,10 @@ int&nbsp;height)</span></div>
 <section class="detail">
 <h3><a id="setNumBoards(java.lang.Integer)">setNumBoards</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setNumBoards</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;numBoards)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>numBoards</code> - The number of boards to request.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -466,6 +476,10 @@ int&nbsp;height)</span></div>
 <section class="detail">
 <h3><a id="setDimensions(uk.ac.manchester.spinnaker.allocator.CreateJob.Dimensions)">setDimensions</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDimensions</span>&#8203;(<span class="arguments"><a href="CreateJob.Dimensions.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.Dimensions</a>&nbsp;dimensions)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>dimensions</code> - The size of rectangle of boards to request.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -482,6 +496,10 @@ int&nbsp;height)</span></div>
 <section class="detail">
 <h3><a id="setBoard(uk.ac.manchester.spinnaker.allocator.CreateJob.SpecificBoard)">setBoard</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setBoard</span>&#8203;(<span class="arguments"><a href="CreateJob.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.allocator">CreateJob.SpecificBoard</a>&nbsp;board)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>board</code> - The address of the specific board to request.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -499,6 +517,11 @@ int&nbsp;height)</span></div>
 <section class="detail">
 <h3><a id="setMachineName(java.lang.String)">setMachineName</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setMachineName</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>machineName</code> - Which machine to allocate on. This and <code>tags</code> are
+            mutually exclusive, but at least one must be given.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -517,6 +540,12 @@ int&nbsp;height)</span></div>
 <section class="detail">
 <h3><a id="setTags(java.util.List)">setTags</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setTags</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;&nbsp;tags)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>tags</code> - The tags to select which machine to allocate on. This and
+            <code>machineName</code> are mutually exclusive, but at least one
+            must be given.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -535,6 +564,12 @@ int&nbsp;height)</span></div>
 <section class="detail">
 <h3><a id="setMaxDeadBoards(java.lang.Integer)">setMaxDeadBoards</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setMaxDeadBoards</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;maxDeadBoards)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>maxDeadBoards</code> - The maximum number of dead boards allowed in a rectangular
+            allocation. Note that the allocation engine might increase
+            this if it decides to overallocate.</dd>
+</dl>
 </section>
 </li>
 </ul>

@@ -92,8 +92,8 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <hr>
-<pre>@Service("control")
-@ManagedResource("Spalloc:type=ServiceMasterControl,name=control")
+<pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Service</a>("control")
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedResource.html?is-external=true" title="class or interface in org.springframework.jmx.export.annotation" class="externalLink">@ManagedResource</a>("Spalloc:type=ServiceMasterControl,name=control")
 public class <span class="typeNameLabel">ServiceMasterControl</span>
 extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">Control over general aspects of the service's manageability. Not exposed as
@@ -124,7 +124,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tbody>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.alloc.SpallocProperties)">ServiceMasterControl</a></span>&#8203;(<a href="SpallocProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties</a>&nbsp;properties)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Create an instance.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -222,8 +224,13 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.alloc.SpallocProperties)">ServiceMasterControl</a></h3>
-<div class="memberSignature"><span class="annotations">@Autowired
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Autowired.html?is-external=true" title="class or interface in org.springframework.beans.factory.annotation" class="externalLink">@Autowired</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="memberName">ServiceMasterControl</span>&#8203;(<span class="arguments"><a href="SpallocProperties.html" title="class in uk.ac.manchester.spinnaker.alloc">SpallocProperties</a>&nbsp;properties)</span></div>
+<div class="block">Create an instance.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>properties</code> - The service properties.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -239,7 +246,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="isPaused()">isPaused</a></h3>
-<div class="memberSignature"><span class="annotations">@ManagedAttribute(description="Whether periodic tasks should not run.")
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html?is-external=true" title="class or interface in org.springframework.jmx.export.annotation" class="externalLink">@ManagedAttribute</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html?is-external=true#description()" title="class or interface in org.springframework.jmx.export.annotation" class="externalLink">description</a>="Whether periodic tasks should not run.")
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isPaused</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -251,6 +258,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="setPaused(boolean)">setPaused</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPaused</span>&#8203;(<span class="arguments">boolean&nbsp;paused)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>paused</code> - Whether periodic tasks should not run.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">
@@ -278,7 +289,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="isUseDummyBMP()">isUseDummyBMP</a></h3>
-<div class="memberSignature"><span class="annotations">@ManagedAttribute(description="Whether the service actually talks to BMPs; when using a dummy, all actual hardware is ignored.")
+<div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html?is-external=true" title="class or interface in org.springframework.jmx.export.annotation" class="externalLink">@ManagedAttribute</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jmx/export/annotation/ManagedAttribute.html?is-external=true#description()" title="class or interface in org.springframework.jmx.export.annotation" class="externalLink">description</a>="Whether the service actually talks to BMPs; when using a dummy, all actual hardware is ignored.")
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">isUseDummyBMP</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -290,6 +301,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <section class="detail">
 <h3><a id="setUseDummyBMP(boolean)">setUseDummyBMP</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setUseDummyBMP</span>&#8203;(<span class="arguments">boolean&nbsp;dummyBMP)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>dummyBMP</code> - Whether to use dummy transceivers for talking to the BMPs.</dd>
+</dl>
 </section>
 </li>
 <li class="blockList">

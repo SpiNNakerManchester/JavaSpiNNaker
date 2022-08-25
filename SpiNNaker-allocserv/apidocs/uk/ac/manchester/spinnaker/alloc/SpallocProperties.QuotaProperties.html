@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -149,7 +149,7 @@ long&nbsp;defaultCollabQuota,
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>@NotBlank <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getConsolidationSchedule()">getConsolidationSchedule</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -173,26 +173,6 @@ long&nbsp;defaultCollabQuota,
 <td class="colLast">
 <div class="block">Default user quota in board-seconds.</div>
 </td>
-</tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setConsolidationSchedule(java.lang.String)">setConsolidationSchedule</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;consolidationSchedule)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDefaultCollabQuota(long)">setDefaultCollabQuota</a></span>&#8203;(long&nbsp;collabQuota)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="altColor" id="i6">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDefaultOrgQuota(long)">setDefaultOrgQuota</a></span>&#8203;(long&nbsp;orgQuota)</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i7">
-<td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setDefaultQuota(int)">setDefaultQuota</a></span>&#8203;(int&nbsp;defaultQuota)</code></th>
-<td class="colLast">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -219,14 +199,24 @@ long&nbsp;defaultCollabQuota,
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(int,long,long,java.lang.String)">QuotaProperties</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">QuotaProperties</span>&#8203;(<span class="arguments">@DefaultValue("100")
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">QuotaProperties</span>&#8203;(<span class="arguments"><a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("100")
 int&nbsp;defaultQuota,
-@DefaultValue("0")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("0")
 long&nbsp;defaultOrgQuota,
-@DefaultValue("3600000")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("3600000")
 long&nbsp;defaultCollabQuota,
-@DefaultValue("0 0 * * * *")
+<a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/properties/bind/DefaultValue.html?is-external=true" title="class or interface in org.springframework.boot.context.properties.bind" class="externalLink">@DefaultValue</a>("0 0 * * * *")
 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;consolidationSchedule)</span></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>defaultQuota</code> - Default user quota in board-seconds.</dd>
+<dd><code>defaultOrgQuota</code> - Default quota for organisations inflated from OpenID, in
+            board-seconds.</dd>
+<dd><code>defaultCollabQuota</code> - Default quota for collabratories inflated from OpenID, in
+            board-seconds.</dd>
+<dd><code>consolidationSchedule</code> - Cron expression that says when we consolidate job quotas
+            into the main quota table.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -242,19 +232,13 @@ long&nbsp;defaultCollabQuota,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getDefaultQuota()">getDefaultQuota</a></h3>
-<div class="memberSignature"><span class="annotations">@PositiveOrZero
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="returnType">@javax.validation.constraints.PositiveOrZero int</span>&nbsp;<span class="memberName">getDefaultQuota</span>()</div>
 <div class="block">Default user quota in board-seconds.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Default user quota in board-seconds.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setDefaultQuota(int)">setDefaultQuota</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDefaultQuota</span>&#8203;(<span class="arguments">int&nbsp;defaultQuota)</span></div>
 </section>
 </li>
 <li class="blockList">
@@ -271,12 +255,6 @@ long&nbsp;defaultCollabQuota,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setDefaultOrgQuota(long)">setDefaultOrgQuota</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDefaultOrgQuota</span>&#8203;(<span class="arguments">long&nbsp;orgQuota)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getDefaultCollabQuota()">getDefaultCollabQuota</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">long</span>&nbsp;<span class="memberName">getDefaultCollabQuota</span>()</div>
 <div class="block">Default quota for collabratories.</div>
@@ -289,26 +267,14 @@ long&nbsp;defaultCollabQuota,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="setDefaultCollabQuota(long)">setDefaultCollabQuota</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setDefaultCollabQuota</span>&#8203;(<span class="arguments">long&nbsp;collabQuota)</span></div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="getConsolidationSchedule()">getConsolidationSchedule</a></h3>
-<div class="memberSignature"><span class="annotations">@NotBlank
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotBlank <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getConsolidationSchedule</span>()</div>
+<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getConsolidationSchedule</span>()</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Cron expression that says when we consolidate job quotas into
          the main quota table.</dd>
 </dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="setConsolidationSchedule(java.lang.String)">setConsolidationSchedule</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setConsolidationSchedule</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;consolidationSchedule)</span></div>
 </section>
 </li>
 </ul>
