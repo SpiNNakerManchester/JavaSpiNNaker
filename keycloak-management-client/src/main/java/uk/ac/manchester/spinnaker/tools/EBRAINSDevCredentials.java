@@ -97,6 +97,7 @@ interface EBRAINSDevCredentials {
 	}
 }
 
+/** Utilities for {@link EBRAINSDevCredentials}. */
 abstract class EBRAINSDevCredentialsUtils {
 	private EBRAINSDevCredentialsUtils() {
 	}
