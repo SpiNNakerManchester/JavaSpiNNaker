@@ -39,10 +39,13 @@ public class CoresNotInStateException extends SpinnmanException {
 	private static final String TMPL =
 			"operation '" + OP_TMPL + "' timed out after %f seconds";
 
+	/** What the timeout was. */
 	private float timeout;
 
+	/** What operation was being done. */
 	private String operation;
 
+	/** Which cores have failed. */
 	private CoreSubsets failedCores;
 
 	CoresNotInStateException(Integer timeout, Set<CPUState> expectedStates,

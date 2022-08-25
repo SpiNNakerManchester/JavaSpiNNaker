@@ -36,12 +36,18 @@ public class Triad {
 	Triad() {
 	}
 
+	/**
+	 * @param x The X coordinate of the board.
+	 * @param y The Y coordinate of the board.
+	 * @param z The Z coordinate of the board.
+	 */
 	public Triad(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
+	/** @return The X coordinate of the board. */
 	public int getX() {
 		return x;
 	}
@@ -50,6 +56,7 @@ public class Triad {
 		this.x = x;
 	}
 
+	/** @return The Y coordinate of the board. */
 	public int getY() {
 		return y;
 	}
@@ -58,6 +65,7 @@ public class Triad {
 		this.y = y;
 	}
 
+	/** @return The Z coordinate of the board. */
 	public int getZ() {
 		return z;
 	}

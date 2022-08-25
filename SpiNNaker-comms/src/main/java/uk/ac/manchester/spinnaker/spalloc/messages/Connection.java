@@ -22,6 +22,9 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import static java.util.Objects.isNull;
+
 import java.util.Objects;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -57,7 +60,7 @@ public final class Connection {
 	 *            the host
 	 */
 	public Connection(HasChipLocation chip, String hostname) {
-		this.chip = chip.asChipLocation();
+		this.chip = isNull(chip) ? null : chip.asChipLocation();
 		this.hostname = hostname;
 	}
 

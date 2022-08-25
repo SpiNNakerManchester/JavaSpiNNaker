@@ -44,10 +44,16 @@ public class TerminationNotifyingThreadFactory implements ThreadFactory {
 
 	private Runnable terminationCallback;
 
-	public TerminationNotifyingThreadFactory() {
+	TerminationNotifyingThreadFactory() {
 		realThreadFactory = defaultThreadFactory();
 	}
 
+	/**
+	 * @param callback
+	 *            An action to carry out when a thread made by this factory
+	 *            actually terminates. If {@code null}, remove any current
+	 *            termination callback.
+	 */
 	public void setTerminationCallback(Runnable callback) {
 		terminationCallback = callback;
 	}

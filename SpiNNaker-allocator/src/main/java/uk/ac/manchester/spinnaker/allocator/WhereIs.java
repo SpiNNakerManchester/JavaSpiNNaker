@@ -54,6 +54,10 @@ public class WhereIs {
 
 	private Physical physicalCoords;
 
+	/**
+	 * @return The ID of the job allocated to the board with the chip.
+	 *         {@code null} if none.
+	 */
 	public Integer getJobId() {
 		return jobId;
 	}
@@ -62,6 +66,10 @@ public class WhereIs {
 		this.jobId = jobId;
 	}
 
+	/**
+	 * @return The location of more information about the job allocated to the
+	 *         board with the chip. {@code null} if none.
+	 */
 	public URI getJobRef() {
 		return jobRef;
 	}
@@ -70,6 +78,10 @@ public class WhereIs {
 		this.jobRef = jobRef;
 	}
 
+	/**
+	 * @return The global location of the chip at the root of the job
+	 *         allocation, if one exists.
+	 */
 	public ChipLocation getJobChip() {
 		return jobChip;
 	}
@@ -78,6 +90,7 @@ public class WhereIs {
 		this.jobChip = jobChip;
 	}
 
+	/** @return The global location of the chip. */
 	public ChipLocation getChip() {
 		return chip;
 	}
@@ -86,6 +99,7 @@ public class WhereIs {
 		this.chip = chip;
 	}
 
+	/** @return Information about the machine containing the chip. */
 	public Machine getMachineHandle() {
 		return machineHandle;
 	}
@@ -94,6 +108,7 @@ public class WhereIs {
 		this.machineHandle = machineHandle;
 	}
 
+	/** @return The name of the machine containing the chip. */
 	@JsonAlias("machine")
 	public String getMachineName() {
 		return machineName;
@@ -103,6 +118,10 @@ public class WhereIs {
 		this.machineName = machineName;
 	}
 
+	/**
+	 * @return The location of more information about the machine containing the
+	 *         chip.
+	 */
 	public URI getMachineRef() {
 		return machineRef;
 	}
@@ -111,6 +130,10 @@ public class WhereIs {
 		this.machineRef = machineRef;
 	}
 
+	/**
+	 * @return The global location of the chip at the root of the board
+	 *         containing the chip being described.
+	 */
 	public ChipLocation getBoardChip() {
 		return boardChip;
 	}
@@ -119,6 +142,7 @@ public class WhereIs {
 		this.boardChip = boardChip;
 	}
 
+	/** @return The logical coordinates for the board containing the chip. */
 	@JsonAlias("logical-board-coordinates")
 	public Triad getLogicalCoords() {
 		return logicalCoords;
@@ -128,6 +152,7 @@ public class WhereIs {
 		this.logicalCoords = logicalCoords;
 	}
 
+	/** @return The physical coordinates for the board containing the chip. */
 	@JsonAlias("physical-board-coordinates")
 	public Physical getPhysicalCoords() {
 		return physicalCoords;

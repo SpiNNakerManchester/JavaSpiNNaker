@@ -109,10 +109,13 @@ public final class Blacklist implements Serializable {
 	@UsedInJavadocOnly(Buffer.class)
 	private transient ByteBuffer rawData;
 
+	/** The blacklisted chips. */
 	private Set<ChipLocation> chips = new HashSet<>();
 
+	/** The blacklisted cores. */
 	private Map<ChipLocation, Set<Integer>> cores = new HashMap<>();
 
+	/** The blacklisted links. */
 	private Map<ChipLocation, Set<Direction>> links = new HashMap<>();
 
 	/**
@@ -520,6 +523,16 @@ public final class Blacklist implements Serializable {
 		return s.append(")").toString();
 	}
 
+	/**
+	 * Write this object to the stream. This is standard except for the special
+	 * handling of the raw data.
+	 *
+	 * @param out
+	 *            Where to write to.
+	 * @throws IOException
+	 *             If output fails.
+	 * @see ObjectOutputStream#defaultWriteObject()
+	 */
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
 		out.writeInt(rawData.remaining());
@@ -532,6 +545,18 @@ public final class Blacklist implements Serializable {
 		}
 	}
 
+	/**
+	 * Set this object up by reading from the stream. This is standard except
+	 * for the special handling of the raw data.
+	 *
+	 * @param in
+	 *            Where to read from.
+	 * @throws IOException
+	 *             If input fails.
+	 * @throws ClassNotFoundException
+	 *             if the class of a serialized object could not be found.
+	 * @see ObjectInputStream#defaultReadObject()
+	 */
 	private void readObject(ObjectInputStream in)
 			throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
