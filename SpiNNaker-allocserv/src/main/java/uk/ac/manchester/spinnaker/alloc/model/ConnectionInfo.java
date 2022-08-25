@@ -16,8 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -35,6 +37,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 	"chip", "hostname"
 })
 @JsonFormat(shape = ARRAY)
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 /*
  * Duplicated from uk.ac.manchester.spinnaker.spalloc.messages.Connection
  * because that name was too confusing with SQL about!
@@ -60,43 +63,26 @@ public final class ConnectionInfo {
 	 * @param hostname
 	 *            the host
 	 */
-	public ConnectionInfo(ChipLocation chip, String hostname) {
-		this.chip = chip;
-		this.hostname = hostname;
-	}
-
-	/**
-	 * Create.
-	 *
-	 * @param chip
-	 *            the chip
-	 * @param hostname
-	 *            the host
-	 */
 	public ConnectionInfo(HasChipLocation chip, String hostname) {
 		this.chip = chip.asChipLocation();
 		this.hostname = hostname;
 	}
 
+	/** @return The chip for the connection. */
 	public ChipLocation getChip() {
 		return chip;
 	}
 
-	/**
-	 * Set the chip for the connection.
-	 *
-	 * @param chip
-	 *            The chip to set.
-	 */
-	public void setChip(ChipLocation chip) {
+	void setChip(ChipLocation chip) {
 		this.chip = chip;
 	}
 
+	/** @return Where to connect to to talk to the chip. */
 	public String getHostname() {
 		return hostname;
 	}
 
-	public void setHostname(String hostname) {
+	void setHostname(String hostname) {
 		this.hostname = hostname;
 	}
 

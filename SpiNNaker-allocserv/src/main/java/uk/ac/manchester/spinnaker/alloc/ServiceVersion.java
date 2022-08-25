@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
-/** The version of the service. */
+/** The version information of the service. */
 @Service
 @Role(ROLE_SUPPORT)
 public class ServiceVersion {
@@ -34,6 +34,15 @@ public class ServiceVersion {
 
 	private String buildTimestamp;
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param version
+	 *            The version, injected from the POM by the build process.
+	 * @param buildTimestamp
+	 *            The build timestamp, injected from the POM by the build
+	 *            process.
+	 */
 	public ServiceVersion(@Value("${version}") String version,
 			@Value("${build-timestamp}") String buildTimestamp) {
 		fullVersion = version;
@@ -41,14 +50,25 @@ public class ServiceVersion {
 		this.buildTimestamp = buildTimestamp;
 	}
 
+	/**
+	 * @return The logical version number. Expected to at least
+	 *         <em>approximately</em> follow semver rules.
+	 */
 	public Version getVersion() {
 		return v;
 	}
 
+	/**
+	 * @return The full version identifier. Conforms only to Maven conventions.
+	 */
 	public String getFullVersion() {
 		return fullVersion;
 	}
 
+	/**
+	 * @return The build timestamp. The format of this is not intended for
+	 *         further machine parsing.
+	 */
 	public String getBuildTimestamp() {
 		return buildTimestamp;
 	}

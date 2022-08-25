@@ -16,17 +16,23 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
 /**
  * A response to a request that indicates a failure.
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class ExceptionResponse implements Response {
 	private String exception;
 
+	/** @return The exception message. Should not include a stack trace. */
 	public String getException() {
 		return exception;
 	}
 
-	public void setException(String exception) {
+	void setException(String exception) {
 		this.exception = exception == null ? "" : exception.toString();
 	}
 }

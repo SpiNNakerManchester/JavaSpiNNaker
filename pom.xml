@@ -387,7 +387,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<packages>uk.ac.manchester.spinnaker.alloc*</packages>
 							</group>
 						</groups>
-						<detectLinks>true</detectLinks>
 						<links>
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
@@ -395,6 +394,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
 						</links>
 						<notimestamp>true</notimestamp>
+						<skippedModules>keycloak-management-client</skippedModules>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -887,14 +887,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</build>
 		</profile>
 		<profile>
-			<!-- This module needs Java 11 to build at all. -->
 			<id>JDK11AndLater</id>
 			<activation>
 				<jdk>[1.11,)</jdk>
 			</activation>
-			<modules>
-				<module>keycloak-management-client</module>
-			</modules>
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -909,6 +905,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</plugins>
 				</pluginManagement>
 			</build>
+		</profile>
+		<profile>
+			<!-- This module needs Java 11 to build at all. -->
+			<id>KeycloakClient</id>
+			<modules>
+				<module>keycloak-management-client</module>
+			</modules>
 		</profile>
 		<profile>
 			<id>JDK8</id>

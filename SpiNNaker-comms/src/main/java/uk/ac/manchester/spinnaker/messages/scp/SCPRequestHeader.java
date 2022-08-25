@@ -38,10 +38,23 @@ public class SCPRequestHeader implements SerializableMessage {
 
 	private boolean sequenceSet;
 
+	/**
+	 * Create an instance that doesn't yet have a sequence number set.
+	 *
+	 * @param command
+	 *            The command to perform.
+	 * @see #issueSequenceNumber(Set)
+	 */
 	public SCPRequestHeader(CommandCode command) {
 		this.command = command;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * This must not be called until after a
+	 * {@linkplain #issueSequenceNumber(Set) sequence number is set}.
+	 */
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		buffer.putShort(command.getValue());
@@ -74,6 +87,7 @@ public class SCPRequestHeader implements SerializableMessage {
 		return sequence;
 	}
 
+	/** @return The message's sequence number. */
 	public short getSequence() {
 		return sequence;
 	}

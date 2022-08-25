@@ -38,10 +38,17 @@ public class EIEIOCommandMessage
 	/** The header of the message. */
 	private final Header header;
 
-	protected EIEIOCommandMessage(ByteBuffer buffer) {
+	/**
+	 * Constructor used when deserializing.
+	 *
+	 * @param buffer
+	 *            Where to deserialize the message from.
+	 */
+	EIEIOCommandMessage(ByteBuffer buffer) {
 		this.header = new Header(buffer);
 	}
 
+	/** @param command The command in the message. */
 	public EIEIOCommandMessage(EIEIOCommand command) {
 		this.header = new Header(command);
 	}

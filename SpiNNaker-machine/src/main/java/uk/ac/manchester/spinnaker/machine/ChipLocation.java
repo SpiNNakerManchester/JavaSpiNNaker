@@ -47,8 +47,10 @@ public final class ChipLocation
 		implements HasChipLocation, Comparable<ChipLocation>, Serializable {
 	private static final long serialVersionUID = -2343484354316378507L;
 
+	/** The X coordinate. */
 	private final int x;
 
+	/** The Y coordinate. */
 	private final int y;
 
 	/**

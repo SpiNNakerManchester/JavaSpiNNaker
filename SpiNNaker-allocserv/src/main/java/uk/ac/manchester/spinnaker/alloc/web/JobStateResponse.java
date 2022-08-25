@@ -87,6 +87,7 @@ public class JobStateResponse {
 	@JsonInclude(NON_NULL)
 	public final CreateJobRequest originalRequest;
 
+	/** Make an instance without any references to other resources. */
 	public JobStateResponse() {
 		keepaliveRef = null;
 		machineRef = null;
@@ -153,7 +154,7 @@ public class JobStateResponse {
 		return state;
 	}
 
-	public void setState(JobState state) {
+	void setState(JobState state) {
 		this.state = state;
 	}
 
@@ -162,7 +163,7 @@ public class JobStateResponse {
 		return startTime;
 	}
 
-	public void setStartTime(Instant startTime) {
+	void setStartTime(Instant startTime) {
 		this.startTime = startTime;
 	}
 
@@ -172,7 +173,7 @@ public class JobStateResponse {
 		return reason;
 	}
 
-	public void setReason(String reason) {
+	void setReason(String reason) {
 		this.reason = reason;
 	}
 
@@ -185,7 +186,7 @@ public class JobStateResponse {
 		return keepaliveHost;
 	}
 
-	public void setKeepaliveHost(String keepaliveHost) {
+	void setKeepaliveHost(String keepaliveHost) {
 		this.keepaliveHost = keepaliveHost;
 	}
 
@@ -195,7 +196,7 @@ public class JobStateResponse {
 		return owner;
 	}
 
-	public void setOwner(String owner) {
+	void setOwner(String owner) {
 		this.owner = owner;
 	}
 

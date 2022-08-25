@@ -16,8 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -25,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Donal Fellows
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class MachineNotifyMessage {
 	private List<String> machinesChanged;
 
@@ -40,7 +44,7 @@ final class MachineNotifyMessage {
 		return machinesChanged;
 	}
 
-	public void setMachinesChanged(List<String> machinesChanged) {
+	void setMachinesChanged(List<String> machinesChanged) {
 		this.machinesChanged = machinesChanged;
 	}
 }

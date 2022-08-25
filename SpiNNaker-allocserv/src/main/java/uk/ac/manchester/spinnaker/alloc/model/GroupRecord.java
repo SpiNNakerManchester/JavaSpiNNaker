@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Collections.unmodifiableMap;
 
@@ -26,13 +27,16 @@ import java.util.Optional;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
- * The description and model of a group. POJO class.
+ * The description and model of a group. POJO class; changes not automatically
+ * reflected in the DB.
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class GroupRecord {
 	/** The type of a group. */
 	public enum GroupType {
@@ -43,6 +47,7 @@ public final class GroupRecord {
 		/** Marks an EBRAINS/HBP collabratory. */
 		COLLABRATORY;
 
+		/** @return Whether this is an internal group. */
 		public boolean isInternal() {
 			return ordinal() == 0;
 		}
@@ -84,29 +89,27 @@ public final class GroupRecord {
 		return groupId;
 	}
 
-	public void setGroupId(Integer groupId) {
+	void setGroupId(Integer groupId) {
 		this.groupId = groupId;
 	}
 
-	/**
-	 * @return The group's name.
-	 */
+	/** @return The group's name. */
 	@NotBlank
 	public String getGroupName() {
 		return groupName;
 	}
 
+	/** @param groupName The group's name. */
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
 
-	/**
-	 * @return The quota of the group in board-seconds, if one exists.
-	 */
+	/** @return The quota of the group in board-seconds, if one exists. */
 	public Optional<Long> getQuota() {
 		return Optional.ofNullable(quota);
 	}
 
+	/** @param quota The quota of the group in board-seconds, if one exists. */
 	public void setQuota(Long quota) {
 		this.quota = quota;
 	}
@@ -116,7 +119,7 @@ public final class GroupRecord {
 		return type;
 	}
 
-	public void setType(GroupType type) {
+	void setType(GroupType type) {
 		this.type = type;
 	}
 
@@ -125,6 +128,7 @@ public final class GroupRecord {
 		return unmodifiableMap(members);
 	}
 
+	/** @param members The members of the group. */
 	public void setMembers(Map<String, URI> members) {
 		this.members = members;
 	}

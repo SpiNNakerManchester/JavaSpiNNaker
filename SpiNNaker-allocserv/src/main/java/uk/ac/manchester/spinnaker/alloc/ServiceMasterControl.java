@@ -40,6 +40,12 @@ public class ServiceMasterControl {
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param properties
+	 *            The service properties.
+	 */
 	@Autowired
 	public ServiceMasterControl(SpallocProperties properties) {
 		this.paused = properties.isPause();
@@ -54,6 +60,10 @@ public class ServiceMasterControl {
 		return paused;
 	}
 
+	/**
+	 * @param paused
+	 *            Whether periodic tasks should not run.
+	 */
 	public synchronized void setPaused(boolean paused) {
 		boolean old = this.paused;
 		this.paused = paused;
@@ -90,6 +100,10 @@ public class ServiceMasterControl {
 		return dummyBMP;
 	}
 
+	/**
+	 * @param dummyBMP
+	 *            Whether to use dummy transceivers for talking to the BMPs.
+	 */
 	public synchronized void setUseDummyBMP(boolean dummyBMP) {
 		boolean old = this.dummyBMP;
 		this.dummyBMP = dummyBMP;

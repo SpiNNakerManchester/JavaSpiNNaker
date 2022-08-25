@@ -307,12 +307,30 @@ public class FirmwareLoader {
 
 		private final int value;
 
+		/**
+		 * @param fpga
+		 *            Which FPGA's registers to set
+		 * @param register
+		 *            Which register is this
+		 * @param value
+		 *            The value to set
+		 */
 		public RegisterSet(FPGA fpga, FPGAMainRegisters register, int value) {
 			this.fpga = fpga;
 			this.address = register.getAddress();
 			this.value = value;
 		}
 
+		/**
+		 * @param fpga
+		 *            Which FPGA's registers to set
+		 * @param register
+		 *            Which register is this
+		 * @param bank
+		 *            In which register bank (i.e., for which link)
+		 * @param value
+		 *            The value to set
+		 */
 		public RegisterSet(FPGA fpga, FPGALinkRegisters register, int bank,
 				int value) {
 			this.fpga = fpga;

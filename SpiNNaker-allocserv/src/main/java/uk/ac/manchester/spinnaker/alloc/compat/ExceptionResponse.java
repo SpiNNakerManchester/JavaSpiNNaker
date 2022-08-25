@@ -16,8 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static java.util.Objects.isNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Donal Fellows
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class ExceptionResponse {
 	private String exception;
 
@@ -37,7 +40,7 @@ final class ExceptionResponse {
 		return exception;
 	}
 
-	public void setException(String exception) {
+	void setException(String exception) {
 		this.exception = isNull(exception) ? "" : exception.toString();
 	}
 }

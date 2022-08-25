@@ -71,82 +71,72 @@ public class MachineListEntryRecord {
 
 	private List<String> tags = new ArrayList<>();
 
-	public MachineListEntryRecord() {
-	}
-
-	/**
-	 * @return the machine ID
-	 */
+	/** @return the machine ID */
 	public int getId() {
 		return id;
 	}
 
+	/** @param id the machine ID */
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the machine name
-	 */
+	/** @return the machine name */
 	public String getName() {
 		return name;
 	}
 
+	/** @param name the machine name */
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	/**
-	 * @return where to go for more details
-	 */
+	/** @return where to go for more details */
 	public Optional<URI> getDetailsUrl() {
 		return Optional.ofNullable(detailsUrl);
 	}
 
+	/** @param detailsUrl where to go for more details */
 	public void setDetailsUrl(URI detailsUrl) {
 		this.detailsUrl = detailsUrl;
 	}
 
-	/**
-	 * @return the number of boards in the machine
-	 */
+	/** @return the number of boards in the machine */
 	public int getNumBoards() {
 		return numBoards;
 	}
 
+	/** @param numBoards the number of boards in the machine */
 	public void setNumBoards(int numBoards) {
 		this.numBoards = numBoards;
 	}
 
-	/**
-	 * @return the number of boards in use
-	 */
+	/** @return the number of boards in use */
 	public int getNumInUse() {
 		return numInUse;
 	}
 
+	/** @param numInUse the number of boards in use */
 	public void setNumInUse(int numInUse) {
 		this.numInUse = numInUse;
 	}
 
-	/**
-	 * @return the number of jobs running on the machine
-	 */
+	/** @return the number of jobs running on the machine */
 	public int getNumJobs() {
 		return numJobs;
 	}
 
+	/** @param numJobs the number of jobs running on the machine */
 	public void setNumJobs(int numJobs) {
 		this.numJobs = numJobs;
 	}
 
-	/**
-	 * @return the machine's tags
-	 */
+	/** @return the machine's tags */
 	public List<String> getTags() {
 		return unmodifiableList(tags);
 	}
 
+	/** @param tags the machine's tags */
 	public void setTags(List<String> tags) {
 		this.tags = tags;
 	}

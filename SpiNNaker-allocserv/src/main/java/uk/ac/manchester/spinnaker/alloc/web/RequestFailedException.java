@@ -46,42 +46,100 @@ import org.springframework.stereotype.Component;
 public class RequestFailedException extends RuntimeException {
 	private static final long serialVersionUID = -7522760691720854101L;
 
+	/** The status code. */
 	private final Status code;
 
+	/** The response message contents. */
 	private final String message;
 
-	public RequestFailedException(Status code, String message,
-			Throwable cause) {
+	/**
+	 * Create an instance.
+	 *
+	 * @param code
+	 *            The status code.
+	 * @param message
+	 *            The response message contents.
+	 * @param cause
+	 *            The cause of the exception.
+	 */
+	RequestFailedException(Status code, String message, Throwable cause) {
 		super(message, cause);
 		this.code = code;
 		this.message = message;
 	}
 
-	public RequestFailedException(WebApplicationException exn) {
+	/**
+	 * Create an instance that wraps a {@link WebApplicationException}.
+	 *
+	 * @param exn
+	 *            The wrapped exception.
+	 */
+	RequestFailedException(WebApplicationException exn) {
 		// code will not be used
 		this(NO_CONTENT, exn.getMessage(), exn);
 	}
 
-	public RequestFailedException(String message) {
+	/**
+	 * Create an instance that indicates an internal server error.
+	 *
+	 * @param message
+	 *            The response message contents.
+	 */
+	RequestFailedException(String message) {
 		this(INTERNAL_SERVER_ERROR, message, null);
 	}
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param code
+	 *            The status code.
+	 * @param message
+	 *            The response message contents.
+	 */
 	public RequestFailedException(Status code, String message) {
 		this(code, message, null);
 	}
 
-	public RequestFailedException(String message, Throwable cause) {
+	/**
+	 * Create an instance that indicates an internal server error.
+	 *
+	 * @param message
+	 *            The response message contents.
+	 * @param cause
+	 *            The cause of the exception.
+	 */
+	RequestFailedException(String message, Throwable cause) {
 		this(INTERNAL_SERVER_ERROR, message, cause);
 	}
 
-	public RequestFailedException(Throwable cause) {
+	/**
+	 * Create an instance that indicates an internal server error.
+	 *
+	 * @param cause
+	 *            The cause of the exception.
+	 */
+	RequestFailedException(Throwable cause) {
 		this(INTERNAL_SERVER_ERROR, cause.getMessage(), cause);
 	}
 
-	public RequestFailedException(Status code, Throwable cause) {
+	/**
+	 * Create an instance.
+	 *
+	 * @param code
+	 *            The status code.
+	 * @param cause
+	 *            The cause of the exception.
+	 */
+	RequestFailedException(Status code, Throwable cause) {
 		this(code, cause.getMessage(), cause);
 	}
 
+	/**
+	 * Convert this exception to a response.
+	 *
+	 * @return The response that this exception implies.
+	 */
 	Response toResponse() {
 		if (getCause() instanceof WebApplicationException) {
 			return ((WebApplicationException) getCause()).getResponse();
@@ -111,6 +169,9 @@ public class RequestFailedException extends RuntimeException {
 	public static class ItsGone extends RequestFailedException {
 		private static final long serialVersionUID = 3774531853141947270L;
 
+		/**
+		 * @param message What message to use to say "its gone away".
+		 */
 		public ItsGone(String message) {
 			super(GONE, message);
 		}
@@ -120,10 +181,17 @@ public class RequestFailedException extends RuntimeException {
 	public static class NotFound extends RequestFailedException {
 		private static final long serialVersionUID = 5991697173204757030L;
 
+		/**
+		 * @param message What message to use to say "not found".
+		 */
 		public NotFound(String message) {
 			super(NOT_FOUND, message);
 		}
 
+		/**
+		 * @param message What message to use to say "not found".
+		 * @param cause Why we are sending the message.
+		 */
 		public NotFound(String message, Throwable cause) {
 			super(NOT_FOUND, message, cause);
 		}
@@ -133,6 +201,9 @@ public class RequestFailedException extends RuntimeException {
 	public static class BadArgs extends RequestFailedException {
 		private static final long serialVersionUID = 7916573155067333350L;
 
+		/**
+		 * @param message What message to use to say "bad arguments".
+		 */
 		public BadArgs(String message) {
 			super(BAD_REQUEST, message, null);
 		}
@@ -142,6 +213,7 @@ public class RequestFailedException extends RuntimeException {
 	public static class EmptyResponse extends RequestFailedException {
 		private static final long serialVersionUID = -2944836034264700912L;
 
+		/** Create an instance. */
 		public EmptyResponse() {
 			super(NO_CONTENT, "");
 		}

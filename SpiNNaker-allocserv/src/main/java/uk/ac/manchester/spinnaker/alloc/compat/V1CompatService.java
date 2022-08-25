@@ -94,7 +94,7 @@ public class V1CompatService {
 
 	private Duration shutdownTimeout;
 
-	public V1CompatService() {
+	V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
 		ThreadGroup group = new ThreadGroup("spalloc-legacy-service");

@@ -34,11 +34,20 @@ public class FirmwareDescriptor {
 
 	private final IntBuffer descriptorData;
 
+	/**
+	 * Create a description of some firmware on a SpiNNaker system.
+	 *
+	 * @param type
+	 *            What type of firmware is this.
+	 * @param buffer
+	 *            What was the descriptor buffer read from the system?
+	 */
 	public FirmwareDescriptor(FirmwareDescriptors type, ByteBuffer buffer) {
 		this.type = type;
 		descriptorData = buffer.asIntBuffer().asReadOnlyBuffer();
 	}
 
+	/** @return The version of the firmware. */
 	public Version getVersion() {
 		int n = descriptorData.get(type.versionIndex);
 
@@ -56,6 +65,7 @@ public class FirmwareDescriptor {
 		}
 	}
 
+	/** @return The timestamp in the firmware. */
 	public Instant getTimestamp() {
 		return Instant.ofEpochSecond(descriptorData.get(type.timestampIndex));
 	}

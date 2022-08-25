@@ -263,6 +263,15 @@ public interface SpallocAPI {
 		/** The number of boards requested. */
 		public final int numBoards;
 
+		/**
+		 * Request a count of boards. The service <em>may</em> over-allocate.
+		 *
+		 * @param numBoards
+		 *            The number of boards desired.
+		 * @param maxDeadBoards
+		 *            The number of dead boards that can be tolerated within
+		 *            that.
+		 */
 		public CreateNumBoards(int numBoards, Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.numBoards = numBoards;
@@ -293,6 +302,18 @@ public interface SpallocAPI {
 		/** Height requested, in boards. */
 		public final int height;
 
+		/**
+		 * Request a rectangle of boards. The service <em>may</em>
+		 * over-allocate.
+		 *
+		 * @param width
+		 *            The width of rectangle to request, in boards.
+		 * @param height
+		 *            The height of rectangle to request, in boards.
+		 * @param maxDeadBoards
+		 *            The number of dead boards that can be tolerated in that
+		 *            rectangle.
+		 */
 		public CreateDimensions(int width, int height, Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.width = width;

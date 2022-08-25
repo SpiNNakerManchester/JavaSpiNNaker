@@ -31,6 +31,11 @@ public final class XYZ {
 	/** Z coordinate. */
 	public final int z;
 
+	/**
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
+	 * @param z Z coordinate.
+	 */
 	public XYZ(int x, int y, int z) {
 		this.x = x;
 		this.y = y;

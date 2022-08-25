@@ -16,7 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
 import java.time.Instant;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -27,6 +31,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  *
  * @author Donal Fellows
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class BoardIssueReport {
 	private int id;
 
@@ -38,6 +43,7 @@ public class BoardIssueReport {
 
 	private Instant timestamp;
 
+	/** Create a record. */
 	public BoardIssueReport() {
 	}
 
@@ -62,7 +68,7 @@ public class BoardIssueReport {
 		return id;
 	}
 
-	public void setId(int id) {
+	void setId(int id) {
 		this.id = id;
 	}
 
@@ -71,40 +77,34 @@ public class BoardIssueReport {
 		return boardId;
 	}
 
-	public void setBoardId(int id) {
+	void setBoardId(int id) {
 		this.boardId = id;
 	}
 
-	/**
-	 * @return What did they report?
-	 */
+	/** @return What did they report? */
 	public String getIssue() {
 		return issue;
 	}
 
-	public void setIssue(String issue) {
+	void setIssue(String issue) {
 		this.issue = issue;
 	}
 
-	/**
-	 * @return Who reported it?
-	 */
+	/** @return Who reported it? */
 	public String getReporter() {
 		return reporter;
 	}
 
-	public void setReporter(String reporter) {
+	void setReporter(String reporter) {
 		this.reporter = reporter;
 	}
 
-	/**
-	 * @return When was it reported?
-	 */
+	/** @return When was it reported? */
 	public Instant getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Instant timestamp) {
+	void setTimestamp(Instant timestamp) {
 		this.timestamp = timestamp;
 	}
 }
