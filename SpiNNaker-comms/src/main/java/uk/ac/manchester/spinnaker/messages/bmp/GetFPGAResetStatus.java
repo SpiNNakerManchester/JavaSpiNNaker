@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException
 /** Get the reset status of a board's FPGAs. */
 public class GetFPGAResetStatus
 		extends BMPRequest<GetFPGAResetStatus.Response> {
+	/** @param board Which board to get the FPGA reset status of. */
 	public GetFPGAResetStatus(BMPBoard board) {
 		super(board, CMD_READ, IO_PORT_CONTROL_WORD, WORD_SIZE, WORD.value);
 	}
@@ -41,6 +42,7 @@ public class GetFPGAResetStatus
 
 	private static final int XIL_RST_BIT = 14;
 
+	/** The response to a request to get the FPGA reset status of a board. */
 	public final class Response extends BMPRequest.BMPResponse {
 		private int ioPortControlWord;
 
@@ -51,6 +53,7 @@ public class GetFPGAResetStatus
 			ioPortControlWord = buffer.getInt();
 		}
 
+		/** @return The reset status of the FPGA. */
 		public boolean isReset() {
 			return ((ioPortControlWord >> XIL_RST_BIT) & 1) != 0;
 		}

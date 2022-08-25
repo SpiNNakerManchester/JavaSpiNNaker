@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.sdp;
 
+import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.nio.ByteBuffer;
@@ -41,8 +42,11 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 	/** The SDP header of the message. */
 	public final SDPHeader sdpHeader;
 
+	/**
+	 * @param sdpHeader The SDP header of the message.
+	 */
 	protected SpinnakerRequest(SDPHeader sdpHeader) {
-		this.sdpHeader = sdpHeader;
+		this.sdpHeader = requireNonNull(sdpHeader);
 	}
 
 	/**

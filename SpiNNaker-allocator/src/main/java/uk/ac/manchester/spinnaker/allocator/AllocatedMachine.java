@@ -16,10 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -32,6 +34,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 @JsonIgnoreProperties({
 	"power", "machine", "machine-ref"
 })
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class AllocatedMachine {
 	private int width;
 
@@ -52,7 +55,7 @@ public class AllocatedMachine {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	void setWidth(int width) {
 		this.width = width;
 	}
 
@@ -61,7 +64,7 @@ public class AllocatedMachine {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	void setHeight(int height) {
 		this.height = height;
 	}
 
@@ -70,7 +73,7 @@ public class AllocatedMachine {
 		return depth;
 	}
 
-	public void setDepth(int depth) {
+	void setDepth(int depth) {
 		this.depth = depth;
 	}
 
@@ -79,7 +82,7 @@ public class AllocatedMachine {
 		return machineName;
 	}
 
-	public void setMachineName(String machineName) {
+	void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
 
@@ -97,7 +100,7 @@ public class AllocatedMachine {
 		return connections;
 	}
 
-	public void setConnections(List<ConnectionInfo> connections) {
+	void setConnections(List<ConnectionInfo> connections) {
 		this.connections = connections;
 	}
 
@@ -106,7 +109,7 @@ public class AllocatedMachine {
 		return boards;
 	}
 
-	public void setBoards(List<BoardCoordinates> boards) {
+	void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards;
 	}
 
@@ -115,6 +118,7 @@ public class AllocatedMachine {
 		"chip", "hostname"
 	})
 	@JsonFormat(shape = ARRAY)
+	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 	public static class ConnectionInfo {
 		private ChipLocation chip;
 
@@ -125,7 +129,7 @@ public class AllocatedMachine {
 			return chip;
 		}
 
-		public void setChip(ChipLocation chip) {
+		void setChip(ChipLocation chip) {
 			this.chip = chip;
 		}
 
@@ -134,7 +138,7 @@ public class AllocatedMachine {
 			return hostname;
 		}
 
-		public void setHostname(String hostname) {
+		void setHostname(String hostname) {
 			this.hostname = hostname;
 		}
 	}

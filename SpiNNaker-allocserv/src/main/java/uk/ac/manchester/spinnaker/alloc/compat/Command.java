@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
@@ -27,10 +28,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
 /**
  * The encoded form of a command to the server. This is basically a Python
  * call encoded (except that no argument is a live object).
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class Command {
 	private String command;
 
@@ -43,7 +47,7 @@ public final class Command {
 		return command;
 	}
 
-	public void setCommand(String command) {
+	void setCommand(String command) {
 		this.command = command;
 	}
 
@@ -52,7 +56,7 @@ public final class Command {
 		return isNull(args) ? emptyList() : unmodifiableList(args);
 	}
 
-	public void setArgs(List<Object> args) {
+	void setArgs(List<Object> args) {
 		this.args = args;
 	}
 
@@ -61,7 +65,7 @@ public final class Command {
 		return isNull(kwargs) ? emptyMap() : unmodifiableMap(kwargs);
 	}
 
-	public void setKwargs(Map<String, Object> kwargs) {
+	void setKwargs(Map<String, Object> kwargs) {
 		this.kwargs = kwargs;
 	}
 }

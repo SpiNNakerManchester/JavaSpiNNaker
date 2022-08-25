@@ -35,7 +35,7 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 	private DatabaseEngine db;
 
 	@Autowired
-	public final void setDatabaseEngine(DatabaseEngine db) {
+	final void setDatabaseEngine(DatabaseEngine db) {
 		this.db = requireNonNull(db, "DatabaseEngine must not be null");
 	}
 
@@ -162,6 +162,7 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 			return conn.transaction(lockForWriting, action);
 		}
 
+		/** @return The encapsulated connection. */
 		public Connection getConnection() {
 			return conn;
 		}

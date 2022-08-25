@@ -16,9 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -28,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({
 	"keepalive-ref", "machine-ref", "power-ref", "chip-ref"
 })
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class JobDescription {
 	private State state;
 
@@ -48,7 +52,7 @@ public class JobDescription {
 		return state;
 	}
 
-	public void setState(State state) {
+	void setState(State state) {
 		this.state = state;
 	}
 
@@ -60,7 +64,7 @@ public class JobDescription {
 		return owner;
 	}
 
-	public void setOwner(String owner) {
+	void setOwner(String owner) {
 		this.owner = owner;
 	}
 
@@ -70,7 +74,7 @@ public class JobDescription {
 		return startTime;
 	}
 
-	public void setStartTime(Instant startTime) {
+	void setStartTime(Instant startTime) {
 		this.startTime = startTime;
 	}
 
@@ -80,7 +84,7 @@ public class JobDescription {
 		return finishTime;
 	}
 
-	public void setFinishTime(Instant finishTime) {
+	void setFinishTime(Instant finishTime) {
 		this.finishTime = finishTime;
 	}
 
@@ -89,7 +93,7 @@ public class JobDescription {
 		return reason;
 	}
 
-	public void setReason(String reason) {
+	void setReason(String reason) {
 		this.reason = reason;
 	}
 
@@ -103,7 +107,7 @@ public class JobDescription {
 		return keepaliveHost;
 	}
 
-	public void setKeepaliveHost(String keepaliveHost) {
+	void setKeepaliveHost(String keepaliveHost) {
 		this.keepaliveHost = keepaliveHost;
 	}
 
@@ -113,7 +117,7 @@ public class JobDescription {
 		return keepaliveTime;
 	}
 
-	public void setKeepaliveTime(Instant keepaliveTime) {
+	void setKeepaliveTime(Instant keepaliveTime) {
 		this.keepaliveTime = keepaliveTime;
 	}
 }

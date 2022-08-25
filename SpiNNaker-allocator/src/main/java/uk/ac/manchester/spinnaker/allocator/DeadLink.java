@@ -39,6 +39,12 @@ public class DeadLink {
 		/** The direction that the dead link goes in. */
 		public final Direction direction;
 
+		/**
+		 * @param board
+		 *            The board at the end of a dead link.
+		 * @param direction
+		 *            The direction that the dead link goes in.
+		 */
 		public End(@JsonProperty("board") BoardCoords board,
 				@JsonProperty("direction") Direction direction) {
 			this.board = board;

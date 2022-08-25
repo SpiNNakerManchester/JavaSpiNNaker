@@ -25,6 +25,10 @@ import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetT
 
 /** Perform a reset of the FPGAs. */
 public class ResetFPGA extends BMPRequest<BMPRequest.BMPResponse> {
+	/**
+	 * @param board Which board to reset the FPGAs of.
+	 * @param resetType What type of reset to do.
+	 */
 	public ResetFPGA(BMPBoard board, FPGAResetType resetType) {
 		super(board, CMD_XILINX, Reset.code, resetType.ordinal());
 	}
