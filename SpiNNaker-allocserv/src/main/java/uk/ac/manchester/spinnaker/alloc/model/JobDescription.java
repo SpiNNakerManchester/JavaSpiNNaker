@@ -28,6 +28,7 @@ import java.util.Optional;
 
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
+ *
  * <pre>
      Job ID: 6037654
       Owner: gorp
@@ -46,6 +47,7 @@ import java.util.Optional;
 Board power: on
  Running on: SpiNNaker1M
  * </pre>
+ *
  * (That's actually slightly edited output from {@code spalloc-job -info})
  */
 public class JobDescription {
@@ -77,82 +79,93 @@ public class JobDescription {
 
 	private byte[] requestBytes;
 
-	public JobDescription() {
-	}
-
-	/**
-	 * @return the machine ID
-	 */
+	/** @return the machine ID */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * @param id
+	 *            the machine ID
+	 */
 	public void setId(int id) {
 		this.id = id;
 	}
 
-	/**
-	 * @return the job's owner
-	 */
+	/** @return the job's owner */
 	public Optional<String> getOwner() {
 		return owner;
 	}
 
+	/**
+	 * @param owner
+	 *            the job's owner
+	 */
 	public void setOwner(String owner) {
 		this.owner = Optional.ofNullable(owner);
 	}
 
-	/**
-	 * @return the job's state
-	 */
+	/** @return the job's state */
 	public JobState getState() {
 		return state;
 	}
 
+	/**
+	 * @param state
+	 *            the job's state
+	 */
 	public void setState(JobState state) {
 		this.state = state;
 	}
 
-	/**
-	 * @return when the job started
-	 */
+	/** @return when the job started */
 	public Instant getStartTime() {
 		return startTime;
 	}
 
+	/**
+	 * @param startTime
+	 *            when the job started
+	 */
 	public void setStartTime(Instant startTime) {
 		this.startTime = startTime;
 	}
 
-	/**
-	 * @return the maximum keepalive interval
-	 */
+	/** @return the maximum keepalive interval */
 	public Duration getKeepAlive() {
 		return keepAlive;
 	}
 
+	/**
+	 * @param keepAlive
+	 *            the maximum keepalive interval
+	 */
 	public void setKeepAlive(Duration keepAlive) {
 		this.keepAlive = keepAlive;
 	}
 
-	/**
-	 * @return the owner's host (the one supplying keepalives)
-	 */
+	/** @return the owner's host (the one supplying keepalives) */
 	public Optional<String> getOwnerHost() {
 		return ownerHost;
 	}
 
+	/**
+	 * @param ownerHost
+	 *            the owner's host (the one supplying keepalives)
+	 */
 	public void setOwnerHost(String ownerHost) {
 		this.ownerHost = Optional.ofNullable(ownerHost);
 	}
 
-	/**
-	 * @return the request
-	 */
+	/** @return the request */
 	public String getRequest() {
 		return request;
 	}
 
+	/**
+	 * @param request
+	 *            the request
+	 */
 	public void setRequest(String request) {
 		this.request = request;
 	}
@@ -165,6 +178,10 @@ public class JobDescription {
 		return Optional.ofNullable(width);
 	}
 
+	/**
+	 * @param width
+	 *            the width of the allocation in <em>chips</em>.
+	 */
 	public void setWidth(int width) {
 		this.width = width;
 	}
@@ -177,6 +194,10 @@ public class JobDescription {
 		return Optional.ofNullable(height);
 	}
 
+	/**
+	 * @param height
+	 *            the height of the allocation in <em>chips</em>.
+	 */
 	public void setHeight(int height) {
 		this.height = height;
 	}
@@ -189,39 +210,50 @@ public class JobDescription {
 		return powered;
 	}
 
+	/**
+	 * @param powered
+	 *            whether all boards are powered up; unallocated jobs are
+	 *            considered unpowered.
+	 */
 	public void setPowered(boolean powered) {
 		this.powered = powered;
 	}
 
-	/**
-	 * @return the machine name
-	 */
+	/** @return the machine name */
 	public String getMachine() {
 		return machine;
 	}
 
+	/**
+	 * @param machine
+	 *            the machine name
+	 */
 	public void setMachine(String machine) {
 		this.machine = machine;
 	}
 
-	/**
-	 * @return the board coordinates of all boards allocated to the job
-	 */
+	/** @return the board coordinates of all boards allocated to the job */
 	public List<BoardCoords> getBoards() {
 		return unmodifiableList(boards);
 	}
 
+	/**
+	 * @param boards
+	 *            the board coordinates of all boards allocated to the job
+	 */
 	public void setBoards(List<BoardCoords> boards) {
 		this.boards = boards;
 	}
 
-	/**
-	 * @return the URL to get machine information
-	 */
+	/** @return the URL to get machine information */
 	public URI getMachineUrl() {
 		return machineUrl;
 	}
 
+	/**
+	 * @param machineUrl
+	 *            the URL to get machine information
+	 */
 	public void setMachineUrl(URI machineUrl) {
 		this.machineUrl = machineUrl;
 	}
@@ -234,6 +266,10 @@ public class JobDescription {
 		return requestBytes;
 	}
 
+	/**
+	 * @param bytes
+	 *            The serialized request.
+	 */
 	public void setRequestBytes(byte[] bytes) {
 		requestBytes = bytes;
 	}

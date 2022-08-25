@@ -32,6 +32,8 @@ import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
+ * Routers are parts of SpiNNaker chips responsible for directing where
+ * on-machine messages are delivered to.
  *
  * @author Christian-B
  */

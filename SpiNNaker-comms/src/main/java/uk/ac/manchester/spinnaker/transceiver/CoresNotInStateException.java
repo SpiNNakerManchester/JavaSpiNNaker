@@ -39,10 +39,13 @@ public class CoresNotInStateException extends SpinnmanException {
 	private static final String TMPL =
 			"operation '" + OP_TMPL + "' timed out after %f seconds";
 
+	/** What the timeout was. */
 	private float timeout;
 
+	/** What operation was being done. */
 	private String operation;
 
+	/** Which cores have failed. */
 	private CoreSubsets failedCores;
 
 	CoresNotInStateException(Integer timeout, Set<CPUState> expectedStates,
@@ -65,14 +68,19 @@ public class CoresNotInStateException extends SpinnmanException {
 		this.failedCores = failedCores;
 	}
 
+	/**
+	 * @return How long did we wait for the cores to enter the desired state?
+	 */
 	public float getTimeout() {
 		return timeout;
 	}
 
+	/** @return What were we attempting to do when the failure happened? */
 	public String getOperation() {
 		return operation;
 	}
 
+	/** @return What cores have failed? */
 	public CoreSubsets getFailedCores() {
 		return failedCores;
 	}

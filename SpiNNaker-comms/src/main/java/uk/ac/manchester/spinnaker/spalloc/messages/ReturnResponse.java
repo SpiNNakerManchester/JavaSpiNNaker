@@ -25,12 +25,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class ReturnResponse implements Response {
 	private String returnValue;
 
+	/** @return The returned value, as a string. */
 	public String getReturnValue() {
 		return returnValue;
 	}
 
 	@JsonSetter("return")
-	public void setReturnValue(JsonNode returnValue) {
+	void setReturnValue(JsonNode returnValue) {
 		this.returnValue = returnValue == null ? "" : returnValue.toString();
 	}
 }

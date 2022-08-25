@@ -40,10 +40,12 @@ public class JobsChangedNotification implements Notification {
 		setJobsChanged(List.of(jobID));
 	}
 
+	/** @return What jobs have changed. Not accurate. */
 	public List<Integer> getJobsChanged() {
 		return jobsChanged;
 	}
 
+	/** @param jobsChanged What jobs have changed. */
 	public void setJobsChanged(List<Integer> jobsChanged) {
 		this.jobsChanged = jobsChanged == null ? List.of()
 				: unmodifiableList(jobsChanged);

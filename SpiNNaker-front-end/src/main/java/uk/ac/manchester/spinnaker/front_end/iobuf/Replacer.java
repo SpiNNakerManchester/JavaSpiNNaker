@@ -174,6 +174,7 @@ class Replacer {
 	public static final class WrappedException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 
+		/** The wrapped exception. */
 		private final IOException e;
 
 		private WrappedException(IOException e) {

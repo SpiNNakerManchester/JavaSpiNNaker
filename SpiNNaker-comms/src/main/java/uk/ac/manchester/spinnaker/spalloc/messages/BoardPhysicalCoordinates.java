@@ -16,11 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.util.Objects.isNull;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -31,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"cabinet", "frame", "board"
 })
 @JsonFormat(shape = ARRAY)
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class BoardPhysicalCoordinates {
 	private int cabinet;
 
@@ -60,27 +63,30 @@ public class BoardPhysicalCoordinates {
 		this.board = board;
 	}
 
+	/** @return the cabinet ID */
 	public int getCabinet() {
 		return cabinet;
 	}
 
-	public void setCabinet(int cabinet) {
+	void setCabinet(int cabinet) {
 		this.cabinet = cabinet;
 	}
 
+	/** @return the frame ID within the cabinet */
 	public int getFrame() {
 		return frame;
 	}
 
-	public void setFrame(int frame) {
+	void setFrame(int frame) {
 		this.frame = frame;
 	}
 
+	/** @return the board ID within the frame */
 	public Integer getBoard() {
 		return board;
 	}
 
-	public void setBoard(Integer board) {
+	void setBoard(Integer board) {
 		this.board = board;
 	}
 

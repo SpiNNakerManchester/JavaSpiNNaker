@@ -154,9 +154,14 @@ public class SecurityConfig {
 	@Autowired
 	private URLPathMaker urlMaker;
 
+	/**
+	 * Configure things we plug into.
+	 *
+	 * @param auth
+	 *            The authentication manager builder to configure.
+	 */
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth)
-			throws Exception {
+	public void configureGlobal(AuthenticationManagerBuilder auth) {
 		auth.authenticationProvider(localAuthProvider);
 	}
 
@@ -200,7 +205,7 @@ public class SecurityConfig {
 	 * @param http
 	 *            Where the configuration is applied to.
 	 * @throws Exception
-	 *             If anything goes wrong with setting up.
+	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	private void defineAPILoginRules(HttpSecurity http) throws Exception {
 		if (properties.isBasic()) {
@@ -219,7 +224,7 @@ public class SecurityConfig {
 	 * @param http
 	 *            Where the configuration is applied to.
 	 * @throws Exception
-	 *             If anything goes wrong with setting up.
+	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	private void defineWebUILoginRules(HttpSecurity http) throws Exception {
 		var loginUrl = urlMaker.systemUrl("login.html");
@@ -256,7 +261,7 @@ public class SecurityConfig {
 	 * @param http
 	 *            Where the configuration is applied to.
 	 * @throws Exception
-	 *             If anything goes wrong with setting up.
+	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	private void defineLogoutRules(HttpSecurity http) throws Exception {
 		var loginUrl = urlMaker.systemUrl("login.html");
@@ -273,7 +278,7 @@ public class SecurityConfig {
 	 *            Used to build the filter chain.
 	 * @return The filter chain that implements the controls.
 	 * @throws Exception
-	 *             If anything goes wrong with setting up.
+	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	@Bean
 	@Role(ROLE_SUPPORT)

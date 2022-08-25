@@ -24,6 +24,7 @@ import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.START_SEN
  * "SpinnakerRequestBuffers" packet.
  */
 public class StartRequests extends EIEIOCommandMessage {
+	/** Make an instance. */
 	public StartRequests() {
 		super(START_SENDING_REQUESTS);
 	}

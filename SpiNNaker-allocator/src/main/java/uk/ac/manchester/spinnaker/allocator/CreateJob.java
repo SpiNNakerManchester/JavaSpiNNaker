@@ -16,8 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
 import java.time.Duration;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 /**
  * A request to create a job.
@@ -42,14 +46,21 @@ public final class CreateJob {
 	/**
 	 * Used when asking for a rectangle of boards.
 	 */
+	@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 	public static final class Dimensions {
 		private int width;
 
 		private int height;
 
-		public Dimensions(int w, int h) {
-			width = w;
-			height = h;
+		/**
+		 * @param width
+		 *            The width of rectangle to ask for, in boards.
+		 * @param height
+		 *            The height of rectangle to ask for, in boards.
+		 */
+		public Dimensions(int width, int height) {
+			this.width = width;
+			this.height = height;
 		}
 
 		/** @return The width of the allocation, in boards. */
@@ -57,7 +68,7 @@ public final class CreateJob {
 			return width;
 		}
 
-		public void setWidth(int width) {
+		void setWidth(int width) {
 			this.width = width;
 		}
 
@@ -66,7 +77,7 @@ public final class CreateJob {
 			return height;
 		}
 
-		public void setHeight(int height) {
+		void setHeight(int height) {
 			this.height = height;
 		}
 	}
@@ -89,10 +100,15 @@ public final class CreateJob {
 
 		private String address;
 
+		/**
+		 * Make an untargeted instance. You must set either the triad triple (x,
+		 * y, z), the physical triple (cabinet, frame, board) or the IP address
+		 * to use this object.
+		 */
 		public SpecificBoard() {
 		}
 
-		SpecificBoard(boolean type, int a, int b, int c) {
+		private SpecificBoard(boolean type, int a, int b, int c) {
 			if (type) {
 				x = a;
 				y = b;
@@ -104,7 +120,7 @@ public final class CreateJob {
 			}
 		}
 
-		SpecificBoard(String addr) {
+		private SpecificBoard(String addr) {
 			address = addr;
 		}
 
@@ -113,6 +129,7 @@ public final class CreateJob {
 			return x;
 		}
 
+		/** @param x The triad X coordinate. */
 		public void setX(Integer x) {
 			this.x = x;
 		}
@@ -122,6 +139,7 @@ public final class CreateJob {
 			return y;
 		}
 
+		/** @param y The triad Y coordinate. */
 		public void setY(Integer y) {
 			this.y = y;
 		}
@@ -131,6 +149,7 @@ public final class CreateJob {
 			return z;
 		}
 
+		/** @param z The triad Z coordinate. */
 		public void setZ(Integer z) {
 			this.z = z;
 		}
@@ -140,6 +159,7 @@ public final class CreateJob {
 			return cabinet;
 		}
 
+		/** @param cabinet The cabinet number. */
 		public void setCabinet(Integer cabinet) {
 			this.cabinet = cabinet;
 		}
@@ -149,6 +169,7 @@ public final class CreateJob {
 			return frame;
 		}
 
+		/** @param frame The frame number. */
 		public void setFrame(Integer frame) {
 			this.frame = frame;
 		}
@@ -158,6 +179,7 @@ public final class CreateJob {
 			return board;
 		}
 
+		/** @param board The board number. */
 		public void setBoard(Integer board) {
 			this.board = board;
 		}
@@ -167,10 +189,13 @@ public final class CreateJob {
 			return address;
 		}
 
+		/** @param address The board IP address. */
 		public void setAddress(String address) {
 			this.address = address;
 		}
 	}
+
+	// TODO Support a request for dimensions rooted at a board
 
 	/**
 	 * Create a request to run on a single board using the default machine
@@ -251,15 +276,12 @@ public final class CreateJob {
 	 *
 	 * @param machine
 	 *            Which machine of the service to use?
-	 * @param cabinet
-	 *            The cabinet number of the board to request.
-	 * @param frame
-	 *            The frame number of the board to request.
-	 * @param board
-	 *            The board number of the board to request.
+	 * @param coords
+	 *            The physical coordinates of the board to request.
 	 */
-	public CreateJob(String machine, int cabinet, int frame, int board) {
-		this.board = new SpecificBoard(false, cabinet, frame, board);
+	public CreateJob(String machine, Physical coords) {
+		this.board = new SpecificBoard(false, coords.getCabinet(),
+				coords.getFrame(), coords.getBoard());
 		machineName = machine;
 	}
 
@@ -287,6 +309,12 @@ public final class CreateJob {
 		return keepaliveInterval;
 	}
 
+	/**
+	 * @param keepaliveInterval
+	 *            How long after a keepalive message will the job be
+	 *            auto-deleted? <em>Required.</em> Must be between 30 and 300
+	 *            seconds.
+	 */
 	public void setKeepaliveInterval(Duration keepaliveInterval) {
 		this.keepaliveInterval = keepaliveInterval;
 	}
@@ -299,6 +327,10 @@ public final class CreateJob {
 		return numBoards;
 	}
 
+	/**
+	 * @param numBoards
+	 *            The number of boards to request.
+	 */
 	public void setNumBoards(Integer numBoards) {
 		this.numBoards = numBoards;
 	}
@@ -308,6 +340,7 @@ public final class CreateJob {
 		return dimensions;
 	}
 
+	/** @param dimensions The size of rectangle of boards to request. */
 	public void setDimensions(Dimensions dimensions) {
 		this.dimensions = dimensions;
 	}
@@ -317,6 +350,7 @@ public final class CreateJob {
 		return board;
 	}
 
+	/** @param board The address of the specific board to request. */
 	public void setBoard(SpecificBoard board) {
 		this.board = board;
 	}
@@ -329,6 +363,11 @@ public final class CreateJob {
 		return machineName;
 	}
 
+	/**
+	 * @param machineName
+	 *            Which machine to allocate on. This and {@code tags} are
+	 *            mutually exclusive, but at least one must be given.
+	 */
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
 		this.tags = null;
@@ -343,6 +382,12 @@ public final class CreateJob {
 		return tags;
 	}
 
+	/**
+	 * @param tags
+	 *            The tags to select which machine to allocate on. This and
+	 *            {@code machineName} are mutually exclusive, but at least one
+	 *            must be given.
+	 */
 	public void setTags(List<String> tags) {
 		this.tags = tags;
 		this.machineName = null;
@@ -357,6 +402,12 @@ public final class CreateJob {
 		return maxDeadBoards;
 	}
 
+	/**
+	 * @param maxDeadBoards
+	 *            The maximum number of dead boards allowed in a rectangular
+	 *            allocation. Note that the allocation engine might increase
+	 *            this if it decides to overallocate.
+	 */
 	public void setMaxDeadBoards(Integer maxDeadBoards) {
 		this.maxDeadBoards = maxDeadBoards;
 	}

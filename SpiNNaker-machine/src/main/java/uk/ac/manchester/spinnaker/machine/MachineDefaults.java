@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Default values for a SpiNNaker machine comprised of SpiNNaker-1 chips running
+ * on boards of version 2 through 5.
  *
  * @author Christian-B
  */
@@ -32,7 +34,7 @@ public final class MachineDefaults {
 	private MachineDefaults() {
 	}
 
-	/** Default sdram per chip after scamp has reserved space for itself. */
+	/** Default SDRAM per chip after SCAMP has reserved space for itself. */
 	public static final int SDRAM_PER_CHIP = 117 * 1024 * 1024;
 
 	/** Clock speed in MHz of a standard Processor. */
@@ -47,13 +49,13 @@ public final class MachineDefaults {
 	/** Entries available on a standard Router. */
 	public static final int ROUTER_AVAILABLE_ENTRIES = 1024;
 
-	/** Max links available on a standard Router. */
+	/** Maximum links available on a standard Router. */
 	public static final int MAX_LINKS_PER_ROUTER = 6;
 
-	/** Max x coordinate for a chip regardless of the type of machine. */
+	/** Maximum X coordinate for a chip regardless of the type of machine. */
 	public static final int MAX_X = 255;
 
-	/** Max y coordinate for a chip regardless of the type of machine. */
+	/** Maximum Y coordinate for a chip regardless of the type of machine. */
 	public static final int MAX_Y = 255;
 
 	/** The number of rows of chips on each 48 Chip board. */
@@ -62,10 +64,17 @@ public final class MachineDefaults {
 	/** The number of columns of chips on each 48 Chip board. */
 	public static final int SIZE_Y_OF_ONE_BOARD = 8;
 
-	/** The height of only known Triad in chips. */
+	/**
+	 * The height of only known Triad in chips. Spalloc arranges boards in
+	 * groups of three &mdash; triads &mdash; that tile out to form a large
+	 * machine.
+	 */
 	public static final int TRIAD_HEIGHT = 12;
 
-	/** The width of the Triad in chips. */
+	/**
+	 * The width of the Triad in chips. Spalloc arranges boards in groups of
+	 * three &mdash; triads &mdash; that tile out to form a large machine.
+	 */
 	public static final int TRIAD_WIDTH = 12;
 
 	/** The offset from zero in chips to get half size root values. */
@@ -78,7 +87,7 @@ public final class MachineDefaults {
 
 	/**
 	 * Width of field of hashcode for holding (one dimension of the) chip
-	 * co-ordinate.
+	 * coordinate.
 	 */
 	public static final int COORD_SHIFT = 8;
 

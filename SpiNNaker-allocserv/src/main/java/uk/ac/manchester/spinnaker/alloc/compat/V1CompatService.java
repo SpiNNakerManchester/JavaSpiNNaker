@@ -93,7 +93,7 @@ public class V1CompatService {
 
 	private Duration shutdownTimeout;
 
-	public V1CompatService() {
+	V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
 		var group = new ThreadGroup("spalloc-legacy-service");
@@ -231,9 +231,9 @@ public class V1CompatService {
 		return !interrupted();
 	}
 
-	/** Operations for testing only. */
+	/** Not a public API! Operations for testing only. */
 	@ForTestingOnly
-	interface TestAPI {
+	public interface TestAPI {
 		/**
 		 * Make an instance of {@link V1CompatTask} that we can talk to.
 		 *
@@ -251,6 +251,12 @@ public class V1CompatService {
 				throws Exception;
 	}
 
+	/**
+	 * Not a public API!
+	 *
+	 * @return Test interface.
+	 * @deprecated Only for testing.
+	 */
 	@ForTestingOnly
 	@Deprecated
 	public TestAPI getTestApi() {

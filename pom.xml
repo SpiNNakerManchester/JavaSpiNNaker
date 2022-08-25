@@ -40,11 +40,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
 
-		<slf4j.version>1.7.36</slf4j.version>
+		<slf4j.version>2.0.0</slf4j.version>
 		<log4j.version>2.18.0</log4j.version>
 
 		<spring.version>5.3.22</spring.version>
-		<spring.boot.version>2.7.2</spring.boot.version>
+		<spring.boot.version>2.7.3</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<jackson.version>2.13.3</jackson.version>
 		<sqlite.version>3.39.2.0</sqlite.version>
 		<keycloak.version>19.0.1</keycloak.version>
-		<swagger.version>4.13.2</swagger.version>
+		<swagger.version>4.14.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.2</jython.version>
 	</properties>
@@ -388,6 +388,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<packages>uk.ac.manchester.spinnaker.alloc*</packages>
 							</group>
 						</groups>
+						<links>
+							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
+							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
+							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
+						</links>
 						<notimestamp>true</notimestamp>
 						<additionalOptions>
 							<additionalOption>-html5</additionalOption>
@@ -638,7 +644,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<module>SpiNNaker-allocserv</module>
 		<module>SpiNNaker-py2json</module>
 		<module>SpiNNaker-allocator</module>
-		<module>keycloak-management-client</module>
 	</modules>
 	<name>SpiNNaker Java Host</name>
 	<description>Implementation of the host software for SpiNNaker in Java.</description>
@@ -802,7 +807,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.0</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -853,6 +858,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<!-- This module needs Java 11 to build at all. -->
+			<id>KeycloakClient</id>
+			<modules>
+				<module>keycloak-management-client</module>
+			</modules>
 		</profile>
 		<profile>
 			<id>CheckForFIXME</id>

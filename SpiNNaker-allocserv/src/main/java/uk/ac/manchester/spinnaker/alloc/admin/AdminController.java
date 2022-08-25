@@ -255,6 +255,7 @@ public interface AdminController {
 			return name;
 		}
 
+		/** @param name The name of the group to create. */
 		public void setName(String name) {
 			this.name = name.trim();
 		}
@@ -267,6 +268,9 @@ public interface AdminController {
 			return Objects.toString(quota, "");
 		}
 
+		/**
+		 * @param quota The quota of the group to create, as a {@link String}.
+		 */
 		public void setQuota(String quota) {
 			try {
 				this.quota = Long.parseLong(quota, DECIMAL);
@@ -292,6 +296,7 @@ public interface AdminController {
 			return quotaDefined;
 		}
 
+		/** @param value Whether the group has a quota. */
 		public void setQuotad(boolean value) {
 			quotaDefined = value;
 		}
@@ -485,6 +490,9 @@ public interface AdminController {
 	ModelAndView defineMachine(
 			@NotNull @RequestParam(MACHINE_FILE_PARAM) MultipartFile file);
 
+	/**
+	 * The model of a blacklist used by the administration web interface.
+	 */
 	class BlacklistData {
 		private int id;
 
@@ -500,6 +508,7 @@ public interface AdminController {
 			return id;
 		}
 
+		/** @param id The board ID. */
 		public void setId(int id) {
 			this.id = id;
 		}
@@ -509,6 +518,7 @@ public interface AdminController {
 			return blacklist;
 		}
 
+		/** @param blacklist The text of the blacklist. */
 		public void setBlacklist(String blacklist) {
 			this.blacklist = blacklist;
 		}
@@ -529,6 +539,7 @@ public interface AdminController {
 			return present;
 		}
 
+		/** @param present Whether there is blacklist data present. */
 		public void setPresent(boolean present) {
 			this.present = present;
 		}
@@ -541,6 +552,11 @@ public interface AdminController {
 			return synched;
 		}
 
+		/**
+		 * @param synched
+		 *            Whether the blacklist data is believed to be the same as
+		 *            the data on the board.
+		 */
 		public void setSynched(boolean synched) {
 			this.synched = synched;
 		}

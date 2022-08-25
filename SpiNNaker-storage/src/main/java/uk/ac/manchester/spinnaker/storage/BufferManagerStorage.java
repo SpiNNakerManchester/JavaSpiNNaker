@@ -185,10 +185,15 @@ public interface BufferManagerStorage extends DatabaseAPI {
 			this.size = size;
 		}
 
+		/**
+		 * @return Whether this is an aligned buffer. Aligned buffers can be
+		 *         read with efficient reading techniques.
+		 */
 		public final boolean isAligned() {
 			return initialIgnore == 0 && finalIgnore == 0;
 		}
 
+		/** @return Whether this is a non-empty buffer. */
 		public final boolean isNonEmpty() {
 			return size > 0;
 		}

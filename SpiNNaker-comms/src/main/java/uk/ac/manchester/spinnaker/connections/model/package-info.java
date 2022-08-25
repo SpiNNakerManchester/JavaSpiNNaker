@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
+ * Abstract model classes for connections.
+ *
  * @author Donal Fellows
  */
 package uk.ac.manchester.spinnaker.connections.model;

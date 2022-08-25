@@ -32,12 +32,10 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
  * Represents a set of of {@link CoreLocation}s organized by Chip.
- * <p>
  *
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/core_subsets.py">
  *      Python Version</a>
- *
  * @author Christian-B
  */
 public class CoreSubsets implements MappableIterable<CoreLocation> {

@@ -16,27 +16,44 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
+import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
- * Like a core location, but for BMPs. Note that board numbers are
- * <em>not</em> restricted in range like core numbers.
+ * Like a {@linkplain CoreLocation core location}, but for BMPs. Note that board
+ * numbers are <em>not</em> restricted in range like core numbers.
  *
  * @author Donal Fellows
  */
-public class BMPLocation implements HasCoreLocation {
+@UsedInJavadocOnly(CoreLocation.class)
+public final class BMPLocation implements HasCoreLocation {
 	private final int cabinet;
 
 	private final int frame;
 
 	private final int board;
 
+	/**
+	 * Create an instance with cabinet and frame both zero.
+	 *
+	 * @param board
+	 *            The board number.
+	 */
 	public BMPLocation(int board) {
-		cabinet = 0;
-		frame = 0;
-		this.board = board;
+		this(0, 0, board);
 	}
 
+	/**
+	 * Create an instance.
+	 *
+	 * @param cabinet
+	 *            The cabinet number.
+	 * @param frame
+	 *            The frame number.
+	 * @param board
+	 *            The board number.
+	 */
 	public BMPLocation(int cabinet, int frame, int board) {
 		this.cabinet = cabinet;
 		this.frame = frame;

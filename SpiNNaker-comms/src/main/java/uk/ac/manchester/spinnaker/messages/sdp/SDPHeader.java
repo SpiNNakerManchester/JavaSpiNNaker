@@ -197,14 +197,26 @@ public class SDPHeader implements SerializableMessage {
 		buffer.put((byte) source.getX());
 	}
 
+	/**
+	 * @return What "chip" is the message going to. Note that there is a special
+	 *         address for addresses off the machine; that address is not
+	 *         normally representable in a {@link CoreLocation}.
+	 */
 	public HasCoreLocation getDestination() {
 		return destination;
 	}
 
+	/**
+	 * @param destination
+	 *            What "chip" is the message going to. Note that there is a
+	 *            special address for addresses off the machine; that address
+	 *            is not normally representable in a {@link CoreLocation}.
+	 */
 	public void setDestination(HasCoreLocation destination) {
 		this.destination = destination;
 	}
 
+	/** @return The target SDP port. Note that this is not a UDP port. */
 	public int getDestinationPort() {
 		return destinationPort;
 	}
@@ -215,7 +227,7 @@ public class SDPHeader implements SerializableMessage {
 	 * @param port
 	 *            The port to set it to.
 	 */
-	public void setDestinationPort(SDPPort port) {
+	void setDestinationPort(SDPPort port) {
 		this.destinationPort = port.value;
 	}
 
@@ -234,14 +246,25 @@ public class SDPHeader implements SerializableMessage {
 		this.destinationPort = port;
 	}
 
+	/** @return What "chip" originated the message. */
 	public HasCoreLocation getSource() {
 		return source;
 	}
 
+	/**
+	 * @param source
+	 *            What "chip" originates the message. Note that there is a
+	 *            special address for origination off the machine; that address
+	 *            is not normally representable in a {@link CoreLocation}.
+	 */
 	public void setSource(HasCoreLocation source) {
 		this.source = source;
 	}
 
+	/**
+	 * @return What SDP port originated the message. Note that this is not a UDP
+	 *         port.
+	 */
 	public int getSourcePort() {
 		return sourcePort;
 	}
@@ -271,19 +294,21 @@ public class SDPHeader implements SerializableMessage {
 		this.sourcePort = port;
 	}
 
+	/** @return The flags from the header. */
 	public Flag getFlags() {
 		return flags;
 	}
 
-	public void setFlags(Flag flags) {
+	void setFlags(Flag flags) {
 		this.flags = flags;
 	}
 
+	/** @return The tag byte from the header. */
 	public int getTag() {
 		return tag;
 	}
 
-	public void setTag(byte tag) {
+	void setTag(byte tag) {
 		this.tag = toUnsignedInt(tag);
 	}
 
@@ -336,6 +361,14 @@ public class SDPHeader implements SerializableMessage {
 			this.value = (byte) value;
 		}
 
+		/**
+		 * Given a value, get the {@code enum} member that corresponds to it.
+		 *
+		 * @param value
+		 *            The value to parse.
+		 * @return The flag it corresponds to, or {@code null} if it doesn't
+		 *         correspond to anything.
+		 */
 		public static Flag get(byte value) {
 			return MAP.get(value);
 		}

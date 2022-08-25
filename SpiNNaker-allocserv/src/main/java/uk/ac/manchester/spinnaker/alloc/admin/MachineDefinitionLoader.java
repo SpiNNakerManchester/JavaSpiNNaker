@@ -118,6 +118,12 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@Max(value = 2, message = "z coordinate must not be more than 2")
 		public final int z;
 
+		/**
+		 * Create an instance.
+		 * @param x X coordinate.
+		 * @param y Y coordinate.
+		 * @param z Z coordinate.
+		 */
 		@JsonCreator
 		public TriadCoords(@JsonProperty("x") int x, @JsonProperty("y") int y,
 				@JsonProperty("z") int z) {
@@ -129,6 +135,19 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		private static final Pattern PATTERN =
 				Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
 
+		/**
+		 * Create an instance from its serial form. The serial form (where the
+		 * numbers may vary) is:
+		 *
+		 * <pre>
+		 * [x:34,y:56,z:2]
+		 * </pre>
+		 *
+		 * @param serialForm
+		 *            The form to deserialise.
+		 * @throws IllegalArgumentException
+		 *             If the string is not in the right form.
+		 */
 		@JsonCreator
 		public TriadCoords(String serialForm) {
 			var m = PATTERN.matcher(serialForm);
@@ -250,6 +269,11 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@PositiveOrZero(message = "frame number must not be negative")
 		public final int f;
 
+		/**
+		 * Create an instance.
+		 * @param c Cabinet number.
+		 * @param f Frame number.
+		 */
 		public BMPCoords(int c, int f) {
 			this.c = c;
 			this.f = f;
@@ -258,6 +282,20 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		private static final Pattern PATTERN =
 				Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
 
+		/**
+		 * Create an instance from its serial form. The serial form (where the
+		 * numbers may vary) is:
+		 *
+		 * <pre>
+		 * [c:34,f:12]
+		 * </pre>
+		 *
+		 * @param serialForm
+		 *            The form to deserialise.
+		 * @throws IllegalArgumentException
+		 *             If the string is not in the right form.
+		 */
+		@JsonCreator
 		public BMPCoords(String serialForm) {
 			var m = PATTERN.matcher(serialForm);
 			if (!m.matches()) {
@@ -317,6 +355,12 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@PositiveOrZero(message = "board number must not be negative")
 		public final int b;
 
+		/**
+		 * Create an instance.
+		 * @param c Cabinet number.
+		 * @param f Frame number.
+		 * @param b Board number.
+		 */
 		@JsonCreator
 		public BoardPhysicalCoords(@JsonProperty("c") int c,
 				@JsonProperty("f") int f, @JsonProperty("b") int b) {
@@ -328,6 +372,19 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		private static final Pattern PATTERN =
 				Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
 
+		/**
+		 * Create an instance from its serial form. The serial form (where the
+		 * numbers may vary) is:
+		 *
+		 * <pre>
+		 * [c:34,f:12,b:23]
+		 * </pre>
+		 *
+		 * @param serialForm
+		 *            The form to deserialise.
+		 * @throws IllegalArgumentException
+		 *             If the string is not in the right form.
+		 */
 		@JsonCreator
 		public BoardPhysicalCoords(String serialForm) {
 			var m = PATTERN.matcher(serialForm);

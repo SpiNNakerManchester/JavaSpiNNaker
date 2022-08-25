@@ -156,6 +156,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		private MachineListEntryRecord makeMachineListEntryRecord(Row row) {
 			int id = row.getInt("machine_id");
 			var rec = new MachineListEntryRecord();
+			rec.setId(id);
 			rec.setName(row.getString("machine_name"));
 			var m = countMachineThings.call1(id).get();
 			rec.setNumBoards(m.getInt("board_count"));

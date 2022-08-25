@@ -361,18 +361,27 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			}
 		}
 
+		/** @return The number of items in the packet. */
 		public byte getCount() {
 			return count;
 		}
 
+		/**
+		 * Set the number of items in the packet to a specific value.
+		 *
+		 * @param count
+		 *            The value to set the count to.
+		 */
 		public void setCount(byte count) {
 			this.count = count;
 		}
 
+		/** Increment the count of items in the packet. */
 		public void incrementCount() {
 			count++;
 		}
 
+		/** Reset the count of items in the packet to zero. */
 		public void resetCount() {
 			count = 0;
 		}

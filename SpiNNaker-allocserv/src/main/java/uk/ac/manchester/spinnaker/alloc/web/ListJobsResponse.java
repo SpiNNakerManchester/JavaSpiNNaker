@@ -54,7 +54,7 @@ public final class ListJobsResponse {
 		return prev;
 	}
 
-	public void setPrev(URI prev) {
+	void setPrev(URI prev) {
 		this.prev = prev;
 	}
 
@@ -64,7 +64,7 @@ public final class ListJobsResponse {
 		return next;
 	}
 
-	public void setNext(URI next) {
+	void setNext(URI next) {
 		this.next = next;
 	}
 }

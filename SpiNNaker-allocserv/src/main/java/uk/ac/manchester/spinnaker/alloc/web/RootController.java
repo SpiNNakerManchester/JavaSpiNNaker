@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 
+/**
+ * A simple controller for the root of the service. Redirects to the actual web
+ * interface.
+ */
 @Controller
 @RequestMapping("/")
 public class RootController {

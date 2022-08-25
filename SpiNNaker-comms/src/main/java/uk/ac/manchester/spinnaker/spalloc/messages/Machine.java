@@ -36,64 +36,62 @@ public class Machine {
 
 	private List<BoardLink> deadLinks = List.of();
 
+	/** @return The name of the machine. */
 	public String getName() {
 		return name;
 	}
 
+	/** @param name The name of the machine. */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/** @return The tags on the machine. */
 	public List<String> getTags() {
 		return tags;
 	}
 
+	/** @param tags The tags on the machine. */
 	public void setTags(List<String> tags) {
 		this.tags = tags == null ? List.of() : unmodifiableList(tags);
 	}
 
+	/** @return The width of the machine. */
 	public int getWidth() {
 		return width;
 	}
 
+	/** @param width The width of the machine. */
 	public void setWidth(int width) {
 		this.width = width;
 	}
 
+	/** @return The height of the machine. */
 	public int getHeight() {
 		return height;
 	}
 
+	/** @param height The height of the machine. */
 	public void setHeight(int height) {
 		this.height = height;
 	}
 
-	/**
-	 * @return the deadBoards
-	 */
+	/** @return The dead boards on the machine. */
 	public List<BoardCoordinates> getDeadBoards() {
 		return deadBoards;
 	}
 
-	/**
-	 * @param deadBoards
-	 *            the deadBoards to set
-	 */
+	/** @param deadBoards The dead boards on the machine. */
 	public void setDeadBoards(List<BoardCoordinates> deadBoards) {
 		this.deadBoards = deadBoards;
 	}
 
-	/**
-	 * @return the deadLinks
-	 */
+	/** @return The dead links on the machine. */
 	public List<BoardLink> getDeadLinks() {
 		return deadLinks;
 	}
 
-	/**
-	 * @param deadLinks
-	 *            the deadLinks to set
-	 */
+	/** @param deadLinks The dead links on the machine. */
 	public void setDeadLinks(List<BoardLink> deadLinks) {
 		this.deadLinks = deadLinks;
 	}

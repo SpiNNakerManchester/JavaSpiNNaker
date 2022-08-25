@@ -70,6 +70,15 @@ public enum Signal {
 		this.type = type;
 	}
 
+	/**
+	 * Convert a byte to a signal value.
+	 *
+	 * @param value
+	 *            The value to decode.
+	 * @return The decoded value.
+	 * @throws NullPointerException
+	 *             If the value is unknown.
+	 */
 	public static Signal get(byte value) {
 		return requireNonNull(MAP.get(value), "unknown signal: " + value);
 	}

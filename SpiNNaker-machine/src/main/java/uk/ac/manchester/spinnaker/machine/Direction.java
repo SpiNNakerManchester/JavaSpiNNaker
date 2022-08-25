@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.machine;
 
 /**
+ * A direction from one SpiNNaker chip to another.
  *
  * @author Christian-B
  */
