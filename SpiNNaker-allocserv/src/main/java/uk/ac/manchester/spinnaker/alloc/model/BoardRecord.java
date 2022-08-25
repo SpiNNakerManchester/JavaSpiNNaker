@@ -59,6 +59,12 @@ public class BoardRecord {
 
 	private Instant lastPowerOff;
 
+	/** The BMP serial number, if known. */
+	private String bmpSerial;
+
+	/** The physical board serial number, if known. */
+	private String physicalSerial;
+
 	private List<BoardIssueReport> reports = new ArrayList<>();
 
 	/** @return The board ID, if known. */
@@ -252,5 +258,25 @@ public class BoardRecord {
 	/** @param power Whether this board is powered on. */
 	public void setPowered(boolean power) {
 		powered = power;
+	}
+
+	/** @return The BMP serial number, if known. */
+	public String getBmpSerial() {
+		return bmpSerial;
+	}
+
+	/** @param bmpSerial The BMP serial number. */
+	public void setBmpSerial(String bmpSerial) {
+		this.bmpSerial = bmpSerial;
+	}
+
+	/** @return The physical board serial number, if known. */
+	public String getPhysicalSerial() {
+		return physicalSerial;
+	}
+
+	/** @param physicalSerial The physical board serial number. */
+	public void setPhysicalSerial(String physicalSerial) {
+		this.physicalSerial = physicalSerial;
 	}
 }

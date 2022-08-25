@@ -321,6 +321,77 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return addStandardContext(MAIN_VIEW.view());
 	}
 
+	private static void addLocalUserList(ModelAndView mav,
+			Map<String, URI> localUserList) {
+		mav.addObject(LOCAL_USER_LIST_OBJ, unmodifiableMap(localUserList));
+	}
+
+	private static void addRemoteUserList(ModelAndView mav,
+			Map<String, URI> remoteUserList) {
+		mav.addObject(OPENID_USER_LIST_OBJ, unmodifiableMap(remoteUserList));
+	}
+
+	private static void addUser(ModelAndView mav, UserRecord user) {
+		mav.addObject(USER_OBJ, user.sanitise());
+	}
+
+	private static void addLocalGroupList(ModelAndView mav,
+			Map<String, URI> localGroupList) {
+		mav.addObject(LOCAL_GROUP_LIST_OBJ, unmodifiableMap(localGroupList));
+	}
+
+	private static void addOrganisationList(ModelAndView mav,
+			Map<String, URI> orgList) {
+		mav.addObject(ORG_GROUP_LIST_OBJ, unmodifiableMap(orgList));
+	}
+
+	private static void addCollabratoryList(ModelAndView mav,
+			Map<String, URI> collabList) {
+		mav.addObject(COLLAB_GROUP_LIST_OBJ, unmodifiableMap(collabList));
+	}
+
+	private static void addGroup(ModelAndView mav, GroupRecord group) {
+		mav.addObject(GROUP_OBJ, group);
+	}
+
+	private static void addUserList(ModelAndView mav, Map<String, URI> users) {
+		mav.addObject(USER_LIST_OBJ, users);
+	}
+
+	private static void addBoard(ModelAndView mav, BoardRecord board) {
+		mav.addObject(BOARD_OBJ, board);
+	}
+
+	private static void addBoard(ModelMap model, BoardRecord board) {
+		model.put(BOARD_OBJ, board);
+	}
+
+	private static void addBlacklist(ModelMap model, BlacklistData bldata) {
+		model.addAttribute(BLACKLIST_DATA_OBJ, bldata);
+	}
+
+	private static void addMachineList(ModelAndView mav,
+			Map<String, Boolean> machineList) {
+		mav.addObject(MACHINE_LIST_OBJ, unmodifiableMap(machineList));
+	}
+
+	private static void addMachineList(ModelMap model,
+			Map<String, Boolean> machineList) {
+		model.put(MACHINE_LIST_OBJ, unmodifiableMap(machineList));
+	}
+
+	private static void addMachineTagging(ModelAndView mav,
+			List<MachineTagging> tagging) {
+		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
+		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
+				.filter(MachineTagging::isTaggedAsDefault).count());
+	}
+
+	private static void addMachineReports(ModelAndView mav,
+			Map<String, List<BoardIssueReport>> reports) {
+		mav.addObject(MACHINE_REPORTS_OBJ, reports);
+	}
+
 	@Override
 	@Action("listing the users")
 	public ModelAndView listUsers() {
@@ -328,10 +399,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		// Share this function
 		Function<UserRecord, URI> urlMaker =
 				user -> uri(admin().showUserForm(user.getUserId()));
-		mav.addObject(LOCAL_USER_LIST_OBJ,
-				unmodifiableMap(userManager.listUsers(true, urlMaker)));
-		mav.addObject(OPENID_USER_LIST_OBJ,
-				unmodifiableMap(userManager.listUsers(false, urlMaker)));
+		addLocalUserList(mav, userManager.listUsers(true, urlMaker));
+		addRemoteUserList(mav, userManager.listUsers(false, urlMaker));
 		return addStandardContext(mav);
 	}
 
@@ -362,8 +431,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		UserRecord user = userManager
 				.getUser(id, m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(NoUser::new);
-		mav.addObject(USER_OBJ, user.sanitise());
-		assert mav.getModel().get(USER_OBJ) instanceof UserRecord;
+		addUser(mav, user);
 		mav.addObject("deleteUri", uri(admin().deleteUser(id, null, null)));
 		return addStandardContext(mav);
 	}
@@ -380,7 +448,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 						m -> uri(admin().showGroupInfo(m.getGroupId())))
 				.orElseThrow(NoUser::new);
 		ModelAndView mav = USER_DETAILS_VIEW.view(model);
-		mav.addObject(USER_OBJ, updatedUser.sanitise());
+		addUser(mav, updatedUser);
 		return addStandardContext(mav);
 	}
 
@@ -407,12 +475,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		// Share this function
 		Function<GroupRecord, URI> urlMaker =
 				group -> uri(admin().showGroupInfo(group.getGroupId()));
-		mav.addObject(LOCAL_GROUP_LIST_OBJ,
-				unmodifiableMap(userManager.listGroups(INTERNAL, urlMaker)));
-		mav.addObject(ORG_GROUP_LIST_OBJ, unmodifiableMap(
-				userManager.listGroups(ORGANISATION, urlMaker)));
-		mav.addObject(COLLAB_GROUP_LIST_OBJ, unmodifiableMap(
-				userManager.listGroups(COLLABRATORY, urlMaker)));
+		addLocalGroupList(mav, userManager.listGroups(INTERNAL, urlMaker));
+		addOrganisationList(mav,
+				userManager.listGroups(ORGANISATION, urlMaker));
+		addCollabratoryList(mav,
+				userManager.listGroups(COLLABRATORY, urlMaker));
 		return addStandardContext(mav);
 	}
 
@@ -421,13 +488,12 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView showGroupInfo(int id) {
 		ModelAndView mav = GROUP_DETAILS_VIEW.view();
 		Map<String, URI> userLocations = new HashMap<>();
-		mav.addObject(GROUP_OBJ, userManager.getGroup(id, m -> {
+		addGroup(mav, userManager.getGroup(id, m -> {
 			userLocations.put(m.getUserName(),
 					uri(admin().showUserForm(m.getUserId())));
 			return uri(admin().removeUserFromGroup(id, m.getUserId(), null));
 		}).orElseThrow(NoGroup::new));
-		assert mav.getModel().get(GROUP_OBJ) instanceof GroupRecord;
-		mav.addObject(USER_LIST_OBJ, userLocations);
+		addUserList(mav, userLocations);
 		mav.addObject("deleteUri", uri(admin().deleteGroup(id, null)));
 		mav.addObject("addUserUri",
 				uri(admin().addUserToGroup(id, null, null)));
@@ -526,8 +592,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("getting the UI for finding boards")
 	public ModelAndView boards() {
 		ModelAndView mav = BOARD_VIEW.view();
-		mav.addObject(BOARD_OBJ, new BoardRecord());
-		mav.addObject(MACHINE_LIST_OBJ, getMachineNames(true));
+		addBoard(mav, new BoardRecord());
+		addMachineList(mav, getMachineNames(true));
 		return addStandardContext(mav);
 	}
 
@@ -567,8 +633,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 		board.setEnabled(bs.getState());
 		addBlacklistData(bs, model);
-		model.put(BOARD_OBJ, bs); // TODO is this right?
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		inflateBoardRecord(board, bs);
+		addBoard(model, board);
+		addMachineList(model, getMachineNames(true));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -583,7 +650,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 		addBlacklistData(bs, model);
 
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		addMachineList(model, getMachineNames(true));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -598,7 +665,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		machineController.pullBlacklist(bs);
 		addBlacklistData(bs, model);
 
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		addMachineList(model, getMachineNames(true));
 		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
 	}
 
@@ -613,7 +680,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		machineController.pushBlacklist(bs);
 		addBlacklistData(bs, model);
 
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		addMachineList(model, getMachineNames(true));
 		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
 	}
 
@@ -623,7 +690,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		inflateBoardRecord(br, bs);
 		br.setEnabled(bs.getState());
 		// Replace the state in the model with the current values
-		model.put(BOARD_OBJ, bs);
+		addBoard(model, br);
 		return bs;
 	}
 
@@ -635,9 +702,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
 		bldata.setSynched(machineController.isBlacklistSynched(board));
 
+		addBlacklist(model, bldata);
 		model.addAttribute(BLACKLIST_URI,
 				uri(admin().blacklistSave(null, model)));
-		model.addAttribute(BLACKLIST_DATA_OBJ, bldata);
 	}
 
 	/**
@@ -678,16 +745,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting a machine's configuration")
 	public ModelAndView machineManagement() {
-		ModelAndView mav =
-				MACHINE_VIEW.view(MACHINE_LIST_OBJ, getMachineNames(true));
+		ModelAndView mav = MACHINE_VIEW.view();
+		addMachineList(mav, getMachineNames(true));
 		List<MachineTagging> tagging = machineController.getMachineTagging();
 		tagging.forEach(
 				t -> t.setUrl(uri(system().getMachineInfo(t.getName()))));
-		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
-		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
-				.filter(MachineTagging::isTaggedAsDefault).count());
-		mav.addObject(MACHINE_REPORTS_OBJ,
-				machineController.getMachineReports());
+		addMachineTagging(mav, tagging);
+		addMachineReports(mav, machineController.getMachineReports());
 		return addStandardContext(mav);
 	}
 
