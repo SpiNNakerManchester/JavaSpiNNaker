@@ -25,11 +25,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/** Describes a dead or administratively disabled link. */
 @JsonFormat(shape = ARRAY)
 @JsonPropertyOrder({
 	"end1", "end2"
 })
-/** Describes a dead link. */
 public class DeadLink {
 	/** One end of a dead link. */
 	public static class End {
@@ -52,6 +52,7 @@ public class DeadLink {
 	@JsonProperty
 	private DeadLink.End end2;
 
+	/** @return The ends of the link. */
 	public List<DeadLink.End> getEnds() {
 		return asList(end1, end2);
 	}

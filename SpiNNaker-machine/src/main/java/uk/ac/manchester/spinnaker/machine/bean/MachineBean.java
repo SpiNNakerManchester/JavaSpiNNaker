@@ -20,12 +20,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
+ * Used to build a {@link Machine} from JSON.
  *
  * @author Christian-B
  */
+@UsedInJavadocOnly(Machine.class)
 public class MachineBean {
 	private final MachineDimensions dimensions;
 

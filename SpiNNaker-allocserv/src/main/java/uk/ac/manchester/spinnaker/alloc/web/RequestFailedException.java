@@ -107,6 +107,7 @@ public class RequestFailedException extends RuntimeException {
 		}
 	}
 
+	/** A resource is no longer believed to exist. */
 	public static class ItsGone extends RequestFailedException {
 		private static final long serialVersionUID = 3774531853141947270L;
 
@@ -115,6 +116,7 @@ public class RequestFailedException extends RuntimeException {
 		}
 	}
 
+	/** A resource cannot be located. */
 	public static class NotFound extends RequestFailedException {
 		private static final long serialVersionUID = 5991697173204757030L;
 
@@ -127,6 +129,7 @@ public class RequestFailedException extends RuntimeException {
 		}
 	}
 
+	/** The client provided bad arguments in a request. */
 	public static class BadArgs extends RequestFailedException {
 		private static final long serialVersionUID = 7916573155067333350L;
 
@@ -135,6 +138,7 @@ public class RequestFailedException extends RuntimeException {
 		}
 	}
 
+	/** The response is empty. */
 	public static class EmptyResponse extends RequestFailedException {
 		private static final long serialVersionUID = -2944836034264700912L;
 

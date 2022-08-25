@@ -28,6 +28,7 @@ import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 
+/** A description of what boards have been allocated to a job. */
 @JsonIgnoreProperties({
 	"power", "machine", "machine-ref"
 })

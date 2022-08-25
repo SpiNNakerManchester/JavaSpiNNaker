@@ -43,6 +43,7 @@ public class JobDescription {
 
 	private Instant keepaliveTime;
 
+	/** @return The state of the job. */
 	public State getState() {
 		return state;
 	}
@@ -51,6 +52,10 @@ public class JobDescription {
 		this.state = state;
 	}
 
+	/**
+	 * @return Who owns the job. {@code null} if the information is shrouded
+	 *         from you.
+	 */
 	public String getOwner() {
 		return owner;
 	}
@@ -59,6 +64,7 @@ public class JobDescription {
 		this.owner = owner;
 	}
 
+	/** @return When the job started. */
 	@JsonAlias("start-time")
 	public Instant getStartTime() {
 		return startTime;
@@ -68,6 +74,7 @@ public class JobDescription {
 		this.startTime = startTime;
 	}
 
+	/** @return When the job was destroyed. {@code null} if not yet finished. */
 	@JsonAlias("finish-time")
 	public Instant getFinishTime() {
 		return finishTime;
@@ -77,6 +84,7 @@ public class JobDescription {
 		this.finishTime = finishTime;
 	}
 
+	/** @return Why the job was destroyed. {@code null} if the job is alive. */
 	public String getReason() {
 		return reason;
 	}
@@ -85,6 +93,11 @@ public class JobDescription {
 		this.reason = reason;
 	}
 
+	/**
+	 * @return Which host is believed to be keeping a job alive. May be
+	 *         {@code null} if the information is not known or shrouded from
+	 *         you.
+	 */
 	@JsonAlias("keepalive-host")
 	public String getKeepaliveHost() {
 		return keepaliveHost;
@@ -94,6 +107,7 @@ public class JobDescription {
 		this.keepaliveHost = keepaliveHost;
 	}
 
+	/** @return The most recent keepalive timestamp. */
 	@JsonAlias("keepalive-time")
 	public Instant getKeepaliveTime() {
 		return keepaliveTime;

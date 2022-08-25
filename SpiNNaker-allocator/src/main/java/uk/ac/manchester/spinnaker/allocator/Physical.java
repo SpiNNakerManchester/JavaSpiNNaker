@@ -21,7 +21,11 @@ import static java.lang.String.format;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-/** Physical coordinates of a board. */
+/**
+ * Physical coordinates of a board. SpiNNaker boards are arranged in frames
+ * (multi-unit racks that share a management layer) and frames are arranged in
+ * cabinets (full 19" server cabinets).
+ */
 @JsonFormat(shape = ARRAY)
 public class Physical {
 	private int cabinet;
@@ -30,6 +34,24 @@ public class Physical {
 
 	private Integer board;
 
+	public Physical() {
+	}
+
+	/**
+	 * @param cabinet
+	 *            The cabinet number.
+	 * @param frame
+	 *            The frame number.
+	 * @param board
+	 *            The board number.
+	 */
+	public Physical(int cabinet, int frame, int board) {
+		this.cabinet = cabinet;
+		this.frame = frame;
+		this.board = board;
+	}
+
+	/** @return The cabinet number. */
 	public int getCabinet() {
 		return cabinet;
 	}
@@ -38,6 +60,7 @@ public class Physical {
 		this.cabinet = cabinet;
 	}
 
+	/** @return The frame number. */
 	public int getFrame() {
 		return frame;
 	}
@@ -46,7 +69,9 @@ public class Physical {
 		this.frame = frame;
 	}
 
+	/** @return The board number. */
 	public Integer getBoard() {
+		// TODO document when this can be null
 		return board;
 	}
 
