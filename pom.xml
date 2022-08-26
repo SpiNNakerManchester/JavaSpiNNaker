@@ -392,7 +392,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
 							<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
 							<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+							<!-- This isn't modular so javadoc 14 gets snooty
 							<link>https://javaee.github.io/javaee-spec/javadocs/</link>
+							-->
 						</links>
 						<notimestamp>true</notimestamp>
 						<additionalOptions>
@@ -897,6 +899,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>Java17extras</id>
+			<activation>
+				<jdk>[17,)</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<links>
+								<!-- Repeat these -->
+								<link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
+								<link>https://docs.spring.io/spring-security/site/docs/current/api/</link>
+								<link>https://docs.spring.io/spring-boot/docs/current/api/</link>
+								<link>https://javaee.github.io/javaee-spec/javadocs/</link>
+								<link>https://cxf.apache.org/javadoc/latest-3.0.x/</link>
+							</links>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
