@@ -215,13 +215,22 @@ public class TransceiverFactory
 		}
 	}
 
-	/** Operations for testing only. */
+	/** Not a public API! Operations for testing only. */
 	@ForTestingOnly
 	public interface TestAPI {
+		/** @return The current blacklist. */
 		Blacklist getCurrentBlacklist();
 
+		/**
+		 * @param factory
+		 *            The mock transceiver factory to use.
+		 */
 		void setFactory(TestTransceiverFactory factory);
 
+		/**
+		 * Not a public API! A factory for transceivers. Use to install a
+		 * suitable mock.
+		 */
 		interface TestTransceiverFactory {
 			/**
 			 * Make a test transceiver.
@@ -241,6 +250,7 @@ public class TransceiverFactory
 	}
 
 	/**
+	 * Not a public API! Do not call outside of test code!
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 */

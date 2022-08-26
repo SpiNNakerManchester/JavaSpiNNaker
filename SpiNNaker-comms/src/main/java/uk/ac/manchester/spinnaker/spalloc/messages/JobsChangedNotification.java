@@ -42,10 +42,12 @@ public class JobsChangedNotification implements Notification {
 		setJobsChanged(singletonList(jobID));
 	}
 
+	/** @return What jobs have changed. Not accurate. */
 	public List<Integer> getJobsChanged() {
 		return jobsChanged;
 	}
 
+	/** @param jobsChanged What jobs have changed. */
 	public void setJobsChanged(List<Integer> jobsChanged) {
 		this.jobsChanged = jobsChanged == null ? emptyList()
 				: unmodifiableList(jobsChanged);

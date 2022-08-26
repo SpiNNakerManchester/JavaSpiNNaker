@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.model;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -32,6 +33,7 @@ import javax.validation.constraints.Null;
 
 import org.springframework.beans.NotReadablePropertyException;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -46,6 +48,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * this class</em> but the service itself will not respect being asked to change
  * them.
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public final class UserRecord {
 	private Integer userId;
 
@@ -112,6 +115,11 @@ public final class UserRecord {
 		return userId;
 	}
 
+	/**
+	 * @param userId
+	 *            The user identifier. Read-only within the administration
+	 *            interface; cannot be set by the service.
+	 */
 	public void setUserId(Integer userId) {
 		this.userId = userId;
 	}
@@ -124,6 +132,10 @@ public final class UserRecord {
 		return userName;
 	}
 
+	/**
+	 * @param userName
+	 *            The user's username.
+	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
@@ -137,6 +149,11 @@ public final class UserRecord {
 		return password;
 	}
 
+	/**
+	 * @param password
+	 *            The user's unencrypted password. <em>Never</em> returned by
+	 *            the service, but may be written.
+	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -149,18 +166,29 @@ public final class UserRecord {
 		return hasPassword;
 	}
 
+	/**
+	 * @param hasPassword
+	 *            Whether the user has a password set. If they don't, they'll
+	 *            have to log in by other mechanisms (e.g., HBP/EBRAINS OpenID
+	 *            Connect).
+	 */
 	public void setHasPassword(Boolean hasPassword) {
 		this.hasPassword = hasPassword;
 	}
 
 	/**
 	 * @return Whether this account is enabled. Disabled accounts
-	 *         <em>cannot</em> use the service until explicitly enabled.
+	 *         <em>cannot</em> log into the service until explicitly enabled.
 	 */
 	public Boolean getEnabled() {
 		return isEnabled;
 	}
 
+	/**
+	 * @param isEnabled
+	 *            Whether this account is enabled. Disabled accounts
+	 *            <em>cannot</em> log into the service until explicitly enabled.
+	 */
 	public void setEnabled(Boolean isEnabled) {
 		this.isEnabled = isEnabled;
 	}
@@ -175,6 +203,12 @@ public final class UserRecord {
 		return isLocked;
 	}
 
+	/**
+	 * @param isLocked
+	 *            Whether this account is temporarily locked. Locked accounts
+	 *            should unlock automatically after 24 hours. Can be explicitly
+	 *            set to {@code false} to force an unlock.
+	 */
 	public void setLocked(Boolean isLocked) {
 		this.isLocked = isLocked;
 	}
@@ -187,6 +221,9 @@ public final class UserRecord {
 		return trustLevel;
 	}
 
+	/**
+	 * @param trustLevel The permissions of the account.
+	 */
 	public void setTrustLevel(TrustLevel trustLevel) {
 		this.trustLevel = trustLevel;
 	}
@@ -201,7 +238,7 @@ public final class UserRecord {
 		return lastSuccessfulLogin;
 	}
 
-	public void setLastSuccessfulLogin(Instant timestamp) {
+	void setLastSuccessfulLogin(Instant timestamp) {
 		this.lastSuccessfulLogin = timestamp;
 	}
 
@@ -215,7 +252,7 @@ public final class UserRecord {
 		return lastFailedLogin;
 	}
 
-	public void setLastFailedLogin(Instant timestamp) {
+	void setLastFailedLogin(Instant timestamp) {
 		this.lastFailedLogin = timestamp;
 	}
 
@@ -231,6 +268,9 @@ public final class UserRecord {
 		return groups;
 	}
 
+	/**
+	 * @param groups The groups that the user is a member of.
+	 */
 	public void setGroups(Map<String, URI> groups) {
 		this.groups = groups;
 	}
@@ -240,6 +280,7 @@ public final class UserRecord {
 		return openIdSubject;
 	}
 
+	/** @param subject The OpenID subject that this user relates to. */
 	public void setOpenIdSubject(String subject) {
 		this.openIdSubject = subject;
 	}
@@ -250,7 +291,7 @@ public final class UserRecord {
 		return isInternal;
 	}
 
-	public void setInternal(boolean internal) {
+	void setInternal(boolean internal) {
 		this.isInternal = internal;
 	}
 

@@ -16,13 +16,20 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.lang.String.format;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-/** Physical coordinates of a board. */
+/**
+ * Physical coordinates of a board. SpiNNaker boards are arranged in frames
+ * (multi-unit racks that share a management layer) and frames are arranged in
+ * cabinets (full 19" server cabinets).
+ */
 @JsonFormat(shape = ARRAY)
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class Physical {
 	private int cabinet;
 
@@ -30,27 +37,48 @@ public class Physical {
 
 	private Integer board;
 
+	Physical() {
+	}
+
+	/**
+	 * @param cabinet
+	 *            The cabinet number.
+	 * @param frame
+	 *            The frame number.
+	 * @param board
+	 *            The board number.
+	 */
+	public Physical(int cabinet, int frame, int board) {
+		this.cabinet = cabinet;
+		this.frame = frame;
+		this.board = board;
+	}
+
+	/** @return The cabinet number. */
 	public int getCabinet() {
 		return cabinet;
 	}
 
-	public void setCabinet(int cabinet) {
+	void setCabinet(int cabinet) {
 		this.cabinet = cabinet;
 	}
 
+	/** @return The frame number. */
 	public int getFrame() {
 		return frame;
 	}
 
-	public void setFrame(int frame) {
+	void setFrame(int frame) {
 		this.frame = frame;
 	}
 
+	/** @return The board number. */
 	public Integer getBoard() {
+		// TODO document when this can be null
 		return board;
 	}
 
-	public void setBoard(Integer board) {
+	void setBoard(Integer board) {
 		this.board = board;
 	}
 

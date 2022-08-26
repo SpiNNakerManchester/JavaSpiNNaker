@@ -133,9 +133,15 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		sendCount++;
 	}
 
+	/**
+	 * Writes the count of messages sent and received on this connection to the
+	 * log.
+	 */
 	protected void writeCountsToLog() {
-		log.info("{} message counts: sent {} received {}", name, sendCount,
-				receiveCount);
+		if (sendCount > 0 || receiveCount > 0) {
+			log.info("{} message counts: sent {} received {}", name, sendCount,
+					receiveCount);
+		}
 	}
 
 	@Override

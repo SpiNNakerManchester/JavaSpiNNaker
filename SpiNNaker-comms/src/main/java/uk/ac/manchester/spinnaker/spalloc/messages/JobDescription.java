@@ -60,103 +60,127 @@ public class JobDescription {
 	/** Number of boards to list individually in the toString. */
 	private static final int PRINT_EXACT_BOARDS_THRESHOLD = 6;
 
+	/** @return The job state. */
 	public State getState() {
 		return state;
 	}
 
+	/** @param state The job state. */
 	public void setState(State state) {
 		this.state = state;
 	}
 
+	/** @return Whether the job's allocated boards are powered on. */
 	public Boolean getPower() {
 		return power;
 	}
 
+	/** @param power Whether the job's allocated boards are powered on. */
 	public void setPower(Boolean power) {
 		this.power = power;
 	}
 
+	/** @return The job's maximum keepalive interval, in seconds. */
 	@JsonProperty("keepalive")
 	public double getKeepAlive() {
 		return keepAlive;
 	}
 
+	/** @param keepAlive The job's maximum keepalive interval, in seconds. */
 	public void setKeepAlive(double keepAlive) {
 		this.keepAlive = keepAlive;
 	}
 
+	/** @return The reason why the job terminated. */
 	public String getReason() {
 		return reason;
 	}
 
+	/** @param reason The reason why the job terminated. */
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
 
+	/** @return The job's identifier. */
 	@JsonProperty("job_id")
 	public int getJobID() {
 		return jobID;
 	}
 
+	/** @param jobID The job's identifier. */
 	public void setJobID(int jobID) {
 		this.jobID = jobID;
 	}
 
+	/** @return The job's owner. This is not necessarily validated! */
 	public String getOwner() {
 		return owner;
 	}
 
+	/** @param owner The job's owner. */
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
 
+	/** @return When the job started, in seconds from the epoch. */
 	@JsonProperty("start_time")
 	public Double getStartTime() {
 		return startTime;
 	}
 
+	/** @param startTime When the job started, in seconds from the epoch. */
 	public void setStartTime(Double startTime) {
 		this.startTime = startTime;
 	}
 
+	/** @return The name of the machine that the job is allocated to. */
 	@JsonProperty("allocated_machine_name")
 	public String getMachine() {
 		return machine;
 	}
 
+	/** @param machine The name of the machine that the job is allocated to. */
 	public void setMachine(String machine) {
 		this.machine = machine;
 	}
 
+	/** @return The positional arguments used to create the job. */
 	public List<Integer> getArgs() {
 		return args;
 	}
 
+	/** @param args The positional arguments used to create the job. */
 	public void setArgs(List<Integer> args) {
 		this.args = unmodifiableList(args);
 	}
 
+	/** @return The keyword arguments used to create the job. */
 	public Map<String, Object> getKwargs() {
 		return kwargs;
 	}
 
+	/** @param kwargs The keyword arguments used to create the job. */
 	public void setKwargs(Map<String, Object> kwargs) {
 		this.kwargs = unmodifiableMap(kwargs);
 	}
 
+	/** @return The boards allocated to the job and their locations. */
 	public List<BoardCoordinates> getBoards() {
 		return boards;
 	}
 
+	/** @param boards The boards allocated to the job and their locations. */
 	public void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards;
 	}
 
+	/** @return The host believed to be keeping the job alive. */
 	@JsonProperty("keepalivehost")
 	public String getKeepAliveHost() {
 		return keepAliveHost;
 	}
 
+	/** @param keepAliveHost The host believed to be keeping the job alive. */
 	public void setKeepAliveHost(String keepAliveHost) {
 		this.keepAliveHost = keepAliveHost;
 	}

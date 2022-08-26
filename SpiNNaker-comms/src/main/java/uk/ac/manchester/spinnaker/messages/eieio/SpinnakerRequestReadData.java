@@ -170,26 +170,56 @@ public class SpinnakerRequestReadData extends EIEIOCommandMessage
 		return core.getP();
 	}
 
+	/** @return The number of requests in the message. */
 	public int getNumRequests() {
 		return numRequests;
 	}
 
+	/** @return The sequence number of the message. */
 	public int getSequenceNumber() {
 		return sequenceNumber;
 	}
 
+	/**
+	 * Get the channel ID.
+	 *
+	 * @param ackID
+	 *            Which acknowledgement.
+	 * @return The channel ID.
+	 */
 	public int getChannel(int ackID) {
 		return channel[ackID];
 	}
 
+	/**
+	 * Get the region ID.
+	 *
+	 * @param ackID
+	 *            Which acknowledgement.
+	 * @return The region ID.
+	 */
 	public int getRegionID(int ackID) {
 		return regionID[ackID];
 	}
 
+	/**
+	 * Get the start addresses to read from.
+	 *
+	 * @param ackID
+	 *            Which acknowledgement.
+	 * @return The start addresses to read from.
+	 */
 	public int getStartAddress(int ackID) {
 		return startAddress[ackID];
 	}
 
+	/**
+	 * Get the number of bytes to read.
+	 *
+	 * @param ackID
+	 *            Which acknowledgement.
+	 * @return The number of bytes to read.
+	 */
 	public int getSpaceRead(int ackID) {
 		return spaceRead[ackID];
 	}

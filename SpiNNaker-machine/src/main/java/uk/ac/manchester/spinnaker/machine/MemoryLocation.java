@@ -35,14 +35,23 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 	/** The actual location. */
 	public final int address;
 
+	/** @param address The actual location. */
 	public MemoryLocation(int address) {
 		this.address = address;
 	}
 
+	/** @param address The actual location. */
 	public MemoryLocation(long address) {
 		this.address = convert(address);
 	}
 
+	/**
+	 * Add an offset to this location to get a new memory location.
+	 *
+	 * @param offset
+	 *            The offset to add.
+	 * @return The new memory location.
+	 */
 	public MemoryLocation add(int offset) {
 		return new MemoryLocation(address + offset);
 	}
@@ -58,6 +67,7 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 		return address - other.address;
 	}
 
+	/** @return Whether this location is really {@linkplain #NULL null}. */
 	public boolean isNull() {
 		return address == 0;
 	}

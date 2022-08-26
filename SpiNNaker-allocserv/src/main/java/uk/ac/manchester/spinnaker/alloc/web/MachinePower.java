@@ -31,19 +31,28 @@ import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 public class MachinePower {
 	private PowerState power;
 
+	/** Make an instance. */
 	public MachinePower() {
 		power = OFF;
 	}
 
+	/**
+	 * Make an instance.
+	 *
+	 * @param power
+	 *            the machine power state
+	 */
 	public MachinePower(PowerState power) {
 		this.power = power;
 	}
 
+	/** @return the machine power state */
 	@NotNull(message = "power must be specified")
 	public PowerState getPower() {
 		return power;
 	}
 
+	/** @param power the machine power state */
 	public void setPower(PowerState power) {
 		this.power = power;
 	}

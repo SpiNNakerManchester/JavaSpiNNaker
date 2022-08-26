@@ -20,6 +20,7 @@ package uk.ac.manchester.spinnaker.spalloc.exceptions;
 public class SpallocStateChangeTimeoutException extends Exception {
 	private static final long serialVersionUID = 4879238794331037892L;
 
+	/** Create an instance. */
 	public SpallocStateChangeTimeoutException() {
 	}
 }

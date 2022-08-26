@@ -25,11 +25,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/** Describes a dead or administratively disabled link. */
 @JsonFormat(shape = ARRAY)
 @JsonPropertyOrder({
 	"end1", "end2"
 })
-/** Describes a dead link. */
 public class DeadLink {
 	/** One end of a dead link. */
 	public static class End {
@@ -39,6 +39,12 @@ public class DeadLink {
 		/** The direction that the dead link goes in. */
 		public final Direction direction;
 
+		/**
+		 * @param board
+		 *            The board at the end of a dead link.
+		 * @param direction
+		 *            The direction that the dead link goes in.
+		 */
 		public End(@JsonProperty("board") BoardCoords board,
 				@JsonProperty("direction") Direction direction) {
 			this.board = board;
@@ -52,6 +58,7 @@ public class DeadLink {
 	@JsonProperty
 	private DeadLink.End end2;
 
+	/** @return The ends of the link. */
 	public List<DeadLink.End> getEnds() {
 		return asList(end1, end2);
 	}

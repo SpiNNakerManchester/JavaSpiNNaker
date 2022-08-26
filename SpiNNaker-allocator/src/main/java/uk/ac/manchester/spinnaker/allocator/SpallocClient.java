@@ -326,8 +326,17 @@ public interface SpallocClient {
 	class Exception extends RuntimeException {
 		private static final long serialVersionUID = -1363689283367574333L;
 
+		/** The HTTP response code that triggered the exception. */
 		private final int responseCode;
 
+		/**
+		 * Create an instance.
+		 *
+		 * @param message
+		 *            The message body of the error.
+		 * @param responseCode
+		 *            The HTTP response code that triggered the exception.
+		 */
 		public Exception(String message, int responseCode) {
 			super(message);
 			this.responseCode = responseCode;

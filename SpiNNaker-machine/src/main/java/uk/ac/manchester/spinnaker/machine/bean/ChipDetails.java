@@ -28,20 +28,24 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
+ * The details of a {@link Chip}.
  *
  * @author Christian-B
  */
+@UsedInJavadocOnly(Chip.class)
 public class ChipDetails {
-	/** Total number of working core on this Chip. */
+	/** Total number of working core on this chip. */
 	public final int cores;
 
-	/** Location of the nearest Ethernet Chip. */
+	/** Location of the nearest Ethernet-enabled chip. */
 	public final ChipLocation ethernet;
 
 	private final InetAddress ipAddress;
