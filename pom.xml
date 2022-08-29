@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
 		<junit.version>5.9.0</junit.version>
-		<checkstyle.version>10.3.2</checkstyle.version>
+		<checkstyle.version>10.3.3</checkstyle.version>
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
 
