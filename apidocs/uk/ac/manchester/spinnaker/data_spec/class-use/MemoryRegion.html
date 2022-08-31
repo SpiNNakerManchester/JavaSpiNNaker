@@ -158,24 +158,24 @@ loadScripts(document, 'script');</script>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html?is-external=true" title="class or interface in java.util" class="externalLink">Iterator</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html?is-external=true" title="class or interface in java.util" class="externalLink">Iterator</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">MemoryRegionCollection.</span><code><span class="memberNameLink"><a href="../MemoryRegionCollection.html#iterator()">iterator</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">Executor.</span><code><span class="memberNameLink"><a href="../Executor.html#regions()">regions</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the regions of the executor as an unmodifiable iterable.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Spliterator.html?is-external=true" title="class or interface in java.util" class="externalLink">Spliterator</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Spliterator.html?is-external=true" title="class or interface in java.util" class="externalLink">Spliterator</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">MemoryRegionCollection.</span><code><span class="memberNameLink"><a href="../MemoryRegionCollection.html#spliterator()">spliterator</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">MemoryRegionCollection.</span><code><span class="memberNameLink"><a href="../MemoryRegionCollection.html#stream()">stream</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -197,7 +197,10 @@ loadScripts(document, 'script');</script>
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><span class="typeNameLabel">MemoryRegionCollection.</span><code><span class="memberNameLink"><a href="../MemoryRegionCollection.html#add(uk.ac.manchester.spinnaker.data_spec.MemoryRegion)">add</a></span>&#8203;(<a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&nbsp;e)</code></th>
 <td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This method is unsupported, as this collection does not
+             support size-varying operations.</div>
+</div>
 </td>
 </tr>
 </tbody>
@@ -216,9 +219,12 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">MemoryRegionCollection.</span><code><span class="memberNameLink"><a href="../MemoryRegionCollection.html#addAll(java.util.Collection)">addAll</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;? extends <a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;&nbsp;c)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">MemoryRegionCollection.</span><code><span class="memberNameLink"><a href="../MemoryRegionCollection.html#addAll(java.util.Collection)">addAll</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;? extends <a href="../MemoryRegion.html" title="class in uk.ac.manchester.spinnaker.data_spec">MemoryRegion</a>&gt;&nbsp;c)</code></th>
 <td class="colLast">
-<div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">This method is unsupported, as this collection does not
+             support size-varying operations.</div>
+</div>
 </td>
 </tr>
 </tbody>

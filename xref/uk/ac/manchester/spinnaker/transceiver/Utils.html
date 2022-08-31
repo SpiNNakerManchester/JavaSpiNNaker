@@ -111,7 +111,7 @@
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong</em>
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 	@Deprecated
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 	@Deprecated(forRemoval = <strong class="jxr_keyword">true</strong>)
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> sendPortTriggerMessage(UDPConnection&lt;?&gt; connection,
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 			InetAddress host) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> 		connection.sendPortTriggerMessage(host);
@@ -142,9 +142,9 @@
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> 		<strong class="jxr_keyword">if</strong> (buffer.hasArray()) {
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> 			Arrays.fill(buffer.array(), start, start + len, value);
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L137" href="#L137">137</a> 			byte[] work = <strong class="jxr_keyword">new</strong> byte[len];
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> 			<strong class="jxr_keyword">var</strong> work = <strong class="jxr_keyword">new</strong> byte[len];
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 			Arrays.fill(work, value);
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 			ByteBuffer buf = buffer.duplicate();
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> 			<strong class="jxr_keyword">var</strong> buf = buffer.duplicate();
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 			buf.position(start);
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> 			buf.put(work);
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> 		}
@@ -162,10 +162,10 @@
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">	 * @return The CRC (as a signed integer).</em>
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 	<strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> crc(ByteBuffer buffer, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> len) {
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> 		ByteBuffer crcbuf = buffer.duplicate();
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> 		<strong class="jxr_keyword">var</strong> crcbuf = buffer.duplicate();
 <a class="jxr_linenumber" name="L158" href="#L158">158</a> 		crcbuf.position(start);
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> 		crcbuf.limit(start + len);
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> 		CRC32 crc = <strong class="jxr_keyword">new</strong> CRC32();
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 		<strong class="jxr_keyword">var</strong> crc = <strong class="jxr_keyword">new</strong> CRC32();
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> 		crc.update(crcbuf);
 <a class="jxr_linenumber" name="L162" href="#L162">162</a> 		<strong class="jxr_keyword">return</strong> (<strong class="jxr_keyword">int</strong>) crc.getValue();
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 	}

@@ -97,7 +97,7 @@ loadScripts(document, 'script');</script>
 <dd>This is a functional interface and can therefore be used as the assignment target for a lambda expression or method reference.</dd>
 </dl>
 <hr>
-<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html?is-external=true" title="class or interface in java.lang" class="externalLink">@FunctionalInterface</a>
+<pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/FunctionalInterface.html?is-external=true" title="class or interface in java.lang" class="externalLink">@FunctionalInterface</a>
 protected static interface <span class="typeNameLabel">BackgroundSupport.BackgroundAction</span></pre>
 <div class="block">An action that produces a response, usually handled asynchronously. Care
  should be taken as the action may be run on a thread other than the
@@ -128,7 +128,7 @@ protected static interface <span class="typeNameLabel">BackgroundSupport.Backgro
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#respond()">respond</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Does the action that produces the result.</div>
@@ -154,9 +154,9 @@ protected static interface <span class="typeNameLabel">BackgroundSupport.Backgro
 <li class="blockList">
 <section class="detail">
 <h3><a id="respond()">respond</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></span>&nbsp;<span class="memberName">respond</span>()
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></span>&nbsp;<span class="memberName">respond</span>()
         throws <span class="exceptions"><a href="RequestFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.web">RequestFailedException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
 <div class="block">Does the action that produces the result.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -164,13 +164,13 @@ protected static interface <span class="typeNameLabel">BackgroundSupport.Backgro
          generic 404 with no special message. Custom messages should
          be supported by throwing a suitable
          <a href="RequestFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.web"><code>RequestFailedException</code></a>. If the result is not a
-         <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Response.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink"><code>Response</code></a> and not a <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Throwable</code></a>, it will be
+         <code>Response</code> and not a <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Throwable</code></a>, it will be
          returned as the entity that populates a <code>200 OK</code> (and
          so must be convertible to JSON).</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="RequestFailedException.html" title="class in uk.ac.manchester.spinnaker.alloc.web">RequestFailedException</a></code> - If anything goes wrong. This is the <em>expected</em>
              exception type; it is <em>not</em> logged.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code> - If anything goes wrong. This is reported as an
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code> - If anything goes wrong. This is reported as an
              <em>unexpected</em> exception and logged.</dd>
 </dl>
 </section>

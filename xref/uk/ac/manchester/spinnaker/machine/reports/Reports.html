@@ -24,19 +24,19 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.machine.reports;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.io.BufferedWriter;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.io.File;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.io.FileWriter;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.io.PrintWriter;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.util.Calendar;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.Chip;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.nio.charset.StandardCharsets.UTF_8;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.io.BufferedWriter;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.io.File;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.io.FileWriter;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.io.PrintWriter;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> java.util.Calendar;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.ChipLocation;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.Link;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.Machine;
@@ -69,10 +69,10 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> generateMachineReport(File reportDirectory,
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  			Machine machine, Collection&lt;?&gt; connections) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  		File file = <strong class="jxr_keyword">new</strong> File(reportDirectory, FILENAME);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  		Calendar timestamp = Calendar.getInstance();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		<strong class="jxr_keyword">try</strong> (PrintWriter f =
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  				<strong class="jxr_keyword">new</strong> PrintWriter(<strong class="jxr_keyword">new</strong> BufferedWriter(<strong class="jxr_keyword">new</strong> FileWriter(file)))) {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  		<strong class="jxr_keyword">var</strong> file = <strong class="jxr_keyword">new</strong> File(reportDirectory, FILENAME);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  		<strong class="jxr_keyword">var</strong> timestamp = Calendar.getInstance();
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> f = <strong class="jxr_keyword">new</strong> PrintWriter(
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  				<strong class="jxr_keyword">new</strong> BufferedWriter(<strong class="jxr_keyword">new</strong> FileWriter(file, UTF_8)))) {
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  			writeHeader(f, timestamp, machine, connections);
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> x = 0; x &lt;= machine.maxChipX(); x++) {
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  				<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> y = 0; y &lt;= machine.maxChipY(); y++) {
@@ -99,7 +99,7 @@
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> writeChipRouterReport(PrintWriter f, <a name="Machine" href="../../../../../../uk/ac/manchester/spinnaker/machine/Machine.html#Machine">Machine</a> machine,
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  			<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  		Chip chip = machine.getChipAt(<strong class="jxr_keyword">new</strong> ChipLocation(x, y));
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  		<strong class="jxr_keyword">var</strong> chip = machine.getChipAt(<strong class="jxr_keyword">new</strong> ChipLocation(x, y));
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  		<strong class="jxr_keyword">if</strong> (chip != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  			f.printf(<span class="jxr_string">"\nInformation for chip %d:%d\n"</span>, chip.getX(),
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  					chip.getY());

@@ -27,9 +27,9 @@
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Byte.toUnsignedInt;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLocation;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -182,7 +182,7 @@
 <a class="jxr_linenumber" name="L174" href="#L174">174</a> 				<strong class="jxr_keyword">if</strong> (!(other instanceof HasCoreLocation)) {
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 					<strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 				}
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> 				HasCoreLocation c = (HasCoreLocation) other;
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 				<strong class="jxr_keyword">var</strong> c = (HasCoreLocation) other;
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> 				<strong class="jxr_keyword">return</strong> x == c.getX() &amp;&amp; y == c.getY() &amp;&amp; p == c.getP();
 <a class="jxr_linenumber" name="L179" href="#L179">179</a> 			}
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> 		};
@@ -362,31 +362,26 @@
 <a class="jxr_linenumber" name="L354" href="#L354">354</a> 		<em class="jxr_javadoccomment">/** The SDP-encoded form of the flag. */</em>
 <a class="jxr_linenumber" name="L355" href="#L355">355</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> byte value;
 <a class="jxr_linenumber" name="L356" href="#L356">356</a> 
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;Byte, Flag&gt; MAP = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> 		Flag(<strong class="jxr_keyword">int</strong> value) {
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> 			<strong class="jxr_keyword">this</strong>.value = (byte) value;
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> 		}
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> 
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> 		<strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> 			<strong class="jxr_keyword">for</strong> (Flag flag : values()) {
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> 				MAP.put(flag.value, flag);
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> 			}
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> 		}
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> 
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">		 * Given a value, get the {@code enum} member that corresponds to it.</em>
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">		 * @param value</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">		 *            The value to parse.</em>
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">		 * @return The flag it corresponds to, or {@code null} if it doesn't</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">		 *         correspond to anything.</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Flag get(byte value) {
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 			<strong class="jxr_keyword">return</strong> MAP.get(value);
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> 		}
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 	}
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> }
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;Byte, Flag&gt; MAP =
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 				makeEnumBackingMap(values(), v -&gt; v.value);
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> 
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> 		Flag(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> 			<strong class="jxr_keyword">this</strong>.value = (byte) value;
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> 		}
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> 
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">		 * Given a value, get the {@code enum} member that corresponds to it.</em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">		 * @param value</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">		 *            The value to parse.</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">		 * @return The flag it corresponds to, or {@code null} if it doesn't</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">		 *         correspond to anything.</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> 		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Flag get(byte value) {
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 			<strong class="jxr_keyword">return</strong> MAP.get(value);
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 		}
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 	}
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

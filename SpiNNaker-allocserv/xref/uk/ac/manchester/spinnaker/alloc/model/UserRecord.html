@@ -319,7 +319,7 @@
 <a class="jxr_linenumber" name="L311" href="#L311">311</a> 
 <a class="jxr_linenumber" name="L312" href="#L312">312</a> 	@JsonIgnore
 <a class="jxr_linenumber" name="L313" href="#L313">313</a> 	<strong class="jxr_keyword">boolean</strong> isPasswordSet() {
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> 		<strong class="jxr_keyword">return</strong> nonNull(password) &amp;&amp; !password.trim().isEmpty();
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> 		<strong class="jxr_keyword">return</strong> nonNull(password) &amp;&amp; !password.isBlank();
 <a class="jxr_linenumber" name="L315" href="#L315">315</a> 	}
 <a class="jxr_linenumber" name="L316" href="#L316">316</a> 
 <a class="jxr_linenumber" name="L317" href="#L317">317</a> 	@AssertTrue(message = <span class="jxr_string">"only set a password for non-OpenID accounts"</span>)

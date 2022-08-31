@@ -79,13 +79,13 @@
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  	List&lt;HeapElement&gt; getBlocks(<a name="HasChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip,
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  			SystemVariableDefinition heap)
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  		HeapHeader header = getHeapHeader(chip, heap);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  		MemoryLocation nextBlock = header.first;
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  		<strong class="jxr_keyword">var</strong> header = getHeapHeader(chip, heap);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  		<strong class="jxr_keyword">var</strong> nextBlock = header.first;
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  		List&lt;HeapElement&gt; blocks = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  		<strong class="jxr_keyword">var</strong> blocks = <strong class="jxr_keyword">new</strong> ArrayList&lt;HeapElement&gt;();
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  		<strong class="jxr_keyword">while</strong> (!nextBlock.isNull()) {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  			BlockHeader block = getBlockHeader(chip, nextBlock);
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  			<strong class="jxr_keyword">var</strong> block = getBlockHeader(chip, nextBlock);
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  			<strong class="jxr_keyword">if</strong> (!block.next.isNull()) {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  				blocks.add(<strong class="jxr_keyword">new</strong> <a name="HeapElement" href="../../../../../uk/ac/manchester/spinnaker/messages/model/HeapElement.html#HeapElement">HeapElement</a>(nextBlock, block.next,
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  						block.free.address));
@@ -114,13 +114,13 @@
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> 	List&lt;HeapElement&gt; getFreeBlocks(<a name="HasChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip,
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 			SystemVariableDefinition heap)
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> 		HeapHeader header = getHeapHeader(chip, heap);
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 		MemoryLocation nextBlock = header.free;
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 		<strong class="jxr_keyword">var</strong> header = getHeapHeader(chip, heap);
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 		<strong class="jxr_keyword">var</strong> nextBlock = header.free;
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> 
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> 		List&lt;HeapElement&gt; blocks = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 		<strong class="jxr_keyword">var</strong> blocks = <strong class="jxr_keyword">new</strong> ArrayList&lt;HeapElement&gt;();
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 
 <a class="jxr_linenumber" name="L114" href="#L114">114</a> 		<strong class="jxr_keyword">while</strong> (!nextBlock.isNull() &amp;&amp; !nextBlock.equals(header.last)) {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a> 			BlockHeader block = getBlockHeader(chip, nextBlock);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 			<strong class="jxr_keyword">var</strong> block = getBlockHeader(chip, nextBlock);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> 			<strong class="jxr_keyword">if</strong> (!block.next.isNull()) {
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> 				blocks.add(<strong class="jxr_keyword">new</strong> <a name="HeapElement" href="../../../../../uk/ac/manchester/spinnaker/messages/model/HeapElement.html#HeapElement">HeapElement</a>(nextBlock, block.next,
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> 						block.free.address));
@@ -152,7 +152,7 @@
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 	<strong class="jxr_keyword">private</strong> HeapHeader getHeapHeader(<a name="HasChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip,
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> 			SystemVariableDefinition heap)
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 		MemoryLocation heapBase = <strong class="jxr_keyword">new</strong> <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a>(readFromAddress(chip,
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 		<strong class="jxr_keyword">var</strong> heapBase = <strong class="jxr_keyword">new</strong> <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a>(readFromAddress(chip,
 <a class="jxr_linenumber" name="L148" href="#L148">148</a> 				SYS_VARS.add(heap.offset), heap.type.value).get());
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HeapHeader(
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 				readFromAddress(chip, heapBase, HEAP_HEADER_SIZE));

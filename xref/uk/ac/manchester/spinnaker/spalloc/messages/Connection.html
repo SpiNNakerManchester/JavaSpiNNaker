@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  	@Override
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(Object other) {
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  		<strong class="jxr_keyword">if</strong> (other instanceof Connection) {
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  			Connection c = (Connection) other;
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  			<strong class="jxr_keyword">var</strong> c = (Connection) other;
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  			<strong class="jxr_keyword">return</strong> Objects.equals(chip, c.chip)
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  					&amp;&amp; Objects.equals(hostname, c.hostname);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  		}

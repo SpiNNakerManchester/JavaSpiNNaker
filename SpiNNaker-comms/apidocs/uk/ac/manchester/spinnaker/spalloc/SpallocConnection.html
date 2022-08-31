@@ -87,13 +87,13 @@ loadScripts(document, 'script');</script>
 <h1 title="Class SpallocConnection" class="title">Class SpallocConnection</h1>
 </div>
 <div class="contentContainer">
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.spalloc.SpallocConnection</div>
 </div>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code>, <code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
@@ -101,8 +101,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">SpallocConnection</span>
-extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
-implements <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></pre>
+extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
+implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></pre>
 <div class="block">The basic communications layer of the spalloc client. This client assumes
  that the protocol is line-oriented, but does not assume anything about the
  formatting of the contents of the lines.</div>
@@ -131,7 +131,7 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html?is-external=true" title="class or interface in java.util" class="externalLink">Queue</a>&lt;<a href="messages/Notification.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Notification</a>&gt;</code></td>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Queue.html?is-external=true" title="class or interface in java.util" class="externalLink">Queue</a>&lt;<a href="messages/Notification.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Notification</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#notifications">notifications</a></span></code></th>
 <td class="colLast">
 <div class="block">A queue of unprocessed notifications.</div>
@@ -161,9 +161,9 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected </code></td>
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int,java.lang.Integer)">SpallocConnection</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int,java.lang.Integer)">SpallocConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 int&nbsp;port,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Define a new connection.</div>
 </td>
@@ -192,9 +192,9 @@ int&nbsp;port,
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#call(uk.ac.manchester.spinnaker.spalloc.messages.Command,java.lang.Integer)">call</a></span>&#8203;(<a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Send a command to the server and return the reply.</div>
 </td>
@@ -215,13 +215,13 @@ int&nbsp;port,
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#connect(java.lang.Integer)">connect</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#connect(java.lang.Integer)">connect</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">(Re)connect to the server.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>protected abstract <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#formatRequest(uk.ac.manchester.spinnaker.spalloc.messages.Command)">formatRequest</a></span>&#8203;(<a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command)</code></th>
 <td class="colLast">
 <div class="block">Format a request to be ready to go to the server.</div>
@@ -229,14 +229,14 @@ int&nbsp;port,
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>protected abstract <a href="messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Response</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parseResponse(java.lang.String)">parseResponse</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;line)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parseResponse(java.lang.String)">parseResponse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;line)</code></th>
 <td class="colLast">
 <div class="block">Parse a response line from the server.</div>
 </td>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>protected <a href="messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Response</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#receiveResponse(java.lang.Integer)">receiveResponse</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#receiveResponse(java.lang.Integer)">receiveResponse</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Receive a line from the server with a response.</div>
 </td>
@@ -244,18 +244,18 @@ int&nbsp;port,
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>protected void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendCommand(uk.ac.manchester.spinnaker.spalloc.messages.Command,java.lang.Integer)">sendCommand</a></span>&#8203;(<a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Attempt to send a command as a line to the server.</div>
 </td>
 </tr>
 <tr class="altColor" id="i8">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i9">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#withConnection()">withConnection</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Context adapter.</div>
@@ -266,10 +266,10 @@ int&nbsp;port,
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -286,7 +286,7 @@ int&nbsp;port,
 <li class="blockList">
 <section class="detail">
 <h3><a id="notifications">notifications</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html?is-external=true" title="class or interface in java.util" class="externalLink">Queue</a>&lt;<a href="messages/Notification.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Notification</a>&gt;</span>&nbsp;<span class="memberName">notifications</span></div>
+<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Queue.html?is-external=true" title="class or interface in java.util" class="externalLink">Queue</a>&lt;<a href="messages/Notification.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Notification</a>&gt;</span>&nbsp;<span class="memberName">notifications</span></div>
 <div class="block">A queue of unprocessed notifications.</div>
 </section>
 </li>
@@ -303,9 +303,9 @@ int&nbsp;port,
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,int,java.lang.Integer)">SpallocConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">SpallocConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">SpallocConnection</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 int&nbsp;port,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span></div>
 <div class="block">Define a new connection. <b>NB:</b> Does not connect to the server until
  <a href="#connect()"><code>connect()</code></a> is called.</div>
 <dl>
@@ -329,12 +329,12 @@ int&nbsp;port,
 <li class="blockList">
 <section class="detail">
 <h3><a id="withConnection()">withConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></span>&nbsp;<span class="memberName">withConnection</span>()
-                             throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></span>&nbsp;<span class="memberName">withConnection</span>()
+                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Context adapter. Allows this code to be used like this:
 
  <pre>
- try (AutoCloseable c = client.withConnection()) {
+ try (var c = client.withConnection()) {
      ...
  }
  </pre></div>
@@ -342,7 +342,7 @@ int&nbsp;port,
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the auto-closeable context.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the connect to the spalloc server fails.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the connect to the spalloc server fails.</dd>
 </dl>
 </section>
 </li>
@@ -350,25 +350,25 @@ int&nbsp;port,
 <section class="detail">
 <h3><a id="connect()">connect</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">connect</span>()
-             throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">(Re)connect to the server.</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If a connection failure occurs.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If a connection failure occurs.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="connect(java.lang.Integer)">connect</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">connect</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
-             throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">connect</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">(Re)connect to the server.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>timeout</code> - How long to spend (re)connecting.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If a connection failure occurs.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If a connection failure occurs.</dd>
 </dl>
 </section>
 </li>
@@ -376,24 +376,24 @@ int&nbsp;port,
 <section class="detail">
 <h3><a id="close()">close</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Disconnect from the server.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html?is-external=true#close()" title="class or interface in java.io" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true#close()" title="class or interface in java.io" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html?is-external=true" title="class or interface in java.io" class="externalLink">Closeable</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if anything goes wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - if anything goes wrong</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="receiveResponse(java.lang.Integer)">receiveResponse</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Response</a></span>&nbsp;<span class="memberName">receiveResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Response</a></span>&nbsp;<span class="memberName">receiveResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                             throws <span class="exceptions"><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Receive a line from the server with a response.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -404,7 +404,7 @@ int&nbsp;port,
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
 <dd><code><a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></code> - If the socket gets an empty response.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the socket is unusable or becomes disconnected.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the socket is unusable or becomes disconnected.</dd>
 </dl>
 </section>
 </li>
@@ -412,9 +412,9 @@ int&nbsp;port,
 <section class="detail">
 <h3><a id="sendCommand(uk.ac.manchester.spinnaker.spalloc.messages.Command,java.lang.Integer)">sendCommand</a></h3>
 <div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">sendCommand</span>&#8203;(<span class="arguments"><a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                     throws <span class="exceptions"><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Attempt to send a command as a line to the server.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -423,15 +423,15 @@ int&nbsp;port,
             <code>null</code> if this function should try again forever.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a></code> - If a timeout occurs.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the socket is unusable or becomes disconnected.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the socket is unusable or becomes disconnected.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="formatRequest(uk.ac.manchester.spinnaker.spalloc.messages.Command)">formatRequest</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">formatRequest</span>&#8203;(<span class="arguments"><a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command)</span>
-                                 throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">formatRequest</span>&#8203;(<span class="arguments"><a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command)</span>
+                                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Format a request to be ready to go to the server.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -439,15 +439,15 @@ int&nbsp;port,
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The text to send to the server. Will have a newline added.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If formatting goes wrong.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If formatting goes wrong.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="parseResponse(java.lang.String)">parseResponse</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Response</a></span>&nbsp;<span class="memberName">parseResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;line)</span>
-                                   throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="messages/Response.html" title="interface in uk.ac.manchester.spinnaker.spalloc.messages">Response</a></span>&nbsp;<span class="memberName">parseResponse</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;line)</span>
+                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Parse a response line from the server.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -457,15 +457,15 @@ int&nbsp;port,
 <dd>The parsed response, or <code>null</code> for a generic "that's
          unexpected".</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If parsing completely fails.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If parsing completely fails.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="call(uk.ac.manchester.spinnaker.spalloc.messages.Command,java.lang.Integer)">call</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">call</span>&#8203;(<span class="arguments"><a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">call</span>&#8203;(<span class="arguments"><a href="messages/Command.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Command</a>&lt;?&gt;&nbsp;command,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                throws <span class="exceptions"><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
 <a href="exceptions/SpallocProtocolTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolTimeoutException</a>,
 <a href="exceptions/SpallocProtocolException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocProtocolException</a></span></div>
@@ -487,10 +487,10 @@ int&nbsp;port,
 <li class="blockList">
 <section class="detail">
 <h3><a id="toString()">toString</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">toString</span>()</div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">toString</span>()</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></code></dd>
 </dl>
 </section>
 </li>

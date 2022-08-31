@@ -56,7 +56,7 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> ByteBuffer condition(ByteBuffer data) {
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  		<em class="jxr_comment">// Just in case</em>
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  		<strong class="jxr_keyword">if</strong> (data.remaining() &gt; FLASH_CHUNK_SIZE) {
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  			ByteBuffer b = data.duplicate();
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  			<strong class="jxr_keyword">var</strong> b = data.duplicate();
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  			b.limit(b.position() + FLASH_CHUNK_SIZE);
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  			<strong class="jxr_keyword">return</strong> b;
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  		}

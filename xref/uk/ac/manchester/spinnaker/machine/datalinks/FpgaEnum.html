@@ -256,7 +256,7 @@
 <a class="jxr_linenumber" name="L248" href="#L248">248</a> <em class="jxr_javadoccomment">	 *             If the arguments don't describe a supported FPGA link.</em>
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L250" href="#L250">250</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="FpgaEnum" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html#FpgaEnum">FpgaEnum</a> findId(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <a name="Direction" href="../../../../../../uk/ac/manchester/spinnaker/machine/Direction.html#Direction">Direction</a> direction) {
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 		<strong class="jxr_keyword">for</strong> (<a name="FpgaEnum" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html#FpgaEnum">FpgaEnum</a> linkId : FpgaEnum.values()) {
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> linkId : FpgaEnum.values()) {
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> 			<strong class="jxr_keyword">if</strong> (linkId.x == x &amp;&amp; linkId.y == y
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> 					&amp;&amp; linkId.direction == direction) {
 <a class="jxr_linenumber" name="L254" href="#L254">254</a> 				<strong class="jxr_keyword">return</strong> linkId;
@@ -278,7 +278,7 @@
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">	 *             If the arguments don't describe a supported FPGA link.</em>
 <a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L272" href="#L272">272</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="FpgaEnum" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html#FpgaEnum">FpgaEnum</a> findId(<a name="FpgaId" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/FpgaId.html#FpgaId">FpgaId</a> fpgaId, <strong class="jxr_keyword">int</strong> id) {
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 		<strong class="jxr_keyword">for</strong> (<a name="FpgaEnum" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/FpgaEnum.html#FpgaEnum">FpgaEnum</a> linkId : FpgaEnum.values()) {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> linkId : FpgaEnum.values()) {
 <a class="jxr_linenumber" name="L274" href="#L274">274</a> 			<strong class="jxr_keyword">if</strong> (linkId.fpgaId == fpgaId &amp;&amp; linkId.id == id) {
 <a class="jxr_linenumber" name="L275" href="#L275">275</a> 				<strong class="jxr_keyword">return</strong> linkId;
 <a class="jxr_linenumber" name="L276" href="#L276">276</a> 			}

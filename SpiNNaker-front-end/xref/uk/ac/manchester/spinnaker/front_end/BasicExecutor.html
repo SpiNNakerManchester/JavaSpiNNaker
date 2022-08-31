@@ -62,7 +62,7 @@
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">	 * @return The future holding the results of the execution.</em>
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  	<strong class="jxr_keyword">public</strong> Tasks submitTasks(Stream&lt;SimpleCallable&gt; tasks) {
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  		Tasks collector = <strong class="jxr_keyword">new</strong> Tasks();
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  		<strong class="jxr_keyword">var</strong> collector = <strong class="jxr_keyword">new</strong> Tasks();
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  		tasks.forEach(t -&gt; collector
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  				.add(executor.submit(() -&gt; collectExceptions(t))));
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  		<strong class="jxr_keyword">return</strong> collector;
@@ -82,7 +82,7 @@
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  	<strong class="jxr_keyword">public</strong> &lt;T&gt; Tasks submitTasks(Stream&lt;T&gt; items,
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  			Function&lt;T, SimpleCallable&gt; taskMapper) {
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  		Tasks collector = <strong class="jxr_keyword">new</strong> Tasks();
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  		<strong class="jxr_keyword">var</strong> collector = <strong class="jxr_keyword">new</strong> Tasks();
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  		items.map(taskMapper).forEach(t -&gt; collector
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  				.add(executor.submit(() -&gt; collectExceptions(t))));
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  		<strong class="jxr_keyword">return</strong> collector;
@@ -101,7 +101,7 @@
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  	<strong class="jxr_keyword">public</strong> &lt;T&gt; Tasks submitTasks(Collection&lt;T&gt; items,
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  			Function&lt;T, SimpleCallable&gt; taskMapper) {
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  		Tasks collector = <strong class="jxr_keyword">new</strong> Tasks();
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  		<strong class="jxr_keyword">var</strong> collector = <strong class="jxr_keyword">new</strong> Tasks();
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  		items.stream().map(taskMapper).forEach(t -&gt; collector
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  				.add(executor.submit(() -&gt; collectExceptions(t))));
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  		<strong class="jxr_keyword">return</strong> collector;
@@ -115,7 +115,7 @@
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">	 * @return The future holding the results of the execution.</em>
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> 	<strong class="jxr_keyword">public</strong> Tasks submitTasks(Iterable&lt;SimpleCallable&gt; tasks) {
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 		Tasks collector = <strong class="jxr_keyword">new</strong> Tasks();
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 		<strong class="jxr_keyword">var</strong> collector = <strong class="jxr_keyword">new</strong> Tasks();
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> 		tasks.forEach(t -&gt; collector
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> 				.add(executor.submit(() -&gt; collectExceptions(t))));
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 		<strong class="jxr_keyword">return</strong> collector;
@@ -193,8 +193,8 @@
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> 			<strong class="jxr_keyword">if</strong> (tasks == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"tasks already awaited"</span>);
 <a class="jxr_linenumber" name="L187" href="#L187">187</a> 			}
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 			<strong class="jxr_keyword">for</strong> (Future&lt;Exception&gt; f : tasks) {
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> 				Exception e = f.get();
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> f : tasks) {
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 				<strong class="jxr_keyword">var</strong> e = f.get();
 <a class="jxr_linenumber" name="L190" href="#L190">190</a> 				<strong class="jxr_keyword">if</strong> (e != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 					<strong class="jxr_keyword">if</strong> (ex == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> 						ex = e;

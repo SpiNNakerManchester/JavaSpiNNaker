@@ -87,18 +87,18 @@ loadScripts(document, 'script');</script>
 <h1 title="Class SpallocJob" class="title">Class SpallocJob</h1>
 </div>
 <div class="contentContainer">
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.spalloc.SpallocJob</div>
 </div>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></code></dd>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">SpallocJob</span>
-extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
-implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a>, <a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></pre>
+extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
+implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a>, <a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></pre>
 <div class="block">A high-level interface for requesting and managing allocations of SpiNNaker
  boards.
  <p>
@@ -111,7 +111,7 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
  like so:
 
  <pre>
- try (SpallocJob j = new SpallocJob(new CreateJob(6).owner(me))) {
+ try (var j = new SpallocJob(new CreateJob(6).owner(me))) {
      myApplication.boot(j.getHostname(), j.getDimensions());
      myApplication.run(j.getHostname());
  }
@@ -171,7 +171,7 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DEFAULT_CONFIGURATION_SOURCE">DEFAULT_CONFIGURATION_SOURCE</a></span></code></th>
 <td class="colLast">
 <div class="block">The name of the default file to load the configuration from.</div>
@@ -205,48 +205,48 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Create a job client that resumes an existing job given its ID.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int,java.lang.Integer,int)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,int,java.lang.Integer,int)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 int&nbsp;port,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Create a job client that resumes an existing job given its ID.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Integer,int)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Integer,int)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Create a job client that resumes an existing job given its ID.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Integer,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Integer,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</code></th>
 <td class="colLast">
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</code></th>
 <td class="colLast">
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 </td>
 </tr>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.lang.String,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</code></th>
 <td class="colLast">
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
@@ -260,7 +260,7 @@ int&nbsp;id)</code></th>
 </tr>
 <tr class="altColor">
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.spalloc.SpallocClient,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></span>&#8203;(<a href="SpallocClient.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocClient</a>&nbsp;client,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</code></th>
 <td class="colLast">
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
@@ -310,13 +310,13 @@ int&nbsp;id)</code></th>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#destroy(java.lang.String)">destroy</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#destroy(java.lang.String)">destroy</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</code></th>
 <td class="colLast">
 <div class="block">Destroy the job and disconnect from the server.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoards()">getBoards</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -326,12 +326,12 @@ int&nbsp;id)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Connection.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Connection</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Connection.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Connection</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getConnections()">getConnections</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i6">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDestroyReason()">getDestroyReason</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -341,7 +341,7 @@ int&nbsp;id)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i8">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHostname()">getHostname</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -351,12 +351,12 @@ int&nbsp;id)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor" id="i10">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachineName()">getMachineName</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i11">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPower()">getPower</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -367,14 +367,14 @@ int&nbsp;id)</code></th>
 </tr>
 <tr class="rowColor" id="i13">
 <td class="colFirst"><code>static void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setConfigurationSource(java.lang.String)">setConfigurationSource</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;filename)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setConfigurationSource(java.lang.String)">setConfigurationSource</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;filename)</code></th>
 <td class="colLast">
 <div class="block">Set up where configuration settings come from.</div>
 </td>
 </tr>
 <tr class="altColor" id="i14">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPower(java.lang.Boolean)">setPower</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;powerOn)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setPower(java.lang.Boolean)">setPower</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;powerOn)</code></th>
 <td class="colLast">
 <div class="block">Turn the boards allocated to the job on or off.</div>
 </td>
@@ -382,14 +382,14 @@ int&nbsp;id)</code></th>
 <tr class="rowColor" id="i15">
 <td class="colFirst"><code><a href="messages/State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitForStateChange(uk.ac.manchester.spinnaker.spalloc.messages.State,java.lang.Integer)">waitForStateChange</a></span>&#8203;(<a href="messages/State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a>&nbsp;oldState,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Block until the job's state changes from the supplied state.</div>
 </td>
 </tr>
 <tr class="altColor" id="i16">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitUntilReady(java.lang.Integer)">waitUntilReady</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#waitUntilReady(java.lang.Integer)">waitUntilReady</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</code></th>
 <td class="colLast">
 <div class="block">Block until the job is allocated and ready.</div>
 </td>
@@ -407,10 +407,10 @@ int&nbsp;id)</code></th>
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from interface&nbsp;uk.ac.manchester.spinnaker.spalloc.<a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.spalloc.SpallocJobAPI">
@@ -432,7 +432,7 @@ int&nbsp;id)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="DEFAULT_CONFIGURATION_SOURCE">DEFAULT_CONFIGURATION_SOURCE</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">DEFAULT_CONFIGURATION_SOURCE</span></div>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">DEFAULT_CONFIGURATION_SOURCE</span></div>
 <div class="block">The name of the default file to load the configuration from.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
@@ -453,10 +453,10 @@ int&nbsp;id)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 <dl>
@@ -465,7 +465,7 @@ int&nbsp;id)</code></th>
 <dd><code>timeout</code> - The communications timeout</dd>
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -473,9 +473,9 @@ int&nbsp;id)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 <dl>
@@ -483,7 +483,7 @@ int&nbsp;id)</code></th>
 <dd><code>hostname</code> - The spalloc server host</dd>
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -492,14 +492,14 @@ int&nbsp;id)</code></th>
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -509,7 +509,7 @@ int&nbsp;id)</code></th>
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.spalloc.SpallocClient,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="SpallocClient.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocClient</a>&nbsp;client,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 <dl>
@@ -517,9 +517,9 @@ int&nbsp;id)</code></th>
 <dd><code>client</code> - The spalloc client</dd>
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
 </dl>
 </section>
 </li>
@@ -527,9 +527,9 @@ int&nbsp;id)</code></th>
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.spalloc.SpallocClient,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="SpallocClient.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocClient</a>&nbsp;client,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 <dl>
@@ -538,20 +538,20 @@ int&nbsp;id)</code></th>
 <dd><code>timeout</code> - The communications timeout</dd>
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,java.lang.Integer,java.lang.Integer,uk.ac.manchester.spinnaker.spalloc.CreateJob)">SpallocJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;port,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 <a href="CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a>&nbsp;builder)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Create a spalloc job that requests a SpiNNaker machine.</div>
 <dl>
@@ -561,9 +561,9 @@ int&nbsp;id)</code></th>
 <dd><code>timeout</code> - The communications timeout</dd>
 <dd><code>builder</code> - The job-creation request builder.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If a bad builder is given.</dd>
 </dl>
 </section>
 </li>
@@ -571,7 +571,7 @@ int&nbsp;id)</code></th>
 <section class="detail">
 <h3><a id="&lt;init&gt;(int)">SpallocJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments">int&nbsp;id)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
 <a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></span></div>
 <div class="block">Create a job client that resumes an existing job given its ID.</div>
@@ -579,7 +579,7 @@ int&nbsp;id)</code></th>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - The job ID</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 </dl>
@@ -588,9 +588,9 @@ int&nbsp;id)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,int)">SpallocJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 int&nbsp;id)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
 <a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></span></div>
 <div class="block">Create a job client that resumes an existing job given its ID.</div>
@@ -599,7 +599,7 @@ int&nbsp;id)</span>
 <dd><code>hostname</code> - The spalloc server host</dd>
 <dd><code>id</code> - The job ID</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 </dl>
@@ -608,10 +608,10 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,java.lang.Integer,int)">SpallocJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 int&nbsp;id)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
 <a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></span></div>
 <div class="block">Create a job client that resumes an existing job given its ID.</div>
@@ -621,7 +621,7 @@ int&nbsp;id)</span>
 <dd><code>timeout</code> - The communications timeout</dd>
 <dd><code>id</code> - The job ID</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 </dl>
@@ -630,11 +630,11 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(java.lang.String,int,java.lang.Integer,int)">SpallocJob</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SpallocJob</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;hostname,
 int&nbsp;port,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout,
 int&nbsp;id)</span>
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
 <a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></span></div>
 <div class="block">Create a job client that resumes an existing job given its ID.</div>
@@ -645,7 +645,7 @@ int&nbsp;id)</span>
 <dd><code>timeout</code> - The communications timeout</dd>
 <dd><code>id</code> - The job ID</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job doesn't exist (any more).</dd>
 </dl>
@@ -664,7 +664,7 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setConfigurationSource(java.lang.String)">setConfigurationSource</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setConfigurationSource</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;filename)</span></div>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setConfigurationSource</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;filename)</span></div>
 <div class="block">Set up where configuration settings come from. By default, this is from a
  file called <a href="#DEFAULT_CONFIGURATION_SOURCE">"spalloc.ini"</a>; this method allows
  you to override that (e.g., for testing).</div>
@@ -681,12 +681,12 @@ int&nbsp;id)</span>
 <section class="detail">
 <h3><a id="close()">close</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
-           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -694,23 +694,23 @@ int&nbsp;id)</span>
 <section class="detail">
 <h3><a id="assertCompatibleVersion()">assertCompatibleVersion</a></h3>
 <div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">assertCompatibleVersion</span>()
-                                throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block">Assert that the server version is compatible. This client supports from
  0.4.0 to 2.0.0 (but not including the latter).</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the server is not compatible with this client.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the server is not compatible with this client.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="destroy(java.lang.String)">destroy</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">destroy</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span>
-             throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">destroy</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span>
+             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocJobAPI.html#destroy(java.lang.String)">SpallocJobAPI</a></code></span></div>
 <div class="block">Destroy the job and disconnect from the server.</div>
@@ -721,7 +721,7 @@ int&nbsp;id)</span>
 <dd><code>reason</code> - Gives a human-readable explanation for the destruction of the
             job.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -729,8 +729,8 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="setPower(java.lang.Boolean)">setPower</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPower</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;powerOn)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setPower</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a>&nbsp;powerOn)</span>
+              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocJobAPI.html#setPower(java.lang.Boolean)">SpallocJobAPI</a></code></span></div>
 <div class="block">Turn the boards allocated to the job on or off.
@@ -747,7 +747,7 @@ int&nbsp;id)</span>
             are already turned on, setting power to true will reset them.
             If <code>null</code>, this method does nothing.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -768,7 +768,7 @@ int&nbsp;id)</span>
 <section class="detail">
 <h3><a id="getState()">getState</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="messages/State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a></span>&nbsp;<span class="memberName">getState</span>()
-               throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
@@ -776,7 +776,7 @@ int&nbsp;id)</span>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The current state of the job.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -784,8 +784,8 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getPower()">getPower</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a></span>&nbsp;<span class="memberName">getPower</span>()
-                 throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink">Boolean</a></span>&nbsp;<span class="memberName">getPower</span>()
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
@@ -793,7 +793,7 @@ int&nbsp;id)</span>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The current power state of the job.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -801,8 +801,8 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getDestroyReason()">getDestroyReason</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getDestroyReason</span>()
-                        throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getDestroyReason</span>()
+                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
@@ -813,7 +813,7 @@ int&nbsp;id)</span>
          you should use <a href="SpallocJobAPI.html#getState()"><code>SpallocJobAPI.getState()</code></a> to determine if the job is
          destroyed, not this method.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -821,10 +821,10 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getConnections()">getConnections</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Connection.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Connection</a>&gt;</span>&nbsp;<span class="memberName">getConnections</span>()
-                                throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/Connection.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">Connection</a>&gt;</span>&nbsp;<span class="memberName">getConnections</span>()
+                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="SpallocJobAPI.html#getConnections()">getConnections</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></code></dd>
@@ -832,17 +832,17 @@ int&nbsp;id)</span>
 <dd>The list of connections, where each connection says what the
          hostname is to talk to a particular board's root chip.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getHostname()">getHostname</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getHostname</span>()
-                   throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getHostname</span>()
+                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
@@ -851,7 +851,7 @@ int&nbsp;id)</span>
 <dd>The name of the host that is the root chip of the whole
          allocation.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>
@@ -860,56 +860,56 @@ int&nbsp;id)</span>
 <section class="detail">
 <h3><a id="getDimensions()">getDimensions</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../machine/MachineDimensions.html" title="class in uk.ac.manchester.spinnaker.machine">MachineDimensions</a></span>&nbsp;<span class="memberName">getDimensions</span>()
-                                throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="SpallocJobAPI.html#getDimensions()">getDimensions</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The dimensions of the machine in chips, e.g., for booting.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMachineName()">getMachineName</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getMachineName</span>()
-                      throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getMachineName</span>()
+                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="SpallocJobAPI.html#getMachineName()">getMachineName</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The name of the machine the job is allocated on.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getBoards()">getBoards</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</span>&nbsp;<span class="memberName">getBoards</span>()
-                                 throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="messages/BoardCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardCoordinates</a>&gt;</span>&nbsp;<span class="memberName">getBoards</span>()
+                                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></span></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="SpallocJobAPI.html#getBoards()">getBoards</a></code>&nbsp;in interface&nbsp;<code><a href="SpallocJobAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocJobAPI</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>All the boards allocated to the job.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If the spalloc job is not Ready.</dd>
 </dl>
 </section>
 </li>
@@ -917,7 +917,7 @@ int&nbsp;id)</span>
 <section class="detail">
 <h3><a id="waitForStateChange(uk.ac.manchester.spinnaker.spalloc.messages.State,java.lang.Integer)">waitForStateChange</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="messages/State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a></span>&nbsp;<span class="memberName">waitForStateChange</span>&#8203;(<span class="arguments"><a href="messages/State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a>&nbsp;oldState,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                          throws <span class="exceptions"><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocJobAPI.html#waitForStateChange(uk.ac.manchester.spinnaker.spalloc.messages.State,java.lang.Integer)">SpallocJobAPI</a></code></span></div>
 <div class="block">Block until the job's state changes from the supplied state.</div>
@@ -938,9 +938,9 @@ int&nbsp;id)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="waitUntilReady(java.lang.Integer)">waitUntilReady</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">waitUntilReady</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">waitUntilReady</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;timeout)</span>
                     throws <span class="exceptions"><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a>,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a>,
 <a href="exceptions/SpallocStateChangeTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocStateChangeTimeoutException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocJobAPI.html#waitUntilReady(java.lang.Integer)">SpallocJobAPI</a></code></span></div>
@@ -953,7 +953,7 @@ int&nbsp;id)</span>
             wait forever.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="exceptions/JobDestroyedException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">JobDestroyedException</a></code> - If the job was destroyed before becoming ready.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 <dd><code><a href="exceptions/SpallocStateChangeTimeoutException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocStateChangeTimeoutException</a></code> - If the timeout expired before the ready state was entered.</dd>
 </dl>
@@ -963,7 +963,7 @@ int&nbsp;id)</span>
 <section class="detail">
 <h3><a id="whereIs(uk.ac.manchester.spinnaker.machine.HasChipLocation)">whereIs</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="messages/BoardPhysicalCoordinates.html" title="class in uk.ac.manchester.spinnaker.spalloc.messages">BoardPhysicalCoordinates</a></span>&nbsp;<span class="memberName">whereIs</span>&#8203;(<span class="arguments"><a href="../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip)</span>
-                                 throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
+                                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocJobAPI.html#whereIs(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SpallocJobAPI</a></code></span></div>
 <div class="block">Locates and returns the physical coordinates containing a given chip in a
@@ -976,7 +976,7 @@ int&nbsp;id)</span>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the physical coordinates of the board</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If communications fail.</dd>
 <dd><code><a href="exceptions/SpallocServerException.html" title="class in uk.ac.manchester.spinnaker.spalloc.exceptions">SpallocServerException</a></code> - If the spalloc server rejects the operation request.</dd>
 </dl>
 </section>

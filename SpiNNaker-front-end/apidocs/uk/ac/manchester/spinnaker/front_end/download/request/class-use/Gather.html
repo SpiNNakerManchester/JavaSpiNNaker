@@ -88,6 +88,12 @@ loadScripts(document, 'script');</script>
 </td>
 </tr>
 <tr class="altColor">
+<th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.download.request">uk.ac.manchester.spinnaker.front_end.download.request</a></th>
+<td class="colLast">
+<div class="block">Classes used to describe the JSON requests to the data transfer code.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <th class="colFirst" scope="row"><a href="#uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse</a></th>
 <td class="colLast">
 <div class="block">Data specification execution interface.</div>
@@ -115,7 +121,7 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../NoDropPacketContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List,uk.ac.manchester.spinnaker.front_end.download.request.Gather)">NoDropPacketContext</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;txrx,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends uk.ac.manchester.spinnaker.machine.HasCoreLocation&gt;&nbsp;monitorCoreLocations,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends uk.ac.manchester.spinnaker.machine.HasCoreLocation&gt;&nbsp;monitorCoreLocations,
 <a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&nbsp;gatherer)</code></th>
 <td class="colLast">
 <div class="block">Create a no-drop-packets context for a single board.</div>
@@ -152,10 +158,38 @@ uk.ac.manchester.spinnaker.machine.CoreSubsets&nbsp;monitorCoreLocations,
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><span class="typeNameLabel">DataGatherer.</span><code><span class="memberNameLink"><a href="../../DataGatherer.html#gather(java.util.List)">gather</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
+<th class="colSecond" scope="row"><span class="typeNameLabel">DataGatherer.</span><code><span class="memberNameLink"><a href="../../DataGatherer.html#gather(java.util.List)">gather</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
 <td class="colLast">
 <div class="block">Download he contents of the regions that are described through the data
  gatherers.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail"><a id="uk.ac.manchester.spinnaker.front_end.download.request">
+<!--   -->
+</a>
+<h2>Uses of <a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a> in <a href="../package-summary.html">uk.ac.manchester.spinnaker.front_end.download.request</a></h2>
+<div class="useSummary">
+<table>
+<caption><span>Fields in <a href="../package-summary.html">uk.ac.manchester.spinnaker.front_end.download.request</a> with type parameters of type <a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a></span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Field</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>static com.fasterxml.jackson.core.type.TypeReference&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&gt;</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">Gather.</span><code><span class="memberNameLink"><a href="../Gather.html#LIST">LIST</a></span></code></th>
+<td class="colLast">
+<div class="block">Type reference for deserializing a list of gatherer descriptions.</div>
 </td>
 </tr>
 </tbody>
@@ -180,8 +214,8 @@ uk.ac.manchester.spinnaker.machine.CoreSubsets&nbsp;monitorCoreLocations,
 <tbody>
 <tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../../dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File)">FastExecuteDataSpecification</a></span>&#8203;(uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir)</code></th>
 <td class="colLast">
 <div class="block">Create an instance of this class.</div>
 </td>

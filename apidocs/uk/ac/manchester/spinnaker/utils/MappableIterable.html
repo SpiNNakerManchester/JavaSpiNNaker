@@ -92,11 +92,11 @@ loadScripts(document, 'script');</script>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - The type of elements returned by the iterator. Note that it is
             <em>strongly</em> recommended to not ever return <code>null</code>;
-            consider using <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>Optional</code></a> instead of that.</dd>
+            consider using <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>Optional</code></a> instead of that.</dd>
 </dl>
 <dl>
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;T&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;T&gt;</code></dd>
 </dl>
 <dl>
 <dt>All Known Implementing Classes:</dt>
@@ -104,7 +104,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public interface <span class="typeNameLabel">MappableIterable&lt;T&gt;</span>
-extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;T&gt;</pre>
+extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;T&gt;</pre>
 <div class="block">Extends iterable with the ability to be mapped to different values.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
@@ -133,13 +133,13 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.ht
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>default <a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#filter(java.util.function.Predicate)">filter</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Predicate</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&nbsp;filterer)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#filter(java.util.function.Predicate)">filter</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Predicate.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Predicate</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&nbsp;filterer)</code></th>
 <td class="colLast">
 <div class="block">Apply a filter to an iterable to get another iterable.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
+<td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#first()">first</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get the first item in the iterable, if there is one.</div>
@@ -155,13 +155,13 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.ht
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>default &lt;U&gt;&nbsp;<a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;U&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#map(java.util.function.Function)">map</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;U&gt;&nbsp;mapper)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#map(java.util.function.Function)">map</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;U&gt;&nbsp;mapper)</code></th>
 <td class="colLast">
 <div class="block">Apply a function to an iterable to get another iterable.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
+<td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#nth(int)">nth</a></span>&#8203;(int&nbsp;n)</code></th>
 <td class="colLast">
 <div class="block">Index into the iterable.</div>
@@ -169,9 +169,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.ht
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>default &lt;K,&#8203;
-V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;V&gt;&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
+V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;V&gt;&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a map of lists.</div>
 </td>
@@ -179,11 +179,11 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>default &lt;K,&#8203;
 V,&#8203;
-S extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.util.function.Supplier,java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;&gt;&nbsp;mapSupplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;collectorSupplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
+S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.util.function.Supplier,java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;&gt;&nbsp;mapSupplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;collectorSupplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a map of collections.</div>
 </td>
@@ -191,57 +191,57 @@ S extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collectio
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>default &lt;K,&#8203;
 V,&#8203;
-S extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;supplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
+S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toCollectingMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;supplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a map of collections.</div>
 </td>
 </tr>
 <tr class="altColor" id="i8">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
+<td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toList()">toList</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a list.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i9">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toList(java.util.function.Supplier)">toList</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</code></th>
+<td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toList(java.util.function.Supplier)">toList</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a list.</div>
 </td>
 </tr>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code>default &lt;K,&#8203;
-V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toMap(java.util.function.Function,java.util.function.Function)">toMap</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
+V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toMap(java.util.function.Function,java.util.function.Function)">toMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a map.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i11">
 <td class="colFirst"><code>default &lt;K,&#8203;
-V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toMap</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;&gt;&nbsp;supplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
+V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toMap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;&gt;&nbsp;supplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a map.</div>
 </td>
 </tr>
 <tr class="altColor" id="i12">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
+<td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toSet()">toSet</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a set.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i13">
-<td class="colFirst"><code>default <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toSet(java.util.function.Supplier)">toSet</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</code></th>
+<td class="colFirst"><code>default <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toSet(java.util.function.Supplier)">toSet</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</code></th>
 <td class="colLast">
 <div class="block">Convert this iterable to a set.</div>
 </td>
@@ -251,10 +251,10 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a></h3>
+<h3>Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a></h3>
 <a id="methods.inherited.from.class.java.lang.Iterable">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="externalLink">forEach</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true#iterator()" title="class or interface in java.lang" class="externalLink">iterator</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true#spliterator()" title="class or interface in java.lang" class="externalLink">spliterator</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="externalLink">forEach</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true#iterator()" title="class or interface in java.lang" class="externalLink">iterator</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true#spliterator()" title="class or interface in java.lang" class="externalLink">spliterator</a></code></div>
 </section>
 </li>
 </ul>
@@ -271,7 +271,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="map(java.util.function.Function)">map</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;U&gt;</span>&nbsp;<span class="returnType"><a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;U&gt;</span>&nbsp;<span class="memberName">map</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;U&gt;&nbsp;mapper)</span></div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;U&gt;</span>&nbsp;<span class="returnType"><a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;U&gt;</span>&nbsp;<span class="memberName">map</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;U&gt;&nbsp;mapper)</span></div>
 <div class="block">Apply a function to an iterable to get another iterable.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -287,7 +287,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="filter(java.util.function.Predicate)">filter</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">filter</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Predicate</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&nbsp;filterer)</span></div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">filter</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Predicate.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Predicate</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&nbsp;filterer)</span></div>
 <div class="block">Apply a filter to an iterable to get another iterable. Note that this
  <em>assumes</em> that <code>null</code> is never produced as a value that
  should be produced in the resulting iterable.</div>
@@ -304,7 +304,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="first()">first</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">first</span>()</div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">first</span>()</div>
 <div class="block">Get the first item in the iterable, if there is one.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -329,7 +329,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="nth(int)">nth</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">nth</span>&#8203;(<span class="arguments">int&nbsp;n)</span></div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">Optional</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">nth</span>&#8203;(<span class="arguments">int&nbsp;n)</span></div>
 <div class="block">Index into the iterable.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -342,7 +342,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="toList()">toList</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toList</span>()</div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toList</span>()</div>
 <div class="block">Convert this iterable to a list. The order of elements in the list will
  be the same as the order of items in this iterable.</div>
 <dl>
@@ -355,7 +355,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="toList(java.util.function.Supplier)">toList</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toList</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</span></div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toList</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</span></div>
 <div class="block">Convert this iterable to a list. Items will be added to the list in the
  order of this iterable.</div>
 <dl>
@@ -370,7 +370,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="toSet()">toSet</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toSet</span>()</div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toSet</span>()</div>
 <div class="block">Convert this iterable to a set. The natural order of elements in the set
  will be the same as the order of items in this iterable.</div>
 <dl>
@@ -383,7 +383,7 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="toSet(java.util.function.Supplier)">toSet</a></h3>
-<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toSet</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</span></div>
+<div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;</span>&nbsp;<span class="memberName">toSet</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>&gt;&gt;&nbsp;supplier)</span></div>
 <div class="block">Convert this iterable to a set. Items will be added to the set in the
  order of this iterable.</div>
 <dl>
@@ -399,8 +399,8 @@ V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
 <section class="detail">
 <h3><a id="toMap(java.util.function.Function,java.util.function.Function)">toMap</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;K,&#8203;
-V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</span>&nbsp;<span class="memberName">toMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
+V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</span>&nbsp;<span class="memberName">toMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
 <div class="block">Convert this iterable to a map. The natural order of entries will be the
  same as the natural order of elements in this iterable.</div>
 <dl>
@@ -420,9 +420,9 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/java
 <section class="detail">
 <h3><a id="toMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toMap</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;K,&#8203;
-V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</span>&nbsp;<span class="memberName">toMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;&gt;&nbsp;supplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
+V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;</span>&nbsp;<span class="memberName">toMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;V&gt;&gt;&nbsp;supplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
 <div class="block">Convert this iterable to a map. Items will be added to the map in the
  order of this iterable.</div>
 <dl>
@@ -443,8 +443,8 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/java
 <section class="detail">
 <h3><a id="toCollectingMap(java.util.function.Function,java.util.function.Function)">toCollectingMap</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;K,&#8203;
-V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;V&gt;&gt;</span>&nbsp;<span class="memberName">toCollectingMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
+V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;V&gt;&gt;</span>&nbsp;<span class="memberName">toCollectingMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
 <div class="block">Convert this iterable to a map of lists. Items will be added to
  the map and to the lists in the order of this iterable.</div>
 <dl>
@@ -465,9 +465,9 @@ V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/java
 <h3><a id="toCollectingMap(java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;K,&#8203;
 V,&#8203;
-S extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</span>&nbsp;<span class="memberName">toCollectingMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;supplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
+S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</span>&nbsp;<span class="memberName">toCollectingMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;supplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
 <div class="block">Convert this iterable to a map of collections. Items will be added to
  the map and to the collections in the order of this iterable.</div>
 <dl>
@@ -490,10 +490,10 @@ S extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collectio
 <h3><a id="toCollectingMap(java.util.function.Supplier,java.util.function.Supplier,java.util.function.Function,java.util.function.Function)">toCollectingMap</a></h3>
 <div class="memberSignature"><span class="modifiers">default</span>&nbsp;<span class="typeParameters">&lt;K,&#8203;
 V,&#8203;
-S extends <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</span>&nbsp;<span class="memberName">toCollectingMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;&gt;&nbsp;mapSupplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;collectorSupplier,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
+S extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;V&gt;&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;</span>&nbsp;<span class="memberName">toCollectingMap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;S&gt;&gt;&nbsp;mapSupplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Supplier.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Supplier</a>&lt;S&gt;&nbsp;collectorSupplier,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;K&gt;&nbsp;keyMapper,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="MappableIterable.html" title="type parameter in MappableIterable">T</a>,&#8203;V&gt;&nbsp;valueMapper)</span></div>
 <div class="block">Convert this iterable to a map of collections. Items will be added to
  the map and to the collections in the order of this iterable.</div>
 <dl>

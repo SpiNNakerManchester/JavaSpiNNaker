@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  	<strong class="jxr_keyword">public</strong> <a name="EIEIODataMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/eieio/EIEIODataMessage.html#EIEIODataMessage">EIEIODataMessage</a>(<a name="EIEIOType" href="../../../../../../uk/ac/manchester/spinnaker/messages/eieio/EIEIOType.html#EIEIOType">EIEIOType</a> eieioType, byte count, ByteBuffer data,
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  			Short keyPrefix, Integer payloadPrefix, Integer timestamp,
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  			EIEIOPrefix prefixType) {
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		Integer payloadBase = payloadPrefix;
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		<strong class="jxr_keyword">var</strong> payloadBase = payloadPrefix;
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  		<strong class="jxr_keyword">if</strong> (timestamp != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  			payloadBase = timestamp;
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  		}
@@ -200,14 +200,14 @@
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> 	@Override
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addToBuffer(ByteBuffer buffer) {
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> 		header.addToBuffer(buffer);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 		ByteBuffer b = elements.duplicate();
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 		<strong class="jxr_keyword">var</strong> b = elements.duplicate();
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> 		b.flip();
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 		buffer.put(b);
 <a class="jxr_linenumber" name="L198" href="#L198">198</a> 	}
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> 
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> 	@Override
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> 	<strong class="jxr_keyword">public</strong> Iterator&lt;AbstractDataElement&gt; iterator() {
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 		<strong class="jxr_keyword">final</strong> ByteBuffer d =
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 		<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">var</strong> d =
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 				data == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : data.duplicate().order(LITTLE_ENDIAN);
 <a class="jxr_linenumber" name="L204" href="#L204">204</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Iterator&lt;AbstractDataElement&gt;() {
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> elementsRead = 0;

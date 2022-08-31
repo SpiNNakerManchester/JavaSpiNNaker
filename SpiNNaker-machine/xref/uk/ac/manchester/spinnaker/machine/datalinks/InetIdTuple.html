@@ -54,8 +54,8 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  	@Override
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  		<strong class="jxr_keyword">int</strong> hash = 5;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  		hash = 29 * hash + Objects.hashCode(<strong class="jxr_keyword">this</strong>.address);
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  		hash = 29 * hash + <strong class="jxr_keyword">this</strong>.id;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  		hash = 29 * hash + Objects.hashCode(address);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  		hash = 29 * hash + id;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  		<strong class="jxr_keyword">return</strong> hash;
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  	}
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
@@ -70,11 +70,11 @@
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">if</strong> (getClass() != obj.getClass()) {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  			<strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  		}
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  		<strong class="jxr_keyword">final</strong> <a name="InetIdTuple" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html#InetIdTuple">InetIdTuple</a> other = (<a name="InetIdTuple" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html#InetIdTuple">InetIdTuple</a>) obj;
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		<strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.id != other.id) {
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  		<strong class="jxr_keyword">var</strong> other = (<a name="InetIdTuple" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/InetIdTuple.html#InetIdTuple">InetIdTuple</a>) obj;
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		<strong class="jxr_keyword">if</strong> (id != other.id) {
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  			<strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  		}
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  		<strong class="jxr_keyword">return</strong> Objects.equals(<strong class="jxr_keyword">this</strong>.address, other.address);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  		<strong class="jxr_keyword">return</strong> Objects.equals(address, other.address);
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  	}
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  }
 </pre>

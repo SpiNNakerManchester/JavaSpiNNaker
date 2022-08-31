@@ -29,24 +29,24 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.String.format;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.System.nanoTime;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Thread.sleep;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Collections.emptySet;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Collections.synchronizedMap;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.requireNonNull;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.net.SocketTimeoutException;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.util.BitSet;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Collections.synchronizedMap;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.requireNonNull;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.slf4j.LoggerFactory.getLogger;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.SCP_RETRY_DEFAULT;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.SCP_TIMEOUT_DEFAULT;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.scp.SequenceNumberSource.SEQUENCE_LENGTH;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.net.SocketTimeoutException;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.nio.ByteBuffer;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.util.BitSet;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> java.util.function.Consumer;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
@@ -260,7 +260,7 @@
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">		 */</em>
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseReceivedResponse(<a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a> msg)
 <a class="jxr_linenumber" name="L254" href="#L254">254</a> 				<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 			T response = msg.parsePayload(request);
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 			<strong class="jxr_keyword">var</strong> response = msg.parsePayload(request);
 <a class="jxr_linenumber" name="L256" href="#L256">256</a> 			<strong class="jxr_keyword">if</strong> (callback != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 				callback.accept(response);
 <a class="jxr_linenumber" name="L258" href="#L258">258</a> 			}
@@ -399,7 +399,7 @@
 <a class="jxr_linenumber" name="L391" href="#L391">391</a> 			multiRetrieve(intermediateChannelWaits);
 <a class="jxr_linenumber" name="L392" href="#L392">392</a> 		}
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> 
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> 		Request&lt;T&gt; req = registerRequest(request, callback, errorCallback);
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 		<strong class="jxr_keyword">var</strong> req = registerRequest(request, callback, errorCallback);
 <a class="jxr_linenumber" name="L395" href="#L395">395</a> 
 <a class="jxr_linenumber" name="L396" href="#L396">396</a> 		<em class="jxr_comment">// Send the request</em>
 <a class="jxr_linenumber" name="L397" href="#L397">397</a> 		req.send();
@@ -444,7 +444,7 @@
 <a class="jxr_linenumber" name="L436" href="#L436">436</a> 					.issueSequenceNumber(outstandingRequests.keySet()));
 <a class="jxr_linenumber" name="L437" href="#L437">437</a> 
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> 			log.debug(<span class="jxr_string">"sending message with sequence {}"</span>, sequence);
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 			Request&lt;T&gt; req = <strong class="jxr_keyword">new</strong> Request&lt;&gt;(request, callback, errorCallback);
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 			<strong class="jxr_keyword">var</strong> req = <strong class="jxr_keyword">new</strong> Request&lt;&gt;(request, callback, errorCallback);
 <a class="jxr_linenumber" name="L440" href="#L440">440</a> 			<strong class="jxr_keyword">if</strong> (outstandingRequests.put(sequence, req) != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L441" href="#L441">441</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> DuplicateSequenceNumberException();
 <a class="jxr_linenumber" name="L442" href="#L442">442</a> 			}
@@ -467,7 +467,7 @@
 <a class="jxr_linenumber" name="L459" href="#L459">459</a> 		finish();
 <a class="jxr_linenumber" name="L460" href="#L460">460</a> 
 <a class="jxr_linenumber" name="L461" href="#L461">461</a> 		<em class="jxr_comment">// Update the packet with a (non-valuable) sequence number</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 		request.scpRequestHeader.issueSequenceNumber(emptySet());
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 		request.scpRequestHeader.issueSequenceNumber(Set.of());
 <a class="jxr_linenumber" name="L463" href="#L463">463</a> 		<em class="jxr_comment">// Send the request</em>
 <a class="jxr_linenumber" name="L464" href="#L464">464</a> 		<strong class="jxr_keyword">new</strong> Request&lt;&gt;(request, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>).send();
 <a class="jxr_linenumber" name="L465" href="#L465">465</a> 	}
@@ -508,12 +508,12 @@
 <a class="jxr_linenumber" name="L500" href="#L500">500</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> singleRetrieve() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L501" href="#L501">501</a> 		<em class="jxr_comment">// Receive the next response</em>
 <a class="jxr_linenumber" name="L502" href="#L502">502</a> 		log.debug(<span class="jxr_string">"waiting for message... timeout of {}"</span>, packetTimeout);
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 		<strong class="jxr_keyword">var</strong> msg = connection.receiveSCPResponse(packetTimeout);
 <a class="jxr_linenumber" name="L504" href="#L504">504</a> 		<strong class="jxr_keyword">if</strong> (log.isDebugEnabled()) {
 <a class="jxr_linenumber" name="L505" href="#L505">505</a> 			log.debug(<span class="jxr_string">"received message {} with seq num {}"</span>, msg.getResult(),
 <a class="jxr_linenumber" name="L506" href="#L506">506</a> 					msg.getSequenceNumber());
 <a class="jxr_linenumber" name="L507" href="#L507">507</a> 		}
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> 		Request&lt;?&gt; req = msg.pickRequest(outstandingRequests);
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 		<strong class="jxr_keyword">var</strong> req = msg.pickRequest(outstandingRequests);
 <a class="jxr_linenumber" name="L509" href="#L509">509</a> 
 <a class="jxr_linenumber" name="L510" href="#L510">510</a> 		<em class="jxr_comment">// Only process responses which have matching requests</em>
 <a class="jxr_linenumber" name="L511" href="#L511">511</a> 		<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
@@ -560,14 +560,14 @@
 <a class="jxr_linenumber" name="L552" href="#L552">552</a> 		numTimeouts++;
 <a class="jxr_linenumber" name="L553" href="#L553">553</a> 
 <a class="jxr_linenumber" name="L554" href="#L554">554</a> 		<em class="jxr_comment">// If there is a timeout, all packets remaining are resent</em>
-<a class="jxr_linenumber" name="L555" href="#L555">555</a> 		BitSet toRemove = <strong class="jxr_keyword">new</strong> BitSet(SEQUENCE_LENGTH);
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> 		<strong class="jxr_keyword">var</strong> toRemove = <strong class="jxr_keyword">new</strong> BitSet(SEQUENCE_LENGTH);
 <a class="jxr_linenumber" name="L556" href="#L556">556</a> 		ArrayList&lt;Integer&gt; currentSeqs;
 <a class="jxr_linenumber" name="L557" href="#L557">557</a> 		<strong class="jxr_keyword">synchronized</strong> (outstandingRequests) {
 <a class="jxr_linenumber" name="L558" href="#L558">558</a> 			currentSeqs = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(outstandingRequests.keySet());
 <a class="jxr_linenumber" name="L559" href="#L559">559</a> 		}
 <a class="jxr_linenumber" name="L560" href="#L560">560</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> seq : currentSeqs) {
 <a class="jxr_linenumber" name="L561" href="#L561">561</a> 			log.debug(<span class="jxr_string">"resending seq {}"</span>, seq);
-<a class="jxr_linenumber" name="L562" href="#L562">562</a> 			Request&lt;?&gt; req = outstandingRequests.get(seq);
+<a class="jxr_linenumber" name="L562" href="#L562">562</a> 			<strong class="jxr_keyword">var</strong> req = outstandingRequests.get(seq);
 <a class="jxr_linenumber" name="L563" href="#L563">563</a> 			<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L564" href="#L564">564</a> 				<em class="jxr_comment">// Shouldn't happen, but if it does we should nuke it.</em>
 <a class="jxr_linenumber" name="L565" href="#L565">565</a> 				toRemove.set(seq);

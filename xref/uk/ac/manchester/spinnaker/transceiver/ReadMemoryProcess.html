@@ -289,7 +289,7 @@
 <a class="jxr_linenumber" name="L281" href="#L281">281</a> 	<strong class="jxr_keyword">void</strong> readLink(<a name="HasChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip, <a name="Direction" href="../../../../../uk/ac/manchester/spinnaker/machine/Direction.html#Direction">Direction</a> linkDirection,
 <a class="jxr_linenumber" name="L282" href="#L282">282</a> 			MemoryLocation baseAddress, <strong class="jxr_keyword">int</strong> size, File dataFile)
 <a class="jxr_linenumber" name="L283" href="#L283">283</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 		<strong class="jxr_keyword">try</strong> (RandomAccessFile s = <strong class="jxr_keyword">new</strong> RandomAccessFile(dataFile, <span class="jxr_string">"rw"</span>)) {
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = <strong class="jxr_keyword">new</strong> RandomAccessFile(dataFile, <span class="jxr_string">"rw"</span>)) {
 <a class="jxr_linenumber" name="L285" href="#L285">285</a> 			readLink(chip, linkDirection, baseAddress, size,
 <a class="jxr_linenumber" name="L286" href="#L286">286</a> 					<strong class="jxr_keyword">new</strong> FileAccumulator(s));
 <a class="jxr_linenumber" name="L287" href="#L287">287</a> 		}
@@ -314,7 +314,7 @@
 <a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L307" href="#L307">307</a> 	<strong class="jxr_keyword">void</strong> readMemory(<a name="HasChipLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/HasChipLocation.html#HasChipLocation">HasChipLocation</a> chip, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress, <strong class="jxr_keyword">int</strong> size,
 <a class="jxr_linenumber" name="L308" href="#L308">308</a> 			File dataFile) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> 		<strong class="jxr_keyword">try</strong> (RandomAccessFile s = <strong class="jxr_keyword">new</strong> RandomAccessFile(dataFile, <span class="jxr_string">"rw"</span>)) {
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = <strong class="jxr_keyword">new</strong> RandomAccessFile(dataFile, <span class="jxr_string">"rw"</span>)) {
 <a class="jxr_linenumber" name="L310" href="#L310">310</a> 			readMemory(chip, baseAddress, size, s);
 <a class="jxr_linenumber" name="L311" href="#L311">311</a> 		}
 <a class="jxr_linenumber" name="L312" href="#L312">312</a> 	}
@@ -339,7 +339,7 @@
 <a class="jxr_linenumber" name="L331" href="#L331">331</a> 	<strong class="jxr_keyword">void</strong> readMemory(BufferManagerStorage.Region region,
 <a class="jxr_linenumber" name="L332" href="#L332">332</a> 			BufferManagerStorage storage)
 <a class="jxr_linenumber" name="L333" href="#L333">333</a> 			<strong class="jxr_keyword">throws</strong> IOException, ProcessException, <a name="StorageException" href="../../../../../uk/ac/manchester/spinnaker/storage/StorageException.html#StorageException">StorageException</a> {
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> 		byte[] buffer = <strong class="jxr_keyword">new</strong> byte[region.size];
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> 		<strong class="jxr_keyword">var</strong> buffer = <strong class="jxr_keyword">new</strong> byte[region.size];
 <a class="jxr_linenumber" name="L335" href="#L335">335</a> 		readMemory(region.core.asChipLocation(), region.startAddress,
 <a class="jxr_linenumber" name="L336" href="#L336">336</a> 				region.size, <strong class="jxr_keyword">new</strong> BufferAccumulator(buffer));
 <a class="jxr_linenumber" name="L337" href="#L337">337</a> 		storage.appendRecordingContents(region, buffer);

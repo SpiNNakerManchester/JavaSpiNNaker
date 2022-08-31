@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  	}
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> haveProp(String propValue) {
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  		<strong class="jxr_keyword">return</strong> nonNull(propValue) &amp;&amp; !propValue.isEmpty();
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  		<strong class="jxr_keyword">return</strong> nonNull(propValue) &amp;&amp; !propValue.isBlank();
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  	}
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  	<em class="jxr_javadoccomment">/**</em>
@@ -84,7 +84,7 @@
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  	}
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> sendMessage(String body) {
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  		SimpleMailMessage message = <strong class="jxr_keyword">new</strong> SimpleMailMessage();
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  		<strong class="jxr_keyword">var</strong> message = <strong class="jxr_keyword">new</strong> SimpleMailMessage();
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  		<strong class="jxr_keyword">if</strong> (haveProp(props.getFrom())) {
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  			message.setFrom(props.getFrom());
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  		}

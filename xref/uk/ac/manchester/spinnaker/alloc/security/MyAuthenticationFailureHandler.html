@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  		log.info(<span class="jxr_string">"auth failure"</span>, e);
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  		response.setStatus(UNAUTHORIZED.value());
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		String message = BLAND_AUTH_MSG;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		<strong class="jxr_keyword">var</strong> message = BLAND_AUTH_MSG;
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  		<strong class="jxr_keyword">if</strong> (properties.isDebugFailures()) {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  			message += <span class="jxr_string">": "</span> + e.getLocalizedMessage();
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  		}

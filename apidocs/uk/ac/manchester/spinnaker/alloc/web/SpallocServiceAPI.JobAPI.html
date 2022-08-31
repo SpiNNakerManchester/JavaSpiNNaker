@@ -93,7 +93,7 @@ loadScripts(document, 'script');</script>
 <dd><a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></dd>
 </dl>
 <hr>
-<pre><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("jobs/{id}")
+<pre>@Path("jobs/{id}")
 public static interface <span class="typeNameLabel">SpallocServiceAPI.JobAPI</span></pre>
 <div class="block">Interface to a particular job.</div>
 <dl>
@@ -122,8 +122,8 @@ public static interface <span class="typeNameLabel">SpallocServiceAPI.JobAPI</sp
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Response.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Response</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteJob(java.lang.String)">deleteJob</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</code></th>
+<td class="colFirst"><code>javax.ws.rs.core.Response</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteJob(java.lang.String)">deleteJob</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</code></th>
 <td class="colLast">
 <div class="block">Delete the job, or at least mark it as destroyed.</div>
 </td>
@@ -154,14 +154,14 @@ public static interface <span class="typeNameLabel">SpallocServiceAPI.JobAPI</sp
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getState(boolean,javax.ws.rs.container.AsyncResponse)">getState</a></span>&#8203;(boolean&nbsp;wait,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
+javax.ws.rs.container.AsyncResponse&nbsp;response)</code></th>
 <td class="colLast">
 <div class="block">Describe the basic info about a job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.lang.String)">keepAlive</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;req)</code></th>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepAlive(java.lang.String)">keepAlive</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;req)</code></th>
 <td class="colLast">
 <div class="block">Keep the job alive.</div>
 </td>
@@ -169,15 +169,15 @@ public static interface <span class="typeNameLabel">SpallocServiceAPI.JobAPI</sp
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#reportBoardIssue(uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest,javax.ws.rs.container.AsyncResponse)">reportBoardIssue</a></span>&#8203;(<a href="IssueReportRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.web">IssueReportRequest</a>&nbsp;report,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
+javax.ws.rs.container.AsyncResponse&nbsp;response)</code></th>
 <td class="colLast">
 <div class="block">Report an issue with some boards.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setMachinePower(uk.ac.manchester.spinnaker.alloc.web.MachinePower,javax.ws.rs.container.AsyncResponse)">setMachinePower</a></span>&#8203;(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="MachinePower.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinePower</a>&nbsp;req,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setMachinePower(uk.ac.manchester.spinnaker.alloc.web.MachinePower,javax.ws.rs.container.AsyncResponse)">setMachinePower</a></span>&#8203;(@NotNull @Valid <a href="MachinePower.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinePower</a>&nbsp;req,
+javax.ws.rs.container.AsyncResponse&nbsp;response)</code></th>
 <td class="colLast">
 <div class="block">Set the power state of the job's sub-machine.</div>
 </td>
@@ -202,13 +202,13 @@ public static interface <span class="typeNameLabel">SpallocServiceAPI.JobAPI</sp
 <li class="blockList">
 <section class="detail">
 <h3><a id="getState(boolean,javax.ws.rs.container.AsyncResponse)">getState</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("/")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
-</span><span class="returnType">void</span>&nbsp;<span class="memberName">getState</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("wait") <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("false")
+<div class="memberSignature"><span class="annotations">@GET
+@Path("/")
+@Produces("application/json")
+</span><span class="returnType">void</span>&nbsp;<span class="memberName">getState</span>&#8203;(<span class="arguments">@QueryParam("wait") @DefaultValue("false")
 boolean&nbsp;wait,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/Suspended.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">@Suspended</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</span></div>
+@Suspended
+javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <div class="block">Describe the basic info about a job.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -220,11 +220,11 @@ boolean&nbsp;wait,
 <li class="blockList">
 <section class="detail">
 <h3><a id="keepAlive(java.lang.String)">keepAlive</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/PUT.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@PUT</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("keepalive")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Consumes.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Consumes</a>("text/plain")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("text/plain")
-</span><span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;req)</span></div>
+<div class="memberSignature"><span class="annotations">@PUT
+@Path("keepalive")
+@Consumes("text/plain")
+@Produces("text/plain")
+</span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">keepAlive</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;req)</span></div>
 <div class="block">Keep the job alive.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -237,11 +237,11 @@ boolean&nbsp;wait,
 <li class="blockList">
 <section class="detail">
 <h3><a id="deleteJob(java.lang.String)">deleteJob</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/DELETE.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DELETE</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("/")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
-</span><span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/Response.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">Response</a></span>&nbsp;<span class="memberName">deleteJob</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("reason") <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("")
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span></div>
+<div class="memberSignature"><span class="annotations">@DELETE
+@Path("/")
+@Produces("application/json")
+</span><span class="returnType">javax.ws.rs.core.Response</span>&nbsp;<span class="memberName">deleteJob</span>&#8203;(<span class="arguments">@QueryParam("reason") @DefaultValue("")
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;reason)</span></div>
 <div class="block">Delete the job, or at least mark it as destroyed.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -254,9 +254,9 @@ boolean&nbsp;wait,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMachine()">getMachine</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("machine")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+<div class="memberSignature"><span class="annotations">@GET
+@Path("machine")
+@Produces("application/json")
 </span><span class="returnType"><a href="SubMachineResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">SubMachineResponse</a></span>&nbsp;<span class="memberName">getMachine</span>()</div>
 <div class="block">Get a description of the (sub-)machine of the job.</div>
 <dl>
@@ -268,9 +268,9 @@ boolean&nbsp;wait,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMachinePower()">getMachinePower</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("machine/power")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+<div class="memberSignature"><span class="annotations">@GET
+@Path("machine/power")
+@Produces("application/json")
 </span><span class="returnType"><a href="MachinePower.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinePower</a></span>&nbsp;<span class="memberName">getMachinePower</span>()</div>
 <div class="block">Get the current power state of the job's sub-machine.</div>
 <dl>
@@ -282,14 +282,14 @@ boolean&nbsp;wait,
 <li class="blockList">
 <section class="detail">
 <h3><a id="setMachinePower(uk.ac.manchester.spinnaker.alloc.web.MachinePower,javax.ws.rs.container.AsyncResponse)">setMachinePower</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/POST.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@POST</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("machine/power")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Consumes.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Consumes</a>("application/json")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
-</span><span class="returnType">void</span>&nbsp;<span class="memberName">setMachinePower</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a> <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="MachinePower.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinePower</a>&nbsp;req,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/Suspended.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">@Suspended</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</span></div>
+<div class="memberSignature"><span class="annotations">@POST
+@Path("machine/power")
+@Consumes("application/json")
+@Produces("application/json")
+</span><span class="returnType">void</span>&nbsp;<span class="memberName">setMachinePower</span>&#8203;(<span class="arguments">@NotNull @Valid
+@NotNull @Valid <a href="MachinePower.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinePower</a>&nbsp;req,
+@Suspended
+javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <div class="block">Set the power state of the job's sub-machine. Note that the actual
  change may (will!) take time to process.</div>
 <dl>
@@ -302,12 +302,12 @@ boolean&nbsp;wait,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getJobChipLocation(@javax.validation.constraints.PositiveOrZero(message="xmustbeatleast0")int,@javax.validation.constraints.PositiveOrZero(message="ymustbeatleast0")int)">getJobChipLocation</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/GET.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@GET</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("chip")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
-</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">getJobChipLocation</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("x") <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("0") <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="x must be at least 0")
+<div class="memberSignature"><span class="annotations">@GET
+@Path("chip")
+@Produces("application/json")
+</span><span class="returnType"><a href="WhereIsResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">WhereIsResponse</a></span>&nbsp;<span class="memberName">getJobChipLocation</span>&#8203;(<span class="arguments">@QueryParam("x") @DefaultValue("0") @PositiveOrZero(message="x must be at least 0")
 @javax.validation.constraints.PositiveOrZero(message="x must be at least 0") int&nbsp;x,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/QueryParam.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@QueryParam</a>("y") <a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/DefaultValue.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@DefaultValue</a>("0") <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="y must be at least 0")
+@QueryParam("y") @DefaultValue("0") @PositiveOrZero(message="y must be at least 0")
 @javax.validation.constraints.PositiveOrZero(message="y must be at least 0") int&nbsp;y)</span></div>
 <div class="block">Get the location description of a board given the job-local
  coordinates of a chip on that board.</div>
@@ -323,13 +323,13 @@ boolean&nbsp;wait,
 <li class="blockList">
 <section class="detail">
 <h3><a id="reportBoardIssue(uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest,javax.ws.rs.container.AsyncResponse)">reportBoardIssue</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/POST.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@POST</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("report-issue")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Consumes.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Consumes</a>("application/json")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Produces.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Produces</a>("application/json")
+<div class="memberSignature"><span class="annotations">@POST
+@Path("report-issue")
+@Consumes("application/json")
+@Produces("application/json")
 </span><span class="returnType">void</span>&nbsp;<span class="memberName">reportBoardIssue</span>&#8203;(<span class="arguments"><a href="IssueReportRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.web">IssueReportRequest</a>&nbsp;report,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/Suspended.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">@Suspended</a>
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</span></div>
+@Suspended
+javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <div class="block">Report an issue with some boards.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

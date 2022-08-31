@@ -26,9 +26,9 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Math.ceil;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.lang.Math.min;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.io.BufferedInputStream;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.apache.commons.io.IOUtils.buffer;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.io.File;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> java.io.FileInputStream;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
@@ -89,7 +89,7 @@
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  		<strong class="jxr_keyword">int</strong> blockID = 0;
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  		<strong class="jxr_keyword">while</strong> (numBytes &gt; 0) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  			<strong class="jxr_keyword">int</strong> chunk = min(numBytes, UDP_MESSAGE_MAX_SIZE);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  			ByteBuffer tmp = data.duplicate();
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  			<strong class="jxr_keyword">var</strong> tmp = data.duplicate();
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  			tmp.limit(tmp.position() + chunk);
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  			sendRequest(<strong class="jxr_keyword">new</strong> <a name="FloodFillData" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/FloodFillData.html#FloodFillData">FloodFillData</a>(nearestNeighbourID, blockID,
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  					baseAddress, tmp));
@@ -133,7 +133,7 @@
 <a class="jxr_linenumber" name="L125" href="#L125">125</a> 		<strong class="jxr_keyword">while</strong> (numBytes &gt; 0) {
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 			<strong class="jxr_keyword">int</strong> chunk = min(numBytes, UDP_MESSAGE_MAX_SIZE);
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 			<em class="jxr_comment">// Allocate a new array each time; assume message hold a ref to it</em>
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 			byte[] buffer = <strong class="jxr_keyword">new</strong> byte[chunk];
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 			<strong class="jxr_keyword">var</strong> buffer = <strong class="jxr_keyword">new</strong> byte[chunk];
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 			chunk = dataStream.read(buffer);
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 			<strong class="jxr_keyword">if</strong> (chunk &lt;= 0) {
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 				<strong class="jxr_keyword">break</strong>;
@@ -166,13 +166,12 @@
 <a class="jxr_linenumber" name="L158" href="#L158">158</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> 	<strong class="jxr_keyword">void</strong> writeMemory(byte nearestNeighbourID, <a name="MemoryLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/MemoryLocation.html#MemoryLocation">MemoryLocation</a> baseAddress,
 <a class="jxr_linenumber" name="L160" href="#L160">160</a> 			File dataFile) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 		<strong class="jxr_keyword">try</strong> (InputStream s =
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 				<strong class="jxr_keyword">new</strong> BufferedInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(dataFile))) {
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 			writeMemory(nearestNeighbourID, baseAddress, s,
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 					(<strong class="jxr_keyword">int</strong>) dataFile.length());
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 		}
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 	}
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> }
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> s = buffer(<strong class="jxr_keyword">new</strong> FileInputStream(dataFile))) {
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 			writeMemory(nearestNeighbourID, baseAddress, s,
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 					(<strong class="jxr_keyword">int</strong>) dataFile.length());
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 		}
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	}
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

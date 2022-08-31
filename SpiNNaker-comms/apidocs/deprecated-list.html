@@ -64,11 +64,107 @@ loadScripts(document, 'script');</script>
 <h1 title="Deprecated API" class="title">Deprecated API</h1>
 <h2 title="Contents">Contents</h2>
 <ul>
+<li><a href="#forRemoval">For Removal</a></li>
 <li><a href="#method">Methods</a></li>
 <li><a href="#enum.constant">Enum Constants</a></li>
 </ul>
 </div>
-<div class="contentContainer"><a id="method">
+<div class="contentContainer"><a id="forRemoval">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<div class="deprecatedSummary">
+<table>
+<caption><span>For Removal</span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Element</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_12">uk.ac.manchester.spinnaker.messages.model.CPUState.CPU_STATE_12</a></th>
+<td class="colLast">
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_13">uk.ac.manchester.spinnaker.messages.model.CPUState.CPU_STATE_13</a></th>
+<td class="colLast">
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_14">uk.ac.manchester.spinnaker.messages.model.CPUState.CPU_STATE_14</a></th>
+<td class="colLast">
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_1">uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.padding_1</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_2">uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.padding_2</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_3">uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.padding_3</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_4">uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.padding_4</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_APLX">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_APLX</a></th>
+<td class="colLast">
+<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a>, which has a superior API</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_RUN">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RUN</a></th>
+<td class="colLast">
+<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a>, which has a superior API</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/CreateJob.html#requireTorus()">uk.ac.manchester.spinnaker.spalloc.CreateJob.requireTorus()</a></th>
+<td class="colLast">
+<div class="deprecationComment">You probably can't use this sensibly with the hardware as
+             deployed (or you automatically get it when meaningful). The
+             default is fine.</div>
+</td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(java.util.List,java.util.Map)">uk.ac.manchester.spinnaker.spalloc.SpallocAPI.createJob&#8203;(List&lt;Integer&gt;, Map&lt;String, Object&gt;)</a></th>
+<td class="colLast">
+<div class="deprecationComment">Consider using <a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)"><code>SpallocAPI.createJob(CreateJob)</code></a> instead.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocClient.html#createJob(java.util.List,java.util.Map,java.lang.Integer)">uk.ac.manchester.spinnaker.spalloc.SpallocClient.createJob&#8203;(List&lt;Integer&gt;, Map&lt;String, Object&gt;, Integer)</a></th>
+<td class="colLast"></td>
+</tr>
+<tr class="altColor">
+<th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/transceiver/Utils.html#sendPortTriggerMessage(uk.ac.manchester.spinnaker.connections.UDPConnection,java.net.InetAddress)">uk.ac.manchester.spinnaker.transceiver.Utils.sendPortTriggerMessage&#8203;(UDPConnection&lt;?&gt;, InetAddress)</a></th>
+<td class="colLast">
+<div class="deprecationComment">Call
+             <a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#sendPortTriggerMessage(java.net.InetAddress)"><code>UDPConnection.sendPortTriggerMessage(InetAddress)</code></a>
+             directly instead.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</ul>
+<a id="method">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -173,15 +269,24 @@ loadScripts(document, 'script');</script>
 <tbody>
 <tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_12">uk.ac.manchester.spinnaker.messages.model.CPUState.CPU_STATE_12</a></th>
-<td class="colLast"></td>
+<td class="colLast">
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_13">uk.ac.manchester.spinnaker.messages.model.CPUState.CPU_STATE_13</a></th>
-<td class="colLast"></td>
+<td class="colLast">
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</td>
 </tr>
 <tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_14">uk.ac.manchester.spinnaker.messages.model.CPUState.CPU_STATE_14</a></th>
-<td class="colLast"></td>
+<td class="colLast">
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#ltpc_period">uk.ac.manchester.spinnaker.messages.model.SystemVariableDefinition.ltpc_period</a></th>
@@ -208,7 +313,7 @@ loadScripts(document, 'script');</script>
 <tr class="altColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_APLX">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_APLX</a></th>
 <td class="colLast">
-<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a></div>
+<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a>, which has a superior API</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -230,7 +335,7 @@ loadScripts(document, 'script');</script>
 <tr class="rowColor">
 <th class="colDeprecatedItemName" scope="row"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_RUN">uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_RUN</a></th>
 <td class="colLast">
-<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a></div>
+<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a>, which has a superior API</div>
 </td>
 </tr>
 </tbody>

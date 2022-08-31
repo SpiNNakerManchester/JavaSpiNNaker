@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9};
+<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -87,13 +87,13 @@ loadScripts(document, 'script');</script>
 <h1 title="Class CollectionUtils" class="title">Class CollectionUtils</h1>
 </div>
 <div class="contentContainer">
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.utils.CollectionUtils</div>
 </div>
 <section class="description">
 <hr>
 <pre>public abstract class <span class="typeNameLabel">CollectionUtils</span>
-extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
+extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">Utilities for working with collections. Things that it would be nice if they
  were in Java itself, but which aren't.</div>
 <dl>
@@ -123,14 +123,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></code></td>
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#AND">AND</a></span></code></th>
 <td class="colLast">
 <div class="block">The binary and operator (<code>&amp;</code>) as a function.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></code></td>
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#OR">OR</a></span></code></th>
 <td class="colLast">
 <div class="block">The binary or operator (<code>|</code>) as a function.</div>
@@ -160,9 +160,9 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&gt;</code></td>
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#batch(int,java.util.List)">batch</a></span>&#8203;(int&nbsp;batchSize,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;&nbsp;input)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;&nbsp;input)</code></th>
 <td class="colLast">
 <div class="block">Given a list of elements, split it into batches of elements of a given
  size.</div>
@@ -171,8 +171,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>static &lt;T,&#8203;
 U,&#8203;
-V&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;U,&#8203;V&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#curry(java.util.function.BiFunction,T)">curry</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;T,&#8203;U,&#8203;V&gt;&nbsp;fn,
+V&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;U,&#8203;V&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#curry(java.util.function.BiFunction,T)">curry</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;T,&#8203;U,&#8203;V&gt;&nbsp;fn,
 T&nbsp;arg)</code></th>
 <td class="colLast">
 <div class="block">Binary function currier.</div>
@@ -180,26 +180,35 @@ T&nbsp;arg)</code></th>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>static &lt;T,&#8203;
-U&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;U&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#lmap(java.util.Collection,java.util.function.Function)">lmap</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&nbsp;list,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;T,&#8203;U&gt;&nbsp;fun)</code></th>
+U&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;U&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#lmap(java.util.Collection,java.util.function.Function)">lmap</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&nbsp;list,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;T,&#8203;U&gt;&nbsp;fun)</code></th>
 <td class="colLast">
-<div class="block">Like <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true#map(java.util.function.Function)" title="class or interface in java.util.stream" class="externalLink"><code>Stream.map(Function)</code></a>, but for lists/collections.</div>
+<div class="block">Like <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true#map(java.util.function.Function)" title="class or interface in java.util.stream" class="externalLink"><code>Stream.map(Function)</code></a>, but for lists/collections.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parseCommaSeparatedSet(java.lang.String,java.util.function.Function)">parseCommaSeparatedSet</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;str,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;T&gt;&nbsp;mapper)</code></th>
+<td class="colFirst"><code>static &lt;E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;,&#8203;
+K&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;E&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeEnumBackingMap(E%5B%5D,java.util.function.Function)">makeEnumBackingMap</a></span>&#8203;(E[]&nbsp;values,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;E,&#8203;K&gt;&nbsp;valueExtractor)</code></th>
+<td class="colLast">
+<div class="block">Utility for making the backing maps for fast <code>enum</code>s.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#parseCommaSeparatedSet(java.lang.String,java.util.function.Function)">parseCommaSeparatedSet</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;str,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;T&gt;&nbsp;mapper)</code></th>
 <td class="colLast">
 <div class="block">Parse a comma-separated string into an <em>unordered</em> set of items.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
-<td class="colFirst"><code>static &lt;E extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;E,&#8203;?,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toEnumSet(java.lang.Class)">toEnumSet</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls)</code></th>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code>static &lt;E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;<br><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;E,&#8203;?,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toEnumSet(java.lang.Class)">toEnumSet</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls)</code></th>
 <td class="colLast">
-<div class="block">Create a collector that collects to an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>EnumSet</code></a>.</div>
+<div class="block">Create a collector that collects to an <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>EnumSet</code></a>.</div>
 </td>
 </tr>
 </tbody>
@@ -207,10 +216,10 @@ U&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.htm
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -227,14 +236,14 @@ U&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.htm
 <li class="blockList">
 <section class="detail">
 <h3><a id="AND">AND</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></span>&nbsp;<span class="memberName">AND</span></div>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></span>&nbsp;<span class="memberName">AND</span></div>
 <div class="block">The binary and operator (<code>&amp;</code>) as a function.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="OR">OR</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></span>&nbsp;<span class="memberName">OR</span></div>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/IntBinaryOperator.html?is-external=true" title="class or interface in java.util.function" class="externalLink">IntBinaryOperator</a></span>&nbsp;<span class="memberName">OR</span></div>
 <div class="block">The binary or operator (<code>|</code>) as a function.</div>
 </section>
 </li>
@@ -251,9 +260,9 @@ U&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.htm
 <li class="blockList">
 <section class="detail">
 <h3><a id="toEnumSet(java.lang.Class)">toEnumSet</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;E extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;</span>
-<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;E,&#8203;?,&#8203;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</span>&nbsp;<span class="memberName">toEnumSet</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls)</span></div>
-<div class="block">Create a collector that collects to an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>EnumSet</code></a>.</div>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;&gt;</span>
+<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collector.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Collector</a>&lt;E,&#8203;?,&#8203;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink">EnumSet</a>&lt;E&gt;&gt;</span>&nbsp;<span class="memberName">toEnumSet</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;E&gt;&nbsp;cls)</span></div>
+<div class="block">Create a collector that collects to an <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>EnumSet</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>E</code> - The type of <code>enum</code> we are collecting.</dd>
@@ -271,7 +280,7 @@ U&gt;&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.htm
 </a><a id="curry(java.util.function.BiFunction,T)">curry</a></h3>
 <div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T,&#8203;
 U,&#8203;
-V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;U,&#8203;V&gt;</span>&nbsp;<span class="memberName">curry</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;T,&#8203;U,&#8203;V&gt;&nbsp;fn,
+V&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;U,&#8203;V&gt;</span>&nbsp;<span class="memberName">curry</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html?is-external=true" title="class or interface in java.util.function" class="externalLink">BiFunction</a>&lt;T,&#8203;U,&#8203;V&gt;&nbsp;fn,
 T&nbsp;arg)</span></div>
 <div class="block">Binary function currier.</div>
 <dl>
@@ -291,11 +300,11 @@ T&nbsp;arg)</span></div>
 <li class="blockList">
 <section class="detail">
 <h3><a id="batch(int,java.util.List)">batch</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&gt;</span>&nbsp;<span class="memberName">batch</span>&#8203;(<span class="arguments">int&nbsp;batchSize,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;&nbsp;input)</span></div>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&gt;</span>&nbsp;<span class="memberName">batch</span>&#8203;(<span class="arguments">int&nbsp;batchSize,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;T&gt;&nbsp;input)</span></div>
 <div class="block">Given a list of elements, split it into batches of elements of a given
  size. The final batch might be smaller. Note that this <em>requires</em>
- a list because it uses the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true#subList(int,int)" title="class or interface in java.util" class="externalLink"><code>List.subList(int, int)</code></a> method.</div>
+ a list because it uses the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true#subList(int,int)" title="class or interface in java.util" class="externalLink"><code>List.subList(int, int)</code></a> method.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - The type of the elements of the input list.</dd>
@@ -314,9 +323,9 @@ T&nbsp;arg)</span></div>
 <section class="detail">
 <h3><a id="lmap(java.util.Collection,java.util.function.Function)">lmap</a></h3>
 <div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T,&#8203;
-U&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;U&gt;</span>&nbsp;<span class="memberName">lmap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&nbsp;list,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;T,&#8203;U&gt;&nbsp;fun)</span></div>
-<div class="block">Like <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true#map(java.util.function.Function)" title="class or interface in java.util.stream" class="externalLink"><code>Stream.map(Function)</code></a>, but for lists/collections.</div>
+U&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;U&gt;</span>&nbsp;<span class="memberName">lmap</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;T&gt;&nbsp;list,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;T,&#8203;U&gt;&nbsp;fun)</span></div>
+<div class="block">Like <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true#map(java.util.function.Function)" title="class or interface in java.util.stream" class="externalLink"><code>Stream.map(Function)</code></a>, but for lists/collections.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
 <dd><code>T</code> - The type of elements of the input list.</dd>
@@ -332,8 +341,8 @@ U&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/java
 <li class="blockList">
 <section class="detail">
 <h3><a id="parseCommaSeparatedSet(java.lang.String,java.util.function.Function)">parseCommaSeparatedSet</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;</span>&nbsp;<span class="memberName">parseCommaSeparatedSet</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;str,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;T&gt;&nbsp;mapper)</span></div>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;T&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html?is-external=true" title="class or interface in java.util" class="externalLink">Set</a>&lt;T&gt;</span>&nbsp;<span class="memberName">parseCommaSeparatedSet</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;str,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>,&#8203;T&gt;&nbsp;mapper)</span></div>
 <div class="block">Parse a comma-separated string into an <em>unordered</em> set of items.</div>
 <dl>
 <dt><span class="paramLabel">Type Parameters:</span></dt>
@@ -343,6 +352,30 @@ U&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/java
 <dd><code>mapper</code> - How to get an element from a piece of string.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The set of items. The set is unordered.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="makeEnumBackingMap(java.lang.Enum[],java.util.function.Function)">
+<!--   -->
+</a><a id="makeEnumBackingMap(E[],java.util.function.Function)">makeEnumBackingMap</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="typeParameters">&lt;E extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Enum.html?is-external=true" title="class or interface in java.lang" class="externalLink">Enum</a>&lt;E&gt;,&#8203;
+K&gt;</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink">Map</a>&lt;K,&#8203;E&gt;</span>&nbsp;<span class="memberName">makeEnumBackingMap</span>&#8203;(<span class="arguments">E[]&nbsp;values,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;E,&#8203;K&gt;&nbsp;valueExtractor)</span></div>
+<div class="block">Utility for making the backing maps for fast <code>enum</code>s. These are
+ expected to be used mainly to invert the trivial mapping from an
+ enumeration member to its <code>value</code> field, though this is not
+ assumed by this code.</div>
+<dl>
+<dt><span class="paramLabel">Type Parameters:</span></dt>
+<dd><code>E</code> - The type of the <code>enum</code>.</dd>
+<dd><code>K</code> - The type of the value to use as the map key.</dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>values</code> - The values in the <code>enum</code>.</dd>
+<dd><code>valueExtractor</code> - How to get the value to use as the map key.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>Unmodifiable map from the values to the <code>enum</code> members.</dd>
 </dl>
 </section>
 </li>

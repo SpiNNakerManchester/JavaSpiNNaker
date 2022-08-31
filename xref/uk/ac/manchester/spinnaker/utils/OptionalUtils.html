@@ -55,7 +55,7 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; Optional&lt;T&gt; apply(Optional&lt;T&gt; source,
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  			Consumer&lt;T&gt;... actions) {
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  		source.ifPresent(t -&gt; {
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  			<strong class="jxr_keyword">for</strong> (Consumer&lt;T&gt; action : actions) {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> action : actions) {
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  				action.accept(t);
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  			}
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  		});

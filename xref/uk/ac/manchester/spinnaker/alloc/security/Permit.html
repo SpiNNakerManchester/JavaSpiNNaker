@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	 *            The originating security context.</em>
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  	<strong class="jxr_keyword">public</strong> <a name="Permit" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/Permit.html#Permit">Permit</a>(javax.ws.rs.core.SecurityContext context) {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">for</strong> (String role : STDAUTH) {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> role : STDAUTH) {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  			<strong class="jxr_keyword">if</strong> (context.isUserInRole(role)) {
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  				authorities.add(<strong class="jxr_keyword">new</strong> <a name="SimpleGrantedAuthority" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/SimpleGrantedAuthority.html#SimpleGrantedAuthority">SimpleGrantedAuthority</a>(role));
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  			}
@@ -200,8 +200,8 @@
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> 			}
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> 		}
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> 
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> 		SecurityContext c = SecurityContextHolder.getContext();
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> 		Authentication old = c.getAuthentication();
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 		<strong class="jxr_keyword">var</strong> c = SecurityContextHolder.getContext();
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> 		<strong class="jxr_keyword">var</strong> old = c.getAuthentication();
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 		c.setAuthentication(<strong class="jxr_keyword">new</strong> TempAuth());
 <a class="jxr_linenumber" name="L198" href="#L198">198</a> 		<strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> 			<strong class="jxr_keyword">return</strong> inContext.get();

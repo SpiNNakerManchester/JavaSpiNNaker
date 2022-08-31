@@ -81,10 +81,10 @@ loadScripts(document, 'script');</script>
 <div class="contentContainer">
 <section class="description">
 <hr>
-<pre><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Documented.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Documented</a>
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Retention.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Retention</a>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/RetentionPolicy.html?is-external=true#RUNTIME" title="class or interface in java.lang.annotation" class="externalLink">RUNTIME</a>)
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/Target.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Target</a>({<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html?is-external=true#METHOD" title="class or interface in java.lang.annotation" class="externalLink">METHOD</a>,<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html?is-external=true#FIELD" title="class or interface in java.lang.annotation" class="externalLink">FIELD</a>,<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html?is-external=true#PARAMETER" title="class or interface in java.lang.annotation" class="externalLink">PARAMETER</a>,<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/annotation/ElementType.html?is-external=true#TYPE_USE" title="class or interface in java.lang.annotation" class="externalLink">TYPE_USE</a>})
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Constraint.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Constraint</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Constraint.html?is-external=true#validatedBy()" title="class or interface in javax.validation" class="externalLink">validatedBy</a>=uk.ac.manchester.spinnaker.alloc.model.IPAddressValidator.class)
+<pre><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Documented.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Documented</a>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Retention.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Retention</a>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/RetentionPolicy.html?is-external=true#RUNTIME" title="class or interface in java.lang.annotation" class="externalLink">RUNTIME</a>)
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/Target.html?is-external=true" title="class or interface in java.lang.annotation" class="externalLink">@Target</a>({<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#METHOD" title="class or interface in java.lang.annotation" class="externalLink">METHOD</a>,<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#FIELD" title="class or interface in java.lang.annotation" class="externalLink">FIELD</a>,<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#PARAMETER" title="class or interface in java.lang.annotation" class="externalLink">PARAMETER</a>,<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/annotation/ElementType.html?is-external=true#TYPE_USE" title="class or interface in java.lang.annotation" class="externalLink">TYPE_USE</a>})
+@Constraint(validatedBy=uk.ac.manchester.spinnaker.alloc.model.IPAddressValidator.class)
 public @interface <span class="memberNameLabel">IPAddress</span></pre>
 <div class="block">Validates that a string looks like an IP address.</div>
 <dl>
@@ -119,21 +119,21 @@ public @interface <span class="memberNameLabel">IPAddress</span></pre>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;?&gt;[]</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;?&gt;[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#groups()">groups</a></span></code></th>
 <td class="colLast">
 <div class="block">Group of constraints.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#message()">message</a></span></code></th>
 <td class="colLast">
 <div class="block">Message on constraint violated.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Payload.html?is-external=true" title="class or interface in javax.validation" class="externalLink">Payload</a>&gt;[]</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends javax.validation.Payload&gt;[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#payload()">payload</a></span></code></th>
 <td class="colLast">
 <div class="block">Payload info.</div>
@@ -173,7 +173,7 @@ public @interface <span class="memberNameLabel">IPAddress</span></pre>
 <li class="blockList">
 <section class="detail">
 <h3><a id="message()">message</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">message</span></div>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">message</span></div>
 <div class="block">Message on constraint violated.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -188,7 +188,7 @@ public @interface <span class="memberNameLabel">IPAddress</span></pre>
 <li class="blockList">
 <section class="detail">
 <h3><a id="groups()">groups</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;?&gt;[]</span>&nbsp;<span class="memberName">groups</span></div>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;?&gt;[]</span>&nbsp;<span class="memberName">groups</span></div>
 <div class="block">Group of constraints. Required by validation spec.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -203,7 +203,7 @@ public @interface <span class="memberNameLabel">IPAddress</span></pre>
 <li class="blockList">
 <section class="detail">
 <h3><a id="payload()">payload</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends <a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Payload.html?is-external=true" title="class or interface in javax.validation" class="externalLink">Payload</a>&gt;[]</span>&nbsp;<span class="memberName">payload</span></div>
+<div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Class.html?is-external=true" title="class or interface in java.lang" class="externalLink">Class</a>&lt;? extends javax.validation.Payload&gt;[]</span>&nbsp;<span class="memberName">payload</span></div>
 <div class="block">Payload info. Required by validation spec.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>

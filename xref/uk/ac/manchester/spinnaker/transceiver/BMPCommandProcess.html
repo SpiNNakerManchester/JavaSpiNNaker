@@ -139,12 +139,12 @@
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 	@SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 	&lt;T <strong class="jxr_keyword">extends</strong> R&gt; T execute(BMPRequest&lt;T&gt; request)
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> 		ValueHolder&lt;R&gt; holder = <strong class="jxr_keyword">new</strong> ValueHolder&lt;&gt;();
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> 		<strong class="jxr_keyword">var</strong> holder = <strong class="jxr_keyword">new</strong> ValueHolder&lt;R&gt;();
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> 		<em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_comment">		 * If no pipeline built yet, build one on the connection selected for</em>
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_comment">		 * it.</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_comment">		 */</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 		RequestPipeline requestPipeline = <strong class="jxr_keyword">new</strong> RequestPipeline(
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> 		<strong class="jxr_keyword">var</strong> requestPipeline = <strong class="jxr_keyword">new</strong> RequestPipeline(
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 				connectionSelector.getNextConnection(request));
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> 		requestPipeline.sendRequest((BMPRequest&lt;R&gt;) request, holder::setValue);
 <a class="jxr_linenumber" name="L142" href="#L142">142</a> 		requestPipeline.finish();
@@ -174,12 +174,12 @@
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 	@SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> 	&lt;T <strong class="jxr_keyword">extends</strong> R&gt; T execute(BMPRequest&lt;T&gt; request, <strong class="jxr_keyword">int</strong> retries)
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 		ValueHolder&lt;R&gt; holder = <strong class="jxr_keyword">new</strong> ValueHolder&lt;&gt;();
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 		<strong class="jxr_keyword">var</strong> holder = <strong class="jxr_keyword">new</strong> ValueHolder&lt;R&gt;();
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 		<em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_comment">		 * If no pipeline built yet, build one on the connection selected for</em>
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_comment">		 * it.</em>
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_comment">		 */</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> 		RequestPipeline requestPipeline = <strong class="jxr_keyword">new</strong> RequestPipeline(
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 		<strong class="jxr_keyword">var</strong> requestPipeline = <strong class="jxr_keyword">new</strong> RequestPipeline(
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 				connectionSelector.getNextConnection(request));
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 		requestPipeline.sendRequest((BMPRequest&lt;R&gt;) request, retries,
 <a class="jxr_linenumber" name="L177" href="#L177">177</a> 				holder::setValue);
@@ -211,9 +211,9 @@
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 	@SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
 <a class="jxr_linenumber" name="L204" href="#L204">204</a> 	&lt;T <strong class="jxr_keyword">extends</strong> R&gt; List&lt;T&gt; execute(Iterable&lt;? <strong class="jxr_keyword">extends</strong> BMPRequest&lt;T&gt;&gt; requests)
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 		List&lt;R&gt; results = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> 		<strong class="jxr_keyword">var</strong> results = <strong class="jxr_keyword">new</strong> ArrayList&lt;R&gt;();
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> 		RequestPipeline requestPipeline = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L208" href="#L208">208</a> 		<strong class="jxr_keyword">for</strong> (BMPRequest&lt;T&gt; request : requests) {
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> request : requests) {
 <a class="jxr_linenumber" name="L209" href="#L209">209</a> 			<strong class="jxr_keyword">if</strong> (requestPipeline == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L210" href="#L210">210</a> 				<em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_comment">				 * If no pipeline built yet, build one on the connection</em>
@@ -255,9 +255,9 @@
 <a class="jxr_linenumber" name="L247" href="#L247">247</a> 	@SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
 <a class="jxr_linenumber" name="L248" href="#L248">248</a> 	&lt;T <strong class="jxr_keyword">extends</strong> R&gt; List&lt;T&gt; execute(Iterable&lt;? <strong class="jxr_keyword">extends</strong> BMPRequest&lt;T&gt;&gt; requests,
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> 			<strong class="jxr_keyword">int</strong> retries) <strong class="jxr_keyword">throws</strong> IOException, <a name="ProcessException" href="../../../../../uk/ac/manchester/spinnaker/transceiver/ProcessException.html#ProcessException">ProcessException</a> {
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 		List&lt;R&gt; results = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 		<strong class="jxr_keyword">var</strong> results = <strong class="jxr_keyword">new</strong> ArrayList&lt;R&gt;();
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> 		RequestPipeline requestPipeline = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 		<strong class="jxr_keyword">for</strong> (BMPRequest&lt;T&gt; request : requests) {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> request : requests) {
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> 			<strong class="jxr_keyword">if</strong> (requestPipeline == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L254" href="#L254">254</a> 				<em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_comment">				 * If no pipeline built yet, build one on the connection</em>
@@ -353,7 +353,7 @@
 <a class="jxr_linenumber" name="L345" href="#L345">345</a> 
 <a class="jxr_linenumber" name="L346" href="#L346">346</a> 			<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseReceivedResponse(<a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a> msg)
 <a class="jxr_linenumber" name="L347" href="#L347">347</a> 					<strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 				R response = msg.parsePayload(request);
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> 				<strong class="jxr_keyword">var</strong> response = msg.parsePayload(request);
 <a class="jxr_linenumber" name="L349" href="#L349">349</a> 				<strong class="jxr_keyword">if</strong> (callback != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L350" href="#L350">350</a> 					callback.accept(response);
 <a class="jxr_linenumber" name="L351" href="#L351">351</a> 				}
@@ -394,7 +394,7 @@
 <a class="jxr_linenumber" name="L386" href="#L386">386</a> 					.issueSequenceNumber(requests.keySet());
 <a class="jxr_linenumber" name="L387" href="#L387">387</a> 
 <a class="jxr_linenumber" name="L388" href="#L388">388</a> 			<em class="jxr_comment">// Send the request, keeping track of how many are sent</em>
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 			Request req = <strong class="jxr_keyword">new</strong> Request(request, callback);
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> 			<strong class="jxr_keyword">var</strong> req = <strong class="jxr_keyword">new</strong> Request(request, callback);
 <a class="jxr_linenumber" name="L390" href="#L390">390</a> 			<strong class="jxr_keyword">if</strong> (requests.put(sequence, req) != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L391" href="#L391">391</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
 <a class="jxr_linenumber" name="L392" href="#L392">392</a> 						<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
@@ -423,7 +423,7 @@
 <a class="jxr_linenumber" name="L415" href="#L415">415</a> 					.issueSequenceNumber(requests.keySet());
 <a class="jxr_linenumber" name="L416" href="#L416">416</a> 
 <a class="jxr_linenumber" name="L417" href="#L417">417</a> 			<em class="jxr_comment">// Send the request, keeping track of how many are sent</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> 			Request req = <strong class="jxr_keyword">new</strong> Request(request, retries, callback);
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 			<strong class="jxr_keyword">var</strong> req = <strong class="jxr_keyword">new</strong> Request(request, retries, callback);
 <a class="jxr_linenumber" name="L419" href="#L419">419</a> 			<strong class="jxr_keyword">if</strong> (requests.put(sequence, req) != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L420" href="#L420">420</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
 <a class="jxr_linenumber" name="L421" href="#L421">421</a> 						<span class="jxr_string">"duplicate sequence number catastrophe"</span>);
@@ -453,8 +453,8 @@
 <a class="jxr_linenumber" name="L445" href="#L445">445</a> 
 <a class="jxr_linenumber" name="L446" href="#L446">446</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> retrieve() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L447" href="#L447">447</a> 			<em class="jxr_comment">// Receive the next response</em>
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> 			SCPResultMessage msg = connection.receiveSCPResponse(timeout);
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 			Request req = msg.pickRequest(requests);
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> 			<strong class="jxr_keyword">var</strong> msg = connection.receiveSCPResponse(timeout);
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> 			<strong class="jxr_keyword">var</strong> req = msg.pickRequest(requests);
 <a class="jxr_linenumber" name="L450" href="#L450">450</a> 			<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L451" href="#L451">451</a> 				<em class="jxr_comment">// Only process responses which have matching requests</em>
 <a class="jxr_linenumber" name="L452" href="#L452">452</a> 				log.info(<span class="jxr_string">"discarding message with unknown sequence number: {}"</span>,
@@ -483,9 +483,9 @@
 <a class="jxr_linenumber" name="L475" href="#L475">475</a> 
 <a class="jxr_linenumber" name="L476" href="#L476">476</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> handleReceiveTimeout() {
 <a class="jxr_linenumber" name="L477" href="#L477">477</a> 			<em class="jxr_comment">// If there is a timeout, all packets remaining are resent</em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 			BitSet toRemove = <strong class="jxr_keyword">new</strong> BitSet(SEQUENCE_LENGTH);
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 			<strong class="jxr_keyword">var</strong> toRemove = <strong class="jxr_keyword">new</strong> BitSet(SEQUENCE_LENGTH);
 <a class="jxr_linenumber" name="L479" href="#L479">479</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> seq : <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(requests.keySet())) {
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> 				Request req = requests.get(seq);
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 				<strong class="jxr_keyword">var</strong> req = requests.get(seq);
 <a class="jxr_linenumber" name="L481" href="#L481">481</a> 				<strong class="jxr_keyword">if</strong> (req == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L482" href="#L482">482</a> 					<em class="jxr_comment">// Shouldn't happen, but if it does we should nuke it.</em>
 <a class="jxr_linenumber" name="L483" href="#L483">483</a> 					toRemove.set(seq);

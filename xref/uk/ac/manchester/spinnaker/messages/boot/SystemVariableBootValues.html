@@ -52,7 +52,7 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  	<em class="jxr_javadoccomment">/** Create a set of boot values using all the defaults. */</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  	<strong class="jxr_keyword">public</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a>() {
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  		values = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  		<strong class="jxr_keyword">for</strong> (<a name="SystemVariableDefinition" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#SystemVariableDefinition">SystemVariableDefinition</a> svd : SystemVariableDefinition.values()) {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> svd : SystemVariableDefinition.values()) {
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  			values.put(svd, svd.getDefault());
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  		}
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  	}
@@ -89,11 +89,11 @@
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  		}
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  		<strong class="jxr_keyword">switch</strong> (systemVariable.type) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  		<strong class="jxr_keyword">case</strong> BYTE_ARRAY:
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  			byte[] defbytes = (byte[]) values.get(systemVariable);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  			<strong class="jxr_keyword">var</strong> defbytes = (byte[]) values.get(systemVariable);
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  			<strong class="jxr_keyword">if</strong> (!(value instanceof byte[])) {
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"need a byte array"</span>);
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  			}
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  			byte[] newbytes = (byte[]) value;
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  			<strong class="jxr_keyword">var</strong> newbytes = (byte[]) value;
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  			<strong class="jxr_keyword">if</strong> (newbytes.length != defbytes.length) {
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  						<span class="jxr_string">"byte array length must be "</span> + defbytes.length);
@@ -126,7 +126,7 @@
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">	 *             if an unsupported board version is used</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a> get(<strong class="jxr_keyword">int</strong> boardVersion) {
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 		SystemVariableBootValues bv = BootValues.get(boardVersion);
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 		<strong class="jxr_keyword">var</strong> bv = BootValues.get(boardVersion);
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> 		<strong class="jxr_keyword">if</strong> (bv != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 			<strong class="jxr_keyword">return</strong> bv;
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 		}
@@ -147,70 +147,69 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">	 *             if an unsupported board version is used</em>
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a> get(<a name="MachineVersion" href="../../../../../../uk/ac/manchester/spinnaker/machine/MachineVersion.html#MachineVersion">MachineVersion</a> boardVersion) {
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> 		SystemVariableBootValues bv =
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> 				BootValues.get(boardVersion.hardwareVersion());
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> 		<strong class="jxr_keyword">if</strong> (bv != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> 			<strong class="jxr_keyword">return</strong> bv;
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		}
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 				<span class="jxr_string">"unknown SpiNNaker board version: "</span> + boardVersion);
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 	}
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 	@Override
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addToBuffer(ByteBuffer buffer) {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 		<strong class="jxr_keyword">int</strong> base = buffer.position();
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> 		<strong class="jxr_keyword">for</strong> (<a name="SystemVariableDefinition" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#SystemVariableDefinition">SystemVariableDefinition</a> svd : variables()) {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 			buffer.position(base + svd.offset);
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> 			svd.addToBuffer(values.get(svd), buffer);
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> 		}
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> 	}
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> 
-<a class="jxr_linenumber" name="L160" href="#L160">160</a> 	<em class="jxr_javadoccomment">/** Mark this object as unmodifiable. */</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a> 	<strong class="jxr_keyword">void</strong> unmodifiable() {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 		unmodifiable = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 	}
-<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
-<a class="jxr_linenumber" name="L165" href="#L165">165</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> BootValues {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a>[] MAP;
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">		 * Deeply magical values, used to configure board LED states. Note that</em>
-<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">		 * index 0 corresponds to board hardware version 1, index 1 to hardware</em>
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">		 * version 2, etc.</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] LED0 = {
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> 			0x00076104, 0x00006103, 0x00000502, 0x00000001, 0x00000001
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> 		};
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> 		<strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> 			MAP = <strong class="jxr_keyword">new</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a>[LED0.length + 1];
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> 			<strong class="jxr_keyword">int</strong> hwver = 1;
-<a class="jxr_linenumber" name="L180" href="#L180">180</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> led0 : LED0) {
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 				SystemVariableBootValues bv = <strong class="jxr_keyword">new</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a>();
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 				bv.setValue(hardware_version, hwver);
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 				bv.setValue(led_0, led0);
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> 				bv.unmodifiable();
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> 				MAP[hwver] = bv;
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> 				hwver++;
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> 			}
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 		}
-<a class="jxr_linenumber" name="L189" href="#L189">189</a> 
-<a class="jxr_linenumber" name="L190" href="#L190">190</a> 		<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">		 * Look up the defaults for a particular version of board.</em>
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">		 *</em>
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">		 * @param boardVersion</em>
-<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">		 *            The board version.</em>
-<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">		 * @return The defaults. Note that this should be treated as</em>
-<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">		 *         &lt;i&gt;unmodifiable&lt;/i&gt;.</em>
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_javadoccomment">		 */</em>
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 		<strong class="jxr_keyword">static</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a> get(<strong class="jxr_keyword">int</strong> boardVersion) {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 			<strong class="jxr_keyword">if</strong> (boardVersion &gt; 0 &amp;&amp; boardVersion &lt; MAP.length) {
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 				<strong class="jxr_keyword">return</strong> MAP[boardVersion];
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> 			}
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 		}
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> 	}
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> }
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> 		<strong class="jxr_keyword">var</strong> bv = BootValues.get(boardVersion.hardwareVersion());
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> 		<strong class="jxr_keyword">if</strong> (bv != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 			<strong class="jxr_keyword">return</strong> bv;
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 		}
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 				<span class="jxr_string">"unknown SpiNNaker board version: "</span> + boardVersion);
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 	}
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 	@Override
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addToBuffer(ByteBuffer buffer) {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 		<strong class="jxr_keyword">int</strong> base = buffer.position();
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> svd : variables()) {
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 			buffer.position(base + svd.offset);
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 			svd.addToBuffer(values.get(svd), buffer);
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 		}
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> 	}
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> 	<em class="jxr_javadoccomment">/** Mark this object as unmodifiable. */</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> 	<strong class="jxr_keyword">void</strong> unmodifiable() {
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> 		unmodifiable = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 	}
+<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> BootValues {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a>[] MAP;
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">		 * Deeply magical values, used to configure board LED states. Note that</em>
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">		 * index 0 corresponds to board hardware version 1, index 1 to hardware</em>
+<a class="jxr_linenumber" name="L170" href="#L170">170</a> <em class="jxr_javadoccomment">		 * version 2, etc.</em>
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L172" href="#L172">172</a> 		<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] LED0 = {
+<a class="jxr_linenumber" name="L173" href="#L173">173</a> 			0x00076104, 0x00006103, 0x00000502, 0x00000001, 0x00000001
+<a class="jxr_linenumber" name="L174" href="#L174">174</a> 		};
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 		<strong class="jxr_keyword">static</strong> {
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 			MAP = <strong class="jxr_keyword">new</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a>[LED0.length + 1];
+<a class="jxr_linenumber" name="L178" href="#L178">178</a> 			<strong class="jxr_keyword">int</strong> hwver = 1;
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> led0 : LED0) {
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> 				<strong class="jxr_keyword">var</strong> bv = <strong class="jxr_keyword">new</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a>();
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 				bv.setValue(hardware_version, hwver);
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 				bv.setValue(led_0, led0);
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> 				bv.unmodifiable();
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 				MAP[hwver] = bv;
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 				hwver++;
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 			}
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 		}
+<a class="jxr_linenumber" name="L188" href="#L188">188</a> 
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> 		<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">		 * Look up the defaults for a particular version of board.</em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">		 *</em>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">		 * @param boardVersion</em>
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">		 *            The board version.</em>
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">		 * @return The defaults. Note that this should be treated as</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_javadoccomment">		 *         &lt;i&gt;unmodifiable&lt;/i&gt;.</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_javadoccomment">		 */</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> 		<strong class="jxr_keyword">static</strong> <a name="SystemVariableBootValues" href="../../../../../../uk/ac/manchester/spinnaker/messages/boot/SystemVariableBootValues.html#SystemVariableBootValues">SystemVariableBootValues</a> get(<strong class="jxr_keyword">int</strong> boardVersion) {
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 			<strong class="jxr_keyword">if</strong> (boardVersion &gt; 0 &amp;&amp; boardVersion &lt; MAP.length) {
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> 				<strong class="jxr_keyword">return</strong> MAP[boardVersion];
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> 			}
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 		}
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 	}
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

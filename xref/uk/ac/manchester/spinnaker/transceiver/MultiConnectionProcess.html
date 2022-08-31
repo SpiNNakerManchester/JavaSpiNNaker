@@ -113,7 +113,7 @@
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> 
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">	 * Manufacture a pipeline to handle a request using the configured pipeline</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">	 * parameters.</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">	 * parameters. Reuses an existing pipeline if it can.</em>
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">	 * @param request</em>
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">	 *            The connection.</em>
@@ -140,7 +140,7 @@
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> 	@Override
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> finish() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 		<strong class="jxr_keyword">for</strong> (<a name="SCPRequestPipeline" href="../../../../../uk/ac/manchester/spinnaker/connections/SCPRequestPipeline.html#SCPRequestPipeline">SCPRequestPipeline</a> pipe : requestPipelines.values()) {
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> pipe : requestPipelines.values()) {
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 			pipe.finish();
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> 		}
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 	}

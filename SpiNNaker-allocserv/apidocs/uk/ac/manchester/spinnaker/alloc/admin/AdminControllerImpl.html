@@ -63,7 +63,7 @@ loadScripts(document, 'script');</script>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -87,7 +87,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class AdminControllerImpl" class="title">Class AdminControllerImpl</h1>
 </div>
 <div class="contentContainer">
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="../db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">uk.ac.manchester.spinnaker.alloc.db.SQLQueries</a>
 <div class="inheritance"><a href="../db/DatabaseAwareBean.html" title="class in uk.ac.manchester.spinnaker.alloc.db">uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl</div>
@@ -137,260 +137,6 @@ implements <a href="AdminController.html" title="interface in uk.ac.manchester.s
 <!--   -->
 </a>
 <h2>Field Summary</h2>
-<div class="memberSummary">
-<table>
-<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
-<thead>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colSecond" scope="col">Field</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#BASE_URI">BASE_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">The base URI for the current request.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#BLACKLIST_DATA_OBJ">BLACKLIST_DATA_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Blacklist data in <a href="#BOARD_VIEW"><code>BOARD_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#BLACKLIST_URI">BLACKLIST_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">How to call <a href="AdminController.html#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)"><code>blacklistSave()</code></a>,
- <a href="AdminController.html#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)"><code>blacklistPush()</code></a>, and
- <a href="AdminController.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)"><code>blacklistFetch()</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#BOARD_OBJ">BOARD_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">State in <a href="#BOARD_VIEW"><code>BOARD_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#BOARD_VIEW">BOARD_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/board.jsp</code>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#BOARDS_URI">BOARDS_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">How to call <a href="AdminController.html#boards()"><code>boards()</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#COLLAB_GROUP_LIST_OBJ">COLLAB_GROUP_LIST_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Group list (type: <a href="../model/GroupRecord.GroupType.html#COLLABRATORY"><code>GroupRecord.GroupType.COLLABRATORY</code></a>) in
- <a href="#GROUP_LIST_VIEW"><code>GROUP_LIST_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CREATE_GROUP_URI">CREATE_GROUP_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">How to call <a href="AdminController.html#getGroupCreationForm()"><code>getGroupCreationForm()</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CREATE_GROUP_VIEW">CREATE_GROUP_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/creategroup.jsp</code>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CREATE_USER_URI">CREATE_USER_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">How to call <a href="AdminController.html#getUserCreationForm()"><code>getUserCreationForm()</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#CREATE_USER_VIEW">CREATE_USER_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/createuser.jsp</code>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DEFAULT_TAGGING_COUNT">DEFAULT_TAGGING_COUNT</a></span></code></th>
-<td class="colLast">
-<div class="block">Number of <code>default</code> tags in <a href="#MACHINE_TAGGING_OBJ"><code>MACHINE_TAGGING_OBJ</code></a>, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DEFINED_MACHINES_OBJ">DEFINED_MACHINES_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Machines that have been defined, in <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GROUP_DETAILS_VIEW">GROUP_DETAILS_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/groupdetails.jsp</code>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GROUP_LIST_VIEW">GROUP_LIST_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/listgroups.jsp</code>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GROUP_OBJ">GROUP_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Group details in <a href="#GROUP_DETAILS_VIEW"><code>GROUP_DETAILS_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GROUPS_URI">GROUPS_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">How to call <a href="AdminController.html#listGroups()"><code>listGroups()</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#LOCAL_GROUP_LIST_OBJ">LOCAL_GROUP_LIST_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Group list (type: <a href="../model/GroupRecord.GroupType.html#INTERNAL"><code>GroupRecord.GroupType.INTERNAL</code></a>) in
- <a href="#GROUP_LIST_VIEW"><code>GROUP_LIST_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#LOCAL_USER_LIST_OBJ">LOCAL_USER_LIST_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">User list in <a href="#USER_LIST_VIEW"><code>USER_LIST_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MACHINE_LIST_OBJ">MACHINE_LIST_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Mapping from machine names to whether they're in service, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MACHINE_REPORTS_OBJ">MACHINE_REPORTS_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Result of <a href="MachineStateControl.html#getMachineReports()"><code>MachineStateControl.getMachineReports()</code></a>, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MACHINE_TAGGING_OBJ">MACHINE_TAGGING_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Result of <a href="MachineStateControl.html#getMachineTagging()"><code>MachineStateControl.getMachineTagging()</code></a>, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MACHINE_URI">MACHINE_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">How to call <a href="AdminController.html#machineManagement()"><code>machineManagement()</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MACHINE_VIEW">MACHINE_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/machine.jsp</code>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MAIN_VIEW">MAIN_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/index.jsp</code>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#OPENID_USER_LIST_OBJ">OPENID_USER_LIST_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">User list in <a href="#USER_LIST_VIEW"><code>USER_LIST_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ORG_GROUP_LIST_OBJ">ORG_GROUP_LIST_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">Group list (type: <a href="../model/GroupRecord.GroupType.html#ORGANISATION"><code>GroupRecord.GroupType.ORGANISATION</code></a>) in
- <a href="#GROUP_LIST_VIEW"><code>GROUP_LIST_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#TRUST_LEVELS">TRUST_LEVELS</a></span></code></th>
-<td class="colLast">
-<div class="block">The members of <a href="../security/TrustLevel.html" title="enum in uk.ac.manchester.spinnaker.alloc.security"><code>TrustLevel</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USER_DETAILS_VIEW">USER_DETAILS_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/userdetails.jsp</code>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USER_LIST_OBJ">USER_LIST_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">User list in <a href="#USER_LIST_VIEW"><code>USER_LIST_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USER_LIST_VIEW">USER_LIST_VIEW</a></span></code></th>
-<td class="colLast">
-<div class="block">View: <code>admin/listusers.jsp</code>.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USER_OBJ">USER_OBJ</a></span></code></th>
-<td class="colLast">
-<div class="block">User details in <a href="#USER_DETAILS_VIEW"><code>USER_DETAILS_VIEW</code></a>.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#USERS_URI">USERS_URI</a></span></code></th>
-<td class="colLast">
-<div class="block">How to call <a href="AdminController.html#listUsers()"><code>listUsers()</code></a>.</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="inheritedList">
 <h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.alloc.db.<a href="../db/SQLQueries.html" title="class in uk.ac.manchester.spinnaker.alloc.db">SQLQueries</a></h3>
 <a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.alloc.db.SQLQueries">
@@ -449,7 +195,7 @@ implements <a href="AdminController.html" title="interface in uk.ac.manchester.s
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addUserToGroup(int,java.lang.String,org.springframework.web.servlet.mvc.support.RedirectAttributes)">addUserToGroup</a></span>&#8203;(int&nbsp;id,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;user,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;user,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Add a user to a group.</div>
@@ -465,7 +211,7 @@ int&nbsp;delta,
 </td>
 </tr>
 <tr class="altColor" id="i2">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch</a></span>&#8203;(<a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
@@ -473,7 +219,7 @@ int&nbsp;delta,
 </td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistPush</a></span>&#8203;(<a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</code></th>
 <td class="colLast">
@@ -538,7 +284,7 @@ int&nbsp;delta,
 <tr class="rowColor" id="i11">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteUser(int,java.security.Principal,org.springframework.web.servlet.mvc.support.RedirectAttributes)">deleteUser</a></span>&#8203;(int&nbsp;id,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</code></th>
 <td class="colLast">
 <div class="block">Delete a user.</div>
@@ -546,14 +292,14 @@ int&nbsp;delta,
 </tr>
 <tr class="altColor" id="i12">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#disableMachine(java.lang.String)">disableMachine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#disableMachine(java.lang.String)">disableMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</code></th>
 <td class="colLast">
 <div class="block">Mark a machine as out of service.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i13">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#enableMachine(java.lang.String)">enableMachine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#enableMachine(java.lang.String)">enableMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</code></th>
 <td class="colLast">
 <div class="block">Mark a machine as in service.</div>
 </td>
@@ -611,8 +357,8 @@ int&nbsp;userid,
 </tr>
 <tr class="rowColor" id="i21">
 <td class="colFirst"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retagMachine(java.lang.String,java.lang.String)">retagMachine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;newTags)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retagMachine(java.lang.String,java.lang.String)">retagMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;newTags)</code></th>
 <td class="colLast">
 <div class="block">Handle the change of the tags of a machine.</div>
 </td>
@@ -636,7 +382,7 @@ int&nbsp;userid,
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#submitUserForm(int,uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,java.security.Principal)">submitUserForm</a></span>&#8203;(int&nbsp;id,
 <a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</code></th>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</code></th>
 <td class="colLast">
 <div class="block">Modify user details.</div>
 </td>
@@ -651,369 +397,16 @@ int&nbsp;userid,
 <!--   -->
 </a><code><a href="../db/DatabaseAwareBean.html#execute(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">execute</a>, <a href="../db/DatabaseAwareBean.html#executeRead(uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult)">executeRead</a>, <a href="../db/DatabaseAwareBean.html#getConnection()">getConnection</a></code></div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 </section>
 </li>
 </ul>
 </section>
 <section class="details">
 <ul class="blockList">
-<!-- ============ FIELD DETAIL =========== -->
-<li class="blockList">
-<section class="fieldDetails"><a id="field.detail">
-<!--   -->
-</a>
-<h2>Field Details</h2>
-<ul class="blockList">
-<li class="blockList">
-<section class="detail">
-<h3><a id="MAIN_VIEW">MAIN_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">MAIN_VIEW</span></div>
-<div class="block">View: <code>admin/index.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="USER_LIST_VIEW">USER_LIST_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">USER_LIST_VIEW</span></div>
-<div class="block">View: <code>admin/listusers.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="USER_DETAILS_VIEW">USER_DETAILS_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">USER_DETAILS_VIEW</span></div>
-<div class="block">View: <code>admin/userdetails.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="CREATE_USER_VIEW">CREATE_USER_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">CREATE_USER_VIEW</span></div>
-<div class="block">View: <code>admin/createuser.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="GROUP_LIST_VIEW">GROUP_LIST_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">GROUP_LIST_VIEW</span></div>
-<div class="block">View: <code>admin/listgroups.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="GROUP_DETAILS_VIEW">GROUP_DETAILS_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">GROUP_DETAILS_VIEW</span></div>
-<div class="block">View: <code>admin/groupdetails.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="CREATE_GROUP_VIEW">CREATE_GROUP_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">CREATE_GROUP_VIEW</span></div>
-<div class="block">View: <code>admin/creategroup.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="BOARD_VIEW">BOARD_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">BOARD_VIEW</span></div>
-<div class="block">View: <code>admin/board.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="MACHINE_VIEW">MACHINE_VIEW</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="../web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></span>&nbsp;<span class="memberName">MACHINE_VIEW</span></div>
-<div class="block">View: <code>admin/machine.jsp</code>.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="USER_LIST_OBJ">USER_LIST_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">USER_LIST_OBJ</span></div>
-<div class="block">User list in <a href="#USER_LIST_VIEW"><code>USER_LIST_VIEW</code></a>. All users.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.USER_LIST_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="LOCAL_USER_LIST_OBJ">LOCAL_USER_LIST_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">LOCAL_USER_LIST_OBJ</span></div>
-<div class="block">User list in <a href="#USER_LIST_VIEW"><code>USER_LIST_VIEW</code></a>. Local users only.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.LOCAL_USER_LIST_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="OPENID_USER_LIST_OBJ">OPENID_USER_LIST_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">OPENID_USER_LIST_OBJ</span></div>
-<div class="block">User list in <a href="#USER_LIST_VIEW"><code>USER_LIST_VIEW</code></a>. OpenID users only.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.OPENID_USER_LIST_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="USER_OBJ">USER_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">USER_OBJ</span></div>
-<div class="block">User details in <a href="#USER_DETAILS_VIEW"><code>USER_DETAILS_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.USER_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="LOCAL_GROUP_LIST_OBJ">LOCAL_GROUP_LIST_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">LOCAL_GROUP_LIST_OBJ</span></div>
-<div class="block">Group list (type: <a href="../model/GroupRecord.GroupType.html#INTERNAL"><code>GroupRecord.GroupType.INTERNAL</code></a>) in
- <a href="#GROUP_LIST_VIEW"><code>GROUP_LIST_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.LOCAL_GROUP_LIST_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="ORG_GROUP_LIST_OBJ">ORG_GROUP_LIST_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">ORG_GROUP_LIST_OBJ</span></div>
-<div class="block">Group list (type: <a href="../model/GroupRecord.GroupType.html#ORGANISATION"><code>GroupRecord.GroupType.ORGANISATION</code></a>) in
- <a href="#GROUP_LIST_VIEW"><code>GROUP_LIST_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.ORG_GROUP_LIST_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="COLLAB_GROUP_LIST_OBJ">COLLAB_GROUP_LIST_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">COLLAB_GROUP_LIST_OBJ</span></div>
-<div class="block">Group list (type: <a href="../model/GroupRecord.GroupType.html#COLLABRATORY"><code>GroupRecord.GroupType.COLLABRATORY</code></a>) in
- <a href="#GROUP_LIST_VIEW"><code>GROUP_LIST_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.COLLAB_GROUP_LIST_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="GROUP_OBJ">GROUP_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GROUP_OBJ</span></div>
-<div class="block">Group details in <a href="#GROUP_DETAILS_VIEW"><code>GROUP_DETAILS_VIEW</code></a>. Group creation info in
- <a href="#CREATE_GROUP_VIEW"><code>CREATE_GROUP_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.GROUP_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="BOARD_OBJ">BOARD_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">BOARD_OBJ</span></div>
-<div class="block">State in <a href="#BOARD_VIEW"><code>BOARD_VIEW</code></a>. <a href="../model/BoardRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>BoardRecord</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.BOARD_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="BLACKLIST_DATA_OBJ">BLACKLIST_DATA_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">BLACKLIST_DATA_OBJ</span></div>
-<div class="block">Blacklist data in <a href="#BOARD_VIEW"><code>BOARD_VIEW</code></a>. <a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><code>AdminController.BlacklistData</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.BLACKLIST_DATA_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="MACHINE_LIST_OBJ">MACHINE_LIST_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">MACHINE_LIST_OBJ</span></div>
-<div class="block">Mapping from machine names to whether they're in service, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.
- <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Map.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>Map</code></a><code>&lt;</code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>String</code></a><code>,</code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Boolean.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Boolean</code></a><code>&gt;</code></div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.MACHINE_LIST_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="DEFINED_MACHINES_OBJ">DEFINED_MACHINES_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">DEFINED_MACHINES_OBJ</span></div>
-<div class="block">Machines that have been defined, in <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="MachineDefinitionLoader.Machine.html" title="class in uk.ac.manchester.spinnaker.alloc.admin"><code>MachineDefinitionLoader.Machine</code></a>, 
-<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.DEFINED_MACHINES_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="MACHINE_TAGGING_OBJ">MACHINE_TAGGING_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">MACHINE_TAGGING_OBJ</span></div>
-<div class="block">Result of <a href="MachineStateControl.html#getMachineTagging()"><code>MachineStateControl.getMachineTagging()</code></a>, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../model/MachineTagging.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>MachineTagging</code></a>, 
-<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.MACHINE_TAGGING_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="DEFAULT_TAGGING_COUNT">DEFAULT_TAGGING_COUNT</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">DEFAULT_TAGGING_COUNT</span></div>
-<div class="block">Number of <code>default</code> tags in <a href="#MACHINE_TAGGING_OBJ"><code>MACHINE_TAGGING_OBJ</code></a>, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.DEFAULT_TAGGING_COUNT">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="MACHINE_REPORTS_OBJ">MACHINE_REPORTS_OBJ</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">MACHINE_REPORTS_OBJ</span></div>
-<div class="block">Result of <a href="MachineStateControl.html#getMachineReports()"><code>MachineStateControl.getMachineReports()</code></a>, in
- <a href="#MACHINE_VIEW"><code>MACHINE_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../model/BoardIssueReport.html" title="class in uk.ac.manchester.spinnaker.alloc.model"><code>BoardIssueReport</code></a>, 
-<a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.MACHINE_REPORTS_OBJ">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="BASE_URI">BASE_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">BASE_URI</span></div>
-<div class="block">The base URI for the current request. In all views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.BASE_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="TRUST_LEVELS">TRUST_LEVELS</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">TRUST_LEVELS</span></div>
-<div class="block">The members of <a href="../security/TrustLevel.html" title="enum in uk.ac.manchester.spinnaker.alloc.security"><code>TrustLevel</code></a>. In all views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.TRUST_LEVELS">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="USERS_URI">USERS_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">USERS_URI</span></div>
-<div class="block">How to call <a href="AdminController.html#listUsers()"><code>listUsers()</code></a>. In all
- views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.USERS_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="CREATE_USER_URI">CREATE_USER_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">CREATE_USER_URI</span></div>
-<div class="block">How to call <a href="AdminController.html#getUserCreationForm()"><code>getUserCreationForm()</code></a>. In all views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.CREATE_USER_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="GROUPS_URI">GROUPS_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">GROUPS_URI</span></div>
-<div class="block">How to call <a href="AdminController.html#listGroups()"><code>listGroups()</code></a>. In all
- views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.GROUPS_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="CREATE_GROUP_URI">CREATE_GROUP_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">CREATE_GROUP_URI</span></div>
-<div class="block">How to call <a href="AdminController.html#getGroupCreationForm()"><code>getGroupCreationForm()</code></a>. In all views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.CREATE_GROUP_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="BOARDS_URI">BOARDS_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">BOARDS_URI</span></div>
-<div class="block">How to call <a href="AdminController.html#boards()"><code>boards()</code></a>. In all views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.BOARDS_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="BLACKLIST_URI">BLACKLIST_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">BLACKLIST_URI</span></div>
-<div class="block">How to call <a href="AdminController.html#blacklistSave(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)"><code>blacklistSave()</code></a>,
- <a href="AdminController.html#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)"><code>blacklistPush()</code></a>, and
- <a href="AdminController.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)"><code>blacklistFetch()</code></a>. In <a href="#BOARD_VIEW"><code>BOARD_VIEW</code></a>.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.BLACKLIST_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="MACHINE_URI">MACHINE_URI</a></h3>
-<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">MACHINE_URI</span></div>
-<div class="block">How to call <a href="AdminController.html#machineManagement()"><code>machineManagement()</code></a>. In all views.</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../../../constant-values.html#uk.ac.manchester.spinnaker.alloc.admin.AdminControllerImpl.MACHINE_URI">Constant Field Values</a></dd>
-</dl>
-</section>
-</li>
-</ul>
-</section>
-</li>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <li class="blockList">
 <section class="constructorDetails"><a id="constructor.detail">
@@ -1122,7 +515,7 @@ int&nbsp;userid,
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">submitUserForm</span>&#8203;(<span class="arguments">int&nbsp;id,
 <a href="../model/UserRecord.html" title="class in uk.ac.manchester.spinnaker.alloc.model">UserRecord</a>&nbsp;user,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</span></div>
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#submitUserForm(int,uk.ac.manchester.spinnaker.alloc.model.UserRecord,org.springframework.ui.ModelMap,java.security.Principal)">AdminController</a></code></span></div>
 <div class="block">Modify user details.</div>
 <dl>
@@ -1142,7 +535,7 @@ int&nbsp;userid,
 <section class="detail">
 <h3><a id="deleteUser(int,java.security.Principal,org.springframework.web.servlet.mvc.support.RedirectAttributes)">deleteUser</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">deleteUser</span>&#8203;(<span class="arguments">int&nbsp;id,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/security/Principal.html?is-external=true" title="class or interface in java.security" class="externalLink">Principal</a>&nbsp;principal,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#deleteUser(int,java.security.Principal,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Delete a user.</div>
@@ -1226,7 +619,7 @@ int&nbsp;userid,
 <section class="detail">
 <h3><a id="addUserToGroup(int,java.lang.String,org.springframework.web.servlet.mvc.support.RedirectAttributes)">addUserToGroup</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">addUserToGroup</span>&#8203;(<span class="arguments">int&nbsp;id,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;user,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;user,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/support/RedirectAttributes.html?is-external=true" title="class or interface in org.springframework.web.servlet.mvc.support" class="externalLink">RedirectAttributes</a>&nbsp;attrs)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#addUserToGroup(int,java.lang.String,org.springframework.web.servlet.mvc.support.RedirectAttributes)">AdminController</a></code></span></div>
 <div class="block">Add a user to a group.</div>
@@ -1360,7 +753,7 @@ int&nbsp;delta,
 <section class="detail">
 <h3><a id="blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistFetch</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html?is-external=true" title="class or interface in org.springframework.scheduling.annotation" class="externalLink">@Async</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</span>&nbsp;<span class="memberName">blacklistFetch</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</span>&nbsp;<span class="memberName">blacklistFetch</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#blacklistFetch(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">AdminController</a></code></span></div>
 <div class="block">Fetch the blacklist for a board from the machine.</div>
@@ -1379,7 +772,7 @@ int&nbsp;delta,
 <section class="detail">
 <h3><a id="blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">blacklistPush</a></h3>
 <div class="memberSignature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html?is-external=true" title="class or interface in org.springframework.scheduling.annotation" class="externalLink">@Async</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</span>&nbsp;<span class="memberName">blacklistPush</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/CompletableFuture.html?is-external=true" title="class or interface in java.util.concurrent" class="externalLink">CompletableFuture</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a>&gt;</span>&nbsp;<span class="memberName">blacklistPush</span>&#8203;(<span class="arguments"><a href="AdminController.BlacklistData.html" title="class in uk.ac.manchester.spinnaker.alloc.admin">AdminController.BlacklistData</a>&nbsp;bldata,
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/ui/ModelMap.html?is-external=true" title="class or interface in org.springframework.ui" class="externalLink">ModelMap</a>&nbsp;model)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#blacklistPush(uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData,org.springframework.ui.ModelMap)">AdminController</a></code></span></div>
 <div class="block">Push the blacklist for a board to the machine.</div>
@@ -1413,8 +806,8 @@ int&nbsp;delta,
 <li class="blockList">
 <section class="detail">
 <h3><a id="retagMachine(java.lang.String,java.lang.String)">retagMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">retagMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
-<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;newTags)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">retagMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;newTags)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#retagMachine(java.lang.String,java.lang.String)">AdminController</a></code></span></div>
 <div class="block">Handle the change of the tags of a machine.</div>
 <dl>
@@ -1431,7 +824,7 @@ int&nbsp;delta,
 <li class="blockList">
 <section class="detail">
 <h3><a id="disableMachine(java.lang.String)">disableMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">disableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">disableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#disableMachine(java.lang.String)">AdminController</a></code></span></div>
 <div class="block">Mark a machine as out of service.</div>
 <dl>
@@ -1447,7 +840,7 @@ int&nbsp;delta,
 <li class="blockList">
 <section class="detail">
 <h3><a id="enableMachine(java.lang.String)">enableMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">enableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/ModelAndView.html?is-external=true" title="class or interface in org.springframework.web.servlet" class="externalLink">ModelAndView</a></span>&nbsp;<span class="memberName">enableMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;machineName)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="AdminController.html#enableMachine(java.lang.String)">AdminController</a></code></span></div>
 <div class="block">Mark a machine as in service.</div>
 <dl>
@@ -1518,7 +911,7 @@ int&nbsp;delta,
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>

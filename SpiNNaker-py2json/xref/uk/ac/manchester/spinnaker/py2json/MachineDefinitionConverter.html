@@ -62,12 +62,12 @@
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  	<strong class="jxr_keyword">public</strong> <a name="MachineDefinitionConverter" href="../../../../../uk/ac/manchester/spinnaker/py2json/MachineDefinitionConverter.html#MachineDefinitionConverter">MachineDefinitionConverter</a>() {
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  		initialize(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  		sys = getSystemState();
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  		File enumPy = locateEnumPy();
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  		<strong class="jxr_keyword">var</strong> enumPy = locateEnumPy();
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  		sys.path.append(newString(enumPy.getParent()));
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  	}
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> File locateEnumPy() {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		ClassLoader cl = MachineDefinitionConverter.<strong class="jxr_keyword">class</strong>.getClassLoader();
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">var</strong> cl = MachineDefinitionConverter.<strong class="jxr_keyword">class</strong>.getClassLoader();
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(cl.getResource(<span class="jxr_string">"enum.py"</span>).getFile());
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  	}
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
@@ -92,9 +92,9 @@
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  	<strong class="jxr_keyword">public</strong> <a name="Configuration" href="../../../../../uk/ac/manchester/spinnaker/py2json/Configuration.html#Configuration">Configuration</a> loadClassicConfigurationDefinition(File definitionFile,
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  			<strong class="jxr_keyword">boolean</strong> doCd) {
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		String what = definitionFile.getAbsolutePath();
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  		<strong class="jxr_keyword">try</strong> (PythonInterpreter py = <strong class="jxr_keyword">new</strong> PythonInterpreter(<strong class="jxr_keyword">null</strong>, sys);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  				WithCurrentDirectory cd = <strong class="jxr_keyword">new</strong> <a name="WithCurrentDirectory" href="../../../../../uk/ac/manchester/spinnaker/py2json/WithCurrentDirectory.html#WithCurrentDirectory">WithCurrentDirectory</a>(py, doCd)) {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		<strong class="jxr_keyword">var</strong> what = definitionFile.getAbsolutePath();
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> py = <strong class="jxr_keyword">new</strong> PythonInterpreter(<strong class="jxr_keyword">null</strong>, sys);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  				<strong class="jxr_keyword">var</strong> cd = <strong class="jxr_keyword">new</strong> <a name="WithCurrentDirectory" href="../../../../../uk/ac/manchester/spinnaker/py2json/WithCurrentDirectory.html#WithCurrentDirectory">WithCurrentDirectory</a>(py, doCd)) {
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  			py.execfile(what);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="Configuration" href="../../../../../uk/ac/manchester/spinnaker/py2json/Configuration.html#Configuration">Configuration</a>(py.get(<span class="jxr_string">"configuration"</span>));
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  		}
@@ -133,7 +133,7 @@
 <a class="jxr_linenumber" name="L125" href="#L125">125</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ExistingFileConverter <strong class="jxr_keyword">implements</strong> ITypeConverter&lt;File&gt; {
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 		@Override
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 		<strong class="jxr_keyword">public</strong> File convert(String value) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L128" href="#L128">128</a> 			File f = <strong class="jxr_keyword">new</strong> File(value);
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 			<strong class="jxr_keyword">var</strong> f = <strong class="jxr_keyword">new</strong> File(value);
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 			<strong class="jxr_keyword">if</strong> (!f.isFile() || !f.canRead()) {
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 				<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> TypeConversionException(<span class="jxr_string">"file must be readable"</span>);
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 			}
@@ -151,19 +151,18 @@
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">	 *             If things go wrong</em>
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String... args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		<strong class="jxr_keyword">try</strong> (<a name="MachineDefinitionConverter" href="../../../../../uk/ac/manchester/spinnaker/py2json/MachineDefinitionConverter.html#MachineDefinitionConverter">MachineDefinitionConverter</a> loader =
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 				<strong class="jxr_keyword">new</strong> <a name="MachineDefinitionConverter" href="../../../../../uk/ac/manchester/spinnaker/py2json/MachineDefinitionConverter.html#MachineDefinitionConverter">MachineDefinitionConverter</a>()) {
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 			Arguments a = populateCommand(<strong class="jxr_keyword">new</strong> Arguments(), args);
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 			Configuration config = loader
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 					.loadClassicConfigurationDefinition(a.configFile, false);
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 			getJsonWriter().writeValue(a.destination, config);
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 		} <strong class="jxr_keyword">catch</strong> (ParameterException e) {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 			err.println(e.getMessage());
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> 			e.getCommandLine().usage(err);
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 			exit(1);
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> 		}
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> 	}
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> }
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> loader = <strong class="jxr_keyword">new</strong> <a name="MachineDefinitionConverter" href="../../../../../uk/ac/manchester/spinnaker/py2json/MachineDefinitionConverter.html#MachineDefinitionConverter">MachineDefinitionConverter</a>()) {
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 			<strong class="jxr_keyword">var</strong> a = populateCommand(<strong class="jxr_keyword">new</strong> Arguments(), args);
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 			<strong class="jxr_keyword">var</strong> config = loader.loadClassicConfigurationDefinition(a.configFile,
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 					false);
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 			getJsonWriter().writeValue(a.destination, config);
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		} <strong class="jxr_keyword">catch</strong> (ParameterException e) {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 			err.println(e.getMessage());
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 			e.getCommandLine().usage(err);
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 			exit(1);
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 		}
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 	}
+<a class="jxr_linenumber" name="L157" href="#L157">157</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

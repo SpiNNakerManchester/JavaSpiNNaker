@@ -91,29 +91,28 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  		<em class="jxr_javadoccomment">/** @return The serial number data, as a read-only buffer. */</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  		<strong class="jxr_keyword">public</strong> IntBuffer getSerialNumber() {
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  			<em class="jxr_comment">// TODO use slice(int,int) once base Java version recent enough</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  			IntBuffer b = buffer.asReadOnlyBuffer();
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  			b.position(SERIAL_INDEX);
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  			b.limit(SERIAL_INDEX + SERIAL_LENGTH);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  			<strong class="jxr_keyword">return</strong> b.slice();
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  		}
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		<em class="jxr_javadoccomment">/** @return The location of the flash buffer. */</em>
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  		<strong class="jxr_keyword">public</strong> MemoryLocation getFlashBuffer() {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> MemoryLocation(buffer.get(FLASH_BUFFER_INDEX));
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  		}
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  		<em class="jxr_javadoccomment">/** @return The board status bit vector. */</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getBoardStatus() {
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  			<em class="jxr_comment">// TODO what's the right return type?</em>
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 			<strong class="jxr_keyword">return</strong> buffer.get(BOARD_STATUS_INDEX);
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> 		}
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> 
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 		<em class="jxr_javadoccomment">/** @return The location of the cortex vector. */</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 		<strong class="jxr_keyword">public</strong> MemoryLocation getCortexVector() {
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> MemoryLocation(buffer.get(CORTEX_VECTOR_INDEX));
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 		}
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> 	}
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  			<strong class="jxr_keyword">var</strong> b = buffer.asReadOnlyBuffer();
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  			b.position(SERIAL_INDEX).limit(SERIAL_INDEX + SERIAL_LENGTH);
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  			<strong class="jxr_keyword">return</strong> b.slice();
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  		}
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  		<em class="jxr_javadoccomment">/** @return The location of the flash buffer. */</em>
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  		<strong class="jxr_keyword">public</strong> MemoryLocation getFlashBuffer() {
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> MemoryLocation(buffer.get(FLASH_BUFFER_INDEX));
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  		}
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  		<em class="jxr_javadoccomment">/** @return The board status bit vector. */</em>
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  		<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getBoardStatus() {
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  			<em class="jxr_comment">// TODO what's the right return type?</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  			<strong class="jxr_keyword">return</strong> buffer.get(BOARD_STATUS_INDEX);
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> 		}
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 		<em class="jxr_javadoccomment">/** @return The location of the cortex vector. */</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 		<strong class="jxr_keyword">public</strong> MemoryLocation getCortexVector() {
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> MemoryLocation(buffer.get(CORTEX_VECTOR_INDEX));
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 		}
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 	}
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

@@ -58,7 +58,7 @@
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  	@Override
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  		<strong class="jxr_keyword">int</strong> hash = <strong class="jxr_keyword">super</strong>.hashCode();
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  		hash = 53 * hash + <strong class="jxr_keyword">this</strong>.spinnakerLinkId;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  		hash = 53 * hash + spinnakerLinkId;
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  		<strong class="jxr_keyword">return</strong> hash;
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  	}
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  
@@ -73,9 +73,9 @@
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  		<strong class="jxr_keyword">if</strong> (getClass() != obj.getClass()) {
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  			<strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  		}
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  		<strong class="jxr_keyword">final</strong> <a name="SpinnakerLinkData" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html#SpinnakerLinkData">SpinnakerLinkData</a> other = (<a name="SpinnakerLinkData" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html#SpinnakerLinkData">SpinnakerLinkData</a>) obj;
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  		<strong class="jxr_keyword">var</strong> other = (<a name="SpinnakerLinkData" href="../../../../../../uk/ac/manchester/spinnaker/machine/datalinks/SpinnakerLinkData.html#SpinnakerLinkData">SpinnakerLinkData</a>) obj;
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  		<strong class="jxr_keyword">if</strong> (sameAs(other)) {
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.spinnakerLinkId == other.spinnakerLinkId;
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  			<strong class="jxr_keyword">return</strong> spinnakerLinkId == other.spinnakerLinkId;
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  		} <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  			<strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  		}

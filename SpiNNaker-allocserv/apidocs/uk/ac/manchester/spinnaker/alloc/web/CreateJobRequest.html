@@ -81,13 +81,13 @@ loadScripts(document, 'script');</script>
 <h1 title="Class CreateJobRequest" class="title">Class CreateJobRequest</h1>
 </div>
 <div class="contentContainer">
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest</div>
 </div>
 <section class="description">
 <hr>
 <pre>public class <span class="typeNameLabel">CreateJobRequest</span>
-extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
+extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">A request to create a job.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
@@ -150,21 +150,21 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></code></td>
+<td class="colFirst"><code>@Valid <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#board">board</a></span></code></th>
 <td class="colLast">
 <div class="block">The specific board to allocate.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></code></td>
+<td class="colFirst"><code>@Valid <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#dimensions">dimensions</a></span></code></th>
 <td class="colLast">
 <div class="block">The dimensions of rectangle of boards to allocate.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#group">group</a></span></code></th>
 <td class="colLast">
 <div class="block">What group will the job be accounted against; the owner <em>must</em> be
@@ -172,7 +172,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="keepalive-interval is required") <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
+<td class="colFirst"><code>@NotNull(message="keepalive-interval is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#keepaliveInterval">keepaliveInterval</a></span></code></th>
 <td class="colLast">
 <div class="block">How long after a keepalive message will the job be auto-deleted?
@@ -180,35 +180,35 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#machineName">machineName</a></span></code></th>
 <td class="colLast">
 <div class="block">Which machine to allocate on.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="max-dead-boards may not be negative") <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
+<td class="colFirst"><code>@PositiveOrZero(message="max-dead-boards may not be negative") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#maxDeadBoards">maxDeadBoards</a></span></code></th>
 <td class="colLast">
 <div class="block">The maximum number of dead boards allowed in a rectangular allocation.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
+<td class="colFirst"><code>@Positive(message="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#numBoards">numBoards</a></span></code></th>
 <td class="colLast">
 <div class="block">The number of boards to allocate.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#owner">owner</a></span></code></th>
 <td class="colLast">
 <div class="block">Who owns the job.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="tags must not be blank") <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@NotBlank(message="tags must not be blank") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#tags">tags</a></span></code></th>
 <td class="colLast">
 <div class="block">The tags to select which machine to allocate on.</div>
@@ -251,10 +251,10 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 </a>
 <h2>Method Summary</h2>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -271,14 +271,14 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="owner">owner</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">owner</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">owner</span></div>
 <div class="block">Who owns the job.</div>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="group">group</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">group</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">group</span></div>
 <div class="block">What group will the job be accounted against; the owner <em>must</em> be
  a member of the group. If <code>null</code>, the single group that the owner
  is a member of will be used (with it being an error for that to not exist
@@ -288,8 +288,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="keepaliveInterval">keepaliveInterval</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="keepalive-interval is required")
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotNull</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotNull.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="keepalive-interval is required") <a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">keepaliveInterval</span></div>
+<div class="memberSignature"><span class="annotations">@NotNull(message="keepalive-interval is required")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@NotNull(message="keepalive-interval is required") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/Duration.html?is-external=true" title="class or interface in java.time" class="externalLink">Duration</a></span>&nbsp;<span class="memberName">keepaliveInterval</span></div>
 <div class="block">How long after a keepalive message will the job be auto-deleted?
  <em>Required.</em> Must be between 30 and 300 seconds.</div>
 </section>
@@ -297,8 +297,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="numBoards">numBoards</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="number of boards must be at least 1 if given")
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@Positive</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/Positive.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">numBoards</span></div>
+<div class="memberSignature"><span class="annotations">@Positive(message="number of boards must be at least 1 if given")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@Positive(message="number of boards must be at least 1 if given") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">numBoards</span></div>
 <div class="block">The number of boards to allocate. May be <code>null</code> to either use the
  default (1) or to let one of the other selectors (<a href="#dimensions"><code>dimensions</code></a>,
  <a href="#board"><code>board</code></a>) make the choice.</div>
@@ -307,8 +307,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="dimensions">dimensions</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></span>&nbsp;<span class="memberName">dimensions</span></div>
+<div class="memberSignature"><span class="annotations">@Valid
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@Valid <a href="CreateJobRequest.Dimensions.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.Dimensions</a></span>&nbsp;<span class="memberName">dimensions</span></div>
 <div class="block">The dimensions of rectangle of boards to allocate. May be <code>null</code> to
  let one of the other selectors (<a href="#numBoards"><code>numBoards</code></a>, <a href="#board"><code>board</code></a>) make
  the choice.</div>
@@ -317,8 +317,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="board">board</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/Valid.html?is-external=true" title="class or interface in javax.validation" class="externalLink">@Valid</a> <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></span>&nbsp;<span class="memberName">board</span></div>
+<div class="memberSignature"><span class="annotations">@Valid
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@Valid <a href="CreateJobRequest.SpecificBoard.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest.SpecificBoard</a></span>&nbsp;<span class="memberName">board</span></div>
 <div class="block">The specific board to allocate. May be <code>null</code> to let one of the
  other selectors (<a href="#numBoards"><code>numBoards</code></a>, <a href="#dimensions"><code>dimensions</code></a>) make the
  choice.</div>
@@ -327,7 +327,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="machineName">machineName</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">machineName</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">machineName</span></div>
 <div class="block">Which machine to allocate on. This and <a href="#tags"><code>tags</code></a> are mutually
  exclusive, but at least one must be given.</div>
 </section>
@@ -335,7 +335,7 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="tags">tags</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@NotBlank</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/NotBlank.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="tags must not be blank") <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">tags</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;@NotBlank(message="tags must not be blank") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">tags</span></div>
 <div class="block">The tags to select which machine to allocate on. This and
  <a href="#machineName"><code>machineName</code></a> are mutually exclusive, but at least one must be
  given.</div>
@@ -344,8 +344,8 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <li class="blockList">
 <section class="detail">
 <h3><a id="maxDeadBoards">maxDeadBoards</a></h3>
-<div class="memberSignature"><span class="annotations"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="max-dead-boards may not be negative")
-</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true" title="class or interface in javax.validation.constraints" class="externalLink">@PositiveOrZero</a>(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/validation/constraints/PositiveOrZero.html?is-external=true#message()" title="class or interface in javax.validation.constraints" class="externalLink">message</a>="max-dead-boards may not be negative") <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">maxDeadBoards</span></div>
+<div class="memberSignature"><span class="annotations">@PositiveOrZero(message="max-dead-boards may not be negative")
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">@PositiveOrZero(message="max-dead-boards may not be negative") <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a></span>&nbsp;<span class="memberName">maxDeadBoards</span></div>
 <div class="block">The maximum number of dead boards allowed in a rectangular allocation.
  Note that the allocation engine might increase this if it decides to
  overallocate. Defaults to <code>0</code>.</div>

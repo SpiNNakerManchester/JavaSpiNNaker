@@ -171,7 +171,7 @@
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 	@Prototype
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 	@Role(ROLE_APPLICATION)
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 	<strong class="jxr_keyword">public</strong> JobAPI job(Job j, String caller, <a name="Permit" href="../../../../../../uk/ac/manchester/spinnaker/alloc/security/Permit.html#Permit">Permit</a> permit, UriInfo ui) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a> 		String sp = props.getProxy().isEnable() ? servletPath : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L166" href="#L166">166</a> 		<strong class="jxr_keyword">var</strong> sp = props.getProxy().isEnable() ? servletPath : <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> JobAPI() {
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 			@Override
 <a class="jxr_linenumber" name="L169" href="#L169">169</a> 			<strong class="jxr_keyword">public</strong> String keepAlive(String reqBody) {
@@ -187,7 +187,7 @@
 <a class="jxr_linenumber" name="L179" href="#L179">179</a> 						log.debug(<span class="jxr_string">"starting wait for change of job"</span>);
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> 						j.waitForChange(props.getWait());
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> 						<em class="jxr_comment">// Refresh the handle</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 						Job nj = core.getJob(permit, j.getId())
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 						<strong class="jxr_keyword">var</strong> nj = core.getJob(permit, j.getId())
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> 								.orElseThrow(() -&gt; <strong class="jxr_keyword">new</strong> ItsGone(<span class="jxr_string">"no such job"</span>));
 <a class="jxr_linenumber" name="L184" href="#L184">184</a> 						<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="JobStateResponse" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/JobStateResponse.html#JobStateResponse">JobStateResponse</a>(nj, ui, mapper, sp);
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> 					});
@@ -241,24 +241,23 @@
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> 			@Override
 <a class="jxr_linenumber" name="L234" href="#L234">234</a> 			<strong class="jxr_keyword">public</strong> <a name="WhereIsResponse" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/WhereIsResponse.html#WhereIsResponse">WhereIsResponse</a> getJobChipLocation(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 				j.access(caller);
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 				BoardLocation loc =
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> 						j.whereIs(x, y).orElseThrow(EmptyResponse::<strong class="jxr_keyword">new</strong>);
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="WhereIsResponse" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/WhereIsResponse.html#WhereIsResponse">WhereIsResponse</a>(loc, ui);
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 			}
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> 			@Override
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> reportBoardIssue(<a name="IssueReportRequest" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/IssueReportRequest.html#IssueReportRequest">IssueReportRequest</a> reqBody,
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> 					AsyncResponse response) {
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 				<em class="jxr_comment">// Async because it involves getting a write lock</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 				<strong class="jxr_keyword">if</strong> (isNull(reqBody)) {
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BadArgs(<span class="jxr_string">"bad issue description"</span>);
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 				}
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 				bgAction(response, () -&gt; <strong class="jxr_keyword">new</strong> <a name="IssueReportResponse" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/IssueReportResponse.html#IssueReportResponse">IssueReportResponse</a>(
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 						j.reportIssue(reqBody, permit)));
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 			}
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 		};
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 	}
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> }
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> 				<strong class="jxr_keyword">var</strong> loc = j.whereIs(x, y).orElseThrow(EmptyResponse::<strong class="jxr_keyword">new</strong>);
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 				<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="WhereIsResponse" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/WhereIsResponse.html#WhereIsResponse">WhereIsResponse</a>(loc, ui);
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> 			}
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			@Override
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 			<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> reportBoardIssue(<a name="IssueReportRequest" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/IssueReportRequest.html#IssueReportRequest">IssueReportRequest</a> reqBody,
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 					AsyncResponse response) {
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 				<em class="jxr_comment">// Async because it involves getting a write lock</em>
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 				<strong class="jxr_keyword">if</strong> (isNull(reqBody)) {
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> BadArgs(<span class="jxr_string">"bad issue description"</span>);
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> 				}
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 				bgAction(response, () -&gt; <strong class="jxr_keyword">new</strong> <a name="IssueReportResponse" href="../../../../../../uk/ac/manchester/spinnaker/alloc/web/IssueReportResponse.html#IssueReportResponse">IssueReportResponse</a>(
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 						j.reportIssue(reqBody, permit)));
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 			}
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 		};
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 	}
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

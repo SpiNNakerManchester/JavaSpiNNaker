@@ -87,34 +87,33 @@ loadScripts(document, 'script');</script>
 <h1 title="Class ProxyCore" class="title">Class ProxyCore</h1>
 </div>
 <div class="contentContainer">
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore</div>
 </div>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">ProxyCore</span>
-extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
-implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></pre>
+extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
+implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></pre>
 <div class="block">The main proxy class for a particular web socket session. It's bound to a
  job, which should be running at the time that the web socket is opened. The
  protocol that is supported is a binary protocol that has five messages:
- <table border=1>
- <caption style="display:none">Protocol</caption>
+ <table border="1" class="protocol">
+ <caption style="display:none">Protocol inside web socket</caption>
  <tr>
  <th>Name</th>
  <th>Request Layout (words)</th>
  <th>Response Layout (words)</th>
  </tr>
  <tr>
- <td rowspan=2><a href="#openConnectedChannel(java.nio.ByteBuffer)">Open Connected
- Channel</a></td>
- <td>
- <table border=1>
- <caption style="display:none">request</caption>
+ <td rowspan=2>
+ <a href="#openConnectedChannel(java.nio.ByteBuffer)">Open Connected Channel</a></td>
+ <td><table border="1" class="protocolrequest">
+ <caption style="display:none">Request</caption>
  <tr>
  <td><a href="ProxyOp.html#OPEN"><code>0</code></a>
  <td>Correlation&nbsp;ID
@@ -124,9 +123,8 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
  </tr>
  </table>
  </td>
- <td>
- <table border=1>
- <caption style="display:none">response</caption>
+ <td><table border="1" class="protocolresponse">
+ <caption style="display:none">Response</caption>
  <tr>
  <td><a href="ProxyOp.html#OPEN"><code>0</code></a>
  <td>Correlation&nbsp;ID
@@ -144,10 +142,10 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
  back uninterpreted in the response message.</td>
  </tr>
  <tr>
- <td rowspan=2><a href="#closeChannel(java.nio.ByteBuffer)">Close Channel</a></td>
- <td>
- <table border=1>
- <caption style="display:none">request</caption>
+ <td rowspan=2>
+ <a href="#closeChannel(java.nio.ByteBuffer)">Close Channel</a></td>
+ <td><table border="1" class="protocolrequest">
+ <caption style="display:none">Request</caption>
  <tr>
  <td><a href="ProxyOp.html#CLOSE"><code>1</code></a>
  <td>Correlation&nbsp;ID
@@ -155,9 +153,8 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
  </tr>
  </table>
  </td>
- <td>
- <table border=1>
- <caption style="display:none">response</caption>
+ <td><table border="1" class="protocolresponse">
+ <caption style="display:none">Response</caption>
  <tr>
  <td><a href="ProxyOp.html#CLOSE"><code>1</code></a>
  <td>Correlation&nbsp;ID
@@ -174,10 +171,10 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
  Connected Channel</em> or <em>Open Unconnected Channel</em>.</td>
  </tr>
  <tr>
- <td rowspan=2><a href="#sendMessage(java.nio.ByteBuffer)">Send Message</a></td>
- <td>
- <table border=1>
- <caption style="display:none">request</caption>
+ <td rowspan=2>
+ <a href="#sendMessage(java.nio.ByteBuffer)">Send Message</a></td>
+ <td><table border="1" class="protocolrequest">
+ <caption style="display:none">Request</caption>
  <tr>
  <td><a href="ProxyOp.html#MESSAGE"><code>2</code></a>
  <td>Channel&nbsp;ID
@@ -197,20 +194,19 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
  Channel</em> will be ignored.</td>
  </tr>
  <tr>
- <td rowspan=2><a href="#openUnconnectedChannel(java.nio.ByteBuffer)">Open
- Unconnected Channel</a></td>
- <td>
- <table border=1>
- <caption style="display:none">request</caption>
+ <td rowspan=2>
+ <a href="#openUnconnectedChannel(java.nio.ByteBuffer)">Open Unconnected Channel</a>
+ </td>
+ <td><table border="1" class="protocolrequest">
+ <caption style="display:none">Request</caption>
  <tr>
  <td><a href="ProxyOp.html#OPEN_UNCONNECTED"><code>3</code></a>
  <td>Correlation&nbsp;ID
  </tr>
  </table>
  </td>
- <td>
- <table border=1>
- <caption style="display:none">response</caption>
+ <td><table border="1" class="protocolresponse">
+ <caption style="display:none">Response</caption>
  <tr>
  <td><a href="ProxyOp.html#OPEN_UNCONNECTED"><code>3</code></a>
  <td>Correlation&nbsp;ID
@@ -237,10 +233,10 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
  To</em> operation.</td>
  </tr>
  <tr>
- <td rowspan=2><a href="#sendMessageTo(java.nio.ByteBuffer)">Send Message To</a></td>
- <td>
- <table border=1>
- <caption style="display:none">request</caption>
+ <td rowspan=2>
+ <a href="#sendMessageTo(java.nio.ByteBuffer)">Send Message To</a></td>
+ <td><table border="1" class="protocolrequest">
+ <caption style="display:none">Request</caption>
  <tr>
  <td><a href="ProxyOp.html#MESSAGE_TO"><code>4</code></a>
  <td>Channel&nbsp;ID
@@ -293,44 +289,44 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#closeChannel(java.nio.ByteBuffer)">closeChannel</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#closeChannel(java.nio.ByteBuffer)">closeChannel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
 <td class="colLast">
 <div class="block">Close a channel.</div>
 </td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleClientMessage(java.nio.ByteBuffer)">handleClientMessage</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#handleClientMessage(java.nio.ByteBuffer)">handleClientMessage</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
 <td class="colLast">
 <div class="block">Handle a message sent to this service on the web socket associated with
  this object.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#openConnectedChannel(java.nio.ByteBuffer)">openConnectedChannel</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#openConnectedChannel(java.nio.ByteBuffer)">openConnectedChannel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
 <td class="colLast">
 <div class="block">Open a connected channel.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#openUnconnectedChannel(java.nio.ByteBuffer)">openUnconnectedChannel</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#openUnconnectedChannel(java.nio.ByteBuffer)">openUnconnectedChannel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
 <td class="colLast">
 <div class="block">Open an unconnected channel.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i5">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendMessage(java.nio.ByteBuffer)">sendMessage</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendMessage(java.nio.ByteBuffer)">sendMessage</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
 <td class="colLast">
 <div class="block">Send a message on a channel.</div>
 </td>
 </tr>
 <tr class="altColor" id="i6">
-<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendMessageTo(java.nio.ByteBuffer)">sendMessageTo</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sendMessageTo(java.nio.ByteBuffer)">sendMessageTo</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</code></th>
 <td class="colLast">
 <div class="block">Send a message to a particular destination on a channel.</div>
 </td>
@@ -340,10 +336,10 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
 </div>
 </div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -360,23 +356,23 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
 <li class="blockList">
 <section class="detail">
 <h3><a id="handleClientMessage(java.nio.ByteBuffer)">handleClientMessage</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">handleClientMessage</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
-                               throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">handleClientMessage</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
+                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Handle a message sent to this service on the web socket associated with
  this object.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>message</code> - The content of the message.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - Not expected; implementations don't actually throw</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - Not expected; implementations don't actually throw</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="openConnectedChannel(java.nio.ByteBuffer)">openConnectedChannel</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">openConnectedChannel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
-                                   throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">openConnectedChannel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
+                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Open a connected channel. Note that no control over the local (to the
  service) port number or address is provided, nor is a mechanism given to
  easily make available what address is used (though it can be obtained
@@ -387,19 +383,19 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
             been already read out of the buffer.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The response message to send, in the bytes leading up to the
-         position. The caller will <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/Buffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
+         position. The caller will <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
          message. If <code>null</code>, no response will be sent.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be opened.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If bad arguments are supplied.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be opened.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If bad arguments are supplied.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="openUnconnectedChannel(java.nio.ByteBuffer)">openUnconnectedChannel</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">openUnconnectedChannel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
-                                     throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">openUnconnectedChannel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
+                                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Open an unconnected channel. Note that no control over the local (to the
  service) port number or address is provided, but the IP address and port
  opened are in the return message.</div>
@@ -409,18 +405,18 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
             been already read out of the buffer.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The response message to send, in the bytes leading up to the
-         position. The caller will <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/Buffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
+         position. The caller will <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
          message. If <code>null</code>, no response will be sent.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be opened.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be opened.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="closeChannel(java.nio.ByteBuffer)">closeChannel</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">closeChannel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
-                           throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">closeChannel</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
+                           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Close a channel. It's not an error to close a channel twice</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -428,18 +424,18 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
             been already read out of the buffer.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The response message to send, in the bytes leading up to the
-         position. The caller will <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/Buffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
+         position. The caller will <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
          message. If <code>null</code>, no response will be sent.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be closed.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be closed.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="sendMessage(java.nio.ByteBuffer)">sendMessage</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">sendMessage</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
-                          throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">sendMessage</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
+                          throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Send a message on a channel. It's not an error to send on a
  non-existant or closed channel.</div>
 <dl>
@@ -448,19 +444,19 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
             been already read out of the buffer.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The response message to send, in the bytes leading up to the
-         position. The caller will <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/Buffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
+         position. The caller will <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
          message. If <code>null</code>, no response will be sent (expected case
          for this operation!)</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be used.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be used.</dd>
 </dl>
 </section>
 </li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="sendMessageTo(java.nio.ByteBuffer)">sendMessageTo</a></h3>
-<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">sendMessageTo</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
-                            throws <span class="exceptions"><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">sendMessageTo</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;message)</span>
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
 <div class="block">Send a message to a particular destination on a channel. It's not an
  error to send on a non-existent or closed channel. It is an error to
  use this operation on a channel that has a bound remote host address.</div>
@@ -470,12 +466,12 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
             been already read out of the buffer.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The response message to send, in the bytes leading up to the
-         position. The caller will <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/Buffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
+         position. The caller will <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true#flip()" title="class or interface in java.nio" class="externalLink">flip</a> the
          message. If <code>null</code>, no response will be sent (expected case
          for this operation!)</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be used.</dd>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If the target doesn't exist in the job, the port number is
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the proxy connection can't be used.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalArgumentException</a></code> - If the target doesn't exist in the job, the port number is
              out of range, or the channel has a bound address.</dd>
 </dl>
 </section>
@@ -486,7 +482,7 @@ implements <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoClos
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
 </dl>
 </section>
 </li>

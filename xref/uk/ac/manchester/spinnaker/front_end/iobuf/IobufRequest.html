@@ -71,15 +71,15 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  	@JsonCreator(mode = DELEGATING)
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  	<strong class="jxr_keyword">public</strong> <a name="IobufRequest" href="../../../../../../uk/ac/manchester/spinnaker/front_end/iobuf/IobufRequest.html#IobufRequest">IobufRequest</a>(Map&lt;String, List&lt;List&lt;Integer&gt;&gt;&gt; map) {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  		requestMap = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		<strong class="jxr_keyword">for</strong> (String name : map.keySet()) {
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  			CoreSubsets cores = requestMap.computeIfAbsent(
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> name : map.keySet()) {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  			<strong class="jxr_keyword">var</strong> cores = requestMap.computeIfAbsent(
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  					<strong class="jxr_keyword">new</strong> File(name).getAbsoluteFile(), f -&gt; <strong class="jxr_keyword">new</strong> <a name="CoreSubsets" href="../../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a>());
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  			map.get(name).forEach(node -&gt; parseCore(cores, node));
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  		}
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  		<strong class="jxr_keyword">int</strong> expectedSize = 0;
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  		CoreSubsets validator = <strong class="jxr_keyword">new</strong> <a name="CoreSubsets" href="../../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a>();
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  		<strong class="jxr_keyword">for</strong> (<a name="CoreSubsets" href="../../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a> s : requestMap.values()) {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  		<strong class="jxr_keyword">var</strong> validator = <strong class="jxr_keyword">new</strong> <a name="CoreSubsets" href="../../../../../../uk/ac/manchester/spinnaker/machine/CoreSubsets.html#CoreSubsets">CoreSubsets</a>();
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> s : requestMap.values()) {
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  			validator.addCores(s);
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  			expectedSize += s.size();
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  		}

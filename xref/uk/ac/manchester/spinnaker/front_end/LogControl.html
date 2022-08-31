@@ -208,9 +208,9 @@
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">	 *            The directory where the log should written inside.</em>
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L202" href="#L202">202</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setLoggerDir(String directoryName) {
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 		File logfile = <strong class="jxr_keyword">new</strong> File(<strong class="jxr_keyword">new</strong> File(directoryName), LOG_FILE);
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> 		String level = getProperty(Props.LOGGING_LEVEL_NAME, <span class="jxr_string">"info"</span>);
-<a class="jxr_linenumber" name="L205" href="#L205">205</a> 		LogControl lc = <strong class="jxr_keyword">new</strong> <a name="LogControl" href="../../../../../uk/ac/manchester/spinnaker/front_end/LogControl.html#LogControl">LogControl</a>();
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> 		<strong class="jxr_keyword">var</strong> logfile = <strong class="jxr_keyword">new</strong> File(<strong class="jxr_keyword">new</strong> File(directoryName), LOG_FILE);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 		<strong class="jxr_keyword">var</strong> level = getProperty(Props.LOGGING_LEVEL_NAME, <span class="jxr_string">"info"</span>);
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> 		<strong class="jxr_keyword">var</strong> lc = <strong class="jxr_keyword">new</strong> <a name="LogControl" href="../../../../../uk/ac/manchester/spinnaker/front_end/LogControl.html#LogControl">LogControl</a>();
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 		reconfigure(lc.configuration(logfile, level));
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> 	}
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> }

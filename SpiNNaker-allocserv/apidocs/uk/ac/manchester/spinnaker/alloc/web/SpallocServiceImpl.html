@@ -87,7 +87,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class SpallocServiceImpl" class="title">Class SpallocServiceImpl</h1>
 </div>
 <div class="contentContainer">
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="BackgroundSupport.html" title="class in uk.ac.manchester.spinnaker.alloc.web">uk.ac.manchester.spinnaker.alloc.web.BackgroundSupport</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.alloc.web.SpallocServiceImpl</div>
 </div>
@@ -99,7 +99,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html?is-external=true" title="class or interface in org.springframework.stereotype" class="externalLink">@Service</a>("service")
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/Path.html?is-external=true" title="class or interface in javax.ws.rs" class="externalLink">@Path</a>("spalloc")
+@Path("spalloc")
 public class <span class="typeNameLabel">SpallocServiceImpl</span>
 extends <a href="BackgroundSupport.html" title="class in uk.ac.manchester.spinnaker.alloc.web">BackgroundSupport</a>
 implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI</a></pre>
@@ -179,18 +179,18 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createJob(uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext,javax.ws.rs.container.AsyncResponse)">createJob</a></span>&#8203;(<a href="CreateJobRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest</a>&nbsp;req,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;security,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.core.SecurityContext&nbsp;security,
+javax.ws.rs.container.AsyncResponse&nbsp;response)</code></th>
 <td class="colLast">
 <div class="block">Create a job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#describeService(javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext,javax.servlet.http.HttpServletRequest)">describeService</a></span>&#8203;(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;sec,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;req)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#describeService(javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext,javax.servlet.http.HttpServletRequest)">describeService</a></span>&#8203;(javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.core.SecurityContext&nbsp;sec,
+javax.servlet.http.HttpServletRequest&nbsp;req)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the overall service.</div>
 </td>
@@ -198,25 +198,25 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 <tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="SpallocServiceAPI.JobAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.JobAPI</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getJob(int,javax.ws.rs.core.UriInfo,javax.servlet.http.HttpServletRequest,javax.ws.rs.core.SecurityContext)">getJob</a></span>&#8203;(int&nbsp;id,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;req,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;security)</code></th>
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.servlet.http.HttpServletRequest&nbsp;req,
+javax.ws.rs.core.SecurityContext&nbsp;security)</code></th>
 <td class="colLast">
 <div class="block">Get a sub-resource for managing a job.</div>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="SpallocServiceAPI.MachineAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.MachineAPI</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachine(java.lang.String,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext)">getMachine</a></span>&#8203;(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;sec)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachine(java.lang.String,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext)">getMachine</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.core.SecurityContext&nbsp;sec)</code></th>
 <td class="colLast">
 <div class="block">Get a sub-resource for managing a machine.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="MachinesResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinesResponse</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachines(javax.ws.rs.core.UriInfo)">getMachines</a></span>&#8203;(<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMachines(javax.ws.rs.core.UriInfo)">getMachines</a></span>&#8203;(javax.ws.rs.core.UriInfo&nbsp;ui)</code></th>
 <td class="colLast">
 <div class="block">Get a description of the machines.</div>
 </td>
@@ -227,8 +227,8 @@ implements <a href="SpallocServiceAPI.html" title="interface in uk.ac.manchester
 boolean&nbsp;destroyed,
 int&nbsp;limit,
 int&nbsp;start,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</code></th>
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.container.AsyncResponse&nbsp;response)</code></th>
 <td class="colLast">
 <div class="block">List jobs.</div>
 </td>
@@ -243,10 +243,10 @@ int&nbsp;start,
 <!--   -->
 </a><code><a href="BackgroundSupport.html#bgAction(javax.ws.rs.container.AsyncResponse,uk.ac.manchester.spinnaker.alloc.security.Permit,uk.ac.manchester.spinnaker.alloc.web.BackgroundSupport.BackgroundAction)">bgAction</a>, <a href="BackgroundSupport.html#bgAction(javax.ws.rs.container.AsyncResponse,uk.ac.manchester.spinnaker.alloc.web.BackgroundSupport.BackgroundAction)">bgAction</a>, <a href="BackgroundSupport.html#fgAction(javax.ws.rs.container.AsyncResponse,uk.ac.manchester.spinnaker.alloc.web.BackgroundSupport.BackgroundAction)">fgAction</a></code></div>
 <div class="inheritedList">
-<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
 <!--   -->
-</a><code><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
+</a><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang" class="externalLink">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang" class="externalLink">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang" class="externalLink">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang" class="externalLink">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang" class="externalLink">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang" class="externalLink">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang" class="externalLink">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang" class="externalLink">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang" class="externalLink">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true#wait(long,int)" title="class or interface in java.lang" class="externalLink">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -279,9 +279,9 @@ int&nbsp;start,
 <li class="blockList">
 <section class="detail">
 <h3><a id="describeService(javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext,javax.servlet.http.HttpServletRequest)">describeService</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></span>&nbsp;<span class="memberName">describeService</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;sec,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;req)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="ServiceDescription.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ServiceDescription</a></span>&nbsp;<span class="memberName">describeService</span>&#8203;(<span class="arguments">javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.core.SecurityContext&nbsp;sec,
+javax.servlet.http.HttpServletRequest&nbsp;req)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#describeService(javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext,javax.servlet.http.HttpServletRequest)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a description of the overall service.</div>
 <dl>
@@ -299,7 +299,7 @@ int&nbsp;start,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMachines(javax.ws.rs.core.UriInfo)">getMachines</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="MachinesResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinesResponse</a></span>&nbsp;<span class="memberName">getMachines</span>&#8203;(<span class="arguments"><a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="MachinesResponse.html" title="class in uk.ac.manchester.spinnaker.alloc.web">MachinesResponse</a></span>&nbsp;<span class="memberName">getMachines</span>&#8203;(<span class="arguments">javax.ws.rs.core.UriInfo&nbsp;ui)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#getMachines(javax.ws.rs.core.UriInfo)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a description of the machines.</div>
 <dl>
@@ -315,9 +315,9 @@ int&nbsp;start,
 <li class="blockList">
 <section class="detail">
 <h3><a id="getMachine(java.lang.String,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext)">getMachine</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SpallocServiceAPI.MachineAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.MachineAPI</a></span>&nbsp;<span class="memberName">getMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;sec)</span></div>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SpallocServiceAPI.MachineAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.MachineAPI</a></span>&nbsp;<span class="memberName">getMachine</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;name,
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.core.SecurityContext&nbsp;sec)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#getMachine(java.lang.String,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a sub-resource for managing a machine.</div>
 <dl>
@@ -336,9 +336,9 @@ int&nbsp;start,
 <section class="detail">
 <h3><a id="getJob(int,javax.ws.rs.core.UriInfo,javax.servlet.http.HttpServletRequest,javax.ws.rs.core.SecurityContext)">getJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="SpallocServiceAPI.JobAPI.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">SpallocServiceAPI.JobAPI</a></span>&nbsp;<span class="memberName">getJob</span>&#8203;(<span class="arguments">int&nbsp;id,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/servlet/http/HttpServletRequest.html?is-external=true" title="class or interface in javax.servlet.http" class="externalLink">HttpServletRequest</a>&nbsp;req,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;security)</span></div>
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.servlet.http.HttpServletRequest&nbsp;req,
+javax.ws.rs.core.SecurityContext&nbsp;security)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#getJob(@javax.validation.constraints.Positive(message=%22jobIDmustbepositive%22)int,javax.ws.rs.core.UriInfo,javax.servlet.http.HttpServletRequest,javax.ws.rs.core.SecurityContext)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Get a sub-resource for managing a job.</div>
 <dl>
@@ -361,8 +361,8 @@ int&nbsp;start,
 boolean&nbsp;destroyed,
 int&nbsp;limit,
 int&nbsp;start,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</span></div>
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#listJobs(boolean,boolean,@javax.validation.constraints.Positive(message=%22limitmustbeatleast1%22)int,@javax.validation.constraints.PositiveOrZero(message=%22startmustbeatleast0%22)int,javax.ws.rs.core.UriInfo,javax.ws.rs.container.AsyncResponse)">SpallocServiceAPI</a></code></span></div>
 <div class="block">List jobs.</div>
 <dl>
@@ -382,9 +382,9 @@ int&nbsp;start,
 <section class="detail">
 <h3><a id="createJob(uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext,javax.ws.rs.container.AsyncResponse)">createJob</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">createJob</span>&#8203;(<span class="arguments"><a href="CreateJobRequest.html" title="class in uk.ac.manchester.spinnaker.alloc.web">CreateJobRequest</a>&nbsp;req,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/UriInfo.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">UriInfo</a>&nbsp;ui,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/core/SecurityContext.html?is-external=true" title="class or interface in javax.ws.rs.core" class="externalLink">SecurityContext</a>&nbsp;security,
-<a href="https://javaee.github.io/javaee-spec/javadocs/javax/ws/rs/container/AsyncResponse.html?is-external=true" title="class or interface in javax.ws.rs.container" class="externalLink">AsyncResponse</a>&nbsp;response)</span></div>
+javax.ws.rs.core.UriInfo&nbsp;ui,
+javax.ws.rs.core.SecurityContext&nbsp;security,
+javax.ws.rs.container.AsyncResponse&nbsp;response)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="SpallocServiceAPI.html#createJob(uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest,javax.ws.rs.core.UriInfo,javax.ws.rs.core.SecurityContext,javax.ws.rs.container.AsyncResponse)">SpallocServiceAPI</a></code></span></div>
 <div class="block">Create a job.</div>
 <dl>

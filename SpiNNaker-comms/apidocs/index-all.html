@@ -435,7 +435,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a blacklist from raw data.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/Blacklist.html#%3Cinit%3E(java.util.Set,java.util.Map,java.util.Map)">Blacklist(Set&lt;ChipLocation&gt;, Map&lt;ChipLocation, Set&lt;Integer&gt;&gt;, Map&lt;ChipLocation, Set&lt;Direction&gt;&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/Blacklist.html#%3Cinit%3E(java.util.Set,java.util.Map,java.util.Map)">Blacklist(Set&lt;ChipLocation&gt;, Map&lt;ChipLocation, ? extends Set&lt;Integer&gt;&gt;, Map&lt;ChipLocation, ? extends Set&lt;Direction&gt;&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></dt>
 <dd>
 <div class="block">Create a blacklist from parsed data.</div>
 </dd>
@@ -789,7 +789,9 @@ loadScripts(document, 'script');</script>
 <h2 class="title">C</h2>
 <dl>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#C_MAIN">C_MAIN</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is doing something with <code>c_main()</code> entry point.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/BMPConnectionData.html#cabinet">cabinet</a></span> - Variable in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/BMPConnectionData.html" title="class in uk.ac.manchester.spinnaker.messages.model">BMPConnectionData</a></dt>
 <dd>
 <div class="block">The ID of the cabinet that contains the frame that contains the BMPs.</div>
@@ -979,8 +981,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_APLX">CMD_APLX</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
-<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a>, which has a superior API</div>
 </div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AR">CMD_AR</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
@@ -1077,8 +1079,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_RUN">CMD_RUN</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
-<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">see <a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_AS"><code>SCPCommand.CMD_AS</code></a>, which has a superior API</div>
 </div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html#CMD_SIG">CMD_SIG</a></span> - uk.ac.manchester.spinnaker.messages.scp.<a href="uk/ac/manchester/spinnaker/messages/scp/SCPCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.scp">SCPCommand</a></dt>
@@ -1289,15 +1291,24 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_12">CPU_STATE_12</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_13">CPU_STATE_13</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#CPU_STATE_14">CPU_STATE_14</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecationComment">Should be unused. Might be changed to another meaning by a
+             future version of SCAMP.</div>
+</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/Constants.html#CPU_USER_0_START_ADDRESS">CPU_USER_0_START_ADDRESS</a></span> - Static variable in class uk.ac.manchester.spinnaker.messages.<a href="uk/ac/manchester/spinnaker/messages/Constants.html" title="class in uk.ac.manchester.spinnaker.messages">Constants</a></dt>
 <dd>
@@ -1335,20 +1346,20 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(java.util.List,java.util.Map)">createJob(List&lt;Integer&gt;, Map&lt;String, Object&gt;)</a></span> - Method in interface uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecationComment">Consider using <a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)"><code>SpallocAPI.createJob(CreateJob)</code></a> instead.</div>
 </div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(java.util.List,java.util.Map,java.lang.Integer)">createJob(List&lt;Integer&gt;, Map&lt;String, Object&gt;, Integer)</a></span> - Method in interface uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecationComment">Consider using <a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob,java.lang.Integer)"><code>SpallocAPI.createJob(CreateJob, Integer)</code></a>
              instead.</div>
 </div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocClient.html#createJob(java.util.List,java.util.Map,java.lang.Integer)">createJob(List&lt;Integer&gt;, Map&lt;String, Object&gt;, Integer)</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocClient.html" title="class in uk.ac.manchester.spinnaker.spalloc">SpallocClient</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html#createJob(uk.ac.manchester.spinnaker.spalloc.CreateJob)">createJob(CreateJob)</a></span> - Method in interface uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/SpallocAPI.html" title="interface in uk.ac.manchester.spinnaker.spalloc">SpallocAPI</a></dt>
 <dd>
@@ -1464,7 +1475,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Enum for data types of system variables.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#DEAD">DEAD</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is dead.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#debug_x">debug_x</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
 <dd>
 <div class="block">The x-coordinate of the chip to send debug messages to.</div>
@@ -2065,7 +2078,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Indicate the end of the packets to be sent.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#FINISHED">FINISHED</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core has finished.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/RunTimeError.html#FIQ">FIQ</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/RunTimeError.html" title="enum in uk.ac.manchester.spinnaker.messages.model">RunTimeError</a></dt>
 <dd>
 <div class="block">Unhandled FIQ.</div>
@@ -3774,7 +3789,9 @@ loadScripts(document, 'script');</script>
 <h2 class="title">I</h2>
 <dl>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#IDLE">IDLE</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is idle.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/FPGALinkRegisters.html#IDSI">IDSI</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/FPGALinkRegisters.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGALinkRegisters</a></dt>
 <dd>
 <div class="block">IDle Sentinel Input value.</div>
@@ -3806,7 +3823,9 @@ loadScripts(document, 'script');</script>
 <div class="block">The system is initialising after boot.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#INITIALISING">INITIALISING</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is preparing to enter service.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/sdp/SDPPort.html#INPUT_BUFFERING_SDP_PORT">INPUT_BUFFERING_SDP_PORT</a></span> - uk.ac.manchester.spinnaker.messages.sdp.<a href="uk/ac/manchester/spinnaker/messages/sdp/SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a></dt>
 <dd>
 <div class="block">Command port for the buffered in functionality.</div>
@@ -4936,19 +4955,19 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_1">padding_1</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_2">padding_2</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_3">padding_3</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#padding_4">padding_4</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span></div>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span></div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/eieio/PaddingRequest.html" title="class in uk.ac.manchester.spinnaker.messages.eieio"><span class="typeNameLink">PaddingRequest</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/eieio/package-summary.html">uk.ac.manchester.spinnaker.messages.eieio</a></dt>
 <dd>
@@ -4993,7 +5012,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Tells apps to pause.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#PAUSED">PAUSED</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is paused.</div>
+</dd>
 <dt><a href="uk/ac/manchester/spinnaker/messages/notification/PauseStop.html" title="class in uk.ac.manchester.spinnaker.messages.notification"><span class="typeNameLink">PauseStop</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/notification/package-summary.html">uk.ac.manchester.spinnaker.messages.notification</a></dt>
 <dd>
 <div class="block">Packet which indicates that the toolchain has paused or stopped.</div>
@@ -5101,7 +5122,9 @@ loadScripts(document, 'script');</script>
 <div class="block">The BMP Power Commands.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#POWERED_DOWN">POWERED_DOWN</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is powered down.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html#powerOff(java.util.Collection)">powerOff(Collection&lt;BMPBoard&gt;)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></dt>
 <dd>
 <div class="block">Power off some boards in the machine.</div>
@@ -5714,7 +5737,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Read the user<sub>2</sub> register of a core.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#READY">READY</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is ready for service.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/messages/State.html#READY">READY</a></span> - uk.ac.manchester.spinnaker.spalloc.messages.<a href="uk/ac/manchester/spinnaker/spalloc/messages/State.html" title="enum in uk.ac.manchester.spinnaker.spalloc.messages">State</a></dt>
 <dd>
 <div class="block">SpallocJob is running (or at least ready to run).</div>
@@ -5866,7 +5891,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/CreateJob.html#requireTorus()">requireTorus()</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecationComment">You probably can't use this sensibly with the hardware as
              deployed (or you automatically get it when meaningful). The
              default is fine.</div>
@@ -5874,7 +5899,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/spalloc/CreateJob.html#requireTorus(boolean)">requireTorus(boolean)</a></span> - Method in class uk.ac.manchester.spinnaker.spalloc.<a href="uk/ac/manchester/spinnaker/spalloc/CreateJob.html" title="class in uk.ac.manchester.spinnaker.spalloc">CreateJob</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecationComment">You probably can't use this sensibly with the hardware as
              deployed (or you automatically get it when meaningful). The
              default is fine.</div>
@@ -6124,9 +6149,13 @@ loadScripts(document, 'script');</script>
  <a href="uk/ac/manchester/spinnaker/connections/model/MessageHandler.html" title="interface in uk.ac.manchester.spinnaker.connections.model">handlers</a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#RUN_TIME_EXCEPTION">RUN_TIME_EXCEPTION</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core has had an RTE and not yet been reset.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#RUNNING">RUNNING</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is running user code.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/sdp/SDPPort.html#RUNNING_COMMAND_SDP_PORT">RUNNING_COMMAND_SDP_PORT</a></span> - uk.ac.manchester.spinnaker.messages.sdp.<a href="uk/ac/manchester/spinnaker/messages/sdp/SDPPort.html" title="enum in uk.ac.manchester.spinnaker.messages.sdp">SDPPort</a></dt>
 <dd>
 <div class="block">Command port for resetting runtime, etc.</div>
@@ -6536,7 +6565,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Utils.html#sendPortTriggerMessage(uk.ac.manchester.spinnaker.connections.UDPConnection,java.net.InetAddress)">sendPortTriggerMessage(UDPConnection&lt;?&gt;, InetAddress)</a></span> - Static method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Utils.html" title="class in uk.ac.manchester.spinnaker.transceiver">Utils</a></dt>
 <dd>
-<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated, for removal: This API element is subject to removal in a future version.</span>
 <div class="deprecationComment">Call
              <a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#sendPortTriggerMessage(java.net.InetAddress)"><code>UDPConnection.sendPortTriggerMessage(InetAddress)</code></a>
              directly instead.</div>
@@ -7307,13 +7336,17 @@ loadScripts(document, 'script');</script>
 <div class="block">Fatal SW error.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#SYNC0">SYNC0</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is waiting for <a href="uk/ac/manchester/spinnaker/messages/model/Signal.html#SYNC0"><code>Signal.SYNC0</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/Signal.html#SYNC0">SYNC0</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a></dt>
 <dd>
 <div class="block">Tells apps to advance from the SYNC0 state.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#SYNC1">SYNC1</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core is waiting for <a href="uk/ac/manchester/spinnaker/messages/model/Signal.html#SYNC1"><code>Signal.SYNC1</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/Signal.html#SYNC1">SYNC1</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/Signal.html" title="enum in uk.ac.manchester.spinnaker.messages.model">Signal</a></dt>
 <dd>
 <div class="block">Tells apps to advance from the SYNC1 state.</div>
@@ -7755,7 +7788,7 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">UnimplementedBMPTransceiver</span></a> - Class in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
 <dd>
 <div class="block">A transceiver where every operation fails with
- <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/UnsupportedOperationException.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>UnsupportedOperationException</code></a>.</div>
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/UnsupportedOperationException.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>UnsupportedOperationException</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html#%3Cinit%3E()">UnimplementedBMPTransceiver()</a></span> - Constructor for class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UnimplementedBMPTransceiver</a></dt>
 <dd>&nbsp;</dd>
@@ -8537,7 +8570,9 @@ the order they are declared.</div>
 <div class="block">Block until the job is allocated and ready.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html#WATCHDOG">WATCHDOG</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/CPUState.html" title="enum in uk.ac.manchester.spinnaker.messages.model">CPUState</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Core was unresponsive and so was shutdown by the watchdog timer.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/P2PTableRoute.html#WEST">WEST</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/P2PTableRoute.html" title="enum in uk.ac.manchester.spinnaker.messages.model">P2PTableRoute</a></dt>
 <dd>
 <div class="block">Toward the West chip.</div>

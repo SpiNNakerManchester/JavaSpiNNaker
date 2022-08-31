@@ -49,8 +49,8 @@
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">	 *             If the object isn't serializable.</em>
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] serialize(Object obj) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  		ByteArrayOutputStream baos = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  		<strong class="jxr_keyword">try</strong> (ObjectOutputStream oos = <strong class="jxr_keyword">new</strong> ObjectOutputStream(baos)) {
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  		<strong class="jxr_keyword">var</strong> baos = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> oos = <strong class="jxr_keyword">new</strong> ObjectOutputStream(baos)) {
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  			oos.writeObject(obj);
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  		}
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  		<strong class="jxr_keyword">return</strong> baos.toByteArray();
@@ -76,8 +76,8 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; T deserialize(byte[] bytes, Class&lt;T&gt; cls)
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  			<strong class="jxr_keyword">throws</strong> ClassNotFoundException, IOException {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  		ByteArrayInputStream bais = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(bytes);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  		<strong class="jxr_keyword">try</strong> (ObjectInputStream ois = <strong class="jxr_keyword">new</strong> ObjectInputStream(bais)) {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  		<strong class="jxr_keyword">var</strong> bais = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(bytes);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  		<strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">var</strong> ois = <strong class="jxr_keyword">new</strong> ObjectInputStream(bais)) {
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  			<strong class="jxr_keyword">return</strong> cls.<strong class="jxr_keyword">cast</strong>(ois.readObject());
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  		}
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  	}

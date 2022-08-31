@@ -24,64 +24,59 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.messages.model;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> * The values used by the SCP IP tag time outs. These control how long to wait</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * for any message request which requires a response, before raising an error.</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> * The value is calculated via the following formula:</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * &lt;dl&gt;</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> * &lt;dd&gt;10ms * 2&lt;sup&gt;tagTimeout.value - 1&lt;/sup&gt;&lt;/dd&gt;</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> * &lt;/dl&gt;</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">public</strong> enum <a name="IPTagTimeOutWaitTime" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/IPTagTimeOutWaitTime.html#IPTagTimeOutWaitTime">IPTagTimeOutWaitTime</a> {
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  	<em class="jxr_javadoccomment">/** Wait for 10ms. */</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	TIMEOUT_10_ms(1),
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	<em class="jxr_javadoccomment">/** Wait for 20ms. */</em>
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	TIMEOUT_20_ms(2),
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	<em class="jxr_javadoccomment">/** Wait for 40ms. */</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	TIMEOUT_40_ms(3),
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  	<em class="jxr_javadoccomment">/** Wait for 80ms. */</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  	TIMEOUT_80_ms(4),
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  	<em class="jxr_javadoccomment">/** Wait for 160ms. */</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  	TIMEOUT_160_ms(5),
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  	<em class="jxr_javadoccomment">/** Wait for 320ms. */</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  	TIMEOUT_320_ms(6),
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	<em class="jxr_javadoccomment">/** Wait for 640ms. */</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  	TIMEOUT_640_ms(7),
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  	<em class="jxr_javadoccomment">/** Wait for 1.28s. */</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  	TIMEOUT_1280_ms(8),
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	<em class="jxr_javadoccomment">/** Wait for 2.56s. */</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	TIMEOUT_2560_ms(9);
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	<em class="jxr_javadoccomment">/** The SCAMP-encoded value. */</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> value;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;Integer, IPTagTimeOutWaitTime&gt; MAP =
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  			<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  	IPTagTimeOutWaitTime(<strong class="jxr_keyword">int</strong> value) {
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  		<strong class="jxr_keyword">this</strong>.value = value;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  	}
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  	<strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  		<strong class="jxr_keyword">for</strong> (<a name="IPTagTimeOutWaitTime" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/IPTagTimeOutWaitTime.html#IPTagTimeOutWaitTime">IPTagTimeOutWaitTime</a> tto : values()) {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  			MAP.put(tto.value, tto);
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  		}
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  	}
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">	 * Deserialise a value into the enum.</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">	 * @param value</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">	 *            The value to deserialise.</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">	 * @return The deserialised value, or {@code null} if it is unrecognised.</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IPTagTimeOutWaitTime" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/IPTagTimeOutWaitTime.html#IPTagTimeOutWaitTime">IPTagTimeOutWaitTime</a> get(<strong class="jxr_keyword">int</strong> value) {
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  		<strong class="jxr_keyword">return</strong> MAP.get(value);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  	}
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  }
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * The values used by the SCP IP tag time outs. These control how long to wait</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> * for any message request which requires a response, before raising an error.</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * The value is calculated via the following formula:</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> * &lt;dl&gt;</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> * &lt;dd&gt;10ms * 2&lt;sup&gt;tagTimeout.value - 1&lt;/sup&gt;&lt;/dd&gt;</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> * &lt;/dl&gt;</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">public</strong> enum <a name="IPTagTimeOutWaitTime" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/IPTagTimeOutWaitTime.html#IPTagTimeOutWaitTime">IPTagTimeOutWaitTime</a> {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  	<em class="jxr_javadoccomment">/** Wait for 10ms. */</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  	TIMEOUT_10_ms(1),
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  	<em class="jxr_javadoccomment">/** Wait for 20ms. */</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  	TIMEOUT_20_ms(2),
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  	<em class="jxr_javadoccomment">/** Wait for 40ms. */</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  	TIMEOUT_40_ms(3),
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  	<em class="jxr_javadoccomment">/** Wait for 80ms. */</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  	TIMEOUT_80_ms(4),
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  	<em class="jxr_javadoccomment">/** Wait for 160ms. */</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  	TIMEOUT_160_ms(5),
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  	<em class="jxr_javadoccomment">/** Wait for 320ms. */</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  	TIMEOUT_320_ms(6),
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  	<em class="jxr_javadoccomment">/** Wait for 640ms. */</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  	TIMEOUT_640_ms(7),
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  	<em class="jxr_javadoccomment">/** Wait for 1.28s. */</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	TIMEOUT_1280_ms(8),
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	<em class="jxr_javadoccomment">/** Wait for 2.56s. */</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  	TIMEOUT_2560_ms(9);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  	<em class="jxr_javadoccomment">/** The SCAMP-encoded value. */</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> value;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;Integer, IPTagTimeOutWaitTime&gt; MAP =
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  			makeEnumBackingMap(values(), v -&gt; v.value);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  	IPTagTimeOutWaitTime(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  		<strong class="jxr_keyword">this</strong>.value = value;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  	}
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">	 * Deserialise a value into the enum.</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">	 * @param value</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">	 *            The value to deserialise.</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">	 * @return The deserialised value, or {@code null} if it is unrecognised.</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IPTagTimeOutWaitTime" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/IPTagTimeOutWaitTime.html#IPTagTimeOutWaitTime">IPTagTimeOutWaitTime</a> get(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  		<strong class="jxr_keyword">return</strong> MAP.get(value);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  	}
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

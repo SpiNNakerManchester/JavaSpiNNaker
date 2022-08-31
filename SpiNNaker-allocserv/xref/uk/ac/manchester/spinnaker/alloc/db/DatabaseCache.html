@@ -100,7 +100,7 @@
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  		}
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  		<strong class="jxr_keyword">if</strong> (isLongTermThread()) {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  			<em class="jxr_comment">// Special case for the main thread</em>
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  			Thread t = currentThread();
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  			<strong class="jxr_keyword">var</strong> t = currentThread();
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  			getRuntime().addShutdownHook(<strong class="jxr_keyword">new</strong> Thread(() -&gt; {
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  				closeDatabaseConnection(connection, t);
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  			}, <span class="jxr_string">"database closer for "</span> + t));
@@ -163,7 +163,7 @@
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> shutdown() {
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 		log.info(<span class="jxr_string">"waiting for all database connections to close"</span>);
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> 		<strong class="jxr_keyword">long</strong> before = currentTimeMillis();
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> 		<strong class="jxr_keyword">for</strong> (CloserThread t : <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(closerThreads)) {
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> t : <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(closerThreads)) {
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> 			<strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L160" href="#L160">160</a> 				t.join();
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> 			} <strong class="jxr_keyword">catch</strong> (InterruptedException ignored) {

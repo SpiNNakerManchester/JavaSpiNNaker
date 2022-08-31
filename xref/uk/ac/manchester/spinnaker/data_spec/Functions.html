@@ -217,8 +217,8 @@
 <a class="jxr_linenumber" name="L209" href="#L209">209</a> 	@Operation(RESERVE)
 <a class="jxr_linenumber" name="L210" href="#L210">210</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> reserve() <strong class="jxr_keyword">throws</strong> <a name="DataSpecificationException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/DataSpecificationException.html#DataSpecificationException">DataSpecificationException</a> {
 <a class="jxr_linenumber" name="L211" href="#L211">211</a> 		<strong class="jxr_keyword">int</strong> region = REGION.getValue(packedCommand);
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 		<strong class="jxr_keyword">boolean</strong> unfilled = UNFILLED.isSet(packedCommand);
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">boolean</strong> referenceable = REFERENCEABLE.isSet(packedCommand);
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 		<strong class="jxr_keyword">var</strong> unfilled = UNFILLED.isSet(packedCommand);
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 		<strong class="jxr_keyword">var</strong> referenceable = REFERENCEABLE.isSet(packedCommand);
 <a class="jxr_linenumber" name="L214" href="#L214">214</a> 		<strong class="jxr_keyword">if</strong> (!referenceable &amp;&amp; cmdSize != LEN2) {
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="DataSpecificationException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/DataSpecificationException.html#DataSpecificationException">DataSpecificationException</a>(format(
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> 					<span class="jxr_string">"Command %s requires one word as argument (total 2 words),"</span>
@@ -247,7 +247,7 @@
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> 		<strong class="jxr_keyword">if</strong> (!referenceable) {
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> 			memRegions.set(<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>(region, unfilled, size));
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 		} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			Reference reference = <strong class="jxr_keyword">new</strong> <a name="Reference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/Reference.html#Reference">Reference</a>(spec.getInt());
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 			<strong class="jxr_keyword">var</strong> reference = <strong class="jxr_keyword">new</strong> <a name="Reference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/Reference.html#Reference">Reference</a>(spec.getInt());
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> 			memRegions.set(
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> 					<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>(region, unfilled, size, reference));
 <a class="jxr_linenumber" name="L245" href="#L245">245</a> 			referenceableRegions.add(region);
@@ -268,7 +268,7 @@
 <a class="jxr_linenumber" name="L260" href="#L260">260</a> 		<strong class="jxr_keyword">if</strong> (!memRegions.isEmpty(region)) {
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="RegionInUseException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/RegionInUseException.html#RegionInUseException">RegionInUseException</a>(region);
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> 		}
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 		Reference reference = <strong class="jxr_keyword">new</strong> <a name="Reference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/Reference.html#Reference">Reference</a>(spec.getInt());
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 		<strong class="jxr_keyword">var</strong> reference = <strong class="jxr_keyword">new</strong> <a name="Reference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/Reference.html#Reference">Reference</a>(spec.getInt());
 <a class="jxr_linenumber" name="L264" href="#L264">264</a> 		memRegions.set(<strong class="jxr_keyword">new</strong> <a name="MemoryRegionReference" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReference.html#MemoryRegionReference">MemoryRegionReference</a>(region, reference));
 <a class="jxr_linenumber" name="L265" href="#L265">265</a> 		regionsToFill.add(region);
 <a class="jxr_linenumber" name="L266" href="#L266">266</a> 	}
@@ -310,7 +310,7 @@
 <a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L303" href="#L303">303</a> 	@Operation(WRITE_ARRAY)
 <a class="jxr_linenumber" name="L304" href="#L304">304</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeArray() <strong class="jxr_keyword">throws</strong> <a name="DataSpecificationException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/DataSpecificationException.html#DataSpecificationException">DataSpecificationException</a> {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 		byte[] bytes = <strong class="jxr_keyword">new</strong> byte[spec.getInt() * INT_SIZE];
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> 		<strong class="jxr_keyword">var</strong> bytes = <strong class="jxr_keyword">new</strong> byte[spec.getInt() * INT_SIZE];
 <a class="jxr_linenumber" name="L306" href="#L306">306</a> 		spec.get(bytes);
 <a class="jxr_linenumber" name="L307" href="#L307">307</a> 		writeToMemory(bytes, WRITE_ARRAY);
 <a class="jxr_linenumber" name="L308" href="#L308">308</a> 	}
@@ -375,12 +375,12 @@
 <a class="jxr_linenumber" name="L367" href="#L367">367</a> 			address = spec.getInt();
 <a class="jxr_linenumber" name="L368" href="#L368">368</a> 		}
 <a class="jxr_linenumber" name="L369" href="#L369">369</a> 
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> 		MemoryRegion reg = getRegion();
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> 		<strong class="jxr_keyword">var</strong> reg = getRegion();
 <a class="jxr_linenumber" name="L371" href="#L371">371</a> 		<strong class="jxr_keyword">if</strong> (reg == <strong class="jxr_keyword">null</strong> || !(reg instanceof <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>)) {
 <a class="jxr_linenumber" name="L372" href="#L372">372</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="NoRegionSelectedException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/NoRegionSelectedException.html#NoRegionSelectedException">NoRegionSelectedException</a>(
 <a class="jxr_linenumber" name="L373" href="#L373">373</a> 					<span class="jxr_string">"no current region has been selected"</span>);
 <a class="jxr_linenumber" name="L374" href="#L374">374</a> 		}
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> 		MemoryRegionReal r = (<a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>) reg;
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 		<strong class="jxr_keyword">var</strong> r = (<a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>) reg;
 <a class="jxr_linenumber" name="L376" href="#L376">376</a> 		<strong class="jxr_keyword">if</strong> (r.isUnfilled()) {
 <a class="jxr_linenumber" name="L377" href="#L377">377</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="RegionUnfilledException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/RegionUnfilledException.html#RegionUnfilledException">RegionUnfilledException</a>(currentRegion, SET_WR_PTR);
 <a class="jxr_linenumber" name="L378" href="#L378">378</a> 		}
@@ -418,7 +418,7 @@
 <a class="jxr_linenumber" name="L410" href="#L410">410</a> 
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> writeToMemory(<strong class="jxr_keyword">long</strong> value, <strong class="jxr_keyword">int</strong> dataLen, <strong class="jxr_keyword">int</strong> numRepeats,
 <a class="jxr_linenumber" name="L412" href="#L412">412</a> 			Commands command) <strong class="jxr_keyword">throws</strong> <a name="DataSpecificationException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/DataSpecificationException.html#DataSpecificationException">DataSpecificationException</a> {
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> 		ByteBuffer b = allocate(numRepeats * dataLen).order(LITTLE_ENDIAN);
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> 		<strong class="jxr_keyword">var</strong> b = allocate(numRepeats * dataLen).order(LITTLE_ENDIAN);
 <a class="jxr_linenumber" name="L414" href="#L414">414</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; numRepeats; i++) {
 <a class="jxr_linenumber" name="L415" href="#L415">415</a> 			<strong class="jxr_keyword">switch</strong> (dataLen) {
 <a class="jxr_linenumber" name="L416" href="#L416">416</a> 			<strong class="jxr_keyword">case</strong> 1:
@@ -446,12 +446,12 @@
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> 		<strong class="jxr_keyword">if</strong> (currentRegion == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="NoRegionSelectedException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/NoRegionSelectedException.html#NoRegionSelectedException">NoRegionSelectedException</a>(command);
 <a class="jxr_linenumber" name="L440" href="#L440">440</a> 		}
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 		MemoryRegion reg = getRegion();
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 		<strong class="jxr_keyword">var</strong> reg = getRegion();
 <a class="jxr_linenumber" name="L442" href="#L442">442</a> 		<strong class="jxr_keyword">if</strong> (reg == <strong class="jxr_keyword">null</strong> || !(reg instanceof <a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>)) {
 <a class="jxr_linenumber" name="L443" href="#L443">443</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="RegionNotAllocatedException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/RegionNotAllocatedException.html#RegionNotAllocatedException">RegionNotAllocatedException</a>(currentRegion, command);
 <a class="jxr_linenumber" name="L444" href="#L444">444</a> 		}
 <a class="jxr_linenumber" name="L445" href="#L445">445</a> 
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> 		MemoryRegionReal r = (<a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>) reg;
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 		<strong class="jxr_keyword">var</strong> r = (<a name="MemoryRegionReal" href="../../../../../uk/ac/manchester/spinnaker/data_spec/MemoryRegionReal.html#MemoryRegionReal">MemoryRegionReal</a>) reg;
 <a class="jxr_linenumber" name="L447" href="#L447">447</a> 		<strong class="jxr_keyword">if</strong> (r.isUnfilled()) {
 <a class="jxr_linenumber" name="L448" href="#L448">448</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="RegionUnfilledException" href="../../../../../uk/ac/manchester/spinnaker/data_spec/RegionUnfilledException.html#RegionUnfilledException">RegionUnfilledException</a>(currentRegion, command);
 <a class="jxr_linenumber" name="L449" href="#L449">449</a> 		}

@@ -46,7 +46,7 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">	 * @return The wrapped connection.</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Connection threadBound(Connection conn) {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  		OneThread ot = <strong class="jxr_keyword">new</strong> <a name="OneThread" href="../../../../../../uk/ac/manchester/spinnaker/storage/threading/OneThread.html#OneThread">OneThread</a>();
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  		<strong class="jxr_keyword">var</strong> ot = <strong class="jxr_keyword">new</strong> <a name="OneThread" href="../../../../../../uk/ac/manchester/spinnaker/storage/threading/OneThread.html#OneThread">OneThread</a>();
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="OTConnection" href="../../../../../../uk/ac/manchester/spinnaker/storage/threading/OTConnection.html#OTConnection">OTConnection</a>(ot, conn, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  	}
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
@@ -60,7 +60,7 @@
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">	 * @return The wrapped connection.</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Connection uncloseableThreadBound(Connection conn) {
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  		OneThread ot = <strong class="jxr_keyword">new</strong> <a name="OneThread" href="../../../../../../uk/ac/manchester/spinnaker/storage/threading/OneThread.html#OneThread">OneThread</a>();
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  		<strong class="jxr_keyword">var</strong> ot = <strong class="jxr_keyword">new</strong> <a name="OneThread" href="../../../../../../uk/ac/manchester/spinnaker/storage/threading/OneThread.html#OneThread">OneThread</a>();
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="OTConnection" href="../../../../../../uk/ac/manchester/spinnaker/storage/threading/OTConnection.html#OTConnection">OTConnection</a>(ot, conn, false);
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  	}
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  

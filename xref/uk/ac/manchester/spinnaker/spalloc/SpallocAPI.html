@@ -103,7 +103,7 @@
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">	 *             if network communications fail.</em>
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  	@Deprecated
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  	@Deprecated(forRemoval = <strong class="jxr_keyword">true</strong>)
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  	<strong class="jxr_keyword">default</strong> <strong class="jxr_keyword">int</strong> createJob(List&lt;Integer&gt; args, Map&lt;String, Object&gt; kwargs)
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> 			<strong class="jxr_keyword">throws</strong> IOException, <a name="SpallocServerException" href="../../../../../uk/ac/manchester/spinnaker/spalloc/exceptions/SpallocServerException.html#SpallocServerException">SpallocServerException</a> {
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> 		<strong class="jxr_keyword">return</strong> createJob(args, kwargs, <strong class="jxr_keyword">null</strong>);
@@ -167,7 +167,7 @@
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">	 *             if network communications fail.</em>
 <a class="jxr_linenumber" name="L161" href="#L161">161</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L162" href="#L162">162</a> 	@Deprecated
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> 	@Deprecated(forRemoval = <strong class="jxr_keyword">true</strong>)
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 	<strong class="jxr_keyword">int</strong> createJob(List&lt;Integer&gt; args, Map&lt;String, Object&gt; kwargs,
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> 			Integer timeout) <strong class="jxr_keyword">throws</strong> IOException,
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 			SpallocProtocolTimeoutException, SpallocServerException;

@@ -154,10 +154,6 @@ loadScripts(document, 'script');</script>
 <div class="block">A map that will extend itself with new values (on get) when the key is
  otherwise absent from the map.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html#%3Cinit%3E(DV)">DefaultMap(DV)</a></span> - Constructor for class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="class in uk.ac.manchester.spinnaker.utils">DefaultMap</a></dt>
-<dd>
-<div class="block">Create a new map.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html#%3Cinit%3E(java.util.function.Supplier)">DefaultMap(Supplier&lt;? extends V&gt;)</a></span> - Constructor for class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="class in uk.ac.manchester.spinnaker.utils">DefaultMap</a></dt>
 <dd>
 <div class="block">Create a new map.</div>
@@ -292,12 +288,12 @@ loadScripts(document, 'script');</script>
 <dl>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/OptionalUtils.html#ifElse(java.util.Optional,java.util.function.Function,java.util.function.Supplier)">ifElse(Optional&lt;T&gt;, Function&lt;T, U&gt;, Supplier&lt;U&gt;)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/OptionalUtils.html" title="class in uk.ac.manchester.spinnaker.utils">OptionalUtils</a></dt>
 <dd>
-<div class="block">How to do one thing if an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">optional</a> is present, and
+<div class="block">How to do one thing if an <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">optional</a> is present, and
  another if it is absent.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/OptionalUtils.html#ifElseFlat(java.util.Optional,java.util.function.Function,java.util.function.Supplier)">ifElseFlat(Optional&lt;T&gt;, Function&lt;T, U&gt;, Supplier&lt;U&gt;)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/OptionalUtils.html" title="class in uk.ac.manchester.spinnaker.utils">OptionalUtils</a></dt>
 <dd>
-<div class="block">How to do one thing if an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">optional</a> is present, and
+<div class="block">How to do one thing if an <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink">optional</a> is present, and
  another if it is absent.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/Counter.html#increment()">increment()</a></span> - Method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/Counter.html" title="class in uk.ac.manchester.spinnaker.utils">Counter</a></dt>
@@ -342,7 +338,7 @@ loadScripts(document, 'script');</script>
 <dl>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html#lmap(java.util.Collection,java.util.function.Function)">lmap(Collection&lt;T&gt;, Function&lt;T, U&gt;)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html" title="class in uk.ac.manchester.spinnaker.utils">CollectionUtils</a></dt>
 <dd>
-<div class="block">Like <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html?is-external=true#map(java.util.function.Function)" title="class or interface in java.util.stream" class="externalLink"><code>Stream.map(Function)</code></a>, but for lists/collections.</div>
+<div class="block">Like <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true#map(java.util.function.Function)" title="class or interface in java.util.stream" class="externalLink"><code>Stream.map(Function)</code></a>, but for lists/collections.</div>
 </dd>
 </dl>
 <a id="I:M">
@@ -350,6 +346,10 @@ loadScripts(document, 'script');</script>
 </a>
 <h2 class="title">M</h2>
 <dl>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html#makeEnumBackingMap(E%5B%5D,java.util.function.Function)">makeEnumBackingMap(E[], Function&lt;E, K&gt;)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html" title="class in uk.ac.manchester.spinnaker.utils">CollectionUtils</a></dt>
+<dd>
+<div class="block">Utility for making the backing maps for fast <code>enum</code>s.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/MappableIterable.html#map(java.util.function.Function)">map(Function&lt;T, U&gt;)</a></span> - Method in interface uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a></dt>
 <dd>
 <div class="block">Apply a function to an iterable to get another iterable.</div>
@@ -389,6 +389,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a new map that manufactures new elements that are aware of their
  key from the beginning.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html#newMapWithDefault(DV)">newMapWithDefault(DV)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/DefaultMap.html" title="class in uk.ac.manchester.spinnaker.utils">DefaultMap</a></dt>
+<dd>
+<div class="block">Create a new map.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/DoubleMapIterator.html#next()">next()</a></span> - Method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/DoubleMapIterator.html" title="class in uk.ac.manchester.spinnaker.utils">DoubleMapIterator</a></dt>
 <dd>&nbsp;</dd>
@@ -432,7 +436,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="uk/ac/manchester/spinnaker/utils/OptionalUtils.html" title="class in uk.ac.manchester.spinnaker.utils"><span class="typeNameLink">OptionalUtils</span></a> - Class in <a href="uk/ac/manchester/spinnaker/utils/package-summary.html">uk.ac.manchester.spinnaker.utils</a></dt>
 <dd>
-<div class="block">Extra utilities for working with <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>Optional</code></a> in Java 8.</div>
+<div class="block">Extra utilities for working with <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>Optional</code></a> in Java 8.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html#OR">OR</a></span> - Static variable in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html" title="class in uk.ac.manchester.spinnaker.utils">CollectionUtils</a></dt>
 <dd>
@@ -472,15 +476,15 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html#%3Cinit%3E(int,java.lang.String)">ProgressBar(int, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.utils.progress.<a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html" title="class in uk.ac.manchester.spinnaker.utils.progress">ProgressBar</a></dt>
 <dd>
-<div class="block">Creates a Progress bar which outputs to <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/System.html?is-external=true#out" title="class or interface in java.lang" class="externalLink"><code>System.out</code></a>.</div>
+<div class="block">Creates a Progress bar which outputs to <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html?is-external=true#out" title="class or interface in java.lang" class="externalLink"><code>System.out</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html#%3Cinit%3E(int,java.lang.String,java.io.PrintStream)">ProgressBar(int, String, PrintStream)</a></span> - Constructor for class uk.ac.manchester.spinnaker.utils.progress.<a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html" title="class in uk.ac.manchester.spinnaker.utils.progress">ProgressBar</a></dt>
 <dd>
-<div class="block">Creates a progress bar which outputs to the given <a href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html?is-external=true" title="class or interface in java.io" class="externalLink"><code>PrintStream</code></a>.</div>
+<div class="block">Creates a progress bar which outputs to the given <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/PrintStream.html?is-external=true" title="class or interface in java.io" class="externalLink"><code>PrintStream</code></a>.</div>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterable.html" title="class in uk.ac.manchester.spinnaker.utils.progress"><span class="typeNameLink">ProgressIterable</span></a>&lt;<a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterable.html" title="type parameter in ProgressIterable">E</a>&gt; - Class in <a href="uk/ac/manchester/spinnaker/utils/progress/package-summary.html">uk.ac.manchester.spinnaker.utils.progress</a></dt>
 <dd>
-<div class="block">An <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Iterable</code></a> wrapper that will start a <a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html" title="class in uk.ac.manchester.spinnaker.utils.progress"><code>ProgressBar</code></a> for each
+<div class="block">An <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>Iterable</code></a> wrapper that will start a <a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html" title="class in uk.ac.manchester.spinnaker.utils.progress"><code>ProgressBar</code></a> for each
  iterator.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterable.html#%3Cinit%3E(java.util.Collection,java.lang.String)">ProgressIterable(Collection&lt;E&gt;, String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.utils.progress.<a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterable.html" title="class in uk.ac.manchester.spinnaker.utils.progress">ProgressIterable</a></dt>
@@ -493,7 +497,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterator.html" title="class in uk.ac.manchester.spinnaker.utils.progress"><span class="typeNameLink">ProgressIterator</span></a>&lt;<a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterator.html" title="type parameter in ProgressIterator">E</a>&gt; - Class in <a href="uk/ac/manchester/spinnaker/utils/progress/package-summary.html">uk.ac.manchester.spinnaker.utils.progress</a></dt>
 <dd>
-<div class="block">An <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Iterator.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>Iterator</code></a> wrapper with and an attached <a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html" title="class in uk.ac.manchester.spinnaker.utils.progress"><code>ProgressBar</code></a>.</div>
+<div class="block">An <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>Iterator</code></a> wrapper with and an attached <a href="uk/ac/manchester/spinnaker/utils/progress/ProgressBar.html" title="class in uk.ac.manchester.spinnaker.utils.progress"><code>ProgressBar</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterator.html#%3Cinit%3E(java.util.Collection,java.lang.String,java.io.PrintStream)">ProgressIterator(Collection&lt;E&gt;, String, PrintStream)</a></span> - Constructor for class uk.ac.manchester.spinnaker.utils.progress.<a href="uk/ac/manchester/spinnaker/utils/progress/ProgressIterator.html" title="class in uk.ac.manchester.spinnaker.utils.progress">ProgressIterator</a></dt>
 <dd>
@@ -596,7 +600,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html#toEnumSet(java.lang.Class)">toEnumSet(Class&lt;E&gt;)</a></span> - Static method in class uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/CollectionUtils.html" title="class in uk.ac.manchester.spinnaker.utils">CollectionUtils</a></dt>
 <dd>
-<div class="block">Create a collector that collects to an <a href="https://docs.oracle.com/javase/8/docs/api/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>EnumSet</code></a>.</div>
+<div class="block">Create a collector that collects to an <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/EnumSet.html?is-external=true" title="class or interface in java.util" class="externalLink"><code>EnumSet</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/utils/MappableIterable.html#toList()">toList()</a></span> - Method in interface uk.ac.manchester.spinnaker.utils.<a href="uk/ac/manchester/spinnaker/utils/MappableIterable.html" title="interface in uk.ac.manchester.spinnaker.utils">MappableIterable</a></dt>
 <dd>

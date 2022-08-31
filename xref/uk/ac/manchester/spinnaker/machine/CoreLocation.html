@@ -89,8 +89,8 @@
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  		<strong class="jxr_keyword">if</strong> (!(obj instanceof <a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a>)) {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  			<strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  		}
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  		CoreLocation that = (<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a>) obj;
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>  		<strong class="jxr_keyword">return</strong> (<strong class="jxr_keyword">this</strong>.x == that.x) &amp;&amp; (<strong class="jxr_keyword">this</strong>.y == that.y) &amp;&amp; (<strong class="jxr_keyword">this</strong>.p == that.p);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  		<strong class="jxr_keyword">var</strong> that = (<a name="CoreLocation" href="../../../../../uk/ac/manchester/spinnaker/machine/CoreLocation.html#CoreLocation">CoreLocation</a>) obj;
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  		<strong class="jxr_keyword">return</strong> (x == that.x) &amp;&amp; (y == that.y) &amp;&amp; (p == that.p);
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  	}
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  	@Override

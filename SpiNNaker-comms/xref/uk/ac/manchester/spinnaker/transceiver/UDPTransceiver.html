@@ -91,8 +91,8 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">	 *            the connection to add</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  	<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> registerConnection(UDPConnection&lt;?&gt; connection) {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  		Pair&lt;?&gt; pair = <strong class="jxr_keyword">new</strong> Pair&lt;&gt;(connection, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		InetAddress addr = normalize(connection.getLocalIPAddress());
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  		<strong class="jxr_keyword">var</strong> pair = <strong class="jxr_keyword">new</strong> Pair&lt;&gt;(connection, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  		<strong class="jxr_keyword">var</strong> addr = normalize(connection.getLocalIPAddress());
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  		log.info(<span class="jxr_string">"registering connection {} for {}"</span>, connection, addr);
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  		connectionsByPort.get(connection.getLocalPort()).put(addr, pair);
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  		connectionsByClass.get(connection.getClass()).add(pair);
@@ -156,8 +156,8 @@
 <a class="jxr_linenumber" name="L148" href="#L148">148</a> 
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> 	@Override
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		<strong class="jxr_keyword">for</strong> (Map&lt;?, Pair&lt;?&gt;&gt; connections : connectionsByPort.values()) {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 			<strong class="jxr_keyword">for</strong> (Pair&lt;?&gt; p : connections.values()) {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> connections : connectionsByPort.values()) {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 			<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> p : connections.values()) {
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> 				<strong class="jxr_keyword">if</strong> (p.listener != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> 					p.listener.close();
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> 				}
@@ -269,7 +269,7 @@
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 		}
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> 
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> 		<em class="jxr_comment">// normalise local_host to the IP address</em>
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 		InetAddress addr = normalize(localHost);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 		<strong class="jxr_keyword">var</strong> addr = normalize(localHost);
 <a class="jxr_linenumber" name="L265" href="#L265">265</a> 
 <a class="jxr_linenumber" name="L266" href="#L266">266</a> 		<em class="jxr_comment">// If the local port was specified</em>
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> 		Pair&lt;T&gt; pair;
@@ -302,181 +302,180 @@
 <a class="jxr_linenumber" name="L294" href="#L294">294</a> 		<strong class="jxr_keyword">if</strong> (pair.listener == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L295" href="#L295">295</a> 			<em class="jxr_comment">// Caller has guaranteed the type constraint</em>
 <a class="jxr_linenumber" name="L296" href="#L296">296</a> 			@SuppressWarnings(<span class="jxr_string">"resource"</span>)
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> 			ConnectionListener&lt;T&gt; listener =
-<a class="jxr_linenumber" name="L298" href="#L298">298</a> 					<strong class="jxr_keyword">new</strong> ConnectionListener&lt;&gt;(pair.connection);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 			log.info(<span class="jxr_string">"launching listener for {}:{}"</span>,
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 					pair.connection.getLocalIPAddress(),
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> 					pair.connection.getLocalPort());
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> 			listener.start();
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> 			pair.listener = listener;
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> 			connectionsByPort.get(pair.connection.getLocalPort()).put(addr,
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 					pair);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> 		}
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 		connectionsByClass.get(connectionFactory.getClassKey()).add(pair);
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 		pair.listener.addCallback(callback);
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> 		<strong class="jxr_keyword">return</strong> pair.connection;
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> 	}
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOFactory" href="../../../../../uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#EIEIOFactory">EIEIOFactory</a> EIEIO_FACTORY = <strong class="jxr_keyword">new</strong> <a name="EIEIOFactory" href="../../../../../uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#EIEIOFactory">EIEIOFactory</a>();
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">	 * Register a callback for EIEIO traffic to be received.</em>
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">	 * @param callback</em>
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">	 *            Function to be called when a packet is received</em>
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">	 * @param localPort</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">	 *            The optional port number to listen on; if not specified, an</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">	 *            existing connection will be used if possible, otherwise a</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">	 *            random free port number will be used</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">	 * @param localHost</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">	 *            The optional hostname or IP address to listen on; if not</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">	 *            specified, all interfaces will be used for listening</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">	 * @return The connection to be used</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">	 *             If basic sanity checks fail.</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">	 *             If the networking fails.</em>
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> registerEIEIOListener(
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> 			EIEIOMessageHandler callback, Integer localPort,
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> 			InetAddress localHost) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 		<strong class="jxr_keyword">return</strong> (<a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>) registerUDPListener(callback, EIEIO_FACTORY,
-<a class="jxr_linenumber" name="L336" href="#L336">336</a> 				localPort, localHost);
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> 	}
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> 
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">	 * Register a callback for EIEIO traffic to be received.</em>
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">	 * @param callback</em>
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">	 *            Function to be called when a packet is received</em>
-<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">	 * @param localPort</em>
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">	 *            The local UDP port to bind.</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">	 * @return The connection to be used</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">	 *             If basic sanity checks fail.</em>
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">	 *             If the networking fails.</em>
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> registerEIEIOListener(
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 			EIEIOMessageHandler callback, <strong class="jxr_keyword">int</strong> localPort) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 		<strong class="jxr_keyword">return</strong> (<a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>) registerUDPListener(callback, EIEIO_FACTORY,
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> 				localPort, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> 	}
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">	 * Register a callback for EIEIO traffic to be received.</em>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">	 * @param callback</em>
-<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">	 *            Function to be called when a packet is received</em>
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">	 * @return The connection to be used</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">	 *             If basic sanity checks fail.</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">	 *             If the networking fails.</em>
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> registerEIEIOListener(
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> 			EIEIOMessageHandler callback) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> 		<strong class="jxr_keyword">return</strong> (<a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>) registerUDPListener(callback, EIEIO_FACTORY,
-<a class="jxr_linenumber" name="L372" href="#L372">372</a> 				<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> 	}
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> 	@SuppressWarnings({
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> 		<span class="jxr_string">"unchecked"</span>, <span class="jxr_string">"rawtypes"</span>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> 	})
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; List&lt;Pair&lt;T&gt;&gt; getConnections(
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> 			Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz) {
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 		<strong class="jxr_keyword">return</strong> (List) connectionsByClass.get(clazz);
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> 	}
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> 
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; Pair&lt;T&gt; lookup(Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz,
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> 			InetAddress addr) {
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> 		<strong class="jxr_keyword">for</strong> (Pair&lt;T&gt; a : getConnections(clazz)) {
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> 			<strong class="jxr_keyword">if</strong> (normalize(a.connection.getLocalIPAddress()).equals(addr)) {
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 				<strong class="jxr_keyword">if</strong> (a.listener == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L388" href="#L388">388</a> 					a = a.clone();
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 				}
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> 				<strong class="jxr_keyword">return</strong> a;
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 			}
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> 		}
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Pair&lt;&gt;(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> 	}
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> 	@SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; Pair&lt;T&gt; getPair(Map&lt;InetAddress, Pair&lt;?&gt;&gt; receivers,
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> 			InetAddress addr, Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz) {
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> 		Pair&lt;?&gt; p = receivers.get(addr);
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> 		<em class="jxr_comment">// If the type of an existing connection is wrong, this is an error</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 		<strong class="jxr_keyword">if</strong> (!clazz.isInstance(p.connection)) {
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(format(
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> 					<span class="jxr_string">"A connection of class %s is already "</span>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> 							+ <span class="jxr_string">"listening on this port on all "</span> + <span class="jxr_string">"interfaces"</span>,
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> 					p.connection.getClass()));
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> 		}
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> 		<strong class="jxr_keyword">return</strong> (Pair&lt;T&gt;) p;
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 	}
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> 
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; Pair&lt;T&gt; lookup(Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz,
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> 			InetAddress addr, <strong class="jxr_keyword">int</strong> port) {
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> 		Map&lt;InetAddress, Pair&lt;?&gt;&gt; receivers = connectionsByPort.get(port);
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> 		<em class="jxr_comment">// If something is already listening on this port</em>
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 		<strong class="jxr_keyword">if</strong> (!receivers.isEmpty()) {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> 			<strong class="jxr_keyword">if</strong> (addr.isAnyLocalAddress()) {
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 				<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_comment">				 * If we are to listen on all interfaces and the listener is not</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_comment">				 * on all interfaces, this is an error</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_comment">				 */</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> 				<strong class="jxr_keyword">if</strong> (!receivers.containsKey(WILDCARD_ADDRESS)) {
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> 							<span class="jxr_string">"Another connection is already listening on this"</span>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> 									+ <span class="jxr_string">" port"</span>);
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> 				}
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 			} <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 				<em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_comment">				 * If we are to listen to a specific interface, and the listener</em>
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_comment">				 * is on all interfaces, this is an error</em>
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_comment">				 */</em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> 				<strong class="jxr_keyword">if</strong> (receivers.containsKey(WILDCARD_ADDRESS)) {
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"port "</span> + port
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> 							+ <span class="jxr_string">" already has conflicting wildcard listener"</span>);
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 				}
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 			}
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> 
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 			<strong class="jxr_keyword">if</strong> (receivers.containsKey(addr)) {
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> 				Pair&lt;T&gt; p = getPair(receivers, addr, clazz);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> 				<strong class="jxr_keyword">if</strong> (p.listener == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 					p = p.clone();
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> 				}
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 				<strong class="jxr_keyword">return</strong> p;
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 			}
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 		}
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Pair&lt;&gt;(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> 	}
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> }
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment"> * Makes EIEIO connections. For internal use only.</em>
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> <strong class="jxr_keyword">class</strong> <a name="EIEIOFactory" href="../../../../../uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#EIEIOFactory">EIEIOFactory</a>
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 		<strong class="jxr_keyword">implements</strong> UDPTransceiver.ConnectionFactory&lt;EIEIOConnection&gt; {
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 	@Override
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	<strong class="jxr_keyword">public</strong> Class&lt;EIEIOConnection&gt; getClassKey() {
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 		<strong class="jxr_keyword">return</strong> EIEIOConnection.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 	}
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 	@Override
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> 	<strong class="jxr_keyword">public</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> getInstance(InetAddress localAddress)
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> 			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>(localAddress);
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> 	}
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> 	@Override
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 	<strong class="jxr_keyword">public</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> getInstance(InetAddress localAddress, <strong class="jxr_keyword">int</strong> localPort)
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> 			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>(localAddress, localPort);
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> 	}
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> }
+<a class="jxr_linenumber" name="L297" href="#L297">297</a> 			<strong class="jxr_keyword">var</strong> listener = <strong class="jxr_keyword">new</strong> ConnectionListener&lt;&gt;(pair.connection);
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 			log.info(<span class="jxr_string">"launching listener for {}:{}"</span>,
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 					pair.connection.getLocalIPAddress(),
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> 					pair.connection.getLocalPort());
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 			listener.start();
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> 			pair.listener = listener;
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> 			connectionsByPort.get(pair.connection.getLocalPort()).put(addr,
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> 					pair);
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> 		}
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 		connectionsByClass.get(connectionFactory.getClassKey()).add(pair);
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 		pair.listener.addCallback(callback);
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> 		<strong class="jxr_keyword">return</strong> pair.connection;
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 	}
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> 
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOFactory" href="../../../../../uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#EIEIOFactory">EIEIOFactory</a> EIEIO_FACTORY = <strong class="jxr_keyword">new</strong> <a name="EIEIOFactory" href="../../../../../uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#EIEIOFactory">EIEIOFactory</a>();
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">	 * Register a callback for EIEIO traffic to be received.</em>
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">	 * @param callback</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">	 *            Function to be called when a packet is received</em>
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">	 * @param localPort</em>
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">	 *            The optional port number to listen on; if not specified, an</em>
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">	 *            existing connection will be used if possible, otherwise a</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">	 *            random free port number will be used</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">	 * @param localHost</em>
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">	 *            The optional hostname or IP address to listen on; if not</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">	 *            specified, all interfaces will be used for listening</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">	 * @return The connection to be used</em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">	 *             If basic sanity checks fail.</em>
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">	 *             If the networking fails.</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> registerEIEIOListener(
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 			EIEIOMessageHandler callback, Integer localPort,
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> 			InetAddress localHost) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> 		<strong class="jxr_keyword">return</strong> (<a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>) registerUDPListener(callback, EIEIO_FACTORY,
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> 				localPort, localHost);
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> 	}
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">	 * Register a callback for EIEIO traffic to be received.</em>
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">	 * @param callback</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">	 *            Function to be called when a packet is received</em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">	 * @param localPort</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">	 *            The local UDP port to bind.</em>
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">	 * @return The connection to be used</em>
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
+<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">	 *             If basic sanity checks fail.</em>
+<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> <em class="jxr_javadoccomment">	 *             If the networking fails.</em>
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> registerEIEIOListener(
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> 			EIEIOMessageHandler callback, <strong class="jxr_keyword">int</strong> localPort) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 		<strong class="jxr_keyword">return</strong> (<a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>) registerUDPListener(callback, EIEIO_FACTORY,
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> 				localPort, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 	}
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> 
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">	 * Register a callback for EIEIO traffic to be received.</em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">	 * @param callback</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">	 *            Function to be called when a packet is received</em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">	 * @return The connection to be used</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">	 * @throws IllegalArgumentException</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">	 *             If basic sanity checks fail.</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">	 *             If the networking fails.</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> registerEIEIOListener(
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> 			EIEIOMessageHandler callback) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> 		<strong class="jxr_keyword">return</strong> (<a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>) registerUDPListener(callback, EIEIO_FACTORY,
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 				<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> 	}
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 	@SuppressWarnings({
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 		<span class="jxr_string">"unchecked"</span>, <span class="jxr_string">"rawtypes"</span>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> 	})
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; List&lt;Pair&lt;T&gt;&gt; getConnections(
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> 			Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz) {
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> 		<strong class="jxr_keyword">return</strong> (List) connectionsByClass.get(clazz);
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> 	}
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> 
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; Pair&lt;T&gt; lookup(Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz,
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> 			InetAddress addr) {
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">var</strong> a : getConnections(clazz)) {
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> 			<strong class="jxr_keyword">if</strong> (normalize(a.connection.getLocalIPAddress()).equals(addr)) {
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> 				<strong class="jxr_keyword">if</strong> (a.listener == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> 					a = a.clone();
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> 				}
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> 				<strong class="jxr_keyword">return</strong> a;
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 			}
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> 		}
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Pair&lt;&gt;(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> 	}
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> 
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> 	@SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; Pair&lt;T&gt; getPair(Map&lt;InetAddress, Pair&lt;?&gt;&gt; receivers,
+<a class="jxr_linenumber" name="L397" href="#L397">397</a> 			InetAddress addr, Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz) {
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 		<strong class="jxr_keyword">var</strong> p = receivers.get(addr);
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> 		<em class="jxr_comment">// If the type of an existing connection is wrong, this is an error</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> 		<strong class="jxr_keyword">if</strong> (!clazz.isInstance(p.connection)) {
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(format(
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> 					<span class="jxr_string">"A connection of class %s is already "</span>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> 							+ <span class="jxr_string">"listening on this port on all "</span> + <span class="jxr_string">"interfaces"</span>,
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> 					p.connection.getClass()));
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> 		}
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> 		<strong class="jxr_keyword">return</strong> (Pair&lt;T&gt;) p;
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> 	}
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> 	<strong class="jxr_keyword">private</strong> &lt;T&gt; Pair&lt;T&gt; lookup(Class&lt;? <strong class="jxr_keyword">extends</strong> UDPConnection&lt;T&gt;&gt; clazz,
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> 			InetAddress addr, <strong class="jxr_keyword">int</strong> port) {
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> 		<strong class="jxr_keyword">var</strong> receivers = connectionsByPort.get(port);
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> 		<em class="jxr_comment">// If something is already listening on this port</em>
+<a class="jxr_linenumber" name="L413" href="#L413">413</a> 		<strong class="jxr_keyword">if</strong> (!receivers.isEmpty()) {
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> 			<strong class="jxr_keyword">if</strong> (addr.isAnyLocalAddress()) {
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> 				<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_comment">				 * If we are to listen on all interfaces and the listener is not</em>
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_comment">				 * on all interfaces, this is an error</em>
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_comment">				 */</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> 				<strong class="jxr_keyword">if</strong> (!receivers.containsKey(WILDCARD_ADDRESS)) {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 							<span class="jxr_string">"Another connection is already listening on this"</span>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 									+ <span class="jxr_string">" port"</span>);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> 				}
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 			} <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> 				<em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_comment">				 * If we are to listen to a specific interface, and the listener</em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_comment">				 * is on all interfaces, this is an error</em>
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_comment">				 */</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 				<strong class="jxr_keyword">if</strong> (receivers.containsKey(WILDCARD_ADDRESS)) {
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 					<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"port "</span> + port
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> 							+ <span class="jxr_string">" already has conflicting wildcard listener"</span>);
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> 				}
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 			}
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> 			<strong class="jxr_keyword">if</strong> (receivers.containsKey(addr)) {
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 				<strong class="jxr_keyword">var</strong> p = getPair(receivers, addr, clazz);
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 				<strong class="jxr_keyword">if</strong> (p.listener == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> 					p = p.clone();
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 				}
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> 				<strong class="jxr_keyword">return</strong> p;
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 			}
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 		}
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> Pair&lt;&gt;(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	}
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> }
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> 
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment"> * Makes EIEIO connections. For internal use only.</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <strong class="jxr_keyword">class</strong> <a name="EIEIOFactory" href="../../../../../uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#EIEIOFactory">EIEIOFactory</a>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 		<strong class="jxr_keyword">implements</strong> UDPTransceiver.ConnectionFactory&lt;EIEIOConnection&gt; {
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 	@Override
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 	<strong class="jxr_keyword">public</strong> Class&lt;EIEIOConnection&gt; getClassKey() {
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 		<strong class="jxr_keyword">return</strong> EIEIOConnection.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 	}
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	@Override
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 	<strong class="jxr_keyword">public</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> getInstance(InetAddress localAddress)
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>(localAddress);
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> 	}
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> 
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> 	@Override
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 	<strong class="jxr_keyword">public</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a> getInstance(InetAddress localAddress, <strong class="jxr_keyword">int</strong> localPort)
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> 			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="EIEIOConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#EIEIOConnection">EIEIOConnection</a>(localAddress, localPort);
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 	}
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

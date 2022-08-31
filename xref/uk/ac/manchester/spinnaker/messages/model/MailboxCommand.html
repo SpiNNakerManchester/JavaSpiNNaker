@@ -25,8 +25,8 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">package</strong> uk.ac.manchester.spinnaker.messages.model;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> java.util.Objects.requireNonNull;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">/**</em>
@@ -47,30 +47,25 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  	<em class="jxr_javadoccomment">/** The SARK value. */</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> value;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;Integer, MailboxCommand&gt; MAP = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  	<strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  		<strong class="jxr_keyword">for</strong> (<a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> v : values()) {
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  			MAP.put(v.value, v);
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  		}
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  	}
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  	MailboxCommand(<strong class="jxr_keyword">int</strong> value) {
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  		<strong class="jxr_keyword">this</strong>.value = value;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  	}
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">	 * Convert SARK value to enum.</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">	 * @param value</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">	 *            The value to convert.</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">	 * @return The enum member</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> get(<strong class="jxr_keyword">int</strong> value) {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  		<strong class="jxr_keyword">return</strong> requireNonNull(MAP.get(value),
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  				<span class="jxr_string">"unknown mailbox command: "</span> + value);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  	}
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  }
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Map&lt;Integer, MailboxCommand&gt; MAP =
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  			makeEnumBackingMap(values(), v -&gt; v.value);
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  	MailboxCommand(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  		<strong class="jxr_keyword">this</strong>.value = value;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  	}
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment">	 * Convert SARK value to enum.</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">	 * @param value</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">	 *            The value to convert.</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">	 * @return The enum member</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="MailboxCommand" href="../../../../../../uk/ac/manchester/spinnaker/messages/model/MailboxCommand.html#MailboxCommand">MailboxCommand</a> get(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  		<strong class="jxr_keyword">return</strong> requireNonNull(MAP.get(value),
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  				<span class="jxr_string">"unknown mailbox command: "</span> + value);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  	}
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
