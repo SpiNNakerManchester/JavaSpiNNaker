@@ -55,6 +55,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
+import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
@@ -212,6 +213,28 @@ public class MachineStateControl extends DatabaseAwareBean {
 		@Override
 		public String toString() {
 			return format("(%d,%d,%d)", x, y, z);
+		}
+
+		public BoardRecord toBoardRecord() {
+			BoardRecord br = new BoardRecord();
+			br.setId(id);
+			br.setMachineName(machineName);
+			br.setX(x);
+			br.setY(y);
+			br.setZ(z);
+			br.setCabinet(cabinet);
+			br.setFrame(frame);
+			br.setBoard(board);
+			br.setIpAddress(address);
+			br.setBmpSerial(bmpSerial);
+			br.setPhysicalSerial(physicalSerial);
+			br.setLastPowerOn(getPowerOnTime().orElse(null));
+			br.setLastPowerOff(getPowerOffTime().orElse(null));
+			br.setPowered(getPower());
+			br.setJobId(getAllocatedJob().orElse(null));
+			br.setReports(getReports());
+			br.setEnabled(getState());
+			return br;
 		}
 	}
 

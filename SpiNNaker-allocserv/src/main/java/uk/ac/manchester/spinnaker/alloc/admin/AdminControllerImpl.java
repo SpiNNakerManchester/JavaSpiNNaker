@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +72,7 @@ import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
+import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
@@ -309,6 +309,255 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return errors(e.getMessage());
 	}
 
+	// Type-safe manipulators for models
+	// These are static so they *can't* access state they shouldn't
+
+	/**
+	 * Add local user list to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param userList
+	 *            The user list to add.
+	 */
+	private static void addLocalUserList(ModelAndView mav,
+			Map<String, URI> userList) {
+		mav.addObject(LOCAL_USER_LIST_OBJ, unmodifiableMap(userList));
+	}
+
+	/**
+	 * Add openid-based (remote) user list to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param userList
+	 *            The user list to add.
+	 */
+	private static void addRemoteUserList(ModelAndView mav,
+			Map<String, URI> userList) {
+		mav.addObject(OPENID_USER_LIST_OBJ, unmodifiableMap(userList));
+	}
+
+	/**
+	 * Add general user list to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param userList
+	 *            The group list to add.
+	 */
+	private static void addUserList(ModelAndView mav,
+			Map<String, URI> userList) {
+		mav.addObject(USER_LIST_OBJ, unmodifiableMap(userList));
+	}
+
+	/**
+	 * Add user record to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param user
+	 *            The user record to add.
+	 */
+	private static void addUser(ModelAndView mav, UserRecord user) {
+		mav.addObject(USER_OBJ, user.sanitise());
+	}
+
+	/**
+	 * Add user record to model.
+	 *
+	 * @param attrs
+	 *            The model
+	 * @param user
+	 *            The user record to add.
+	 */
+	private static void addUser(RedirectAttributes attrs, UserRecord user) {
+		attrs.addFlashAttribute(USER_OBJ, user);
+	}
+
+	/**
+	 * Add local group list to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param groupList
+	 *            The group list to add.
+	 */
+	private static void addLocalGroupList(ModelAndView mav,
+			Map<String, URI> groupList) {
+		mav.addObject(LOCAL_GROUP_LIST_OBJ, unmodifiableMap(groupList));
+	}
+
+	/**
+	 * Add organisation list to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param orgList
+	 *            The group list to add.
+	 */
+	private static void addOrganisationList(ModelAndView mav,
+			Map<String, URI> orgList) {
+		mav.addObject(ORG_GROUP_LIST_OBJ, unmodifiableMap(orgList));
+	}
+
+	/**
+	 * Add collabratory list to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param collabList
+	 *            The group list to add.
+	 */
+	private static void addCollabratoryList(ModelAndView mav,
+			Map<String, URI> collabList) {
+		mav.addObject(COLLAB_GROUP_LIST_OBJ, unmodifiableMap(collabList));
+	}
+
+	/**
+	 * Add group record to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param group
+	 *            The group record to add.
+	 */
+	private static void addGroup(ModelAndView mav, GroupRecord group) {
+		mav.addObject(GROUP_OBJ, group);
+	}
+
+	/**
+	 * Add board record to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param board
+	 *            The board record to add.
+	 */
+	private static void addBoard(ModelAndView mav, BoardRecord board) {
+		mav.addObject(BOARD_OBJ, board);
+	}
+
+	/**
+	 * Add board record to model.
+	 *
+	 * @param model
+	 *            The model
+	 * @param board
+	 *            The board record to add.
+	 */
+	private static void addBoard(ModelMap model, BoardRecord board) {
+		model.addAttribute(BOARD_OBJ, board);
+	}
+
+	/**
+	 * Add blacklist record to model.
+	 *
+	 * @param model
+	 *            The model
+	 * @param bldata
+	 *            The blacklist record to add.
+	 */
+	private static void addBlacklist(ModelMap model, BlacklistData bldata) {
+		model.addAttribute(BLACKLIST_DATA_OBJ, bldata);
+	}
+
+	/**
+	 * Add machine list to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param machineList
+	 *            The machine list to add.
+	 */
+	private static void addMachineList(ModelAndView mav,
+			Map<String, Boolean> machineList) {
+		mav.addObject(MACHINE_LIST_OBJ, unmodifiableMap(machineList));
+	}
+
+	/**
+	 * Add machine list to model.
+	 *
+	 * @param model
+	 *            The model
+	 * @param machineList
+	 *            The machine list to add.
+	 */
+	private static void addMachineList(ModelMap model,
+			Map<String, Boolean> machineList) {
+		model.addAttribute(MACHINE_LIST_OBJ, unmodifiableMap(machineList));
+	}
+
+	/**
+	 * Add machine tagging to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param tagging
+	 *            The machine tagging to add.
+	 */
+	private static void addMachineTagging(ModelAndView mav,
+			List<MachineTagging> tagging) {
+		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
+		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
+				.filter(MachineTagging::isTaggedAsDefault).count());
+	}
+
+	/**
+	 * Add machine reports to model.
+	 *
+	 * @param model
+	 *            The model
+	 * @param reports
+	 *            The machine reports to add.
+	 */
+	private static void addMachineReports(ModelAndView mav,
+			Map<String, List<BoardIssueReport>> reports) {
+		mav.addObject(MACHINE_REPORTS_OBJ, reports);
+	}
+
+	/**
+	 * Add link to model.
+	 *
+	 * @param mav
+	 *            The model
+	 * @param handle
+	 *            The name of the link
+	 * @param url
+	 *            The URL to add.
+	 */
+	private static void addUrl(ModelAndView mav, String handle, URI url) {
+		mav.addObject(handle, url);
+	}
+
+	/**
+	 * Add link to model.
+	 *
+	 * @param model
+	 *            The model
+	 * @param handle
+	 *            The name of the link
+	 * @param url
+	 *            The URL to add.
+	 */
+	private static void addUrl(ModelMap model, String handle, URI url) {
+		model.addAttribute(handle, url);
+	}
+
+	/**
+	 * Add notice message to model.
+	 *
+	 * @param attrs
+	 *            The model
+	 * @param msg
+	 *            The notice message to add.
+	 */
+	private static void addNotice(RedirectAttributes attrs, String msg) {
+		attrs.addFlashAttribute("notice", msg);
+	}
+
+	// The actual controller methods
+
 	@Override
 	@Action("getting the main admin UI")
 	public ModelAndView mainUI() {
@@ -319,13 +568,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("listing the users")
 	public ModelAndView listUsers() {
 		var mav = USER_LIST_VIEW.view();
-		// Share this function
-		Function<UserRecord, URI> urlMaker =
-				user -> uri(admin().showUserForm(user.getUserId()));
-		mav.addObject(LOCAL_USER_LIST_OBJ,
-				unmodifiableMap(userManager.listUsers(true, urlMaker)));
-		mav.addObject(OPENID_USER_LIST_OBJ,
-				unmodifiableMap(userManager.listUsers(false, urlMaker)));
+		addLocalUserList(mav,
+				userManager.listUsers(true, this::showUserFormUrl));
+		addRemoteUserList(mav,
+				userManager.listUsers(false, this::showUserFormUrl));
 		return addStandardContext(mav);
 	}
 
@@ -346,20 +592,46 @@ public class AdminControllerImpl extends DatabaseAwareBean
 						"user creation failed (duplicate username?)"));
 		int id = realUser.getUserId();
 		log.info("created user ID={} username={}", id, realUser.getUserName());
-		return redirectTo(uri(admin().showUserForm(id)), attrs);
+		addNotice(attrs, "created " + realUser.getUserName());
+		return redirectTo(showUserFormUrl(id), attrs);
 	}
 
 	@Override
 	@Action("getting info about a user")
 	public ModelAndView showUserForm(int id) {
 		var mav = USER_DETAILS_VIEW.view();
-		var user = userManager
-				.getUser(id, m -> uri(admin().showGroupInfo(m.getGroupId())))
+		var user = userManager.getUser(id, this::showGroupInfoUrl)
 				.orElseThrow(NoUser::new);
-		mav.addObject(USER_OBJ, user.sanitise());
-		assert mav.getModel().get(USER_OBJ) instanceof UserRecord;
-		mav.addObject("deleteUri", uri(admin().deleteUser(id, null, null)));
+		addUser(mav, user);
+		addUrl(mav, "deleteUri", deleteUserUrl(id));
 		return addStandardContext(mav);
+	}
+
+	/**
+	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
+	 * @param id User ID
+	 * @return URL
+	 */
+	private URI showUserFormUrl(int id) {
+		return uri(admin().showUserForm(id));
+	}
+
+	/**
+	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
+	 * @param member Record referring to user
+	 * @return URL
+	 */
+	private URI showUserFormUrl(MemberRecord member) {
+		return uri(admin().showUserForm(member.getUserId()));
+	}
+
+	/**
+	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
+	 * @param user Record referring to user
+	 * @return URL
+	 */
+	private URI showUserFormUrl(UserRecord user) {
+		return uri(admin().showUserForm(user.getUserId()));
 	}
 
 	@Override
@@ -369,12 +641,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		var adminUser = principal.getName();
 		user.setUserId(null);
 		log.info("updating user ID={}", id);
-		var updatedUser = userManager
-				.updateUser(id, user, adminUser,
-						m -> uri(admin().showGroupInfo(m.getGroupId())))
-				.orElseThrow(NoUser::new);
 		var mav = USER_DETAILS_VIEW.view(model);
-		mav.addObject(USER_OBJ, updatedUser.sanitise());
+		addUser(mav,
+				userManager
+						.updateUser(id, user, adminUser, this::showGroupInfoUrl)
+						.orElseThrow(NoUser::new));
 		return addStandardContext(mav);
 	}
 
@@ -389,24 +660,34 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		log.info("deleted user ID={} username={}", id, deletedUsername);
 		// Not sure that these are the correct place
 		var mav = redirectTo(uri(admin().listUsers()), attrs);
-		attrs.addFlashAttribute("notice", "deleted " + deletedUsername);
-		attrs.addFlashAttribute(USER_OBJ, new UserRecord());
+		addNotice(attrs, "deleted " + deletedUsername);
+		addUser(attrs, new UserRecord());
 		return mav;
+	}
+
+	/**
+	 * Get URL for calling
+	 * {@link #deleteUser(int, Principal, RedirectAttributes) deleteUser()}
+	 * later.
+	 *
+	 * @param id
+	 *            User ID
+	 * @return URL
+	 */
+	private URI deleteUserUrl(int id) {
+		return uri(admin().deleteUser(id, null, null));
 	}
 
 	@Override
 	@Action("listing the groups")
 	public ModelAndView listGroups() {
 		var mav = GROUP_LIST_VIEW.view();
-		// Share this function
-		Function<GroupRecord, URI> urlMaker =
-				group -> uri(admin().showGroupInfo(group.getGroupId()));
-		mav.addObject(LOCAL_GROUP_LIST_OBJ,
-				unmodifiableMap(userManager.listGroups(INTERNAL, urlMaker)));
-		mav.addObject(ORG_GROUP_LIST_OBJ, unmodifiableMap(
-				userManager.listGroups(ORGANISATION, urlMaker)));
-		mav.addObject(COLLAB_GROUP_LIST_OBJ, unmodifiableMap(
-				userManager.listGroups(COLLABRATORY, urlMaker)));
+		addLocalGroupList(mav,
+				userManager.listGroups(INTERNAL, this::showGroupInfoUrl));
+		addOrganisationList(mav,
+				userManager.listGroups(ORGANISATION, this::showGroupInfoUrl));
+		addCollabratoryList(mav,
+				userManager.listGroups(COLLABRATORY, this::showGroupInfoUrl));
 		return addStandardContext(mav);
 	}
 
@@ -415,19 +696,42 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView showGroupInfo(int id) {
 		var mav = GROUP_DETAILS_VIEW.view();
 		var userLocations = new HashMap<String, URI>();
-		mav.addObject(GROUP_OBJ, userManager.getGroup(id, m -> {
-			userLocations.put(m.getUserName(),
-					uri(admin().showUserForm(m.getUserId())));
+		addGroup(mav, userManager.getGroup(id, m -> {
+			userLocations.put(m.getUserName(), showUserFormUrl(m));
 			return uri(admin().removeUserFromGroup(id, m.getUserId(), null));
 		}).orElseThrow(NoGroup::new));
-		assert mav.getModel().get(GROUP_OBJ) instanceof GroupRecord;
-		mav.addObject(USER_LIST_OBJ, userLocations);
-		mav.addObject("deleteUri", uri(admin().deleteGroup(id, null)));
-		mav.addObject("addUserUri",
-				uri(admin().addUserToGroup(id, null, null)));
-		mav.addObject("addQuotaUri",
-				uri(admin().adjustGroupQuota(id, 0, null)));
+		addUserList(mav, userLocations);
+		addUrl(mav, "deleteUri", uri(admin().deleteGroup(id, null)));
+		addUrl(mav, "addUserUri", uri(admin().addUserToGroup(id, null, null)));
+		addUrl(mav, "addQuotaUri", uri(admin().adjustGroupQuota(id, 0, null)));
 		return addStandardContext(mav);
+	}
+
+	/**
+	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
+	 * @param id Group ID
+	 * @return URL
+	 */
+	private URI showGroupInfoUrl(int id) {
+		return uri(admin().showGroupInfo(id));
+	}
+
+	/**
+	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
+	 * @param membership Record referring to group
+	 * @return URL
+	 */
+	private URI showGroupInfoUrl(MemberRecord membership) {
+		return uri(admin().showGroupInfo(membership.getGroupId()));
+	}
+
+	/**
+	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
+	 * @param group Record referring to group
+	 * @return URL
+	 */
+	private URI showGroupInfoUrl(GroupRecord group) {
+		return uri(admin().showGroupInfo(group.getGroupId()));
 	}
 
 	@Override
@@ -447,7 +751,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 						"group creation failed (duplicate name?)"));
 		int id = realGroup.getGroupId();
 		log.info("created group ID={} name={}", id, realGroup.getGroupName());
-		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+		addNotice(attrs, "created " + realGroup.getGroupName());
+		return redirectTo(showGroupInfoUrl(id), attrs);
 	}
 
 	@Override
@@ -456,18 +761,16 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			RedirectAttributes attrs) {
 		var g = userManager.getGroup(id, null).orElseThrow(NoGroup::new);
 		var u = userManager.getUser(user, null).orElseThrow(NoUser::new);
-		String notice;
 		if (userManager.addUserToGroup(u, g).isPresent()) {
 			log.info("added user {} to group {}", u.getUserName(),
 					g.getGroupName());
-			notice = format("added user %s to group %s", u.getUserName(),
-					g.getGroupName());
+			addNotice(attrs, format("added user %s to group %s",
+					u.getUserName(), g.getGroupName()));
 		} else {
-			notice = format("user %s is already a member of group %s",
-					u.getUserName(), g.getGroupName());
+			addNotice(attrs, format("user %s is already a member of group %s",
+					u.getUserName(), g.getGroupName()));
 		}
-		attrs.addFlashAttribute("notice", notice);
-		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+		return redirectTo(showGroupInfoUrl(id), attrs);
 	}
 
 	@Override
@@ -476,18 +779,17 @@ public class AdminControllerImpl extends DatabaseAwareBean
 			RedirectAttributes attrs) {
 		var g = userManager.getGroup(id, null).orElseThrow(NoGroup::new);
 		var u = userManager.getUser(userid, null).orElseThrow(NoUser::new);
-		String notice;
 		if (userManager.removeUserFromGroup(u, g)) {
 			log.info("removed user {} from group {}", u.getUserName(),
 					g.getGroupName());
-			notice = format("removed user %s from group %s", u.getUserName(),
-					g.getGroupName());
+			addNotice(attrs, format("removed user %s from group %s",
+					u.getUserName(), g.getGroupName()));
 		} else {
-			notice = format("user %s is already not a member of group %s",
-					u.getUserName(), g.getGroupName());
+			addNotice(attrs,
+					format("user %s is already not a member of group %s",
+							u.getUserName(), g.getGroupName()));
 		}
-		attrs.addFlashAttribute("notice", notice);
-		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+		return redirectTo(showGroupInfoUrl(id), attrs);
 	}
 
 	@Override
@@ -497,9 +799,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		quotaManager.addQuota(id, delta * BOARD_HOUR).ifPresent(aq -> {
 			log.info("adjusted quota for group {} to {}", aq.getName(),
 					aq.getQuota());
-			// attrs.addFlashAttribute("notice", "quota updated");
+			// addNotice(attrs, "quota updated");
 		});
-		return redirectTo(uri(admin().showGroupInfo(id)), attrs);
+		return redirectTo(showGroupInfoUrl(id), attrs);
 	}
 
 	@Override
@@ -508,17 +810,16 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		var deletedGroupName =
 				userManager.deleteGroup(id).orElseThrow(NoGroup::new);
 		log.info("deleted group ID={} groupname={}", id, deletedGroupName);
-		var mav = redirectTo(uri(admin().listGroups()), attrs);
-		attrs.addFlashAttribute("notice", "deleted " + deletedGroupName);
-		return mav;
+		addNotice(attrs, "deleted " + deletedGroupName);
+		return redirectTo(uri(admin().listGroups()), attrs);
 	}
 
 	@Override
 	@Action("getting the UI for finding boards")
 	public ModelAndView boards() {
 		var mav = BOARD_VIEW.view();
-		mav.addObject(BOARD_OBJ, new BoardRecord());
-		mav.addObject(MACHINE_LIST_OBJ, getMachineNames(true));
+		addBoard(mav, new BoardRecord());
+		addMachineList(mav, getMachineNames(true));
 		return addStandardContext(mav);
 	}
 
@@ -558,8 +859,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 		board.setEnabled(bs.getState());
 		addBlacklistData(bs, model);
-		model.put(BOARD_OBJ, bs); // TODO is this right?
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		inflateBoardRecord(board, bs);
+		addBoard(model, board);
+		addMachineList(model, getMachineNames(true));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -574,7 +876,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		}
 		addBlacklistData(bs, model);
 
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		addMachineList(model, getMachineNames(true));
 		return addStandardContext(BOARD_VIEW.view(model));
 	}
 
@@ -589,7 +891,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		machineController.pullBlacklist(bs);
 		addBlacklistData(bs, model);
 
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		addMachineList(model, getMachineNames(true));
 		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
 	}
 
@@ -604,20 +906,34 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		machineController.pushBlacklist(bs);
 		addBlacklistData(bs, model);
 
-		model.put(MACHINE_LIST_OBJ, getMachineNames(true));
+		addMachineList(model, getMachineNames(true));
 		return completedFuture(addStandardContext(BOARD_VIEW.view(model)));
 	}
 
+	/**
+	 * Get the board record from the model and inflate a board state control
+	 * object.
+	 *
+	 * @param model
+	 *            The model.
+	 * @return The board state control object. <em>This object should not be put
+	 *         in the model as it is DB-aware!</em>
+	 */
 	private BoardState readAndRememberBoardState(ModelMap model) {
 		var br = (BoardRecord) model.get(BOARD_OBJ);
 		var bs = getBoardState(br).orElseThrow(NoBoard::new);
 		inflateBoardRecord(br, bs);
 		br.setEnabled(bs.getState());
 		// Replace the state in the model with the current values
-		model.put(BOARD_OBJ, bs);
+		addBoard(model, br);
 		return bs;
 	}
 
+	/**
+	 * Add current blacklist data to model.
+	 * @param board Which board's blacklist data to add.
+	 * @param model The model to add it to.
+	 */
 	private void addBlacklistData(BoardState board, ModelMap model) {
 		var bldata = new BlacklistData();
 		bldata.setId(board.id);
@@ -626,9 +942,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		bl.map(Blacklist::render).ifPresent(bldata::setBlacklist);
 		bldata.setSynched(machineController.isBlacklistSynched(board));
 
-		model.addAttribute(BLACKLIST_URI,
-				uri(admin().blacklistSave(null, model)));
-		model.addAttribute(BLACKLIST_DATA_OBJ, bldata);
+		addBlacklist(model, bldata);
+		addUrl(model, BLACKLIST_URI, uri(admin().blacklistSave(null, model)));
 	}
 
 	/**
@@ -669,15 +984,13 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("getting a machine's configuration")
 	public ModelAndView machineManagement() {
-		var mav = MACHINE_VIEW.view(MACHINE_LIST_OBJ, getMachineNames(true));
+		var mav = MACHINE_VIEW.view();
+		addMachineList(mav, getMachineNames(true));
 		var tagging = machineController.getMachineTagging();
 		tagging.forEach(
 				t -> t.setUrl(uri(system().getMachineInfo(t.getName()))));
-		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
-		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
-				.filter(MachineTagging::isTaggedAsDefault).count());
-		mav.addObject(MACHINE_REPORTS_OBJ,
-				machineController.getMachineReports());
+		addMachineTagging(mav, tagging);
+		addMachineReports(mav, machineController.getMachineReports());
 		return addStandardContext(mav);
 	}
 
