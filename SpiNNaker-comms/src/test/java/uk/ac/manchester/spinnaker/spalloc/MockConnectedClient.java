@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.spalloc;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -141,7 +140,19 @@ public class MockConnectedClient extends SpallocClient {
 	 */
 	static final String VERSION = "\"1.0.0\"";
 
-	private static final Map<Class<?>, String> RESPONSES = new HashMap<>();
+	private static final Map<Class<?>, String> RESPONSES = Map.ofEntries(
+			Map.entry(ListJobsCommand.class, LIST_JOBS_R),
+			Map.entry(ListMachinesCommand.class, LIST_MACHINE_R),
+			Map.entry(CreateJobCommand.class, "" + MOCK_ID),
+			Map.entry(GetJobMachineInfoCommand.class, JOB_MACHINE_INFO_R),
+			Map.entry(GetJobStateCommand.class, STATE_POWER_R),
+			Map.entry(WhereIsJobChipCommand.class, WHERE_IS_R),
+			Map.entry(WhereIsMachineBoardLogicalCommand.class, WHERE_IS_R),
+			Map.entry(WhereIsMachineBoardPhysicalCommand.class, WHERE_IS_R),
+			Map.entry(WhereIsMachineChipCommand.class, WHERE_IS_R),
+			Map.entry(VersionCommand.class, VERSION),
+			Map.entry(GetBoardPositionCommand.class, POSITION_R),
+			Map.entry(GetBoardAtPositionCommand.class, AT_R));
 
 	private boolean actual;
 
@@ -168,21 +179,6 @@ public class MockConnectedClient extends SpallocClient {
 				log.warn("Connect fail using mock", ex);
 			}
 		}
-	}
-
-	static {
-		RESPONSES.put(ListJobsCommand.class, LIST_JOBS_R);
-		RESPONSES.put(ListMachinesCommand.class, LIST_MACHINE_R);
-		RESPONSES.put(CreateJobCommand.class, "" + MOCK_ID);
-		RESPONSES.put(GetJobMachineInfoCommand.class, JOB_MACHINE_INFO_R);
-		RESPONSES.put(GetJobStateCommand.class, STATE_POWER_R);
-		RESPONSES.put(WhereIsJobChipCommand.class, WHERE_IS_R);
-		RESPONSES.put(WhereIsMachineBoardLogicalCommand.class, WHERE_IS_R);
-		RESPONSES.put(WhereIsMachineBoardPhysicalCommand.class, WHERE_IS_R);
-		RESPONSES.put(WhereIsMachineChipCommand.class, WHERE_IS_R);
-		RESPONSES.put(VersionCommand.class, VERSION);
-		RESPONSES.put(GetBoardPositionCommand.class, POSITION_R);
-		RESPONSES.put(GetBoardAtPositionCommand.class, AT_R);
 	}
 
 	@Override

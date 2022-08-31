@@ -32,9 +32,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.security.LocalAuthProviderImpl.TestAPI;
 
@@ -72,10 +69,10 @@ class LocalAuthTest extends TestSupport {
 
 	@Test
 	public void unlockUser() throws Exception {
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			c.transaction(() -> {
 				// 90k seconds is more than one day
-				try (Update setLocked =
+				try (var setLocked =
 						c.update("UPDATE user_info SET locked = :locked, "
 								+ "last_fail_timestamp = :time - 90000 "
 								+ "WHERE user_id = :user_id")) {
@@ -86,11 +83,11 @@ class LocalAuthTest extends TestSupport {
 
 		authEngine.unlock();
 
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			assertEquals(false, c.transaction(() -> {
-				try (Query q = c.query("SELECT locked FROM user_info "
+				try (var q = c.query("SELECT locked FROM user_info "
 						+ "WHERE user_id = :user_id")) {
-					return q.call1(USER).map(Row.bool("locked")).get();
+					return q.call1(USER).map(Row.bool("locked")).orElseThrow();
 				}
 			}));
 		}

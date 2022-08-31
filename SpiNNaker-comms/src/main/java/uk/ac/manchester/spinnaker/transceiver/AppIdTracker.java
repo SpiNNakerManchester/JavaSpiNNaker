@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.rangeClosed;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import uk.ac.manchester.spinnaker.messages.model.AppID;
@@ -94,11 +93,11 @@ public class AppIdTracker {
 	 *             if there are no IDs available
 	 */
 	public AppID allocateNewID() {
-		Iterator<AppID> it = freeIDs.iterator();
+		var it = freeIDs.iterator();
 		if (!it.hasNext()) {
 			throw new RuntimeException("no remaining free IDs");
 		}
-		AppID val = it.next();
+		var val = it.next();
 		it.remove();
 		return val;
 	}

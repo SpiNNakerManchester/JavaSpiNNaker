@@ -89,7 +89,7 @@ public final class BMPLocation implements HasCoreLocation {
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof BMPLocation) {
-			BMPLocation bmp = (BMPLocation) other;
+			var bmp = (BMPLocation) other;
 			return bmp.cabinet == cabinet && bmp.frame == frame
 					&& bmp.board == board;
 		}

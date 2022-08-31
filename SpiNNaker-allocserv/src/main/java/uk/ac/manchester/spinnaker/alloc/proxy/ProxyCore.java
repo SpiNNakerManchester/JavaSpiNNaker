@@ -21,6 +21,8 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.web.socket.CloseStatus.BAD_DATA;
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
+import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.CLOSE;
+import static uk.ac.manchester.spinnaker.alloc.proxy.ProxyOp.OPEN_UNCONNECTED;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 
 import java.io.IOException;
@@ -49,19 +51,18 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * The main proxy class for a particular web socket session. It's bound to a
  * job, which should be running at the time that the web socket is opened. The
  * protocol that is supported is a binary protocol that has five messages:
- * <table border=1>
- * <caption style="display:none">Protocol</caption>
+ * <table border="1" class="protocol">
+ * <caption style="display:none">Protocol inside web socket</caption>
  * <tr>
  * <th>Name</th>
  * <th>Request Layout (words)</th>
  * <th>Response Layout (words)</th>
  * </tr>
  * <tr>
- * <td rowspan=2>{@linkplain #openConnectedChannel(ByteBuffer) Open Connected
- * Channel}</td>
- * <td>
- * <table border=1>
- * <caption style="display:none">request</caption>
+ * <td rowspan=2>
+ * {@linkplain #openConnectedChannel(ByteBuffer) Open Connected Channel}</td>
+ * <td><table border="1" class="protocolrequest">
+ * <caption style="display:none">Request</caption>
  * <tr>
  * <td>{@link ProxyOp#OPEN 0}
  * <td>Correlation&nbsp;ID
@@ -71,9 +72,8 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </tr>
  * </table>
  * </td>
- * <td>
- * <table border=1>
- * <caption style="display:none">response</caption>
+ * <td><table border="1" class="protocolresponse">
+ * <caption style="display:none">Response</caption>
  * <tr>
  * <td>{@link ProxyOp#OPEN 0}
  * <td>Correlation&nbsp;ID
@@ -91,10 +91,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * back uninterpreted in the response message.</td>
  * </tr>
  * <tr>
- * <td rowspan=2>{@linkplain #closeChannel(ByteBuffer) Close Channel}</td>
- * <td>
- * <table border=1>
- * <caption style="display:none">request</caption>
+ * <td rowspan=2>
+ * {@linkplain #closeChannel(ByteBuffer) Close Channel}</td>
+ * <td><table border="1" class="protocolrequest">
+ * <caption style="display:none">Request</caption>
  * <tr>
  * <td>{@link ProxyOp#CLOSE 1}
  * <td>Correlation&nbsp;ID
@@ -102,9 +102,8 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * </tr>
  * </table>
  * </td>
- * <td>
- * <table border=1>
- * <caption style="display:none">response</caption>
+ * <td><table border="1" class="protocolresponse">
+ * <caption style="display:none">Response</caption>
  * <tr>
  * <td>{@link ProxyOp#CLOSE 1}
  * <td>Correlation&nbsp;ID
@@ -121,10 +120,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Connected Channel</em> or <em>Open Unconnected Channel</em>.</td>
  * </tr>
  * <tr>
- * <td rowspan=2>{@linkplain #sendMessage(ByteBuffer) Send Message}</td>
- * <td>
- * <table border=1>
- * <caption style="display:none">request</caption>
+ * <td rowspan=2>
+ * {@linkplain #sendMessage(ByteBuffer) Send Message}</td>
+ * <td><table border="1" class="protocolrequest">
+ * <caption style="display:none">Request</caption>
  * <tr>
  * <td>{@link ProxyOp#MESSAGE 2}
  * <td>Channel&nbsp;ID
@@ -144,20 +143,19 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * Channel</em> will be ignored.</td>
  * </tr>
  * <tr>
- * <td rowspan=2>{@linkplain #openUnconnectedChannel(ByteBuffer) Open
- * Unconnected Channel}</td>
- * <td>
- * <table border=1>
- * <caption style="display:none">request</caption>
+ * <td rowspan=2>
+ * {@linkplain #openUnconnectedChannel(ByteBuffer) Open Unconnected Channel}
+ * </td>
+ * <td><table border="1" class="protocolrequest">
+ * <caption style="display:none">Request</caption>
  * <tr>
  * <td>{@link ProxyOp#OPEN_UNCONNECTED 3}
  * <td>Correlation&nbsp;ID
  * </tr>
  * </table>
  * </td>
- * <td>
- * <table border=1>
- * <caption style="display:none">response</caption>
+ * <td><table border="1" class="protocolresponse">
+ * <caption style="display:none">Response</caption>
  * <tr>
  * <td>{@link ProxyOp#OPEN_UNCONNECTED 3}
  * <td>Correlation&nbsp;ID
@@ -184,10 +182,10 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * To</em> operation.</td>
  * </tr>
  * <tr>
- * <td rowspan=2>{@linkplain #sendMessageTo(ByteBuffer) Send Message To}</td>
- * <td>
- * <table border=1>
- * <caption style="display:none">request</caption>
+ * <td rowspan=2>
+ * {@linkplain #sendMessageTo(ByteBuffer) Send Message To}</td>
+ * <td><table border="1" class="protocolrequest">
+ * <caption style="display:none">Request</caption>
  * <tr>
  * <td>{@link ProxyOp#MESSAGE_TO 4}
  * <td>Channel&nbsp;ID
@@ -260,7 +258,7 @@ public class ProxyCore implements AutoCloseable {
 		this.idIssuer = idIssuer;
 		this.writeCounts = writeCounts;
 		this.localHost = localHost;
-		for (ConnectionInfo ci : connections) {
+		for (var ci : connections) {
 			try {
 				hosts.put(ci.getChip(),
 						InetAddress.getByName(ci.getHostname()));
@@ -307,8 +305,8 @@ public class ProxyCore implements AutoCloseable {
 	public final void handleClientMessage(ByteBuffer message)
 			throws IOException {
 		try {
-			Impl impl = decode(message.getInt());
-			ByteBuffer reply = impl != null ? impl.call(message) : null;
+			var impl = decode(message.getInt());
+			var reply = impl != null ? impl.call(message) : null;
 			if (reply != null) {
 				reply.flip();
 				session.sendMessage(new BinaryMessage(reply));
@@ -321,8 +319,7 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	private static ByteBuffer response(ProxyOp op, int correlationId) {
-		ByteBuffer msg =
-				allocate(RESPONSE_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+		var msg = allocate(RESPONSE_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
 		msg.putInt(op.ordinal());
 		msg.putInt(correlationId);
 		return msg;
@@ -352,14 +349,14 @@ public class ProxyCore implements AutoCloseable {
 
 		int x = message.getInt();
 		int y = message.getInt();
-		InetAddress who = getTargetHost(x, y);
+		var who = getTargetHost(x, y);
 
 		int port = message.getInt();
 		validatePort(port);
 
 		int id = openConnected(who, port);
 
-		ByteBuffer msg = response(ProxyOp.OPEN, corId);
+		var msg = response(ProxyOp.OPEN, corId);
 		msg.putInt(id);
 		return msg;
 	}
@@ -378,7 +375,7 @@ public class ProxyCore implements AutoCloseable {
 	private int openConnected(InetAddress who, int port) throws IOException {
 		// This method actually makes a connection and listener thread
 		int id = idIssuer.getAsInt();
-		ProxyUDPConnection conn = new ProxyUDPConnection(session, who, port, id,
+		var conn = new ProxyUDPConnection(session, who, port, id,
 				() -> removeConnection(id), null);
 		setConnection(id, conn);
 
@@ -391,7 +388,7 @@ public class ProxyCore implements AutoCloseable {
 	}
 
 	private InetAddress getTargetHost(int x, int y) {
-		InetAddress who = hosts.get(new ChipLocation(x, y));
+		var who = hosts.get(new ChipLocation(x, y));
 		if (who == null) {
 			throw new IllegalArgumentException("unrecognised ethernet chip");
 		}
@@ -417,11 +414,11 @@ public class ProxyCore implements AutoCloseable {
 		// This method handles message parsing/assembly and validation
 		int corId = message.getInt();
 
-		ValueHolder<InetAddress> localAddress = new ValueHolder<>();
-		ValueHolder<Integer> localPort = new ValueHolder<>();
+		var localAddress = new ValueHolder<InetAddress>();
+		var localPort = new ValueHolder<Integer>();
 		int id = openUnconnected(localAddress, localPort);
 
-		ByteBuffer msg = response(ProxyOp.OPEN_UNCONNECTED, corId);
+		var msg = response(OPEN_UNCONNECTED, corId);
 		msg.putInt(id);
 		msg.put(localAddress.getValue().getAddress());
 		msg.putInt(localPort.getValue());
@@ -435,10 +432,10 @@ public class ProxyCore implements AutoCloseable {
 					"cannot receive if localHost is not definite");
 		}
 		int id = idIssuer.getAsInt();
-		ProxyUDPConnection conn = new ProxyUDPConnection(session, null, 0, id,
+		var conn = new ProxyUDPConnection(session, null, 0, id,
 				() -> removeConnection(id), localHost);
 		setConnection(id, conn);
-		InetAddress who = conn.getLocalIPAddress();
+		var who = conn.getLocalIPAddress();
 		int port = conn.getLocalPort();
 
 		// Start sending messages received from the board
@@ -468,14 +465,14 @@ public class ProxyCore implements AutoCloseable {
 			throws IOException {
 		int corId = message.getInt();
 		int id = message.getInt();
-		ByteBuffer msg = response(ProxyOp.CLOSE, corId);
+		var msg = response(CLOSE, corId);
 		msg.putInt(closeChannel(id));
 		return msg;
 	}
 
 	private int closeChannel(int id) throws IOException {
 		@SuppressWarnings("resource")
-		ProxyUDPConnection conn = removeConnection(id);
+		var conn = removeConnection(id);
 		if (!isValid(conn)) {
 			return 0;
 		}
@@ -503,11 +500,11 @@ public class ProxyCore implements AutoCloseable {
 	 *             If the proxy connection can't be used.
 	 */
 	protected ByteBuffer sendMessage(ByteBuffer message) throws IOException {
-		Integer id = message.getInt();
+		int id = message.getInt();
 		log.debug("got message for channel {}", id);
-		ProxyUDPConnection conn = getConnection(id);
+		var conn = getConnection(id);
 		if (isValid(conn) && conn.getRemoteIPAddress() != null) {
-			ByteBuffer payload = message.slice();
+			var payload = message.slice();
 			log.debug("sending message to {} of length {}", conn,
 					payload.remaining());
 			conn.sendMessage(payload);
@@ -534,21 +531,21 @@ public class ProxyCore implements AutoCloseable {
 	 *             out of range, or the channel has a bound address.
 	 */
 	protected ByteBuffer sendMessageTo(ByteBuffer message) throws IOException {
-		Integer id = message.getInt();
+		int id = message.getInt();
 		int x = message.getInt();
 		int y = message.getInt();
-		InetAddress who = getTargetHost(x, y);
+		var who = getTargetHost(x, y);
 
 		int port = message.getInt();
 		validatePort(port);
 
 		log.debug("got message for channel {} for {}:{}", id, who, port);
-		ProxyUDPConnection conn = getConnection(id);
+		var conn = getConnection(id);
 		if (isValid(conn)) {
 			if (conn.getRemoteIPAddress() != null) {
 				throw new IllegalArgumentException("channel is connected");
 			}
-			ByteBuffer payload = message.slice();
+			var payload = message.slice();
 			log.debug("sending message to {} of length {}", conn,
 					payload.remaining());
 			conn.sendMessage(payload, who, port);
@@ -593,8 +590,8 @@ public class ProxyCore implements AutoCloseable {
 	@Override
 	public void close() {
 		// Take a copy immediately
-		ArrayList<ProxyUDPConnection> copy = listConnections();
-		for (ProxyUDPConnection conn : copy) {
+		var copy = listConnections();
+		for (var conn : copy) {
 			if (conn != null && !conn.isClosed()) {
 				try {
 					conn.close();

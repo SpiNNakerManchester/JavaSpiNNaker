@@ -45,6 +45,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GetDevId extends CredentialDB {
 	private static final Logger log = getLogger(GetDevId.class);
 
+	/** The OIDC realm name. */
+	public static final String REALM = "hbp";
+
 	/** Where the keycloak service is. */
 	public static final String HBP_OPENID_BASE =
 			"https://iam.ebrains.eu/auth/";
@@ -91,7 +94,7 @@ public class GetDevId extends CredentialDB {
 	}
 
 	private ClientRegistration getRegistrationClient(String clientId) {
-		var cr = ClientRegistration.create().url(HBP_OPENID_BASE, "hbp")
+		var cr = ClientRegistration.create().url(HBP_OPENID_BASE, REALM)
 				.build();
 		if (nextAuth != null) {
 			cr.auth(nextAuth);
@@ -247,7 +250,7 @@ public class GetDevId extends CredentialDB {
 		} catch (ClientRegistrationException e) {
 			log.error("failed", e);
 			if (e.getCause() instanceof HttpErrorException) {
-				HttpErrorException ex = (HttpErrorException) e.getCause();
+				var ex = (HttpErrorException) e.getCause();
 				log.info("status: {}", ex.getStatusLine().getStatusCode());
 				log.info("response: {}", ex.getErrorResponse());
 			}

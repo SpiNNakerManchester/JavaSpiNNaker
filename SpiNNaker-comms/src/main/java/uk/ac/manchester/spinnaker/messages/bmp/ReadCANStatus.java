@@ -21,7 +21,6 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPCommand.CMD_BMP_INFO;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.List;
 
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -59,7 +58,7 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 		 * @return Ordered sequence of board numbers.
 		 */
 		public MappableIterable<Integer> availableBoards() {
-			List<Integer> boards = new ArrayList<>();
+			var boards = new ArrayList<Integer>();
 			for (int i = 0; i < MAX_BOARDS_PER_FRAME; i++) {
 				if (statusData[i] != 0) {
 					boards.add(i);

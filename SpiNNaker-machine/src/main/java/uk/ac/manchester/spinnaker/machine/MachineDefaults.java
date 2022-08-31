@@ -16,11 +16,11 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Collections.unmodifiableSet;
+import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -101,8 +101,15 @@ public final class MachineDefaults {
 	public static final int REGION_SHIFT = 4;
 
 	/** Ignore Links info for a four chip board. */
+	// _4_chip_down_links = {
+	// (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
+	// (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
+	// }
 	public static final Map<ChipLocation, Set<Direction>> FOUR_CHIP_DOWN_LINKS =
-			fourChipDownLinks();
+			Map.of(new ChipLocation(0, 0), Set.of(WEST, SOUTHWEST),
+					new ChipLocation(0, 1), Set.of(WEST, SOUTHWEST),
+					new ChipLocation(1, 0), Set.of(EAST, NORTHEAST),
+					new ChipLocation(1, 1), Set.of(EAST, NORTHEAST));
 
 	/**
 	 * Checks the x and y parameter are legal ones regardless of the type of
@@ -144,24 +151,5 @@ public final class MachineDefaults {
 		if (p < 0 || p >= MAX_NUM_CORES) {
 			throw new IllegalArgumentException("bad processor ID: " + p);
 		}
-	}
-
-	// _4_chip_down_links = {
-	// (0, 0, 3), (0, 0, 4), (0, 1, 3), (0, 1, 4),
-	// (1, 0, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1)
-	// }
-	private static Map<ChipLocation, Set<Direction>> fourChipDownLinks() {
-		HashMap<ChipLocation, Set<Direction>> result = new HashMap<>();
-		HashSet<Direction> directions = new HashSet<>();
-		directions.add(Direction.WEST);
-		directions.add(Direction.SOUTHWEST);
-		result.put(new ChipLocation(0, 0), unmodifiableSet(directions));
-		result.put(new ChipLocation(0, 1), unmodifiableSet(directions));
-		directions = new HashSet<>();
-		directions.add(Direction.EAST);
-		directions.add(Direction.NORTHEAST);
-		result.put(new ChipLocation(1, 0), unmodifiableSet(directions));
-		result.put(new ChipLocation(1, 1), unmodifiableSet(directions));
-		return unmodifiableMap(result);
 	}
 }

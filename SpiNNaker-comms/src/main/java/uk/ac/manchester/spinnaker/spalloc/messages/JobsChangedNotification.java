@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 
 import java.util.List;
@@ -26,7 +24,7 @@ import java.util.List;
  * A response that describes what jobs have changed state.
  */
 public class JobsChangedNotification implements Notification {
-	private List<Integer> jobsChanged = emptyList();
+	private List<Integer> jobsChanged = List.of();
 
 	/** Create a notification response. */
 	public JobsChangedNotification() {
@@ -39,7 +37,7 @@ public class JobsChangedNotification implements Notification {
 	 *            The ID of the job that has changed.
 	 */
 	public JobsChangedNotification(int jobID) {
-		setJobsChanged(singletonList(jobID));
+		setJobsChanged(List.of(jobID));
 	}
 
 	/** @return What jobs have changed. Not accurate. */
@@ -49,7 +47,7 @@ public class JobsChangedNotification implements Notification {
 
 	/** @param jobsChanged What jobs have changed. */
 	public void setJobsChanged(List<Integer> jobsChanged) {
-		this.jobsChanged = jobsChanged == null ? emptyList()
+		this.jobsChanged = jobsChanged == null ? List.of()
 				: unmodifiableList(jobsChanged);
 	}
 

@@ -20,9 +20,6 @@ import static java.lang.Thread.sleep;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -48,7 +45,6 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +54,6 @@ import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -121,8 +116,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	/**
 	 * The set of states that indicate a core in a failure state.
 	 */
-	Set<CPUState> DEFAULT_ERROR_STATES = unmodifiableSet(
-			new HashSet<>(asList(RUN_TIME_EXCEPTION, WATCHDOG)));
+	Set<CPUState> DEFAULT_ERROR_STATES = Set.of(RUN_TIME_EXCEPTION, WATCHDOG);
 
 	/**
 	 * What proportion of checks are to be expensive full checks.
@@ -468,7 +462,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
-		return getCPUInformation(new CoreSubsets(core)).first().get();
+		return getCPUInformation(new CoreSubsets(core)).first().orElseThrow();
 	}
 
 	/**
@@ -651,7 +645,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		return getIobuf(new CoreSubsets(core)).first().get();
+		return getIobuf(new CoreSubsets(core)).first().orElseThrow();
 	}
 
 	/**
@@ -758,7 +752,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void setWatchDogTimeout(int watchdog)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
+		for (var chip : getMachineDetails().chipCoordinates()) {
 			setWatchDogTimeoutOnChip(chip, watchdog);
 		}
 	}
@@ -777,7 +771,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void enableWatchDogTimer(boolean watchdog)
 			throws IOException, ProcessException {
-		for (ChipLocation chip : getMachineDetails().chipCoordinates()) {
+		for (var chip : getMachineDetails().chipCoordinates()) {
 			enableWatchDogTimerOnChip(chip, watchdog);
 		}
 	}
@@ -826,7 +820,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, numBytes, appID);
+		execute(core, Set.of(core.getP()), executable, numBytes, appID);
 	}
 
 	/**
@@ -884,7 +878,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, InputStream executable,
 			int numBytes, AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, numBytes, appID,
+		execute(core, Set.of(core.getP()), executable, numBytes, appID,
 				wait);
 	}
 
@@ -938,7 +932,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void execute(HasCoreLocation core, File executable, AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, false);
+		execute(core, Set.of(core.getP()), executable, appID, false);
 	}
 
 	/**
@@ -992,7 +986,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, File executable, AppID appID,
 			boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, wait);
+		execute(core, Set.of(core.getP()), executable, appID, wait);
 	}
 
 	/**
@@ -1043,7 +1037,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, false);
+		execute(core, Set.of(core.getP()), executable, appID, false);
 	}
 
 	/**
@@ -1095,7 +1089,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void execute(HasCoreLocation core, ByteBuffer executable,
 			AppID appID, boolean wait)
 			throws IOException, ProcessException, InterruptedException {
-		execute(core, singleton(core.getP()), executable, appID, wait);
+		execute(core, Set.of(core.getP()), executable, appID, wait);
 	}
 
 	/**
@@ -1333,7 +1327,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 			AppID appID) throws IOException, ProcessException,
 			InterruptedException, SpinnmanException {
 		// Execute each of the binaries and get them in to a "wait" state
-		for (String binary : executableTargets.getBinaries()) {
+		for (var binary : executableTargets.getBinaries()) {
 			executeFlood(executableTargets.getCoresForBinary(binary),
 					new File(binary), appID, true);
 		}
@@ -1344,13 +1338,13 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 		// Check that the binaries have reached a wait state
 		int count = getCoreStateCount(appID, READY);
 		if (count < executableTargets.getTotalProcessors()) {
-			Map<CoreLocation, CPUInfo> coresNotReady = getCoresNotInState(
+			var coresNotReady = getCoresNotInState(
 					executableTargets.getAllCoreSubsets(), READY);
 			if (!coresNotReady.isEmpty()) {
-				try (Formatter f = new Formatter()) {
+				try (var f = new Formatter()) {
 					f.format("Only %d of %d cores reached ready state:", count,
 							executableTargets.getTotalProcessors());
-					for (CPUInfo info : coresNotReady.values()) {
+					for (var info : coresNotReady.values()) {
 						f.format("\n%s", info.getStatusDescription());
 					}
 					throw new SpinnmanException(f.toString());
@@ -1603,7 +1597,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			int dataWord) throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemory(core, baseAddress, b);
 	}
@@ -1941,7 +1935,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default void writeNeighbourMemory(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeNeighbourMemory(core, link, baseAddress, b);
 	}
@@ -2138,7 +2132,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelUnsafe
 	default void writeMemoryFlood(MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		ByteBuffer b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
+		var b = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		b.putInt(dataWord).flip();
 		writeMemoryFlood(baseAddress, b);
 	}
@@ -2296,7 +2290,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	default int readUser0(HasCoreLocation core)
 			throws ProcessException, IOException {
-		MemoryLocation user0 = getUser0RegisterAddress(core);
+		var user0 = getUser0RegisterAddress(core);
 		return readMemory(core.getScampCore(), user0, WORD_SIZE).getInt();
 	}
 
@@ -2313,7 +2307,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	default int readUser1(HasCoreLocation core)
 			throws ProcessException, IOException {
-		MemoryLocation user1 = getUser1RegisterAddress(core);
+		var user1 = getUser1RegisterAddress(core);
 		return readMemory(core.getScampCore(), user1, WORD_SIZE).getInt();
 	}
 
@@ -2330,7 +2324,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 */
 	default int readUser2(HasCoreLocation core)
 			throws ProcessException, IOException {
-		MemoryLocation user2 = getUser2RegisterAddress(core);
+		var user2 = getUser2RegisterAddress(core);
 		return readMemory(core.getScampCore(), user2, WORD_SIZE).getInt();
 	}
 
@@ -2506,7 +2500,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			CPUState state) throws IOException, ProcessException {
-		return getCoresInState(allCoreSubsets, singleton(state));
+		return getCoresInState(allCoreSubsets, Set.of(state));
 	}
 
 	/**
@@ -2555,7 +2549,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
 			throws IOException, ProcessException {
-		return getCoresNotInState(allCoreSubsets, singleton(state));
+		return getCoresNotInState(allCoreSubsets, Set.of(state));
 	}
 
 	/**

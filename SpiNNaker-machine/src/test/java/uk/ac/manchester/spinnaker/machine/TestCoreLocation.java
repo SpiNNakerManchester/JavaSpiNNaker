@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.machine;
 
 import java.util.HashMap;
-import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
@@ -29,11 +28,11 @@ public class TestCoreLocation {
 
 	@Test
 	public void testChipLocationBasicUse() {
-		CoreLocation l1 = new CoreLocation(0, 0, 0);
+		var l1 = new CoreLocation(0, 0, 0);
 		assertEquals(l1, l1);
 		assertNotEquals(l1, "l1");
 
-		CoreLocation l2 = new CoreLocation(0, 0, 0);
+		var l2 = new CoreLocation(0, 0, 0);
 		assertEquals(0, l2.getX());
 		assertEquals(0, l2.getY());
 		assertEquals(0, l2.getP());
@@ -41,20 +40,20 @@ public class TestCoreLocation {
 		assertEquals(l1.toString(), l2.toString());
 		assertTrue(l2.onSameCoreAs(l1));
 
-		CoreLocation l3 = new CoreLocation(0, 1, 0);
+		var l3 = new CoreLocation(0, 1, 0);
 		assertEquals(0, l3.getX());
 		assertEquals(1, l3.getY());
 		assertEquals(0, l3.getP());
 		assertNotEquals(l1, l3);
 		assertNotEquals(l1.toString(), l3.toString());
 
-		CoreLocation l4 = new CoreLocation(ChipLocation.ONE_ZERO, 0);
+		var l4 = new CoreLocation(ChipLocation.ONE_ZERO, 0);
 		assertEquals(1, l4.getX());
 		assertEquals(0, l4.getY());
 		assertEquals(0, l4.getP());
 		assertNotEquals(l1, l4);
 
-		CoreLocation l5 = new CoreLocation(0, 0, 1);
+		var l5 = new CoreLocation(0, 0, 1);
 		assertEquals(0, l5.getX());
 		assertEquals(0, l5.getY());
 		assertEquals(1, l5.getP());
@@ -62,7 +61,7 @@ public class TestCoreLocation {
 		assertTrue(l1.onSameChipAs(l5));
 		assertFalse(l3.onSameChipAs(l4));
 
-		Map<CoreLocation, Integer> m = new HashMap<>();
+		var m = new HashMap<CoreLocation, Integer>();
 		m.put(l1, 123);
 		assertEquals(123, (int) m.get(l2));
 
@@ -139,12 +138,12 @@ public class TestCoreLocation {
 
 	@Test
 	public void testCompare() {
-		CoreLocation core001 = new CoreLocation(0, 0, 1);
-		CoreLocation core001a = new CoreLocation(0, 0, 1);
-		CoreLocation core002 = new CoreLocation(0, 0, 2);
-		CoreLocation core102 = new CoreLocation(1, 0, 2);
-		CoreLocation core013 = new CoreLocation(0, 1, 3);
-		CoreLocation core114 = new CoreLocation(1, 1, 4);
+		var core001 = new CoreLocation(0, 0, 1);
+		var core001a = new CoreLocation(0, 0, 1);
+		var core002 = new CoreLocation(0, 0, 2);
+		var core102 = new CoreLocation(1, 0, 2);
+		var core013 = new CoreLocation(0, 1, 3);
+		var core114 = new CoreLocation(1, 1, 4);
 		assertThat("114 > 001", core114, greaterThan(core001));
 		assertThat("114 > 013", core114, greaterThan(core013));
 		assertThat("114 > 102", core114, greaterThan(core102));

@@ -19,11 +19,11 @@ package uk.ac.manchester.spinnaker.transceiver;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.nio.ByteBuffer.allocate;
+import static org.apache.commons.io.IOUtils.buffer;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_RETRIES;
 import static uk.ac.manchester.spinnaker.connections.SCPRequestPipeline.SCP_TIMEOUT;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -166,8 +166,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void writeLink(HasCoreLocation core, Direction linkDirection,
 			MemoryLocation baseAddress, File dataFile)
 			throws IOException, ProcessException {
-		try (InputStream data =
-				new BufferedInputStream(new FileInputStream(dataFile))) {
+		try (var data = buffer(new FileInputStream(dataFile))) {
 			writeMemoryFlow(baseAddress, data, (int) dataFile.length(), (addr,
 					bytes) -> new WriteLink(core, linkDirection, addr, bytes));
 		}
@@ -238,8 +237,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void writeMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			File dataFile) throws IOException, ProcessException {
-		try (InputStream data =
-				new BufferedInputStream(new FileInputStream(dataFile))) {
+		try (var data = buffer(new FileInputStream(dataFile))) {
 			writeMemoryFlow(baseAddress, data, (int) dataFile.length(),
 					(addr, bytes) -> new WriteMemory(core, addr, bytes));
 		}
@@ -267,10 +265,10 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			throws IOException, ProcessException {
 		int offset = data.position();
 		int bytesToWrite = data.remaining();
-		MemoryLocation writePosition = baseAddress;
+		var writePosition = baseAddress;
 		while (bytesToWrite > 0) {
 			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-			ByteBuffer tmp = data.asReadOnlyBuffer();
+			var tmp = data.asReadOnlyBuffer();
 			tmp.position(offset);
 			tmp.limit(offset + bytesToSend);
 			sendRequest(msgProvider.getMessage(writePosition, tmp));
@@ -304,11 +302,11 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			MemoryLocation baseAddress, InputStream data, int bytesToWrite,
 			MessageProvider<T> msgProvider)
 			throws IOException, ProcessException {
-		MemoryLocation writePosition = baseAddress;
-		ByteBuffer workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
+		var writePosition = baseAddress;
+		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 		while (bytesToWrite > 0) {
 			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
-			ByteBuffer tmp = workingBuffer.duplicate();
+			var tmp = workingBuffer.duplicate();
 			bytesToSend = data.read(tmp.array(), 0, bytesToSend);
 			if (bytesToSend <= 0) {
 				break;

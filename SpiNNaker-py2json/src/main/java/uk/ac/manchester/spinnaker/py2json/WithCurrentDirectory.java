@@ -30,7 +30,7 @@ final class WithCurrentDirectory implements AutoCloseable {
 	private final PythonInterpreter python;
 
 	WithCurrentDirectory(PythonInterpreter python, boolean doCd) {
-		String cwd = getProperty("user.dir");
+		var cwd = getProperty("user.dir");
 		if (doCd) {
 			this.python = python;
 		} else {

@@ -116,6 +116,7 @@ final class OTCallable extends OTPrepared implements CallableStatement {
 		return s.getDouble(parameterIndex);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
 	public BigDecimal getBigDecimal(int parameterIndex, int scale)

@@ -16,8 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.HashSet;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -34,7 +36,7 @@ public class TestDirection {
 	 */
 	@Test
 	public void testValues() {
-		Direction[] result = Direction.values();
+		var result = Direction.values();
 		assertEquals(6, result.length);
 	}
 
@@ -43,9 +45,9 @@ public class TestDirection {
 	 */
 	@Test
 	public void testValueOf() {
-		String name = "NORTH";
-		Direction expResult = Direction.NORTH;
-		Direction result = Direction.valueOf(name);
+		var name = "NORTH";
+		var expResult = Direction.NORTH;
+		var result = Direction.valueOf(name);
 		assertEquals(expResult, result);
 	}
 
@@ -55,8 +57,8 @@ public class TestDirection {
 	@Test
 	public void testById() {
 		int id = 2;
-		Direction expResult = Direction.NORTH;
-		Direction result = Direction.byId(id);
+		var expResult = Direction.NORTH;
+		var result = Direction.byId(id);
 		assertEquals(expResult, result);
 	}
 
@@ -67,10 +69,8 @@ public class TestDirection {
 	 */
 	@Test
 	public void testInverse() {
-		HashSet<Direction> inverses = new HashSet<>();
-		for (Direction direction : Direction.values()) {
-			inverses.add(direction.inverse());
-		}
+		var inverses = stream(Direction.values()).map(Direction::inverse)
+				.collect(toSet());
 		assertEquals(Direction.values().length, inverses.size());
 	}
 

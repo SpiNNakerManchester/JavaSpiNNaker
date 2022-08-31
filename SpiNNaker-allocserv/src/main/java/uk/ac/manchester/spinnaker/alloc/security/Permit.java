@@ -59,7 +59,7 @@ public final class Permit {
 	 *            The originating security context.
 	 */
 	public Permit(javax.ws.rs.core.SecurityContext context) {
-		for (String role : STDAUTH) {
+		for (var role : STDAUTH) {
 			if (context.isUserInRole(role)) {
 				authorities.add(new SimpleGrantedAuthority(role));
 			}
@@ -192,8 +192,8 @@ public final class Permit {
 			}
 		}
 
-		SecurityContext c = SecurityContextHolder.getContext();
-		Authentication old = c.getAuthentication();
+		var c = SecurityContextHolder.getContext();
+		var old = c.getAuthentication();
 		c.setAuthentication(new TempAuth());
 		try {
 			return inContext.get();

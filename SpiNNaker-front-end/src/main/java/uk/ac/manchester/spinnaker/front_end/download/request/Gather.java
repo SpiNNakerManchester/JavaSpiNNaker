@@ -24,6 +24,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
@@ -38,6 +39,14 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  */
 @JsonFormat(shape = OBJECT)
 public class Gather implements HasCoreLocation {
+	/**
+	 * Type reference for deserializing a list of gatherer descriptions.
+	 */
+	public static final TypeReference<List<Gather>> LIST = new TR();
+
+	private static class TR extends TypeReference<List<Gather>> {
+	}
+
 	/** The x value of the core this placement is on. */
 	private final int x;
 

@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.HOSTNAME_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_DEFAULT;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.KEEPALIVE_PROPERTY;
@@ -43,12 +42,12 @@ import static uk.ac.manchester.spinnaker.spalloc.JobConstants.TIMEOUT_PROPERTY;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.USER_PROPERTY;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration2.INIConfiguration;
 import org.apache.commons.configuration2.SubnodeConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.INIBuilderParameters;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -87,9 +86,9 @@ public class Configuration {
 			 * ``$HOME/.config/spalloc``) and finally the current working
 			 * directory (in a file named ``.spalloc``).
 			 */
-			INIBuilderParameters params = new Parameters().ini()
+			var params = new Parameters().ini()
 					.setLocationStrategy(new CombinedLocationStrategy(
-							asList(new ProvidedURLLocationStrategy(),
+							List.of(new ProvidedURLLocationStrategy(),
 									new HomeDirectoryLocationStrategy(),
 									new ClasspathLocationStrategy())))
 					.setListDelimiterHandler(
@@ -176,10 +175,11 @@ public class Configuration {
 	 * Set up the default values in the map, so the configuration file doesn't
 	 * need to have everything listed in it.
 	 *
-	 * @return a map loaded with default configuration values.
+	 * @return a <em>modifiable</em> map loaded with default configuration
+	 *         values.
 	 */
 	private static Map<String, Object> initDefaultValues() {
-		Map<String, Object> defaults = new HashMap<>();
+		var defaults = new HashMap<String, Object>();
 		defaults.put(PORT_PROPERTY, PORT_DEFAULT);
 		defaults.put(KEEPALIVE_PROPERTY, KEEPALIVE_DEFAULT);
 		defaults.put(TIMEOUT_PROPERTY, TIMEOUT_DEFAULT);
@@ -199,7 +199,7 @@ public class Configuration {
 	}
 
 	private Double readNoneOrFloat(String prop) {
-		String val = section.getString(prop);
+		var val = section.getString(prop);
 		if (isNull(val)) {
 			return null;
 		}
@@ -207,7 +207,7 @@ public class Configuration {
 	}
 
 	private Integer readNoneOrInt(String prop) {
-		String val = section.getString(prop);
+		var val = section.getString(prop);
 		if (isNull(val)) {
 			return null;
 		}
@@ -215,7 +215,7 @@ public class Configuration {
 	}
 
 	private String readNoneOrString(String prop) {
-		String val = section.getString(prop);
+		var val = section.getString(prop);
 		if (isNull(val)) {
 			return null;
 		}

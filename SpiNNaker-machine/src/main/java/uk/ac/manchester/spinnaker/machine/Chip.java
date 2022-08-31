@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
@@ -33,8 +31,6 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
-import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
-import uk.ac.manchester.spinnaker.machine.bean.ChipResources;
 
 /**
  * A Description of a Spinnaker Chip including its Router.
@@ -82,7 +78,7 @@ public class Chip implements HasChipLocation {
 			Processor> DEFAULT_MONITOR_PROCESSORS = defaultMonitorProcessors();
 
 	private static final List<Integer> DEFAULT_ETHERNET_TAG_IDS =
-			asList(1, 2, 3, 4, 5, 6, 7);
+			List.of(1, 2, 3, 4, 5, 6, 7);
 
 	// Note: emergency_routing_enabled not implemented as not used
 	// TODO convert_routing_table_entry_to_spinnaker_route
@@ -120,7 +116,7 @@ public class Chip implements HasChipLocation {
 		this.location = location;
 		monitorProcessors = new TreeMap<>();
 		userProcessors = new TreeMap<>();
-		processors.forEach((processor) -> {
+		processors.forEach(processor -> {
 			if (monitorProcessors.containsKey(processor.processorId)) {
 				throw new IllegalArgumentException("duplicate processor");
 			} else if (userProcessors.containsKey(processor.processorId)) {
@@ -138,7 +134,7 @@ public class Chip implements HasChipLocation {
 		this.virtual = virtual;
 		if (tagIds == null) {
 			if (ipAddress == null) {
-				this.tagIds = emptyList();
+				this.tagIds = List.of();
 			} else {
 				this.tagIds = DEFAULT_ETHERNET_TAG_IDS;
 			}
@@ -241,7 +237,7 @@ public class Chip implements HasChipLocation {
 
 		virtual = false;
 		if (ipAddress == null) {
-			tagIds = emptyList();
+			tagIds = List.of();
 		} else {
 			tagIds = DEFAULT_ETHERNET_TAG_IDS;
 		}
@@ -270,8 +266,8 @@ public class Chip implements HasChipLocation {
 	}
 
 	Chip(ChipBean bean, Machine machine) {
-		ChipDetails details = bean.getDetails();
-		ChipResources resources = bean.getResources();
+		var details = bean.getDetails();
+		var resources = bean.getResources();
 
 		location = bean.getLocation();
 		monitorProcessors = provideMonitors(resources.getMonitors());
@@ -290,7 +286,7 @@ public class Chip implements HasChipLocation {
 	}
 
 	private static TreeMap<Integer, Processor> defaultUserProcessors() {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		for (int i = 1; i < PROCESSORS_PER_CHIP; i++) {
 			processors.put(i, Processor.factory(i, false));
 		}
@@ -298,13 +294,13 @@ public class Chip implements HasChipLocation {
 	}
 
 	private static TreeMap<Integer, Processor> defaultMonitorProcessors() {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		processors.put(0, Processor.factory(0, true));
 		return processors;
 	}
 
 	private static TreeMap<Integer, Processor> provideMonitors(int monitors) {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		for (int i = 0; i < monitors; i++) {
 			processors.put(i, Processor.factory(i, true));
 		}
@@ -313,7 +309,7 @@ public class Chip implements HasChipLocation {
 
 	private TreeMap<Integer, Processor> provideUserProcesses(int monitors,
 			int cores) {
-		TreeMap<Integer, Processor> processors = new TreeMap<>();
+		var processors = new TreeMap<Integer, Processor>();
 		for (int i = monitors; i < cores; i++) {
 			processors.put(i, Processor.factory(i, false));
 		}
@@ -378,7 +374,7 @@ public class Chip implements HasChipLocation {
 	 * @return A list of all the processors including both monitor and user.
 	 */
 	public List<Processor> allProcessors() {
-		ArrayList<Processor> all = new ArrayList<>(monitorProcessors.values());
+		var all = new ArrayList<>(monitorProcessors.values());
 		all.addAll(userProcessors.values());
 		sort(all);
 		return all;

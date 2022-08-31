@@ -92,7 +92,7 @@ class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
 		if (isNull(value)) {
 			return false;
 		}
-		if (emptyOK && value.isEmpty()) {
+		if (emptyOK && value.isBlank()) {
 			return true;
 		}
 		return pattern.matcher(value).matches();

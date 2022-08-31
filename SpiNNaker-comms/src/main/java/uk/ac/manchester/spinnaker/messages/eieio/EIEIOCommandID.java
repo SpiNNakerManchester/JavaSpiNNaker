@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.eieio;
 
-import java.util.HashMap;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
 import java.util.Map;
 
 /**
@@ -44,13 +45,8 @@ public enum EIEIOCommandID implements EIEIOCommand {
 
 	private final int value;
 
-	private static final Map<Integer, EIEIOCommandID> MAP = new HashMap<>();
-
-	static {
-		for (EIEIOCommandID commmand : values()) {
-			MAP.put(commmand.value, commmand);
-		}
-	}
+	private static final Map<Integer, EIEIOCommandID> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	EIEIOCommandID(int value) {
 		this.value = value;
@@ -69,7 +65,7 @@ public enum EIEIOCommandID implements EIEIOCommand {
 	 * @return the ID, or {@code null} if the encoded form was unrecognised.
 	 */
 	public static EIEIOCommand get(int command) {
-		EIEIOCommandID id = MAP.get(command);
+		var id = MAP.get(command);
 		if (id != null) {
 			return id;
 		}

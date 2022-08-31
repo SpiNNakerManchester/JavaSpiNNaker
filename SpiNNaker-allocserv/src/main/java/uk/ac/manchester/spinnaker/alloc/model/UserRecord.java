@@ -311,7 +311,7 @@ public final class UserRecord {
 
 	@JsonIgnore
 	boolean isPasswordSet() {
-		return nonNull(password) && !password.trim().isEmpty();
+		return nonNull(password) && !password.isBlank();
 	}
 
 	@AssertTrue(message = "only set a password for non-OpenID accounts")

@@ -46,7 +46,7 @@ public final class CF {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof CF) {
-			CF other = (CF) obj;
+			var other = (CF) obj;
 			return c == other.c && f == other.f;
 		}
 		return false;

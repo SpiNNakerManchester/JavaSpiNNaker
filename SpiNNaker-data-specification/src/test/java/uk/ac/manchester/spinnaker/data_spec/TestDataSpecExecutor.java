@@ -32,11 +32,8 @@ import static uk.ac.manchester.spinnaker.data_spec.Generator.makeSpec;
 import static uk.ac.manchester.spinnaker.data_spec.Generator.makeSpecStream;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -44,7 +41,7 @@ import org.junit.jupiter.api.Test;
 public class TestDataSpecExecutor {
 	@Test
 	void testSimpleSpec() throws IOException, DataSpecificationException {
-		ByteBuffer spec = makeSpec(s -> {
+		var spec = makeSpec(s -> {
 			s.reserveMemoryRegion(0, 100);
 			s.reserveMemoryRegion(1, 200, true);
 			s.reserveMemoryRegion(2, 4);
@@ -63,7 +60,7 @@ public class TestDataSpecExecutor {
 
 		// Execute the spec
 		@SuppressWarnings("resource")
-		Executor executor = new Executor(spec, 400);
+		var executor = new Executor(spec, 400);
 		executor.execute();
 		executor.close();
 
@@ -77,46 +74,46 @@ public class TestDataSpecExecutor {
 				.forEach(r -> assertNull(executor.getRegion(r)));
 
 		// Test region 0
-		MemoryRegion reg0 = executor.getRegion(0);
+		var reg0 = executor.getRegion(0);
 		assertTrue(reg0 instanceof MemoryRegionReal);
-		MemoryRegionReal region0 = (MemoryRegionReal) reg0;
+		var region0 = (MemoryRegionReal) reg0;
 		assertEquals(100, region0.getAllocatedSize());
 		assertEquals(24, region0.getMaxWritePointer());
 		assertFalse(region0.isUnfilled());
-		int[] expectedR0 = new int[] {
+		var expectedR0 = new int[] {
 			0, 1, 2, 0, 0, 4
 		};
-		ByteBuffer r0data = region0.getRegionData().asReadOnlyBuffer()
+		var r0data = region0.getRegionData().asReadOnlyBuffer()
 				.order(LITTLE_ENDIAN);
 		r0data.flip();
-		int[] dst = new int[expectedR0.length];
+		var dst = new int[expectedR0.length];
 		r0data.asIntBuffer().get(dst);
 		assertArrayEquals(expectedR0, dst);
 
 		// Test region 1
-		MemoryRegion reg1 = executor.getRegion(1);
+		var reg1 = executor.getRegion(1);
 		assertTrue(reg1 instanceof MemoryRegionReal);
-		MemoryRegionReal region1 = (MemoryRegionReal) reg1;
+		var region1 = (MemoryRegionReal) reg1;
 		assertEquals(200, region1.getAllocatedSize());
 		assertTrue(region1.isUnfilled());
 
 		// Test region 2
-		MemoryRegion reg2 = executor.getRegion(2);
+		var reg2 = executor.getRegion(2);
 		assertTrue(reg2 instanceof MemoryRegionReal);
-		MemoryRegionReal region2 = (MemoryRegionReal) reg2;
+		var region2 = (MemoryRegionReal) reg2;
 		assertEquals(4, region2.getAllocatedSize());
 		assertEquals(10, region2.getRegionData().getInt(0));
 
 		// Test region 3
-		MemoryRegion reg3 = executor.getRegion(3);
+		var reg3 = executor.getRegion(3);
 		assertTrue(reg3 instanceof MemoryRegionReal);
-		MemoryRegionReal region3 = (MemoryRegionReal) reg3;
+		var region3 = (MemoryRegionReal) reg3;
 		assertEquals(12, region3.getAllocatedSize());
 
 		// Test region 4 (reference)
-		MemoryRegion reg4 = executor.getRegion(4);
+		var reg4 = executor.getRegion(4);
 		assertTrue(reg4 instanceof MemoryRegionReference);
-		MemoryRegionReference region4 = (MemoryRegionReference) reg4;
+		var region4 = (MemoryRegionReference) reg4;
 		assertEquals(region4.getReference(), new Reference(2));
 
 		// Test referencing
@@ -129,10 +126,10 @@ public class TestDataSpecExecutor {
 		});
 
 		// Test the pointer table
-		ByteBuffer buffer = ByteBuffer.allocate(4096).order(LITTLE_ENDIAN);
+		var buffer = ByteBuffer.allocate(4096).order(LITTLE_ENDIAN);
 		executor.setBaseAddress(NULL);
 		executor.addPointerTable(buffer);
-		IntBuffer table = asIntBuffer(buffer);
+		var table = buffer.flip().asIntBuffer();
 		assertEquals(MAX_MEM_REGIONS * 3, table.limit());
 		assertEquals(headerAndTableSize, table.get(0));
 		assertEquals(headerAndTableSize + 100, table.get(3));
@@ -144,27 +141,22 @@ public class TestDataSpecExecutor {
 		// Test the header
 		buffer.clear();
 		executor.addHeader(buffer);
-		IntBuffer header = asIntBuffer(buffer);
+		var header = buffer.flip().asIntBuffer();
 		assertEquals(2, header.limit());
 		assertEquals(APPDATA_MAGIC_NUM, header.get(0));
 		assertEquals(DSE_VERSION, header.get(1));
 	}
 
-	private static IntBuffer asIntBuffer(ByteBuffer buffer) {
-		buffer.flip();
-		return buffer.asIntBuffer();
-	}
-
 	@Test
 	void testTrivialSpec() throws IOException, DataSpecificationException {
-		ByteBuffer spec = makeSpec(s -> {
+		var spec = makeSpec(s -> {
 			s.nop();
 			s.endSpecification();
 		});
 
 		// Execute the spec
 		@SuppressWarnings("resource")
-		Executor executor = new Executor(spec, 400);
+		var executor = new Executor(spec, 400);
 		executor.execute();
 		executor.close();
 
@@ -173,7 +165,7 @@ public class TestDataSpecExecutor {
 
 	@Test
 	void testComplexSpec() throws IOException, DataSpecificationException {
-		ByteBuffer spec = makeSpec(s -> {
+		var spec = makeSpec(s -> {
 			s.reserveMemoryRegion(0, 44);
 			s.switchWriteFocus(0);
 			s.setRegisterValue(3, 0x31323341);
@@ -198,12 +190,12 @@ public class TestDataSpecExecutor {
 		});
 
 		// Execute the spec
-		try (Executor executor = new Executor(spec, 400)) {
+		try (var executor = new Executor(spec, 400)) {
 			executor.execute();
 
-			MemoryRegion reg = executor.getRegion(0);
+			var reg = executor.getRegion(0);
 			assertTrue(reg instanceof MemoryRegionReal);
-			MemoryRegionReal r = (MemoryRegionReal) reg;
+			var r = (MemoryRegionReal) reg;
 			assertEquals(44, r.getAllocatedSize());
 			assertEquals(40, r.getMaxWritePointer());
 			assertFalse(r.isUnfilled());
@@ -219,10 +211,10 @@ public class TestDataSpecExecutor {
 	@Test
 	void testTrivialSpecFromStream()
 			throws IOException, DataSpecificationException {
-		ByteArrayInputStream spec = makeSpecStream(s -> s.endSpecification());
+		var spec = makeSpecStream(s -> s.endSpecification());
 
 		// Execute the spec
-		try (Executor executor = new Executor(spec, 400)) {
+		try (var executor = new Executor(spec, 400)) {
 			executor.execute();
 			executor.regions().forEach(Assertions::assertNull);
 		}
@@ -231,12 +223,12 @@ public class TestDataSpecExecutor {
 	@Test
 	void testTrivialSpecFromFile()
 			throws IOException, DataSpecificationException {
-		File f = createTempFile("dse", ".spec");
+		var f = createTempFile("dse", ".spec");
 		try {
 			makeSpec(f, s -> s.endSpecification());
 
 			// Execute the spec
-			try (Executor executor = new Executor(f, 400)) {
+			try (var executor = new Executor(f, 400)) {
 				executor.execute();
 				executor.regions().forEach(Assertions::assertNull);
 			}
@@ -247,13 +239,13 @@ public class TestDataSpecExecutor {
 
 	@Test
 	void testFailingSpec() throws IOException {
-		ByteBuffer spec = makeSpec(s -> {
+		var spec = makeSpec(s -> {
 			s.fail();
 			s.endSpecification();
 		});
 
 		// Execute the spec
-		try (Executor executor = new Executor(spec, 400)) {
+		try (var executor = new Executor(spec, 400)) {
 			assertThrows(ExecuteBreakInstruction.class, executor::execute);
 		}
 	}

@@ -106,7 +106,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void clearIOBUF(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
-		for (CoreLocation core : requireNonNull(coreSubsets,
+		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new ClearIOBUF(core));
 		}
@@ -131,7 +131,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 			throws IOException, ProcessException {
 		int runTime = (runTimesteps == null ? 0 : runTimesteps);
 		boolean infiniteRun = runTimesteps == null;
-		for (CoreLocation core : requireNonNull(coreSubsets,
+		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new UpdateRuntime(core, runTime, infiniteRun));
 		}
@@ -150,7 +150,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	 *             If anything goes wrong with networking.
 	 */
 	void updateProvenanceAndExit(CoreSubsets coreSubsets) throws IOException {
-		for (CoreLocation core : requireNonNull(coreSubsets,
+		for (var core : requireNonNull(coreSubsets,
 				"must have actual core subset to iterate over")) {
 			sendOneWayRequest(new UpdateProvenanceAndExit(core));
 		}
@@ -177,7 +177,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	MappableIterable<IOBuffer> readIOBuf(int size, CoreSubsets cores)
 			throws ProcessException, IOException {
 		// Get the IOBuf address for each core
-		for (CoreLocation core : requireNonNull(cores,
+		for (var core : requireNonNull(cores,
 				"must have actual core subset to iterate over")) {
 			sendRequest(new ReadMemory(core.getScampCore(),
 					getVcpuAddress(core).add(CPU_IOBUF_ADDRESS_OFFSET), WORD),
@@ -191,16 +191,16 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 		// Run rounds of the process until reading is complete
 		while (!nextReads.isEmpty() || !extraReads.isEmpty()) {
 			while (!extraReads.isEmpty()) {
-				ExtraRead read = extraReads.remove();
+				var read = extraReads.remove();
 				sendRequest(read.message(),
 						response -> saveIOBufTailSection(read, response));
 			}
 
 			while (!nextReads.isEmpty()) {
-				NextRead read = nextReads.remove();
+				var read = nextReads.remove();
 				sendRequest(read.message(), response -> {
 					// Unpack the IOBuf header
-					MemoryLocation nextAddress =
+					var nextAddress =
 							new MemoryLocation(response.data.getInt());
 					response.data.getLong(); // Ignore 8 bytes
 					int bytesToRead = response.data.getInt();
@@ -235,7 +235,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 
 			@Override
 			public IOBuffer next() {
-				CoreLocation core = cores.next();
+				var core = cores.next();
 				return new IOBuffer(core, iobuf.get(core).values());
 			}
 		};
@@ -251,7 +251,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	private int saveIOBufHead(NextRead read, Response response,
 			int bytesToRead) {
 		// Create a buffer for the data
-		ByteBuffer buffer = allocate(bytesToRead).order(LITTLE_ENDIAN);
+		var buffer = allocate(bytesToRead).order(LITTLE_ENDIAN);
 		iobuf.get(read.core).put(read.blockID, buffer);
 
 		// Put the data from this packet into the buffer
@@ -277,7 +277,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 	}
 
 	private void saveIOBufTailSection(ExtraRead read, Response response) {
-		ByteBuffer buffer = iobuf.get(read.core).get(read.blockID);
+		var buffer = iobuf.get(read.core).get(read.blockID);
 		synchronized (buffer) {
 			buffer.position(read.offset);
 			buffer.put(response.data);

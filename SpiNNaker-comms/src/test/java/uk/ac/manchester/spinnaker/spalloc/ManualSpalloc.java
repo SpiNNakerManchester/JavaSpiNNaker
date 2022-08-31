@@ -19,9 +19,7 @@ package uk.ac.manchester.spinnaker.spalloc;
 import static uk.ac.manchester.spinnaker.spalloc.JobConstants.PORT_DEFAULT;
 
 import java.io.IOException;
-import java.util.List;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
 
 /**
  * This is a manual tool to help understanding state while running tests.
@@ -38,10 +36,10 @@ public final class ManualSpalloc {
 
 	public static void main(String... args)
 			throws IOException, SpallocServerException, Exception {
-		try (SpallocClient client = new SpallocClient(SPALLOC, PORT_DEFAULT);
-				AutoCloseable c = client.withConnection()) {
-			List<JobDescription> jobs = client.listJobs();
-			for (JobDescription job : jobs) {
+		try (var client = new SpallocClient(SPALLOC, PORT_DEFAULT);
+				var c = client.withConnection()) {
+			var jobs = client.listJobs();
+			for (var job : jobs) {
 				System.out.println(job);
 			}
 		}

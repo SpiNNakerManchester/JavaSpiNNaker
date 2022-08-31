@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Administrative interfaces.
+ * Administrative interfaces. Connected quite deeply with Spring MVC.
  */
 package uk.ac.manchester.spinnaker.alloc.admin;

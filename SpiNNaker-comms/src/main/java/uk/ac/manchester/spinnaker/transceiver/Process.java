@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
-import uk.ac.manchester.spinnaker.messages.sdp.SDPHeader;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /** An abstract process for talking to SpiNNaker efficiently. */
@@ -73,7 +72,7 @@ abstract class Process {
 		if (!isError()) {
 			return;
 		}
-		SDPHeader hdr = errorRequest.sdpHeader;
+		var hdr = errorRequest.sdpHeader;
 		throw makeInstance(hdr.getDestination(), exception);
 	}
 
@@ -133,7 +132,7 @@ abstract class Process {
 	 */
 	protected final <T extends CheckOKResponse> T synchronousCall(
 			SCPRequest<T> request) throws IOException, ProcessException {
-		ValueHolder<T> holder = new ValueHolder<>();
+		var holder = new ValueHolder<T>();
 		resetState();
 		sendRequest(request, holder::setValue);
 		finish();

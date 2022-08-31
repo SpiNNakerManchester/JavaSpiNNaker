@@ -107,7 +107,7 @@ public class NotificationConnection
 	@Override
 	public void sendNotification(NotificationMessage notificationMessage)
 			throws IOException {
-		ByteBuffer b = newMessageBuffer();
+		var b = newMessageBuffer();
 		notificationMessage.addToBuffer(b);
 		b.flip();
 		send(b);
@@ -115,7 +115,7 @@ public class NotificationConnection
 
 	@Override
 	public NotificationMessage receiveMessage(int timeout) throws IOException {
-		ByteBuffer b = receive(timeout);
+		var b = receive(timeout);
 		return AbstractNotificationMessage.build(b);
 	}
 }

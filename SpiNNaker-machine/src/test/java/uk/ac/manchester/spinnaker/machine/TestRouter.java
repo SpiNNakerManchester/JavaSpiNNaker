@@ -16,12 +16,13 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.stream.Stream;
+import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 import static org.hamcrest.Matchers.*;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.Test;
@@ -38,49 +39,40 @@ public class TestRouter {
 
 	private static final ChipLocation CHIP10 = new ChipLocation(1, 0);
 
-	private static final Link LINK00_01 =
-			new Link(CHIP00, Direction.NORTH, CHIP01);
+	private static final Link LINK00_01 = new Link(CHIP00, NORTH, CHIP01);
 
-	private static final Link LINK00_01A =
-			new Link(CHIP00, Direction.NORTH, CHIP01);
+	private static final Link LINK00_01A = new Link(CHIP00, NORTH, CHIP01);
 
-	private static final Link LINK00_10 =
-			new Link(CHIP00, Direction.WEST, CHIP10);
+	private static final Link LINK00_10 = new Link(CHIP00, WEST, CHIP10);
 
-	private static final Link LINK01_01 =
-			new Link(CHIP01, Direction.SOUTH, CHIP01);
+	private static final Link LINK01_01 = new Link(CHIP01, SOUTH, CHIP01);
 
 	@Test
 	public void testRouterBasicUse() {
-		ArrayList<Link> links = new ArrayList<>();
-		links.add(LINK00_01);
+		var links = List.of(LINK00_01);
 		@SuppressWarnings("unused")
-		Router router = new Router(links);
+		var router = new Router(links);
 	}
 
 	@Test
 	public void testLinks() {
-		ArrayList<Link> links = new ArrayList<>();
-		links.add(LINK00_01);
-		Router router = new Router(links);
-		final Collection<Link> values = router.links();
+		var links = List.of(LINK00_01);
+		var router = new Router(links);
+		final var values = router.links();
 		assertEquals(1, values.size());
 		assertThrows(UnsupportedOperationException.class, () -> {
 			values.remove(LINK00_01);
 		});
-		Collection<Link> values2 = router.links();
+		var values2 = router.links();
 		assertEquals(1, values2.size());
 	}
 
 	@Test
 	public void testgetNeighbouringChipsCoords() {
-		ArrayList<Link> links = new ArrayList<>();
-		links.add(LINK00_10);
-		links.add(LINK00_01);
+		var links = List.of(LINK00_10, LINK00_01);
 		assertThat(CHIP01, is(oneOf(CHIP01, CHIP10)));
-		Router router = new Router(links);
-		Stream<ChipLocation> neighbours =
-				router.streamNeighbouringChipsCoords();
+		var router = new Router(links);
+		var neighbours = router.streamNeighbouringChipsCoords();
 		neighbours.forEach(loc -> {
 			assertThat(loc, is(oneOf(CHIP01, CHIP10)));
 		});
@@ -90,11 +82,10 @@ public class TestRouter {
 				assertThat(loc, is(oneOf(CHIP01, CHIP10)));
 			});
 		});
-		for (HasChipLocation loc : router.iterNeighbouringChipsCoords()) {
+		for (var loc : router.iterNeighbouringChipsCoords()) {
 			assertThat(loc, is(oneOf(CHIP01, CHIP10)));
 		}
-		Iterator<ChipLocation> iterator =
-				router.iterNeighbouringChipsCoords().iterator();
+		var iterator = router.iterNeighbouringChipsCoords().iterator();
 		// Note Order is now by Direction
 		assertEquals(CHIP01, iterator.next());
 		assertEquals(CHIP10, iterator.next());
@@ -105,10 +96,8 @@ public class TestRouter {
 
 	@Test
 	public void testRouterStream() {
-		ArrayList<Link> links = new ArrayList<>();
-		links.add(LINK00_01);
-		links.add(LINK01_01);
-		Router router = new Router(links.stream());
+		var links = List.of(LINK00_01, LINK01_01);
+		var router = new Router(links.stream());
 		assertTrue(router.hasLink(Direction.NORTH));
 		assertEquals(LINK00_01, router.getLink(Direction.NORTH));
 		assertEquals(2, router.size());
@@ -116,43 +105,37 @@ public class TestRouter {
 
 	@Test
 	public void testRouterRepeat() {
-		ArrayList<Link> links = new ArrayList<>();
-		links.add(LINK00_01);
-		links.add(LINK00_01A);
+		var links = List.of(LINK00_01, LINK00_01A);
 		assertThrows(IllegalArgumentException.class, () -> {
 			@SuppressWarnings("unused")
-			Router router = new Router(links);
+			var router = new Router(links);
 		});
 	}
 
 	@Test
 	public void testDefaults1() {
-		Router router = new Router();
+		var router = new Router();
 		assertThat(router.links(), IsEmptyCollection.empty());
-		assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES,
+		assertEquals(ROUTER_AVAILABLE_ENTRIES,
 				router.nAvailableMulticastEntries);
 	}
 
 	@Test
 	public void testDefaults2() {
-		ArrayList<Link> links = new ArrayList<>();
-		links.add(LINK00_01);
-		links.add(LINK00_10);
-		Router router = new Router(links);
+		var links = List.of(LINK00_01, LINK00_10);
+		var router = new Router(links);
 		assertThat(router.links(), containsInAnyOrder(links.toArray()));
-		assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES,
+		assertEquals(ROUTER_AVAILABLE_ENTRIES,
 				router.nAvailableMulticastEntries);
 	}
 
 	@Test
 	public void testDefaults3() {
-		ArrayList<Link> links = new ArrayList<>();
-		links.add(LINK00_01);
-		links.add(LINK00_10);
-		Router router =
+		var links = List.of(LINK00_01, LINK00_10);
+		var router =
 				new Router(links, MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1);
 		assertThat(router.links(), containsInAnyOrder(links.toArray()));
-		assertEquals(MachineDefaults.ROUTER_AVAILABLE_ENTRIES + 1,
+		assertEquals(ROUTER_AVAILABLE_ENTRIES + 1,
 				router.nAvailableMulticastEntries);
 	}
 

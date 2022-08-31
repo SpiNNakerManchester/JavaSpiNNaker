@@ -30,11 +30,9 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.security.TrustLevel.BASIC;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.IntConsumer;
@@ -48,16 +46,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connected;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Transacted;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
 
@@ -125,7 +120,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 *             On failure.
 	 */
 	protected static void killDB(String dbPath) throws IOException {
-		Path dbp = Paths.get(dbPath);
+		var dbp = Paths.get(dbPath);
 		if (exists(dbp)) {
 			log.info("deleting old database: {}", dbp);
 			delete(dbp);
@@ -134,22 +129,22 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	private static void makeMachine(Connection c, int width, int height,
 			int depth) {
-		try (Update u = c.update(INSERT_MACHINE)) {
+		try (var u = c.update(INSERT_MACHINE)) {
 			u.call(MACHINE, MACHINE_NAME, width, height, depth);
 		}
-		try (Update u = c.update(INSERT_BMP_WITH_ID)) {
+		try (var u = c.update(INSERT_BMP_WITH_ID)) {
 			u.call(BMP, MACHINE, BMP_ADDR, 1, 1);
 		}
 	}
 
 	private static void makeUser(Connection c) {
-		try (Update u = c.update(INSERT_USER)) {
+		try (var u = c.update(INSERT_USER)) {
 			u.call(USER, USER_NAME, BASIC, true);
 		}
-		try (Update u = c.update(INSERT_GROUP)) {
+		try (var u = c.update(INSERT_GROUP)) {
 			u.call(GROUP, GROUP_NAME, INITIAL_QUOTA);
 		}
-		try (Update u = c.update(INSERT_MEMBER)) {
+		try (var u = c.update(INSERT_MEMBER)) {
 			u.call(MEMBERSHIP, USER, GROUP);
 		}
 	}
@@ -158,7 +153,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 * Set up a machine with one board, and a user.
 	 */
 	protected void setupDB1() {
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			c.transaction(() -> setupDB1(c));
 		}
 	}
@@ -167,7 +162,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		// A simple machine
 		makeMachine(c, 1, 1, 1);
 		// Add one board to the machine
-		try (Update u = c.update(INSERT_BOARD_WITH_ID)) {
+		try (var u = c.update(INSERT_BOARD_WITH_ID)) {
 			u.call(BOARD, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
 		}
 		// A disabled permission-less user with a quota
@@ -178,7 +173,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 * Set up a machine with three boards, and a user.
 	 */
 	protected void setupDB3() {
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			c.transaction(() -> setupDB3(c));
 		}
 	}
@@ -188,12 +183,12 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		makeMachine(c, 1, 1, 3);
 		// Add three connected boards to the machine
 		int b0 = BOARD, b1 = BOARD + 1, b2 = BOARD + 2;
-		try (Update u = c.update(INSERT_BOARD_WITH_ID)) {
+		try (var u = c.update(INSERT_BOARD_WITH_ID)) {
 			u.call(b0, BOARD_ADDR, BMP, 0, MACHINE, 0, 0, 0, 0, 0, false);
 			u.call(b1, "2.2.2.3", BMP, 1, MACHINE, 0, 0, 1, 8, 4, false);
 			u.call(b2, "2.2.2.4", BMP, 2, MACHINE, 0, 0, 2, 4, 8, false);
 		}
-		try (Update u = c.update(INSERT_LINK)) {
+		try (var u = c.update(INSERT_LINK)) {
 			u.call(b0, 0, b1, 3, true);
 			u.call(b0, 1, b2, 4, true);
 			u.call(b1, 2, b2, 5, true);
@@ -229,7 +224,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 			@NonNull JobState state, Integer size, Instant createTime,
 			Instant allocateTime, Instant deathTime, Duration keepalive,
 			Instant keepaliveTime) {
-		try (Update u = c.update(INSERT_JOB_WITH_TIMESTAMPS)) {
+		try (var u = c.update(INSERT_JOB_WITH_TIMESTAMPS)) {
 			return u.key(MACHINE, USER, GROUP, root, state, createTime,
 					allocateTime, deathTime, size, keepalive, keepaliveTime)
 					.orElseThrow(
@@ -266,7 +261,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 */
 	protected static void allocateBoardToJob(Connection c, int boardId,
 			Integer jobId) {
-		try (Update u = c.update("UPDATE boards SET allocated_job = :job "
+		try (var u = c.update("UPDATE boards SET allocated_job = :job "
 				+ "WHERE board_id = :board")) {
 			u.call(jobId, boardId);
 		}
@@ -284,7 +279,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 */
 	protected static void setAllocRoot(Connection c, int jobId,
 			Integer boardId) {
-		try (Update u = c.update("UPDATE jobs SET root_id = :board, "
+		try (var u = c.update("UPDATE jobs SET root_id = :board, "
 				+ "width = 1, height = 1, depth = 1 "
 				+ "WHERE job_id = :job")) {
 			u.call(boardId, jobId);
@@ -293,8 +288,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	protected List<String> getReports() {
 		return db.execute(c -> {
-			try (Query q =
-					c.query("SELECT reported_issue FROM board_reports")) {
+			try (var q = c.query("SELECT reported_issue FROM board_reports")) {
 				return q.call().map(string("reported_issue")).toList();
 			}
 		});
@@ -302,7 +296,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	protected void killReports() {
 		db.executeVoid(c -> {
-			try (Update u = c.update("DELETE from board_reports")) {
+			try (var u = c.update("DELETE from board_reports")) {
 				u.call();
 			}
 		});
@@ -320,7 +314,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	}
 
 	protected void doTransactionalTest(Transacted action) {
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			c.transaction(() -> {
 				try {
 					conn = c;
@@ -349,40 +343,42 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	}
 
 	protected void makeAllocBySizeRequest(int job, int size) {
-		try (Update u = conn.update(TEST_INSERT_REQ_SIZE)) {
+		try (var u = conn.update(TEST_INSERT_REQ_SIZE)) {
 			conn.transaction(() -> u.call(job, size));
 		}
 	}
 
 	protected void makeAllocByDimensionsRequest(int job, int width, int height,
 			int allowedDead) {
-		try (Update u = conn.update(TEST_INSERT_REQ_DIMS)) {
+		try (var u = conn.update(TEST_INSERT_REQ_DIMS)) {
 			conn.transaction(() -> u.call(job, width, height, allowedDead));
 		}
 	}
 
 	protected void makeAllocByBoardIdRequest(int job, int board) {
-		try (Update u = conn.update(TEST_INSERT_REQ_BOARD)) {
+		try (var u = conn.update(TEST_INSERT_REQ_BOARD)) {
 			conn.transaction(() -> u.call(job, board));
 		}
 	}
 
 	protected JobState getJobState(int job) {
-		try (Query q = conn.query(GET_JOB)) {
-			return conn.transaction(() -> q.call1(job).get()
+		try (var q = conn.query(GET_JOB)) {
+			return conn.transaction(() -> q.call1(job).orElseThrow()
 					.getEnum("job_state", JobState.class));
 		}
 	}
 
 	protected int getJobRequestCount() {
-		try (Query q = conn.query(TEST_COUNT_REQUESTS)) {
-			return conn.transaction(() -> q.call1(QUEUED).get().getInt("cnt"));
+		try (var q = conn.query(TEST_COUNT_REQUESTS)) {
+			return conn.transaction(
+					() -> q.call1(QUEUED).orElseThrow().getInt("cnt"));
 		}
 	}
 
 	protected int getPendingPowerChanges() {
-		try (Query q = conn.query(TEST_COUNT_POWER_CHANGES)) {
-			return conn.transaction(() -> q.call1().get().getInt("cnt"));
+		try (var q = conn.query(TEST_COUNT_POWER_CHANGES)) {
+			return conn
+					.transaction(() -> q.call1().orElseThrow().getInt("cnt"));
 		}
 	}
 
@@ -404,7 +400,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	protected void nukeJob(int jobId) {
 		db.executeVoid(c -> {
-			try (Update u = c.update("DELETE FROM jobs WHERE job_id = ?")) {
+			try (var u = c.update("DELETE FROM jobs WHERE job_id = ?")) {
 				u.call(jobId);
 			}
 		});
@@ -463,7 +459,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 		 */
 		default Permit setAuth(String name) {
 			@SuppressWarnings("serial")
-			Authentication a = new Authentication() {
+			var a = new Authentication() {
 				@Override
 				public String getName() {
 					return name;
@@ -471,7 +467,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 				@Override
 				public Collection<? extends GrantedAuthority> getAuthorities() {
-					return new ArrayList<>();
+					return List.of();
 				}
 
 				@Override
@@ -524,7 +520,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 	 *            The code to run.
 	 */
 	public static void inContext(InC inc) {
-		SecurityContext context = SecurityContextHolder.getContext();
+		var context = SecurityContextHolder.getContext();
 		try {
 			inc.act(context::setAuthentication);
 		} finally {

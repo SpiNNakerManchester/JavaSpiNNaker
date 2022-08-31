@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Collection;
 
 import org.slf4j.Logger;
@@ -113,7 +112,7 @@ public class Executor implements Closeable {
 	}
 
 	private void logInput() {
-		IntBuffer b = input.asIntBuffer();
+		var b = input.asIntBuffer();
 		int[] a = new int[b.limit()];
 		b.get(a);
 		if (log.isDebugEnabled()) {
@@ -145,7 +144,7 @@ public class Executor implements Closeable {
 		while (true) {
 			int index = input.position();
 			int cmd = input.getInt();
-			Callable instruction = funcs.getOperation(cmd, index);
+			var instruction = funcs.getOperation(cmd, index);
 			if (END_SPEC_EXECUTOR == instruction.execute(cmd)) {
 				break;
 			}
@@ -181,9 +180,9 @@ public class Executor implements Closeable {
 	 */
 	public void setBaseAddress(MemoryLocation startAddress) {
 		int nextOffset = APP_PTR_TABLE_BYTE_SIZE;
-		for (MemoryRegion reg : memRegions) {
+		for (var reg : memRegions) {
 			if (reg instanceof MemoryRegionReal) {
-				MemoryRegionReal r = (MemoryRegionReal) reg;
+				var r = (MemoryRegionReal) reg;
 				r.setRegionBase(startAddress.add(nextOffset));
 				nextOffset += r.getAllocatedSize();
 			}
@@ -210,15 +209,16 @@ public class Executor implements Closeable {
 	 */
 	public void addPointerTable(ByteBuffer buffer) {
 		assert buffer.order() == LITTLE_ENDIAN;
-		for (MemoryRegion reg : memRegions) {
+		for (var reg : memRegions) {
 			if (reg != null) {
 				buffer.putInt(reg.getRegionBase().address);
 				if (reg instanceof MemoryRegionReal) {
 					// Work out the checksum
-					MemoryRegionReal regReal = (MemoryRegionReal) reg;
+					var regReal = (MemoryRegionReal) reg;
 					int nWords =
 							ceildiv(regReal.getMaxWritePointer(), INT_SIZE);
-					IntBuffer buf = asIntBuffer(regReal.getRegionData());
+					var buf = regReal.getRegionData().duplicate()
+							.order(LITTLE_ENDIAN).rewind().asIntBuffer();
 					long sum = 0;
 					for (int i = 0; i < nWords; i++) {
 						sum = (sum + (buf.get() & UNSIGNED_INT)) & UNSIGNED_INT;
@@ -238,12 +238,6 @@ public class Executor implements Closeable {
 				buffer.putInt(0);
 			}
 		}
-	}
-
-	private static IntBuffer asIntBuffer(ByteBuffer buffer) {
-		buffer = buffer.duplicate().order(LITTLE_ENDIAN);
-		buffer.rewind();
-		return buffer.asIntBuffer();
 	}
 
 	/** @return the size of the data that will be written to memory. */
