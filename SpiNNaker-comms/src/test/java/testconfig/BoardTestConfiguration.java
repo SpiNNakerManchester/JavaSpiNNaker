@@ -17,7 +17,6 @@
 package testconfig;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -122,17 +121,17 @@ public class BoardTestConfiguration {
 			throws SocketException, UnknownHostException {
 		initRemoteHost(config.get(MCSEC, "machineName"), true);
 		boardVersion = MachineVersion.byId(config.getInt(MCSEC, "version"));
-		String names = config.get(MCSEC, "bmp_names");
+		var names = config.get(MCSEC, "bmp_names");
 		if (isNull(names) || "None".equals(names)) {
 			bmpNames = null;
 		} else {
-			Inet4Address bmpHost = getByName(names);
-			bmpNames = asList(
-					new BMPConnectionData(0, 0, bmpHost, asList(0), null));
+			var bmpHost = getByName(names);
+			bmpNames = List.of(
+					new BMPConnectionData(0, 0, bmpHost, List.of(0), null));
 		}
 		autoDetectBMP = config.getBoolean(MCSEC, "auto_detect_bmp");
 		localport = PORT;
-		try (DatagramSocket s = new DatagramSocket()) {
+		try (var s = new DatagramSocket()) {
 			s.connect(new InetSocketAddress(remotehost, PORT));
 			localhost = s.getLocalAddress().getHostAddress();
 		}
@@ -148,16 +147,16 @@ public class BoardTestConfiguration {
 	public SpallocJob setUpSpallocedBoard()
 			throws IOException, SpallocServerException, JobDestroyedException,
 			SpallocStateChangeTimeoutException {
-		String spalloc = config.get(SPSEC, "hostname");
+		var spalloc = config.get(SPSEC, "hostname");
 		assumeTrue(spalloc != null, "no spalloc server defined");
 		assumeTrue(hostIsReachable(spalloc),
 				() -> format("spalloc server (%s) appears to be down",
 						spalloc));
-		Integer port = config.getInt(SPSEC, "port");
-		Integer timeout = config.getInt(SPSEC, "timeout");
-		String tag = config.get(SPSEC, "tag");
+		var port = config.getInt(SPSEC, "port");
+		var timeout = config.getInt(SPSEC, "timeout");
+		var tag = config.get(SPSEC, "tag");
 		@SuppressWarnings("resource")
-		SpallocJob job = new SpallocJob(spalloc, port, timeout,
+		var job = new SpallocJob(spalloc, port, timeout,
 				jobDesc(1, KEEPALIVE_SECS, tag));
 		job.waitUntilReady(null);
 		try {

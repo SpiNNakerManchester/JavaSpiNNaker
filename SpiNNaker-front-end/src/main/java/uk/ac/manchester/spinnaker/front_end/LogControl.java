@@ -201,9 +201,9 @@ public final class LogControl {
 	 *            The directory where the log should written inside.
 	 */
 	protected static void setLoggerDir(String directoryName) {
-		File logfile = new File(new File(directoryName), LOG_FILE);
-		String level = getProperty(Props.LOGGING_LEVEL_NAME, "info");
-		LogControl lc = new LogControl();
+		var logfile = new File(new File(directoryName), LOG_FILE);
+		var level = getProperty(Props.LOGGING_LEVEL_NAME, "info");
+		var lc = new LogControl();
 		reconfigure(lc.configuration(logfile, level));
 	}
 }

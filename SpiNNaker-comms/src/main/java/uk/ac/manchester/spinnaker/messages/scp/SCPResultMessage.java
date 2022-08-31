@@ -29,8 +29,6 @@ import static uk.ac.manchester.spinnaker.messages.scp.SCPResult.RC_TIMEOUT;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,14 +38,8 @@ public final class SCPResultMessage {
 
 	private static final int SKIP_HEADER_BYTES = 2 + SDP_HEADER_LENGTH;
 
-	private static final Set<SCPResult> RETRY_CODES = new HashSet<>();
-
-	static {
-		RETRY_CODES.add(RC_TIMEOUT);
-		RETRY_CODES.add(RC_P2P_TIMEOUT);
-		RETRY_CODES.add(RC_LEN);
-		RETRY_CODES.add(RC_P2P_NOREPLY);
-	}
+	private static final Set<SCPResult> RETRY_CODES =
+			Set.of(RC_TIMEOUT, RC_P2P_TIMEOUT, RC_LEN, RC_P2P_NOREPLY);
 
 	/** The response code. */
 	private final SCPResult result;
@@ -64,7 +56,7 @@ public final class SCPResultMessage {
 	 *            without header stripped.
 	 */
 	public SCPResultMessage(ByteBuffer response) {
-		ByteBuffer peek = response.duplicate().order(LITTLE_ENDIAN);
+		var peek = response.duplicate().order(LITTLE_ENDIAN);
 		// Skip the padding bytes and the SDP header
 		peek.position(SKIP_HEADER_BYTES);
 		result = SCPResult.get(peek.getShort());
@@ -148,7 +140,7 @@ public final class SCPResultMessage {
 	public String toString() {
 		Object contents;
 		if (nonNull(responseData)) {
-			List<String> data = new ArrayList<>();
+			var data = new ArrayList<String>();
 			for (int i = 0; i < responseData.limit(); i++) {
 				data.add(toHexString(toUnsignedInt(responseData.get(i))));
 			}

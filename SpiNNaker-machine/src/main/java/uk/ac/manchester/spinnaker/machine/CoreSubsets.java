@@ -16,9 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
@@ -26,6 +23,7 @@ import static java.util.Objects.nonNull;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -158,8 +156,8 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 			throw new IllegalStateException("The subsets is immutable. "
 					+ "Possibly because a hashcode has been generated.");
 		}
-		Map<Integer, CoreLocation> map = getOrCreate(chip);
-		for (Integer p : processors) {
+		var map = getOrCreate(chip);
+		for (var p : processors) {
 			map.put(p, new CoreLocation(chip, p));
 		}
 	}
@@ -194,7 +192,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *            the locations to add.
 	 */
 	public void addCores(Iterable<CoreLocation> locations) {
-		for (CoreLocation location : locations) {
+		for (var location : locations) {
 			addCore(location);
 		}
 	}
@@ -238,7 +236,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return True if and only if there is a none empty Subset for this Chip.
 	 */
 	public boolean isChip(ChipLocation chip) {
-		return !locations.getOrDefault(chip, emptyMap()).isEmpty();
+		return !locations.getOrDefault(chip, Map.of()).isEmpty();
 	}
 
 	/**
@@ -250,7 +248,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return True if and only if there is a core with these coordinates
 	 */
 	public boolean isCore(CoreLocation core) {
-		return locations.getOrDefault(core.asChipLocation(), emptyMap())
+		return locations.getOrDefault(core.asChipLocation(), Map.of())
 				.containsValue(core);
 	}
 
@@ -270,8 +268,8 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	public final int hashCode() {
 		immutable = true;
 		int hash = 7;
-		for (Map<Integer, CoreLocation> subset : locations.values()) {
-			for (CoreLocation location : subset.values()) {
+		for (var subset : locations.values()) {
+			for (var location : subset.values()) {
 				hash = 89 * hash + location.hashCode();
 			}
 		}
@@ -302,8 +300,8 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final CoreSubsets other = (CoreSubsets) obj;
-		return Objects.equals(this.locations, other.locations);
+		var other = (CoreSubsets) obj;
+		return Objects.equals(locations, other.locations);
 	}
 
 	@Override
@@ -320,9 +318,9 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *         Therefore the result may be empty.
 	 */
 	public CoreSubsets intersection(CoreSubsets other) {
-		CoreSubsets results = new CoreSubsets();
+		var results = new CoreSubsets();
 		locations.forEach((chip, locs) -> {
-			Map<?, CoreLocation> otherSubset = other.locations.get(chip);
+			var otherSubset = other.locations.get(chip);
 			if (nonNull(otherSubset)) {
 				locs.forEach((ignored, location) -> {
 					if (otherSubset.containsValue(location)) {
@@ -365,7 +363,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 		if (locations.containsKey(chip)) {
 			return unmodifiableCollection(locations.get(chip).values());
 		} else {
-			return emptyList();
+			return List.of();
 		}
 	}
 
@@ -383,7 +381,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 		if (locations.containsKey(chip)) {
 			return unmodifiableSet(locations.get(chip).keySet());
 		} else {
-			return emptySet();
+			return Set.of();
 		}
 	}
 }

@@ -156,7 +156,7 @@ public class ProgressBar implements Closeable {
 			output.println();
 		}
 		long duration = currentTimeMillis() - startTime;
-		String durationSt = formatDuration(duration);
+		var durationSt = formatDuration(duration);
 		if (isNull(description)) {
 			output.println("This took " + durationSt);
 		} else {
@@ -184,7 +184,7 @@ public class ProgressBar implements Closeable {
 	}
 
 	private static String distanceIndicator() {
-		StringBuilder builder = new StringBuilder("0%");
+		var builder = new StringBuilder("0%");
 		for (int i = 0; i < LEFT_SPACES; i += 1) {
 			builder.append(" ");
 		}

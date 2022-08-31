@@ -84,7 +84,7 @@ public final class DoubleMapIterator<V> implements Iterator<V> {
 		if (isNull(inner)) {
 			throw new NoSuchElementException("no more elements available");
 		}
-		V result = inner.next();
+		var result = inner.next();
 		checkInner();
 		return result;
 	}

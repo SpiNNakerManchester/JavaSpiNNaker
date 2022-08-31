@@ -133,12 +133,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	@SuppressWarnings("unchecked")
 	<T extends R> T execute(BMPRequest<T> request)
 			throws IOException, ProcessException {
-		ValueHolder<R> holder = new ValueHolder<>();
+		var holder = new ValueHolder<R>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
-		RequestPipeline requestPipeline = new RequestPipeline(
+		var requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
 		requestPipeline.sendRequest((BMPRequest<R>) request, holder::setValue);
 		requestPipeline.finish();
@@ -168,12 +168,12 @@ class BMPCommandProcess<R extends BMPResponse> {
 	@SuppressWarnings("unchecked")
 	<T extends R> T execute(BMPRequest<T> request, int retries)
 			throws IOException, ProcessException {
-		ValueHolder<R> holder = new ValueHolder<>();
+		var holder = new ValueHolder<R>();
 		/*
 		 * If no pipeline built yet, build one on the connection selected for
 		 * it.
 		 */
-		RequestPipeline requestPipeline = new RequestPipeline(
+		var requestPipeline = new RequestPipeline(
 				connectionSelector.getNextConnection(request));
 		requestPipeline.sendRequest((BMPRequest<R>) request, retries,
 				holder::setValue);
@@ -205,9 +205,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests)
 			throws IOException, ProcessException {
-		List<R> results = new ArrayList<>();
+		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
-		for (BMPRequest<T> request : requests) {
+		for (var request : requests) {
 			if (isNull(requestPipeline)) {
 				/*
 				 * If no pipeline built yet, build one on the connection
@@ -249,9 +249,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 	@SuppressWarnings("unchecked")
 	<T extends R> List<T> execute(Iterable<? extends BMPRequest<T>> requests,
 			int retries) throws IOException, ProcessException {
-		List<R> results = new ArrayList<>();
+		var results = new ArrayList<R>();
 		RequestPipeline requestPipeline = null;
-		for (BMPRequest<T> request : requests) {
+		for (var request : requests) {
 			if (isNull(requestPipeline)) {
 				/*
 				 * If no pipeline built yet, build one on the connection
@@ -347,7 +347,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 			private void parseReceivedResponse(SCPResultMessage msg)
 					throws Exception {
-				R response = msg.parsePayload(request);
+				var response = msg.parsePayload(request);
 				if (nonNull(callback)) {
 					callback.accept(response);
 				}
@@ -388,7 +388,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 					.issueSequenceNumber(requests.keySet());
 
 			// Send the request, keeping track of how many are sent
-			Request req = new Request(request, callback);
+			var req = new Request(request, callback);
 			if (nonNull(requests.put(sequence, req))) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
@@ -417,7 +417,7 @@ class BMPCommandProcess<R extends BMPResponse> {
 					.issueSequenceNumber(requests.keySet());
 
 			// Send the request, keeping track of how many are sent
-			Request req = new Request(request, retries, callback);
+			var req = new Request(request, retries, callback);
 			if (nonNull(requests.put(sequence, req))) {
 				throw new RuntimeException(
 						"duplicate sequence number catastrophe");
@@ -447,8 +447,8 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 		private void retrieve() throws IOException {
 			// Receive the next response
-			SCPResultMessage msg = connection.receiveSCPResponse(timeout);
-			Request req = msg.pickRequest(requests);
+			var msg = connection.receiveSCPResponse(timeout);
+			var req = msg.pickRequest(requests);
 			if (isNull(req)) {
 				// Only process responses which have matching requests
 				log.info("discarding message with unknown sequence number: {}",
@@ -477,9 +477,9 @@ class BMPCommandProcess<R extends BMPResponse> {
 
 		private void handleReceiveTimeout() {
 			// If there is a timeout, all packets remaining are resent
-			BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
+			var toRemove = new BitSet(SEQUENCE_LENGTH);
 			for (int seq : new ArrayList<>(requests.keySet())) {
-				Request req = requests.get(seq);
+				var req = requests.get(seq);
 				if (isNull(req)) {
 					// Shouldn't happen, but if it does we should nuke it.
 					toRemove.set(seq);

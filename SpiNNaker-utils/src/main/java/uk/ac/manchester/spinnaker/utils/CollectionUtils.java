@@ -23,11 +23,13 @@ import static java.util.EnumSet.noneOf;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static java.util.stream.IntStream.range;
 
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -149,5 +151,27 @@ public abstract class CollectionUtils {
 	public static <T> Set<T> parseCommaSeparatedSet(String str,
 			Function<String, T> mapper) {
 		return stream(str.split(",")).map(mapper).collect(toSet());
+	}
+
+	/**
+	 * Utility for making the backing maps for fast {@code enum}s. These are
+	 * expected to be used mainly to invert the trivial mapping from an
+	 * enumeration member to its {@code value} field, though this is not
+	 * assumed by this code.
+	 *
+	 * @param <E>
+	 *            The type of the {@code enum}.
+	 * @param <K>
+	 *            The type of the value to use as the map key.
+	 * @param values
+	 *            The values in the {@code enum}.
+	 * @param valueExtractor
+	 *            How to get the value to use as the map key.
+	 * @return Unmodifiable map from the values to the {@code enum} members.
+	 */
+	public static <E extends Enum<E>, K> Map<K, E> makeEnumBackingMap(
+			E[] values, Function<E, K> valueExtractor) {
+		return stream(values)
+				.collect(toUnmodifiableMap(valueExtractor, v -> v));
 	}
 }

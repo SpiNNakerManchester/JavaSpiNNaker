@@ -202,7 +202,7 @@ public class RouterDiagnostics {
 	 * @return An array of 4 values
 	 */
 	public int[] getUserRegisters() {
-		int[] ur = new int[NUM_USER_CONTROL_REGISTERS];
+		var ur = new int[NUM_USER_CONTROL_REGISTERS];
 		arraycopy(registerValues, USER_0.ordinal(), ur, 0, ur.length);
 		return ur;
 	}

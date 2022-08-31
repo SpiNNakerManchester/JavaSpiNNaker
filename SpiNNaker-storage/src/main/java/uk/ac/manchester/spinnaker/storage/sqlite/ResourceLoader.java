@@ -33,7 +33,7 @@ public abstract class ResourceLoader {
 	}
 
 	private static InputStream open(String name) throws FileNotFoundException {
-		InputStream stream = ResourceLoader.class.getResourceAsStream(name);
+		var stream = ResourceLoader.class.getResourceAsStream(name);
 		if (isNull(stream)) {
 			throw new FileNotFoundException(name);
 		}
@@ -50,7 +50,7 @@ public abstract class ResourceLoader {
 	 *             If things don't work. Shouldn't happen if build is correct.
 	 */
 	public static String loadResource(String name) {
-		try (InputStream stream = open(name)) {
+		try (var stream = open(name)) {
 			return IOUtils.toString(stream, UTF_8);
 		} catch (IOException e) {
 			throw new RuntimeException("failed to read resource", e);

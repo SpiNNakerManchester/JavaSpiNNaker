@@ -83,7 +83,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 			@Override
 			T generateNext() {
 				while (src.hasNext()) {
-					T val = src.next();
+					var val = src.next();
 					if (filterer.test(val)) {
 						return val;
 					}
@@ -99,7 +99,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 * @return an optional with the first item.
 	 */
 	default Optional<T> first() {
-		for (T value : this) {
+		for (var value : this) {
 			return Optional.ofNullable(value);
 		}
 		return Optional.empty();
@@ -137,7 +137,7 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 */
 	default Optional<T> nth(int n) {
 		int i = 0;
-		for (T value : this) {
+		for (var value : this) {
 			if (i++ >= n) {
 				return Optional.ofNullable(value);
 			}
@@ -153,8 +153,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 *         finite!
 	 */
 	default List<T> toList() {
-		List<T> list = new ArrayList<>();
-		for (T val : this) {
+		var list = new ArrayList<T>();
+		for (var val : this) {
 			list.add(val);
 		}
 		return list;
@@ -170,8 +170,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 *         finite!
 	 */
 	default List<T> toList(Supplier<List<T>> supplier) {
-		List<T> list = supplier.get();
-		for (T val : this) {
+		var list = supplier.get();
+		for (var val : this) {
 			list.add(val);
 		}
 		return list;
@@ -185,8 +185,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 *         finite!
 	 */
 	default Set<T> toSet() {
-		Set<T> set = new LinkedHashSet<>();
-		for (T val : this) {
+		var set = new LinkedHashSet<T>();
+		for (var val : this) {
 			set.add(val);
 		}
 		return set;
@@ -202,8 +202,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 *         finite!
 	 */
 	default Set<T> toSet(Supplier<Set<T>> supplier) {
-		Set<T> set = supplier.get();
-		for (T val : this) {
+		var set = supplier.get();
+		for (var val : this) {
 			set.add(val);
 		}
 		return set;
@@ -226,8 +226,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap(Function<T, K> keyMapper,
 			Function<T, V> valueMapper) {
-		Map<K, V> map = new LinkedHashMap<>();
-		for (T val : this) {
+		var map = new LinkedHashMap<K, V>();
+		for (var val : this) {
 			map.put(keyMapper.apply(val), valueMapper.apply(val));
 		}
 		return map;
@@ -252,8 +252,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, V> toMap(Supplier<Map<K, V>> supplier,
 			Function<T, K> keyMapper, Function<T, V> valueMapper) {
-		Map<K, V> map = supplier.get();
-		for (T val : this) {
+		var map = supplier.get();
+		for (var val : this) {
 			map.put(keyMapper.apply(val), valueMapper.apply(val));
 		}
 		return map;
@@ -276,8 +276,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	 */
 	default <K, V> Map<K, List<V>> toCollectingMap(
 			Function<T, K> keyMapper, Function<T, V> valueMapper) {
-		Map<K, List<V>> map = new LinkedHashMap<>();
-		for (T val : this) {
+		var map = new LinkedHashMap<K, List<V>>();
+		for (var val : this) {
 			map.computeIfAbsent(keyMapper.apply(val),
 					k -> new ArrayList<>()).add(valueMapper.apply(val));
 		}
@@ -306,8 +306,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	default <K, V, S extends Collection<V>> Map<K, S> toCollectingMap(
 			Supplier<S> supplier, Function<T, K> keyMapper,
 			Function<T, V> valueMapper) {
-		Map<K, S> map = new LinkedHashMap<>();
-		for (T val : this) {
+		var map = new LinkedHashMap<K, S>();
+		for (var val : this) {
 			map.computeIfAbsent(keyMapper.apply(val), k -> supplier.get())
 					.add(valueMapper.apply(val));
 		}
@@ -338,8 +338,8 @@ public interface MappableIterable<T> extends Iterable<T> {
 	default <K, V, S extends Collection<V>> Map<K, S> toCollectingMap(
 			Supplier<Map<K, S>> mapSupplier, Supplier<S> collectorSupplier,
 			Function<T, K> keyMapper, Function<T, V> valueMapper) {
-		Map<K, S> map = mapSupplier.get();
-		for (T val : this) {
+		var map = mapSupplier.get();
+		for (var val : this) {
 			map.computeIfAbsent(keyMapper.apply(val),
 					k -> collectorSupplier.get()).add(valueMapper.apply(val));
 		}
@@ -378,7 +378,7 @@ abstract class IteratorSupport<T> implements Iterator<T> {
 
 	@Override
 	public T next() {
-		T val = value;
+		var val = value;
 		value = null;
 		if (nonNull(val)) {
 			return val;
@@ -394,7 +394,7 @@ abstract class IteratorWrapper {
 	static <T, U> MappableIterable<U> wrap(MappableIterable<T> mapiter,
 			Function<Iterator<T>, Iterator<U>> mapper) {
 		return () -> {
-			Iterator<T> srcit = mapiter.iterator();
+			var srcit = mapiter.iterator();
 			return mapper.apply(srcit);
 		};
 	}

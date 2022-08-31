@@ -20,7 +20,6 @@ import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 import static java.util.Objects.isNull;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -99,7 +98,7 @@ public final class Version implements Comparable<Version> {
 	 *             patterns.
 	 */
 	public Version(String threePartVersion) {
-		Matcher m = VERSION_RE.matcher(threePartVersion);
+		var m = VERSION_RE.matcher(threePartVersion);
 		if (!m.matches()) {
 			throw new IllegalArgumentException(
 					"bad version string: " + threePartVersion);
@@ -121,7 +120,7 @@ public final class Version implements Comparable<Version> {
 		if (!(other instanceof Version)) {
 			return false;
 		}
-		Version v = (Version) other;
+		var v = (Version) other;
 		return majorVersion == v.majorVersion && minorVersion == v.minorVersion
 				&& revision == v.revision;
 	}

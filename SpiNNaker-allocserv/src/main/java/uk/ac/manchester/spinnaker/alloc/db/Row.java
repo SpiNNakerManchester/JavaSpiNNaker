@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 
 import java.io.IOException;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -253,7 +252,7 @@ public final class Row {
 	 *             If the object is not of the required type.
 	 */
 	public <T> T getSerial(String columnLabel, Class<T> cls) {
-		byte[] bytes = getBytes(columnLabel);
+		var bytes = getBytes(columnLabel);
 		if (isNull(bytes)) {
 			return null;
 		}
@@ -419,7 +418,7 @@ public final class Row {
 	 */
 	public Long getLong(String columnLabel) {
 		return get(() -> {
-			Number value = (Number) rs.getObject(columnLabel);
+			var value = (Number) rs.getObject(columnLabel);
 			if (rs.wasNull()) {
 				return null;
 			}
@@ -441,13 +440,13 @@ public final class Row {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("Row(");
+		var sb = new StringBuilder("Row(");
 		try {
-			ResultSetMetaData md = rs.getMetaData();
-			String sep = "";
+			var md = rs.getMetaData();
+			var sep = "";
 			for (int i = 1; i <= md.getColumnCount(); i++) {
-				String col = md.getColumnName(i);
-				Object val = rs.getObject(i);
+				var col = md.getColumnName(i);
+				var val = rs.getObject(i);
 				sb.append(sep).append(col).append(":").append(val);
 				sep = ", ";
 			}

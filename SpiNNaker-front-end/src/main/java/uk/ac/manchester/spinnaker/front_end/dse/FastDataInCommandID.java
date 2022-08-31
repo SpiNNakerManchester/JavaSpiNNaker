@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.front_end.dse;
 
 import static java.util.Objects.isNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,13 +39,7 @@ public enum FastDataInCommandID {
 	RECEIVE_FINISHED_DATA_IN(2003);
 
 	private static final Map<Integer, FastDataInCommandID> MAP =
-			new HashMap<>();
-
-	static {
-		for (FastDataInCommandID c : values()) {
-			MAP.put(c.value, c);
-		}
-	}
+			makeEnumBackingMap(values(), v -> v.value);
 
 	/** The protocol ID of this constant. */
 	public final int value;
@@ -64,7 +58,7 @@ public enum FastDataInCommandID {
 	 *             if the value isn't one of the ones accepted by this class.
 	 */
 	public static FastDataInCommandID forValue(int value) {
-		FastDataInCommandID id = MAP.get(value);
+		var id = MAP.get(value);
 		if (isNull(id)) {
 			throw new IllegalArgumentException(
 					"unexpected command code: " + value);

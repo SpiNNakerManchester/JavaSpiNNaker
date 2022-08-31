@@ -52,7 +52,7 @@ public class SpinnakerLinkData extends AbstractDataLink {
 	@Override
 	public int hashCode() {
 		int hash = super.hashCode();
-		hash = 53 * hash + this.spinnakerLinkId;
+		hash = 53 * hash + spinnakerLinkId;
 		return hash;
 	}
 
@@ -67,9 +67,9 @@ public class SpinnakerLinkData extends AbstractDataLink {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final SpinnakerLinkData other = (SpinnakerLinkData) obj;
+		var other = (SpinnakerLinkData) obj;
 		if (sameAs(other)) {
-			return this.spinnakerLinkId == other.spinnakerLinkId;
+			return spinnakerLinkId == other.spinnakerLinkId;
 		} else {
 			return false;
 		}

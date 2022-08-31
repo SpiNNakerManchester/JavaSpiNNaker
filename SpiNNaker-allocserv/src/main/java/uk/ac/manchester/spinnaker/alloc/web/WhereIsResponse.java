@@ -23,13 +23,11 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 
 import java.net.URI;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
-import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -74,14 +72,14 @@ public class WhereIsResponse {
 	public final BoardPhysicalCoordinates physicalBoardCoordinates;
 
 	WhereIsResponse(BoardLocation location, UriInfo ui) {
-		UriBuilder minter = ui.getBaseUriBuilder().path("{major}/{minor}");
+		var minter = ui.getBaseUriBuilder().path("{major}/{minor}");
 		machine = location.getMachine();
 		machineRef = minter.build(MACH, machine);
 		chip = location.getChip();
 		boardChip = location.getBoardChip();
 		logicalBoardCoordinates = location.getLogical();
 		physicalBoardCoordinates = location.getPhysical();
-		Job j = location.getJob();
+		var j = location.getJob();
 		if (nonNull(j)) {
 			jobId = j.getId();
 			jobRef = minter.build(JOB, jobId);

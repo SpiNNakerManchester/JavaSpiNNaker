@@ -60,8 +60,7 @@ final class ChipMemoryIO {
 	 */
 	static ChipMemoryIO getInstance(Transceiver transceiver,
 			HasChipLocation chip) {
-		Map<ChipLocation, ChipMemoryIO> map =
-				existing.computeIfAbsent(transceiver, x -> new HashMap<>());
+		var map = existing.computeIfAbsent(transceiver, x -> new HashMap<>());
 		return map.computeIfAbsent(chip.asChipLocation(),
 				k -> new ChipMemoryIO(transceiver, chip, UNBUFFERED_SDRAM_START,
 						UDP_MESSAGE_MAX_SIZE));
@@ -107,7 +106,7 @@ final class ChipMemoryIO {
 	}
 
 	private Transceiver txrx() throws IOException {
-		Transceiver t = transceiver.get();
+		var t = transceiver.get();
 		if (isNull(t)) {
 			throw new EOFException();
 		}
@@ -124,12 +123,11 @@ final class ChipMemoryIO {
 	 */
 	void flushWriteBuffer() throws IOException, ProcessException {
 		if (writeBuffer.position() > 0) {
-			Transceiver t = hold;
+			var t = hold;
 			if (isNull(t)) {
 				t = txrx();
 			}
-			ByteBuffer b = writeBuffer.duplicate();
-			b.flip();
+			var b = writeBuffer.duplicate().flip();
 			t.writeMemory(core, writeAddress, b);
 			writeAddress = writeAddress.add(writeBuffer.position());
 			writeBuffer.position(0);
@@ -171,13 +169,13 @@ final class ChipMemoryIO {
 		}
 
 		flushWriteBuffer();
-		ByteBuffer data = txrx().readMemory(core, currentAddress, numBytes);
+		var data = txrx().readMemory(core, currentAddress, numBytes);
 		currentAddress = currentAddress.add(numBytes);
 		writeAddress = currentAddress;
 		if (data.position() == 0 && data.hasArray()) {
 			return data.array();
 		}
-		byte[] bytes = new byte[data.remaining()];
+		var bytes = new byte[data.remaining()];
 		data.get(bytes);
 		return bytes;
 	}
@@ -195,7 +193,7 @@ final class ChipMemoryIO {
 	void write(byte[] data) throws IOException, ProcessException {
 		int numBytes = data.length;
 
-		Transceiver t = txrx();
+		var t = txrx();
 		if (numBytes >= writeBuffer.limit()) {
 			flushWriteBuffer();
 			t.writeMemory(core, currentAddress, data);
@@ -234,7 +232,7 @@ final class ChipMemoryIO {
 	 */
 	void fill(int value, int size, FillDataType type)
 			throws IOException, ProcessException {
-		Transceiver t = txrx();
+		var t = txrx();
 		flushWriteBuffer();
 		t.fillMemory(core, currentAddress, value, size, type);
 		currentAddress = currentAddress.add(size);

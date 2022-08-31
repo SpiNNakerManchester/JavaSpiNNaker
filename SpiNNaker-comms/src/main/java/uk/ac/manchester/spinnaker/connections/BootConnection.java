@@ -25,7 +25,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.BootReceiver;
 import uk.ac.manchester.spinnaker.connections.model.BootSender;
@@ -97,7 +96,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 
 	@Override
 	public void sendBootMessage(BootMessage bootMessage) throws IOException {
-		ByteBuffer b = allocate(BOOT_MESSAGE_SIZE).order(BIG_ENDIAN);
+		var b = allocate(BOOT_MESSAGE_SIZE).order(BIG_ENDIAN);
 		bootMessage.addToBuffer(b);
 		b.flip();
 		send(b);

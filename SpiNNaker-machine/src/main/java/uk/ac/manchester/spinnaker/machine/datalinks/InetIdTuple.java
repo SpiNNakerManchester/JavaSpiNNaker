@@ -48,8 +48,8 @@ public class InetIdTuple {
 	@Override
 	public int hashCode() {
 		int hash = 5;
-		hash = 29 * hash + Objects.hashCode(this.address);
-		hash = 29 * hash + this.id;
+		hash = 29 * hash + Objects.hashCode(address);
+		hash = 29 * hash + id;
 		return hash;
 	}
 
@@ -64,10 +64,10 @@ public class InetIdTuple {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final InetIdTuple other = (InetIdTuple) obj;
-		if (this.id != other.id) {
+		var other = (InetIdTuple) obj;
+		if (id != other.id) {
 			return false;
 		}
-		return Objects.equals(this.address, other.address);
+		return Objects.equals(address, other.address);
 	}
 }

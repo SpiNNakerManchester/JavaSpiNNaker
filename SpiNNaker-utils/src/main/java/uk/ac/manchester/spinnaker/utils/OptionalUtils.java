@@ -47,7 +47,7 @@ public abstract class OptionalUtils {
 	public static <T> Optional<T> apply(Optional<T> source,
 			Consumer<T>... actions) {
 		source.ifPresent(t -> {
-			for (Consumer<T> action : actions) {
+			for (var action : actions) {
 				action.accept(t);
 			}
 		});

@@ -20,7 +20,6 @@ import static java.lang.Math.min;
 import static java.lang.Thread.interrupted;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Collections.singleton;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.bmp.WriteFlashBuffer.FLASH_CHUNK_SIZE;
@@ -41,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
+import java.util.Set;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
@@ -172,7 +172,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default void powerOn(BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_ON, getBoundBMP(), singleton(board));
+		power(POWER_ON, getBoundBMP(), Set.of(board));
 	}
 
 	/**
@@ -231,7 +231,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default void powerOff(BMPBoard board)
 			throws InterruptedException, IOException, ProcessException {
-		power(POWER_OFF, getBoundBMP(), singleton(board));
+		power(POWER_OFF, getBoundBMP(), Set.of(board));
 	}
 
 	/**
@@ -297,7 +297,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafe
 	default void setLED(Collection<Integer> leds, LEDAction action,
 			BMPBoard board) throws IOException, ProcessException {
-		setLED(leds, action, getBoundBMP(), singleton(board));
+		setLED(leds, action, getBoundBMP(), Set.of(board));
 	}
 
 	/**
@@ -1057,7 +1057,7 @@ public interface BMPTransceiverInterface {
 	@ParallelSafeWithCare
 	default int readBMPMemoryWord(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address) throws IOException, ProcessException {
-		ByteBuffer b = readBMPMemory(bmp, board, address, WORD_SIZE);
+		var b = readBMPMemory(bmp, board, address, WORD_SIZE);
 		return b.getInt(0);
 	}
 
@@ -1146,8 +1146,7 @@ public interface BMPTransceiverInterface {
 	default void writeBMPMemory(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int dataWord)
 			throws IOException, ProcessException {
-		ByteBuffer data = allocate(WORD_SIZE);
-		data.order(LITTLE_ENDIAN);
+		var data = allocate(WORD_SIZE).order(LITTLE_ENDIAN);
 		data.putInt(dataWord);
 		data.flip();
 		writeBMPMemory(bmp, board, baseAddress, data);
@@ -1359,7 +1358,7 @@ public interface BMPTransceiverInterface {
 		interrupted();
 
 		// Prepare the boot data
-		ByteBuffer data = allocate(BMP_BOOT_SECTOR_SIZE);
+		var data = allocate(BMP_BOOT_SECTOR_SIZE);
 		data.order(LITTLE_ENDIAN);
 		data.put(readBMPMemory(bmp, board, BMP_BOOT_SECTOR_ADDR,
 				BMP_BOOT_SECTOR_SIZE));
@@ -1375,7 +1374,7 @@ public interface BMPTransceiverInterface {
 		}
 
 		// Prepare the serial flash update; must read part of the data first
-		byte[] sfData = new byte[SF_BL_ADDR.address + SF_BL_LEN];
+		var sfData = new byte[SF_BL_ADDR.address + SF_BL_LEN];
 		readSerialFlash(bmp, board, NULL, SF_BL_ADDR.address).get(sfData, 0,
 				SF_BL_ADDR.address);
 		data.position(BMP_BOOT_BLACKLIST_OFFSET);
@@ -1717,13 +1716,12 @@ public interface BMPTransceiverInterface {
 			MemoryLocation baseAddress, ByteBuffer data, boolean update)
 			throws ProcessException, IOException {
 		int size = data.remaining();
-		MemoryLocation workingBuffer =
-				eraseBMPFlash(bmp, board, baseAddress, size);
-		MemoryLocation addr = baseAddress;
+		var workingBuffer = eraseBMPFlash(bmp, board, baseAddress, size);
+		var targetAddr = baseAddress;
 		int offset = 0;
 
 		while (true) {
-			ByteBuffer buf = data.asReadOnlyBuffer();
+			var buf = data.asReadOnlyBuffer();
 			buf.position(offset)
 					.limit(min(offset + FLASH_CHUNK_SIZE, buf.capacity()));
 			int length = buf.remaining();
@@ -1732,11 +1730,11 @@ public interface BMPTransceiverInterface {
 			}
 
 			writeBMPMemory(bmp, board, workingBuffer, buf);
-			chunkBMPFlash(bmp, board, addr);
+			chunkBMPFlash(bmp, board, targetAddr);
 			if (length < FLASH_CHUNK_SIZE) {
 				break;
 			}
-			addr = addr.add(FLASH_CHUNK_SIZE);
+			targetAddr = targetAddr.add(FLASH_CHUNK_SIZE);
 			offset += FLASH_CHUNK_SIZE;
 		}
 		if (update) {

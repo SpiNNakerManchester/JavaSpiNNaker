@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.isNull;
 
@@ -31,11 +30,11 @@ public final class JobMachineInfo {
 
 	private int height;
 
-	private List<Connection> connections = emptyList();
+	private List<Connection> connections = List.of();
 
 	private String machineName;
 
-	private List<BoardCoordinates> boards = emptyList();
+	private List<BoardCoordinates> boards = List.of();
 
 	/** Number of boards/Connections to list individually in the toString. */
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
@@ -67,7 +66,7 @@ public final class JobMachineInfo {
 
 	/** @param connections How to talk to the allocated boards. */
 	public void setConnections(List<Connection> connections) {
-		this.connections = isNull(connections) ? emptyList()
+		this.connections = isNull(connections) ? List.of()
 				: unmodifiableList(connections);
 	}
 
@@ -88,12 +87,12 @@ public final class JobMachineInfo {
 
 	/** @param boards Locations of the allocated boards. */
 	public void setBoards(List<BoardCoordinates> boards) {
-		this.boards = isNull(boards) ? emptyList() : unmodifiableList(boards);
+		this.boards = isNull(boards) ? List.of() : unmodifiableList(boards);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append("width: ").append(width);
 		builder.append(" height: ").append(height);
 		builder.append(" machineName: ").append(machineName);

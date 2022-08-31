@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.isNull;
 
@@ -26,16 +25,16 @@ import java.util.List;
  * A response that describes what machines have changed state.
  */
 public final class MachinesChangedNotification implements Notification {
-	private List<String> machinesChanged = emptyList();
+	private List<String> machinesChanged = List.of();
 
 	/** @return What machines have changed. */
 	public List<String> getMachinesChanged() {
 		return machinesChanged;
 	}
 
-	/** @param machinesChanged What jobs have changed. */
+	/** @param machinesChanged What machines have changed. */
 	public void setMachinesChanged(List<String> machinesChanged) {
-		this.machinesChanged = isNull(machinesChanged) ? emptyList()
+		this.machinesChanged = isNull(machinesChanged) ? List.of()
 				: unmodifiableList(machinesChanged);
 	}
 

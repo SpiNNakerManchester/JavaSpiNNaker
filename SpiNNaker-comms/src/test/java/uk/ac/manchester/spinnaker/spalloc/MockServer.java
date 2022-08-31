@@ -101,7 +101,7 @@ class MockServer implements SupportUtils.IServer {
 
 	@Override
 	public JSONObject recv() throws JSONException, IOException {
-		String line = in.readLine();
+		var line = in.readLine();
 		return isNull(line) ? null : new JSONObject(line);
 	}
 
@@ -121,7 +121,7 @@ class MockServer implements SupportUtils.IServer {
 						send.take();
 						break;
 					}
-					JSONObject r = recv();
+					var r = recv();
 					if (isNull(r)) {
 						break;
 					}
@@ -142,7 +142,7 @@ class MockServer implements SupportUtils.IServer {
 			try (MockServer s = new MockServer()) {
 				s.connect();
 				while (true) {
-					JSONObject o = s.recv();
+					var o = s.recv();
 					if (isNull(o)) {
 						break;
 					}

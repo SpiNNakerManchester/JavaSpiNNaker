@@ -98,7 +98,7 @@ interface Accumulator<T> {
 				throw new IllegalStateException(
 						"writing to fully written buffer");
 			}
-			ByteBuffer b = buffer.duplicate();
+			var b = buffer.duplicate();
 			b.position(position);
 			int after = position + data.remaining();
 			b.put(data);

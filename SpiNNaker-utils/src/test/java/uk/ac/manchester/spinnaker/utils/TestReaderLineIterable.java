@@ -18,10 +18,8 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,15 +36,15 @@ public class TestReaderLineIterable {
 
 	@Test
 	public void testSimple() throws IOException {
-		StringReader reader = new StringReader("First\nSecond\nThird");
-		ReaderLineIterable iterable = new ReaderLineIterable(reader);
+		var reader = new StringReader("First\nSecond\nThird");
+		var iterable = new ReaderLineIterable(reader);
 		int count = 0;
-		for (String line : iterable) {
+		for (var line : iterable) {
 			count += 1;
 		}
 		assertEquals(3, count);
 		assertThrows(IllegalStateException.class, () -> {
-			for (String line : iterable) {
+			for (var line : iterable) {
 				continue;
 			}
 		});
@@ -56,16 +54,16 @@ public class TestReaderLineIterable {
 
 	@Test
 	public void testStream() throws IOException {
-		InputStream inputStream =
+		var inputStream =
 				new ByteArrayInputStream("First\nSecond\nThird".getBytes());
-		ReaderLineIterable iterable = new ReaderLineIterable(inputStream);
+		var iterable = new ReaderLineIterable(inputStream);
 		int count = 0;
-		for (String line : iterable) {
+		for (var line : iterable) {
 			count += 1;
 		}
 		assertEquals(3, count);
 		assertThrows(IllegalStateException.class, () -> {
-			for (String line : iterable) {
+			for (var line : iterable) {
 				continue;
 			}
 		});
@@ -75,11 +73,11 @@ public class TestReaderLineIterable {
 
 	@Test
 	public void testEarlyClose() throws IOException {
-		StringReader reader = new StringReader("First\nSecond\nThird");
-		ReaderLineIterable iterable = new ReaderLineIterable(reader);
+		var reader = new StringReader("First\nSecond\nThird");
+		var iterable = new ReaderLineIterable(reader);
 		iterable.close();
 		assertThrows(IllegalStateException.class, () -> {
-			for (String line : iterable) {
+			for (var line : iterable) {
 				continue;
 			}
 		});
@@ -90,9 +88,9 @@ public class TestReaderLineIterable {
 	 */
 	@Test
 	public void testClose() {
-		Reader reader = new CloseError();
-		try (ReaderLineIterable iterable = new ReaderLineIterable(reader)) {
-			for (String line : iterable) {
+		var reader = new CloseError();
+		try (var iterable = new ReaderLineIterable(reader)) {
+			for (var line : iterable) {
 				continue;
 			}
 		} catch (IOException ex) {
@@ -107,8 +105,8 @@ public class TestReaderLineIterable {
 	 */
 	@Test
 	public void testNoClose() {
-		Reader reader = new CloseError();
-		for (String line : new ReaderLineIterable(reader)) {
+		var reader = new CloseError();
+		for (var line : new ReaderLineIterable(reader)) {
 			continue;
 		}
 	}
@@ -118,9 +116,9 @@ public class TestReaderLineIterable {
 	 */
 	@Test
 	public void testDelayedException() {
-		ReaderLineIterable iterable = new ReaderLineIterable(new WeirdReader());
+		var iterable = new ReaderLineIterable(new WeirdReader());
 		int count = 0;
-		for (String line : iterable) {
+		for (var line : iterable) {
 			count += 1;
 		}
 		assertEquals(0, count);
@@ -130,9 +128,9 @@ public class TestReaderLineIterable {
 
 	@Test
 	public void testHasNext() throws IOException {
-		StringReader reader = new StringReader("First\nSecond\nThird");
-		try (ReaderLineIterable iterable = new ReaderLineIterable(reader)) {
-			Iterator<String> iterator = iterable.iterator();
+		var reader = new StringReader("First\nSecond\nThird");
+		try (var iterable = new ReaderLineIterable(reader)) {
+			var iterator = iterable.iterator();
 			assertEquals("First", iterator.next());
 			iterator.hasNext();
 			iterator.hasNext();

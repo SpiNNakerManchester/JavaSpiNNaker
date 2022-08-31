@@ -181,7 +181,7 @@ public class ChipResources {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("[");
+		var builder = new StringBuilder("[");
 		if (cores != NOT_SET) {
 			builder.append("cores: ").append(cores).append(", ");
 		}

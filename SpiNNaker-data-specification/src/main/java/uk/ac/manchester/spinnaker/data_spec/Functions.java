@@ -211,8 +211,8 @@ class Functions implements FunctionAPI {
 	@Operation(RESERVE)
 	public void reserve() throws DataSpecificationException {
 		int region = REGION.getValue(packedCommand);
-		boolean unfilled = UNFILLED.isSet(packedCommand);
-		boolean referenceable = REFERENCEABLE.isSet(packedCommand);
+		var unfilled = UNFILLED.isSet(packedCommand);
+		var referenceable = REFERENCEABLE.isSet(packedCommand);
 		if (!referenceable && cmdSize != LEN2) {
 			throw new DataSpecificationException(format(
 					"Command %s requires one word as argument (total 2 words),"
@@ -241,7 +241,7 @@ class Functions implements FunctionAPI {
 		if (!referenceable) {
 			memRegions.set(new MemoryRegionReal(region, unfilled, size));
 		} else {
-			Reference reference = new Reference(spec.getInt());
+			var reference = new Reference(spec.getInt());
 			memRegions.set(
 					new MemoryRegionReal(region, unfilled, size, reference));
 			referenceableRegions.add(region);
@@ -262,7 +262,7 @@ class Functions implements FunctionAPI {
 		if (!memRegions.isEmpty(region)) {
 			throw new RegionInUseException(region);
 		}
-		Reference reference = new Reference(spec.getInt());
+		var reference = new Reference(spec.getInt());
 		memRegions.set(new MemoryRegionReference(region, reference));
 		regionsToFill.add(region);
 	}
@@ -304,7 +304,7 @@ class Functions implements FunctionAPI {
 	 */
 	@Operation(WRITE_ARRAY)
 	public void writeArray() throws DataSpecificationException {
-		byte[] bytes = new byte[spec.getInt() * INT_SIZE];
+		var bytes = new byte[spec.getInt() * INT_SIZE];
 		spec.get(bytes);
 		writeToMemory(bytes, WRITE_ARRAY);
 	}
@@ -369,12 +369,12 @@ class Functions implements FunctionAPI {
 			address = spec.getInt();
 		}
 
-		MemoryRegion reg = getRegion();
+		var reg = getRegion();
 		if (isNull(reg) || !(reg instanceof MemoryRegionReal)) {
 			throw new NoRegionSelectedException(
 					"no current region has been selected");
 		}
-		MemoryRegionReal r = (MemoryRegionReal) reg;
+		var r = (MemoryRegionReal) reg;
 		if (r.isUnfilled()) {
 			throw new RegionUnfilledException(currentRegion, SET_WR_PTR);
 		}
@@ -412,7 +412,7 @@ class Functions implements FunctionAPI {
 
 	private void writeToMemory(long value, int dataLen, int numRepeats,
 			Commands command) throws DataSpecificationException {
-		ByteBuffer b = allocate(numRepeats * dataLen).order(LITTLE_ENDIAN);
+		var b = allocate(numRepeats * dataLen).order(LITTLE_ENDIAN);
 		for (int i = 0; i < numRepeats; i++) {
 			switch (dataLen) {
 			case 1:
@@ -440,12 +440,12 @@ class Functions implements FunctionAPI {
 		if (isNull(currentRegion)) {
 			throw new NoRegionSelectedException(command);
 		}
-		MemoryRegion reg = getRegion();
+		var reg = getRegion();
 		if (isNull(reg) || !(reg instanceof MemoryRegionReal)) {
 			throw new RegionNotAllocatedException(currentRegion, command);
 		}
 
-		MemoryRegionReal r = (MemoryRegionReal) reg;
+		var r = (MemoryRegionReal) reg;
 		if (r.isUnfilled()) {
 			throw new RegionUnfilledException(currentRegion, command);
 		}

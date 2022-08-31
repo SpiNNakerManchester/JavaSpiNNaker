@@ -113,12 +113,12 @@ public class MachineBean {
 	 * @return A description of the machine and its details.
 	 */
 	public String describe() {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		builder.append(dimensions);
 		builder.append("\nroot: ").append(root);
 		builder.append("\nethernet_resources: ").append(ethernetResources);
 		builder.append("\nstandard_resources: ").append(standardResources);
-		for (ChipBean bean : chips) {
+		for (var bean : chips) {
 			builder.append("\n").append(bean);
 		}
 		return builder.toString();

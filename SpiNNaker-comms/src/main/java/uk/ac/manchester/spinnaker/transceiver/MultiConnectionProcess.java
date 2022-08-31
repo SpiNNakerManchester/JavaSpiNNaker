@@ -105,7 +105,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 
 	/**
 	 * Manufacture a pipeline to handle a request using the configured pipeline
-	 * parameters.
+	 * parameters. Reuses an existing pipeline if it can.
 	 *
 	 * @param request
 	 *            The connection.
@@ -132,7 +132,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
 
 	@Override
 	protected void finish() throws IOException {
-		for (SCPRequestPipeline pipe : requestPipelines.values()) {
+		for (var pipe : requestPipelines.values()) {
 			pipe.finish();
 		}
 	}

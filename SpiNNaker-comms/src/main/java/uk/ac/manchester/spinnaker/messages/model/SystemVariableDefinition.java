@@ -17,9 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Integer.compare;
-import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
-import static java.util.Collections.unmodifiableList;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.ADDRESS;
 import static uk.ac.manchester.spinnaker.messages.model.DataType.BYTE;
@@ -113,7 +111,7 @@ public enum SystemVariableDefinition {
 	/** The last part of the LED definitions. */
 	led_1(INT, 0x34),
 	/** A word of padding. */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	padding_1(INT, 0x38),
 	/** The random seed. */
 	random_seed(INT, 0x3c),
@@ -126,7 +124,7 @@ public enum SystemVariableDefinition {
 	/** The number of watch dog timeouts before an error is raised. */
 	software_watchdog_count(BYTE, 0x43),
 	/** A word of padding. */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	padding_2(INT, 0x44),
 	/** The base address of the system SDRAM heap. */
 	system_ram_heap_address(ADDRESS, 0x48, 1024),
@@ -175,7 +173,7 @@ public enum SystemVariableDefinition {
 	/** The number of SCAMP working cores. */
 	n_scamp_working_cores(BYTE, 0xbd),
 	/** A short of padding. */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	padding_3(SHORT, 0xbe),
 	/** The base address of SDRAM. */
 	sdram_base_address(ADDRESS, 0xc0),
@@ -210,7 +208,7 @@ public enum SystemVariableDefinition {
 	/** A pointer to the board information structure. */
 	board_info(ADDRESS, 0xf8),
 	/** A word of padding. */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	padding_4(INT, 0xfc);
 
 	/** The data type of the variable. */
@@ -320,9 +318,9 @@ public enum SystemVariableDefinition {
 	 * @return The list of all variables.
 	 */
 	public static List<SystemVariableDefinition> variables() {
-		SystemVariableDefinition[] vals = values().clone();
+		var vals = values().clone();
 		sort(vals, (a, b) -> compare(a.offset, b.offset));
-		return unmodifiableList(asList(vals));
+		return List.of(vals);
 	}
 }
 

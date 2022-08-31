@@ -21,7 +21,6 @@ import static java.util.Objects.nonNull;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -1134,7 +1133,7 @@ public class SpallocProperties {
 				@DefaultValue("") String truststorePassword) {
 			this.enable = enable;
 			this.domain = domain;
-			this.setScopes(nonNull(scopes) ? scopes : new HashSet<>());
+			this.setScopes(nonNull(scopes) ? scopes : Set.of());
 			this.id = id;
 			this.secret = secret;
 			this.usernamePrefix = usernamePrefix;
@@ -1164,7 +1163,7 @@ public class SpallocProperties {
 		 * @return The application installation identity.
 		 */
 		public String getId() {
-			return isNull(id) ? null : id.trim();
+			return isNull(id) ? null : id.strip();
 		}
 
 		void setId(String id) {
@@ -1178,7 +1177,7 @@ public class SpallocProperties {
 		 * @return The application installation secret.
 		 */
 		public String getSecret() {
-			return isNull(secret) ? null : secret.trim();
+			return isNull(secret) ? null : secret.strip();
 		}
 
 		void setSecret(String secret) {
@@ -1277,8 +1276,8 @@ public class SpallocProperties {
 		@AssertTrue(
 				message = "id and secret must be given if OpenID is enabled")
 		private boolean isValid() {
-			return !enable || (nonNull(id) && !id.trim().isEmpty()
-					&& nonNull(secret) && !secret.trim().isEmpty());
+			return !enable || (nonNull(id) && !id.isBlank()
+					&& nonNull(secret) && !secret.isBlank());
 		}
 	}
 
@@ -1957,7 +1956,7 @@ public class SpallocProperties {
 				+ "if the v1 service is enabled")
 		private boolean isValidUserIfEnabled() {
 			return !enable
-					|| (nonNull(serviceUser) && !serviceUser.trim().isEmpty());
+					|| (nonNull(serviceUser) && !serviceUser.isBlank());
 		}
 
 		/**
@@ -1980,7 +1979,7 @@ public class SpallocProperties {
 				+ "if the v1 service is enabled")
 		private boolean isValidGroupIfEnabled() {
 			return !enable || (nonNull(serviceGroup)
-					&& !serviceGroup.trim().isEmpty());
+					&& !serviceGroup.isBlank());
 		}
 
 		/**

@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.messages.boot;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.machine.MachineVersion.FIVE;
 
@@ -31,7 +30,7 @@ class TestMessage {
 
 	@Test
 	void testBootMessage() {
-		BootMessage msg = new BootMessage(BootOpCode.HELLO, 0, 0, 0);
+		var msg = new BootMessage(BootOpCode.HELLO, 0, 0, 0);
 
 		assertNull(msg.data);
 		assertEquals(BootOpCode.HELLO, msg.opcode);
@@ -39,10 +38,10 @@ class TestMessage {
 		assertEquals(0, msg.operand2);
 		assertEquals(0, msg.operand3);
 
-		ByteBuffer b = ByteBuffer.allocate(2048);
+		var b = ByteBuffer.allocate(2048);
 		msg.addToBuffer(b);
 		b.flip();
-		BootMessage msg2 = new BootMessage(b);
+		var msg2 = new BootMessage(b);
 
 		assertNull(msg2.data);
 		assertEquals(BootOpCode.HELLO, msg2.opcode);
@@ -55,12 +54,12 @@ class TestMessage {
 
 	@Test
 	void testBootMessages() {
-		BootMessages bm = new BootMessages(FIVE);
-		List<BootMessage> bml = bm.getMessages().collect(Collectors.toList());
+		var bm = new BootMessages(FIVE);
+		var bml = bm.getMessages().collect(Collectors.toList());
 		assertEquals(30, bml.size());
-		ByteBuffer patched = bml.get(1).data;
+		var patched = bml.get(1).data;
 		patched.position(BOOT_STRUCT_REPLACE_OFFSET);
-		byte[] got = new byte[16];
+		var got = new byte[16];
 		patched.get(got);
 		byte[] expected = {
 			0, 0, 0, 0, // 0-3
@@ -71,13 +70,13 @@ class TestMessage {
 		assertArrayEquals(expected, got);
 	}
 
-	private static final List<Integer> EXPECTED_SIZES = asList(18, 1042, 690);
+	private static final List<Integer> EXPECTED_SIZES = List.of(18, 1042, 690);
 
 	@Test
 	void testBootMessagesSerialize() {
-		BootMessages bm = new BootMessages(FIVE);
-		for (BootMessage b : bm.getMessages().collect(Collectors.toList())) {
-			ByteBuffer buf = ByteBuffer.allocate(1500);
+		var bm = new BootMessages(FIVE);
+		for (var b : bm.getMessages().collect(Collectors.toList())) {
+			var buf = ByteBuffer.allocate(1500);
 			b.addToBuffer(buf);
 			buf.flip();
 			assertTrue(EXPECTED_SIZES.contains(buf.remaining()),

@@ -39,7 +39,7 @@ public class TestOneShotEvent {
 		@Override
 		public void run() {
 			try {
-				OneShotEvent event = new OneShotEvent();
+				var event = new OneShotEvent();
 				event.await();
 				event.fire();
 			} catch (InterruptedException ex) {
@@ -52,7 +52,7 @@ public class TestOneShotEvent {
 		@Override
 		public void run() {
 			try {
-				OneShotEvent event = new OneShotEvent();
+				var event = new OneShotEvent();
 				event.fire();
 				event.await();
 			} catch (InterruptedException ex) {
@@ -64,7 +64,7 @@ public class TestOneShotEvent {
 	private Runnable firer = new Runnable() {
 		@Override
 		public void run() {
-			OneShotEvent event = new OneShotEvent();
+			var event = new OneShotEvent();
 			event.fire();
 		}
 	};
@@ -73,7 +73,7 @@ public class TestOneShotEvent {
 		@Override
 		public void run() {
 			try {
-				OneShotEvent event = new OneShotEvent();
+				var event = new OneShotEvent();
 				event.fire();
 				event.fire();
 				event.await();
@@ -101,15 +101,15 @@ public class TestOneShotEvent {
 
 	@Test
 	public void testMultiple() {
-		Thread thanger = new Thread(hanger);
+		var thanger = new Thread(hanger);
 		thanger.start();
-		Thread tinOrder = new Thread(inOrder);
+		var tinOrder = new Thread(inOrder);
 		tinOrder.start();
-		Thread tfirer = new Thread(firer);
+		var tfirer = new Thread(firer);
 		tfirer.start();
-		Thread tmultiple = new Thread(multiple);
+		var tmultiple = new Thread(multiple);
 		tmultiple.start();
-		Thread twaiter = new Thread(waiter);
+		var twaiter = new Thread(waiter);
 		twaiter.start();
 
 		sleep(500);

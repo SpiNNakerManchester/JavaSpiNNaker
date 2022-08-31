@@ -71,8 +71,7 @@ public class ProcessException extends SpinnmanException {
 	static ProcessException makeInstance(HasCoreLocation core,
 			Throwable cause) {
 		if (requireNonNull(cause) instanceof UnexpectedResponseCodeException) {
-			UnexpectedResponseCodeException urc =
-					(UnexpectedResponseCodeException) cause;
+			var urc = (UnexpectedResponseCodeException) cause;
 			if (isNull(urc.response)) {
 				return new ProcessException(core, cause, null);
 			}

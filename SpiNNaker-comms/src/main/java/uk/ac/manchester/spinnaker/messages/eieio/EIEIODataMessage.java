@@ -91,7 +91,7 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	public EIEIODataMessage(EIEIOType eieioType, byte count, ByteBuffer data,
 			Short keyPrefix, Integer payloadPrefix, Integer timestamp,
 			EIEIOPrefix prefixType) {
-		Integer payloadBase = payloadPrefix;
+		var payloadBase = payloadPrefix;
 		if (nonNull(timestamp)) {
 			payloadBase = timestamp;
 		}
@@ -194,14 +194,14 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		header.addToBuffer(buffer);
-		ByteBuffer b = elements.duplicate();
+		var b = elements.duplicate();
 		b.flip();
 		buffer.put(b);
 	}
 
 	@Override
 	public Iterator<AbstractDataElement> iterator() {
-		final ByteBuffer d =
+		final var d =
 				isNull(data) ? null : data.duplicate().order(LITTLE_ENDIAN);
 		return new Iterator<AbstractDataElement>() {
 			private int elementsRead = 0;

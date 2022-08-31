@@ -28,19 +28,19 @@ public class TestChipLocation {
 
 	@Test
 	public void testChipLocationBasicUse() {
-		ChipLocation l1 = new ChipLocation(0, 0);
-		ChipLocation l2 = new ChipLocation(0, 0);
+		var l1 = new ChipLocation(0, 0);
+		var l2 = new ChipLocation(0, 0);
 		assertEquals(0, l2.getX());
 		assertEquals(0, l2.getY());
 		assertEquals(l1, l2);
 		assertEquals(l1.hashCode(), l2.hashCode());
-		ChipLocation l3 = new ChipLocation(0, 1);
+		var l3 = new ChipLocation(0, 1);
 		assertEquals(0, l3.getX());
 		assertEquals(1, l3.getY());
 		assertNotEquals(l1, l3);
 		assertNotEquals(l1.hashCode(), l3.hashCode());
 		assertNotEquals(l1, "hello");
-		ChipLocation l4 = new ChipLocation(1, 0);
+		var l4 = new ChipLocation(1, 0);
 		assertEquals(1, l4.getX());
 		assertEquals(0, l4.getY());
 		assertNotEquals(l1, l4);
@@ -53,10 +53,10 @@ public class TestChipLocation {
 
 	@Test
 	public void testEquals() {
-		ChipLocation chip00 = new ChipLocation(0, 0);
-		ChipLocation chip10 = new ChipLocation(1, 0);
-		ChipLocation chip01 = new ChipLocation(0, 1);
-		ChipLocation chip11 = new ChipLocation(1, 1);
+		var chip00 = new ChipLocation(0, 0);
+		var chip10 = new ChipLocation(1, 0);
+		var chip01 = new ChipLocation(0, 1);
+		var chip11 = new ChipLocation(1, 1);
 		assertThat("11 > 00", chip11, greaterThan(chip00));
 		assertThat("11 > 01", chip11, greaterThan(chip01));
 		assertThat("11 > 10", chip11, greaterThan(chip10));

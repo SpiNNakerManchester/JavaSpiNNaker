@@ -69,14 +69,14 @@ public class IOBuffer implements HasCoreLocation {
 	 */
 	public IOBuffer(HasCoreLocation core, Iterable<ByteBuffer> contents) {
 		this.core = core;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		for (ByteBuffer b : contents) {
+		var baos = new ByteArrayOutputStream();
+		for (var b : contents) {
 			if (b.hasArray()) {
 				baos.write(b.array(), b.arrayOffset() + b.position(),
 						b.remaining());
 			} else {
 				// Must copy
-				byte[] temp = new byte[b.remaining()];
+				var temp = new byte[b.remaining()];
 				b.get(temp);
 				baos.write(temp, 0, temp.length);
 			}

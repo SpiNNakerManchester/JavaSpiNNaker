@@ -96,7 +96,7 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 		if (!(other instanceof MemoryLocation)) {
 			return false;
 		}
-		MemoryLocation o = (MemoryLocation) other;
+		var o = (MemoryLocation) other;
 		return o.address == address;
 	}
 

@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.data_spec;
 
-import java.util.HashMap;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
 import java.util.Map;
 
 /**
@@ -144,17 +145,11 @@ public enum Commands {
 	 */
 	public final int value;
 
-	private static final Map<Integer, Commands> MAP;
+	private static final Map<Integer, Commands> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	Commands(int value) {
 		this.value = value;
-	}
-
-	static {
-		MAP = new HashMap<>();
-		for (Commands cmd : values()) {
-			MAP.put(cmd.value, cmd);
-		}
 	}
 
 	/**

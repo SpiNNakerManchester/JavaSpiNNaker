@@ -57,7 +57,7 @@ public class ReportMailSender {
 	}
 
 	private static boolean haveProp(String propValue) {
-		return nonNull(propValue) && !propValue.isEmpty();
+		return nonNull(propValue) && !propValue.isBlank();
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class ReportMailSender {
 	}
 
 	private void sendMessage(String body) {
-		SimpleMailMessage message = new SimpleMailMessage();
+		var message = new SimpleMailMessage();
 		if (haveProp(props.getFrom())) {
 			message.setFrom(props.getFrom());
 		}

@@ -41,9 +41,9 @@ public class TestAbstractDataLink {
 
 	@Test
 	public void testEquals() throws UnknownHostException {
-		AbstractDataLink link1 = new AbstractDataLink(location00,
+		var link1 = new AbstractDataLink(location00,
 				Direction.NORTHEAST, createInetAddress());
-		AbstractDataLink link2 = new AbstractDataLink(location00,
+		var link2 = new AbstractDataLink(location00,
 				Direction.NORTHEAST, createInetAddress());
 		assertEquals(link1, link2);
 		assertEquals(link1, link1);

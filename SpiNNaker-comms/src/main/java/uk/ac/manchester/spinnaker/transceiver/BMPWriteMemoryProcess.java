@@ -35,6 +35,7 @@ import uk.ac.manchester.spinnaker.messages.Constants;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPRequest.BMPResponse;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPWriteMemory;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
@@ -79,7 +80,7 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
-				ByteBuffer buffer = data.asReadOnlyBuffer();
+				var buffer = data.asReadOnlyBuffer();
 				buffer.position(offset);
 				buffer.limit(offset + chunkSize);
 				offset += chunkSize;
@@ -107,14 +108,14 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	void writeMemory(BMPBoard board, MemoryLocation baseAddress,
 			InputStream data, int bytesToWrite)
 			throws IOException, ProcessException {
-		ValueHolder<IOException> exn = new ValueHolder<IOException>();
-		ByteBuffer workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
+		var exn = new ValueHolder<IOException>();
+		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 
 		execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
 				try {
-					ByteBuffer buffer = workingBuffer.duplicate();
+					var buffer = workingBuffer.duplicate();
 					// After this, chunkSize is REAL chunk size or -1
 					chunkSize = data.read(buffer.array(), 0, chunkSize);
 					if (chunkSize < 1) {
@@ -177,6 +178,7 @@ abstract class BMPWriteIterator
 	 * @return The wrapped chunk, or {@link Optional#empty()} if no chunk
 	 *         available.
 	 */
+	@UsedInJavadocOnly(Constants.class)
 	abstract Optional<ByteBuffer> prepareSendBuffer(int plannedSize);
 
 	@Override
@@ -184,8 +186,7 @@ abstract class BMPWriteIterator
 		if (sizeRemaining < 1) {
 			return false;
 		}
-		Optional<ByteBuffer> bb = prepareSendBuffer(
-				min(sizeRemaining, Constants.UDP_MESSAGE_MAX_SIZE));
+		var bb = prepareSendBuffer(min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
 		sendBuffer = bb.orElse(null);
 		return bb.isPresent();
 	}

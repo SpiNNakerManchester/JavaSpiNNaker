@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Integer.parseInt;
 import static java.nio.ByteBuffer.allocate;
+import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableMap;
@@ -31,6 +32,7 @@ import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.IntStream.range;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_LINKS_PER_ROUTER;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_NUM_CORES;
@@ -42,19 +44,15 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.OR;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.toEnumSet;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -127,7 +125,7 @@ public final class Blacklist implements Serializable {
 	 *            The raw data to parse.
 	 */
 	public Blacklist(ByteBuffer buffer) {
-		ByteBuffer buf = buffer.duplicate().order(LITTLE_ENDIAN);
+		var buf = buffer.duplicate().order(LITTLE_ENDIAN);
 		rawData = buf.duplicate();
 		decodeBlacklist(buf);
 	}
@@ -147,8 +145,8 @@ public final class Blacklist implements Serializable {
 	 *            caller should ensure.
 	 */
 	public Blacklist(Set<ChipLocation> deadChips,
-			Map<ChipLocation, Set<Integer>> deadCores,
-			Map<ChipLocation, Set<Direction>> deadLinks) {
+			Map<ChipLocation, ? extends Set<Integer>> deadCores,
+			Map<ChipLocation, ? extends Set<Direction>> deadLinks) {
 		chips = deadChips;
 		// Sort the elements in each sub-collection
 		cores = deadCores.entrySet().stream().collect(
@@ -159,13 +157,13 @@ public final class Blacklist implements Serializable {
 	}
 
 	private ByteBuffer encodeBlacklist() {
-		ByteBuffer buf = allocate((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE)
+		var buf = allocate((SPINN5_CHIPS_PER_BOARD + 1) * WORD_SIZE)
 				.order(LITTLE_ENDIAN);
 		buf.putInt(0); // Size; filled in later
 		int count = 0;
 		for (int x = 0; x < SIZE_X_OF_ONE_BOARD; x++) {
 			for (int y = 0; y < SIZE_Y_OF_ONE_BOARD; y++) {
-				ChipLocation chip = new ChipLocation(x, y);
+				var chip = new ChipLocation(x, y);
 				int loc = (x << COORD_BITS) | y;
 				int value = 0;
 				if (chips.contains(chip)) {
@@ -194,9 +192,9 @@ public final class Blacklist implements Serializable {
 	}
 
 	private void decodeBlacklist(ByteBuffer buf) {
-		IntBuffer entries = buf.asIntBuffer();
+		var entries = buf.asIntBuffer();
 		int len = entries.get();
-		Set<ChipLocation> done = new HashSet<>();
+		var done = new HashSet<ChipLocation>();
 
 		for (int i = 0; i < len; i++) {
 			int entry = entries.get();
@@ -204,7 +202,7 @@ public final class Blacklist implements Serializable {
 			// get board coordinates
 			int bx = (entry >> (PAYLOAD_BITS + COORD_BITS)) & COORD_MASK;
 			int by = (entry >> PAYLOAD_BITS) & COORD_MASK;
-			ChipLocation b = new ChipLocation(bx, by);
+			var b = new ChipLocation(bx, by);
 
 			// check for repeated coordinates
 			if (done.contains(b)) {
@@ -247,7 +245,7 @@ public final class Blacklist implements Serializable {
 	 *             If the string is badly formatted.
 	 */
 	public Blacklist(String blacklistText) {
-		stream(blacklistText.split("\\R+")).map(String::trim)
+		blacklistText.lines().map(String::strip)
 				// Remove blank and comment lines
 				.filter(Blacklist::isRelevantLine)
 				// Parse the remaining lines
@@ -266,9 +264,8 @@ public final class Blacklist implements Serializable {
 	 *             If the string is badly formatted.
 	 */
 	public Blacklist(File blacklistFile) throws IOException {
-		try (FileReader r = new FileReader(requireNonNull(blacklistFile));
-				BufferedReader br = new BufferedReader(r)) {
-			br.lines().map(String::trim)
+		try (var r = buffer(new FileReader(requireNonNull(blacklistFile)))) {
+			r.lines().map(String::strip)
 					// Remove blank and comment lines
 					.filter(Blacklist::isRelevantLine)
 					// Parse the remaining lines
@@ -278,7 +275,7 @@ public final class Blacklist implements Serializable {
 	}
 
 	private static boolean isRelevantLine(String s) {
-		return !s.isEmpty() && !s.startsWith("#");
+		return !s.isBlank() && !s.startsWith("#");
 	}
 
 	// REs from Perl code to read blacklist files
@@ -295,8 +292,7 @@ public final class Blacklist implements Serializable {
 	private static final Pattern DEAD_PATTERN = compile("dead\\s*");
 
 	private static String deleteMatched(Matcher m) {
-		// TODO Java 8 uses StringBuffer for this; WHYWHYWHY?!
-		StringBuffer sb = new StringBuffer();
+		var sb = new StringBuilder();
 		m.appendReplacement(sb, "").appendTail(sb);
 		return sb.toString();
 	}
@@ -322,17 +318,17 @@ public final class Blacklist implements Serializable {
 	 *             On a bad direction.
 	 */
 	private void parseLine(String line) {
-		Matcher m = CHIP_PATTERN.matcher(line);
+		var m = CHIP_PATTERN.matcher(line);
 		if (!m.find()) {
 			throw new IllegalArgumentException("bad line: " + line);
 		}
 		int x = parseInt(m.group("x"));
 		int y = parseInt(m.group("y"));
-		ChipLocation chip = new ChipLocation(x, y);
+		var chip = new ChipLocation(x, y);
 		if (!GEOM.singleBoard().contains(chip)) {
 			throw new IllegalArgumentException("bad chip coords: " + line);
 		}
-		String rest = deleteMatched(m);
+		var rest = deleteMatched(m);
 
 		ChipLocation dead = null;
 		Set<Integer> deadCores = null;
@@ -369,7 +365,7 @@ public final class Blacklist implements Serializable {
 			}
 
 			// All done, or error
-			if (!rest.isEmpty()) {
+			if (!rest.isBlank()) {
 				// Bad line
 				throw new IllegalArgumentException("bad line: " + line);
 			}
@@ -405,49 +401,38 @@ public final class Blacklist implements Serializable {
 	 *             If something goes wrong. Not expected!
 	 */
 	public String render() {
-		try (StringWriter sw = new StringWriter();
-				BufferedWriter bw = new BufferedWriter(sw);
-				PrintWriter pw = new PrintWriter(bw)) {
-			render(pw);
-			if (pw.checkError()) {
-				// Annoying that HOW things failed gets swallowed...
-				throw new RuntimeException("failed to write blacklist");
-			}
-			return sw.toString();
-		} catch (IOException e) {
-			throw new RuntimeException(
-					"unexpected exception while writing blacklist to string",
-					e);
+		try (var f = new Formatter()) {
+			render(f);
+			return f.toString();
 		}
 	}
 
-	private void render(PrintWriter out) {
-		// Don't use println(); not exactly portable on Windows
-		for (ChipLocation chip : GEOM.singleBoard()) {
+	private void render(Formatter out) {
+		for (var chip : GEOM.singleBoard()) {
 			if (!isChipMentioned(chip)) {
 				continue;
 			}
 			out.format("chip %d %d", chip.getX(), chip.getY());
 			if (chips.contains(chip)) {
-				out.print(" dead\n");
+				out.format(" dead\n");
 			} else {
 				if (cores.containsKey(chip)) {
-					out.print(" core ");
-					String sep = "";
-					for (Integer id : cores.get(chip)) {
-						out.append(sep).append(id.toString());
+					out.format(" core ");
+					var sep = "";
+					for (var id : cores.get(chip)) {
+						out.format(sep).format(id.toString());
 						sep = ",";
 					}
 				}
 				if (links.containsKey(chip)) {
-					out.print(" link ");
-					String sep = "";
-					for (Direction d : links.get(chip)) {
-						out.append(sep).append(Integer.toString(d.id));
+					out.format(" link ");
+					var sep = "";
+					for (var d : links.get(chip)) {
+						out.format(sep).format(Integer.toString(d.id));
 						sep = ",";
 					}
 				}
-				out.print("\n");
+				out.format("\n");
 			}
 		}
 	}
@@ -520,7 +505,7 @@ public final class Blacklist implements Serializable {
 
 	@Override
 	public String toString() {
-		StringBuilder s = new StringBuilder("Blacklist(");
+		var s = new StringBuilder("Blacklist(");
 		s.append(chips).append(", ").append(cores).append(", ").append(links);
 		return s.append(")").toString();
 	}
@@ -563,8 +548,8 @@ public final class Blacklist implements Serializable {
 			throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		int len = in.readInt();
-		byte[] buf = new byte[len];
+		var buf = new byte[len];
 		in.read(buf);
-		rawData = ByteBuffer.wrap(buf);
+		rawData = wrap(buf).order(LITTLE_ENDIAN);
 	}
 }

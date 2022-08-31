@@ -44,7 +44,7 @@ public abstract class InetFactory {
 	 */
 	public static Inet4Address getByAddress(byte[] addr)
 			throws UnknownHostException, Inet6NotSupportedException {
-		InetAddress general = InetAddress.getByAddress(addr);
+		var general = InetAddress.getByAddress(addr);
 		try {
 			return (Inet4Address) general;
 		} catch (ClassCastException ex) {
@@ -71,7 +71,7 @@ public abstract class InetFactory {
 	 */
 	public static Inet4Address getByName(String host)
 			throws UnknownHostException, Inet6NotSupportedException {
-		InetAddress general = InetAddress.getByName(host);
+		var general = InetAddress.getByName(host);
 		try {
 			return (Inet4Address) general;
 		} catch (ClassCastException ex) {

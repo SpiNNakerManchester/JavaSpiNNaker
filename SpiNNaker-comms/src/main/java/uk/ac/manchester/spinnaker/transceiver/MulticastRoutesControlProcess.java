@@ -113,16 +113,15 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 
 	private static ByteBuffer serializeRoutingData(
 			Collection<MulticastRoutingEntry> routes) {
-		ByteBuffer buffer = allocateBuffer(routes.size());
+		var buffer = allocateBuffer(routes.size());
 		short index = 0;
-		for (MulticastRoutingEntry route : routes) {
+		for (var route : routes) {
 			writeEntryToBuffer(buffer, index++, route);
 		}
 
 		// Add an entry to mark the end
 		writeEndToBuffer(buffer);
-		buffer.flip();
-		return buffer;
+		return buffer.flip();
 	}
 
 	/**
@@ -152,7 +151,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 					"too many router entries: " + routes.size());
 		}
 		// Create the routing data
-		ByteBuffer routingData = serializeRoutingData(routes);
+		var routingData = serializeRoutingData(routes);
 
 		// Upload the data
 		writeMemory(chip.getScampCore(), ROUTING_TABLE_DATA, routingData);
@@ -185,7 +184,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 	List<MulticastRoutingEntry> getRoutes(HasChipLocation chip,
 			MemoryLocation baseAddress, AppID appID)
 			throws IOException, ProcessException {
-		Map<Integer, MulticastRoutingEntry> routes = new TreeMap<>();
+		var routes = new TreeMap<Integer, MulticastRoutingEntry>();
 		for (int i = 0; i < NUM_READS; i++) {
 			int offset = i * ENTRIES_PER_READ;
 			sendRequest(
@@ -204,7 +203,7 @@ class MulticastRoutesControlProcess extends WriteMemoryProcess {
 			Map<Integer, MulticastRoutingEntry> routes, AppID appID) {
 		for (int r = 0; r < ENTRIES_PER_READ; r++) {
 			data.getShort(); // Ignore
-			AppID appid = new AppID(toUnsignedInt(data.get()));
+			var appid = new AppID(toUnsignedInt(data.get()));
 			data.get(); // Ignore
 			int route = data.getInt();
 			int key = data.getInt();

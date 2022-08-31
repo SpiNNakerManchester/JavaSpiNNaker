@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.model;
 
-import java.util.HashMap;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
 import java.util.Map;
 
 /**
@@ -51,16 +52,10 @@ public enum IPTagTimeOutWaitTime {
 	public final int value;
 
 	private static final Map<Integer, IPTagTimeOutWaitTime> MAP =
-			new HashMap<>();
+			makeEnumBackingMap(values(), v -> v.value);
 
 	IPTagTimeOutWaitTime(int value) {
 		this.value = value;
-	}
-
-	static {
-		for (IPTagTimeOutWaitTime tto : values()) {
-			MAP.put(tto.value, tto);
-		}
 	}
 
 	/**

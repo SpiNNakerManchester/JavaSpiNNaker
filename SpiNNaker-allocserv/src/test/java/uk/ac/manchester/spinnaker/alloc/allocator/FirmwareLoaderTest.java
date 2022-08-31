@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +49,7 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
 @TestPropertySource(properties = {
 	"spalloc.database-path=" + FirmwareLoaderTest.DB,
 	"spalloc.historical-data.path=" + FirmwareLoaderTest.HIST_DB,
-	"spalloc.transceiver.fpga-reload=true"
+	"spalloc.transceiver.fpga-reload=true" // Enable reloading!
 })
 class FirmwareLoaderTest extends TestSupport {
 	/** The name of the database file. */
@@ -105,11 +104,21 @@ class FirmwareLoaderTest extends TestSupport {
 
 	private void assertState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		List<?> expected =
-				asList(state, "req", requestCount, "power", powerCount);
-		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
+		var expected = asList(state, "req", requestCount, "power", powerCount);
+		var got = asList(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assertEquals(expected, got);
+	}
+
+	private void waitForBMPCompletion(int job) throws Exception {
+		for (int i = 0; i < 10; i++) {
+			processBMPRequests();
+			if (getJobState(job) == READY) {
+				break;
+			}
+			snooze1s();
+			snooze1s();
+		}
 	}
 
 	private void resetDBState(Connection c, int job) throws Exception {
@@ -143,14 +152,14 @@ class FirmwareLoaderTest extends TestSupport {
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void bootSimply() throws Exception {
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			this.conn = c;
 			int job = c.transaction(() -> makeQueuedJob(1));
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> getAllocTester().allocate());
-				processBMPRequests();
+				waitForBMPCompletion(job);
 
 				assertState(job, READY, 0, 0);
 			} finally {
@@ -162,16 +171,21 @@ class FirmwareLoaderTest extends TestSupport {
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void bootWithReboot() throws Exception {
-		// One failure triggers an extra power cycle of the board
-		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
-		try (Connection c = db.getConnection()) {
+		/*
+		 * One failure triggers an extra power cycle of the board.
+		 *
+		 * FPGA_ALL is a bogus value for the result of the particular
+		 * readFPGARegister() call we care about.
+		 */
+		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL);
+		try (var c = db.getConnection()) {
 			this.conn = c;
 			int job = c.transaction(() -> makeQueuedJob(1));
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> getAllocTester().allocate());
-				processBMPRequests();
+				waitForBMPCompletion(job);
 
 				assertState(job, READY, 0, 0);
 			} finally {
@@ -183,25 +197,20 @@ class FirmwareLoaderTest extends TestSupport {
 	@Test
 	@Timeout(TEST_TIMEOUT + TEST_TIMEOUT)
 	public void bootWithFirmwareReload() throws Exception {
-		// Two failures trigger a the reloading of the firmware
-		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
-		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL.value);
-		try (Connection c = db.getConnection()) {
+		/*
+		 * Two failures trigger a the reloading of the firmware. This is slow
+		 * (even slower in reality).
+		 */
+		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL);
+		MockTransceiver.fpgaResults.add(FPGA.FPGA_ALL);
+		try (var c = db.getConnection()) {
 			this.conn = c;
 			int job = c.transaction(() -> makeQueuedJob(1));
 			log.info("job id = {}", job);
 			try {
 				makeAllocBySizeRequest(job, 1);
 				c.transaction(() -> getAllocTester().allocate());
-				// Post-reset delay is a long delay! 10 will hit timeout...
-				for (int i = 0; i < 10; i++) {
-					processBMPRequests();
-					if (getJobState(job) == READY) {
-						break;
-					}
-					snooze1s();
-					snooze1s();
-				}
+				waitForBMPCompletion(job);
 
 				assertState(job, READY, 0, 0);
 			} finally {

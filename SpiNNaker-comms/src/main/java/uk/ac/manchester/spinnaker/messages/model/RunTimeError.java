@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.util.Objects.requireNonNull;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -71,13 +71,8 @@ public enum RunTimeError {
 	/** The SCAMP RTE code. */
 	public final int value;
 
-	private static final Map<Integer, RunTimeError> MAP = new HashMap<>();
-
-	static {
-		for (RunTimeError v : values()) {
-			MAP.put(v.value, v);
-		}
-	}
+	private static final Map<Integer, RunTimeError> MAP =
+			makeEnumBackingMap(values(), v -> v.value);
 
 	RunTimeError(int value) {
 		this.value = value;

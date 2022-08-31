@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.machine;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
-import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
@@ -33,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -92,9 +92,9 @@ public final class SpiNNakerTriadGeometry {
 		this.triadWidth = triadWidth;
 		this.roots = roots;
 
-		ArrayList<Location> calulationEthernets = new ArrayList<>();
+		var calulationEthernets = new ArrayList<Location>();
 
-		for (ChipLocation root : roots) {
+		for (var root : roots) {
 			calulationEthernets.add(new Location(root.getX(), root.getY()));
 			// Add fictional roots that are less than a full triad away
 			if (root.getX() > 0) {
@@ -114,9 +114,8 @@ public final class SpiNNakerTriadGeometry {
 
 		for (int x = 0; x < triadHeight; x++) {
 			for (int y = 0; y < triadWidth; y++) {
-				Location bestCalc =
-						locateNearestRoot(x, y, calulationEthernets);
-				ChipLocation key = new ChipLocation(x, y);
+				var bestCalc = locateNearestRoot(x, y, calulationEthernets);
+				var key = new ChipLocation(x, y);
 				localChipCoordinates.put(key,
 						new ChipLocation((x - bestCalc.x), (y - bestCalc.y)));
 				if (bestCalc.x == 0 && bestCalc.y == 0) {
@@ -177,7 +176,7 @@ public final class SpiNNakerTriadGeometry {
 		 */
 		Location bestCalc = null;
 		float bestDistance = Float.MAX_VALUE;
-		for (Location ethernet : roots) {
+		for (var ethernet : roots) {
 			float calc = hexagonalMetricDistance(x, y,
 					ethernet.x + xCentre, ethernet.y + yCentre);
 			if (calc < bestDistance) {
@@ -205,9 +204,9 @@ public final class SpiNNakerTriadGeometry {
 	 */
 	public ChipLocation getRootChip(HasChipLocation chip, int width,
 			int height) {
-		ChipLocation adjusted = new ChipLocation(chip.getX() % triadHeight,
+		var adjusted = new ChipLocation(chip.getX() % triadHeight,
 				chip.getY() % triadWidth);
-		ChipLocation localChip = localChipCoordinates.get(adjusted);
+		var localChip = localChipCoordinates.get(adjusted);
 
 		return new ChipLocation(
 				(chip.getX() - localChip.getX() + height) % height,
@@ -229,7 +228,7 @@ public final class SpiNNakerTriadGeometry {
 
 		int x = chip.getX() % triadWidth;
 		int y = chip.getY() % triadHeight;
-		ChipLocation adjusted = new ChipLocation(x, y);
+		var adjusted = new ChipLocation(x, y);
 		return localChipCoordinates.get(adjusted);
 	}
 
@@ -249,7 +248,7 @@ public final class SpiNNakerTriadGeometry {
 	 */
 	public Set<ChipLocation> getPotentialRootChips(
 			MachineDimensions dimensions) {
-		Set<ChipLocation> results = new LinkedHashSet<>();
+		var results = new LinkedHashSet<ChipLocation>();
 		int maxWidth;
 		int maxHeight;
 		if (dimensions.width % triadWidth == 0
@@ -264,7 +263,7 @@ public final class SpiNNakerTriadGeometry {
 				return results;
 			}
 		}
-		for (ChipLocation chip : roots) {
+		for (var chip : roots) {
 			for (int x = chip.getX(); x < maxWidth; x += triadWidth) {
 				for (int y = chip.getY(); y < maxHeight; y += triadHeight) {
 					results.add(new ChipLocation(x, y));
@@ -313,7 +312,8 @@ public final class SpiNNakerTriadGeometry {
 	 */
 	public static SpiNNakerTriadGeometry getSpinn5Geometry() {
 		if (isNull(spinn5TriadGeometry)) {
-			Collection<ChipLocation> roots = asList(new ChipLocation(0, 0),
+			var roots = List.of(
+					new ChipLocation(0, 0),
 					new ChipLocation(HALF_SIZE, SIZE_Y_OF_ONE_BOARD),
 					new ChipLocation(SIZE_X_OF_ONE_BOARD, HALF_SIZE));
 

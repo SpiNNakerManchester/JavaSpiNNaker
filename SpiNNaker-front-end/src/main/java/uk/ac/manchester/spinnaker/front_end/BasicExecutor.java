@@ -56,7 +56,7 @@ public class BasicExecutor implements AutoCloseable {
 	 * @return The future holding the results of the execution.
 	 */
 	public Tasks submitTasks(Stream<SimpleCallable> tasks) {
-		Tasks collector = new Tasks();
+		var collector = new Tasks();
 		tasks.forEach(t -> collector
 				.add(executor.submit(() -> collectExceptions(t))));
 		return collector;
@@ -76,7 +76,7 @@ public class BasicExecutor implements AutoCloseable {
 	 */
 	public <T> Tasks submitTasks(Stream<T> items,
 			Function<T, SimpleCallable> taskMapper) {
-		Tasks collector = new Tasks();
+		var collector = new Tasks();
 		items.map(taskMapper).forEach(t -> collector
 				.add(executor.submit(() -> collectExceptions(t))));
 		return collector;
@@ -95,7 +95,7 @@ public class BasicExecutor implements AutoCloseable {
 	 */
 	public <T> Tasks submitTasks(Collection<T> items,
 			Function<T, SimpleCallable> taskMapper) {
-		Tasks collector = new Tasks();
+		var collector = new Tasks();
 		items.stream().map(taskMapper).forEach(t -> collector
 				.add(executor.submit(() -> collectExceptions(t))));
 		return collector;
@@ -109,7 +109,7 @@ public class BasicExecutor implements AutoCloseable {
 	 * @return The future holding the results of the execution.
 	 */
 	public Tasks submitTasks(Iterable<SimpleCallable> tasks) {
-		Tasks collector = new Tasks();
+		var collector = new Tasks();
 		tasks.forEach(t -> collector
 				.add(executor.submit(() -> collectExceptions(t))));
 		return collector;
@@ -187,8 +187,8 @@ public class BasicExecutor implements AutoCloseable {
 			if (isNull(tasks)) {
 				throw new IllegalStateException("tasks already awaited");
 			}
-			for (Future<Exception> f : tasks) {
-				Exception e = f.get();
+			for (var f : tasks) {
+				var e = f.get();
 				if (nonNull(e)) {
 					if (isNull(ex)) {
 						ex = e;

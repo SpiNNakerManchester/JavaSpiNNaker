@@ -17,8 +17,6 @@
 package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.min;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -72,11 +70,11 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	private final Integer maxSDRAMSize;
 
 	private static <T> Set<T> def(Set<T> c) {
-		return isNull(c) ? emptySet() : c;
+		return isNull(c) ? Set.of() : c;
 	}
 
 	private static <K, V> Map<K, V> def(Map<K, V> m) {
-		return isNull(m) ? emptyMap() : m;
+		return isNull(m) ? Map.of() : m;
 	}
 
 	private static int clamp(int value, Integer limit) {
@@ -138,17 +136,17 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	Machine getMachineDetails(HasChipLocation bootChip, MachineDimensions size)
 			throws IOException, ProcessException {
 		// Get the P2P table; 8 entries are packed into each 32-bit word
-		List<ByteBuffer> p2pColumnData = new ArrayList<>();
+		var p2pColumnData = new ArrayList<ByteBuffer>();
 		for (int column = 0; column < size.width; column++) {
 			p2pColumnData.add(synchronousCall(new ReadMemory(bootChip,
 					ROUTER_P2P.add(getColumnOffset(column)),
 					getNumColumnBytes(size.height))).data);
 			// TODO work out why multiple calls at once is a problem
 		}
-		P2PTable p2pTable = new P2PTable(size, p2pColumnData);
+		var p2pTable = new P2PTable(size, p2pColumnData);
 
 		// Get the chip information for each chip
-		for (ChipLocation chip : p2pTable.getChips()) {
+		for (var chip : p2pTable.getChips()) {
 			sendRequest(new GetChipInfo(chip),
 					response -> chipInfo.put(chip, response.chipInfo));
 		}
@@ -163,7 +161,7 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Warn about unexpected missing chips
-		for (ChipLocation chip : p2pTable.getChips()) {
+		for (var chip : p2pTable.getChips()) {
 			if (!chipInfo.containsKey(chip)) {
 				log.warn("Chip {},{} was expected but didn't reply",
 						chip.getX(), chip.getY());
@@ -171,7 +169,7 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Build a Machine
-		Machine machine = new Machine(size, bootChip);
+		var machine = new Machine(size, bootChip);
 		chipInfo.forEach((chip, data) -> {
 			if (!ignoreChips.contains(chip)) {
 				machine.addChip(makeChip(size, data));
@@ -191,10 +189,9 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	private Chip makeChip(MachineDimensions size, ChipSummaryInfo chipInfo) {
 		// Create the processor list
-		List<Processor> processors = new ArrayList<>();
-		ChipLocation location = chipInfo.chip.asChipLocation();
-		Set<Integer> ignoreCores =
-				ignoreCoresMap.getOrDefault(location, emptySet());
+		var processors = new ArrayList<Processor>();
+		var location = chipInfo.chip.asChipLocation();
+		var ignoreCores = ignoreCoresMap.getOrDefault(location, Set.of());
 		for (int id = 0; id < chipInfo.numCores; id++) {
 			// Add the core provided it is not to be ignored
 			if (nonNull(ignoreCores) && !ignoreCores.contains(id)) {
@@ -225,10 +222,10 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private List<Link> makeLinks(ChipSummaryInfo chipInfo,
 			MachineDimensions size, Set<Direction> ignoreLinks) {
-		HasChipLocation chip = chipInfo.chip;
-		List<Link> links = new ArrayList<>();
-		for (Direction link : chipInfo.workingLinks) {
-			ChipLocation dest = getChipOverLink(chip, size, link);
+		var chip = chipInfo.chip;
+		var links = new ArrayList<Link>();
+		for (var link : chipInfo.workingLinks) {
+			var dest = getChipOverLink(chip, size, link);
 			if (!ignoreLinks.contains(link) && !ignoreChips.contains(dest)
 					&& this.chipInfo.containsKey(dest)) {
 				links.add(new Link(chip, link, dest));
@@ -239,10 +236,10 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private List<Link> makeLinks(ChipSummaryInfo chipInfo,
 			MachineDimensions size) {
-		HasChipLocation chip = chipInfo.chip;
-		List<Link> links = new ArrayList<>();
-		for (Direction link : chipInfo.workingLinks) {
-			ChipLocation dest = getChipOverLink(chip, size, link);
+		var chip = chipInfo.chip;
+		var links = new ArrayList<Link>();
+		for (var link : chipInfo.workingLinks) {
+			var dest = getChipOverLink(chip, size, link);
 			if (!ignoreChips.contains(dest)
 					&& this.chipInfo.containsKey(dest)) {
 				links.add(new Link(chip, link, dest));

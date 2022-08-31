@@ -83,9 +83,8 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 		/** @return The serial number data, as a read-only buffer. */
 		public IntBuffer getSerialNumber() {
 			// TODO use slice(int,int) once base Java version recent enough
-			IntBuffer b = buffer.asReadOnlyBuffer();
-			b.position(SERIAL_INDEX);
-			b.limit(SERIAL_INDEX + SERIAL_LENGTH);
+			var b = buffer.asReadOnlyBuffer();
+			b.position(SERIAL_INDEX).limit(SERIAL_INDEX + SERIAL_LENGTH);
 			return b.slice();
 		}
 

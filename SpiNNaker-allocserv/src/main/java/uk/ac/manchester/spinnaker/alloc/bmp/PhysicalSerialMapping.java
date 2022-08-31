@@ -18,9 +18,10 @@ package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
+import static java.util.function.Predicate.not;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.commons.io.IOUtils.buffer;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -59,18 +60,18 @@ class PhysicalSerialMapping {
 
 	@PostConstruct
 	void loadMapping() throws IOException {
-		try (InputStreamReader isr = new InputStreamReader(
-				spin5serialFile.getInputStream(), UTF_8);
-				BufferedReader r = new BufferedReader(isr)) {
-			r.lines().map(s -> s.replaceFirst("#.*", "").trim())
-					.filter(s -> !s.isEmpty()).forEach(this::parseOneMapping);
+		try (var isr = new InputStreamReader(spin5serialFile.getInputStream(),
+				UTF_8)) {
+			buffer(isr).lines().map(s -> s.replaceFirst("#.*", "").strip())
+					.filter(not(String::isBlank))
+					.forEach(this::parseOneMapping);
 		}
 		log.info("loaded physical/logical board ID map: {} entries",
 				physicalToLogical.size());
 	}
 
 	private void parseOneMapping(String line) {
-		String[] bits = line.split("\\s+", 2);
+		var bits = line.split("\\s+", 2);
 		if (log.isTraceEnabled()) {
 			log.trace("parsing line: {}", Arrays.toString(bits));
 		}
@@ -78,9 +79,9 @@ class PhysicalSerialMapping {
 			log.debug("bogus line: {}", line);
 			return;
 		}
-		String physical = bits[0];
-		String logical = bits[1];
-		String old = physicalToLogical.put(physical, logical);
+		var physical = bits[0];
+		var logical = bits[1];
+		var old = physicalToLogical.put(physical, logical);
 		if (nonNull(old)) {
 			log.warn("replaced mapping for {} (to {}) with {}", physical, old,
 					logical);

@@ -17,8 +17,6 @@
 package uk.ac.manchester.spinnaker.alloc.compat;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
@@ -53,7 +51,7 @@ public final class Command {
 
 	/** @return The positional arguments to the command. */
 	public List<Object> getArgs() {
-		return isNull(args) ? emptyList() : unmodifiableList(args);
+		return isNull(args) ? List.of() : unmodifiableList(args);
 	}
 
 	void setArgs(List<Object> args) {
@@ -62,7 +60,7 @@ public final class Command {
 
 	/** @return The keyword arguments to the command. */
 	public Map<String, Object> getKwargs() {
-		return isNull(kwargs) ? emptyMap() : unmodifiableMap(kwargs);
+		return isNull(kwargs) ? Map.of() : unmodifiableMap(kwargs);
 	}
 
 	void setKwargs(Map<String, Object> kwargs) {

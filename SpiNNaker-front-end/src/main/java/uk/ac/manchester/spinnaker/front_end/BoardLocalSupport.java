@@ -38,7 +38,7 @@ public abstract class BoardLocalSupport {
 	}
 
 	private String root(HasChipLocation chipLoc) {
-		HasChipLocation root = machine.getChipAt(chipLoc).nearestEthernet;
+		var root = machine.getChipAt(chipLoc).nearestEthernet;
 		return "(board:" + root.getX() + "," + root.getY() + ")";
 	}
 

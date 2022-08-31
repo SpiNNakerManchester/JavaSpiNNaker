@@ -24,7 +24,6 @@ import static java.util.Objects.nonNull;
 import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Locate any SpiNNaker machines IP addresses from the auto-transmitted packets
@@ -47,11 +46,11 @@ public abstract class LocateConnectedMachineIPAddress {
 	 */
 	public static void locateConnectedMachine(Handler handler)
 			throws Exception {
-		try (IPAddressConnection connection = new IPAddressConnection()) {
-			Set<InetAddress> seenBoards = new HashSet<>();
+		try (var connection = new IPAddressConnection()) {
+			var seenBoards = new HashSet<>();
 			while (true) {
-				InetAddress ipAddress = connection.receiveMessage();
-				Calendar now = Calendar.getInstance();
+				var ipAddress = connection.receiveMessage();
+				var now = Calendar.getInstance();
 				if (nonNull(ipAddress) && !seenBoards.contains(ipAddress)) {
 					seenBoards.add(ipAddress);
 					if (handler.handle(ipAddress, now)) {
@@ -101,12 +100,9 @@ public abstract class LocateConnectedMachineIPAddress {
 	public static void main(String... args) throws Exception {
 		print("The following addresses might be SpiNNaker boards"
 				+ " (press Ctrl-C to quit):");
-		getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				print("Exiting");
-			}
-		});
+		getRuntime().addShutdownHook(new Thread(() -> {
+			print("Exiting");
+		}));
 		locateConnectedMachine((addr, time) -> {
 			print("%s (%s) at %s", addr, addr.getCanonicalHostName(), time);
 			return false;
