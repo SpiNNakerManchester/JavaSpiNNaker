@@ -17,9 +17,11 @@
 package uk.ac.manchester.spinnaker.allocator;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.asDir;
@@ -30,18 +32,29 @@ import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.writeFor
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /**
  * Manages the login session. This allows us to avoid the (heavy) cost of the
@@ -251,6 +264,255 @@ final class ClientSession {
 	 */
 	HttpURLConnection connection(URI url) throws IOException {
 		return connection(url, false);
+	}
+
+	private enum ProxyProtocol {
+		OPEN(20), CLOSE(12), MSG(1600), OPEN_U(8), MSG_TO(1600);
+
+		private int size;
+
+		ProxyProtocol(int size) {
+			this.size = size;
+		}
+
+		ByteBuffer allocate() {
+			return ByteBuffer.allocate(size).order(LITTLE_ENDIAN);
+		}
+	}
+
+	abstract static class Channel {
+		/** Channel ID. Issued by server. */
+		final int id;
+
+		/** The websocket. */
+		private final ProxyProtocolClient client;
+
+		/** Whether this channel is closed. */
+		boolean closed;
+
+		private final Consumer<ByteBuffer> receiver;
+
+		Channel(int id, ProxyProtocolClient client,
+				Consumer<ByteBuffer> receiver) {
+			this.id = id;
+			this.client = client;
+			this.receiver = receiver;
+			client.channelHandlers.put(id, this::receive);
+		}
+
+		void receive(ByteBuffer msg) {
+			msg = msg.slice();
+			msg.order(LITTLE_ENDIAN);
+			receiver.accept(msg);
+		}
+
+		public void close() throws InterruptedException {
+			if (closed) {
+				return;
+			}
+			int callbackId = client.getId();
+			ValueHolder<Integer> result = new ValueHolder<>();
+			OneShotEvent event = new OneShotEvent();
+
+			ByteBuffer b = ProxyProtocol.CLOSE.allocate();
+			b.putInt(ProxyProtocol.CLOSE.ordinal());
+			b.putInt(callbackId);
+			b.putInt(id);
+			b.flip();
+
+			client.replyHandlers.put(callbackId, msg -> {
+				result.setValue(msg.getInt());
+				closed = true;
+				event.fire();
+			});
+			client.send(b);
+			event.await();
+			if (result.getValue() != id) {
+				log.warn("did not properly close channel");
+			}
+			client.channelHandlers.remove(id);
+		}
+
+		protected final void sendPreparedMessage(ByteBuffer fullMessage) {
+			if (closed) {
+				throw new IllegalStateException();
+			}
+			client.send(fullMessage);
+		}
+	}
+
+	static class ConnectedChannel extends Channel {
+		ConnectedChannel(int id, ProxyProtocolClient client,
+				Consumer<ByteBuffer> receiver) {
+			super(id, client, receiver);
+		}
+
+		public void send(ByteBuffer msg) {
+			ByteBuffer b = ProxyProtocol.MSG.allocate();
+			b.putInt(ProxyProtocol.MSG.ordinal());
+			b.putInt(id);
+			b.put(msg);
+			b.flip();
+
+			sendPreparedMessage(b);
+		}
+	}
+
+	static class UnconnectedChannel extends Channel {
+		private final byte[] addr;
+
+		private final int port;
+
+		UnconnectedChannel(int id, byte[] addr, int port,
+				ProxyProtocolClient client, Consumer<ByteBuffer> receiver) {
+			super(id, client, receiver);
+			this.addr = addr;
+			this.port = port;
+		}
+
+		public Inet4Address getAddress() throws UnknownHostException {
+			return (Inet4Address) InetAddress.getByAddress(addr);
+		}
+
+		public int getPort() {
+			return port;
+		}
+
+		public void send(ChipLocation chip, int port, ByteBuffer msg) {
+			ByteBuffer b = ProxyProtocol.MSG_TO.allocate();
+			b.putInt(ProxyProtocol.MSG_TO.ordinal());
+			b.putInt(id);
+			b.putInt(chip.getX());
+			b.putInt(chip.getY());
+			b.putInt(port);
+			b.put(msg);
+			b.flip();
+
+			sendPreparedMessage(b);
+		}
+	}
+
+	class ProxyProtocolClient extends WebSocketClient {
+		private final Map<Integer, Consumer<ByteBuffer>> replyHandlers;
+
+		private final Map<Integer, Consumer<ByteBuffer>> channelHandlers;
+
+		private int correlationCounter;
+
+		private synchronized int getId() {
+			return correlationCounter++;
+		}
+
+		ProxyProtocolClient(URI uri, Map<String, String> headers) {
+			super(uri, headers);
+			replyHandlers = new HashMap<>();
+			channelHandlers = new HashMap<>();
+		}
+
+		@Override
+		public void onOpen(ServerHandshake handshakedata) {
+		}
+
+		@Override
+		public void onMessage(String message) {
+			log.warn("Unexpected text message on websocket: {}", message);
+		}
+
+		@Override
+		public void onMessage(ByteBuffer message) {
+			message.order(LITTLE_ENDIAN);
+			int code = message.getInt();
+			switch (ProxyProtocol.values()[code]) {
+			case OPEN:
+			case CLOSE:
+			case OPEN_U:
+				requireNonNull(replyHandlers.remove(message.getInt()),
+						"uncorrelated response").accept(message);
+				break;
+			case MSG:
+				requireNonNull(channelHandlers.get(message.getInt()),
+						"unrecognised channel").accept(message);
+				break;
+			default:
+				log.error("unexpected message code: {}", code);
+			}
+		}
+
+		public ConnectedChannel openChannel(ChipLocation chip, int port,
+				Consumer<ByteBuffer> receiver) throws InterruptedException {
+			int id = getId();
+			ValueHolder<ConnectedChannel> channel = new ValueHolder<>();
+			OneShotEvent event = new OneShotEvent();
+
+			ByteBuffer b = ProxyProtocol.OPEN.allocate();
+			b.putInt(ProxyProtocol.OPEN.ordinal());
+			b.putInt(id);
+			b.putInt(chip.getX());
+			b.putInt(chip.getY());
+			b.putInt(port);
+			b.flip();
+
+			replyHandlers.put(id, msg -> {
+				channel.setValue(
+						new ConnectedChannel(msg.getInt(), this, receiver));
+				event.fire();
+			});
+			send(b);
+			event.await();
+			return channel.getValue();
+		}
+
+		private static final int INET_SIZE = 4;
+
+		public UnconnectedChannel openUnconnectedChannel(
+				Consumer<ByteBuffer> receiver) throws InterruptedException {
+			int id = getId();
+			ValueHolder<UnconnectedChannel> channel = new ValueHolder<>();
+			OneShotEvent event = new OneShotEvent();
+
+			ByteBuffer b = ProxyProtocol.OPEN_U.allocate();
+			b.putInt(ProxyProtocol.OPEN_U.ordinal());
+			b.putInt(id);
+			b.flip();
+
+			replyHandlers.put(id, msg -> {
+				int channelId = msg.getInt();
+				byte[] addr = new byte[INET_SIZE];
+				msg.get(addr);
+				int port = msg.getInt();
+				channel.setValue(new UnconnectedChannel(channelId, addr, port,
+						this, receiver));
+				event.fire();
+			});
+			send(b);
+			event.await();
+			return channel.getValue();
+		}
+
+		@Override
+		public void onClose(int code, String reason, boolean remote) {
+			log.info("websocket connection closed: {}", reason);
+		}
+
+		@Override
+		public void onError(Exception ex) {
+			log.error("Failure on websocket", ex);
+		}
+	}
+
+	WebSocketClient websocket(URI url) {
+		// TODO use Map.of() in Java 11
+		Map<String, String> headers = new HashMap<>();
+		if (Objects.nonNull(session)) {
+			log.debug("Attaching websocket to session {}", session);
+			headers.put(COOKIE, SESSION_NAME + "=" + session);
+		}
+		if (csrfHeader != null && csrf != null) {
+			log.debug("Marking websocket with token {}={}", csrfHeader, csrf);
+			headers.put(csrfHeader, csrf);
+		}
+		// TODO what's going on with threading?
+		return new ProxyProtocolClient(url, headers);
 	}
 
 	private synchronized void authorizeConnection(HttpURLConnection c,
