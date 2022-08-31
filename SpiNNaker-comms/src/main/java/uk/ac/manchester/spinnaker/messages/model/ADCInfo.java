@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_2_5;
 import static uk.ac.manchester.spinnaker.messages.Constants.BMP_V_SCALE_3_3;
 
 import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 
 /** Container for the ADC data thats been retrieved from an FPGA. */
 @SARKStruct(value = "board_stat_t", api = SARKStruct.API.BMP)
@@ -116,11 +115,11 @@ public final class ADCInfo {
 	 *            bytes from an SCP packet containing ADC information
 	 */
 	public ADCInfo(ByteBuffer buffer) {
-		short[] adc = new short[ADC_SIZE];
-		short[] tInt = new short[T_INT_SIZE];
-		short[] tExt = new short[T_EXT_SIZE];
-		short[] fan = new short[FAN_SIZE];
-		ShortBuffer sb = buffer.asShortBuffer().asReadOnlyBuffer();
+		var adc = new short[ADC_SIZE];
+		var tInt = new short[T_INT_SIZE];
+		var tExt = new short[T_EXT_SIZE];
+		var fan = new short[FAN_SIZE];
+		var sb = buffer.asShortBuffer().asReadOnlyBuffer();
 		sb.get(adc);
 		sb.get(tInt);
 		sb.get(tExt);

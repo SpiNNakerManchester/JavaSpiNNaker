@@ -73,7 +73,7 @@ public final class BMPCoords {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof BMPCoords) {
-			BMPCoords b = (BMPCoords) o;
+			var b = (BMPCoords) o;
 			return cabinet == b.cabinet && frame == b.frame;
 		}
 		return false;

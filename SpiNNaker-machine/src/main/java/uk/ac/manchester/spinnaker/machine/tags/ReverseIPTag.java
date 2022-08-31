@@ -119,7 +119,7 @@ public final class ReverseIPTag extends Tag {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("ReverseIPTag(");
+		var sb = new StringBuilder("ReverseIPTag(");
 		sb.append(getTag()).append(" {").append(getBoardAddress());
 		if (getPort() != null) {
 			sb.append(":").append(getPort());

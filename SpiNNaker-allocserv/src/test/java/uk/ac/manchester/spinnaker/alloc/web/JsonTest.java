@@ -68,7 +68,7 @@ class JsonTest {
 	}
 
 	private static UriInfo stubBuilder(String base) throws URISyntaxException {
-		URI uri = new URI(base);
+		var uri = new URI(base);
 
 		return new StubUriInfo() {
 			@Override
@@ -107,7 +107,7 @@ class JsonTest {
 	class Serialization {
 		@Test
 		void testServiceDescription() throws IOException, JSONException {
-			ServiceDescription d = new ServiceDescription();
+			var d = new ServiceDescription();
 			d.setVersion(new Version("1.2.3"));
 			JSONAssert.assertEquals(
 					"{ \"version\": { \"major-version\": 1,"
@@ -117,7 +117,7 @@ class JsonTest {
 
 		@Test
 		void testStateResponse() throws IOException, JSONException {
-			JobStateResponse r = new JobStateResponse();
+			var r = new JobStateResponse();
 			r.setState(JobState.READY);
 			r.setStartTime(Instant.ofEpochSecond(1633954394));
 			r.setKeepaliveHost("127.0.0.1");
@@ -133,7 +133,7 @@ class JsonTest {
 		@Test
 		void testWhereIsResponse()
 				throws IOException, JSONException, URISyntaxException {
-			BoardLocation loc = new BoardLocation() {
+			var loc = new BoardLocation() {
 				@Override
 				public ChipLocation getBoardChip() {
 					return new ChipLocation(3, 4);
@@ -179,8 +179,7 @@ class JsonTest {
 					};
 				}
 			};
-			WhereIsResponse r =
-					new WhereIsResponse(loc, stubBuilder("http://localhost/"));
+			var r = new WhereIsResponse(loc, stubBuilder("http://localhost/"));
 			JSONAssert.assertEquals(
 					"{ \"machine\": \"gorp\", \"chip\": [1, 2], "
 							+ "\"job-id\": 12345, \"board-chip\": [3, 4],"
@@ -195,9 +194,8 @@ class JsonTest {
 	class Deserialization {
 		@Test
 		void testCreateJobRequestSimple() throws IOException {
-			String obj =
-					"{\"owner\":\"bob\", \"keepalive-interval\":\"PT30S\"}";
-			CreateJobRequest cjr = deserialize(obj, CreateJobRequest.class);
+			var obj = "{\"owner\":\"bob\", \"keepalive-interval\":\"PT30S\"}";
+			var cjr = deserialize(obj, CreateJobRequest.class);
 			assertNotNull(cjr);
 			assertEquals("bob", cjr.owner);
 			assertNotNull(cjr.keepaliveInterval);
@@ -207,13 +205,12 @@ class JsonTest {
 
 		@Test
 		void testCreateJobRequestComplex() throws IOException {
-			String obj =
-					"{\"owner\": \"bob\", \"keepalive-interval\": \"PT30S\", "
-							+ "\"dimensions\": {\"width\": 1, \"height\": 2}, "
-							+ "\"tags\": [\"a\", \"b\"], "
-							+ "\"max-dead-boards\": 77, "
-							+ "\"machine-name\": \"gorp\"}";
-			CreateJobRequest cjr = deserialize(obj, CreateJobRequest.class);
+			var obj = "{\"owner\": \"bob\", \"keepalive-interval\": \"PT30S\", "
+					+ "\"dimensions\": {\"width\": 1, \"height\": 2}, "
+					+ "\"tags\": [\"a\", \"b\"], "
+					+ "\"max-dead-boards\": 77, "
+					+ "\"machine-name\": \"gorp\"}";
+			var cjr = deserialize(obj, CreateJobRequest.class);
 			assertNotNull(cjr);
 			assertEquals("bob", cjr.owner);
 			assertNotNull(cjr.keepaliveInterval);
@@ -229,8 +226,8 @@ class JsonTest {
 
 		@Test
 		void testPowerRequest() throws IOException {
-			String obj = "{\"power\": \"ON\"}";
-			MachinePower mp = deserialize(obj, MachinePower.class);
+			var obj = "{\"power\": \"ON\"}";
+			var mp = deserialize(obj, MachinePower.class);
 			assertEquals(ON, mp.getPower());
 		}
 	}

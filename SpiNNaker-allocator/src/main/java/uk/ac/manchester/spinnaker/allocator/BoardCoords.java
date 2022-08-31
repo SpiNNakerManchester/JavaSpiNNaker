@@ -140,7 +140,7 @@ public class BoardCoords {
 		if (Objects.isNull(other) || !(other instanceof BoardCoords)) {
 			return false;
 		}
-		BoardCoords o = (BoardCoords) other;
+		var o = (BoardCoords) other;
 		return x == o.x && y == o.y && z == o.z && cabinet == o.cabinet
 				&& frame == o.frame && Objects.equals(board, o.board)
 				&& Objects.equals(address, o.address);

@@ -54,12 +54,12 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	public MachineDefinitionConverter() {
 		initialize(null, null);
 		sys = getSystemState();
-		File enumPy = locateEnumPy();
+		var enumPy = locateEnumPy();
 		sys.path.append(newString(enumPy.getParent()));
 	}
 
 	private static File locateEnumPy() {
-		ClassLoader cl = MachineDefinitionConverter.class.getClassLoader();
+		var cl = MachineDefinitionConverter.class.getClassLoader();
 		return new File(cl.getResource("enum.py").getFile());
 	}
 
@@ -84,9 +84,9 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	 */
 	public Configuration loadClassicConfigurationDefinition(File definitionFile,
 			boolean doCd) {
-		String what = definitionFile.getAbsolutePath();
-		try (PythonInterpreter py = new PythonInterpreter(null, sys);
-				WithCurrentDirectory cd = new WithCurrentDirectory(py, doCd)) {
+		var what = definitionFile.getAbsolutePath();
+		try (var py = new PythonInterpreter(null, sys);
+				var cd = new WithCurrentDirectory(py, doCd)) {
 			py.execfile(what);
 			return new Configuration(py.get("configuration"));
 		}
@@ -125,7 +125,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	private static class ExistingFileConverter implements ITypeConverter<File> {
 		@Override
 		public File convert(String value) throws Exception {
-			File f = new File(value);
+			var f = new File(value);
 			if (!f.isFile() || !f.canRead()) {
 				throw new TypeConversionException("file must be readable");
 			}
@@ -143,11 +143,10 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	 *             If things go wrong
 	 */
 	public static void main(String... args) throws Exception {
-		try (MachineDefinitionConverter loader =
-				new MachineDefinitionConverter()) {
-			Arguments a = populateCommand(new Arguments(), args);
-			Configuration config = loader
-					.loadClassicConfigurationDefinition(a.configFile, false);
+		try (var loader = new MachineDefinitionConverter()) {
+			var a = populateCommand(new Arguments(), args);
+			var config = loader.loadClassicConfigurationDefinition(a.configFile,
+					false);
 			getJsonWriter().writeValue(a.destination, config);
 		} catch (ParameterException e) {
 			err.println(e.getMessage());

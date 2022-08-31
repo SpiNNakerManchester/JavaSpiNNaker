@@ -23,9 +23,7 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
@@ -33,9 +31,6 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
@@ -75,18 +70,16 @@ public class BlacklistStore extends DatabaseAwareBean {
 	 *             If database access fails.
 	 */
 	private Optional<Blacklist> readBlacklist(Connection conn, int boardId) {
-		try (Query blChips = conn.query(GET_BLACKLISTED_CHIPS);
-				Query blCores = conn.query(GET_BLACKLISTED_CORES);
-				Query blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
-			Set<ChipLocation> blacklistedChips = blChips.call(boardId)
+		try (var blChips = conn.query(GET_BLACKLISTED_CHIPS);
+				var blCores = conn.query(GET_BLACKLISTED_CORES);
+				var blLinks = conn.query(GET_BLACKLISTED_LINKS)) {
+			var blacklistedChips = blChips.call(boardId)
 					.map(chip("x", "y")).toSet();
-			Map<ChipLocation, Set<Integer>> blacklistedCores = blCores
-					.call(boardId).toCollectingMap(HashSet::new,
-							chip("x", "y"), integer("p"));
-			Map<ChipLocation, Set<Direction>> blacklistedLinks = blLinks
-					.call(boardId).toCollectingMap(
-							() -> noneOf(Direction.class), chip("x", "y"),
-							enumerate("direction", Direction.class));
+			var blacklistedCores = blCores.call(boardId).toCollectingMap(
+					HashSet::new, chip("x", "y"), integer("p"));
+			var blacklistedLinks = blLinks.call(boardId).toCollectingMap(
+					() -> noneOf(Direction.class), chip("x", "y"),
+					enumerate("direction", Direction.class));
 
 			if (blacklistedChips.isEmpty() && blacklistedCores.isEmpty()
 					&& blacklistedLinks.isEmpty()) {
@@ -125,12 +118,12 @@ public class BlacklistStore extends DatabaseAwareBean {
 	 */
 	private void writeBlacklist(Connection conn, int boardId,
 			Blacklist blacklist) {
-		try (Update clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS);
-				Update clearCores = conn.update(CLEAR_BLACKLISTED_CORES);
-				Update clearLinks = conn.update(CLEAR_BLACKLISTED_LINKS);
-				Update addChip = conn.update(ADD_BLACKLISTED_CHIP);
-				Update addCore = conn.update(ADD_BLACKLISTED_CORE);
-				Update addLink = conn.update(ADD_BLACKLISTED_LINK)) {
+		try (var clearChips = conn.update(CLEAR_BLACKLISTED_CHIPS);
+				var clearCores = conn.update(CLEAR_BLACKLISTED_CORES);
+				var clearLinks = conn.update(CLEAR_BLACKLISTED_LINKS);
+				var addChip = conn.update(ADD_BLACKLISTED_CHIP);
+				var addCore = conn.update(ADD_BLACKLISTED_CORE);
+				var addLink = conn.update(ADD_BLACKLISTED_LINK)) {
 			// TODO Keep the old blacklist data where it is the same as before
 			// Remove the old information
 			clearChips.call(boardId);

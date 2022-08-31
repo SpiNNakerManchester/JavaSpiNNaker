@@ -161,7 +161,7 @@ class BMPReadMemoryProcess extends BMPCommandProcess<BMPResponse> {
 	 */
 	void read(BMPBoard board, MemoryLocation baseAddress, int size,
 			File dataFile) throws IOException, ProcessException {
-		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
+		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			read(board, baseAddress, size, new FileAccumulator(s));
 		}
 	}

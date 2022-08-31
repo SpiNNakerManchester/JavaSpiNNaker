@@ -199,8 +199,7 @@ public abstract class UDPConnection<T>
 			InetAddress remoteHost, Integer remotePort,
 			TrafficClass trafficClass) throws IOException {
 		// SpiNNaker only speaks IPv4
-		DatagramSocket sock = new DatagramSocket(
-				createLocalAddress(localHost, localPort));
+		var sock = new DatagramSocket(createLocalAddress(localHost, localPort));
 		if (trafficClass != null) {
 			sock.setTrafficClass(trafficClass.value);
 		}
@@ -374,9 +373,8 @@ public abstract class UDPConnection<T>
 	ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
-		ByteBuffer buffer = allocate(receivePacketSize);
-		DatagramPacket pkt =
-				new DatagramPacket(buffer.array(), receivePacketSize);
+		var buffer = allocate(receivePacketSize);
+		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
 		logRecv(buffer, pkt.getSocketAddress());
@@ -424,9 +422,8 @@ public abstract class UDPConnection<T>
 	UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
-		ByteBuffer buffer = allocate(receivePacketSize);
-		DatagramPacket pkt =
-				new DatagramPacket(buffer.array(), receivePacketSize);
+		var buffer = allocate(receivePacketSize);
+		var pkt = new DatagramPacket(buffer.array(), receivePacketSize);
 		socket.receive(pkt);
 		buffer.position(pkt.getLength()).flip();
 		logRecv(buffer, pkt.getSocketAddress());
@@ -447,7 +444,7 @@ public abstract class UDPConnection<T>
 			ByteBuffer data, InetSocketAddress remoteAddress) {
 		if (!data.hasArray()) {
 			// Yuck; must copy because can't touch the backing array
-			byte[] buffer = new byte[data.remaining()];
+			var buffer = new byte[data.remaining()];
 			data.duplicate().get(buffer);
 			return new DatagramPacket(buffer, 0, buffer.length, remoteAddress);
 		} else {
@@ -618,7 +615,7 @@ public abstract class UDPConnection<T>
 	 */
 	void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
-		InetSocketAddress addr = new InetSocketAddress(address, port);
+		var addr = new InetSocketAddress(address, port);
 		if (log.isDebugEnabled()) {
 			logSend(data, addr);
 		}
@@ -687,9 +684,8 @@ public abstract class UDPConnection<T>
 		 * message, but then fail to send a response since the
 		 * REPLY_NOT_EXPECTED flag is set (see scamp-3.c line 728 and 625-644)
 		 */
-		SDPMessage triggerMessage =
-				new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
-						new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
+		var triggerMessage = new SDPMessage(new SDPHeader(REPLY_NOT_EXPECTED,
+				new CoreLocation(0, 0, 0), RUNNING_COMMAND_SDP_PORT));
 		sendTo(triggerMessage.getMessageData(null), host, SCP_SCAMP_PORT);
 	}
 

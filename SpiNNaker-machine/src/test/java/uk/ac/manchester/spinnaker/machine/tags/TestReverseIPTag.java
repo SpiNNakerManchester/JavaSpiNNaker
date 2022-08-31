@@ -36,13 +36,13 @@ public class TestReverseIPTag {
 
 	@Test
 	public void testBasic() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
+		var boardAddress = createInetAddress((byte) 45);
 		int tagID = 10;
 		Integer udpPort = 20;
 		int sdpPort = 30;
-		CoreLocation destination = new CoreLocation(2, 3, 4);
+		var destination = new CoreLocation(2, 3, 4);
 
-		ReverseIPTag instance = new ReverseIPTag(boardAddress, tagID, udpPort,
+		var instance = new ReverseIPTag(boardAddress, tagID, udpPort,
 				destination, sdpPort);
 
 		assertEquals(boardAddress, instance.getBoardAddress());
@@ -54,12 +54,12 @@ public class TestReverseIPTag {
 
 	@Test
 	public void testDefaults() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
+		var boardAddress = createInetAddress((byte) 45);
 		int tagID = 10;
 		Integer udpPort = 20;
-		CoreLocation destination = new CoreLocation(2, 3, 4);
+		var destination = new CoreLocation(2, 3, 4);
 
-		ReverseIPTag instance =
+		var instance =
 				new ReverseIPTag(boardAddress, tagID, udpPort, destination);
 
 		assertEquals(boardAddress, instance.getBoardAddress());
@@ -77,15 +77,15 @@ public class TestReverseIPTag {
 	@Test
 	@SuppressWarnings("unused")
 	public void testEquals() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
+		var boardAddress = createInetAddress((byte) 45);
 		int tagID = 10;
 		Integer udpPort = 20;
 		int sdpPort = 30;
-		CoreLocation destination = new CoreLocation(2, 3, 4);
+		var destination = new CoreLocation(2, 3, 4);
 
-		ReverseIPTag tag = new ReverseIPTag(createInetAddress((byte) 45), 10,
+		var tag = new ReverseIPTag(createInetAddress((byte) 45), 10,
 				20, new CoreLocation(2, 3, 4), 30);
-		ReverseIPTag tag2 = new ReverseIPTag(createInetAddress((byte) 45), 10,
+		var tag2 = new ReverseIPTag(createInetAddress((byte) 45), 10,
 				20, new CoreLocation(2, 3, 4), 30);
 		assertEquals(tag, tag2);
 		assertEquals(tag.hashCode(), tag2.hashCode());

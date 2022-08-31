@@ -194,8 +194,8 @@ public final class IPTag extends Tag {
 			throws UnknownHostException {
 		super(getByName(boardAddress), tagID,
 				(port == null ? DEFAULT_PORT : port));
-		this.destination = new ChipLocation(x, y);
-		this.ipAddress = getByName(targetAddress);
+		destination = new ChipLocation(x, y);
+		ipAddress = getByName(targetAddress);
 		if (stripSDP == null) {
 			this.stripSDP = DEFAULT_STRIP_SDP;
 		} else {
@@ -267,7 +267,7 @@ public final class IPTag extends Tag {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("IPTag(");
+		var sb = new StringBuilder("IPTag(");
 		sb.append(getTag()).append(" {").append(getBoardAddress());
 		sb.append("} -");
 		if (stripSDP) {

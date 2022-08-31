@@ -16,12 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -29,13 +27,13 @@ import org.junit.jupiter.api.Test;
 class ListFetchingIterTest {
 	@Test
 	void basicUse() {
-		Iterator<List<Integer>> lfi = new ListFetchingIter<Integer>() {
+		var lfi = new ListFetchingIter<Integer>() {
 			private int i = 0;
 
 			@Override
 			List<Integer> fetchNext() {
 				i++;
-				return asList(i * 3, i * 3 + 1);
+				return List.of(i * 3, i * 3 + 1);
 			}
 
 			@Override
@@ -44,14 +42,14 @@ class ListFetchingIterTest {
 			}
 		};
 
-		List<Integer> all = new ArrayList<>();
+		var all = new ArrayList<Integer>();
 		lfi.forEachRemaining(all::addAll);
-		assertEquals(asList(3, 4, 6, 7, 9, 10, 12, 13), all);
+		assertEquals(List.of(3, 4, 6, 7, 9, 10, 12, 13), all);
 	}
 
 	@Test
 	void throwing() {
-		Iterator<List<Integer>> lfi = new ListFetchingIter<Integer>() {
+		var lfi = new ListFetchingIter<Integer>() {
 			private int i = 0;
 
 			@Override
@@ -59,7 +57,7 @@ class ListFetchingIterTest {
 				if (i++ > 2) {
 					throw new IOException("swallowed");
 				}
-				return asList(i * 3, i * 3 + 1);
+				return List.of(i * 3, i * 3 + 1);
 			}
 
 			@Override
@@ -68,8 +66,8 @@ class ListFetchingIterTest {
 			}
 		};
 
-		List<Integer> all = new ArrayList<>();
+		var all = new ArrayList<Integer>();
 		lfi.forEachRemaining(all::addAll);
-		assertEquals(asList(3, 4, 6, 7, 9, 10), all);
+		assertEquals(List.of(3, 4, 6, 7, 9, 10), all);
 	}
 }

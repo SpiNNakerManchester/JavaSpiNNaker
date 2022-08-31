@@ -73,7 +73,7 @@ public class DatabaseConfirmation extends AbstractNotificationMessage {
 						CHARSET);
 			} else {
 				// Must copy; ugh!
-				byte[] ary = new byte[data.remaining()];
+				var ary = new byte[data.remaining()];
 				data.get(ary);
 				databasePath = new String(ary, CHARSET);
 			}

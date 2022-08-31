@@ -16,7 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.notification;
 
-import java.util.HashMap;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
 import java.util.Map;
 
 /**
@@ -32,13 +33,7 @@ public enum NotificationMessageCode {
 	private final int value;
 
 	private static final Map<Integer, NotificationMessageCode> MAP =
-			new HashMap<>();
-
-	static {
-		for (NotificationMessageCode commmand : values()) {
-			MAP.put(commmand.value, commmand);
-		}
-	}
+			makeEnumBackingMap(values(), v -> v.value);
 
 	NotificationMessageCode(int value) {
 		this.value = value;

@@ -33,7 +33,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
@@ -97,8 +96,8 @@ public class V1CompatService {
 	V1CompatService() {
 		mapper = JsonMapper.builder().propertyNamingStrategy(SNAKE_CASE)
 				.build();
-		ThreadGroup group = new ThreadGroup("spalloc-legacy-service");
-		ValueHolder<Integer> counter = new ValueHolder<>(1);
+		var group = new ThreadGroup("spalloc-legacy-service");
+		var counter = new ValueHolder<>(1);
 		threadFactory = r -> new Thread(group, r,
 				"spalloc-legacy-" + counter.update(i -> i + 1));
 	}
@@ -133,7 +132,7 @@ public class V1CompatService {
 
 	@PostConstruct
 	private void open() throws IOException {
-		CompatibilityProperties props = mainProps.getCompat();
+		var props = mainProps.getCompat();
 		if (props.getThreadPoolSize() > 0) {
 			log.info("setting thread pool size to {}",
 					props.getThreadPoolSize());
@@ -145,8 +144,7 @@ public class V1CompatService {
 		}
 
 		if (props.isEnable()) {
-			InetSocketAddress addr =
-					new InetSocketAddress(props.getHost(), props.getPort());
+			var addr = new InetSocketAddress(props.getHost(), props.getPort());
 			serv = new ServerSocket();
 			serv.bind(addr);
 			servThread = threadFactory.newThread(this::acceptConnections);
@@ -171,7 +169,7 @@ public class V1CompatService {
 
 		// Shut down the clients
 		executor.shutdown();
-		List<Runnable> remainingTasks = executor.shutdownNow();
+		var remainingTasks = executor.shutdownNow();
 		if (!remainingTasks.isEmpty()) {
 			log.warn("there are {} compat tasks outstanding",
 					remainingTasks.size());
@@ -215,7 +213,7 @@ public class V1CompatService {
 	 */
 	private boolean acceptConnection() {
 		try {
-			V1CompatTask service = getTask(serv.accept());
+			var service = getTask(serv.accept());
 			executor.execute(() -> service.handleConnection());
 		} catch (SocketException e) {
 			// Check here; interrupt = shutting down = no errors, please
@@ -267,9 +265,8 @@ public class V1CompatService {
 			@Override
 			public Future<?> launchInstance(PipedWriter in, PipedReader out)
 					throws Exception {
-				V1CompatTask service =
-						taskFactory.getObject(V1CompatService.this,
-								new PipedReader(in), new PipedWriter(out));
+				var service = taskFactory.getObject(V1CompatService.this,
+						new PipedReader(in), new PipedWriter(out));
 				return executor.submit(() -> service.handleConnection());
 			}
 		};

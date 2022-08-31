@@ -35,6 +35,7 @@ import java.util.Map;
 
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * An abstract, high-level request to create a job.
@@ -92,8 +93,8 @@ public class CreateJob {
 	 *            Third coordinate
 	 * @see WhereIs
 	 */
+	@UsedInJavadocOnly(WhereIs.class)
 	public CreateJob(int x, int y, int z) {
-		WhereIs.class.hashCode(); // NEEDED FOR JAVADOC @see ABOVE
 		args.add(x);
 		args.add(y);
 		args.add(z);
@@ -248,7 +249,7 @@ public class CreateJob {
 	 *             deployed (or you automatically get it when meaningful). The
 	 *             default is fine.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public CreateJob requireTorus() {
 		return requireTorus(true);
 	}
@@ -264,7 +265,7 @@ public class CreateJob {
 	 *             deployed (or you automatically get it when meaningful). The
 	 *             default is fine.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public CreateJob requireTorus(boolean requireTorus) {
 		kwargs.put(REQUIRE_TORUS_PROPERTY, requireTorus);
 		return this;

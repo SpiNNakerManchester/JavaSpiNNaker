@@ -19,15 +19,16 @@ package uk.ac.manchester.spinnaker.tools;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Base64.getEncoder;
+import static java.util.Map.entry;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.encodeForm;
 import static uk.ac.manchester.spinnaker.tools.EBRAINSDevCredentialsUtils.makeBasicAuth;
 import static uk.ac.manchester.spinnaker.tools.GetDevId.HBP_OPENID_BASE;
+import static uk.ac.manchester.spinnaker.tools.GetDevId.REALM;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 
@@ -42,9 +43,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Donal Fellows
  */
 interface EBRAINSDevCredentials {
+	/** The content type for submitting an HTML form (or equivalent). */
+	String FORM_ENCODED = "application/x-www-form-urlencoded; charset=UTF-8";
+
 	/** Where to get the developer access token from. This is non-standard. */
-	String OIDC_TOKEN_URL =
-			HBP_OPENID_BASE + "realms/hbp/protocol/openid-connect/token";
+	String OIDC_TOKEN_URL = HBP_OPENID_BASE + "realms/" + REALM
+			+ "/protocol/openid-connect/token";
 
 	/**
 	 * @return The user that will do the registration. Must not be {@code null}.
@@ -79,15 +83,10 @@ interface EBRAINSDevCredentials {
 		// UGLY!
 		http.setRequestProperty("Authorization", makeBasicAuth("developer:"));
 
-		var arguments = new HashMap<String, String>();
-		arguments.put("grant_type", "password");
-		arguments.put("username", user);
-		arguments.put("password", pass);
-
-		var out = encodeForm(arguments);
+		var out = encodeForm(Map.ofEntries(entry("grant_type", "password"),
+				entry("username", user), entry("password", pass)));
 		http.setFixedLengthStreamingMode(out.length);
-		http.setRequestProperty("Content-Type",
-				"application/x-www-form-urlencoded; charset=UTF-8");
+		http.setRequestProperty("Content-Type", FORM_ENCODED);
 		try (var os = http.getOutputStream()) {
 			os.write(out);
 		}

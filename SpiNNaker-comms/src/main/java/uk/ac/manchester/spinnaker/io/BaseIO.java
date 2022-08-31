@@ -56,7 +56,7 @@ abstract class BaseIO implements AbstractIO {
 
 	@Override
 	public void seek(int numBytes) {
-		MemoryLocation position = start.add(numBytes);
+		var position = start.add(numBytes);
 		if (position.lessThan(start) || position.greaterThan(end)) {
 			throw new IllegalArgumentException(
 					"Attempt to seek to a position of " + position
@@ -123,7 +123,7 @@ abstract class BaseIO implements AbstractIO {
 			throws IOException, ProcessException;
 
 	private void inRange(int delta) throws EOFException {
-		MemoryLocation newAddr = current.add(delta);
+		var newAddr = current.add(delta);
 		if (!newAddr.lessThan(end)) {
 			throw new EOFException();
 		}
@@ -137,7 +137,7 @@ abstract class BaseIO implements AbstractIO {
 		int n = (numBytes == null || numBytes < 0) ? end.diff(current)
 				: numBytes;
 		inRange(n);
-		byte[] data = doRead(n);
+		var data = doRead(n);
 		current = current.add(n);
 		return data;
 	}
@@ -202,8 +202,8 @@ abstract class BaseIO implements AbstractIO {
 	 */
 	final <IO extends AbstractIO> IO get(Slice slice,
 			SliceFactory<IO> factory) {
-		MemoryLocation from = start;
-		MemoryLocation to = end;
+		var from = start;
+		var to = end;
 		if (slice.start != null) {
 			if (slice.start < 0) {
 				from = end.add(slice.start);

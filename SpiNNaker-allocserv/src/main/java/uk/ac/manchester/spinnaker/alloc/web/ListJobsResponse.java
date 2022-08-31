@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.List;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,7 +43,7 @@ public final class ListJobsResponse {
 	private URI next;
 
 	ListJobsResponse(Jobs jc, UriInfo ui) {
-		UriBuilder b = ui.getAbsolutePathBuilder().path("{id}");
+		var b = ui.getAbsolutePathBuilder().path("{id}");
 		jobs = unmodifiableList(
 				jc.ids().stream().map(id -> b.build(id)).collect(toList()));
 	}

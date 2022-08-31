@@ -16,10 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
-import static java.lang.Integer.compare;
+import static java.util.Comparator.comparing;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT;
+
+import java.util.Comparator;
 
 /**
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
@@ -52,13 +54,12 @@ public class RegionLocation
 	 *            The Region to use.
 	 */
 	public RegionLocation(HasCoreLocation core, int region) {
-		this.x = core.getX();
-		this.y = core.getY();
-		this.p = core.getP();
+		x = core.getX();
+		y = core.getY();
+		p = core.getP();
 		this.region = region;
-		this.hashcode =
-				((((x << COORD_SHIFT) ^ y) << CORE_SHIFT) ^ p) << REGION_SHIFT
-						^ region;
+		hashcode = ((((x << COORD_SHIFT) ^ y) << CORE_SHIFT)
+				^ p) << REGION_SHIFT ^ region;
 	}
 
 	@Override
@@ -76,20 +77,16 @@ public class RegionLocation
 		return y;
 	}
 
+	/** Comparator for region locations. */
+	public static final Comparator<RegionLocation> COMPARATOR =
+			comparing(RegionLocation::getX) //
+					.thenComparing(RegionLocation::getY)
+					.thenComparing(RegionLocation::getP)
+					.thenComparing(rl -> rl.region);
+
 	@Override
-	@SuppressWarnings("checkstyle:InnerAssignment")
 	public int compareTo(RegionLocation o) {
-		int cmp;
-		if ((cmp = compare(x, o.x)) != 0) {
-			return cmp;
-		}
-		if ((cmp = compare(y, o.y)) != 0) {
-			return cmp;
-		}
-		if ((cmp = compare(p, o.p)) != 0) {
-			return cmp;
-		}
-		return compare(region, o.region);
+		return COMPARATOR.compare(this, o);
 	}
 
 	@Override
@@ -100,9 +97,9 @@ public class RegionLocation
 		if (!(obj instanceof RegionLocation)) {
 			return false;
 		}
-		RegionLocation that = (RegionLocation) obj;
-		return (this.x == that.x) && (this.y == that.y) && (this.p == that.p)
-				&& (this.region == that.region);
+		var that = (RegionLocation) obj;
+		return (x == that.x) && (y == that.y) && (p == that.p)
+				&& (region == that.region);
 	}
 
 	@Override

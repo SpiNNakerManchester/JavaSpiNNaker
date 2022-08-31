@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
 import java.util.List;
@@ -27,15 +26,15 @@ import java.util.List;
 public class Machine {
 	private String name;
 
-	private List<String> tags = emptyList();
+	private List<String> tags = List.of();
 
 	private int width;
 
 	private int height;
 
-	private List<BoardCoordinates> deadBoards = emptyList();
+	private List<BoardCoordinates> deadBoards = List.of();
 
-	private List<BoardLink> deadLinks = emptyList();
+	private List<BoardLink> deadLinks = List.of();
 
 	/** @return The name of the machine. */
 	public String getName() {
@@ -54,7 +53,7 @@ public class Machine {
 
 	/** @param tags The tags on the machine. */
 	public void setTags(List<String> tags) {
-		this.tags = tags == null ? emptyList() : unmodifiableList(tags);
+		this.tags = tags == null ? List.of() : unmodifiableList(tags);
 	}
 
 	/** @return The width of the machine. */

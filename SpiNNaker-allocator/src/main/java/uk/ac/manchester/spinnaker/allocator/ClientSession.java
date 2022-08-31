@@ -19,9 +19,9 @@ package uk.ac.manchester.spinnaker.allocator;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.asDir;
@@ -30,7 +30,6 @@ import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.readJson
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.writeForm;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -43,7 +42,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -155,7 +153,7 @@ final class ClientSession {
 	private static HttpURLConnection createConnection(URI url)
 			throws IOException {
 		log.debug("will connect to {}", url);
-		HttpURLConnection c = (HttpURLConnection) url.toURL().openConnection();
+		var c = (HttpURLConnection) url.toURL().openConnection();
 		c.setUseCaches(false);
 		return c;
 	}
@@ -178,8 +176,8 @@ final class ClientSession {
 	 */
 	HttpURLConnection connection(URI url, boolean forStateChange)
 			throws IOException {
-		URI realUrl = baseUri.resolve(url);
-		HttpURLConnection c = createConnection(realUrl);
+		var realUrl = baseUri.resolve(url);
+		var c = createConnection(realUrl);
 		authorizeConnection(c, forStateChange);
 		return c;
 	}
@@ -204,8 +202,8 @@ final class ClientSession {
 	 */
 	HttpURLConnection connection(URI url, URI url2, boolean forStateChange)
 			throws IOException {
-		URI realUrl = baseUri.resolve(url).resolve(url2);
-		HttpURLConnection c = createConnection(realUrl);
+		var realUrl = baseUri.resolve(url).resolve(url2);
+		var c = createConnection(realUrl);
 		authorizeConnection(c, forStateChange);
 		return c;
 	}
@@ -230,8 +228,8 @@ final class ClientSession {
 	 */
 	HttpURLConnection connection(URI url, String url2, boolean forStateChange)
 			throws IOException {
-		URI realUrl = baseUri.resolve(url).resolve(url2);
-		HttpURLConnection c = createConnection(realUrl);
+		var realUrl = baseUri.resolve(url).resolve(url2);
+		var c = createConnection(realUrl);
 		authorizeConnection(c, forStateChange);
 		return c;
 	}
@@ -549,16 +547,16 @@ final class ClientSession {
 		// Careful: spec allows for multiple Set-Cookie fields
 		boolean found = false;
 		for (int i = 0; true; i++) {
-			String key = conn.getHeaderFieldKey(i);
+			var key = conn.getHeaderFieldKey(i);
 			if (key == null) {
 				break;
 			}
 			if (!key.equalsIgnoreCase(SET_COOKIE)) {
 				continue;
 			}
-			String setCookie = conn.getHeaderField(i);
+			var setCookie = conn.getHeaderField(i);
 			if (setCookie != null) {
-				Matcher m = SESSION_ID_RE.matcher(setCookie);
+				var m = SESSION_ID_RE.matcher(setCookie);
 				if (m.find()) {
 					session = m.group(1);
 					found = true;
@@ -570,10 +568,10 @@ final class ClientSession {
 
 	/** Helper for digging CSRF token info out of HTML. */
 	private Stream<String> getCSRF(String line) {
-		Matcher m = CSRF_ID_RE.matcher(line);
-		Set<String> s = emptySet();
+		var m = CSRF_ID_RE.matcher(line);
+		Set<String> s = Set.of();
 		if (m.find()) {
-			s = singleton(m.group(1));
+			s = Set.of(m.group(1));
 		}
 		return s.stream();
 	}
@@ -586,8 +584,8 @@ final class ClientSession {
 	 *             If things go wrong.
 	 */
 	private String makeTemporarySession() throws IOException {
-		HttpURLConnection c = connection(LOGIN_FORM);
-		try (InputStream is = checkForError(c, "couldn't get login form")) {
+		var c = connection(LOGIN_FORM);
+		try (var is = checkForError(c, "couldn't get login form")) {
 			// There's a session cookie at this point; we need it!
 			if (!trackCookie(c)) {
 				throw new IOException("could not establish session");
@@ -608,15 +606,12 @@ final class ClientSession {
 	 *             If things go wrong.
 	 */
 	private void logSessionIn(String tempCsrf) throws IOException {
-		Map<String, String> form = new HashMap<>();
-		form.put("_csrf", tempCsrf);
-		form.put("username", username);
-		form.put("password", password);
-		form.put("submit", "submit");
-
-		HttpURLConnection c = connection(LOGIN_HANDLER, true);
+		var c = connection(LOGIN_HANDLER, true);
 		c.setRequestMethod("POST");
-		writeForm(c, form);
+		writeForm(c,
+				ofEntries(entry("_csrf", tempCsrf), entry("submit", "submit"),
+						entry("username", username),
+						entry("password", password)));
 		checkForError(c, "login failed");
 		// There should be a new session cookie after login
 		if (!trackCookie(c)) {
@@ -634,7 +629,7 @@ final class ClientSession {
 	 */
 	private synchronized void renew(boolean postRenew) throws IOException {
 		// Create a temporary session so we can log in
-		String tempCsrf = makeTemporarySession();
+		var tempCsrf = makeTemporarySession();
 
 		// This makes the real session
 		logSessionIn(tempCsrf);
@@ -683,10 +678,9 @@ final class ClientSession {
 	 *             If access fails.
 	 */
 	synchronized RootInfo discoverRoot() throws IOException {
-		HttpURLConnection conn = connection(SPALLOC_ROOT);
-		try (InputStream is =
-				checkForError(conn, "couldn't read service root")) {
-			RootInfo root = readJson(is, RootInfo.class);
+		var conn = connection(SPALLOC_ROOT);
+		try (var is = checkForError(conn, "couldn't read service root")) {
+			var root = readJson(is, RootInfo.class);
 			this.csrfHeader = root.csrfHeader;
 			this.csrf = root.csrfToken;
 			root.csrfHeader = null;

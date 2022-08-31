@@ -16,37 +16,29 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
-import java.io.IOException;
 import static java.lang.Thread.sleep;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.Notification;
 import uk.ac.manchester.spinnaker.spalloc.messages.State;
-import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 
 /**
  * Tests the Spalloc Client ideally using an actual connection but with a backup
@@ -67,8 +59,8 @@ public class TestMockClient {
 
 	@Test
 	void testListJobs() throws IOException, SpallocServerException, Exception {
-		try (AutoCloseable c = client.withConnection()) {
-			List<JobDescription> jobs = client.listJobs(timeout);
+		try (var c = client.withConnection()) {
+			var jobs = client.listJobs(timeout);
 			if (client.isActual()) {
 				// Don't know the jobids currently on the machine if any
 				jobs.forEach(d -> assertThat("Jobid > 0", d.getJobID(),
@@ -86,8 +78,8 @@ public class TestMockClient {
 
 	void testListMachines()
 			throws IOException, SpallocServerException, Exception {
-		try (AutoCloseable c = client.withConnection()) {
-			List<Machine> machines = client.listMachines(timeout);
+		try (var c = client.withConnection()) {
+			var machines = client.listMachines(timeout);
 			if (client.isActual()) {
 				// Don't know the jobids currently on the machine if any
 				machines.forEach(m -> assertNotNull(m.getName()));
@@ -95,24 +87,23 @@ public class TestMockClient {
 				String[] expectedNames = {
 					"Spin24b-223", "Spin24b-225", "Spin24b-226"
 				};
-				List<String> foundNames = machines.stream()
+				var foundNames = machines.stream()
 						.map(Machine::getName).collect(Collectors.toList());
 				assertArrayEquals(expectedNames, foundNames.toArray());
 			}
 			if (!machines.isEmpty()) {
-				String machineName = machines.get(0).getName();
-				BoardCoordinates coords = new BoardCoordinates(0, 0, 1);
-				BoardPhysicalCoordinates physical =
+				var machineName = machines.get(0).getName();
+				var coords = new BoardCoordinates(0, 0, 1);
+				var physical =
 						client.getBoardPosition(machineName, coords, timeout);
-				BoardCoordinates coords2 =
+				var coords2 =
 						client.getBoardPosition(machineName, physical, timeout);
 				assertEquals(coords, coords2);
 				boolean previous = client.isActual();
-				WhereIs whereis1 = client.whereIs(machineName, coords, timeout);
-				WhereIs whereis2 =
-						client.whereIs(machineName, physical, timeout);
-				ChipLocation chip = whereis1.getChip();
-				WhereIs whereis3 = client.whereIs(machineName, chip, timeout);
+				var whereis1 = client.whereIs(machineName, coords, timeout);
+				var whereis2 = client.whereIs(machineName, physical, timeout);
+				var chip = whereis1.getChip();
+				var whereis3 = client.whereIs(machineName, chip, timeout);
 				// check only work if all real or all mock
 				if (previous == client.isActual()) {
 					assertEquals(whereis1, whereis2);
@@ -129,19 +120,19 @@ public class TestMockClient {
 	@Test
 	void testJob() throws IOException, SpallocServerException, Exception {
 		Notification notification = null;
-		try (AutoCloseable c = client.withConnection()) {
-			List<Integer> args = new ArrayList<>();
-			Map<String, Object> kwargs = new HashMap<>();
-			kwargs.put("owner", "Unittest. OK to kill after 1 minute.");
+		try (var c = client.withConnection()) {
+			var args = new ArrayList<Integer>();
 			@SuppressWarnings("deprecation")
-			int jobId = client.createJob(args, kwargs, timeout);
+			int jobId = client.createJob(args,
+					Map.of("owner", "Unittest. OK to kill after 1 minute."),
+					timeout);
 			if (client.isActual()) {
 				assertThat("Jobid > 0", jobId, greaterThan(0));
 			} else {
 				assertEquals(MockConnectedClient.MOCK_ID, jobId);
 			}
 			client.notifyJob(jobId, true, timeout);
-			JobState state = client.getJobState(jobId, timeout);
+			var state = client.getJobState(jobId, timeout);
 			int retries = 0;
 			while (client.isActual() && state.getState() == State.QUEUED) {
 				retries += 1;
@@ -155,16 +146,15 @@ public class TestMockClient {
 			}
 			assertEquals(State.POWER, state.getState());
 			assertTrue(state.getPower());
-			JobMachineInfo machineInfo =
-					client.getJobMachineInfo(jobId, timeout);
-			String machineName = machineInfo.getMachineName();
+			var machineInfo = client.getJobMachineInfo(jobId, timeout);
+			var machineName = machineInfo.getMachineName();
 			if (client.isActual()) {
-				assert !machineName.isEmpty() : "must have a machine name";
+				assert !machineName.isBlank() : "must have a machine name";
 			} else {
 				assertEquals("Spin24b-223", machineName);
 			}
-			List<Connection> connections = machineInfo.getConnections();
-			String hostName = connections.get(0).getHostname();
+			var connections = machineInfo.getConnections();
+			var hostName = connections.get(0).getHostname();
 			if (client.isActual()) {
 				InetAddress.getAllByName(hostName);
 			} else {
@@ -188,8 +178,8 @@ public class TestMockClient {
 			state = client.getJobState(jobId, timeout);
 			assertEquals(State.POWER, state.getState());
 			assertTrue(state.getPower());
-			ChipLocation chip = new ChipLocation(1, 1);
-			WhereIs whereis = client.whereIs(jobId, chip, timeout);
+			var chip = new ChipLocation(1, 1);
+			var whereis = client.whereIs(jobId, chip, timeout);
 			assertEquals(chip, whereis.getJobChip());
 			assertEquals(jobId, whereis.getJobId());
 			if (client.isActual()) {
@@ -208,8 +198,8 @@ public class TestMockClient {
 
 	@Test
 	void testVersion() throws IOException, SpallocServerException, Exception {
-		try (AutoCloseable c = client.withConnection()) {
-			Version version = client.version(timeout);
+		try (var c = client.withConnection()) {
+			var version = client.version(timeout);
 			if (client.isActual()) {
 				// TODO: Something here!
 				assertThat("version is meaningful", version.majorVersion,

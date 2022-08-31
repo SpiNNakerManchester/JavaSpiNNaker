@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.compat;
 import static java.lang.Integer.parseInt;
 import static java.lang.Thread.interrupted;
 import static java.lang.reflect.Array.newInstance;
-import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_S;
@@ -248,19 +247,19 @@ abstract class Utils {
 	 * @return A stream of ends of the link.
 	 */
 	static Stream<BoardLink> boardLinks(DownLink downLink) {
-		BoardLink bl1 = new BoardLink();
+		var bl1 = new BoardLink();
 		bl1.setX(downLink.end1.board.getX());
 		bl1.setY(downLink.end1.board.getY());
 		bl1.setZ(downLink.end1.board.getZ());
 		bl1.setLink(downLink.end1.direction.ordinal());
 
-		BoardLink bl2 = new BoardLink();
+		var bl2 = new BoardLink();
 		bl2.setX(downLink.end2.board.getX());
 		bl2.setY(downLink.end2.board.getY());
 		bl2.setZ(downLink.end2.board.getZ());
 		bl2.setLink(downLink.end2.direction.ordinal());
 
-		return asList(bl1, bl2).stream();
+		return List.of(bl1, bl2).stream();
 	}
 
 	/**
@@ -284,7 +283,7 @@ abstract class Utils {
 			BiConsumer<T, U> fun) {
 		// No expected exceptions, so use input size as capacity
 		int projectedSize = src.size();
-		List<U> dst = new ArrayList<>(projectedSize);
+		var dst = new ArrayList<U>(projectedSize);
 
 		Constructor<U> con;
 		try {
@@ -295,11 +294,11 @@ abstract class Utils {
 
 		// This is why we can't use a Supplier
 		@SuppressWarnings("unchecked")
-		U[] ary = (U[]) newInstance(cls, projectedSize);
+		var ary = (U[]) newInstance(cls, projectedSize);
 
 		try {
-			for (T val : src) {
-				U target = con.newInstance();
+			for (var val : src) {
+				var target = con.newInstance();
 				fun.accept(val, target);
 				dst.add(target);
 			}

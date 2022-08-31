@@ -44,7 +44,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	/** Create a set of boot values using all the defaults. */
 	public SystemVariableBootValues() {
 		values = new HashMap<>();
-		for (SystemVariableDefinition svd : SystemVariableDefinition.values()) {
+		for (var svd : SystemVariableDefinition.values()) {
 			values.put(svd, svd.getDefault());
 		}
 	}
@@ -81,11 +81,11 @@ public class SystemVariableBootValues implements SerializableMessage {
 		}
 		switch (systemVariable.type) {
 		case BYTE_ARRAY:
-			byte[] defbytes = (byte[]) values.get(systemVariable);
+			var defbytes = (byte[]) values.get(systemVariable);
 			if (!(value instanceof byte[])) {
 				throw new IllegalArgumentException("need a byte array");
 			}
-			byte[] newbytes = (byte[]) value;
+			var newbytes = (byte[]) value;
 			if (newbytes.length != defbytes.length) {
 				throw new IllegalArgumentException(
 						"byte array length must be " + defbytes.length);
@@ -118,7 +118,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 *             if an unsupported board version is used
 	 */
 	public static SystemVariableBootValues get(int boardVersion) {
-		SystemVariableBootValues bv = BootValues.get(boardVersion);
+		var bv = BootValues.get(boardVersion);
 		if (bv != null) {
 			return bv;
 		}
@@ -139,8 +139,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	 *             if an unsupported board version is used
 	 */
 	public static SystemVariableBootValues get(MachineVersion boardVersion) {
-		SystemVariableBootValues bv =
-				BootValues.get(boardVersion.hardwareVersion());
+		var bv = BootValues.get(boardVersion.hardwareVersion());
 		if (bv != null) {
 			return bv;
 		}
@@ -151,7 +150,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 	@Override
 	public void addToBuffer(ByteBuffer buffer) {
 		int base = buffer.position();
-		for (SystemVariableDefinition svd : variables()) {
+		for (var svd : variables()) {
 			buffer.position(base + svd.offset);
 			svd.addToBuffer(values.get(svd), buffer);
 		}
@@ -178,7 +177,7 @@ public class SystemVariableBootValues implements SerializableMessage {
 			MAP = new SystemVariableBootValues[LED0.length + 1];
 			int hwver = 1;
 			for (int led0 : LED0) {
-				SystemVariableBootValues bv = new SystemVariableBootValues();
+				var bv = new SystemVariableBootValues();
 				bv.setValue(hardware_version, hwver);
 				bv.setValue(led_0, led0);
 				bv.unmodifiable();

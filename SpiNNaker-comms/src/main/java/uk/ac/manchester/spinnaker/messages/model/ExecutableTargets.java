@@ -49,7 +49,7 @@ public class ExecutableTargets {
 	 *            the subset of cores that the binary needs to be loaded on
 	 */
 	public void addSubsets(String binary, CoreSubsets subsets) {
-		for (CoreLocation core : subsets) {
+		for (var core : subsets) {
 			addProcessor(binary, core);
 		}
 	}

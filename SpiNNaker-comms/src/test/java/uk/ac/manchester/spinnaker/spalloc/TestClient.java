@@ -26,8 +26,6 @@ import static uk.ac.manchester.spinnaker.spalloc.messages.State.READY;
 
 import java.io.EOFException;
 import java.net.ConnectException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,20 +35,13 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.messages.model.Version;
-import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
-import uk.ac.manchester.spinnaker.spalloc.messages.Connection;
 import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobDescription;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobMachineInfo;
-import uk.ac.manchester.spinnaker.spalloc.messages.JobState;
 import uk.ac.manchester.spinnaker.spalloc.messages.JobsChangedNotification;
-import uk.ac.manchester.spinnaker.spalloc.messages.Machine;
 import uk.ac.manchester.spinnaker.spalloc.messages.MachinesChangedNotification;
 import uk.ac.manchester.spinnaker.spalloc.messages.ReturnResponse;
 import uk.ac.manchester.spinnaker.spalloc.messages.VersionCommand;
@@ -88,12 +79,12 @@ class TestClient {
 
 	@Test
 	void testConnectContext() throws Exception {
-		try (MockServer s = new MockServer()) {
+		try (var s = new MockServer()) {
 			assertTimeoutPreemptively(OVERALL_TEST_TIMEOUT, () -> {
-				try (SpallocClient c =
+				try (var c =
 						new SpallocClient("localhost", s.getPort(), null)) {
-					Joinable t = backgroundAccept(s);
-					try (AutoCloseable context = c.withConnection()) {
+					var t = backgroundAccept(s);
+					try (var context = c.withConnection()) {
 						return; // do nothing
 					} finally {
 						t.join();
@@ -134,16 +125,15 @@ class TestClient {
 					.getReturnValue());
 
 			// Return a large message
-			JSONArray a1 = new JSONArray();
+			var a1 = new JSONArray();
 			for (int i = 0; i < 1000; i++) {
 				a1.put(i);
 			}
-			JSONObject o = new JSONObject();
+			var o = new JSONObject();
 			o.put("return", a1);
 			s.send(o);
-			JSONArray a2 =
-					new JSONArray(((ReturnResponse) c.receiveResponse(null))
-							.getReturnValue());
+			var a2 = new JSONArray(((ReturnResponse) c.receiveResponse(null))
+					.getReturnValue());
 			for (int i = 0; i < 1000; i++) {
 				assertEquals(a1.get(i), a2.get(i));
 			}
@@ -161,11 +151,11 @@ class TestClient {
 			assertEquals("bar", ((ExceptionResponse) c.receiveResponse(null))
 					.getException());
 			s.send("{\"machines_changed\": [\"foo\",\"bar\"]}");
-			assertEquals(Arrays.asList("foo", "bar"),
+			assertEquals(List.of("foo", "bar"),
 					((MachinesChangedNotification) c.receiveResponse(null))
 							.getMachinesChanged());
 			s.send("{\"jobs_changed\": [1, 2]}");
-			assertEquals(Arrays.asList(1, 2),
+			assertEquals(List.of(1, 2),
 					((JobsChangedNotification) c.receiveResponse(null))
 							.getJobsChanged());
 
@@ -244,7 +234,7 @@ class TestClient {
 
 			// Exceptions should transfer
 			s.send("{\"exception\": \"something informative\"}");
-			Throwable t = assertThrows(SpallocServerException.class,
+			var t = assertThrows(SpallocServerException.class,
 					() -> c.call(new MockCommand("foo", 1, "bar", 2), TIMEOUT));
 			assertEquals("something informative", t.getMessage());
 		});
@@ -294,10 +284,8 @@ class TestClient {
 
 			// Old style create_job
 			s.send("{\"return\": 123}");
-			Map<String, Object> kwargs = new HashMap<>();
-			kwargs.put("bar", 2);
-			kwargs.put("owner", "dummy");
-			assertEquals(123, c.createJob(Arrays.asList(1), kwargs));
+			Map<String, Object> kwargs = Map.of("bar", 2, "owner", "dummy");
+			assertEquals(123, c.createJob(List.of(1), kwargs));
 			JSONAssert.assertEquals(
 					"{\"command\": \"create_job\", \"args\": [1], "
 							+ "\"kwargs\": {\"owner\": \"dummy\"}}",
@@ -320,7 +308,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":[{\"job_id\":123},{\"job_id\":99}]}");
-			List<JobDescription> result = c.listJobs();
+			var result = c.listJobs();
 			assertEquals(2, result.size());
 			assertEquals(123, result.get(0).getJobID());
 			assertEquals(99, result.get(1).getJobID());
@@ -336,7 +324,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":[{\"name\":\"foo\"},{\"name\":\"bar\"}]}");
-			List<Machine> result = c.listMachines();
+			var result = c.listMachines();
 			assertEquals(2, result.size());
 			assertEquals("foo", result.get(0).getName());
 			assertEquals("bar", result.get(1).getName());
@@ -367,8 +355,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":[4,5,6]}");
-			BoardPhysicalCoordinates pc =
-					c.getBoardPosition("gorp", new BoardCoordinates(1, 2, 3));
+			var pc = c.getBoardPosition("gorp", new BoardCoordinates(1, 2, 3));
 			assertEquals(new BoardPhysicalCoordinates(4, 5, 6), pc);
 			JSONAssert.assertEquals("{\"command\": \"get_board_position\", "
 					+ "\"args\": [], \"kwargs\": "
@@ -376,7 +363,7 @@ class TestClient {
 					s.recv(), true);
 
 			s.send("{\"return\":[7,8,9]}");
-			BoardCoordinates lc = c.getBoardPosition("gorp", pc);
+			var lc = c.getBoardPosition("gorp", pc);
 			assertEquals(new BoardCoordinates(7, 8, 9), lc);
 			JSONAssert.assertEquals("{\"command\": \"get_board_at_position\", "
 					+ "\"args\": [], \"kwargs\": "
@@ -393,11 +380,11 @@ class TestClient {
 
 			s.send("{\"return\":{\"boards\": [[1,2,3]],"
 					+ "\"connections\": [[[1,2],\"gorp\"]]}}");
-			JobMachineInfo result = c.getJobMachineInfo(123);
-			List<BoardCoordinates> boards = result.getBoards();
+			var result = c.getJobMachineInfo(123);
+			var boards = result.getBoards();
 			assertEquals(1, boards.size());
 			assertEquals(new BoardCoordinates(1, 2, 3), boards.get(0));
-			List<Connection> conns = result.getConnections();
+			var conns = result.getConnections();
 			assertEquals(1, conns.size());
 			assertEquals(new ChipLocation(1, 2), conns.get(0).getChip());
 			assertEquals("gorp", conns.get(0).getHostname());
@@ -415,7 +402,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":{\"state\":3,\"power\":true}}");
-			JobState result = c.getJobState(123);
+			var result = c.getJobState(123);
 			assertEquals(true, result.getPower());
 			assertEquals(READY, result.getState());
 			JSONAssert.assertEquals(
@@ -495,7 +482,7 @@ class TestClient {
 			bgAccept.join();
 
 			s.send("{\"return\":\"1.2.3\"}");
-			Version result = c.version();
+			var result = c.version();
 			assertEquals(1, result.majorVersion);
 			assertEquals(2, result.minorVersion);
 			assertEquals(3, result.revision);

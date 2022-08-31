@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.isNull;
@@ -53,7 +52,7 @@ public class JobDescription {
 
 	private Map<String, Object> kwargs;
 
-	private List<BoardCoordinates> boards = emptyList();
+	private List<BoardCoordinates> boards = List.of();
 
 	private String keepAliveHost;
 
@@ -187,7 +186,7 @@ public class JobDescription {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("Job: ").append(jobID);
+		var builder = new StringBuilder("Job: ").append(jobID);
 		builder.append(" owner: ").append(owner);
 		if (nonNull(startTime)) {
 			builder.append(" startTime: ")
