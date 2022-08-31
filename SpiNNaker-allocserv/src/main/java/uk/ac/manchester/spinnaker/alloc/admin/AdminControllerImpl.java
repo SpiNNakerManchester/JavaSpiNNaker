@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
-import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toSet;
@@ -26,6 +25,43 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BASE_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BLACKLIST_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BOARDS_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BOARD_OBJ;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.BOARD_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_GROUP_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_GROUP_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_USER_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.CREATE_USER_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.DEFINED_MACHINES_OBJ;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROUPS_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROUP_DETAILS_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROUP_LIST_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.GROUP_OBJ;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACHINE_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MACHINE_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.MAIN_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.TRUST_LEVELS;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USERS_URI;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USER_DETAILS_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USER_LIST_VIEW;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.USER_OBJ;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addBlacklist;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addBoard;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addCollabratoryList;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addGroup;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addLocalGroupList;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addLocalUserList;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addMachineList;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addMachineReports;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addMachineTagging;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addNotice;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addOrganisationList;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addRemoteUserList;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUrl;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUser;
+import static uk.ac.manchester.spinnaker.alloc.admin.AdminControllerSupport.addUserList;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.bool;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType.COLLABRATORY;
@@ -61,25 +97,19 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import uk.ac.manchester.spinnaker.alloc.admin.AdminController.BlacklistData;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.alloc.allocator.QuotaManager;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
-import uk.ac.manchester.spinnaker.alloc.model.BoardIssueReport;
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
-import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
-import uk.ac.manchester.spinnaker.alloc.model.MachineTagging;
 import uk.ac.manchester.spinnaker.alloc.model.MemberRecord;
 import uk.ac.manchester.spinnaker.alloc.model.UserRecord;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
 import uk.ac.manchester.spinnaker.alloc.web.Action;
-import uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.ViewFactory;
-import uk.ac.manchester.spinnaker.messages.model.Blacklist;
-import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 import uk.ac.manchester.spinnaker.alloc.web.SystemController;
+import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
  * Implements the logic supporting the JSP views and maps them into URL space.
@@ -89,7 +119,7 @@ import uk.ac.manchester.spinnaker.alloc.web.SystemController;
 @Controller("mvc.adminUI")
 @PreAuthorize(IS_ADMIN)
 public class AdminControllerImpl extends DatabaseAwareBean
-		implements AdminController, AdminControllerConstants {
+		implements AdminController {
 	private static final Logger log = getLogger(AdminControllerImpl.class);
 
 	/** One board-hour in board-seconds. */
@@ -151,8 +181,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		model.put(TRUST_LEVELS, TrustLevel.values());
 		model.put(USERS_URI, uri(admin().listUsers()));
 		model.put(CREATE_USER_URI, uri(admin().getUserCreationForm()));
-		model.put(CREATE_GROUP_URI,
-				uri(admin().getGroupCreationForm()));
+		model.put(CREATE_GROUP_URI, uri(admin().getGroupCreationForm()));
 		model.put(GROUPS_URI, uri(admin().listGroups()));
 		model.put(BOARDS_URI, uri(admin().boards()));
 		model.put(MACHINE_URI, uri(admin().machineManagement()));
@@ -309,253 +338,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 		return errors(e.getMessage());
 	}
 
-	// Type-safe manipulators for models
-	// These are static so they *can't* access state they shouldn't
-
-	/**
-	 * Add local user list to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param userList
-	 *            The user list to add.
-	 */
-	private static void addLocalUserList(ModelAndView mav,
-			Map<String, URI> userList) {
-		mav.addObject(LOCAL_USER_LIST_OBJ, unmodifiableMap(userList));
-	}
-
-	/**
-	 * Add openid-based (remote) user list to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param userList
-	 *            The user list to add.
-	 */
-	private static void addRemoteUserList(ModelAndView mav,
-			Map<String, URI> userList) {
-		mav.addObject(OPENID_USER_LIST_OBJ, unmodifiableMap(userList));
-	}
-
-	/**
-	 * Add general user list to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param userList
-	 *            The group list to add.
-	 */
-	private static void addUserList(ModelAndView mav,
-			Map<String, URI> userList) {
-		mav.addObject(USER_LIST_OBJ, unmodifiableMap(userList));
-	}
-
-	/**
-	 * Add user record to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param user
-	 *            The user record to add.
-	 */
-	private static void addUser(ModelAndView mav, UserRecord user) {
-		mav.addObject(USER_OBJ, user.sanitise());
-	}
-
-	/**
-	 * Add user record to model.
-	 *
-	 * @param attrs
-	 *            The model
-	 * @param user
-	 *            The user record to add.
-	 */
-	private static void addUser(RedirectAttributes attrs, UserRecord user) {
-		attrs.addFlashAttribute(USER_OBJ, user);
-	}
-
-	/**
-	 * Add local group list to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param groupList
-	 *            The group list to add.
-	 */
-	private static void addLocalGroupList(ModelAndView mav,
-			Map<String, URI> groupList) {
-		mav.addObject(LOCAL_GROUP_LIST_OBJ, unmodifiableMap(groupList));
-	}
-
-	/**
-	 * Add organisation list to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param orgList
-	 *            The group list to add.
-	 */
-	private static void addOrganisationList(ModelAndView mav,
-			Map<String, URI> orgList) {
-		mav.addObject(ORG_GROUP_LIST_OBJ, unmodifiableMap(orgList));
-	}
-
-	/**
-	 * Add collabratory list to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param collabList
-	 *            The group list to add.
-	 */
-	private static void addCollabratoryList(ModelAndView mav,
-			Map<String, URI> collabList) {
-		mav.addObject(COLLAB_GROUP_LIST_OBJ, unmodifiableMap(collabList));
-	}
-
-	/**
-	 * Add group record to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param group
-	 *            The group record to add.
-	 */
-	private static void addGroup(ModelAndView mav, GroupRecord group) {
-		mav.addObject(GROUP_OBJ, group);
-	}
-
-	/**
-	 * Add board record to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param board
-	 *            The board record to add.
-	 */
-	private static void addBoard(ModelAndView mav, BoardRecord board) {
-		mav.addObject(BOARD_OBJ, board);
-	}
-
-	/**
-	 * Add board record to model.
-	 *
-	 * @param model
-	 *            The model
-	 * @param board
-	 *            The board record to add.
-	 */
-	private static void addBoard(ModelMap model, BoardRecord board) {
-		model.addAttribute(BOARD_OBJ, board);
-	}
-
-	/**
-	 * Add blacklist record to model.
-	 *
-	 * @param model
-	 *            The model
-	 * @param bldata
-	 *            The blacklist record to add.
-	 */
-	private static void addBlacklist(ModelMap model, BlacklistData bldata) {
-		model.addAttribute(BLACKLIST_DATA_OBJ, bldata);
-	}
-
-	/**
-	 * Add machine list to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param machineList
-	 *            The machine list to add.
-	 */
-	private static void addMachineList(ModelAndView mav,
-			Map<String, Boolean> machineList) {
-		mav.addObject(MACHINE_LIST_OBJ, unmodifiableMap(machineList));
-	}
-
-	/**
-	 * Add machine list to model.
-	 *
-	 * @param model
-	 *            The model
-	 * @param machineList
-	 *            The machine list to add.
-	 */
-	private static void addMachineList(ModelMap model,
-			Map<String, Boolean> machineList) {
-		model.addAttribute(MACHINE_LIST_OBJ, unmodifiableMap(machineList));
-	}
-
-	/**
-	 * Add machine tagging to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param tagging
-	 *            The machine tagging to add.
-	 */
-	private static void addMachineTagging(ModelAndView mav,
-			List<MachineTagging> tagging) {
-		mav.addObject(MACHINE_TAGGING_OBJ, tagging);
-		mav.addObject(DEFAULT_TAGGING_COUNT, tagging.stream()
-				.filter(MachineTagging::isTaggedAsDefault).count());
-	}
-
-	/**
-	 * Add machine reports to model.
-	 *
-	 * @param model
-	 *            The model
-	 * @param reports
-	 *            The machine reports to add.
-	 */
-	private static void addMachineReports(ModelAndView mav,
-			Map<String, List<BoardIssueReport>> reports) {
-		mav.addObject(MACHINE_REPORTS_OBJ, reports);
-	}
-
-	/**
-	 * Add link to model.
-	 *
-	 * @param mav
-	 *            The model
-	 * @param handle
-	 *            The name of the link
-	 * @param url
-	 *            The URL to add.
-	 */
-	private static void addUrl(ModelAndView mav, String handle, URI url) {
-		mav.addObject(handle, url);
-	}
-
-	/**
-	 * Add link to model.
-	 *
-	 * @param model
-	 *            The model
-	 * @param handle
-	 *            The name of the link
-	 * @param url
-	 *            The URL to add.
-	 */
-	private static void addUrl(ModelMap model, String handle, URI url) {
-		model.addAttribute(handle, url);
-	}
-
-	/**
-	 * Add notice message to model.
-	 *
-	 * @param attrs
-	 *            The model
-	 * @param msg
-	 *            The notice message to add.
-	 */
-	private static void addNotice(RedirectAttributes attrs, String msg) {
-		attrs.addFlashAttribute("notice", msg);
-	}
-
 	// The actual controller methods
 
 	@Override
@@ -609,7 +391,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/**
 	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
-	 * @param id User ID
+	 *
+	 * @param id
+	 *            User ID
 	 * @return URL
 	 */
 	private URI showUserFormUrl(int id) {
@@ -618,7 +402,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/**
 	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
-	 * @param member Record referring to user
+	 *
+	 * @param member
+	 *            Record referring to user
 	 * @return URL
 	 */
 	private URI showUserFormUrl(MemberRecord member) {
@@ -627,7 +413,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/**
 	 * Get URL for calling {@link #showUserForm(int) showUserForm()} later.
-	 * @param user Record referring to user
+	 *
+	 * @param user
+	 *            Record referring to user
 	 * @return URL
 	 */
 	private URI showUserFormUrl(UserRecord user) {
@@ -654,9 +442,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	public ModelAndView deleteUser(int id, Principal principal,
 			RedirectAttributes attrs) {
 		var adminUser = principal.getName();
-		var deletedUsername =
-				userManager.deleteUser(id, adminUser).orElseThrow(
-						() -> new AdminException("could not delete that user"));
+		var deletedUsername = userManager.deleteUser(id, adminUser).orElseThrow(
+				() -> new AdminException("could not delete that user"));
 		log.info("deleted user ID={} username={}", id, deletedUsername);
 		// Not sure that these are the correct place
 		var mav = redirectTo(uri(admin().listUsers()), attrs);
@@ -709,7 +496,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/**
 	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
-	 * @param id Group ID
+	 *
+	 * @param id
+	 *            Group ID
 	 * @return URL
 	 */
 	private URI showGroupInfoUrl(int id) {
@@ -718,7 +507,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/**
 	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
-	 * @param membership Record referring to group
+	 *
+	 * @param membership
+	 *            Record referring to group
 	 * @return URL
 	 */
 	private URI showGroupInfoUrl(MemberRecord membership) {
@@ -727,7 +518,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/**
 	 * Get URL for calling {@link #showGroupInfo(int) showGroupInfo()} later.
-	 * @param group Record referring to group
+	 *
+	 * @param group
+	 *            Record referring to group
 	 * @return URL
 	 */
 	private URI showGroupInfoUrl(GroupRecord group) {
@@ -745,10 +538,10 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("creating a group")
 	public ModelAndView createGroup(CreateGroupModel groupRequest,
 			RedirectAttributes attrs) {
-		var realGroup = userManager
-				.createGroup(groupRequest.toGroupRecord(), INTERNAL)
-				.orElseThrow(() -> new AdminException(
-						"group creation failed (duplicate name?)"));
+		var realGroup =
+				userManager.createGroup(groupRequest.toGroupRecord(), INTERNAL)
+						.orElseThrow(() -> new AdminException(
+								"group creation failed (duplicate name?)"));
 		int id = realGroup.getGroupId();
 		log.info("created group ID={} name={}", id, realGroup.getGroupName());
 		addNotice(attrs, "created " + realGroup.getGroupName());
@@ -931,8 +724,11 @@ public class AdminControllerImpl extends DatabaseAwareBean
 
 	/**
 	 * Add current blacklist data to model.
-	 * @param board Which board's blacklist data to add.
-	 * @param model The model to add it to.
+	 *
+	 * @param board
+	 *            Which board's blacklist data to add.
+	 * @param model
+	 *            The model to add it to.
 	 */
 	private void addBlacklistData(BoardState board, ModelMap model) {
 		var bldata = new BlacklistData();
@@ -997,8 +793,8 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Override
 	@Action("retagging a machine")
 	public ModelAndView retagMachine(String machineName, String newTags) {
-		var tags = stream(newTags.split(",")).map(String::trim)
-				.collect(toSet());
+		var tags =
+				stream(newTags.split(",")).map(String::trim).collect(toSet());
 		machineController.updateTags(machineName, tags);
 		log.info("retagged {} to have tags {}", machineName, tags);
 		return machineManagement();
@@ -1042,164 +838,4 @@ public class AdminControllerImpl extends DatabaseAwareBean
 					"problem with processing file: " + e.getMessage());
 		}
 	}
-}
-
-@UsedInJavadocOnly({GroupType.class, BoardIssueReport.class})
-interface AdminControllerConstants {
-	// These are paths below src/main/webapp/WEB-INF/views
-	/** View: {@code admin/index.jsp}. */
-	ViewFactory MAIN_VIEW = new ViewFactory("admin/index");
-
-	/** View: {@code admin/listusers.jsp}. */
-	ViewFactory USER_LIST_VIEW = new ViewFactory("admin/listusers");
-
-	/** View: {@code admin/userdetails.jsp}. */
-	ViewFactory USER_DETAILS_VIEW = new ViewFactory("admin/userdetails");
-
-	/** View: {@code admin/createuser.jsp}. */
-	ViewFactory CREATE_USER_VIEW = new ViewFactory("admin/createuser");
-
-	/** View: {@code admin/listgroups.jsp}. */
-	ViewFactory GROUP_LIST_VIEW = new ViewFactory("admin/listgroups");
-
-	/** View: {@code admin/groupdetails.jsp}. */
-	ViewFactory GROUP_DETAILS_VIEW = new ViewFactory("admin/groupdetails");
-
-	/** View: {@code admin/creategroup.jsp}. */
-	ViewFactory CREATE_GROUP_VIEW = new ViewFactory("admin/creategroup");
-
-	/** View: {@code admin/board.jsp}. */
-	ViewFactory BOARD_VIEW = new ViewFactory("admin/board");
-
-	/** View: {@code admin/machine.jsp}. */
-	ViewFactory MACHINE_VIEW = new ViewFactory("admin/machine");
-
-	/** User list in {@link #USER_LIST_VIEW}. All users. */
-	String USER_LIST_OBJ = "userlist";
-
-	/** User list in {@link #USER_LIST_VIEW}. Local users only. */
-	String LOCAL_USER_LIST_OBJ = "localusers";
-
-	/** User list in {@link #USER_LIST_VIEW}. OpenID users only. */
-	String OPENID_USER_LIST_OBJ = "openidusers";
-
-	/** User details in {@link #USER_DETAILS_VIEW}. */
-	String USER_OBJ = "user";
-
-	/**
-	 * Group list (type: {@link GroupType#INTERNAL}) in
-	 * {@link #GROUP_LIST_VIEW}.
-	 */
-	String LOCAL_GROUP_LIST_OBJ = "localgroups";
-
-	/**
-	 * Group list (type: {@link GroupType#ORGANISATION}) in
-	 * {@link #GROUP_LIST_VIEW}.
-	 */
-	String ORG_GROUP_LIST_OBJ = "orggroups";
-
-	/**
-	 * Group list (type: {@link GroupType#COLLABRATORY}) in
-	 * {@link #GROUP_LIST_VIEW}.
-	 */
-	String COLLAB_GROUP_LIST_OBJ = "collabgroups";
-
-	/**
-	 * Group details in {@link #GROUP_DETAILS_VIEW}. Group creation info in
-	 * {@link #CREATE_GROUP_VIEW}.
-	 */
-	String GROUP_OBJ = "group";
-
-	/** State in {@link #BOARD_VIEW}. {@link BoardRecord}. */
-	String BOARD_OBJ = "board";
-
-	/**
-	 * Blacklist data in {@link #BOARD_VIEW}. {@link BlacklistData}.
-	 */
-	String BLACKLIST_DATA_OBJ = "bldata";
-
-	/**
-	 * Mapping from machine names to whether they're in service, in
-	 * {@link #MACHINE_VIEW}.
-	 * {@link Map}{@code <}{@link String}{@code ,}{@link Boolean}{@code >}
-	 */
-	String MACHINE_LIST_OBJ = "machineNames";
-
-	/**
-	 * Machines that have been defined, in {@link #MACHINE_VIEW}.
-	 *
-	 * @see Machine
-	 */
-	String DEFINED_MACHINES_OBJ = "definedMachines";
-
-	/**
-	 * Result of {@link MachineStateControl#getMachineTagging()}, in
-	 * {@link #MACHINE_VIEW}.
-	 *
-	 * @see MachineTagging
-	 */
-	String MACHINE_TAGGING_OBJ = "machineTagging";
-
-	/**
-	 * Number of {@code default} tags in {@link #MACHINE_TAGGING_OBJ}, in
-	 * {@link #MACHINE_VIEW}.
-	 */
-	String DEFAULT_TAGGING_COUNT = "defaultCount";
-
-	/**
-	 * Result of {@link MachineStateControl#getMachineReports()}, in
-	 * {@link #MACHINE_VIEW}.
-	 *
-	 * @see BoardIssueReport
-	 */
-	String MACHINE_REPORTS_OBJ = "machineReports";
-
-	/** The base URI for the current request. In all views. */
-	String BASE_URI = "baseuri";
-
-	/** The members of {@link TrustLevel}. In all views. */
-	String TRUST_LEVELS = "trustLevels";
-
-	/**
-	 * How to call {@link AdminController#listUsers() listUsers()}. In all
-	 * views.
-	 */
-	String USERS_URI = "usersUri";
-
-	/**
-	 * How to call {@link AdminController#getUserCreationForm()
-	 * getUserCreationForm()}. In all views.
-	 */
-	String CREATE_USER_URI = "createUserUri";
-
-	/**
-	 * How to call {@link AdminController#listGroups() listGroups()}. In all
-	 * views.
-	 */
-	String GROUPS_URI = "groupsUri";
-
-	/**
-	 * How to call {@link AdminController#getGroupCreationForm()
-	 * getGroupCreationForm()}. In all views.
-	 */
-	String CREATE_GROUP_URI = "createGroupUri";
-
-	/** How to call {@link AdminController#boards() boards()}. In all views. */
-	String BOARDS_URI = "boardsUri";
-
-	/**
-	 * How to call {@link AdminController#blacklistSave(BlacklistData,ModelMap)
-	 * blacklistSave()},
-	 * {@link AdminController#blacklistPush(BlacklistData, ModelMap)
-	 * blacklistPush()}, and
-	 * {@link AdminController#blacklistFetch(BlacklistData,ModelMap)
-	 * blacklistFetch()}. In {@link #BOARD_VIEW}.
-	 */
-	String BLACKLIST_URI = "blacklistControlUri";
-
-	/**
-	 * How to call {@link AdminController#machineManagement()
-	 * machineManagement()}. In all views.
-	 */
-	String MACHINE_URI = "machineUri";
 }
