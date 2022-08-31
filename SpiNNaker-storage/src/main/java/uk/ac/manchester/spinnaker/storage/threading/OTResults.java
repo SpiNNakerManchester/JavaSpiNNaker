@@ -128,6 +128,7 @@ final class OTResults extends OTWrapper implements ResultSet {
 		return r.getDouble(columnIndex);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
 	public BigDecimal getBigDecimal(int columnIndex, int scale)
@@ -166,6 +167,7 @@ final class OTResults extends OTWrapper implements ResultSet {
 		return r.getAsciiStream(columnIndex);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
 	public InputStream getUnicodeStream(int columnIndex) throws SQLException {
@@ -227,6 +229,7 @@ final class OTResults extends OTWrapper implements ResultSet {
 		return r.getDouble(columnLabel);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
 	public BigDecimal getBigDecimal(String columnLabel, int scale)
@@ -265,6 +268,7 @@ final class OTResults extends OTWrapper implements ResultSet {
 		return r.getAsciiStream(columnLabel);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
 	public InputStream getUnicodeStream(String columnLabel)

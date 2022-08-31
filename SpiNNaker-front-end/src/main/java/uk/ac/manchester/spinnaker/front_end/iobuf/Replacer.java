@@ -78,7 +78,7 @@ class Replacer {
 	}
 
 	private void parseLine(String line) {
-		var parts = line.trim().split(",", NUM_PARTS);
+		var parts = line.split(",", NUM_PARTS);
 		if (parts.length == NUM_PARTS) {
 			try {
 				var tmpl = new Template(parts);

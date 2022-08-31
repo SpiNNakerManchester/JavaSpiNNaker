@@ -104,7 +104,7 @@ public class TestMappableIterable {
 
 		var first = mi.first();
 		assertTrue(first.isPresent());
-		assertEquals(1, first.get());
+		assertEquals(1, first.orElseThrow());
 
 		var first3 = mi.first(3).toList();
 		assertEquals(List.of(1, 2, 3), first3);
@@ -117,7 +117,7 @@ public class TestMappableIterable {
 	public void testNth() {
 		MappableIterable<Integer> mi = values3::iterator;
 
-		assertEquals(7, mi.nth(2).get());
+		assertEquals(7, mi.nth(2).orElseThrow());
 		assertFalse(mi.nth(7).isPresent());
 	}
 }

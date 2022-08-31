@@ -174,16 +174,11 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	}
 
 	private void mainLoop() throws IOException {
-		while (!isClosed()) {
+		while (session.isOpen() && !isClosed()) {
 			var msg = receiveMessage(TIMEOUT);
-			if (!msg.isPresent()) {
-				// Timeout; go round the loop again.
-				if (!session.isOpen() || isClosed()) {
-					return;
-				}
-				continue;
-			}
-			handleReceivedMessage(msg.get());
+			if (msg.isPresent()) {
+				handleReceivedMessage(msg.orElseThrow());
+			} // Otherwise was a timeout; go round the loop again anyway.
 		}
 	}
 

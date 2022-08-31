@@ -28,9 +28,9 @@ public enum SCPCommand implements CommandCode {
 	/**
 	 * Run at PC.
 	 *
-	 * @deprecated see {@link #CMD_AS}
+	 * @deprecated see {@link #CMD_AS}, which has a superior API
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	CMD_RUN(1),
 	/** Read SDRAM. */
 	CMD_READ(2),
@@ -39,9 +39,9 @@ public enum SCPCommand implements CommandCode {
 	/**
 	 * Run via APLX.
 	 *
-	 * @deprecated see {@link #CMD_AS}
+	 * @deprecated see {@link #CMD_AS}, which has a superior API
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	CMD_APLX(4),
 	/** Fill memory. */
 	CMD_FILL(5),
@@ -100,7 +100,7 @@ public enum SCPCommand implements CommandCode {
 	/** Configure pulse-width modulation hardware. */
 	@Deprecated
 	CMD_BMP_PWM(62),
-	/** */
+	/** Test feature control. */
 	@Deprecated
 	CMD_BMP_TEST(63),
 	/** Tube output. */

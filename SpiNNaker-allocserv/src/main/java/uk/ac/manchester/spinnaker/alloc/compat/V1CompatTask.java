@@ -371,13 +371,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	public final boolean communicate()
 			throws IOException, InterruptedException {
-		Optional<Command> cmd;
+		Command cmd;
 		try {
-			cmd = readMessage();
-			if (!cmd.isPresent()) {
+			var c = readMessage();
+			if (!c.isPresent()) {
 				log.debug("null message");
 				return false;
 			}
+			cmd = c.orElseThrow();
 		} catch (SocketTimeoutException e) {
 			log.debug("timeout");
 			// Message was not read by time timeout expired
@@ -389,14 +390,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 
 		Object r;
 		try {
-			r = callOperation(cmd.get());
+			r = callOperation(cmd);
 		} catch (Oops | TaskException | IllegalArgumentException e) {
 			// Expected exceptions; don't log
 			writeException(e);
 			return true;
 		} catch (Exception e) {
 			log.warn("unexpected exception from {} operation",
-					cmd.get().getCommand(), e);
+					cmd.getCommand(), e);
 			writeException(e);
 			return true;
 		}

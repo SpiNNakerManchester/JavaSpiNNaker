@@ -21,42 +21,61 @@ import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMa
 
 import java.util.Map;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /** SARK CPU States. */
+@UsedInJavadocOnly(Signal.class)
 public enum CPUState {
-	/** */
+	/** Core is dead. */
 	DEAD,
-	/** */
+	/** Core is powered down. */
 	POWERED_DOWN,
-	/** */
+	/** Core has had an RTE and not yet been reset. */
 	RUN_TIME_EXCEPTION,
-	/** */
+	/** Core was unresponsive and so was shutdown by the watchdog timer. */
 	WATCHDOG,
-	/** */
+	/** Core is preparing to enter service. */
 	INITIALISING,
-	/** */
+	/** Core is ready for service. */
 	READY,
-	/** */
+	/** Core is doing something with {@code c_main()} entry point. */
+	// TODO what?
 	C_MAIN,
-	/** */
+	/** Core is running user code. */
 	RUNNING,
-	/** */
+	/** Core is waiting for {@link Signal#SYNC0}. */
 	SYNC0,
-	/** */
+	/** Core is waiting for {@link Signal#SYNC1}. */
 	SYNC1,
-	/** */
+	/** Core is paused. */
 	PAUSED,
-	/** */
+	/** Core has finished. */
 	FINISHED,
-	/** */
-	@Deprecated
+	/**
+	 * CPU State 12.
+	 *
+	 * @deprecated Should be unused. Might be changed to another meaning by a
+	 *             future version of SCAMP.
+	 */
+	@Deprecated(forRemoval = true)
 	CPU_STATE_12,
-	/** */
-	@Deprecated
+	/**
+	 * CPU State 13.
+	 *
+	 * @deprecated Should be unused. Might be changed to another meaning by a
+	 *             future version of SCAMP.
+	 */
+	@Deprecated(forRemoval = true)
 	CPU_STATE_13,
-	/** */
-	@Deprecated
+	/**
+	 * CPU State 14.
+	 *
+	 * @deprecated Should be unused. Might be changed to another meaning by a
+	 *             future version of SCAMP.
+	 */
+	@Deprecated(forRemoval = true)
 	CPU_STATE_14,
-	/** */
+	/** Core is idle. User code may be run on it. */
 	IDLE;
 
 	/** The canonical SARK value for the state. */

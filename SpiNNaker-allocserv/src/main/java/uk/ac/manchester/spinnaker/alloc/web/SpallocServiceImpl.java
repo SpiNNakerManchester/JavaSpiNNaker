@@ -204,7 +204,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		if (isNull(str)) {
 			return null;
 		}
-		return str.trim();
+		return str.strip();
 	}
 
 	@Override
@@ -232,14 +232,14 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 
 		if (!security.isUserInRole("ADMIN") || isNull(req.owner)
-				|| req.owner.trim().isEmpty()) {
+				|| req.owner.isBlank()) {
 			req.owner = security.getUserPrincipal().getName();
 		}
-		if (isNull(req.owner) || req.owner.trim().isEmpty()) {
+		if (isNull(req.owner) || req.owner.isBlank()) {
 			throw new BadArgs(
 					"request must be connected to an identified owner");
 		}
-		req.owner = req.owner.trim();
+		req.owner = req.owner.strip();
 
 		var ka = properties.getKeepalive();
 		if (isNull(req.keepaliveInterval)

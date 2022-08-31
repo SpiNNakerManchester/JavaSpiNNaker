@@ -158,7 +158,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			var rec = new MachineListEntryRecord();
 			rec.setId(id);
 			rec.setName(row.getString("machine_name"));
-			var m = countMachineThings.call1(id).get();
+			var m = countMachineThings.call1(id).orElseThrow();
 			rec.setNumBoards(m.getInt("board_count"));
 			rec.setNumInUse(m.getInt("in_use"));
 			rec.setNumJobs(m.getInt("num_jobs"));
@@ -318,8 +318,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 		rec.setState(row.getEnum("job_state", JobState.class));
 		var numBoards = row.getInteger("allocation_size");
 		rec.setNumBoards(numBoards);
-		rec.setPowered(nonNull(numBoards)
-				&& numBoards == countPoweredBoards.call1(id).get().getInt("c"));
+		rec.setPowered(nonNull(numBoards) && numBoards == countPoweredBoards
+				.call1(id).orElseThrow().getInt("c"));
 		rec.setMachineId(row.getInt("machine_id"));
 		rec.setMachineName(row.getString("machine_name"));
 		rec.setCreationTimestamp(row.getInstant("create_timestamp"));
@@ -378,7 +378,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			jd.setWidth(cd.getInt("width"));
 			jd.setHeight(cd.getInt("height"));
 		});
-		int poweredCount = countPoweredBoards.call1(id).get().getInt("c");
+		int poweredCount =
+				countPoweredBoards.call1(id).orElseThrow().getInt("c");
 		jd.setBoards(getCoords.call(id).map(r -> new BoardCoords(r, false))
 				.toList());
 		jd.setPowered(jd.getBoards().size() == poweredCount);
@@ -403,7 +404,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				// Cannot find machine!
 				return Optional.empty();
 			}
-			var machine = m.get();
+			var machine = m.orElseThrow();
 
 			var id = insertJob(conn, machine, user, group, keepaliveInterval,
 					req);
@@ -411,7 +412,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				// Insert failed
 				return Optional.empty();
 			}
-			int jobId = id.get();
+			int jobId = id.orElseThrow();
 
 			epochs.nextJobsEpoch();
 			var scale = props.getPriorityScale();
@@ -1242,8 +1243,9 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 					var findBoard = conn.query(findBoardByJobChip)) {
 				return conn.transaction(false, () -> findBoard
 						.call1(id, root, x, y)
-						.map(row -> new BoardLocationImpl(row, Spalloc.this
-								.getMachine(machineId, true, conn).get())));
+						.map(row -> new BoardLocationImpl(row,
+								Spalloc.this.getMachine(machineId, true, conn)
+										.orElseThrow())));
 			}
 		}
 
@@ -1447,7 +1449,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 			private List<Integer> boardIds;
 
 			private SubMachineImpl(Connection conn) {
-				machine = Spalloc.this.getMachine(machineId, true, conn).get();
+				machine = Spalloc.this.getMachine(machineId, true, conn)
+						.orElseThrow();
 				try (var getRootXY = conn.query(GET_ROOT_COORDS);
 						var getBoardInfo = conn.query(GET_BOARD_CONNECT_INFO)) {
 					getRootXY.call1(root).ifPresent(row -> {

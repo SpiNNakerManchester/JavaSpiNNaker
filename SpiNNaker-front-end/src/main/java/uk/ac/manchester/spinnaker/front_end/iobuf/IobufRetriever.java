@@ -201,7 +201,7 @@ public class IobufRetriever extends BoardLocalSupport {
 	private void retrieveIobufContents(CoreSubsets cores, Replacer replacer,
 			File provenanceDir, List<String> errorEntries,
 			List<String> warnEntries) throws IOException, ProcessException {
-		try (var bl = new BoardLocal(cores.first().get())) {
+		try (var bl = new BoardLocal(cores.first().orElseThrow())) {
 			// extract iobuf, write to file and check for errors for provenance
 			for (var iobuf : txrx.getIobuf(cores)) {
 				var file = getProvenanceFile(provenanceDir, iobuf);

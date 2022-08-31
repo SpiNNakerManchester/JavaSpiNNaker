@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end;
 import static java.lang.System.err;
 import static java.lang.System.exit;
 import static java.lang.System.out;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.LogControl.setLoggerDir;
@@ -386,7 +387,7 @@ public final class CommandLineInterface {
 
 	private static Machine getMachine(String filename)
 			throws JsonParseException, JsonMappingException, IOException {
-		try (var machineReader = new FileReader(filename)) {
+		try (var machineReader = new FileReader(filename, UTF_8)) {
 			return new Machine(
 					MAPPER.readValue(machineReader, MachineBean.class));
 		}
@@ -394,21 +395,21 @@ public final class CommandLineInterface {
 
 	private static IobufRequest getIobufRequest(String filename)
 			throws IOException {
-		try (var gatherReader = new FileReader(filename)) {
+		try (var gatherReader = new FileReader(filename, UTF_8)) {
 			return MAPPER.readValue(gatherReader, IobufRequest.class);
 		}
 	}
 
 	private static List<Gather> getGatherers(String filename)
 			throws IOException {
-		try (var gatherReader = new FileReader(filename)) {
+		try (var gatherReader = new FileReader(filename, UTF_8)) {
 			return MAPPER.readValue(gatherReader, Gather.LIST);
 		}
 	}
 
 	private static List<Placement> getPlacements(String placementsFile)
 			throws IOException {
-		try (var placementReader = new FileReader(placementsFile)) {
+		try (var placementReader = new FileReader(placementsFile, UTF_8)) {
 			return MAPPER.readValue(placementReader, Placement.LIST);
 		}
 	}

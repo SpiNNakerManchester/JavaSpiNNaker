@@ -24,6 +24,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.BITFILE;
 import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.REGISTER;
@@ -37,7 +38,6 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -382,7 +382,7 @@ public class FirmwareLoader {
 	}
 
 	private static int crc(Resource r) throws IOException {
-		try (var s = new BufferedInputStream(r.getInputStream())) {
+		try (var s = buffer(r.getInputStream())) {
 			return crc(s);
 		}
 	}
@@ -500,7 +500,7 @@ public class FirmwareLoader {
 				SLOT_LABELS[i], state, CHIP_LABELS[flags & CHIP_MASK], base,
 				length, crc));
 		log.info("FPGA BOOT:           File      {}",
-				new String(filenameBytes, 0, size, UTF_8).trim());
+				new String(filenameBytes, 0, size, UTF_8).strip());
 		log.info("FPGA BOOT:           Written   {}",
 				Instant.ofEpochSecond(time));
 		log.info("FPGA BOOT:           ModTime   {}",
@@ -569,7 +569,7 @@ public class FirmwareLoader {
 		}
 
 		var base = BITFILE_BASE.add(slot * BITFILE_MAX_SIZE);
-		try (var s = new BufferedInputStream(resource.getInputStream())) {
+		try (var s = buffer(resource.getInputStream())) {
 			txrx.writeSerialFlash(board, base, size, s);
 		}
 		int otherCRC = txrx.readSerialFlashCRC(board, base, size);
@@ -692,7 +692,7 @@ class FirmwareDefinition {
 			props.load(is);
 		}
 		bitfileNames = stream(props.getProperty("bitfiles").split(","))
-				.map(String::trim).collect(toList());
+				.map(String::strip).collect(toList());
 		for (var f : bitfileNames) {
 			modTimes.put(f, parseUnsignedInt(props.getProperty(f)));
 			var r = manifestLocation.createRelative(f);

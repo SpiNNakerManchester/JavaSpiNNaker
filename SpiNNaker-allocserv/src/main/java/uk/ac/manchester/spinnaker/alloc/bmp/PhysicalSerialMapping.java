@@ -17,9 +17,10 @@
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.function.Predicate.not;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.commons.io.IOUtils.buffer;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -58,11 +59,11 @@ class PhysicalSerialMapping {
 
 	@PostConstruct
 	void loadMapping() throws IOException {
-		try (var isr =
-				new InputStreamReader(spin5serialFile.getInputStream(), UTF_8);
-				var r = new BufferedReader(isr)) {
-			r.lines().map(s -> s.replaceFirst("#.*", "").trim())
-					.filter(s -> !s.isEmpty()).forEach(this::parseOneMapping);
+		try (var isr = new InputStreamReader(spin5serialFile.getInputStream(),
+				UTF_8)) {
+			buffer(isr).lines().map(s -> s.replaceFirst("#.*", "").strip())
+					.filter(not(String::isBlank))
+					.forEach(this::parseOneMapping);
 		}
 		log.info("loaded physical/logical board ID map: {} entries",
 				physicalToLogical.size());

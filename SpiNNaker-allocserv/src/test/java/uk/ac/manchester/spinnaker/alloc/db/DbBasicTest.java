@@ -117,7 +117,7 @@ class DbBasicTest {
 
 				// No column to fetch
 				e = assertThrows(InvalidResultSetAccessException.class,
-						() -> q0.call1().get().getInstant("d"));
+						() -> q0.call1().orElseThrow().getInstant("d"));
 				assertContains("no such column: 'd'", e.getMessage());
 			}
 
@@ -130,7 +130,7 @@ class DbBasicTest {
 		// Accessing row after it has been disposed of
 		var row = c.transaction(() -> {
 			try (var q = c.query(COUNT)) {
-				var r = q.call1().get();
+				var r = q.call1().orElseThrow();
 				assertContains("Row(c:", r.toString());
 				return r;
 			}

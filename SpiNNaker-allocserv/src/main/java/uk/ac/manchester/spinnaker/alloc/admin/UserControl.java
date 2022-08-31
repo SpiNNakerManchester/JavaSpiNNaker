@@ -478,7 +478,7 @@ public class UserControl extends DatabaseAwareBean {
 		}
 
 		if (!oldUser.isExternallyAuthenticated() && nonNull(user.getPassword())
-				&& !user.getPassword().isEmpty()) {
+				&& !user.getPassword().isBlank()) {
 			if (sql.setUserPass.call(encPass, id) > 0) {
 				log.info("setting user {} to have password", id);
 			}

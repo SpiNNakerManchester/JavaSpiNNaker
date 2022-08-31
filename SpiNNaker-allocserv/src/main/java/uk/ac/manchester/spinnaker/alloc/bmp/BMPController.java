@@ -1276,7 +1276,8 @@ public class BMPController extends DatabaseAwareBean {
 
 		int insertBoardReport(
 				int boardId, Integer jobId, String issue, int userId) {
-			return insertBoardReport.key(boardId, jobId, issue, userId).get();
+			return insertBoardReport.key(boardId, jobId, issue, userId)
+					.orElseThrow();
 		}
 
 		int markBoardAsDead(Integer boardId) {

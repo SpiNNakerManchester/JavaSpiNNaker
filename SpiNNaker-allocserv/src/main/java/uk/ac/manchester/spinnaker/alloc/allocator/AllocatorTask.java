@@ -895,7 +895,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private boolean setPower(PowerSQL sql, int jobId, PowerState power,
 			JobState targetState) {
-		var sourceState = sql.getJobState.call1(jobId).get()
+		var sourceState = sql.getJobState.call1(jobId).orElseThrow()
 				.getEnum("job_state", JobState.class);
 		var boards = sql.getJobBoards.call(jobId).map(integer("board_id"))
 				.toList();

@@ -102,7 +102,7 @@ public class JobStateResponse {
 			if (!data.isPresent()) {
 				return null;
 			}
-			return mapper.readValue(data.get(), CreateJobRequest.class);
+			return mapper.readValue(data.orElseThrow(), CreateJobRequest.class);
 		} catch (IOException | DataAccessException e) {
 			// Non-critical; this can be just dropped if it doesn't work
 			return null;

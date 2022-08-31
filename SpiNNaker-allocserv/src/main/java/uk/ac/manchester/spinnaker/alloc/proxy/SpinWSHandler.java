@@ -109,7 +109,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@PostConstruct
 	private void initLocalHost() throws UnknownHostException {
 		var props = properties.getProxy();
-		if (!props.getLocalHost().isEmpty()) {
+		if (!props.getLocalHost().isBlank()) {
 			this.localHost = InetAddress.getByName(props.getLocalHost());
 		}
 	}

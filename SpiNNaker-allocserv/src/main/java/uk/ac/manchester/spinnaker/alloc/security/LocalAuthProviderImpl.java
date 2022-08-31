@@ -145,7 +145,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private Optional<GroupRecord> makeInitGroup(String groupname) {
-		if (groupname.isEmpty()) {
+		if (groupname.isBlank()) {
 			// No system group name, so ignore group setup
 			return Optional.empty();
 		}
@@ -176,11 +176,12 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		var group = makeInitGroup(authProps.getSystemGroup());
 
 		// Connect the two if we made them both
-		if (user.isPresent() && group.isPresent() && !userController
-				.addUserToGroup(user.get(), group.get()).isPresent()) {
-			log.warn("user {} was not added to default group {}",
-					user.get().getUserName(), group.get().getGroupName());
-		}
+		user.ifPresent(u -> group.ifPresent(g -> {
+			if (!userController.addUserToGroup(u, g).isPresent()) {
+				log.warn("user {} was not added to default group {}",
+						u.getUserName(), g.getGroupName());
+			}
+		}));
 	}
 
 	private static final class SetupException extends RuntimeException {
@@ -195,8 +196,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@PreAuthorize(IS_ADMIN)
 	public boolean createUser(String username, String password,
 			TrustLevel trustLevel) {
-		var name = username.trim();
-		if (name.isEmpty()) {
+		var name = username.strip();
+		if (name.isBlank()) {
 			// Won't touch the DB if the username is empty
 			throw new UsernameNotFoundException("empty user name?");
 		}
@@ -352,8 +353,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			throws AuthenticationException {
 		log.info("authenticating Local Login {}", auth.toString());
 		// We ALWAYS trim the username; extraneous whitespace is bogus
-		var name = auth.getName().trim();
-		if (name.isEmpty()) {
+		var name = auth.getName().strip();
+		if (name.isBlank()) {
 			// Won't touch the DB if the username is empty
 			throw new UsernameNotFoundException("empty user name?");
 		}
@@ -586,7 +587,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * checks the password, we just got the userId from the DB, and
 			 * we're in a transaction so the world won't change under our feet.
 			 */
-			return userAuthorities.call1(userId).get();
+			return userAuthorities.call1(userId).orElseThrow();
 		}
 
 		/**
@@ -827,7 +828,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				if (teamsClaim instanceof List) {
 					if (!teamsClaim.isEmpty()) {
 						// Dummy check to determine if first element is string
-						teamsClaim.get(0).isEmpty();
+						teamsClaim.get(0).isBlank();
 					}
 					return teamsClaim;
 				}
@@ -1092,7 +1093,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			String oldSubject) {
 		if (isNull(subject)) {
 			log.warn("null subject for {}", username);
-		} else if (subject.isEmpty()) {
+		} else if (subject.isBlank()) {
 			log.warn("empty subject for {}", username);
 		}
 		if (nonNull(oldSubject)) {

@@ -243,7 +243,7 @@ public final class Blacklist implements Serializable {
 	 *             If the string is badly formatted.
 	 */
 	public Blacklist(String blacklistText) {
-		stream(blacklistText.split("\\R+")).map(String::trim)
+		blacklistText.lines().map(String::strip)
 				// Remove blank and comment lines
 				.filter(Blacklist::isRelevantLine)
 				// Parse the remaining lines
@@ -263,7 +263,7 @@ public final class Blacklist implements Serializable {
 	 */
 	public Blacklist(File blacklistFile) throws IOException {
 		try (var r = buffer(new FileReader(requireNonNull(blacklistFile)))) {
-			r.lines().map(String::trim)
+			r.lines().map(String::strip)
 					// Remove blank and comment lines
 					.filter(Blacklist::isRelevantLine)
 					// Parse the remaining lines
@@ -273,7 +273,7 @@ public final class Blacklist implements Serializable {
 	}
 
 	private static boolean isRelevantLine(String s) {
-		return !s.isEmpty() && !s.startsWith("#");
+		return !s.isBlank() && !s.startsWith("#");
 	}
 
 	// REs from Perl code to read blacklist files
@@ -363,7 +363,7 @@ public final class Blacklist implements Serializable {
 			}
 
 			// All done, or error
-			if (!rest.isEmpty()) {
+			if (!rest.isBlank()) {
 				// Bad line
 				throw new IllegalArgumentException("bad line: " + line);
 			}

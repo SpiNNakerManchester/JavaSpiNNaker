@@ -257,7 +257,7 @@ public interface AdminController {
 
 		/** @param name The name of the group to create. */
 		public void setName(String name) {
-			this.name = name.trim();
+			this.name = name.strip();
 		}
 
 		/**

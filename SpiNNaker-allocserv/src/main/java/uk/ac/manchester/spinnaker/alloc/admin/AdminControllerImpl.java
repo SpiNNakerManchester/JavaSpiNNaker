@@ -21,6 +21,7 @@ import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
@@ -794,7 +795,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	@Action("retagging a machine")
 	public ModelAndView retagMachine(String machineName, String newTags) {
 		var tags =
-				stream(newTags.split(",")).map(String::trim).collect(toSet());
+				stream(newTags.split(",")).map(String::strip).collect(toSet());
 		machineController.updateTags(machineName, tags);
 		log.info("retagged {} to have tags {}", machineName, tags);
 		return machineManagement();
@@ -831,7 +832,7 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	}
 
 	private List<Machine> extractMachineDefinitions(MultipartFile file) {
-		try (var input = file.getInputStream()) {
+		try (var input = buffer(file.getInputStream())) {
 			return machineDefiner.readMachineDefinitions(input);
 		} catch (IOException e) {
 			throw new AdminException(

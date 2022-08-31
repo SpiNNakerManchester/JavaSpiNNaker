@@ -119,7 +119,7 @@ class SpallocCoreTest extends TestSupport {
 		var m = spalloc.getMachine(MACHINE_NAME, false);
 		assertNotNull(m);
 		assertNotEquals(Optional.empty(), m);
-		var machine = m.get();
+		var machine = m.orElseThrow();
 		// Not tagged
 		assertEquals(Set.of(), machine.getTags());
 		assertEquals(List.of(0), machine.getAvailableBoards());
@@ -135,7 +135,7 @@ class SpallocCoreTest extends TestSupport {
 
 		@BeforeEach
 		void getMachine() {
-			machine = spalloc.getMachine(MACHINE_NAME, false).get();
+			machine = spalloc.getMachine(MACHINE_NAME, false).orElseThrow();
 		}
 
 		@Test
@@ -181,19 +181,21 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getBoardByChip() {
 			assertEquals(new BoardPhysicalCoordinates(1, 1, 0),
-					machine.getBoardByChip(0, 0).get().getPhysical());
+					machine.getBoardByChip(0, 0).orElseThrow().getPhysical());
 		}
 
 		@Test
 		void getBoardByPhysicalCoords() {
-			assertEquals(new BoardCoordinates(0, 0, 0), machine
-					.getBoardByPhysicalCoords(1, 1, 0).get().getLogical());
+			assertEquals(new BoardCoordinates(0, 0, 0),
+					machine.getBoardByPhysicalCoords(1, 1, 0).orElseThrow()
+							.getLogical());
 		}
 
 		@Test
 		void getBoardByLogicalCoords() {
-			assertEquals(new BoardPhysicalCoordinates(1, 1, 0), machine
-					.getBoardByLogicalCoords(0, 0, 0).get().getPhysical());
+			assertEquals(new BoardPhysicalCoordinates(1, 1, 0),
+					machine.getBoardByLogicalCoords(0, 0, 0).orElseThrow()
+							.getPhysical());
 		}
 
 		@Test
@@ -235,14 +237,15 @@ class SpallocCoreTest extends TestSupport {
 			var m = spalloc.getMachineInfo(MACHINE_NAME, false, p);
 			assertNotNull(m);
 			assertNotEquals(Optional.empty(), m);
-			var machine = m.get();
+			var machine = m.orElseThrow();
 			// Not tagged
 			assertEquals(MACHINE_NAME, machine.getName());
 			assertEquals(List.of(), machine.getTags());
 			assertEquals(List.of(), machine.getLive()); // TODO fix test setup
 
 			withJob(jobId -> withAllocation(jobId, () -> {
-				var m2 = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var m2 = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(1, m2.getJobs().size());
 				var j = m2.getJobs().get(0);
 				assertEquals(Optional.of(USER_NAME), j.getOwner());
@@ -262,7 +265,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getId() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(MACHINE, md.getId());
 			});
 		}
@@ -270,7 +274,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getName() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(MACHINE_NAME, md.getName());
 			});
 		}
@@ -278,7 +283,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getWidth() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(1, md.getWidth());
 			});
 		}
@@ -286,7 +292,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getHeight() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(1, md.getHeight());
 			});
 		}
@@ -294,7 +301,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getNumInUse() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(1, md.getNumInUse());
 			});
 		}
@@ -302,7 +310,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getLive() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(List.of(), md.getLive());
 			});
 		}
@@ -310,7 +319,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getDead() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(List.of(), md.getDead());
 			});
 		}
@@ -318,7 +328,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getJobs() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(1, md.getJobs().size());
 				var j = md.getJobs().get(0);
 				assertEquals(jobId, j.getId());
@@ -332,7 +343,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getTags() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(List.of(), md.getTags());
 			});
 		}
@@ -340,7 +352,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getQuota() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p).get();
+				var md = spalloc.getMachineInfo(MACHINE_NAME, false, p)
+						.orElseThrow();
 				assertEquals(Optional.of(1024L), md.getQuota());
 			});
 		}
@@ -385,21 +398,21 @@ class SpallocCoreTest extends TestSupport {
 			var p = c.setAuth(USER_NAME);
 			assertNotEquals(Optional.empty(), spalloc.getJob(p, jobId));
 
-			var j = spalloc.getJob(p, jobId).get();
+			var j = spalloc.getJob(p, jobId).orElseThrow();
 
 			assertEquals(jobId, j.getId());
 			assertEquals(QUEUED, j.getState());
-			assertEquals(USER_NAME, j.getOwner().get());
+			assertEquals(USER_NAME, j.getOwner().orElseThrow());
 			// Not yet allocated so no machine to get
 			assertEquals(Optional.empty(), j.getMachine());
 
 			withAllocation(jobId, () -> {
-				var j2 = spalloc.getJob(p, jobId).get();
+				var j2 = spalloc.getJob(p, jobId).orElseThrow();
 
 				assertEquals(jobId, j2.getId());
 				assertEquals(QUEUED, j2.getState());
-				assertEquals(USER_NAME, j2.getOwner().get());
-				var m = j2.getMachine().get();
+				assertEquals(USER_NAME, j2.getOwner().orElseThrow());
+				var m = j2.getMachine().orElseThrow();
 				assertEquals(MACHINE_NAME, m.getMachine().getName());
 			});
 
@@ -407,7 +420,7 @@ class SpallocCoreTest extends TestSupport {
 
 			// Re-fetch to see state change
 			assertEquals(QUEUED, j.getState());
-			j = spalloc.getJob(p, jobId).get();
+			j = spalloc.getJob(p, jobId).orElseThrow();
 			assertEquals(DESTROYED, j.getState());
 		}));
 		// See more detailed testing of Job below
@@ -419,7 +432,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getId() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(jobId, j.getId());
 			});
 		}
@@ -427,7 +440,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getState() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(QUEUED, j.getState());
 			});
 		}
@@ -435,7 +448,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getOwner() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(Optional.of(USER_NAME), j.getOwner());
 			});
 		}
@@ -443,7 +456,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getOriginalRequest() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				// We didn't supply one
 				assertEquals(Optional.empty(), j.getOriginalRequest());
 			});
@@ -452,7 +465,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getWidth() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(Optional.of(1), j.getWidth());
 			});
 		}
@@ -460,7 +473,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getHeight() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(Optional.of(1), j.getHeight());
 			});
 		}
@@ -468,7 +481,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getDepth() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(Optional.of(1), j.getDepth());
 			});
 		}
@@ -476,7 +489,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getRootChip() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(Optional.of(ZERO_ZERO), j.getRootChip());
 			});
 		}
@@ -484,8 +497,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void whereIs() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
-				var bl = j.whereIs(4, 4).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
+				var bl = j.whereIs(4, 4).orElseThrow();
 				assertEquals(ZERO_ZERO, bl.getBoardChip());
 				assertEquals(new ChipLocation(4, 4), bl.getChip());
 				assertEquals(new ChipLocation(1, 3),
@@ -501,8 +514,8 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getMachine() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
-				var sm = j.getMachine().get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
+				var sm = j.getMachine().orElseThrow();
 
 				assertEquals(1, sm.getWidth());
 				assertEquals(1, sm.getHeight());
@@ -528,7 +541,7 @@ class SpallocCoreTest extends TestSupport {
 			var ts0 = Instant.now().truncatedTo(SECONDS);
 			snooze1s();
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(Optional.empty(), j.getKeepaliveHost());
 				var ts1 = j.getKeepaliveTimestamp();
 				assertTrue(ts0.isBefore(ts1));
@@ -537,7 +550,7 @@ class SpallocCoreTest extends TestSupport {
 				j.access("3.3.3.3");
 
 				// reread
-				var j2 = spalloc.getJob(p, jobId).get();
+				var j2 = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(Optional.of("3.3.3.3"), j2.getKeepaliveHost());
 				var ts2 = j2.getKeepaliveTimestamp();
 				assertTrue(ts1.isBefore(ts2));
@@ -547,7 +560,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getStartTime() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertNotNull(j.getStartTime());
 			});
 		}
@@ -558,7 +571,7 @@ class SpallocCoreTest extends TestSupport {
 			inContext(c -> withJob(jobId -> {
 				var p = c.setAuth(USER_NAME);
 
-				var j = spalloc.getJob(p, jobId).get();
+				var j = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(QUEUED, j.getState());
 				assertEquals(Optional.empty(), j.getFinishTime());
 				assertEquals(Optional.empty(), j.getReason());
@@ -568,9 +581,9 @@ class SpallocCoreTest extends TestSupport {
 				j.destroy("foo bar");
 
 				// reread
-				var j2 = spalloc.getJob(p, jobId).get();
+				var j2 = spalloc.getJob(p, jobId).orElseThrow();
 				assertEquals(DESTROYED, j2.getState());
-				var ts1 = j2.getFinishTime().get();
+				var ts1 = j2.getFinishTime().orElseThrow();
 				assertFalse(ts0.isAfter(ts1));
 				assertEquals(Optional.of("foo bar"), j2.getReason());
 			}));
@@ -582,7 +595,7 @@ class SpallocCoreTest extends TestSupport {
 				try {
 					assertEquals(List.of(), getReports());
 
-					var j = spalloc.getJob(p, jobId).get();
+					var j = spalloc.getJob(p, jobId).orElseThrow();
 					// Messy to build as usually only done by Jackson
 					var r = new IssueReportRequest();
 					var b = new ReportedBoard();
@@ -611,11 +624,11 @@ class SpallocCoreTest extends TestSupport {
 			var p = c.setAuth(USER_NAME);
 			assertNotEquals(Optional.empty(), spalloc.getJobInfo(p, jobId));
 
-			var j = spalloc.getJobInfo(p, jobId).get();
+			var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 
 			assertEquals(jobId, j.getId());
 			assertEquals(QUEUED, j.getState());
-			assertEquals(USER_NAME, j.getOwner().get());
+			assertEquals(USER_NAME, j.getOwner().orElseThrow());
 		}));
 		// See more detailed testing of JobDescription below
 	}
@@ -626,7 +639,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getId() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(jobId, j.getId());
 			});
 		}
@@ -634,7 +647,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getOwner() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(Optional.of(USER_NAME), j.getOwner());
 			});
 		}
@@ -642,7 +655,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getOwnerHost() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(Optional.empty(), j.getOwnerHost());
 			});
 		}
@@ -650,7 +663,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getRequest() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertNull(j.getRequest());
 			});
 		}
@@ -658,7 +671,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getRequestBytes() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertNull(j.getRequestBytes());
 			});
 		}
@@ -666,7 +679,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getKeepAlive() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(Duration.ofSeconds(0), j.getKeepAlive());
 			});
 		}
@@ -674,7 +687,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getState() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(QUEUED, j.getState());
 			});
 		}
@@ -682,7 +695,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getHeight() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(Optional.of(8), j.getHeight());
 			});
 		}
@@ -690,7 +703,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getWidth() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(Optional.of(8), j.getWidth());
 			});
 		}
@@ -698,7 +711,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getTriadHeight() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(1, j.getTriadHeight());
 			});
 		}
@@ -706,7 +719,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getTriadWidth() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(1, j.getTriadWidth());
 			});
 		}
@@ -714,7 +727,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getMachine() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(MACHINE_NAME, j.getMachine());
 			});
 		}
@@ -722,7 +735,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getMachineUrl() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertNull(j.getMachineUrl());
 			});
 		}
@@ -730,7 +743,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void getBoards() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertEquals(
 						List.of(new BoardCoords(0, 0, 0, 1, 1, 0, BOARD_ADDR)),
 						j.getBoards());
@@ -740,7 +753,7 @@ class SpallocCoreTest extends TestSupport {
 		@Test
 		void isPowered() {
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertFalse(j.isPowered());
 			});
 		}
@@ -750,7 +763,7 @@ class SpallocCoreTest extends TestSupport {
 			var ts0 = Instant.now().truncatedTo(SECONDS);
 			snooze1s();
 			withStandardAllocatedJob((p, jobId) -> {
-				var j = spalloc.getJobInfo(p, jobId).get();
+				var j = spalloc.getJobInfo(p, jobId).orElseThrow();
 				assertTrue(ts0.isBefore(j.getStartTime()));
 			});
 		}
@@ -778,7 +791,7 @@ class SpallocCoreTest extends TestSupport {
 		var job = spalloc
 				.createJob(USER_NAME, GROUP_NAME, CreateBoard.triad(0, 0, 0),
 						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
-				.get();
+				.orElseThrow();
 		try {
 			job.access("0.0.0.0");
 			assertEquals(QUEUED, job.getState());
@@ -789,7 +802,7 @@ class SpallocCoreTest extends TestSupport {
 		job = spalloc
 				.createJob(USER_NAME, GROUP_NAME, new CreateDimensions(1, 1, 1),
 						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
-				.get();
+				.orElseThrow();
 		try {
 			assertEquals(QUEUED, job.getState());
 		} finally {
@@ -798,7 +811,7 @@ class SpallocCoreTest extends TestSupport {
 
 		job = spalloc.createJob(USER_NAME, GROUP_NAME,
 				new CreateDimensionsAt(1, 1, BOARD_ADDR, null), MACHINE_NAME,
-				List.of(), Duration.ofSeconds(1), null).get();
+				List.of(), Duration.ofSeconds(1), null).orElseThrow();
 		try {
 			assertEquals(QUEUED, job.getState());
 		} finally {
@@ -808,7 +821,7 @@ class SpallocCoreTest extends TestSupport {
 		job = spalloc
 				.createJob(USER_NAME, GROUP_NAME, new CreateNumBoards(1, 0),
 						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
-				.get();
+				.orElseThrow();
 		try {
 			assertEquals(QUEUED, job.getState());
 		} finally {
@@ -819,7 +832,7 @@ class SpallocCoreTest extends TestSupport {
 		job = spalloc
 				.createJob(USER_NAME, null, new CreateNumBoards(1, 0),
 						MACHINE_NAME, List.of(), Duration.ofSeconds(1), null)
-				.get();
+				.orElseThrow();
 		try {
 			assertEquals(QUEUED, job.getState());
 			// TODO check that the right group was selected

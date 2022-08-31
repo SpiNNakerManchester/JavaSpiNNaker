@@ -136,17 +136,17 @@ class MDefLoaderTest {
 
 			// Should be just one BMP
 			try (var q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-				assertEquals(1, q.call1().get().getInt("c"));
+				assertEquals(1, q.call1().orElseThrow().getInt("c"));
 			}
 
 			// Should be just one board
 			try (var q = c.query(COUNT_LIVE_BOARDS)) {
-				assertEquals(1, q.call1().get().getInt("c"));
+				assertEquals(1, q.call1().orElseThrow().getInt("c"));
 			}
 
 			// Single-board setups have no inter-board links
 			try (var q = c.query(COUNT_LIVE_LINKS)) {
-				assertEquals(0, q.call1().get().getInt("c"));
+				assertEquals(0, q.call1().orElseThrow().getInt("c"));
 			}
 		});
 	}
@@ -177,17 +177,17 @@ class MDefLoaderTest {
 
 			// Should be just one BMP
 			try (var q = c.query("SELECT COUNT(*) AS c FROM bmp")) {
-				assertEquals(1, q.call1().get().getInt("c"));
+				assertEquals(1, q.call1().orElseThrow().getInt("c"));
 			}
 
 			// Should be just one board
 			try (var q = c.query(COUNT_LIVE_BOARDS)) {
-				assertEquals(3, q.call1().get().getInt("c"));
+				assertEquals(3, q.call1().orElseThrow().getInt("c"));
 			}
 
 			// Single-board setups have no inter-board links
 			try (var q = c.query(COUNT_LIVE_LINKS)) {
-				assertEquals(9, q.call1().get().getInt("c"));
+				assertEquals(9, q.call1().orElseThrow().getInt("c"));
 			}
 		});
 	}
