@@ -90,7 +90,7 @@ public final class BoardCoordinates {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof BoardCoordinates) {
-			BoardCoordinates other = (BoardCoordinates) o;
+			var other = (BoardCoordinates) o;
 			return x == other.x && y == other.y && z == other.z;
 		}
 		return false;

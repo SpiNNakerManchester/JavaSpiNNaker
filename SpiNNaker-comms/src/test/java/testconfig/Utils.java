@@ -18,7 +18,6 @@ package testconfig;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Some of the printing utilities used by testing code.
@@ -31,8 +30,8 @@ public abstract class Utils {
 
 	public static void printEnumCollection(String name,
 			Collection<? extends Enum<?>> enumList) {
-		StringBuilder sb = new StringBuilder(name).append(" ");
-		for (Enum<?> enumValue : enumList) {
+		var sb = new StringBuilder(name).append(" ");
+		for (var enumValue : enumList) {
 			sb.append(enumValue.name()).append("; ");
 		}
 		System.out.println(sb.toString());
@@ -47,19 +46,19 @@ public abstract class Utils {
 		int start = 0;
 		int end = BITS_IN_WORD;
 
-		Set<Integer> startFields = new HashSet<>();
-		Set<Integer> endFields = new HashSet<>();
-		for (Field field : fields) {
+		var startFields = new HashSet<>();
+		var endFields = new HashSet<>();
+		for (var field : fields) {
 			startFields.add(field.from);
 			endFields.add(field.to);
 		}
 
-		StringBuilder prefix = new StringBuilder(" ");
+		var prefix = new StringBuilder(" ");
 		name.chars().forEachOrdered(c -> prefix.append(" "));
-		StringBuilder header1 = new StringBuilder(prefix);
-		StringBuilder header2 = new StringBuilder(prefix);
-		StringBuilder header3 = new StringBuilder(prefix);
-		StringBuilder mainline = new StringBuilder(name).append(" ");
+		var header1 = new StringBuilder(prefix);
+		var header2 = new StringBuilder(prefix);
+		var header3 = new StringBuilder(prefix);
+		var mainline = new StringBuilder(name).append(" ");
 		boolean sep = false;
 		for (int i = start; i < end; i++) {
 			if (!sep && startFields.contains(i)) {

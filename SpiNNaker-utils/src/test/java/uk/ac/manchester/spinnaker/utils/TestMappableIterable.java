@@ -18,22 +18,20 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unused")
 public class TestMappableIterable {
-	private final List<Integer> values = asList(1, 2, 3, 4, 5);
+	private final List<Integer> values = List.of(1, 2, 3, 4, 5);
 
-	private final List<Integer> values2 = asList(1, 2, 3, 2, 1);
+	private final List<Integer> values2 = List.of(1, 2, 3, 2, 1);
 
-	private final List<Integer> values3 = asList(5, 6, 7, 8, 9);
+	private final List<Integer> values3 = List.of(5, 6, 7, 8, 9);
 
-	private final List<Integer> empty = asList();
+	private final List<Integer> empty = List.of();
 
 	private static void assertUnreachable() {
 		assertTrue(false, "unreachable code reached");
@@ -41,7 +39,7 @@ public class TestMappableIterable {
 
 	@Test
 	public void testMap() {
-		MappableIterable<Integer> mi = () -> values.iterator();
+		MappableIterable<Integer> mi = values::iterator;
 
 		int i = 3;
 		for (Integer value : mi.map(x -> x * 3)) {
@@ -50,7 +48,7 @@ public class TestMappableIterable {
 		}
 		assertEquals(18, i);
 
-		assertEquals(asList('A', 'B', 'C', 'D', 'E'),
+		assertEquals(List.of('A', 'B', 'C', 'D', 'E'),
 				mi.map(x -> (char) (x + 64)).toList());
 
 		mi = () -> empty.iterator();
@@ -63,15 +61,15 @@ public class TestMappableIterable {
 
 	@Test
 	public void testToListAndSet() {
-		MappableIterable<Integer> mi = () -> values2.iterator();
+		MappableIterable<Integer> mi = values2::iterator;
 
 		assertEquals(values2, mi.toList());
-		assertEquals(asList(1, 2, 3), new ArrayList<>(mi.toSet()));
+		assertEquals(List.of(1, 2, 3), new ArrayList<>(mi.toSet()));
 	}
 
 	@Test
 	public void testFilter() {
-		MappableIterable<Integer> mi = () -> values.iterator();
+		MappableIterable<Integer> mi = values::iterator;
 
 		int i = 1;
 		for (Integer value : mi.filter(x -> (x & 1) > 0)) {
@@ -102,14 +100,14 @@ public class TestMappableIterable {
 
 	@Test
 	public void testFirst() {
-		MappableIterable<Integer> mi = () -> values.iterator();
+		MappableIterable<Integer> mi = values::iterator;
 
-		Optional<Integer> first = mi.first();
+		var first = mi.first();
 		assertTrue(first.isPresent());
-		assertEquals(1, first.get());
+		assertEquals(1, first.orElseThrow());
 
-		List<Integer> first3 = mi.first(3).toList();
-		assertEquals(asList(1, 2, 3), first3);
+		var first3 = mi.first(3).toList();
+		assertEquals(List.of(1, 2, 3), first3);
 
 		mi = () -> empty.iterator();
 		assertFalse(mi.first().isPresent());
@@ -117,9 +115,9 @@ public class TestMappableIterable {
 
 	@Test
 	public void testNth() {
-		MappableIterable<Integer> mi = () -> values3.iterator();
+		MappableIterable<Integer> mi = values3::iterator;
 
-		assertEquals(7, mi.nth(2).get());
+		assertEquals(7, mi.nth(2).orElseThrow());
 		assertFalse(mi.nth(7).isPresent());
 	}
 }

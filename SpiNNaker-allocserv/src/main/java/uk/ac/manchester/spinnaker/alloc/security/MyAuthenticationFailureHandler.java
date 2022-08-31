@@ -60,7 +60,7 @@ class MyAuthenticationFailureHandler implements AuthenticationFailureHandler {
 		log.info("auth failure", e);
 		response.setStatus(UNAUTHORIZED.value());
 
-		String message = BLAND_AUTH_MSG;
+		var message = BLAND_AUTH_MSG;
 		if (properties.isDebugFailures()) {
 			message += ": " + e.getLocalizedMessage();
 		}

@@ -28,7 +28,7 @@ public class TestReplacer {
 	@Test
 	public void replace() {
 		// Ignores bad line in dict file
-		Replacer replacer = new Replacer(aplx.getFile());
+		var replacer = new Replacer(aplx.getFile());
 
 		assertEquals("abc-d-2-e-3-f-4",
 				replacer.replace("1\u001e2\u001e3\u001e4"));

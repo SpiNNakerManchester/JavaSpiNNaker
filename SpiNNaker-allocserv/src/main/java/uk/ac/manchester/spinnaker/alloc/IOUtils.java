@@ -41,8 +41,8 @@ public abstract class IOUtils {
 	 *             If the object isn't serializable.
 	 */
 	public static byte[] serialize(Object obj) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+		var baos = new ByteArrayOutputStream();
+		try (var oos = new ObjectOutputStream(baos)) {
 			oos.writeObject(obj);
 		}
 		return baos.toByteArray();
@@ -68,8 +68,8 @@ public abstract class IOUtils {
 	 */
 	public static <T> T deserialize(byte[] bytes, Class<T> cls)
 			throws ClassNotFoundException, IOException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		try (ObjectInputStream ois = new ObjectInputStream(bais)) {
+		var bais = new ByteArrayInputStream(bytes);
+		try (var ois = new ObjectInputStream(bais)) {
 			return cls.cast(ois.readObject());
 		}
 	}

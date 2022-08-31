@@ -42,7 +42,7 @@ class TestOperationMapper {
 
 	@Test
 	void testUnimplemented() {
-		MockFunctions mock = new MockFunctions();
+		var mock = new MockFunctions();
 		assertThrows(UnimplementedDSECommandException.class,
 				() -> mock.getOperation(KEY, 0));
 		assertThrows(UnimplementedDSECommandException.class,
@@ -51,7 +51,7 @@ class TestOperationMapper {
 
 	@Test
 	void testBadResultType() {
-		MockFunctions mock = new MockFunctions() {
+		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public double foo() {
 				return 1.23;
@@ -63,7 +63,7 @@ class TestOperationMapper {
 
 	@Test
 	void testArgumentNotAllowed() {
-		MockFunctions mock = new MockFunctions() {
+		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo(int xy) {
 				return xy;
@@ -75,15 +75,14 @@ class TestOperationMapper {
 
 	@Test
 	void testUnexpectedCheckedExceptionInCall() {
-		MockFunctions mock = new MockFunctions() {
+		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() throws IOException {
 				throw new IOException("booyah");
 			}
 		};
-		Callable op = mock.getOperation(KEY, 0);
-		RuntimeException e =
-				assertThrows(RuntimeException.class, () -> op.execute(KEY));
+		var op = mock.getOperation(KEY, 0);
+		var e = assertThrows(RuntimeException.class, () -> op.execute(KEY));
 		assertEquals("bad call", e.getMessage());
 		assertEquals(IOException.class, e.getCause().getClass());
 		assertEquals("booyah", e.getCause().getMessage());
@@ -91,40 +90,40 @@ class TestOperationMapper {
 
 	@Test
 	void testUncheckedExceptionInCall() {
-		MockFunctions mock = new MockFunctions() {
+		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() {
 				// We shouldn't be encountering these except deliberately
 				throw new AcceptPendingException();
 			}
 		};
-		Callable op = mock.getOperation(KEY, 0);
+		var op = mock.getOperation(KEY, 0);
 		assertThrows(AcceptPendingException.class, () -> op.execute(KEY));
 	}
 
 	@Test
 	void testErrorInCall() {
-		MockFunctions mock = new MockFunctions() {
+		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() {
 				// We shouldn't be encountering these except deliberately
 				throw new AWTError("");
 			}
 		};
-		Callable op = mock.getOperation(KEY, 0);
+		var op = mock.getOperation(KEY, 0);
 		assertThrows(AWTError.class, () -> op.execute(KEY));
 	}
 
 	@Test
 	void testExpectedCheckedExceptionInCall() {
-		MockFunctions mock = new MockFunctions() {
+		var mock = new MockFunctions() {
 			@Operation(PRINT_STRUCT)
 			public int foo() throws DataSpecificationException {
 				throw new DataSpecificationException("boing");
 			}
 		};
-		Callable op = mock.getOperation(KEY, 0);
-		Exception e = assertThrows(DataSpecificationException.class,
+		var op = mock.getOperation(KEY, 0);
+		var e = assertThrows(DataSpecificationException.class,
 				() -> op.execute(KEY));
 		assertEquals("boing", e.getMessage());
 	}
@@ -140,8 +139,8 @@ class TestOperationMapper {
 			}
 		}
 
-		MockFunctions7 mock = new MockFunctions7();
-		Callable op = mock.getOperation(KEY, 0);
+		var mock = new MockFunctions7();
+		var op = mock.getOperation(KEY, 0);
 		assertEquals(0, mock.cmd);
 		assertEquals(0, mock.act);
 		op.execute(13579);

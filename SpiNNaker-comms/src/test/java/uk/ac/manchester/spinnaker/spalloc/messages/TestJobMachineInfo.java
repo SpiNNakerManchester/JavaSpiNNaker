@@ -16,12 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.spalloc.messages;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
 /**
@@ -31,7 +33,7 @@ import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 public class TestJobMachineInfo {
 	@Test
 	void testFromJson() throws IOException {
-		String json =  "{\"connections\":[[[0,0],\"10.2.225.177\"],"
+		var json = "{\"connections\":[[[0,0],\"10.2.225.177\"],"
 				+ "[[4,8],\"10.2.225.145\"],[[0,12],\"10.2.225.185\"],"
 				+ "[[8,16],\"10.2.225.121\"],[[4,20],\"10.2.225.153\"],"
 				+ "[[8,4],\"10.2.225.113\"]],"
@@ -39,8 +41,8 @@ public class TestJobMachineInfo {
 				+ "\"boards\":"
 				+ "[[2,1,1],[2,1,0],[2,1,2],[2,0,2],[2,0,1],[2,0,0]],"
 				+ "\"height\":24}";
-		ObjectMapper mapper = SpallocClient.createMapper();
-		JobMachineInfo fromJson = mapper.readValue(json, JobMachineInfo.class);
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, JobMachineInfo.class);
 		assertEquals(6, fromJson.getConnections().size());
 		assertEquals(6, fromJson.getBoards().size());
 		assertEquals(16, fromJson.getWidth());
@@ -50,11 +52,11 @@ public class TestJobMachineInfo {
 
 	@Test
 	void testNullJson() throws IOException {
-		String json = "{\"connections\":null,"
+		var json = "{\"connections\":null,"
 				+ "\"machine_name\":null,"
 				+ "\"boards\":null}";
-		ObjectMapper mapper = SpallocClient.createMapper();
-		JobMachineInfo fromJson = mapper.readValue(json, JobMachineInfo.class);
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, JobMachineInfo.class);
 		assertEquals(0, fromJson.getConnections().size());
 		assertEquals(0, fromJson.getBoards().size());
 		assertEquals(0, fromJson.getWidth());

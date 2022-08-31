@@ -24,7 +24,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * A deserialiser which deserialises classes based on unique properties that
@@ -81,7 +80,7 @@ class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	 */
 	private Class<? extends T> getTargetClass(Iterator<String> elementNames) {
 		while (elementNames.hasNext()) {
-			Class<? extends T> cls = registry.get(elementNames.next());
+			var cls = registry.get(elementNames.next());
 			if (cls != null) {
 				return cls;
 			}
@@ -107,8 +106,8 @@ class PropertyBasedDeserialiser<T> extends StdDeserializer<T> {
 	@Override
 	public T deserialize(JsonParser parser, DeserializationContext context)
 			throws IOException {
-		ObjectNode root = parser.readValueAsTree();
-		Class<? extends T> cls = getTargetClass(root.fieldNames());
+		var root = parser.readValueAsTree();
+		var cls = getTargetClass(root.fieldNames());
 		if (cls == null) {
 			return null;
 		}

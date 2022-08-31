@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -30,16 +31,9 @@ public class TestDoubleMapIterator {
 
 	@Test
 	public void testSingle() {
-		Map<Double, Map<String, Integer>> aMap = new HashMap<>();
+		var aMap = Map.of(23.2, Map.of("One", 1, "Two", 2, "Three", 3));
 
-		Map<String, Integer> inner = new HashMap<>();
-		inner.put("One", 1);
-		inner.put("Two", 2);
-		inner.put("Three", 3);
-		aMap.put(23.2, inner);
-
-		DoubleMapIterator<Integer> instance;
-		instance = new DoubleMapIterator<>(aMap);
+		var instance = new DoubleMapIterator<>(aMap);
 		int count = 0;
 		while (instance.hasNext()) {
 			int value = instance.next();
@@ -51,22 +45,11 @@ public class TestDoubleMapIterator {
 
 	@Test
 	public void testMultiple() {
-		Map<Double, Map<String, Integer>> aMap = new HashMap<>();
+		var aMap = Map.of(//
+				23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+				43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
 
-		Map<String, Integer> inner = new HashMap<>();
-		inner.put("One", 1);
-		inner.put("Two", 2);
-		inner.put("Three", 3);
-		aMap.put(23.2, inner);
-
-		Map<String, Integer> inner2 = new HashMap<>();
-		inner2.put("Ten", 10);
-		inner2.put("Eleven", 11);
-		inner2.put("Twelve", 12);
-		aMap.put(43.6, inner2);
-
-		DoubleMapIterator<Integer> instance;
-		instance = new DoubleMapIterator<>(aMap);
+		var instance = new DoubleMapIterator<>(aMap);
 		int count = 0;
 		while (instance.hasNext()) {
 			int value = instance.next();
@@ -83,9 +66,9 @@ public class TestDoubleMapIterator {
 
 	@Test
 	public void testEmptyWhole() {
-		Map<Double, Map<String, Integer>> aMap = new HashMap<>();
-		DoubleMapIterator<Integer> instance;
-		instance = new DoubleMapIterator<>(aMap);
+		// Compiler solver needs type hint
+		var aMap = new HashMap<Double, Map<String, Integer>>();
+		var instance = new DoubleMapIterator<>(aMap);
 		int count = 0;
 		while (instance.hasNext()) {
 			int value = instance.next();
@@ -98,25 +81,12 @@ public class TestDoubleMapIterator {
 
 	@Test
 	public void testOneEmpty() {
-		Map<Double, Map<String, Integer>> aMap = new HashMap<>();
+		// Compiler solver needs type hint
+		var aMap = Map.of(343.2, new HashMap<String, Integer>(), //
+				23.2, Map.of("One", 1, "Two", 2, "Three", 3), //
+				43.6, Map.of("Ten", 10, "Eleven", 11, "Twelve", 12));
 
-		Map<String, Integer> inner0 = new HashMap<>();
-		aMap.put(343.2, inner0);
-
-		Map<String, Integer> inner = new HashMap<>();
-		inner.put("One", 1);
-		inner.put("Two", 2);
-		inner.put("Three", 3);
-		aMap.put(23.2, inner);
-
-		Map<String, Integer> inner2 = new HashMap<>();
-		inner2.put("Ten", 10);
-		inner2.put("Eleven", 11);
-		inner2.put("Twelve", 12);
-		aMap.put(43.6, inner2);
-
-		DoubleMapIterator<Integer> instance;
-		instance = new DoubleMapIterator<>(aMap);
+		var instance = new DoubleMapIterator<>(aMap);
 		int count = 0;
 		while (instance.hasNext()) {
 			int value = instance.next();

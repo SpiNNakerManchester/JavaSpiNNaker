@@ -43,7 +43,7 @@ public final class BMPBoard {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof BMPBoard) {
-			BMPBoard b = (BMPBoard) o;
+			var b = (BMPBoard) o;
 			return board == b.board;
 		}
 		return false;

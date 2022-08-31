@@ -19,8 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.admin;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
@@ -29,6 +27,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,11 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.AssertFalse;
@@ -135,11 +132,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.z = z;
 		}
 
-		private static final Pattern PATTERN;
-
-		static {
-			PATTERN = Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
-		}
+		private static final Pattern PATTERN =
+				Pattern.compile("^\\[x:(\\d+),y:(\\d+),z:(\\d+)\\]$");
 
 		/**
 		 * Create an instance from its serial form. The serial form (where the
@@ -156,7 +150,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 */
 		@JsonCreator
 		public TriadCoords(String serialForm) {
-			Matcher m = PATTERN.matcher(serialForm);
+			var m = PATTERN.matcher(serialForm);
 			if (!m.matches()) {
 				throw new IllegalArgumentException(
 						"bad argument: " + serialForm);
@@ -223,7 +217,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 * @return The new location
 		 */
 		TriadCoords move(Direction direction, Machine machine) {
-			DirInfo di = DirInfo.get(z, direction);
+			var di = DirInfo.get(z, direction);
 			return new TriadCoords(limit(x + di.dx, machine.getWidth()),
 					limit(y + di.dy, machine.getHeight()), z + di.dz);
 		}
@@ -231,7 +225,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof TriadCoords) {
-				TriadCoords other = (TriadCoords) obj;
+				var other = (TriadCoords) obj;
 				return x == other.x && y == other.y && z == other.z;
 			}
 			return false;
@@ -285,11 +279,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.f = f;
 		}
 
-		private static final Pattern PATTERN;
-
-		static {
-			PATTERN = Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
-		}
+		private static final Pattern PATTERN =
+				Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
 
 		/**
 		 * Create an instance from its serial form. The serial form (where the
@@ -306,7 +297,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 */
 		@JsonCreator
 		public BMPCoords(String serialForm) {
-			Matcher m = PATTERN.matcher(serialForm);
+			var m = PATTERN.matcher(serialForm);
 			if (!m.matches()) {
 				throw new IllegalArgumentException(
 						"bad argument: " + serialForm);
@@ -319,7 +310,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof BMPCoords) {
-				BMPCoords other = (BMPCoords) obj;
+				var other = (BMPCoords) obj;
 				return c == other.c && f == other.f;
 			}
 			return false;
@@ -378,11 +369,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			this.b = b;
 		}
 
-		private static final Pattern PATTERN;
-
-		static {
-			PATTERN = Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
-		}
+		private static final Pattern PATTERN =
+				Pattern.compile("^\\[c:(\\d+),f:(\\d+),b:(\\d+)\\]$");
 
 		/**
 		 * Create an instance from its serial form. The serial form (where the
@@ -399,7 +387,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 */
 		@JsonCreator
 		public BoardPhysicalCoords(String serialForm) {
-			Matcher m = PATTERN.matcher(serialForm);
+			var m = PATTERN.matcher(serialForm);
 			if (!m.matches()) {
 				throw new IllegalArgumentException(
 						"bad argument: " + serialForm);
@@ -413,7 +401,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@Override
 		public boolean equals(Object obj) {
 			if (obj instanceof BoardPhysicalCoords) {
-				BoardPhysicalCoords other = (BoardPhysicalCoords) obj;
+				var other = (BoardPhysicalCoords) obj;
 				return c == other.c && f == other.f && b == other.b;
 			}
 			return false;
@@ -477,15 +465,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		/** South. */
 		south(Direction.S);
 
-		private static final Map<Direction, Link> MAP;
-
-		static {
-			// This *MUST* be made in the static block
-			MAP = new HashMap<>(values().length);
-			for (Link l : values()) {
-				MAP.put(l.d, l);
-			}
-		}
+		private static final Map<Direction, Link> MAP =
+				makeEnumBackingMap(values(), v -> v.d);
 
 		private final Direction d;
 
@@ -655,22 +636,22 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		static class Builder {
 			private String name;
 
-			private Set<String> tags = emptySet();
+			private Set<String> tags = Set.of();
 
 			private int width;
 
 			private int height;
 
-			private Set<TriadCoords> deadBoards = emptySet();
+			private Set<TriadCoords> deadBoards = Set.of();
 
-			private Map<TriadCoords, EnumSet<Link>> deadLinks = emptyMap();
+			private Map<TriadCoords, EnumSet<Link>> deadLinks = Map.of();
 
 			private Map<TriadCoords, BoardPhysicalCoords> boardLocations =
-					emptyMap();
+					Map.of();
 
-			private Map<BMPCoords, String> bmpIps = emptyMap();
+			private Map<BMPCoords, String> bmpIps = Map.of();
 
-			private Map<TriadCoords, String> spinnakerIps = emptyMap();
+			private Map<TriadCoords, String> spinnakerIps = Map.of();
 
 			public Builder withName(String name) {
 				this.name = name;
@@ -721,7 +702,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			}
 
 			public Machine build() {
-				Machine m = new Machine();
+				var m = new Machine();
 				m.name = name;
 				m.tags = tags;
 				m.width = width;
@@ -834,7 +815,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 	@PostConstruct
 	private void setUp() {
-		try (Connection conn = getConnection()) {
+		try (var conn = getConnection()) {
 			DirInfo.load(conn);
 		}
 	}
@@ -856,7 +837,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	public List<Machine> readMachineDefinitions(File file)
 			throws IOException, JsonParseException, JsonMappingException {
-		Configuration cfg = mapper.readValue(file, Configuration.class);
+		var cfg = mapper.readValue(file, Configuration.class);
 		validate(cfg);
 		return cfg.getMachines();
 	}
@@ -878,7 +859,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	public List<Machine> readMachineDefinitions(InputStream stream)
 			throws IOException, JsonParseException, JsonMappingException {
-		Configuration cfg = mapper.readValue(stream, Configuration.class);
+		var cfg = mapper.readValue(stream, Configuration.class);
 		validate(cfg);
 		return cfg.getMachines();
 	}
@@ -893,8 +874,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *             signature of callers.
 	 */
 	private void validate(Configuration cfg) throws IOException {
-		for (ConstraintViolation<Configuration> violation : validatorFactory
-				.getValidator().validate(cfg)) {
+		for (var violation : validatorFactory.getValidator().validate(cfg)) {
 			// We ought to also say the other problems...
 			throw new IOException("failed to validate configuration: "
 					+ violation.getMessage());
@@ -956,9 +936,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	public void loadMachineDefinitions(InputStream stream)
 			throws JsonParseException, JsonMappingException, IOException {
-		List<Machine> machines = readMachineDefinitions(stream);
-		try (Updates sql = new Updates()) {
-			for (Machine machine : machines) {
+		var machines = readMachineDefinitions(stream);
+		try (var sql = new Updates()) {
+			for (var machine : machines) {
 				sql.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}
@@ -971,8 +951,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *            The configuration.
 	 */
 	public void loadMachineDefinitions(Configuration configuration) {
-		try (Updates sql = new Updates()) {
-			for (Machine machine : configuration.getMachines()) {
+		try (var sql = new Updates()) {
+			for (var machine : configuration.getMachines()) {
 				sql.transaction(() -> loadMachineDefinition(sql, machine));
 			}
 		}
@@ -985,7 +965,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *            The machine definition.
 	 */
 	public void loadMachineDefinition(Machine machine) {
-		try (Updates sql = new Updates()) {
+		try (var sql = new Updates()) {
 			sql.transaction(() -> loadMachineDefinition(sql, machine));
 		}
 	}
@@ -1017,9 +997,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 */
 	private Integer loadMachineDefinition(Updates sql, Machine machine) {
 		int machineId = makeMachine(sql, machine);
-		Map<BMPCoords, Integer> bmpIds = makeBMPs(sql, machine, machineId);
-		Map<TriadCoords, Integer> boardIds =
-				makeBoards(sql, machine, machineId, bmpIds);
+		var bmpIds = makeBMPs(sql, machine, machineId);
+		var boardIds = makeBoards(sql, machine, machineId, bmpIds);
 		makeLinks(sql, machine, boardIds);
 		return machineId;
 	}
@@ -1036,7 +1015,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 	private Map<BMPCoords, Integer> makeBMPs(Updates sql, Machine machine,
 			int machineId) {
-		Map<BMPCoords, Integer> bmpIds = new HashMap<>();
+		var bmpIds = new HashMap<BMPCoords, Integer>();
 		machine.bmpIPs.forEach(
 				(bmp, ip) -> sql.makeBMP.key(machineId, ip, bmp.c, bmp.f)
 						.ifPresent(id -> bmpIds.put(bmp, id)));
@@ -1045,13 +1024,13 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 	private Map<TriadCoords, Integer> makeBoards(Updates sql, Machine machine,
 			int machineId, Map<BMPCoords, Integer> bmpIds) {
-		Map<TriadCoords, Integer> boardIds = new HashMap<>();
+		var boardIds = new HashMap<TriadCoords, Integer>();
 		int maxX = 0, maxY = 0;
-		for (TriadCoords triad : machine.boardLocations.keySet()) {
-			BoardPhysicalCoords phys = machine.boardLocations.get(triad);
+		for (var triad : machine.boardLocations.keySet()) {
+			var phys = machine.boardLocations.get(triad);
 			int bmpID = bmpIds.get(phys.bmp());
-			String addr = machine.spinnakerIPs.get(triad);
-			ChipLocation root = triad.chipLocation();
+			var addr = machine.spinnakerIPs.get(triad);
+			var root = triad.chipLocation();
 			log.debug("making {} board {}",
 					machine.deadBoards.contains(triad) ? "dead" : "live",
 					triad);
@@ -1070,14 +1049,12 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 */
 		sql.setMaxCoords.call(maxX + TRIAD_CHIP_SIZE - 1,
 				maxY + TRIAD_CHIP_SIZE - 1, machineId);
-		BoardPhysicalCoords rootPhys =
-				machine.boardLocations.get(new TriadCoords(0, 0, 0));
-		for (TriadCoords triad : machine.deadBoards) {
+		var rootPhys = machine.boardLocations.get(new TriadCoords(0, 0, 0));
+		for (var triad : machine.deadBoards) {
 			// Fake with the machine root if no real coords available
-			BoardPhysicalCoords phys =
-					machine.boardLocations.getOrDefault(triad, rootPhys);
+			var phys = machine.boardLocations.getOrDefault(triad, rootPhys);
 			int bmpID = bmpIds.get(phys.bmp());
-			ChipLocation root = triad.chipLocation();
+			var root = triad.chipLocation();
 			log.debug("making {} board {}", "dead", triad);
 			sql.makeBoard
 					.key(machineId, null, bmpID, null, triad.x, triad.y,
@@ -1089,9 +1066,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 	private void makeLinks(Updates sql, Machine machine,
 			Map<TriadCoords, Integer> boardIds) {
-		for (TriadCoords here : boardIds.keySet()) {
-			for (Direction d : Direction.values()) {
-				TriadCoords there = here.move(d, machine);
+		for (var here : boardIds.keySet()) {
+			for (var d : Direction.values()) {
+				var there = here.move(d, machine);
 				if (boardIds.containsKey(there)) {
 					makeLink(sql, machine, boardIds, here, d, there,
 							d.opposite());
@@ -1103,8 +1080,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private Optional<Integer> makeLink(Updates sql, Machine machine,
 			Map<TriadCoords, Integer> boardIds, TriadCoords here, Direction d1,
 			TriadCoords there, Direction d2) {
-		Integer b1 = boardIds.get(here);
-		Integer b2 = boardIds.get(there);
+		var b1 = boardIds.get(here);
+		var b2 = boardIds.get(there);
 		if (isNull(b1) || isNull(b2)) {
 			// No such board? Oh well
 			return Optional.empty();
@@ -1124,8 +1101,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return sql.makeLink.key(b1, d1, b2, d2, !dead);
 		} catch (DataAccessException e) {
 			if (e.getMostSpecificCause() instanceof SQLiteException) {
-				SQLiteException exn =
-						(SQLiteException) e.getMostSpecificCause();
+				var exn = (SQLiteException) e.getMostSpecificCause();
 				/*
 				 * If the CHECK constraint says no, just ignore; we'll do the
 				 * link from the other direction. This does mean we're doing too
@@ -1167,7 +1143,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		return new TestAPI() {
 			@Override
 			public Integer loadMachineDefinition(Machine machine) {
-				try (Updates updates = new Updates(c)) {
+				try (var updates = new Updates(c)) {
 					return MachineDefinitionLoader.this
 							.loadMachineDefinition(updates, machine);
 				}

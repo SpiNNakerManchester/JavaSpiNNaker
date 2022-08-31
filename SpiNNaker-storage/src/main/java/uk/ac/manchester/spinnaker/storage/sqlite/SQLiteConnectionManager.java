@@ -107,10 +107,10 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	final <T> T callR(CallWithResult<T> call, String actionDescription)
 			throws StorageException {
 		synchronized (connProvider) {
-			try (Connection conn = connProvider.getConnection()) {
+			try (var conn = connProvider.getConnection()) {
 				startTransaction(conn);
 				try {
-					T result = call.call(conn);
+					var result = call.call(conn);
 					conn.commit();
 					return result;
 				} catch (Exception e) {
@@ -136,7 +136,7 @@ abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	final void callV(CallWithoutResult call, String actionDescription)
 			throws StorageException {
 		synchronized (connProvider) {
-			try (Connection conn = connProvider.getConnection()) {
+			try (var conn = connProvider.getConnection()) {
 				startTransaction(conn);
 				try {
 					call.call(conn);

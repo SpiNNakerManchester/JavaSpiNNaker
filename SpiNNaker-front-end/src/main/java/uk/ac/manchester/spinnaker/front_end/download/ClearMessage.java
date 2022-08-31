@@ -46,8 +46,7 @@ public final class ClearMessage extends GatherProtocolMessage {
 	 * @return The created message.
 	 */
 	static ClearMessage create(HasCoreLocation destination, int transactionId) {
-		ByteBuffer payload =
-				allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
+		var payload = allocate(NUM_WORDS * WORD_SIZE).order(LITTLE_ENDIAN);
 		payload.putInt(CLEAR_TRANSMISSIONS.value);
 		payload.putInt(transactionId);
 		payload.flip();

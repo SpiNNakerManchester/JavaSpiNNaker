@@ -24,7 +24,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.WebServiceComponentNames.MACH
 import java.net.URI;
 
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.springframework.security.web.csrf.CsrfToken;
@@ -61,7 +60,7 @@ public class ServiceDescription {
 			CsrfToken token) {
 		this.version = version;
 		if (sec.isUserInRole("READER")) {
-			UriBuilder ub = ui.getAbsolutePathBuilder().path("{resource}");
+			var ub = ui.getAbsolutePathBuilder().path("{resource}");
 			jobsRef = ub.build(JOB);
 			machinesRef = ub.build(MACH);
 		}

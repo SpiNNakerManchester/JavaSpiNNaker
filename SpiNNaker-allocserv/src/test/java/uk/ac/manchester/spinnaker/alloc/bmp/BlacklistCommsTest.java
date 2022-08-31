@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,6 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
-import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl.BoardState;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
@@ -76,6 +76,8 @@ class BlacklistCommsTest extends TestSupport {
 
 	private TransceiverFactory.TestAPI txrxFactory;
 
+	private ExecutorService exec;
+
 	@BeforeAll
 	static void clearDB() throws IOException {
 		killDB(DB);
@@ -91,22 +93,26 @@ class BlacklistCommsTest extends TestSupport {
 		this.bmpCtrl = bmpCtrl.getTestAPI();
 		MockTransceiver.installIntoFactory(txrxFactory);
 		this.txrxFactory = txrxFactory.getTestAPI();
+		exec = newSingleThreadExecutor();
+	}
+
+	@AfterEach
+	void stopExecutor() {
+		exec.shutdown();
 	}
 
 	/**
 	 * A faked up running of the BMP worker thread because the main schedule is
 	 * disabled.
 	 *
-	 * @param exec
-	 *            The executor used by the test.
 	 * @return The future to wait for as part of shutting down. The value is
 	 *         meaningless, but the exceptions potentially thrown are not.
 	 * @throws InterruptedException If interrupted.
 	 */
-	private Future<String> bmpWorker(ExecutorService exec)
+	private Future<String> bmpWorker()
 			throws InterruptedException {
-		OneShotEvent ready = new OneShotEvent();
-		Future<String> future = exec.submit(() -> {
+		var ready = new OneShotEvent();
+		var future = exec.submit(() -> {
 			ready.fire();
 			// Time to allow main thread to submit the work we'll carry out
 			Thread.sleep(TEST_DELAY);
@@ -120,47 +126,38 @@ class BlacklistCommsTest extends TestSupport {
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void getSerialNumber() throws Exception {
-		BoardState bs = stateCtrl.findId(BOARD).get();
-		ExecutorService exec = newSingleThreadExecutor();
-		try {
-			Future<String> future = bmpWorker(exec);
-			String serialNumber = stateCtrl.getSerialNumber(bs);
-			assertEquals(BMP_DONE_TOKEN, future.get());
-			assertEquals("gorp", serialNumber); // Magic value in dummy!
-		} finally {
-			exec.shutdown();
-		}
+		var bs = stateCtrl.findId(BOARD).orElseThrow();
+		var future = bmpWorker();
+
+		var serialNumber = stateCtrl.getSerialNumber(bs);
+
+		assertEquals(BMP_DONE_TOKEN, future.get());
+		assertEquals("gorp", serialNumber); // Magic value in dummy!
 	}
 
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void readBlacklistFromMachine() throws Exception {
-		BoardState bs = stateCtrl.findId(BOARD).get();
-		ExecutorService exec = newSingleThreadExecutor();
-		try {
-			Future<String> future = bmpWorker(exec);
-			Blacklist bl = stateCtrl.readBlacklistFromMachine(bs).get();
-			assertEquals(BMP_DONE_TOKEN, future.get());
-			assertEquals(new Blacklist("chip 5 5 core 5"), bl);
-		} finally {
-			exec.shutdown();
-		}
+		var bs = stateCtrl.findId(BOARD).orElseThrow();
+		var future = bmpWorker();
+
+		var bl = stateCtrl.readBlacklistFromMachine(bs).orElseThrow();
+
+		assertEquals(BMP_DONE_TOKEN, future.get());
+		assertEquals(new Blacklist("chip 5 5 core 5"), bl);
 	}
 
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void writeBlacklistToMachine() throws Exception {
-		BoardState bs = stateCtrl.findId(BOARD).get();
-		ExecutorService exec = newSingleThreadExecutor();
-		try {
-			Future<String> future = bmpWorker(exec);
-			assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
-			stateCtrl.writeBlacklistToMachine(bs,
-					new Blacklist("chip 4 4 core 4,6"));
-			assertEquals(BMP_DONE_TOKEN, future.get());
-			assertEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
-		} finally {
-			exec.shutdown();
-		}
+		var bs = stateCtrl.findId(BOARD).orElseThrow();
+		var future = bmpWorker();
+		assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
+
+		stateCtrl.writeBlacklistToMachine(bs,
+				new Blacklist("chip 4 4 core 4,6"));
+
+		assertEquals(BMP_DONE_TOKEN, future.get());
+		assertEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 	}
 }

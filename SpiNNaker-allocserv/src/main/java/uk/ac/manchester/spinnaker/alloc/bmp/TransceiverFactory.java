@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.util.Arrays.asList;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
@@ -77,7 +76,7 @@ public class TransceiverFactory
 
 		@Override
 		public boolean equals(Object o) {
-			Key other = (Key) o;
+			var other = (Key) o;
 			return machine.equals(other.machine) && bmp.equals(other.bmp);
 		}
 
@@ -120,7 +119,7 @@ public class TransceiverFactory
 						k -> makeTransceiver(machineDescription, bmp));
 			}
 		} catch (TransceiverFactoryException e) {
-			Throwable t = e.getCause();
+			var t = e.getCause();
 			if (t instanceof IOException) {
 				throw (IOException) t;
 			} else if (t instanceof SpinnmanException) {
@@ -144,8 +143,7 @@ public class TransceiverFactory
 
 	private BMPTransceiverInterface makeTransceiver(Machine machineDescription,
 			BMPCoords bmp) {
-		BMPConnectionData connData =
-				makeConnectionData(machineDescription, bmp);
+		var connData = makeConnectionData(machineDescription, bmp);
 		try {
 			if (control.isUseDummyBMP()) {
 				return testFactory.create(machineDescription.getName(),
@@ -162,8 +160,8 @@ public class TransceiverFactory
 	private BMPConnectionData makeConnectionData(Machine machine,
 			BMPCoords bmp) {
 		try {
-			String address = machine.getBMPAddress(bmp);
-			List<Integer> boards = machine.getBoardNumbers(bmp);
+			var address = machine.getBMPAddress(bmp);
+			var boards = machine.getBoardNumbers(bmp);
 			return new BMPConnectionData(0, 0, getByName(address), boards,
 					SCP_SCAMP_PORT);
 		} catch (IOException e) {
@@ -191,7 +189,7 @@ public class TransceiverFactory
 		int count = 0;
 		while (true) {
 			try {
-				return new Transceiver(null, asList(new BMPConnection(data)),
+				return new Transceiver(null, List.of(new BMPConnection(data)),
 						null, null, null, null, null);
 			} catch (ProcessException e) {
 				if (e.getCause() instanceof BMPSendTimedOutException
@@ -208,7 +206,7 @@ public class TransceiverFactory
 
 	@PreDestroy
 	void closeTransceivers() throws Exception {
-		for (BMPTransceiverInterface txrx : txrxMap.values()) {
+		for (var txrx : txrxMap.values()) {
 			if (txrx instanceof AutoCloseable) {
 				((AutoCloseable) txrx).close();
 			}

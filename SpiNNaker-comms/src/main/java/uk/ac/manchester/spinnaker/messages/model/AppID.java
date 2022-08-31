@@ -57,7 +57,7 @@ public final class AppID {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AppID) {
-			AppID other = (AppID) o;
+			var other = (AppID) o;
 			return appID == other.appID;
 		}
 		return false;

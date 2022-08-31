@@ -90,7 +90,7 @@ public final class ChipSummaryInfo {
 	}
 
 	private static Set<Direction> parseWorkingLinks(int flags) {
-		Set<Direction> wl = new LinkedHashSet<>();
+		var wl = new LinkedHashSet<Direction>();
 		for (int link = 0; link < NUM_LINKS; link++) {
 			if (bitset(flags, LINKS_FIELD_SHIFT + link)) {
 				wl.add(Direction.byId(link));
@@ -100,7 +100,7 @@ public final class ChipSummaryInfo {
 	}
 
 	private static List<CPUState> parseStates(byte[] stateBytes) {
-		List<CPUState> states = new ArrayList<>();
+		var states = new ArrayList<CPUState>();
 		for (byte b : stateBytes) {
 			states.add(CPUState.get(b));
 		}
@@ -135,7 +135,7 @@ public final class ChipSummaryInfo {
 		largestFreeSDRAMBlock = buffer.getInt();
 		largestFreeSRAMBlock = buffer.getInt();
 
-		byte[] states = new byte[NUM_CORES];
+		var states = new byte[NUM_CORES];
 		buffer.get(states);
 		coreStates = parseStates(states);
 
@@ -144,7 +144,7 @@ public final class ChipSummaryInfo {
 		int neX = toUnsignedInt(buffer.get());
 		nearestEthernetChip = new ChipLocation(neX, neY);
 
-		byte[] ia = new byte[ADDRESS_SIZE];
+		var ia = new byte[ADDRESS_SIZE];
 		buffer.get(ia);
 		ethernetIPAddress = parseEthernetAddress(ia);
 	}

@@ -28,8 +28,8 @@ class TestIOBufModel {
 
 	@Test
 	void test() throws UnsupportedEncodingException {
-		byte[] buf = "Everything failed on chip.".getBytes("ASCII");
-		IOBuffer b = new IOBuffer(new ChipLocation(1, 2).getScampCore(), buf);
+		var buf = "Everything failed on chip.".getBytes("ASCII");
+		var b = new IOBuffer(new ChipLocation(1, 2).getScampCore(), buf);
 		assertEquals(1, b.getX());
 		assertEquals(2, b.getY());
 		assertEquals(0, b.getP());

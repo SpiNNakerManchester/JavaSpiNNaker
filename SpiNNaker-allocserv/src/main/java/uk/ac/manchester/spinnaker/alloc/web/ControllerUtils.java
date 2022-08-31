@@ -25,7 +25,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
@@ -54,7 +53,7 @@ public abstract class ControllerUtils {
 	 */
 	@UsedInJavadocOnly(MvcUriComponentsBuilder.class)
 	public static URI uri(Object selfCall, Object... objects) {
-		UriComponentsBuilder b = fromMethodCall(selfCall);
+		var b = fromMethodCall(selfCall);
 		// Force some dumb stuff to be right
 		b.query(null).scheme("https");
 		return b.buildAndExpand(objects).toUri();
@@ -82,7 +81,7 @@ public abstract class ControllerUtils {
 	 * @return The message.
 	 */
 	public static String errorMessage(ObjectError error) {
-		String msg = error.getDefaultMessage();
+		var msg = error.getDefaultMessage();
 		return isNull(msg) ? error.toString() : msg;
 	}
 

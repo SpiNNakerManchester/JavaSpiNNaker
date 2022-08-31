@@ -111,14 +111,14 @@ public class CPUInfo implements HasCoreLocation {
 	private static final int NUM_USER_VALUES = 4;
 
 	private static int[] getInts(ByteBuffer buffer, int fieldLength) {
-		int[] data = new int[fieldLength];
+		var data = new int[fieldLength];
 		buffer.asIntBuffer().get(data);
 		buffer.position(buffer.position() + fieldLength * WORD_SIZE);
 		return data;
 	}
 
 	private static String getStr(ByteBuffer buffer, int fieldLength) {
-		byte[] data = new byte[fieldLength];
+		var data = new byte[fieldLength];
 		buffer.get(data);
 		int len = 0;
 		// Trim from first trailing NUL
@@ -316,7 +316,7 @@ public class CPUInfo implements HasCoreLocation {
 			return format("    %d:%d:%d in state %s", core.getX(), core.getY(),
 					core.getP(), state);
 		}
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append(format("    %d:%d:%d in state %s:%s\n", core.getX(),
 				core.getY(), core.getP(), state, runTimeError));
 		sb.append(format("        r0=%08x, r1=%08x, r2=%08x, r3=%08x\n",

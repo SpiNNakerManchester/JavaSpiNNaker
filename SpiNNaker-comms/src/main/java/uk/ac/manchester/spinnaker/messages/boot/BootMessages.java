@@ -68,9 +68,8 @@ public class BootMessages {
 
 	private static SystemVariableBootValues initFlags(
 			SystemVariableBootValues bootVars) {
-		SystemVariableBootValues specific =
-				bootVars == null ? new SystemVariableBootValues()
-						: new SystemVariableBootValues(bootVars);
+		var specific = bootVars == null ? new SystemVariableBootValues()
+				: new SystemVariableBootValues(bootVars);
 		int currentTime = (int) (currentTimeMillis() / MSEC_PER_SEC);
 		specific.setValue(unix_timestamp, currentTime);
 		specific.setValue(boot_signature, currentTime);
@@ -93,7 +92,7 @@ public class BootMessages {
 	private void injectBootVariableBlock(
 			SystemVariableBootValues bootVariables) {
 		// NB: Endian shenanigans!
-		ByteBuffer buffer = allocate(BOOT_VARIABLE_SIZE).order(LITTLE_ENDIAN);
+		var buffer = allocate(BOOT_VARIABLE_SIZE).order(LITTLE_ENDIAN);
 		bootVariables.addToBuffer(buffer);
 		buffer.position(0);
 		for (int i = 0; i < BOOT_STRUCT_REPLACE_LENGTH / WORD_SIZE; i++) {
@@ -104,10 +103,10 @@ public class BootMessages {
 
 	private static ByteBuffer readBootImage(URL bootImage) {
 		// NB: This data is BIG endian!
-		ByteBuffer buffer =
+		var buffer =
 				allocate(BOOT_IMAGE_MAX_BYTES + WORD_SIZE).order(BIG_ENDIAN);
 
-		try (DataInputStream is = new DataInputStream(bootImage.openStream())) {
+		try (var is = new DataInputStream(bootImage.openStream())) {
 			while (true) {
 				// NB: Byte-swap the data from the file!
 				buffer.putInt(reverseBytes(is.readInt()));
@@ -186,7 +185,7 @@ public class BootMessages {
 		 * Compute the data in the payload; note that this is a pure byte
 		 * sequence right now so endianness checks are moot.
 		 */
-		ByteBuffer buffer = bootData.duplicate();
+		var buffer = bootData.duplicate();
 		buffer.position(blockID * BOOT_MESSAGE_DATA_BYTES);
 		buffer.limit(buffer.position()
 				+ min(buffer.remaining(), BOOT_MESSAGE_DATA_BYTES));
@@ -198,12 +197,12 @@ public class BootMessages {
 	/** @return a stream of messages to be sent. */
 	public Stream<BootMessage> getMessages() {
 		// The bookending control messages
-		BootMessage start = new StartOfBootMessages(numDataPackets);
-		BootMessage finish = new EndOfBootMessages();
+		var start = new StartOfBootMessages(numDataPackets);
+		var finish = new EndOfBootMessages();
 
 		// Concatenate everything in the right order
-		Stream<BootMessage> imageMessages =
-				range(0, numDataPackets).mapToObj(this::getBootMessage);
+		var imageMessages = range(0, numDataPackets)
+				.mapToObj(this::getBootMessage);
 		return concat(Stream.of(start),
 				concat(imageMessages, Stream.of(finish)));
 	}

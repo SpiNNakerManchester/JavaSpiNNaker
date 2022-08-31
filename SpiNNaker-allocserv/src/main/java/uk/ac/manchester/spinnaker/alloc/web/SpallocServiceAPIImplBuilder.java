@@ -163,7 +163,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 	@Prototype
 	@Role(ROLE_APPLICATION)
 	public JobAPI job(Job j, String caller, Permit permit, UriInfo ui) {
-		String sp = props.getProxy().isEnable() ? servletPath : null;
+		var sp = props.getProxy().isEnable() ? servletPath : null;
 		return new JobAPI() {
 			@Override
 			public String keepAlive(String reqBody) {
@@ -179,7 +179,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 						log.debug("starting wait for change of job");
 						j.waitForChange(props.getWait());
 						// Refresh the handle
-						Job nj = core.getJob(permit, j.getId())
+						var nj = core.getJob(permit, j.getId())
 								.orElseThrow(() -> new ItsGone("no such job"));
 						return new JobStateResponse(nj, ui, mapper, sp);
 					});
@@ -233,8 +233,7 @@ class SpallocServiceAPIImplBuilder extends BackgroundSupport {
 			@Override
 			public WhereIsResponse getJobChipLocation(int x, int y) {
 				j.access(caller);
-				BoardLocation loc =
-						j.whereIs(x, y).orElseThrow(EmptyResponse::new);
+				var loc = j.whereIs(x, y).orElseThrow(EmptyResponse::new);
 				return new WhereIsResponse(loc, ui);
 			}
 

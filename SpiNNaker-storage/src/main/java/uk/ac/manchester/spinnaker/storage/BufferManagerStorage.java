@@ -241,7 +241,7 @@ public interface BufferManagerStorage extends DatabaseAPI {
 	@Deprecated
 	default int storeRegionContents(Region region, ByteBuffer contents)
 			throws StorageException {
-		byte[] ary = new byte[contents.remaining()];
+		var ary = new byte[contents.remaining()];
 		contents.slice().get(ary);
 		return storeDSEContents(region, ary);
 	}
@@ -273,7 +273,7 @@ public interface BufferManagerStorage extends DatabaseAPI {
 	 */
 	default void appendRecordingContents(Region region, ByteBuffer contents)
 			throws StorageException {
-		byte[] ary = new byte[contents.remaining()];
+		var ary = new byte[contents.remaining()];
 		contents.slice().get(ary);
 		appendRecordingContents(region, ary);
 	}

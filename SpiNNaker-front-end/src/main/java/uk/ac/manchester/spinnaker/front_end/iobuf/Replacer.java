@@ -25,16 +25,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -65,10 +62,10 @@ class Replacer {
 
 	Replacer(File aplxFile) throws Replacer.WrappedException {
 		origin = aplxFile.getAbsoluteFile();
-		Path dictPath = Paths
+		var dictPath = Paths
 				.get(removeExtension(aplxFile.getAbsolutePath()) + ".dict");
 		if (dictPath.toFile().isFile()) {
-			try (Stream<String> lines = Files.lines(dictPath)) {
+			try (var lines = Files.lines(dictPath)) {
 				lines.forEachOrdered(this::parseLine);
 			} catch (UncheckedIOException e) {
 				throw new WrappedException(e.getCause());
@@ -81,10 +78,10 @@ class Replacer {
 	}
 
 	private void parseLine(String line) {
-		String[] parts = line.trim().split(",", NUM_PARTS);
+		var parts = line.split(",", NUM_PARTS);
 		if (parts.length == NUM_PARTS) {
 			try {
-				Template tmpl = new Template(parts);
+				var tmpl = new Template(parts);
 				messages.put(tmpl.key, tmpl);
 			} catch (NumberFormatException ignore) {
 			}
@@ -101,12 +98,12 @@ class Replacer {
 	 * @return The fully expanded line.
 	 */
 	public String replace(String shortLine) {
-		String[] parts = shortLine.split(RS_TOKEN);
+		var parts = shortLine.split(RS_TOKEN);
 		if (!messages.containsKey(parts[0])) {
 			return shortLine;
 		}
-		Template tmpl = messages.get(parts[0]);
-		StringBuilder replaced = tmpl.getReplacementBuffer();
+		var tmpl = messages.get(parts[0]);
+		var replaced = tmpl.getReplacementBuffer();
 
 		if (parts.length > 1) {
 			if (tmpl.matches.size() != parts.length - 1) {
@@ -130,12 +127,12 @@ class Replacer {
 		private Template(String[] parts) throws NumberFormatException {
 			key = parts[0];
 			prefix = parts[1];
-			String original = parts[2];
+			var original = parts[2];
 			unescaped = unescapeJava(original);
 			parseUnsignedInt(key); // throws if fails
 
 			// Get the regions to replace
-			Matcher m = FORMAT_SEQUENCE.matcher(original);
+			var m = FORMAT_SEQUENCE.matcher(original);
 			matches = new ArrayList<>();
 			int index = 0;
 			while (m.find()) {
