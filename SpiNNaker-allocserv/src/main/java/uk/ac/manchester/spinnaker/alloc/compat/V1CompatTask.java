@@ -90,6 +90,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	private final PrintWriter out;
 
 	/**
+	 * Make an instance that wraps a socket.
+	 *
 	 * @param srv
 	 *            The overall service, used for looking up shared resources that
 	 *            are uncomfortable as beans.
@@ -170,6 +172,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	protected abstract void closeNotifiers();
 
 	/**
+	 * What host is connected to this service instance?
+	 *
 	 * @return The remote host that this task is serving.
 	 */
 	public final String host() {
@@ -740,6 +744,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			Integer p, String description);
 
 	/**
+	 * Get the service version.
+	 *
 	 * @return The service version. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.

@@ -18,13 +18,20 @@ package uk.ac.manchester.spinnaker.machine.bean;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import uk.ac.manchester.spinnaker.machine.Chip;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.Link;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
+ * A {@linkplain Link link} between two {@linkplain Chip chips}. At this point
+ * of the JSON model, the chip coordinates of the source are implicit.
  *
  * @author Christian-B
  */
+@UsedInJavadocOnly({Chip.class, Link.class})
 public class LinkBean {
 	/** Where the link is going. */
 	public final ChipLocation destination;

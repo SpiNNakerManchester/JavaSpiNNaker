@@ -21,10 +21,11 @@ package uk.ac.manchester.spinnaker.messages.bmp;
  *
  * @author Donal Fellows
  */
-public class BMPBoard {
+public final class BMPBoard {
 	/** The board number. */
 	public final int board;
 
+	/** @param board The board number. */
 	public BMPBoard(int board) {
 		this.board = board;
 	}

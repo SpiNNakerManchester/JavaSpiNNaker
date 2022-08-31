@@ -24,12 +24,10 @@ import org.slf4j.Logger;
 
 /**
  * Represents a directional link between SpiNNaker chips in the machine.
- * <p>
  *
  * @see <a href=
  *      "https://github.com/SpiNNakerManchester/SpiNNMachine/blob/master/spinn_machine/link.py">
  *      Python Version</a>
- *
  * @author Christian-B
  */
 public final class Link {

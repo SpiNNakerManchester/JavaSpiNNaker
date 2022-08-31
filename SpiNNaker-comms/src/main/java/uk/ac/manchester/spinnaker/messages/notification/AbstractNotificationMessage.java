@@ -35,10 +35,17 @@ public abstract class AbstractNotificationMessage
 	/** The command code of the message. */
 	private final NotificationMessageCode command;
 
+	/**
+	 * @param buffer
+	 *            Where to read the command code from. The command code will be
+	 *            in the first two bytes; this constructor advances the buffer
+	 *            position.
+	 */
 	protected AbstractNotificationMessage(ByteBuffer buffer) {
 		command = NotificationMessageCode.get(buffer.getShort() & MAX_COMMAND);
 	}
 
+	/** @param command The command code of the message. */
 	public AbstractNotificationMessage(NotificationMessageCode command) {
 		this.command = command;
 	}
@@ -50,6 +57,15 @@ public abstract class AbstractNotificationMessage
 		buffer.putShort(value);
 	}
 
+	/**
+	 * Create a notification message instance from a buffer holding a received
+	 * message.
+	 *
+	 * @param buffer
+	 *            The received message data buffer.
+	 * @return The parsed message, or {@code null} if the message's command code
+	 *         is not understood.
+	 */
 	public static NotificationMessage build(ByteBuffer buffer) {
 		switch (NotificationMessageCode.get(buffer.getShort(0) & MAX_COMMAND)) {
 		case DATABASE_CONFIRMATION:

@@ -20,12 +20,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
+ * Used to build a {@link Machine} from JSON.
  *
  * @author Christian-B
  */
+@UsedInJavadocOnly(Machine.class)
 public class MachineBean {
 	private final MachineDimensions dimensions;
 
@@ -72,32 +76,28 @@ public class MachineBean {
 		this.standardResources = standardResources;
 	}
 
+	/** @return The dimensions of the machine. */
 	@JsonIgnore
 	public MachineDimensions getMachineDimensions() {
 		return dimensions;
 	}
 
+	/** @return The root chip of the machine. */
 	public ChipLocation getRoot() {
 		return root;
 	}
 
-	/**
-	 * @return the default ethernet resources
-	 */
+	/** @return the default resources of ethernet-enabled chips */
 	public ChipResources getEthernetResources() {
 		return ethernetResources;
 	}
 
-	/**
-	 * @return the default non-ethernet resources
-	 */
+	/** @return the default resources of chips that are not ethernet-enabled */
 	public ChipResources getStandardResources() {
 		return standardResources;
 	}
 
-	/**
-	 * @return the chips
-	 */
+	/** @return the chips */
 	public List<ChipBean> getChips() {
 		return chips;
 	}

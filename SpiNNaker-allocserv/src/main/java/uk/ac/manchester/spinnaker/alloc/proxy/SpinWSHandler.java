@@ -86,7 +86,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
 
-	public SpinWSHandler() {
+	SpinWSHandler() {
 		ThreadGroup group = new ThreadGroup("ws/udp workers");
 		executor = newCachedThreadPool(r -> {
 			Thread t = new Thread(group, r, "ws/udp worker");

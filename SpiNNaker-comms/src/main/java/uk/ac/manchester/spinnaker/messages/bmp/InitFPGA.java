@@ -23,6 +23,12 @@ import java.nio.ByteBuffer;
 
 /** Start an initialisation of the FPGAs. Terminated by {@link ResetFPGA}. */
 public class InitFPGA extends BMPRequest<BMPRequest.BMPResponse> {
+	/**
+	 * @param board
+	 *            Which board's FPGA to initialise.
+	 * @param mask
+	 *            Which FPGAs on the board to initialise.
+	 */
 	public InitFPGA(BMPBoard board, int mask) {
 		super(board, CMD_XILINX, Init.code, mask);
 	}

@@ -31,6 +31,11 @@ public final class CFB {
 	/** Board number. */
 	public final int b;
 
+	/**
+	 * @param c Cabinet number.
+	 * @param f Frame number.
+	 * @param b Board number.
+	 */
 	public CFB(int c, int f, int b) {
 		this.c = c;
 		this.f = f;

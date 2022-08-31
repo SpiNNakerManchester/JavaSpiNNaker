@@ -48,7 +48,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "spalloc-server"
+    target-branch: "java-11-spalloc"
     labels:
       - "bug"
       - "dependabot"

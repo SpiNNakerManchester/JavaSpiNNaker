@@ -236,11 +236,8 @@ abstract class Utils {
 	 * @return The converted coordinate.
 	 */
 	static BoardCoordinates board(BoardCoords coords) {
-		BoardCoordinates bc = new BoardCoordinates();
-		bc.setX(coords.getX());
-		bc.setY(coords.getY());
-		bc.setZ(coords.getZ());
-		return bc;
+		return new BoardCoordinates(coords.getX(), coords.getY(),
+				coords.getZ());
 	}
 
 	/**

@@ -34,63 +34,67 @@ public class JobState {
 
 	private String keepalivehost;
 
+	/** @return the state of the job */
 	public State getState() {
 		return state;
 	}
 
+	/** @param state the state of the job */
 	public void setState(State state) {
 		this.state = state;
 	}
 
+	/** @return whether the job's boards are powered */
 	public Boolean getPower() {
 		return power;
 	}
 
+	/** @param power whether the job's boards are powered */
 	public void setPower(Boolean power) {
 		this.power = power;
 	}
 
+	/** @return the keepalive interval, in seconds */
 	public double getKeepalive() {
 		return keepAlive;
 	}
 
+	/** @param keepAlive the keepalive interval, in seconds */
 	public void setKeepalive(double keepAlive) {
 		this.keepAlive = keepAlive;
 	}
 
+	/** @return the reason why the job was destroyed */
 	public String getReason() {
 		return reason;
 	}
 
+	/** @param reason the reason why the job was destroyed */
 	public void setReason(String reason) {
 		this.reason = reason;
 	}
 
-	/**
-	 * @return the startTime
-	 */
+	/** @return the time the job started, in seconds from the epoch */
 	public double getStartTime() {
 		return startTime;
 	}
 
 	/**
-	 * @param d
-	 *            the startTime to set
+	 * @param startTime
+	 *            the start time to set
 	 */
-	public void setStartTime(double d) {
-		this.startTime = d;
+	public void setStartTime(double startTime) {
+		this.startTime = startTime;
 	}
 
-	/**
-	 * @return the keepalivehost
-	 */
+	/** @return the host keeping the job alive */
 	public String getKeepalivehost() {
 		return keepalivehost;
 	}
 
 	/**
 	 * @param keepalivehost
-	 *            the keepalivehost to set
+	 *            the keepalive host to set
 	 */
 	public void setKeepalivehost(String keepalivehost) {
 		this.keepalivehost = keepalivehost;

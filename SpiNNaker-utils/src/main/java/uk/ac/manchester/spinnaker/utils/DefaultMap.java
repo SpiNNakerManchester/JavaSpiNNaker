@@ -25,7 +25,9 @@ import java.util.function.Supplier;
 
 /**
  * A map that will extend itself with new values (on get) when the key is
- * otherwise absent from the map.
+ * otherwise absent from the map. Note that this map is <em>only</em> safely
+ * serializable if the default value is literal and serializable, in addition to
+ * the usual constraints of maps.
  *
  * @author Donal Fellows
  *
@@ -37,13 +39,20 @@ import java.util.function.Supplier;
 public class DefaultMap<K, V> extends HashMap<K, V> {
 	private static final long serialVersionUID = -3805864660424802906L;
 
-	private final boolean direct;
+	/**
+	 * Whether this is a direct default value map. Only direct maps are
+	 * serializable.
+	 */
+	private boolean direct;
 
-	private final V defValue;
+	/** The default value. */
+	private V defValue;
 
-	private final Supplier<? extends V> defFactory;
+	/** How to make a new default value. Not key-aware. */
+	private final transient Supplier<? extends V> defFactory;
 
-	private final KeyAwareFactory<? super K, ? extends V> advFactory;
+	/** How to make a new default value. Key-aware. */
+	private final transient KeyAwareFactory<? super K, ? extends V> advFactory;
 
 	/**
 	 * Create a new map.

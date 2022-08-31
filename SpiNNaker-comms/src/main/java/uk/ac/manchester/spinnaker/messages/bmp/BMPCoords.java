@@ -19,6 +19,10 @@ package uk.ac.manchester.spinnaker.messages.bmp;
 /**
  * A simple description of a BMP to talk to. Supports equality and being used as
  * a hash key.
+ * <p>
+ * Although every board technically has a BMP, they are managed at the level of
+ * a frame (when a sufficient quantity of boards is used, typically but not
+ * necessarily 24). Cabinets contain frames.
  */
 public final class BMPCoords {
 	/** The ID of the cabinet that contains the frame that contains the BMPs. */
@@ -45,10 +49,18 @@ public final class BMPCoords {
 		this.frame = frame;
 	}
 
+	/**
+	 * @return The ID of the cabinet that contains the frame that contains the
+	 *         BMPs.
+	 */
 	public int getCabinet() {
 		return cabinet;
 	}
 
+	/**
+	 * @return The ID of the frame that contains the master BMP. Frames are
+	 *         contained within a cabinet.
+	 */
 	public int getFrame() {
 		return frame;
 	}
