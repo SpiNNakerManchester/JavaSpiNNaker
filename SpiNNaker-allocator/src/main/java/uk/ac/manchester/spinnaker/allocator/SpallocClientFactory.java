@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,28 +27,45 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.MachineVersion.TRIAD_NO_WRAPAROUND;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.allocator.ClientSession.ConnectedChannel;
+import uk.ac.manchester.spinnaker.allocator.ClientSession.ProxyProtocolClient;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
+import uk.ac.manchester.spinnaker.connections.BootConnection;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.model.Connection;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
@@ -79,6 +96,9 @@ public class SpallocClientFactory {
 
 	/** The default port of the connection. */
 	private static final int SCP_SCAMP_PORT = 17893;
+
+	/** The default port of the connection. */
+	private static final int UDP_BOOT_CONNECTION_DEFAULT_PORT = 54321;
 
 	/** Used to convert to/from JSON. */
 	static final JsonMapper JSON_MAPPER = JsonMapper.builder()
@@ -525,22 +545,155 @@ public class SpallocClientFactory {
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
 		}
 
-		@Override
-		public TransceiverInterface getTransceiver()
+		private ProxyProtocolClient proxy;
+
+		private ProxyProtocolClient getProxy()
 				throws IOException, InterruptedException {
+			if (nonNull(proxy) && proxy.isOpen()) {
+				return proxy;
+			}
 			var wssAddr = describe(false).getProxyAddress();
 			if (isNull(wssAddr)) {
 				throw new IOException("machine not allocated");
 			}
-			var am = machine();
-			var ws = s.websocket(wssAddr);
-			for (var bc : am.getConnections()) {
-				// FIXME remember channels
-				// FIXME define receivers
-				ws.openChannel(bc.getChip(), SCP_SCAMP_PORT, null);
+			if (!(nonNull(proxy) && proxy.isOpen())) {
+				synchronized (this) {
+					if (!(nonNull(proxy) && proxy.isOpen())) {
+						proxy = s.websocket(wssAddr);
+					}
+				}
 			}
-			// TODO Assemble into a transceiver
-			return null;
+			return proxy;
+		}
+
+		@Override
+		public SCPConnection getConnection(HasChipLocation chip)
+				throws IOException, InterruptedException {
+			return new ProxiedSCPConnection(chip.asChipLocation(), getProxy());
+		}
+
+		@Override
+		public TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException {
+			var ws = getProxy();
+			var am = machine();
+			var conns = new ArrayList<Connection>();
+			for (var bc : am.getConnections()) {
+				conns.add(new ProxiedSCPConnection(
+						bc.getChip().asChipLocation(), ws));
+			}
+			conns.add(new ProxiedBootConnection(ws));
+			return new ProxiedTransceiver(conns, ws);
+		}
+	}
+
+	// Shared helper because we can't use a superclass
+	private ByteBuffer receiveHelper(BlockingQueue<ByteBuffer> received,
+			long timeout) throws SocketTimeoutException {
+		try {
+			var msg = received.poll(timeout, MILLISECONDS);
+			if (isNull(msg)) {
+				throw new SocketTimeoutException();
+			}
+			return msg;
+		} catch (InterruptedException e) {
+			throw new SocketTimeoutException();
+		}
+	}
+
+	private class ProxiedSCPConnection extends SCPConnection {
+		private final ConnectedChannel channel;
+
+		private final BlockingQueue<ByteBuffer> received;
+
+		private ProxyProtocolClient ws;
+
+		ProxiedSCPConnection(ChipLocation chip, ProxyProtocolClient ws)
+				throws IOException, InterruptedException {
+			super(chip);
+			this.ws = ws;
+			received = new LinkedBlockingQueue<>();
+			channel = ws.openChannel(chip, SCP_SCAMP_PORT, received::add);
+		}
+
+		@Override
+		public void close() throws IOException {
+			channel.close();
+			ws = null;
+		}
+
+		@Override
+		public boolean isClosed() {
+			return isNull(ws) || ws.isClosed();
+		}
+
+		@Override
+		protected void doSend(ByteBuffer buffer) {
+			channel.send(buffer);
+		}
+
+		@Override
+		protected ByteBuffer doReceive(int timeout)
+				throws SocketTimeoutException {
+			return receiveHelper(received, timeout);
+		}
+	}
+
+	private class ProxiedBootConnection extends BootConnection {
+		private final ConnectedChannel channel;
+
+		private final BlockingQueue<ByteBuffer> received;
+
+		private ProxyProtocolClient ws;
+
+		ProxiedBootConnection(ProxyProtocolClient ws)
+				throws IOException, InterruptedException {
+			this.ws = requireNonNull(ws);
+			received = new LinkedBlockingQueue<>();
+			channel = ws.openChannel(ZERO_ZERO,
+					UDP_BOOT_CONNECTION_DEFAULT_PORT, received::add);
+		}
+
+		@Override
+		public void close() throws IOException {
+			channel.close();
+			ws = null;
+		}
+
+		@Override
+		public boolean isClosed() {
+			return isNull(ws) || ws.isClosed();
+		}
+
+		@Override
+		protected void doSend(ByteBuffer buffer) {
+			channel.send(buffer);
+		}
+
+		@Override
+		protected ByteBuffer doReceive(int timeout)
+				throws SocketTimeoutException {
+			return receiveHelper(received, timeout);
+		}
+	}
+
+	private class ProxiedTransceiver extends Transceiver {
+		private final ProxyProtocolClient websocket;
+
+		ProxiedTransceiver(Collection<Connection> connections,
+				ProxyProtocolClient websocket)
+				throws IOException, SpinnmanException {
+			// Assume unwrapped
+			super(TRIAD_NO_WRAPAROUND, connections, null, null, null, null,
+					null);
+			this.websocket = websocket;
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		public void close() throws Exception {
+			super.close();
+			websocket.closeBlocking();
 		}
 	}
 

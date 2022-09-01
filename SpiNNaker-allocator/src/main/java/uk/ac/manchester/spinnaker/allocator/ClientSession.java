@@ -304,7 +304,7 @@ final class ClientSession {
 			receiver.accept(msg);
 		}
 
-		public void close() throws InterruptedException {
+		public void close() throws IOException {
 			if (closed) {
 				return;
 			}
@@ -324,7 +324,11 @@ final class ClientSession {
 				event.fire();
 			});
 			client.send(b);
-			event.await();
+			try {
+				event.await();
+			} catch (InterruptedException e) {
+				throw new IOException("failed to close channel", e);
+			}
 			if (result.getValue() != id) {
 				log.warn("did not properly close channel");
 			}
