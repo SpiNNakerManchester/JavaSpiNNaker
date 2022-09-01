@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.manchester.spinnaker.utils.DefaultMap.KeyAwareFactory;
@@ -34,22 +36,29 @@ public class TestDefaultMap {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testUntyped() {
-		DefaultMap instance = new DefaultMap(ArrayList::new);
-		Object foo = instance.get("foo");
+		var instance = new DefaultMap(ArrayList::new);
+		var foo = instance.get("foo");
 		assertTrue(foo instanceof ArrayList);
-		ArrayList fooList = (ArrayList) foo;
+		var fooList = (ArrayList) foo;
 		fooList.add("a");
 		fooList.add(1);
 	}
 
 	@Test
 	public void testTyped() {
-		DefaultMap<String, List<Integer>> instance =
-				new DefaultMap<>(ArrayList<Integer>::new);
-		List<Integer> foo = instance.get("foo");
+		// Explicit to work around weird issue in Java 14 compiler
+		Map<String, List<Integer>> instance = new DefaultMap<>(ArrayList::new);
+		var foo = instance.get("foo");
 		assertTrue(foo instanceof ArrayList);
 		// foo.add("a");
 		foo.add(1);
+		var bar = instance.get("bar");
+		assertNotEquals(foo, bar);
+		assertEquals(1, foo.size());
+		assertEquals(0, bar.size());
+		var bar2 = instance.get("bar");
+		bar2.add(123);
+		assertEquals(bar, bar2);
 	}
 
 	/**
@@ -58,11 +67,11 @@ public class TestDefaultMap {
 	 */
 	@Test
 	public void testBad() {
-		DefaultMap<String, List<Integer>> instance =
-				new DefaultMap<>(new ArrayList<Integer>());
-		List<Integer> foo = instance.get("one");
+		Map<String, List<Integer>> instance =
+				DefaultMap.newMapWithDefault(new ArrayList<>());
+		var foo = instance.get("one");
 		foo.add(11);
-		List<Integer> bar = instance.get("two");
+		var bar = instance.get("two");
 		bar.add(12);
 		assertEquals(2, bar.size());
 		assertTrue(foo == bar);
@@ -72,7 +81,7 @@ public class TestDefaultMap {
 	public void testKeyAware() {
 		DefaultMap<Integer, Integer> instance =
 				DefaultMap.newAdvancedDefaultMap(new Doubler());
-		Integer two = instance.get(1);
+		var two = instance.get(1);
 		assertEquals(2, two.intValue());
 	}
 
@@ -80,7 +89,7 @@ public class TestDefaultMap {
 	public void testKeyAware2() {
 		DefaultMap<Integer, Integer> instance =
 				DefaultMap.newAdvancedDefaultMap(i -> i * 2);
-		Integer two = instance.get(1);
+		var two = instance.get(1);
 		assertEquals(2, two.intValue());
 	}
 

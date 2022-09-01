@@ -42,7 +42,7 @@ class JsonTest {
 
 	@Test
 	void boardCoords() throws Exception {
-		BoardCoords bc = new BoardCoords(0, 1, 2, 3, 4, 5, "6.7.8.9");
+		var bc = new BoardCoords(0, 1, 2, 3, 4, 5, "6.7.8.9");
 		assertNotNull(serialize(bc));
 		assertEquals(bc, deserialize(serialize(bc), BoardCoords.class));
 	}
@@ -62,7 +62,7 @@ class JsonTest {
 	@Test
 	void jobs() throws Exception {
 		// Deserialize only
-		String jobs = "{\"jobs\":[\"http:foo1\",\"http:foo2\"],"
+		var jobs = "{\"jobs\":[\"http:foo1\",\"http:foo2\"],"
 				+ "\"prev\":\"http:foo3\",\"next\":\"http:foo4\"}";
 		assertEquals(2, deserialize(jobs, Jobs.class).jobs.size());
 	}
@@ -71,7 +71,7 @@ class JsonTest {
 	void machines() throws Exception {
 		// Deserialize only
 		// also BriefMachineDescription, DeadLink and Direction
-		String ms = "{\"machines\":[{\"name\":\"foo\",\"dead-links\":[["
+		var ms = "{\"machines\":[{\"name\":\"foo\",\"dead-links\":[["
 				+ "{\"board\":{\"x\":0,\"y\":0,\"z\":0},\"direction\":0},"
 				+ "{\"board\":{\"x\":0,\"y\":0,\"z\":0},\"direction\":1}]]}]}";
 		assertEquals(1, deserialize(ms, Machines.class).machines.size());
@@ -79,7 +79,7 @@ class JsonTest {
 
 	@Test
 	void physical() throws Exception {
-		Physical p = new Physical(1, 2, 3);
+		var p = new Physical(1, 2, 3);
 		assertEquals("[1,2,3]", serialize(p));
 		assertEquals(p.toString(),
 				deserialize(serialize(p), Physical.class).toString());
@@ -87,16 +87,16 @@ class JsonTest {
 
 	@Test
 	void power() throws Exception {
-		String power = "{\"power\":\"OFF\"}";
+		var power = "{\"power\":\"OFF\"}";
 		assertNotNull(deserialize(power, Power.class));
 	}
 
 	@Test
 	void rootInfo() throws Exception {
-		String rootInfo = "{\"csrf-header\":\"a\",\"csrf-token\":\"b\","
+		var rootInfo = "{\"csrf-header\":\"a\",\"csrf-token\":\"b\","
 				+ "\"jobs-uri\":\"http:c\",\"machines-uri\":\"http:d\","
 				+ "\"version\":\"1.2.3\"}";
-		RootInfo ri = deserialize(rootInfo, RootInfo.class);
+		var ri = deserialize(rootInfo, RootInfo.class);
 		assertNotNull(ri);
 		assertEquals("a", ri.csrfHeader);
 		assertEquals("b", ri.csrfToken);
@@ -107,7 +107,7 @@ class JsonTest {
 
 	@Test
 	void triad() throws Exception {
-		Triad t = new Triad(1, 2, 3);
+		var t = new Triad(1, 2, 3);
 		assertEquals("[1,2,3]", serialize(t));
 		assertEquals(t.toString(),
 				deserialize(serialize(t), Triad.class).toString());

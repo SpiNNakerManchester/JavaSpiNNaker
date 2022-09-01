@@ -76,7 +76,7 @@ class ProxyRememberer {
 	 */
 	void removeProxyForJob(Integer jobId, ProxyCore proxy) {
 		synchronized (proxies) {
-			List<ProxyCore> list = proxies.get(jobId);
+			var list = proxies.get(jobId);
 			if (nonNull(list)) {
 				list.remove(proxy);
 			}
@@ -98,7 +98,7 @@ class ProxyRememberer {
 	 *            The job ID.
 	 */
 	void killProxies(Integer jobId) {
-		List<ProxyCore> list = removeProxyListForJob(jobId);
+		var list = removeProxyListForJob(jobId);
 		if (nonNull(list)) {
 			list.forEach(ProxyCore::close);
 		}

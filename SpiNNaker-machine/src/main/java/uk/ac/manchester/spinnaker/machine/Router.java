@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -164,11 +163,11 @@ public final class Router implements MappableIterable<Link> {
 	public Router(HasChipLocation source, int nAvailableMulticastEntries,
 			ChipDetails details, Machine machine) {
 		this(nAvailableMulticastEntries);
-		Set<Direction> ignoreDirections = details.getDeadDirections();
-		for (Direction direction : Direction.values()) {
+		var ignoreDirections = details.getDeadDirections();
+		for (var direction : Direction.values()) {
 			if (!ignoreDirections.contains(direction)) {
-				ChipLocation destination =
-						details.getLinkDestination(direction, source, machine);
+				var destination = details.getLinkDestination(direction, source,
+						machine);
 				addLink(new Link(source, direction,
 						requireNonNull(destination)));
 			}

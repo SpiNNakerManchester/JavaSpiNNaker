@@ -97,7 +97,7 @@ public class AbstractDataLink implements HasChipLocation {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final AbstractDataLink other = (AbstractDataLink) obj;
+		var other = (AbstractDataLink) obj;
 		return sameAs(other);
 	}
 

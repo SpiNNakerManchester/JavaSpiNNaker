@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.messages.bmp;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import uk.ac.manchester.spinnaker.messages.scp.SCPCommand;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -52,7 +51,7 @@ public class SerialVector {
 	 *            Where to deserialize the vector from.
 	 */
 	SerialVector(ByteBuffer buffer) {
-		IntBuffer b = buffer.asIntBuffer();
+		var b = buffer.asIntBuffer();
 		hardwareVersion = b.get();
 		serialNumber = new int[SERIAL_NUMBER_LENGTH];
 		b.get(serialNumber);

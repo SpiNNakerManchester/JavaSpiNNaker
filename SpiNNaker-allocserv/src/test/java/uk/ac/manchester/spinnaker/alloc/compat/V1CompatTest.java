@@ -31,9 +31,7 @@ import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -85,9 +83,9 @@ class V1CompatTest extends TestSupport {
 	private void withInstance(
 			BiConsumer<PrintWriter, NonThrowingLineReader> act)
 			throws Exception {
-		try (PipedWriter to = new PipedWriter();
-				PipedReader from = new PipedReader()) {
-			Future<?> f = testAPI.launchInstance(to, from);
+		try (var to = new PipedWriter();
+				var from = new PipedReader()) {
+			var f = testAPI.launchInstance(to, from);
 			try {
 				act.accept(new PrintWriter(to),
 						new NonThrowingLineReader(from));
@@ -113,8 +111,8 @@ class V1CompatTest extends TestSupport {
 		to.println("{\"command\":\"create_job\",\"args\":"
 				+ Arrays.toString(args) + ",\"kwargs\":{\"owner\":\"gorp\","
 				+ "\"machine\":\"" + MACHINE_NAME + "\"}}");
-		String line = from.readLine();
-		Matcher m = compile("\\{\"return\":(\\d+)\\}").matcher(line);
+		var line = from.readLine();
+		var m = compile("\\{\"return\":(\\d+)\\}").matcher(line);
 		assertTrue(m.matches(),
 				() -> format("'%s' doesn't match against '%s'", m.pattern(),
 						line));
@@ -150,7 +148,7 @@ class V1CompatTest extends TestSupport {
 	class WithoutJob {
 		@Test
 		void version(@Autowired ServiceVersion version) throws Exception {
-			String response = "{\"return\":\"" + version.getVersion() + "\"}";
+			var response = "{\"return\":\"" + version.getVersion() + "\"}";
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"version\"}");
 				assertEquals(response, from.readLine());
@@ -159,7 +157,7 @@ class V1CompatTest extends TestSupport {
 
 		@Test
 		void listMachines() throws Exception {
-			String machinesResponse = "{\"return\":[{\"name\":\"" + MACHINE_NAME
+			var machinesResponse = "{\"return\":[{\"name\":\"" + MACHINE_NAME
 					+ "\",\"tags\":[],\"width\":1,\"height\":1,"
 					+ "\"dead_boards\":[],\"dead_links\":[]}]}";
 			withInstance((to, from) -> {
@@ -169,7 +167,7 @@ class V1CompatTest extends TestSupport {
 				assertEquals(machinesResponse, from.readLine());
 				// An exception
 				to.println("{\"command\": \"list_machines\", \"args\": false}");
-				String line = from.readLine();
+				var line = from.readLine();
 				assertNotEquals(machinesResponse, line);
 				assertTrue(line.startsWith("{\"exception\":"),
 						() -> "expected exception in " + line);
@@ -178,7 +176,7 @@ class V1CompatTest extends TestSupport {
 
 		@Test
 		void listJobs() throws Exception {
-			String jobsResponse = "{\"return\":[]}";
+			var jobsResponse = "{\"return\":[]}";
 			withInstance((to, from) -> {
 				to.println("{\"command\": \"list_jobs\"}");
 				assertEquals(jobsResponse, from.readLine());
@@ -232,7 +230,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		void getBoardAtPosition() throws Exception {
 			// Physical->Logical map
-			String response = "{\"return\":[0,0,0]}";
+			var response = "{\"return\":[0,0,0]}";
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_board_at_position\",\"kwargs\":{"
 						+ "\"machine_name\":\"" + MACHINE_NAME
@@ -245,7 +243,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		void getBoardPosition() throws Exception {
 			// Logical->Physical map
-			String response = "{\"return\":[1,1,0]}";
+			var response = "{\"return\":[1,1,0]}";
 			withInstance((to, from) -> {
 				to.println("{\"command\":\"get_board_position\",\"kwargs\":{"
 						+ "\"machine_name\":\"" + MACHINE_NAME
@@ -257,7 +255,7 @@ class V1CompatTest extends TestSupport {
 		@Test
 		void jobCreateDelete() throws Exception {
 			withInstance((to, from) -> {
-				String jobId = create(to, from);
+				var jobId = create(to, from);
 				destroy(to, from, jobId);
 
 				jobId = create(to, from, 1);
@@ -282,11 +280,11 @@ class V1CompatTest extends TestSupport {
 		@Test
 		void compound() throws Exception {
 			withInstance((to, from) -> {
-				String jobId = create(to, from, 1, 1);
+				var jobId = create(to, from, 1, 1);
 
 				try {
 					to.println("{\"command\": \"list_jobs\"}");
-					String jobs = from.readLine();
+					var jobs = from.readLine();
 					assertThat("got job in list", jobs,
 							matchesPattern("\\{\"return\":\\[\\{.*\"job_id\":"
 									+ jobId + ",.*\\}\\]\\}"));

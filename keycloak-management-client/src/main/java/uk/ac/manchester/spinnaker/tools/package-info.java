@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Support tools that are rarely needed. Particularly {@link GetDevId}.
+ * Support tools that are rarely needed. Particularly {@link GetDevId},
+ * a (partial!) tool for managing the spalloc server registration with the
+ * keycloak service operated by HBP/EBRAINS.
  */
 package uk.ac.manchester.spinnaker.tools;

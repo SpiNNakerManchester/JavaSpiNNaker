@@ -100,7 +100,7 @@ public interface OpenIDUserAware {
 	 * @return The verified email address of the OpenID user, if available.
 	 */
 	default Optional<String> getOpenIdEmail() {
-		Optional<String> email = getOpenIdUser().map(uu -> uu.getAttributes())
+		var email = getOpenIdUser().map(uu -> uu.getAttributes())
 				.filter(uu -> uu.containsKey(EMAIL_VERIFIED)
 						&& (Boolean) uu.get(EMAIL_VERIFIED))
 				.map(uu -> uu.get(EMAIL).toString());

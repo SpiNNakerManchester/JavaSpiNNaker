@@ -19,14 +19,8 @@ package uk.ac.manchester.spinnaker.machine.bean;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.net.URL;
 
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.ac.manchester.spinnaker.machine.Chip;
-import uk.ac.manchester.spinnaker.machine.Direction;
-import uk.ac.manchester.spinnaker.machine.Link;
 
 import uk.ac.manchester.spinnaker.machine.Machine;
 
@@ -38,42 +32,42 @@ public class TestMachineBean {
 
 	@Test
 	public void testSpinn4() throws IOException {
-		URL url = TestMachineBean.class.getResource("/spinn4.json");
-		ObjectMapper mapper = MapperFactory.createMapper();
-		MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+		var url = TestMachineBean.class.getResource("/spinn4.json");
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(url, MachineBean.class);
 
-		Machine machine = new Machine(fromJson);
+		var machine = new Machine(fromJson);
 		assertNotNull(machine);
 	}
 
 	@Test
 	public void testSpinn4Fiddle() throws IOException {
-		URL url = TestMachineBean.class.getResource("/spinn4_fiddle.json");
-		ObjectMapper mapper = MapperFactory.createMapper();
-		MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+		var url = TestMachineBean.class.getResource("/spinn4_fiddle.json");
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(url, MachineBean.class);
 
-		Machine machine = new Machine(fromJson);
+		var machine = new Machine(fromJson);
 		assertNotNull(machine);
 	}
 
 	@Test
 	public void testSevenEight() throws IOException {
-		URL url = TestMachineBean.class.getResource("/test24_12.json");
-		ObjectMapper mapper = MapperFactory.createMapper();
-		MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+		var url = TestMachineBean.class.getResource("/test24_12.json");
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(url, MachineBean.class);
 
-		Machine machine = new Machine(fromJson);
+		var machine = new Machine(fromJson);
 		assertEquals(24, machine.machineDimensions.height);
 		assertEquals(12, machine.machineDimensions.width);
 		assertNotNull(machine);
 	}
 
 	public void testPop() throws IOException {
-		URL url = TestMachineBean.class.getResource("/h40w16.json");
-		ObjectMapper mapper = MapperFactory.createMapper();
-		MachineBean fromJson = mapper.readValue(url, MachineBean.class);
+		var url = TestMachineBean.class.getResource("/h40w16.json");
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(url, MachineBean.class);
 
-		Machine machine = new Machine(fromJson);
+		var machine = new Machine(fromJson);
 		assertNotNull(machine);
 	}
 }

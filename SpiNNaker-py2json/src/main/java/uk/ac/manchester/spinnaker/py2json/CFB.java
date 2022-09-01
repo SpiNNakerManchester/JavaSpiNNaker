@@ -52,7 +52,7 @@ public final class CFB {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof CFB) {
-			CFB other = (CFB) obj;
+			var other = (CFB) obj;
 			return c == other.c && f == other.f && b == other.b;
 		}
 		return false;

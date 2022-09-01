@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.machine.tags;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.bean.MapperFactory;
@@ -39,14 +38,14 @@ public class TestIPTag {
 
 	@Test
 	public void testBasic() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
-		ChipLocation destination = new ChipLocation(3, 3);
+		var boardAddress = createInetAddress((byte) 45);
+		var destination = new ChipLocation(3, 3);
 		int tagID = 10;
-		InetAddress targetAddress = createInetAddress((byte) 55);
+		var targetAddress = createInetAddress((byte) 55);
 		Integer port = 20;
 		boolean stripSDP = true;
-		TrafficIdentifier trafficIdentifier = TrafficIdentifier.DEFAULT;
-		IPTag instance = new IPTag(boardAddress, destination, tagID,
+		var trafficIdentifier = TrafficIdentifier.DEFAULT;
+		var instance = new IPTag(boardAddress, destination, tagID,
 				targetAddress, port, stripSDP, trafficIdentifier);
 		assertEquals(boardAddress, instance.getBoardAddress());
 		assertEquals(destination, instance.getDestination());
@@ -59,11 +58,11 @@ public class TestIPTag {
 
 	@Test
 	public void testDefaults1() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
-		ChipLocation destination = new ChipLocation(3, 3);
+		var boardAddress = createInetAddress((byte) 45);
+		var destination = new ChipLocation(3, 3);
 		int tagID = 10;
-		InetAddress targetAddress = createInetAddress((byte) 55);
-		IPTag instance =
+		var targetAddress = createInetAddress((byte) 55);
+		var instance =
 				new IPTag(boardAddress, destination, tagID, targetAddress);
 		assertEquals(boardAddress, instance.getBoardAddress());
 		assertEquals(destination, instance.getDestination());
@@ -85,12 +84,12 @@ public class TestIPTag {
 
 	@Test
 	public void testDefaults2() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
-		ChipLocation destination = new ChipLocation(3, 3);
+		var boardAddress = createInetAddress((byte) 45);
+		var destination = new ChipLocation(3, 3);
 		int tagID = 10;
-		InetAddress targetAddress = createInetAddress((byte) 55);
+		var targetAddress = createInetAddress((byte) 55);
 		Integer port = 20;
-		IPTag instance = new IPTag(boardAddress, destination, tagID,
+		var instance = new IPTag(boardAddress, destination, tagID,
 				targetAddress, port);
 		assertEquals(boardAddress, instance.getBoardAddress());
 		assertEquals(destination, instance.getDestination());
@@ -104,13 +103,13 @@ public class TestIPTag {
 
 	@Test
 	public void testDefaul3() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
-		ChipLocation destination = new ChipLocation(3, 3);
+		var boardAddress = createInetAddress((byte) 45);
+		var destination = new ChipLocation(3, 3);
 		int tagID = 10;
-		InetAddress targetAddress = createInetAddress((byte) 55);
+		var targetAddress = createInetAddress((byte) 55);
 		Integer port = 20;
 		boolean stripSDP = true;
-		IPTag instance = new IPTag(boardAddress, destination, tagID,
+		var instance = new IPTag(boardAddress, destination, tagID,
 				targetAddress, port, stripSDP);
 		assertEquals(boardAddress, instance.getBoardAddress());
 		assertEquals(destination, instance.getDestination());
@@ -124,11 +123,11 @@ public class TestIPTag {
 
 	@Test
 	public void testDefaults4() throws UnknownHostException {
-		InetAddress boardAddress = createInetAddress((byte) 45);
-		ChipLocation destination = new ChipLocation(3, 3);
+		var boardAddress = createInetAddress((byte) 45);
+		var destination = new ChipLocation(3, 3);
 		int tagID = 10;
-		InetAddress targetAddress = createInetAddress((byte) 55);
-		IPTag instance = new IPTag(boardAddress, destination, tagID,
+		var targetAddress = createInetAddress((byte) 55);
+		var instance = new IPTag(boardAddress, destination, tagID,
 				targetAddress, true);
 		assertEquals(boardAddress, instance.getBoardAddress());
 		assertEquals(destination, instance.getDestination());
@@ -147,10 +146,10 @@ public class TestIPTag {
 
 	@Test
 	public void testEquals() throws UnknownHostException {
-		IPTag tag1 = new IPTag(createInetAddress((byte) 45),
+		var tag1 = new IPTag(createInetAddress((byte) 45),
 				new ChipLocation(3, 3), 10, createInetAddress((byte) 55), 20,
 				true, TrafficIdentifier.DEFAULT);
-		IPTag tag1a = new IPTag(createInetAddress((byte) 45),
+		var tag1a = new IPTag(createInetAddress((byte) 45),
 				new ChipLocation(3, 3), 10, createInetAddress((byte) 55), 20,
 				true, TrafficIdentifier.DEFAULT);
 		assertEquals(tag1, tag1a);
@@ -188,12 +187,12 @@ public class TestIPTag {
 
 	@Test
 	public void testFromJson() throws IOException {
-		String json = " {\"x\": 0, \"y\": 0, "
+		var json = " {\"x\": 0, \"y\": 0, "
 				+ "\"boardAddress\": \"192.168.240.253\", "
 				+ "\"targetAddress\": \"localhost\", \"stripSDP\": true, "
 				+ "\"tagID\": 1, \"trafficIdentifier\": \"DATA_SPEED_UP\"}";
-		ObjectMapper mapper = MapperFactory.createMapper();
-		IPTag fromJson = mapper.readValue(json, IPTag.class);
+		var mapper = MapperFactory.createMapper();
+		var fromJson = mapper.readValue(json, IPTag.class);
 		assertNotNull(fromJson);
 	}
 

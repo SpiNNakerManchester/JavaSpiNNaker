@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.P2PTableRoute.NONE;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,8 +71,8 @@ public class P2PTable {
 
 	private void parseColumnData(Iterable<ByteBuffer> columnData) {
 		int x = 0;
-		for (ByteBuffer buffer : columnData) {
-			IntBuffer data = buffer.asIntBuffer();
+		for (var buffer : columnData) {
+			var data = buffer.asIntBuffer();
 			int chipX = x++;
 			for (int y = 0; y < height; y += ROUTE_CHUNK) {
 				extractRoutes(chipX, y, data.get());
@@ -83,7 +82,7 @@ public class P2PTable {
 
 	private void extractRoutes(int chipX, int chipYBase, int word) {
 		range(0, min(ROUTE_CHUNK, height - chipYBase)).forEach(y -> {
-			P2PTableRoute route =
+			var route =
 					P2PTableRoute.get((word >> (ROUTE_BITS * y)) & ROUTE_MASK);
 			if (route != null && route != NONE) {
 				routes.put(new ChipLocation(chipX, chipYBase + y), route);
@@ -126,7 +125,7 @@ public class P2PTable {
 	 * @return True if anything in the table routes to the chip.
 	 */
 	public boolean isRoute(HasChipLocation chip) {
-		P2PTableRoute r = routes.get(chip.asChipLocation());
+		var r = routes.get(chip.asChipLocation());
 		return r != null && r != NONE;
 	}
 
@@ -138,7 +137,7 @@ public class P2PTable {
 	 * @return Get the route descriptor for a chip.
 	 */
 	public P2PTableRoute getRoute(HasChipLocation chip) {
-		P2PTableRoute r = routes.get(chip.asChipLocation());
+		var r = routes.get(chip.asChipLocation());
 		return r == null ? NONE : r;
 	}
 }

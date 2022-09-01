@@ -58,7 +58,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @return True if they can make a job. False if they can't.
 	 */
 	public boolean mayCreateJob(int groupId) {
-		try (CreateCheckSQL sql = new CreateCheckSQL()) {
+		try (var sql = new CreateCheckSQL()) {
 			return sql.transaction(false, () -> sql.mayCreateJob(groupId));
 		}
 	}
@@ -78,7 +78,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 		private boolean mayCreateJob(int groupId) {
 			return getQuota.call1(groupId).map(result -> {
-				Integer quota = result.getInteger("quota");
+				var quota = result.getInteger("quota");
 				if (isNull(quota)) {
 					return true;
 				}
@@ -100,7 +100,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 * @return True if the job can continue to run. False if it can't.
 	 */
 	public boolean mayLetJobContinue(int jobId) {
-		try (ContinueCheckSQL sql = new ContinueCheckSQL()) {
+		try (var sql = new ContinueCheckSQL()) {
 			return sql.transaction(false, () -> sql.mayLetJobContinue(jobId));
 		}
 	}
@@ -135,7 +135,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 *         become.
 	 */
 	public Optional<AdjustedQuota> addQuota(int groupId, int delta) {
-		try (AdjustQuotaSQL sql = new AdjustQuotaSQL()) {
+		try (var sql = new AdjustQuotaSQL()) {
 			return sql.transaction(() -> sql.adjustQuota(groupId, delta)
 					.map(AdjustedQuota::new));
 		}
@@ -191,7 +191,7 @@ public class QuotaManager extends DatabaseAwareBean {
 			return;
 		}
 		// Split off for testability
-		try (Connection c = getConnection()) {
+		try (var c = getConnection()) {
 			doConsolidate(c);
 		} catch (DataAccessException e) {
 			if (isBusy(e)) {
@@ -204,7 +204,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	}
 
 	private void doConsolidate(Connection c) {
-		try (ConsolidateSQL sql = new ConsolidateSQL(c)) {
+		try (var sql = new ConsolidateSQL(c)) {
 			sql.transaction(sql::consolidate);
 		}
 	}
@@ -231,7 +231,7 @@ public class QuotaManager extends DatabaseAwareBean {
 
 		// Result is arbitrary and ignored
 		private Void consolidate() {
-			for (Row row : getConsoldationTargets.call()) {
+			for (var row : getConsoldationTargets.call()) {
 				decrementQuota.call(row.getObject("usage"),
 						row.getInt("group_id"));
 				markConsolidated.call(row.getInt("job_id"));

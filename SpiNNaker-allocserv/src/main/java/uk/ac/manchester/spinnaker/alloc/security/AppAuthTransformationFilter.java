@@ -61,8 +61,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request)
 			throws ServletException {
-		Authentication a =
-				SecurityContextHolder.getContext().getAuthentication();
+		var a = SecurityContextHolder.getContext().getAuthentication();
 		return isNull(a) || isUnsupportedAuthTokenClass(a.getClass());
 	}
 
@@ -70,14 +69,14 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request,
 			HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		HttpSession s = request.getSession(false);
-		SecurityContext ctx = SecurityContextHolder.getContext();
-		Authentication savedAuth = getSavedToken(s);
-		Authentication originalAuth = ctx.getAuthentication();
+		var s = request.getSession(false);
+		var ctx = SecurityContextHolder.getContext();
+		var savedAuth = getSavedToken(s);
+		var originalAuth = ctx.getAuthentication();
 		if (nonNull(savedAuth)) {
 			ctx.setAuthentication(savedAuth);
 		} else {
-			Authentication a = localAuthProvider.updateAuthentication(ctx);
+			var a = localAuthProvider.updateAuthentication(ctx);
 			if (nonNull(a)) {
 				saveToken(s, a);
 			}
@@ -91,9 +90,9 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 
 	private static Authentication getSavedToken(HttpSession session) {
 		if (nonNull(session)) {
-			Object o = session.getAttribute(TOKEN);
+			var o = session.getAttribute(TOKEN);
 			if (o instanceof Token) {
-				Token t = (Token) o;
+				var t = (Token) o;
 				if (t.isValid(session)) {
 					return t.getAuth();
 				}
@@ -121,7 +120,7 @@ public class AppAuthTransformationFilter extends OncePerRequestFilter {
 	 *            the HTTP request; used for looking up the session
 	 */
 	public static void clearToken(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
+		var session = request.getSession(false);
 		if (nonNull(session)) {
 			session.removeAttribute(TOKEN);
 			log.debug("removed special auth token from session");

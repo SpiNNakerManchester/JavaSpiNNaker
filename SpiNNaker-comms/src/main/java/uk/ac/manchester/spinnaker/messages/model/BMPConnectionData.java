@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.String.format;
 import static java.net.InetAddress.getByAddress;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -27,6 +26,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Contains the details of a connection to a SpiNNaker Board Management
@@ -96,7 +96,7 @@ public class BMPConnectionData {
 	public BMPConnectionData(InetAddress host, int numBoards)
 			throws UnknownHostException {
 		// take the IP address, split by dots, and subtract 1 off last bit
-		byte[] ipBits = host.getAddress();
+		var ipBits = host.getAddress();
 		if (ipBits[MIN_BYTE_FIELD] == 0 || ipBits[MIN_BYTE_FIELD] == 1) {
 			// Last digit of valid IP address can't really be 0 or 255
 			throw new IllegalArgumentException(
@@ -114,7 +114,7 @@ public class BMPConnectionData {
 		// if null, the end user didn't enter anything, so assume one board
 		// starting at position 0
 		if (numBoards == 0) {
-			boards = unmodifiableCollection(singletonList(0));
+			boards = List.of(0);
 		} else {
 			boards = unmodifiableCollection(
 					range(0, numBoards).boxed().collect(toList()));

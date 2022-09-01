@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
@@ -30,7 +28,6 @@ import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
 import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,8 +43,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -72,24 +67,6 @@ class BlacklistStoreTest extends TestSupport {
 	@BeforeAll
 	static void clearDB() throws IOException {
 		killDB(DB);
-	}
-
-	@SafeVarargs
-	private static <T> Set<T> set(T... args) {
-		// TODO replace with Set.of() in Java 11 onwards
-		return new HashSet<>(Arrays.asList(args));
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> Map<ChipLocation, Set<T>> map(Object... args) {
-		// TODO replace with Map.of() in Java 11 onwards
-		Map<ChipLocation, Set<T>> map = new HashMap<>();
-		for (int i = 0; i < args.length; i += 2) {
-			ChipLocation key = (ChipLocation) args[i];
-			Set<T> value = (Set<T>) args[i + 1];
-			map.put(key, value);
-		}
-		return map;
 	}
 
 	private static final ChipLocation C01 = new ChipLocation(0, 1);
@@ -123,27 +100,27 @@ class BlacklistStoreTest extends TestSupport {
 	@Test
 	void readDBWithBlacklistedChipPresent() {
 		checkAndRollback(c -> {
-			try (Update u = c.update(ADD_BLACKLISTED_CHIP)) {
+			try (var u = c.update(ADD_BLACKLISTED_CHIP)) {
 				assertEquals(1, u.call(BOARD, 1, 1));
 			}
 
-			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
-			assertEquals(new Blacklist(set(C11), emptyMap(), emptyMap()), bl);
+			assertEquals(new Blacklist(Set.of(C11), Map.of(), Map.of()), bl);
 		});
 	}
 
 	@Test
 	void readDBWithBlacklistedChipsPresent() {
 		checkAndRollback(c -> {
-			try (Update u = c.update(ADD_BLACKLISTED_CHIP)) {
+			try (var u = c.update(ADD_BLACKLISTED_CHIP)) {
 				assertEquals(1, u.call(BOARD, 1, 0));
 				assertEquals(1, u.call(BOARD, 0, 1));
 			}
 
-			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
-			assertEquals(new Blacklist(set(C01, C10), emptyMap(), emptyMap()),
+			assertEquals(new Blacklist(Set.of(C01, C10), Map.of(), Map.of()),
 					bl);
 		});
 	}
@@ -151,13 +128,14 @@ class BlacklistStoreTest extends TestSupport {
 	@Test
 	void readDBWithBlacklistedCorePresent() {
 		checkAndRollback(c -> {
-			try (Update u = c.update(ADD_BLACKLISTED_CORE)) {
+			try (var u = c.update(ADD_BLACKLISTED_CORE)) {
 				assertEquals(1, u.call(BOARD, 1, 1, 15));
 			}
 
-			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
-			assertEquals(new Blacklist(set(), map(C11, set(15)), emptyMap()),
+			assertEquals(
+					new Blacklist(Set.of(), Map.of(C11, Set.of(15)), Map.of()),
 					bl);
 		});
 	}
@@ -165,53 +143,55 @@ class BlacklistStoreTest extends TestSupport {
 	@Test
 	void readDBWithBlacklistedCoresPresent() {
 		checkAndRollback(c -> {
-			try (Update u = c.update(ADD_BLACKLISTED_CORE)) {
+			try (var u = c.update(ADD_BLACKLISTED_CORE)) {
 				assertEquals(1, u.call(BOARD, 0, 1, 16));
 				assertEquals(1, u.call(BOARD, 1, 0, 14));
 			}
 
-			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
-			assertEquals(new Blacklist(set(), map(C01, set(16), C10, set(14)),
-					emptyMap()), bl);
+			assertEquals(
+					new Blacklist(Set.of(),
+							Map.of(C01, Set.of(16), C10, Set.of(14)), Map.of()),
+					bl);
 		});
 	}
 
 	@Test
 	void readDBWithBlacklistedLinkPresent() {
 		checkAndRollback(c -> {
-			try (Update u = c.update(ADD_BLACKLISTED_LINK)) {
+			try (var u = c.update(ADD_BLACKLISTED_LINK)) {
 				assertEquals(1, u.call(BOARD, 1, 1, WEST));
 			}
 
-			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
-			assertEquals(new Blacklist(set(), emptyMap(), map(C11, set(WEST))),
-					bl);
+			assertEquals(new Blacklist(Set.of(), Map.of(),
+					Map.of(C11, Set.of(WEST))), bl);
 		});
 	}
 
 	@Test
 	void readDBWithBlacklistedLinksPresent() {
 		checkAndRollback(c -> {
-			try (Update u = c.update(ADD_BLACKLISTED_LINK)) {
+			try (var u = c.update(ADD_BLACKLISTED_LINK)) {
 				assertEquals(1, u.call(BOARD, 0, 1, NORTH));
 				assertEquals(1, u.call(BOARD, 1, 0, SOUTH));
 			}
 
-			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
-			assertEquals(new Blacklist(set(), emptyMap(),
-					map(C01, set(NORTH), C10, set(SOUTH))), bl);
+			assertEquals(new Blacklist(Set.of(), Map.of(),
+					Map.of(C01, Set.of(NORTH), C10, Set.of(SOUTH))), bl);
 		});
 	}
 
 	@Test
 	void readDBWithMultipleBlacklistStuffPresent() {
 		checkAndRollback(c -> {
-			try (Update chip = c.update(ADD_BLACKLISTED_CHIP);
-					Update core = c.update(ADD_BLACKLISTED_CORE);
-					Update link = c.update(ADD_BLACKLISTED_LINK)) {
+			try (var chip = c.update(ADD_BLACKLISTED_CHIP);
+					var core = c.update(ADD_BLACKLISTED_CORE);
+					var link = c.update(ADD_BLACKLISTED_LINK)) {
 				assertEquals(1, chip.call(BOARD, 1, 0));
 				assertEquals(1, chip.call(BOARD, 0, 1));
 				assertEquals(1, core.call(BOARD, 0, 2, 16));
@@ -220,13 +200,14 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, link.call(BOARD, 3, 0, SOUTH));
 			}
 
-			Blacklist bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
-			assertEquals(new Blacklist(set(C10, C01),
-					map(new ChipLocation(0, 2), set(16), new ChipLocation(2, 0),
-							set(14)),
-					map(new ChipLocation(0, 3), set(NORTH),
-							new ChipLocation(3, 0), set(SOUTH))),
+			assertEquals(
+					new Blacklist(Set.of(C10, C01),
+							Map.of(new ChipLocation(0, 2), Set.of(16),
+									new ChipLocation(2, 0), Set.of(14)),
+							Map.of(new ChipLocation(0, 3), Set.of(NORTH),
+									new ChipLocation(3, 0), Set.of(SOUTH))),
 					bl);
 		});
 	}
@@ -234,22 +215,23 @@ class BlacklistStoreTest extends TestSupport {
 	@Test
 	void writeDB() {
 		checkAndRollback(c -> {
-			Blacklist bl = new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
-					map(C77, set(NORTH, SOUTH, EAST, WEST)));
+			var bl = new Blacklist(Set.of(C01, C11),
+					Map.of(C10, Set.of(1, 2, 3)),
+					Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)));
 
 			testAPI.writeBlacklist(c, BOARD, bl);
 
 			// Check the results by looking in the DB ourselves
-			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
-					Query cores = c.query(GET_BLACKLISTED_CORES);
-					Query links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(set(C11, C01), chips.call(BOARD)
+			try (var chips = c.query(GET_BLACKLISTED_CHIPS);
+					var cores = c.query(GET_BLACKLISTED_CORES);
+					var links = c.query(GET_BLACKLISTED_LINKS)) {
+				assertEquals(Set.of(C11, C01), chips.call(BOARD)
 						.map(BlacklistStoreTest::coords).toSet());
-				assertEquals(map(C10, set(3, 2, 1)),
+				assertEquals(Map.of(C10, Set.of(3, 2, 1)),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
 								integer("p")));
-				assertEquals(map(C77, set(NORTH, SOUTH, EAST, WEST)),
+				assertEquals(Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)),
 						links.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
 								enumerate("direction", Direction.class)));
@@ -260,25 +242,27 @@ class BlacklistStoreTest extends TestSupport {
 	@Test
 	void rewriteDB() {
 		checkAndRollback(c -> {
-			Blacklist bl1 = new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
-					map(C77, set(NORTH, SOUTH, EAST, WEST)));
-			Blacklist bl2 = new Blacklist(set(C10, C77), map(C01, set(4, 5, 6)),
-					map(C11, set(NORTHEAST, SOUTHWEST)));
+			var bl1 = new Blacklist(Set.of(C01, C11),
+					Map.of(C10, Set.of(1, 2, 3)),
+					Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)));
+			var bl2 = new Blacklist(Set.of(C10, C77),
+					Map.of(C01, Set.of(4, 5, 6)),
+					Map.of(C11, Set.of(NORTHEAST, SOUTHWEST)));
 
 			testAPI.writeBlacklist(c, BOARD, bl1);
 			testAPI.writeBlacklist(c, BOARD, bl2);
 
 			// Check the results by looking in the DB ourselves
-			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
-					Query cores = c.query(GET_BLACKLISTED_CORES);
-					Query links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(set(C77, C10), chips.call(BOARD)
+			try (var chips = c.query(GET_BLACKLISTED_CHIPS);
+					var cores = c.query(GET_BLACKLISTED_CORES);
+					var links = c.query(GET_BLACKLISTED_LINKS)) {
+				assertEquals(Set.of(C77, C10), chips.call(BOARD)
 						.map(BlacklistStoreTest::coords).toSet());
-				assertEquals(map(C01, set(6, 4, 5)),
+				assertEquals(Map.of(C01, Set.of(6, 4, 5)),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
 								integer("p")));
-				assertEquals(map(C11, set(SOUTHWEST, NORTHEAST)),
+				assertEquals(Map.of(C11, Set.of(SOUTHWEST, NORTHEAST)),
 						links.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
 								enumerate("direction", Direction.class)));
@@ -289,24 +273,25 @@ class BlacklistStoreTest extends TestSupport {
 	@Test
 	void rewriteToEmptyDB() {
 		checkAndRollback(c -> {
-			Blacklist bl1 = new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
-					map(C77, set(NORTH, SOUTH, EAST, WEST)));
-			Blacklist bl2 = new Blacklist(emptySet(), emptyMap(), emptyMap());
+			var bl1 = new Blacklist(Set.of(C01, C11),
+					Map.of(C10, Set.of(1, 2, 3)),
+					Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)));
+			var bl2 = new Blacklist(Set.of(), Map.of(), Map.of());
 
 			testAPI.writeBlacklist(c, BOARD, bl1);
 			testAPI.writeBlacklist(c, BOARD, bl2);
 
 			// Check the results by looking in the DB ourselves
-			try (Query chips = c.query(GET_BLACKLISTED_CHIPS);
-					Query cores = c.query(GET_BLACKLISTED_CORES);
-					Query links = c.query(GET_BLACKLISTED_LINKS)) {
-				assertEquals(emptySet(), chips.call(BOARD)
+			try (var chips = c.query(GET_BLACKLISTED_CHIPS);
+					var cores = c.query(GET_BLACKLISTED_CORES);
+					var links = c.query(GET_BLACKLISTED_LINKS)) {
+				assertEquals(Set.of(), chips.call(BOARD)
 						.map(BlacklistStoreTest::coords).toSet());
-				assertEquals(emptyMap(),
+				assertEquals(Map.of(),
 						cores.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
 								integer("p")));
-				assertEquals(emptyMap(),
+				assertEquals(Map.of(),
 						links.call(BOARD).toCollectingMap(HashMap::new,
 								HashSet::new, BlacklistStoreTest::coords,
 								enumerate("direction", Direction.class)));
@@ -317,12 +302,12 @@ class BlacklistStoreTest extends TestSupport {
 	@Test
 	void writeAndReadBack() {
 		checkAndRollback(c -> {
-			Blacklist blIn =
-					new Blacklist(set(C01, C11), map(C10, set(1, 2, 3)),
-							map(C77, set(NORTH, SOUTH, EAST, WEST)));
+			var blIn = new Blacklist(Set.of(C01, C11),
+					Map.of(C10, Set.of(1, 2, 3)),
+					Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)));
 
 			testAPI.writeBlacklist(c, BOARD, blIn);
-			Blacklist blOut = testAPI.readBlacklist(c, BOARD).get();
+			var blOut = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(blIn, blOut);
 		});

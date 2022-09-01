@@ -58,6 +58,6 @@ public class LinkBean {
 			@JsonProperty(value = "destinationY", required = true)
 			int destinationY) {
 		destination = new ChipLocation(destinationX, destinationY);
-		this.sourceDirection = Direction.byId(sourceLinkId);
+		sourceDirection = Direction.byId(sourceLinkId);
 	}
 }

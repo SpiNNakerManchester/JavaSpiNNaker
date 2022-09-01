@@ -21,7 +21,6 @@ import static java.lang.Short.toUnsignedInt;
 import static java.lang.String.format;
 import static java.lang.System.nanoTime;
 import static java.lang.Thread.sleep;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.requireNonNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -39,6 +38,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -252,7 +252,7 @@ public class SCPRequestPipeline {
 		 */
 		private void parseReceivedResponse(SCPResultMessage msg)
 				throws Exception {
-			T response = msg.parsePayload(request);
+			var response = msg.parsePayload(request);
 			if (callback != null) {
 				callback.accept(response);
 			}
@@ -391,7 +391,7 @@ public class SCPRequestPipeline {
 			multiRetrieve(intermediateChannelWaits);
 		}
 
-		Request<T> req = registerRequest(request, callback, errorCallback);
+		var req = registerRequest(request, callback, errorCallback);
 
 		// Send the request
 		req.send();
@@ -436,7 +436,7 @@ public class SCPRequestPipeline {
 					.issueSequenceNumber(outstandingRequests.keySet()));
 
 			log.debug("sending message with sequence {}", sequence);
-			Request<T> req = new Request<>(request, callback, errorCallback);
+			var req = new Request<>(request, callback, errorCallback);
 			if (outstandingRequests.put(sequence, req) != null) {
 				throw new DuplicateSequenceNumberException();
 			}
@@ -459,7 +459,7 @@ public class SCPRequestPipeline {
 		finish();
 
 		// Update the packet with a (non-valuable) sequence number
-		request.scpRequestHeader.issueSequenceNumber(emptySet());
+		request.scpRequestHeader.issueSequenceNumber(Set.of());
 		// Send the request
 		new Request<>(request, null, null).send();
 	}
@@ -500,12 +500,12 @@ public class SCPRequestPipeline {
 	private void singleRetrieve() throws IOException {
 		// Receive the next response
 		log.debug("waiting for message... timeout of {}", packetTimeout);
-		SCPResultMessage msg = connection.receiveSCPResponse(packetTimeout);
+		var msg = connection.receiveSCPResponse(packetTimeout);
 		if (log.isDebugEnabled()) {
 			log.debug("received message {} with seq num {}", msg.getResult(),
 					msg.getSequenceNumber());
 		}
-		Request<?> req = msg.pickRequest(outstandingRequests);
+		var req = msg.pickRequest(outstandingRequests);
 
 		// Only process responses which have matching requests
 		if (req == null) {
@@ -552,14 +552,14 @@ public class SCPRequestPipeline {
 		numTimeouts++;
 
 		// If there is a timeout, all packets remaining are resent
-		BitSet toRemove = new BitSet(SEQUENCE_LENGTH);
+		var toRemove = new BitSet(SEQUENCE_LENGTH);
 		ArrayList<Integer> currentSeqs;
 		synchronized (outstandingRequests) {
 			currentSeqs = new ArrayList<>(outstandingRequests.keySet());
 		}
 		for (int seq : currentSeqs) {
 			log.debug("resending seq {}", seq);
-			Request<?> req = outstandingRequests.get(seq);
+			var req = outstandingRequests.get(seq);
 			if (req == null) {
 				// Shouldn't happen, but if it does we should nuke it.
 				toRemove.set(seq);

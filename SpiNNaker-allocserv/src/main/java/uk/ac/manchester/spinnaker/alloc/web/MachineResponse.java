@@ -27,7 +27,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -93,7 +92,7 @@ public final class MachineResponse {
 		downLinks = machine.getDownLinks();
 
 		if (nonNull(ui)) {
-			UriBuilder b = ui.getAbsolutePathBuilder().path("{resource}");
+			var b = ui.getAbsolutePathBuilder().path("{resource}");
 			lookupByPhysicalBoard = b.build(MACH_BOARD_BY_PHYSICAL);
 			lookupByLogicalBoard = b.build(MACH_BOARD_BY_LOGICAL);
 			lookupByChip = b.build(MACH_BOARD_BY_CHIP);

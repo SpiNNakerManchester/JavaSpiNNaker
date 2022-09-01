@@ -122,8 +122,7 @@ class FastDataInProtocol {
 	 */
 	SDPMessage dataToLocation(MemoryLocation baseAddress, int numPackets,
 			int transactionId) {
-		ByteBuffer payload =
-				allocate(BYTES_FOR_LOCATION_PACKET).order(LITTLE_ENDIAN);
+		var payload = allocate(BYTES_FOR_LOCATION_PACKET).order(LITTLE_ENDIAN);
 		payload.putInt(SEND_DATA_TO_LOCATION.value);
 		payload.putInt(transactionId);
 		payload.putInt(baseAddress.address);
@@ -147,8 +146,7 @@ class FastDataInProtocol {
 	 *             If the sequence number is nonsense.
 	 */
 	SDPMessage seqData(ByteBuffer data, int seqNum, int transactionId) {
-		ByteBuffer payload =
-				allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
+		var payload = allocate(BYTES_PER_FULL_PACKET).order(LITTLE_ENDIAN);
 		int position = calculatePositionFromSequenceNumber(seqNum);
 		if (position >= data.limit()) {
 			throw new RuntimeException(format(
@@ -165,9 +163,9 @@ class FastDataInProtocol {
 	}
 
 	private int putBuffer(ByteBuffer data, int position, ByteBuffer payload) {
-		ByteBuffer tmp = data.asReadOnlyBuffer();
+		var tmp = data.asReadOnlyBuffer();
 		tmp.position(position);
-		ByteBuffer slice = tmp.slice();
+		var slice = tmp.slice();
 		slice.limit(min(slice.limit(), payload.remaining()));
 		payload.put(slice).flip();
 		return slice.position();
@@ -185,8 +183,7 @@ class FastDataInProtocol {
 	 * @return The message indicating the end of the data.
 	 */
 	SDPMessage tellDataIn(int transactionId) {
-		ByteBuffer payload =
-				allocate(BYTES_FOR_TELL_PACKET).order(LITTLE_ENDIAN);
+		var payload = allocate(BYTES_FOR_TELL_PACKET).order(LITTLE_ENDIAN);
 		payload.putInt(SEND_TELL_DATA_IN.value);
 		payload.putInt(transactionId);
 		payload.flip();

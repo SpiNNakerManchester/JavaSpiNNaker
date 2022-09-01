@@ -16,8 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.security;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
@@ -43,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
@@ -126,7 +123,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		if (!authProps.isAddDummyUser()) {
 			return Optional.empty();
 		}
-		String pass = DUMMY_PASSWORD;
+		var pass = DUMMY_PASSWORD;
 		boolean poorPassword = true;
 		if (authProps.isDummyRandomPass()) {
 			pass = passServices.generatePassword();
@@ -148,11 +145,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private Optional<GroupRecord> makeInitGroup(String groupname) {
-		if (groupname.isEmpty()) {
+		if (groupname.isBlank()) {
 			// No system group name, so ignore group setup
 			return Optional.empty();
 		}
-		GroupRecord template = new GroupRecord();
+		var template = new GroupRecord();
 		template.setGroupName(groupname);
 		// What should the default quota be here? Using no-quota-at-all for now
 		template.setQuota(null);
@@ -173,17 +170,18 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@PostConstruct
 	private void initUserIfNecessary() {
 		// User setup
-		Optional<UserRecord> user = makeInitUser(DUMMY_USER);
+		var user = makeInitUser(DUMMY_USER);
 
 		// Group setup
-		Optional<GroupRecord> group = makeInitGroup(authProps.getSystemGroup());
+		var group = makeInitGroup(authProps.getSystemGroup());
 
 		// Connect the two if we made them both
-		if (user.isPresent() && group.isPresent() && !userController
-				.addUserToGroup(user.get(), group.get()).isPresent()) {
-			log.warn("user {} was not added to default group {}",
-					user.get().getUserName(), group.get().getGroupName());
-		}
+		user.ifPresent(u -> group.ifPresent(g -> {
+			if (!userController.addUserToGroup(u, g).isPresent()) {
+				log.warn("user {} was not added to default group {}",
+						u.getUserName(), g.getGroupName());
+			}
+		}));
 	}
 
 	private static final class SetupException extends RuntimeException {
@@ -198,13 +196,13 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	@PreAuthorize(IS_ADMIN)
 	public boolean createUser(String username, String password,
 			TrustLevel trustLevel) {
-		String name = username.trim();
-		if (name.isEmpty()) {
+		var name = username.strip();
+		if (name.isBlank()) {
 			// Won't touch the DB if the username is empty
 			throw new UsernameNotFoundException("empty user name?");
 		}
-		String encPass = passServices.encodePassword(password);
-		try (AuthQueries sql = new AuthQueries()) {
+		var encPass = passServices.encodePassword(password);
+		try (var sql = new AuthQueries()) {
 			return sql.transaction(
 					() -> sql.createUser(username, encPass, trustLevel, null)
 							.isPresent());
@@ -237,8 +235,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				OAuth2User user =
-						((OAuth2AuthenticationToken) auth).getPrincipal();
+				var user = ((OAuth2AuthenticationToken) auth).getPrincipal();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ user.getAttribute(PREFERRED_USERNAME),
@@ -250,7 +247,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				 * we've checked that the token from Keycloak is valid. We still
 				 * have to take an authorization decision though.
 				 */
-				Jwt token = ((JwtAuthenticationToken) auth).getToken();
+				var token = ((JwtAuthenticationToken) auth).getToken();
 				return authorizeOpenId(
 						authProps.getOpenid().getUsernamePrefix()
 								+ token.getClaimAsString(PREFERRED_USERNAME),
@@ -267,10 +264,10 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Override
 	public Authentication updateAuthentication(SecurityContext ctx) {
-		Authentication current = ctx.getAuthentication();
+		var current = ctx.getAuthentication();
 		if (nonNull(current)) {
 			if (supports(current.getClass())) {
-				Authentication updated = authenticate(current);
+				var updated = authenticate(current);
 				if (nonNull(updated) && updated != current) {
 					log.debug("filter updated security from {} to {}", current,
 							updated);
@@ -300,7 +297,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 	@Override
 	public boolean supports(Class<?> cls) {
-		for (Class<?> c : SUPPORTED_AUTH_TOKEN_CLASSES) {
+		for (var c : SUPPORTED_AUTH_TOKEN_CLASSES) {
 			if (c.isAssignableFrom(cls)) {
 				return true;
 			}
@@ -321,7 +318,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *         it.
 	 */
 	static boolean isUnsupportedAuthTokenClass(Class<?> cls) {
-		for (Class<?> c : UNSUPPORTED_AUTH_TOKEN_CLASSES) {
+		for (var c : UNSUPPORTED_AUTH_TOKEN_CLASSES) {
 			if (c.isAssignableFrom(cls)) {
 				return true;
 			}
@@ -356,15 +353,15 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			throws AuthenticationException {
 		log.info("authenticating Local Login {}", auth.toString());
 		// We ALWAYS trim the username; extraneous whitespace is bogus
-		String name = auth.getName().trim();
-		if (name.isEmpty()) {
+		var name = auth.getName().strip();
+		if (name.isBlank()) {
 			// Won't touch the DB if the username is empty
 			throw new UsernameNotFoundException("empty user name?");
 		}
-		String password = auth.getCredentials().toString();
-		List<GrantedAuthority> authorities = new ArrayList<>();
+		var password = auth.getCredentials().toString();
+		var authorities = new ArrayList<GrantedAuthority>();
 
-		try (AuthQueries queries = new AuthQueries()) {
+		try (var queries = new AuthQueries()) {
 			if (!authLocalAgainstDB(name, password, authorities, queries)) {
 				return null;
 			}
@@ -404,7 +401,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			// No actual name there?
 			throw new UsernameNotFoundException("empty user name?");
 		}
-		try (AuthQueries queries = new AuthQueries()) {
+		try (var queries = new AuthQueries()) {
 			if (!queries.transaction(() -> authOpenIDAgainstDB(name, subject,
 					authorities, queries))) {
 				return null;
@@ -455,7 +452,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		private OpenIDDerivedAuthenticationToken(String who,
 				OriginatingCredential credential) {
-			super(asList(new SimpleGrantedAuthority(GRANT_READER),
+			super(List.of(new SimpleGrantedAuthority(GRANT_READER),
 					new SimpleGrantedAuthority(GRANT_USER)));
 			this.who = who;
 			this.credential = credential;
@@ -590,7 +587,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * checks the password, we just got the userId from the DB, and
 			 * we're in a transaction so the world won't change under our feet.
 			 */
-			return userAuthorities.call1(userId).get();
+			return userAuthorities.call1(userId).orElseThrow();
 		}
 
 		/**
@@ -666,7 +663,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 
 		GroupSynch(AuthQueries sql) {
 			super(sql.getConnection());
-			try (Update make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
+			try (var make = conn.update(GROUP_SYNC_MAKE_TEMP_TABLE)) {
 				make.call();
 			}
 			insert = conn.update(GROUP_SYNC_INSERT_TEMP_ROW);
@@ -693,7 +690,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			 * table instead, and that's just as good *and can be done in the
 			 * transaction*.
 			 */
-			try (Update drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
+			try (var drop = conn.update(GROUP_SYNC_DROP_TEMP_TABLE)) {
 				drop.call();
 			}
 			super.close();
@@ -777,9 +774,9 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		if (isNull(claim)) {
 			return false;
 		}
-		Set<String> seen = new HashSet<>();
-		for (String collab : claim) {
-			String reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
+		var seen = new HashSet<>();
+		for (var collab : claim) {
+			var reduced = COLLAB_MATCHER.matcher(collab).replaceFirst("$1");
 			if (!seen.contains(reduced)) {
 				results.add(new CollabratoryAuthority(reduced));
 				seen.add(reduced);
@@ -803,7 +800,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		if (isNull(claim)) {
 			return false;
 		}
-		for (String org : claim) {
+		for (var org : claim) {
 			/*
 			 * No special processing required; orgs start with / in name and are
 			 * already guaranteed to be unique.
@@ -827,11 +824,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		// Messy; all the implicit types and hidden casts!
 		try {
 			if (rolesClaim instanceof Map) {
-				List<String> teamsClaim = rolesClaim.get("team");
+				var teamsClaim = rolesClaim.get("team");
 				if (teamsClaim instanceof List) {
 					if (!teamsClaim.isEmpty()) {
 						// Dummy check to determine if first element is string
-						teamsClaim.get(0).isEmpty();
+						teamsClaim.get(0).isBlank();
 					}
 					return teamsClaim;
 				}
@@ -839,7 +836,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		} catch (ClassCastException e) {
 			log.debug("failed to convert claim", e);
 		}
-		return emptyList();
+		return List.of();
 	}
 
 	private void mapAuthorities(String source, ClaimAccessor claimSet,
@@ -959,8 +956,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					// Note that this extends the lock!
 					throw new LockedException("account is locked");
 				}
-				Row authInfo = queries.getUserAuthorities(userId);
-				String encPass = authInfo.getString("encrypted_password");
+				var authInfo = queries.getUserAuthorities(userId);
+				var encPass = authInfo.getString("encrypted_password");
 				if (isNull(encPass)) {
 					/*
 					 * We know this user, but they can't use this authentication
@@ -968,8 +965,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					 */
 					return Optional.empty();
 				}
-				TrustLevel trust =
-						authInfo.getEnum("trust_level", TrustLevel.class);
+				var trust = authInfo.getEnum("trust_level", TrustLevel.class);
 				return Optional.of(new LocalAuthResult(userId, trust, encPass));
 			} catch (AuthenticationException e) {
 				queries.noteLoginFailureForUser(userId, username);
@@ -1030,8 +1026,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private boolean authOpenIDAgainstDB(String username, String subject,
 			Collection<? extends GrantedAuthority> authorities,
 			AuthQueries queries) {
-		List<String> collabs = new ArrayList<>();
-		List<String> orgs = new ArrayList<>();
+		var collabs = new ArrayList<String>();
+		var orgs = new ArrayList<String>();
 		authorities.forEach(ga -> inflateGroup(ga, collabs, orgs, queries));
 		return ifElse(queries.getUser(username), userInfo -> {
 			int userId = userInfo.getInt("user_id");
@@ -1045,7 +1041,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 					// Note that this extends the lock!
 					throw new LockedException("account is locked");
 				}
-				Row authInfo = queries.getUserAuthorities(userId);
+				var authInfo = queries.getUserAuthorities(userId);
 				if (nonNull(authInfo.getString("encrypted_password"))) {
 					/*
 					 * We know this user, but they can't use this authentication
@@ -1097,7 +1093,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			String oldSubject) {
 		if (isNull(subject)) {
 			log.warn("null subject for {}", username);
-		} else if (subject.isEmpty()) {
+		} else if (subject.isBlank()) {
 			log.warn("empty subject for {}", username);
 		}
 		if (nonNull(oldSubject)) {
@@ -1115,16 +1111,16 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	private void inflateGroup(GrantedAuthority ga, List<String> collabs,
 			List<String> orgs, AuthQueries queries) {
 		if (ga instanceof CollabratoryAuthority) {
-			CollabratoryAuthority collab = (CollabratoryAuthority) ga;
-			String collab1 = collab.getCollabratory();
+			var collab = (CollabratoryAuthority) ga;
+			var collab1 = collab.getCollabratory();
 			if (queries.createGroup(collab1, COLLABRATORY,
 					quotaProps.getDefaultCollabQuota())) {
 				log.info("created collabratory '{}'", collab1);
 			}
 			collabs.add(collab.getCollabratory());
 		} else if (ga instanceof OrganisationAuthority) {
-			OrganisationAuthority org = (OrganisationAuthority) ga;
-			String org1 = org.getOrganisation();
+			var org = (OrganisationAuthority) ga;
+			var org1 = org.getOrganisation();
 			if (queries.createGroup(org1, ORGANISATION,
 					quotaProps.getDefaultOrgQuota())) {
 				log.info("created organisation '{}'", org1);
@@ -1150,11 +1146,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	private void synchExternalGroups(String username, int userId,
 			List<String> orgs, List<String> collabs, AuthQueries queries) {
-		try (GroupSynch synch = new GroupSynch(queries)) {
-			for (String org : orgs) {
+		try (var synch = new GroupSynch(queries)) {
+			for (var org : orgs) {
 				synch.define(org, ORGANISATION);
 			}
-			for (String collab : collabs) {
+			for (var collab : collabs) {
 				synch.define(collab, COLLABRATORY);
 			}
 			synch.apply(userId);
@@ -1184,7 +1180,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	private void unlock() {
-		try (AuthQueries sql = new AuthQueries()) {
+		try (var sql = new AuthQueries()) {
 			sql.transaction(() -> {
 				sql.unlock();
 				return null;

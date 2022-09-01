@@ -16,8 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
@@ -34,7 +33,6 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
@@ -68,12 +66,12 @@ class QuotaManagerTest extends TestSupport {
 
 	private Long getQuota(Connection c) {
 		try (Query q = c.query(TEST_GET_QUOTA)) {
-			return q.call1(MACHINE, USER).get().getLong("quota");
+			return q.call1(MACHINE, USER).orElseThrow().getLong("quota");
 		}
 	}
 
 	private void setQuota(Connection c, Integer quota) {
-		try (Update u = c.update(TEST_SET_QUOTA)) {
+		try (var u = c.update(TEST_SET_QUOTA)) {
 			u.call(quota, GROUP);
 		}
 	}

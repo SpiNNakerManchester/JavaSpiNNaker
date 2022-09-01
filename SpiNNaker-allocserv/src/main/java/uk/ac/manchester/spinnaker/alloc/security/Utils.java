@@ -20,7 +20,6 @@ import static java.util.Objects.nonNull;
 import static javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
@@ -52,10 +51,9 @@ public abstract class Utils {
 	 */
 	public static X509TrustManager trustManager(KeyStore truststore)
 			throws GeneralSecurityException {
-		TrustManagerFactory tmf =
-				TrustManagerFactory.getInstance(getDefaultAlgorithm());
+		var tmf = TrustManagerFactory.getInstance(getDefaultAlgorithm());
 		tmf.init(truststore);
-		for (TrustManager tm : tmf.getTrustManagers()) {
+		for (var tm : tmf.getTrustManagers()) {
 			if (tm instanceof X509TrustManager) {
 				return (X509TrustManager) tm;
 			}
@@ -77,8 +75,8 @@ public abstract class Utils {
 	public static void installInjectableTrustStoreAsDefault(
 			Supplier<X509TrustManager> injector)
 			throws GeneralSecurityException {
-		X509TrustManager defaultTm = trustManager(null);
-		SSLContext sslContext = SSLContext.getInstance("TLS");
+		var defaultTm = trustManager(null);
+		var sslContext = SSLContext.getInstance("TLS");
 		sslContext.init(null, new TrustManager[] {
 			new X509TrustManager() {
 				@Override
@@ -89,7 +87,7 @@ public abstract class Utils {
 				@Override
 				public void checkServerTrusted(X509Certificate[] chain,
 						String authType) throws CertificateException {
-					X509TrustManager customTm = injector.get();
+					var customTm = injector.get();
 					if (nonNull(customTm)) {
 						try {
 							customTm.checkServerTrusted(chain, authType);
@@ -122,8 +120,8 @@ public abstract class Utils {
 	 */
 	public static KeyStore loadTrustStore(OpenIDProperties props)
 			throws GeneralSecurityException, IOException {
-		KeyStore myTrustStore = KeyStore.getInstance(props.getTruststoreType());
-		try (InputStream myCerts = props.getTruststorePath().getInputStream()) {
+		var myTrustStore = KeyStore.getInstance(props.getTruststoreType());
+		try (var myCerts = props.getTruststorePath().getInputStream()) {
 			myTrustStore.load(myCerts,
 					props.getTruststorePassword().toCharArray());
 		}

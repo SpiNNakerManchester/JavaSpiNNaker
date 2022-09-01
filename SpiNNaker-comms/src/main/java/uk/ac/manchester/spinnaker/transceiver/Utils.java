@@ -103,7 +103,7 @@ public abstract class Utils {
 	 * @throws IOException
 	 *             If anything goes wrong
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public static void sendPortTriggerMessage(UDPConnection<?> connection,
 			InetAddress host) throws IOException {
 		connection.sendPortTriggerMessage(host);
@@ -134,9 +134,9 @@ public abstract class Utils {
 		if (buffer.hasArray()) {
 			Arrays.fill(buffer.array(), start, start + len, value);
 		} else {
-			byte[] work = new byte[len];
+			var work = new byte[len];
 			Arrays.fill(work, value);
-			ByteBuffer buf = buffer.duplicate();
+			var buf = buffer.duplicate();
 			buf.position(start);
 			buf.put(work);
 		}
@@ -154,10 +154,10 @@ public abstract class Utils {
 	 * @return The CRC (as a signed integer).
 	 */
 	static int crc(ByteBuffer buffer, int start, int len) {
-		ByteBuffer crcbuf = buffer.duplicate();
+		var crcbuf = buffer.duplicate();
 		crcbuf.position(start);
 		crcbuf.limit(start + len);
-		CRC32 crc = new CRC32();
+		var crc = new CRC32();
 		crc.update(crcbuf);
 		return (int) crc.getValue();
 	}

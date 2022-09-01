@@ -20,8 +20,8 @@ import static com.fasterxml.jackson.databind.PropertyNamingStrategies.SNAKE_CASE
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Nested;
@@ -60,13 +60,13 @@ class JsonTest {
 	class Serialization {
 		@Test
 		void testBoardCoordinates() throws IOException, JSONException {
-			BoardCoordinates d = new BoardCoordinates(0, 1, 2);
+			var d = new BoardCoordinates(0, 1, 2);
 			JSONAssert.assertEquals("[0, 1, 2]", serialize(d), true);
 		}
 
 		@Test
 		void testBoardPhysicalCoordinates() throws IOException, JSONException {
-			BoardPhysicalCoordinates r = new BoardPhysicalCoordinates(0, 1, 2);
+			var r = new BoardPhysicalCoordinates(0, 1, 2);
 			JSONAssert.assertEquals(
 					"[0, 1, 2]",
 					serialize(r), true);
@@ -74,11 +74,11 @@ class JsonTest {
 
 		@Test
 		void testJobMachineInfo() throws IOException, JSONException {
-			JobMachineInfo r = new JobMachineInfo();
+			var r = new JobMachineInfo();
 			r.setMachineName("gorp");
-			r.setBoards(Arrays.asList(new BoardCoordinates(0, 1, 2)));
-			r.setConnections(Arrays
-					.asList(new Connection(new ChipLocation(0, 0), "foo.bar")));
+			r.setBoards(List.of(new BoardCoordinates(0, 1, 2)));
+			r.setConnections(
+					List.of(new Connection(new ChipLocation(0, 0), "foo.bar")));
 			JSONAssert.assertEquals(
 					"{ 'boards': [[0,1,2]], "
 							+ "'connections': [[[0,0],'foo.bar']], "
@@ -90,7 +90,7 @@ class JsonTest {
 
 		@Test
 		void testJobState() throws IOException, JSONException {
-			JobState r = new JobState();
+			var r = new JobState();
 			r.setPower(false);
 			r.setReason("gorp");
 			r.setState(State.POWER);
@@ -109,11 +109,11 @@ class JsonTest {
 
 		@Test
 		void testJobDescription() throws IOException, JSONException {
-			JobDescription[] r = new JobDescription[1];
+			var r = new JobDescription[1];
 			r[0] = new JobDescription();
 			r[0].setJobID(1);
-			r[0].setArgs(Arrays.asList(0));
-			r[0].setKwargs(new HashMap<>());
+			r[0].setArgs(List.of(0));
+			r[0].setKwargs(Map.of());
 			r[0].setKeepAlive(123);
 			r[0].setKeepAliveHost("127.0.0.1");
 			r[0].setMachine("foo");
@@ -140,10 +140,10 @@ class JsonTest {
 
 		@Test
 		void testMachine() throws IOException, JSONException {
-			Machine[] r = new Machine[1];
+			var r = new Machine[1];
 			r[0] = new Machine();
 			r[0].setName("gorp");
-			r[0].setTags(Arrays.asList("foo", "bar"));
+			r[0].setTags(List.of("foo", "bar"));
 			JSONAssert
 					.assertEquals(
 							"[{ 'name': 'gorp', 'tags': ['foo', 'bar'], "
@@ -154,7 +154,7 @@ class JsonTest {
 
 		@Test
 		void testWhereIs() throws IOException, JSONException {
-			WhereIs r = new WhereIs(new ChipLocation(0, 0), 0,
+			var r = new WhereIs(new ChipLocation(0, 0), 0,
 					new ChipLocation(0, 0), new BoardCoordinates(0, 1, 2),
 					"gorp", new ChipLocation(0, 0),
 					new BoardPhysicalCoordinates(0, 1, 2));

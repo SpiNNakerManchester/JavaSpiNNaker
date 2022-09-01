@@ -162,6 +162,7 @@ class OTPrepared extends OTStatement implements PreparedStatement {
 		s.setAsciiStream(parameterIndex, x, length);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	@Deprecated
 	public final void setUnicodeStream(int parameterIndex, InputStream x,

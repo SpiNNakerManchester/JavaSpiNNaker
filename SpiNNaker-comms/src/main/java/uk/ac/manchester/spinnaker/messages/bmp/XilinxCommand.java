@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.messages.bmp;
 
-import static uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
+import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType;
 
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 

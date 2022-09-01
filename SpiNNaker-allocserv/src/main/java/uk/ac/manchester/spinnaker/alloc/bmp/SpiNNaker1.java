@@ -37,13 +37,11 @@ import org.springframework.stereotype.Component;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.TxrxProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.alloc.bmp.FirmwareLoader.FirmwareLoaderException;
-import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.messages.model.FPGA;
-import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
@@ -117,7 +115,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	private void loadFirmware(List<BMPBoard> boards)
 			throws ProcessException, InterruptedException, IOException {
 		int count = 0;
-		for (BMPBoard board : boards) {
+		for (var board : boards) {
 			firmwareLoaderFactory.getObject(txrx, board)
 					.bitLoad(++count == boards.size());
 		}
@@ -216,7 +214,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 */
 	private boolean canBoardManageFPGAs(BMPBoard board)
 			throws ProcessException, IOException {
-		VersionInfo vi = txrx.readBMPVersion(board);
+		var vi = txrx.readBMPVersion(board);
 		return vi.versionNumber.majorVersion >= BMP_VERSION_MIN;
 	}
 
@@ -228,8 +226,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 */
 	@Override
 	public void setLinkOff(Link link) throws ProcessException, IOException {
-		BMPBoard board = requireNonNull(idToBoard.get(link.getBoard()));
-		Direction d = link.getLink();
+		var board = requireNonNull(idToBoard.get(link.getBoard()));
+		var d = link.getLink();
 		// skip FPGA link configuration if old BMP version
 		if (!canBoardManageFPGAs(board)) {
 			return;
@@ -249,7 +247,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * @see #isGoodFPGA(Integer, FPGA)
 	 */
 	private boolean hasGoodFPGAs(BMPBoard board) throws FPGAReloadRequired {
-		for (FPGA fpga : FPGA.values()) {
+		for (var fpga : FPGA.values()) {
 			if (fpga.isSingleFPGA() && !isGoodFPGA(board, fpga)) {
 				return false;
 			}
@@ -260,7 +258,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 	@Override
 	public void powerOnAndCheck(List<Integer> boards)
 			throws ProcessException, InterruptedException, IOException {
-		List<BMPBoard> boardsToPower = remap(boards);
+		var boardsToPower = remap(boards);
 		boolean reloadDone = false; // so we only do firmware loading once
 		for (int attempt = 1; attempt <= props.getFpgaAttempts(); attempt++) {
 			if (attempt > 1) {
@@ -275,9 +273,9 @@ class SpiNNaker1 implements SpiNNakerControl {
 			 * that have booted correctly need no further action.
 			 */
 
-			List<BMPBoard> retryBoards = new ArrayList<>();
-			List<BMPBoard> reloadBoards = new ArrayList<>();
-			for (BMPBoard board : boardsToPower) {
+			var retryBoards = new ArrayList<BMPBoard>();
+			var reloadBoards = new ArrayList<BMPBoard>();
+			for (var board : boardsToPower) {
 				// Skip board if old BMP version
 				if (!canBoardManageFPGAs(board)) {
 					continue;

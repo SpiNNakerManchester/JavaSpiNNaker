@@ -31,7 +31,6 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 
-import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
@@ -106,9 +105,9 @@ public final class MissingSequenceNumbersMessage extends GatherProtocolMessage {
 	static MappableIterable<MissingSequenceNumbersMessage> createMessages(
 			HasCoreLocation destination, List<Integer> missingSeqs,
 			int transactionId) {
-		List<Integer> work = reduce(missingSeqs);
+		var work = reduce(missingSeqs);
 		int numPackets = computeNumberOfPackets(work.size());
-		CoreLocation dest = destination.asCoreLocation();
+		var dest = destination.asCoreLocation();
 		return () -> new Iterator<MissingSequenceNumbersMessage>() {
 			int pktNum = 0;
 			int index = 0;

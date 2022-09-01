@@ -41,7 +41,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
@@ -56,7 +55,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
-import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -129,8 +127,8 @@ public class SecurityConfig {
 	@Role(ROLE_SUPPORT)
 	static X509TrustManager customTrustManager(AuthProperties props)
 			throws IOException, GeneralSecurityException {
-		OpenIDProperties p = props.getOpenid();
-		X509TrustManager tm = trustManager(loadTrustStore(p));
+		var p = props.getOpenid();
+		var tm = trustManager(loadTrustStore(p));
 		customTm = tm;
 		log.info("set trust store from {}", p.getTruststorePath().getURI());
 		return tm;
@@ -229,8 +227,8 @@ public class SecurityConfig {
 	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	private void defineWebUILoginRules(HttpSecurity http) throws Exception {
-		String loginUrl = urlMaker.systemUrl("login.html");
-		String rootPage = urlMaker.systemUrl("");
+		var loginUrl = urlMaker.systemUrl("login.html");
+		var rootPage = urlMaker.systemUrl("");
 		if (properties.getOpenid().isEnable()) {
 			/*
 			 * We're both, so we can have logins AND tokens. The logins are for
@@ -266,7 +264,7 @@ public class SecurityConfig {
 	 *             If anything goes wrong with setting up. Not expected.
 	 */
 	private void defineLogoutRules(HttpSecurity http) throws Exception {
-		String loginUrl = urlMaker.systemUrl("login.html");
+		var loginUrl = urlMaker.systemUrl("login.html");
 		http.logout().logoutUrl(urlMaker.systemUrl("perform_logout"))
 				.addLogoutHandler((req, resp, auth) -> clearToken(req))
 				.deleteCookies(SESSION_COOKIE).invalidateHttpSession(true)
@@ -304,10 +302,9 @@ public class SecurityConfig {
 	@Bean("hbp.collab-and-org.bearer-converter.shim")
 	@Role(ROLE_SUPPORT)
 	Converter<Jwt, ? extends AbstractAuthenticationToken> authConverter() {
-		JwtGrantedAuthoritiesConverter jgac =
-				new JwtGrantedAuthoritiesConverter();
+		var baseConverter = new JwtGrantedAuthoritiesConverter();
 		return jwt -> {
-			Collection<GrantedAuthority> mappedAuthorities = jgac.convert(jwt);
+			var mappedAuthorities = baseConverter.convert(jwt);
 			// ASSUME that this is a modifiable collection
 			localAuthProvider.mapAuthorities(jwt, mappedAuthorities);
 			return new JwtAuthenticationToken(jwt, mappedAuthorities);
@@ -323,10 +320,9 @@ public class SecurityConfig {
 	@Bean("hbp.collab-and-org.user-converter.shim")
 	@Role(ROLE_SUPPORT)
 	GrantedAuthoritiesMapper userAuthoritiesMapper() {
-		SimpleAuthorityMapper sam = new SimpleAuthorityMapper();
+		var baseMapper = new SimpleAuthorityMapper();
 		return authorities -> {
-			Collection<GrantedAuthority> mappedAuthorities =
-					sam.mapAuthorities(authorities);
+			var mappedAuthorities = baseMapper.mapAuthorities(authorities);
 			authorities.forEach(authority -> {
 				/*
 				 * Check for OidcUserAuthority because Spring Security 5.2
@@ -346,9 +342,9 @@ public class SecurityConfig {
 	@Bean
 	@Role(ROLE_SUPPORT)
 	LogoutHandler logoutHandler() {
-		SecurityContextLogoutHandler sclh = new SecurityContextLogoutHandler();
-		sclh.setClearAuthentication(true);
-		sclh.setInvalidateHttpSession(true);
-		return sclh;
+		var handler = new SecurityContextLogoutHandler();
+		handler.setClearAuthentication(true);
+		handler.setInvalidateHttpSession(true);
+		return handler;
 	}
 }

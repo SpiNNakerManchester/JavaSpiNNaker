@@ -22,7 +22,6 @@ import static java.util.Objects.isNull;
 import static uk.ac.manchester.spinnaker.data_spec.Constants.APP_PTR_TABLE_BYTE_SIZE;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +78,7 @@ class ExecutionContext implements AutoCloseable {
 		executor.execute();
 		executor.setBaseAddress(start);
 
-		CoreToFill coreToFill = linkRegionReferences(executor, core, start);
+		var coreToFill = linkRegionReferences(executor, core, start);
 		if (coreToFill.refs.isEmpty()) {
 			writeHeader(core, executor, start);
 		} else {
@@ -91,10 +90,10 @@ class ExecutionContext implements AutoCloseable {
 			CoreLocation core, MemoryLocation start)
 			throws DataSpecificationException {
 		for (int region : executor.getReferenceableRegions()) {
-			MemoryRegionReal r = (MemoryRegionReal) executor.getRegion(region);
-			Reference ref = r.getReference();
+			var r = (MemoryRegionReal) executor.getRegion(region);
+			var ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
-				RegionToRef reg = regionsToRef.get(ref);
+				var reg = regionsToRef.get(ref);
 				throw new DataSpecificationException(
 						"Reference " + ref + " from " + core + ", " + region
 								+ " already exists from " + reg);
@@ -102,13 +101,12 @@ class ExecutionContext implements AutoCloseable {
 			regionsToRef.put(ref, new RegionToRef(core, r.getRegionBase()));
 		}
 
-		CoreToFill coreToFill = new CoreToFill(executor, start, core);
+		var coreToFill = new CoreToFill(executor, start, core);
 		for (int region : executor.getRegionsToFill()) {
-			MemoryRegionReference r =
-					(MemoryRegionReference) executor.getRegion(region);
-			Reference ref = r.getReference();
+			var r = (MemoryRegionReference) executor.getRegion(region);
+			var ref = r.getReference();
 			if (regionsToRef.containsKey(ref)) {
-				RegionToRef reg = regionsToRef.get(ref);
+				var reg = regionsToRef.get(ref);
 				if (!reg.core.onSameChipAs(core)) {
 					throw new DanglingReferenceException(ref, reg, core,
 							region);
@@ -123,8 +121,7 @@ class ExecutionContext implements AutoCloseable {
 
 	private void writeHeader(HasCoreLocation core, Executor executor,
 			MemoryLocation startAddress) throws IOException, ProcessException {
-		ByteBuffer b = allocate(APP_PTR_TABLE_BYTE_SIZE)
-				.order(LITTLE_ENDIAN);
+		var b = allocate(APP_PTR_TABLE_BYTE_SIZE).order(LITTLE_ENDIAN);
 
 		executor.addHeader(b);
 		executor.addPointerTable(b);
@@ -137,9 +134,9 @@ class ExecutionContext implements AutoCloseable {
 	public void close() throws DataSpecificationException, ProcessException,
 			IOException {
 		// Check for missing
-		List<String> errors = new ArrayList<>();
-		for (CoreToFill toFill : regionsToFill) {
-			for (MemoryRegionReference ref : toFill.refs) {
+		var errors = new ArrayList<String>();
+		for (var toFill : regionsToFill) {
+			for (var ref : toFill.refs) {
 				checkForCrossReferenceError(errors, toFill, ref);
 			}
 		}
@@ -148,9 +145,9 @@ class ExecutionContext implements AutoCloseable {
 		}
 
 		// Finish filling things in and write header
-		for (CoreToFill toFill : regionsToFill) {
-			for (MemoryRegionReference ref : toFill.refs) {
-				RegionToRef reg = regionsToRef.get(ref.getReference());
+		for (var toFill : regionsToFill) {
+			for (var ref : toFill.refs) {
+				var reg = regionsToRef.get(ref.getReference());
 				ref.setRegionBase(reg.pointer);
 			}
 			writeHeader(toFill.core, toFill.executor, toFill.start);
@@ -159,11 +156,11 @@ class ExecutionContext implements AutoCloseable {
 
 	private void checkForCrossReferenceError(List<String> errors,
 			CoreToFill toFill, MemoryRegionReference ref) {
-		Reference reference = ref.getReference();
-		RegionToRef reg = regionsToRef.get(reference);
+		var reference = ref.getReference();
+		var reg = regionsToRef.get(reference);
 
 		if (isNull(reg)) {
-			StringBuilder potentialRefs = new StringBuilder("Reference ")
+			var potentialRefs = new StringBuilder("Reference ")
 					.append(reference).append(" from ").append(toFill)
 					.append(" not found from ");
 			regionsToRef.values().forEach(region -> {
@@ -172,7 +169,7 @@ class ExecutionContext implements AutoCloseable {
 							.append(region.core).append("); ");
 				}
 			});
-			errors.add(potentialRefs.toString().trim());
+			errors.add(potentialRefs.toString().strip());
 		} else {
 			if (!reg.core.onSameChipAs(toFill.core)) {
 				errors.add("Region " + ref + " on " + reg

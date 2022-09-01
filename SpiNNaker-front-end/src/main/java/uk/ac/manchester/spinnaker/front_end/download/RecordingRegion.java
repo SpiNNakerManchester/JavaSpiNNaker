@@ -89,7 +89,7 @@ public final class RecordingRegion {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("Recording Channel:{")
+		var sb = new StringBuilder("Recording Channel:{")
 				.append("space:").append(space).append(",size:").append(size)
 				.append(",data:").append(data);
 		if (missing) {
@@ -115,17 +115,17 @@ public final class RecordingRegion {
 	public static List<RecordingRegion> getRecordingRegionDescriptors(
 			TransceiverInterface txrx, Placement placement)
 			throws IOException, ProcessException {
-		MemoryLocation recordingDataAddress = placement.getVertex().getBase();
+		var recordingDataAddress = placement.getVertex().getBase();
 		// Get the size of the list of recordings
 		int nRegions = txrx.readMemory(placement.getScampCore(),
 				recordingDataAddress, WORD_SIZE).getInt();
 
 		// Read all the channels' metadata
-		ByteBuffer channelData = txrx.readMemory(placement.getScampCore(),
+		var channelData = txrx.readMemory(placement.getScampCore(),
 				recordingDataAddress.add(WORD_SIZE), SIZE * nRegions);
 
 		// Parse the data
-		List<RecordingRegion> regions = new ArrayList<>(nRegions);
+		var regions = new ArrayList<RecordingRegion>(nRegions);
 		for (int i = 0; i < nRegions; i++) {
 			regions.add(new RecordingRegion(channelData));
 		}

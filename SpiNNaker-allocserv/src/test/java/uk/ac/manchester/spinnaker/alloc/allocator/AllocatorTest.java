@@ -17,10 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.DESTROYED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.POWER;
@@ -44,7 +41,6 @@ import uk.ac.manchester.spinnaker.alloc.allocator.AllocatorTask.TestAPI;
 import uk.ac.manchester.spinnaker.alloc.bmp.BMPController;
 import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
 import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 
 @SpringBootTest
@@ -83,18 +79,16 @@ class AllocatorTest extends TestSupport {
 
 	private void assertState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		List<?> expected =
-				asList(state, "req", requestCount, "power", powerCount);
-		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
+		var expected = List.of(state, "req", requestCount, "power", powerCount);
+		var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assertEquals(expected, got);
 	}
 
 	private void assumeState(int jobId, JobState state, int requestCount,
 			int powerCount) {
-		List<?> expected =
-				asList(state, "req", requestCount, "power", powerCount);
-		List<?> got = asList(getJobState(jobId), "req", getJobRequestCount(),
+		var expected = List.of(state, "req", requestCount, "power", powerCount);
+		var got = List.of(getJobState(jobId), "req", getJobRequestCount(),
 				"power", getPendingPowerChanges());
 		assumeTrue(expected.equals(got),
 				() -> format("expected %s but got %s", expected, got));
@@ -119,7 +113,7 @@ class AllocatorTest extends TestSupport {
 		// Table names CANNOT be parameters; they're not values
 		return conn.query(format(
 				"SELECT COUNT(*) AS c FROM %s WHERE job_id = :job", table))
-				.call1(job).get().getInt("c");
+				.call1(job).orElseThrow().getInt("c");
 	}
 
 	// The actual tests
@@ -327,7 +321,7 @@ class AllocatorTest extends TestSupport {
 	@Test
 	public void expireReady() throws Exception {
 		// This is messier; can't have a transaction open and roll it back
-		try (Connection c = db.getConnection()) {
+		try (var c = db.getConnection()) {
 			this.conn = c;
 			int job = c.transaction(() -> makeQueuedJob(1));
 			try {
@@ -377,7 +371,7 @@ class AllocatorTest extends TestSupport {
 					() -> "must have created a job we can tombstone");
 			int preTomb = countJobInTable(job, "tombstone.jobs");
 
-			AllocatorTask.Copied moved = getAllocTester().tombstone();
+			var moved = getAllocTester().tombstone();
 
 			assertEquals(1, moved.numJobs());
 			// No resources were ever allocated, so no moves to do

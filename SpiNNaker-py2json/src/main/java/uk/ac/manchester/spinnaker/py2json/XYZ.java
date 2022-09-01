@@ -52,7 +52,7 @@ public final class XYZ {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof XYZ) {
-			XYZ other = (XYZ) obj;
+			var other = (XYZ) obj;
 			return x == other.x && y == other.y && z == other.z;
 		}
 		return false;

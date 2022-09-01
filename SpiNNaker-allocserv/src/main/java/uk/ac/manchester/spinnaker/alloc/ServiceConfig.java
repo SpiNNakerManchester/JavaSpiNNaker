@@ -19,9 +19,6 @@ package uk.ac.manchester.spinnaker.alloc;
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static java.lang.System.setProperty;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.status;
@@ -34,7 +31,6 @@ import static org.springframework.beans.factory.config.BeanDefinition.ROLE_APPLI
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_INFRASTRUCTURE;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -163,7 +159,7 @@ public class ServiceConfig extends Application {
 	@Bean("JSONProvider")
 	@Role(ROLE_INFRASTRUCTURE)
 	JacksonJsonProvider jsonProvider(ObjectMapper mapper) {
-		JacksonJsonProvider provider = new JacksonJsonProvider();
+		var provider = new JacksonJsonProvider();
 		provider.setMapper(mapper);
 		return provider;
 	}
@@ -188,15 +184,15 @@ public class ServiceConfig extends Application {
 	@Role(ROLE_INFRASTRUCTURE)
 	JAXRSServerFactoryBean rawFactory(SpringBus bus,
 			ProtocolUpgraderInterceptor protocolCorrector) {
-		JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
+		var factory = new JAXRSServerFactoryBean();
 		factory.setStaticSubresourceResolution(true);
 		factory.setAddress("/");
 		factory.setBus(bus);
-		factory.setProviders(new ArrayList<>(
+		factory.setProviders(List.of(
 				ctx.getBeansWithAnnotation(Provider.class).values()));
-		factory.setFeatures(asList(new OpenApiFeature()));
-		factory.setInInterceptors(asList(new JAXRSBeanValidationInInterceptor(),
-				protocolCorrector));
+		factory.setFeatures(List.of(new OpenApiFeature()));
+		factory.setInInterceptors(List
+				.of(new JAXRSBeanValidationInInterceptor(), protocolCorrector));
 		return factory;
 	}
 
@@ -226,13 +222,13 @@ public class ServiceConfig extends Application {
 		private Map<String, List<String>> getHeaders(Message message) {
 			// If we've got one of these in the message, it's of this type
 			return (Map<String, List<String>>) message
-					.getOrDefault(PROTOCOL_HEADERS, emptyMap());
+					.getOrDefault(PROTOCOL_HEADERS, Map.of());
 		}
 
 		@Override
 		public void handleMessage(Message message) throws Fault {
-			Map<String, List<String>> headers = getHeaders(message);
-			if (headers.getOrDefault(FORWARDED_PROTOCOL, emptyList())
+			var headers = getHeaders(message);
+			if (headers.getOrDefault(FORWARDED_PROTOCOL, List.of())
 					.contains("https")) {
 				upgradeEndpointProtocol(
 						(ServletRequest) message.get(HTTP_REQUEST));
@@ -244,7 +240,7 @@ public class ServiceConfig extends Application {
 		 * need it, but we're being careful.
 		 */
 		private void upgradeEndpointProtocol(ServletRequest request) {
-			String addr = (String) request.getAttribute(ENDPOINT_ADDRESS);
+			var addr = (String) request.getAttribute(ENDPOINT_ADDRESS);
 			if (addr != null && addr.startsWith("http:")) {
 				request.setAttribute(ENDPOINT_ADDRESS,
 						addr.replace("http:", "https:"));
@@ -259,7 +255,7 @@ public class ServiceConfig extends Application {
 			implements ExceptionMapper<ValidationException> {
 		@Override
 		public Response toResponse(ValidationException exception) {
-			String message = exception.getMessage().replaceAll(".*:\\s*", "");
+			var message = exception.getMessage().replaceAll(".*:\\s*", "");
 			return status(BAD_REQUEST).type(TEXT_PLAIN).entity(message).build();
 		}
 	}
@@ -282,8 +278,8 @@ public class ServiceConfig extends Application {
 	@DependsOn("JSONProvider")
 	Server jaxRsServer(SpallocServiceAPI service, AdminAPI adminService,
 			Executor executor, JAXRSServerFactoryBean factory) {
-		factory.setServiceBeans(asList(service, adminService));
-		Server s = factory.create();
+		factory.setServiceBeans(List.of(service, adminService));
+		var s = factory.create();
 		s.getEndpoint().setExecutor(executor);
 		return s;
 	}
@@ -314,7 +310,7 @@ public class ServiceConfig extends Application {
 		 * @return The full local URL (absolute path, without protocol or host)
 		 */
 		public String systemUrl(String suffix) {
-			String prefix = mvcServletPath;
+			var prefix = mvcServletPath;
 			if (!prefix.endsWith("/")) {
 				prefix += "/";
 			}
@@ -331,7 +327,7 @@ public class ServiceConfig extends Application {
 		 * @return The full local URL (absolute path, without protocol or host)
 		 */
 		public String serviceUrl(String suffix) {
-			String prefix = cxfPath;
+			var prefix = cxfPath;
 			if (!prefix.endsWith("/")) {
 				prefix += "/";
 			}
@@ -387,14 +383,14 @@ public class ServiceConfig extends Application {
 	@Bean
 	@Role(ROLE_SUPPORT)
 	ViewResolver jspViewResolver() {
-		InternalResourceViewResolver bean = new InternalResourceViewResolver() {
+		var bean = new InternalResourceViewResolver() {
 			@Override
 			protected AbstractUrlBasedView buildView(String viewName)
 					throws Exception {
-				AbstractUrlBasedView v = super.buildView(viewName);
-				String path = v.getUrl();
+				var v = super.buildView(viewName);
+				var path = v.getUrl();
 				if (path.startsWith("/WEB-INF/views/system")) {
-					String path2 = path.replaceFirst("/system", "");
+					var path2 = path.replaceFirst("/system", "");
 					log.debug("rewrote [{}] to [{}]", path, path2);
 					v.setUrl(path2);
 				}
@@ -413,7 +409,7 @@ public class ServiceConfig extends Application {
 	private void logBeans() {
 		if (log.isDebugEnabled()) {
 			log.debug("beans defined: {}",
-					asList(ctx.getBeanDefinitionNames()));
+					List.of(ctx.getBeanDefinitionNames()));
 		}
 	}
 

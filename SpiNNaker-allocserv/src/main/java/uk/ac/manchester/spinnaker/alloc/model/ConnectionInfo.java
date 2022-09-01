@@ -89,7 +89,7 @@ public final class ConnectionInfo {
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof ConnectionInfo) {
-			ConnectionInfo c = (ConnectionInfo) other;
+			var c = (ConnectionInfo) other;
 			return Objects.equals(chip, c.chip)
 					&& Objects.equals(hostname, c.hostname);
 		}
