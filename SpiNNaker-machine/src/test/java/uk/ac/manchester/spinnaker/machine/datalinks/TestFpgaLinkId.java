@@ -29,8 +29,8 @@ public class TestFpgaLinkId {
 
 	private int checkFpgaLink(FpgaId fpga, int linkId, int x, int y,
 			Direction link) {
-		FpgaEnum found = FpgaEnum.findId(x, y, link);
-		String message = "x: " + x + " y: " + y + " direction: " + link;
+		var found = FpgaEnum.findId(x, y, link);
+		var message = "x: " + x + " y: " + y + " direction: " + link;
 		assertEquals(fpga, found.fpgaId, message + " fpga");
 		assertEquals(linkId, found.id, message + " linkId");
 		return linkId + 1;
@@ -198,8 +198,8 @@ public class TestFpgaLinkId {
 
 	@Test
 	public void testStatic() {
-		FpgaEnum id1 = FpgaEnum.findId(6, 2, Direction.EAST);
-		FpgaEnum id2 = FpgaEnum.findId(FpgaId.BOTTOM, 2);
+		var id1 = FpgaEnum.findId(6, 2, Direction.EAST);
+		var id2 = FpgaEnum.findId(FpgaId.BOTTOM, 2);
 
 		assertEquals(id1, id2);
 		assertEquals(new ChipLocation(6, 2), id1.asChipLocation());

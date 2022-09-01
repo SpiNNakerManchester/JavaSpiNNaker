@@ -64,7 +64,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 *            immutable value as it can be potentially inserted for many
 	 *            keys. <em>Must not be {@code null}.</em>
 	 */
-	public <DV extends V> DefaultMap(DV defaultValue) {
+	private <DV extends V> DefaultMap(DV defaultValue) {
 		direct = true;
 		defValue = requireNonNull(defaultValue);
 		defFactory = null;
@@ -117,6 +117,23 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	}
 
 	/**
+	 * Create a new map.
+	 *
+	 * @param <K>
+	 *            The type of keys.
+	 * @param <DV>
+	 *            The type of the default value.
+	 * @param defaultValue
+	 *            The default value to use in the map. This should be an
+	 *            immutable value as it can be potentially inserted for many
+	 *            keys. <em>Must not be {@code null}.</em>
+	 * @return The new default map.
+	 */
+	public static <K, DV> DefaultMap<K, DV> newMapWithDefault(DV defaultValue) {
+		return new DefaultMap<>(defaultValue);
+	}
+
+	/**
 	 * Create a new map that manufactures new elements that are aware of their
 	 * key from the beginning. This is done through this method because
 	 * otherwise it clashes with the more common case of the unaware factory.
@@ -136,7 +153,6 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 *            The type of values.
 	 * @param keyAwareFactory
 	 *            Method or Object to create the default values.
-	 *
 	 * @return The new default map.
 	 */
 	public static <K, V> DefaultMap<K, V> newAdvancedDefaultMap(
@@ -161,8 +177,8 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	@Override
 	public V get(Object key) {
 		@SuppressWarnings("unchecked")
-		K k = (K) key;
-		V value = super.get(k);
+		var k = (K) key;
+		var value = super.get(key);
 		if (value == null) {
 			value = makeDefault(k);
 			put(k, value);
@@ -186,7 +202,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 			if (v == null) {
 				v = makeDefault(k);
 			}
-			V result = remappingFunction.apply(k, v);
+			var result = remappingFunction.apply(k, v);
 			if (result == null) {
 				result = makeDefault(k);
 			}
@@ -204,7 +220,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	public V computeIfAbsent(K key,
 			Function<? super K, ? extends V> mappingFunction) {
 		return super.computeIfAbsent(key, k -> {
-			V result = mappingFunction.apply(k);
+			var result = mappingFunction.apply(k);
 			if (result == null) {
 				result = makeDefault(k);
 			}
@@ -222,7 +238,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	public V computeIfPresent(K key,
 			BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
 		return super.computeIfPresent(key, (k, v) -> {
-			V result = remappingFunction.apply(k, v);
+			var result = remappingFunction.apply(k, v);
 			if (result == null) {
 				result = makeDefault(k);
 			}
@@ -243,7 +259,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 			value = makeDefault(key);
 		}
 		return super.merge(key, value, (v1, v2) -> {
-			V result = remappingFunction.apply(v1, v2);
+			var result = remappingFunction.apply(v1, v2);
 			if (result == null) {
 				result = makeDefault(key);
 			}

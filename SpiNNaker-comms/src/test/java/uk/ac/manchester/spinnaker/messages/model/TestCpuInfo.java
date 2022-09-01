@@ -29,8 +29,8 @@ class TestCpuInfo {
 
 	@Test
 	void testCreateWithBlankBuffer() {
-		ByteBuffer b = ByteBuffer.allocate(256).order(LITTLE_ENDIAN);
-		CPUInfo c = new CPUInfo(new CoreLocation(0, 0, 0), b);
+		var b = ByteBuffer.allocate(256).order(LITTLE_ENDIAN);
+		var c = new CPUInfo(new CoreLocation(0, 0, 0), b);
 		assertEquals(0, c.getApplicationMailboxDataAddress());
 	}
 

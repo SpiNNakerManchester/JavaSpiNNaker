@@ -127,7 +127,7 @@ public enum Direction {
 	 *             If no direction is found.
 	 */
 	public static Direction byLabel(String label) {
-		for (Direction direction : Direction.values()) {
+		for (var direction : Direction.values()) {
 			if (direction.label.equals(label)) {
 				return direction;
 			}

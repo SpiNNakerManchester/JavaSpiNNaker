@@ -260,7 +260,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			}
 			return Optional.empty();
 		}
-		Command c = parseCommand(line);
+		var c = parseCommand(line);
 		if (isNull(c) || isNull(c.getCommand())) {
 			throw new IOException("message did not specify a command");
 		}
@@ -277,7 +277,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	private void sendMessage(Object msg) throws IOException {
 		// We go via a string to avoid early closing issues
-		String data = getJsonMapper().writeValueAsString(msg);
+		var data = getJsonMapper().writeValueAsString(msg);
 		log.debug("about to send message: {}", data);
 		// Synch so we definitely don't interleave bits of messages
 		synchronized (out) {
@@ -371,13 +371,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	public final boolean communicate()
 			throws IOException, InterruptedException {
-		Optional<Command> cmd;
+		Command cmd;
 		try {
-			cmd = readMessage();
-			if (!cmd.isPresent()) {
+			var c = readMessage();
+			if (!c.isPresent()) {
 				log.debug("null message");
 				return false;
 			}
+			cmd = c.orElseThrow();
 		} catch (SocketTimeoutException e) {
 			log.debug("timeout");
 			// Message was not read by time timeout expired
@@ -389,14 +390,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 
 		Object r;
 		try {
-			r = callOperation(cmd.get());
+			r = callOperation(cmd);
 		} catch (Oops | TaskException | IllegalArgumentException e) {
 			// Expected exceptions; don't log
 			writeException(e);
 			return true;
 		} catch (Exception e) {
 			log.warn("unexpected exception from {} operation",
-					cmd.get().getCommand(), e);
+					cmd.getCommand(), e);
 			writeException(e);
 			return true;
 		}
@@ -418,8 +419,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	private Object callOperation(Command cmd) throws Exception {
 		log.debug("calling operation '{}'", cmd.getCommand());
-		List<Object> args = cmd.getArgs();
-		Map<String, Object> kwargs = cmd.getKwargs();
+		var args = cmd.getArgs();
+		var kwargs = cmd.getKwargs();
 		switch (cmd.getCommand()) {
 		case "create_job":
 			// This is three operations really, and an optional parameter.
@@ -492,7 +493,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			} else if (!kwargs.containsKey("machine")) {
 				throw new Oops("missing parameter: machine");
 			}
-			String m = (String) kwargs.get("machine");
+			var m = (String) kwargs.get("machine");
 			if (kwargs.containsKey("chip_x")) {
 				return requireNonNull(
 						whereIsMachineChip(m, parseDec(kwargs, "chip_x"),
@@ -509,9 +510,9 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				throw new Oops("missing parameter: chip_x, x, or cabinet");
 			}
 		case "report_problem":
-			String ip = args.get(0).toString();
+			var ip = args.get(0).toString();
 			Integer x = null, y = null, p = null;
-			String desc = "It doesn't work and I don't know why.";
+			var desc = "It doesn't work and I don't know why.";
 			if (kwargs.containsKey("x")) {
 				x = parseDec(kwargs, "x");
 				y = parseDec(kwargs, "y");

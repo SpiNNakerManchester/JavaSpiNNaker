@@ -72,7 +72,7 @@ public abstract class Utils {
 		}
 		sql = trimSQLComments(sql);
 		// Trim long queries to no more than TRIM_LENGTH...
-		String sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
+		var sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
 		if (sql2 != sql) {
 			// and add an ellipsis if we do the trimming
 			sql = sql2 + ELLIPSIS;
@@ -84,7 +84,8 @@ public abstract class Utils {
 		if (isNull(sql)) {
 			return null;
 		}
-		return sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
+		return sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ")
+				.strip();
 	}
 
 	/**
@@ -96,7 +97,7 @@ public abstract class Utils {
 	 * @return Whether it was caused by the database being busy.
 	 */
 	public static boolean isBusy(DataAccessException exception) {
-		Throwable root = exception.getMostSpecificCause();
+		var root = exception.getMostSpecificCause();
 		return root instanceof SQLiteException
 				&& ((SQLiteException) root).getResultCode() == SQLITE_BUSY;
 	}
@@ -122,8 +123,8 @@ public abstract class Utils {
 			return restack(new UncategorizedSQLException(
 					"general SQL exception", trimSQLComments(sql), exception));
 		}
-		SQLiteException exn = (SQLiteException) exception;
-		String msg = exn.getMessage();
+		var exn = (SQLiteException) exception;
+		var msg = exn.getMessage();
 		boolean replaced = false;
 		if (msg.contains("SQL error or missing database (")) {
 			msg = msg.replaceFirst("SQL error or missing database \\((.*)\\)",
@@ -222,8 +223,8 @@ public abstract class Utils {
 
 	private static <T extends Throwable> T restack(T exn) {
 		exn.fillInStackTrace();
-		StackTraceElement[] st = exn.getStackTrace();
-		StackTraceElement[] newst = new StackTraceElement[st.length - CHOP_LEN];
+		var st = exn.getStackTrace();
+		var newst = new StackTraceElement[st.length - CHOP_LEN];
 		arraycopy(st, CHOP_LEN, newst, 0, newst.length);
 		exn.setStackTrace(newst);
 		return exn;

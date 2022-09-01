@@ -42,11 +42,10 @@ class TestIptag {
 	@Test
 	void testNewIptag() throws UnknownHostException, SocketException {
 		boardConfig.setUpRemoteBoard();
-		InetAddress ip = InetAddress.getByName("8.8.8.8");
+		var ip = InetAddress.getByName("8.8.8.8");
 		int port = 1337;
 		int tag = 255;
-		IPTag iptag =
-				new IPTag(boardConfig.remotehost, ZERO_CHIP, tag, ip, port);
+		var iptag = new IPTag(boardConfig.remotehost, ZERO_CHIP, tag, ip, port);
 		assertEquals(ip, iptag.getIPAddress());
 		assertEquals(port, (int) iptag.getPort());
 		assertEquals(tag, iptag.getTag());

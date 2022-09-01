@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.errorMessage;
 import static uk.ac.manchester.spinnaker.alloc.web.ControllerUtils.uri;
 
 import java.security.Principal;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -54,10 +52,6 @@ import uk.ac.manchester.spinnaker.alloc.ServiceConfig.URLPathMaker;
 import uk.ac.manchester.spinnaker.alloc.ServiceVersion;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
-import uk.ac.manchester.spinnaker.alloc.model.JobDescription;
-import uk.ac.manchester.spinnaker.alloc.model.JobListEntryRecord;
-import uk.ac.manchester.spinnaker.alloc.model.MachineDescription;
-import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PasswordChangeRecord;
 import uk.ac.manchester.spinnaker.alloc.security.AppAuthTransformationFilter;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
@@ -118,13 +112,13 @@ public class SystemControllerImpl implements SystemController {
 	private ServiceVersion version;
 
 	private ModelAndView view(ViewFactory name) {
-		Authentication auth = getContext().getAuthentication();
+		var auth = getContext().getAuthentication();
 		return name.view(USER_MAY_CHANGE_PASSWORD,
 				auth instanceof UsernamePasswordAuthenticationToken);
 	}
 
 	private ModelAndView view(ViewFactory name, String key, Object value) {
-		ModelAndView mav = name.view();
+		var mav = name.view();
 		mav.addObject(key, value);
 		return mav;
 	}
@@ -179,7 +173,7 @@ public class SystemControllerImpl implements SystemController {
 		AuthenticationException.class, DataAccessException.class
 	})
 	private ModelAndView dbError(RuntimeException e, HandlerMethod hm) {
-		Action a = hm.getMethodAnnotation(Action.class);
+		var a = hm.getMethodAnnotation(Action.class);
 		String message;
 		if (e instanceof AuthenticationException) {
 			message = "authentication problem";
@@ -220,7 +214,7 @@ public class SystemControllerImpl implements SystemController {
 	@Action("logging out")
 	public String performLogout(HttpServletRequest request,
 			HttpServletResponse response) {
-		Authentication auth = getContext().getAuthentication();
+		var auth = getContext().getAuthentication();
 		AppAuthTransformationFilter.clearToken(request);
 		if (nonNull(auth)) {
 			log.info("logging out {}", auth.getPrincipal());
@@ -238,7 +232,7 @@ public class SystemControllerImpl implements SystemController {
 	@PreAuthorize(IS_READER)
 	@Action("listing machines")
 	public ModelAndView getMachineList() {
-		List<MachineListEntryRecord> table = spallocCore.listMachines(false);
+		var table = spallocCore.listMachines(false);
 		table.forEach(rec -> rec
 				.setDetailsUrl(uri(self().getMachineInfo(rec.getName()))));
 		return view(MACHINE_LIST_VIEW, MACHINES_OBJ, table);
@@ -248,12 +242,12 @@ public class SystemControllerImpl implements SystemController {
 	@PreAuthorize(IS_READER)
 	@Action("getting machine details")
 	public ModelAndView getMachineInfo(String machine) {
-		Permit permit = new Permit(getContext());
+		var permit = new Permit(getContext());
 		/*
 		 * Admins can get the view for disabled machines, but if they know it is
 		 * there.
 		 */
-		MachineDescription mach = spallocCore
+		var mach = spallocCore
 				.getMachineInfo(machine, permit.admin, permit)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 		// Owners and admins may drill down further into jobs
@@ -266,8 +260,7 @@ public class SystemControllerImpl implements SystemController {
 	@PreAuthorize(IS_READER)
 	@Action("listing jobs")
 	public ModelAndView getJobList() {
-		List<JobListEntryRecord> table =
-				spallocCore.listJobs(new Permit(getContext()));
+		var table = spallocCore.listJobs(new Permit(getContext()));
 		table.forEach(entry -> {
 			entry.setDetailsUrl(uri(self().getJobInfo(entry.getId())));
 			entry.setMachineUrl(
@@ -280,8 +273,8 @@ public class SystemControllerImpl implements SystemController {
 	@PreAuthorize(IS_READER)
 	@Action("getting job details")
 	public ModelAndView getJobInfo(int id) {
-		Permit permit = new Permit(getContext());
-		JobDescription mach = spallocCore.getJobInfo(permit, id)
+		var permit = new Permit(getContext());
+		var mach = spallocCore.getJobInfo(permit, id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
 		if (nonNull(mach.getRequestBytes())) {
 			mach.setRequest(new String(mach.getRequestBytes(), UTF_8));

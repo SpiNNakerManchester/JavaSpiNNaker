@@ -33,7 +33,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -67,7 +66,7 @@ class ThrottledConnection implements Closeable {
 
 	static {
 		CLOSER = newSingleThreadScheduledExecutor(r -> {
-			Thread t = new Thread(r, "ThrottledConnection.Closer");
+			var t = new Thread(r, "ThrottledConnection.Closer");
 			t.setDaemon(true);
 			return t;
 		});
@@ -136,7 +135,7 @@ class ThrottledConnection implements Closeable {
 	public void send(SDPMessage message) throws IOException {
 		log.debug("about to send {} bytes", message.getData().remaining());
 		if (log.isDebugEnabled()) {
-			ByteBuffer payload = message.getData();
+			var payload = message.getData();
 			log.debug("message payload data: {}", range(0, payload.remaining())
 					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
 		}
@@ -147,7 +146,7 @@ class ThrottledConnection implements Closeable {
 
 	@Override
 	public void close() {
-		SCPConnection c = connection;
+		var c = connection;
 		connection = null;
 		// Prevent reuse of existing socket IDs for other boards
 		CLOSER.schedule(() -> {

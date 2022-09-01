@@ -22,8 +22,6 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.beans.factory.config.BeanDefinition.ROLE_SUPPORT;
 
-import java.security.Principal;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -66,16 +64,16 @@ class AccessDeniedExceptionMapper
 	@Override
 	public Response toResponse(AccessDeniedException exception) {
 		// Actually produce useful logging; the default is ghastly!
-		Principal p = req.getUserPrincipal();
+		var p = req.getUserPrincipal();
 		if (p instanceof AbstractAuthenticationToken) {
-			AbstractAuthenticationToken who = (AbstractAuthenticationToken) p;
+			var who = (AbstractAuthenticationToken) p;
 			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
 					who.getName(),
 					who.getAuthorities().stream()
 							.map(GrantedAuthority::getAuthority)
 							.collect(toSet()));
 		} else if (p instanceof OAuth2AuthenticatedPrincipal) {
-			OAuth2AuthenticatedPrincipal who = (OAuth2AuthenticatedPrincipal) p;
+			var who = (OAuth2AuthenticatedPrincipal) p;
 			log.warn("access denied: {} : {} {}", ui.getAbsolutePath(),
 					who.getName(),
 					who.getAuthorities().stream()

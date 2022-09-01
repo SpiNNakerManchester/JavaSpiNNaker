@@ -30,10 +30,9 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_OFF;
 import static uk.ac.manchester.spinnaker.messages.model.Signal.CONTINUE;
 import static uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType.PULSE;
 
-import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Nested;
@@ -85,7 +84,7 @@ class GeneralMessageTest {
 	 */
 	private int length(SCPRequest<?> req) {
 		// Serialise and get message length
-		ByteBuffer b = allocate(280);
+		var b = allocate(280);
 		req.sdpHeader.setSource(ZERO_ZERO_ZERO);
 		req.sdpHeader.setSourcePort(0);
 		req.sdpHeader.setDestination(ZERO_ZERO_ZERO);
@@ -141,7 +140,7 @@ class GeneralMessageTest {
 		@Test
 		void setLed() {
 			assertEquals(NO_PAYLOAD,
-					length(new SetLED(ZERO_ZERO_ZERO, new HashMap<>())));
+					length(new SetLED(ZERO_ZERO_ZERO, Map.of())));
 		}
 
 		@Test
@@ -292,10 +291,10 @@ class GeneralMessageTest {
 
 			@Test
 			void floodFillData() {
-				ByteBuffer b = allocate(128);
+				var b = allocate(128);
 				assertEquals(152,
 						length(new FloodFillData((byte) 0, 0, NULL, b)));
-				byte[] bs = new byte[64];
+				var bs = new byte[64];
 				assertEquals(88,
 						length(new FloodFillData((byte) 0, 0, NULL, bs)));
 				assertEquals(56, length(
@@ -353,14 +352,14 @@ class GeneralMessageTest {
 
 			@Test
 			void writeLink() {
-				ByteBuffer b = allocate(128);
+				var b = allocate(128);
 				assertEquals(152,
 						length(new WriteLink(ZERO_ZERO_ZERO, EAST, NULL, b)));
 			}
 
 			@Test
 			void writeMemory() {
-				ByteBuffer b = allocate(128);
+				var b = allocate(128);
 				assertEquals(152, length(new WriteMemory(ZERO_ZERO, NULL, b)));
 				assertEquals(152,
 						length(new WriteMemory(ZERO_ZERO_ZERO, NULL, b)));
@@ -383,7 +382,7 @@ class GeneralMessageTest {
 
 		@Test
 		void writeMemory() {
-			ByteBuffer b = allocate(128);
+			var b = allocate(128);
 			assertEquals(152, length(new BMPWriteMemory(BOARD, NULL, b)));
 		}
 
@@ -446,9 +445,9 @@ class GeneralMessageTest {
 
 			@Test
 			void writeFpgaData() {
-				ByteBuffer b = allocate(128);
+				var b = allocate(128);
 				assertEquals(152, length(new WriteFPGAData(BOARD, b)));
-				byte[] bs = new byte[64];
+				var bs = new byte[64];
 				assertEquals(88, length(new WriteFPGAData(BOARD, bs)));
 			}
 
@@ -493,7 +492,7 @@ class GeneralMessageTest {
 
 			@Test
 			void writeSerialFlash() {
-				ByteBuffer b = allocate(128);
+				var b = allocate(128);
 				assertEquals(152, length(new WriteSerialFlash(BOARD, NULL, b)));
 			}
 		}

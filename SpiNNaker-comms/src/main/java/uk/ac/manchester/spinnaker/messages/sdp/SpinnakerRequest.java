@@ -73,12 +73,11 @@ public abstract class SpinnakerRequest implements SerializableMessage {
 		sdpHeader.setSource(new SDPSource(originatingChip));
 
 		// Serialize
-		ByteBuffer buffer = newMessageBuffer();
+		var buffer = newMessageBuffer();
 		// First two bytes must be zero for SDP or SCP send
 		buffer.putShort((short) 0);
 		addToBuffer(buffer);
-		buffer.flip();
-		return buffer;
+		return buffer.flip();
 	}
 
 	/**

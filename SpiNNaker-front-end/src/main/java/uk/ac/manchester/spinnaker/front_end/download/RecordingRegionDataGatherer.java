@@ -99,15 +99,14 @@ public class RecordingRegionDataGatherer extends DataGatherer
 			throws IOException, ProcessException {
 		// Cheap check first
 		synchronized (recordingRegions) {
-			List<RecordingRegion> regions = recordingRegions.get(placement);
+			var regions = recordingRegions.get(placement);
 			if (regions != null) {
 				return regions;
 			}
 		}
 
 		// Need to go to the machine; don't hold the lock while doing so
-		List<RecordingRegion> regions =
-				getRecordingRegionDescriptors(txrx, placement);
+		var regions = getRecordingRegionDescriptors(txrx, placement);
 		synchronized (recordingRegions) {
 			// Put the value in the map if it wasn't already there
 			return recordingRegions.computeIfAbsent(placement, key -> regions);
@@ -117,10 +116,10 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	@Override
 	protected List<Region> getRegion(Placement placement, int index)
 			throws IOException, ProcessException {
-		RecordingRegion region = getRegions(placement).get(index);
+		var region = getRegions(placement).get(index);
 		log.debug("got region of {} R:{} as {}", placement.asCoreLocation(),
 				index, region);
-		List<Region> regionPieces = new ArrayList<>(1);
+		var regionPieces = new ArrayList<Region>(1);
 		if (region.size > 0) {
 			regionPieces.add(new Region(placement, index, region.data,
 					(int) region.size));

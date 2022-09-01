@@ -98,7 +98,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		}
 
 		// Get a word of data regardless of the type
-		ByteBuffer buffer = allocate(TWO_WORDS).order(LITTLE_ENDIAN);
+		var buffer = allocate(TWO_WORDS).order(LITTLE_ENDIAN);
 		while (buffer.hasRemaining()) {
 			dataType.writeTo(data, buffer);
 		}
@@ -118,12 +118,12 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 			MemoryLocation base, int size, ByteBuffer buffer)
 			throws IOException {
 		int toWrite = size;
-		MemoryLocation address = base;
+		var address = base;
 
 		// Send the pre-data to make the memory aligned, up to the first word.
 		int extraBytes = (ALIGNMENT - base.subWordAlignment()) % ALIGNMENT;
 		if (extraBytes != 0) {
-			ByteBuffer preBytes = buffer.duplicate();
+			var preBytes = buffer.duplicate();
 			preBytes.limit(extraBytes);
 			// Send the preBytes to make the memory aligned
 			if (preBytes.hasRemaining()) {

@@ -51,11 +51,11 @@ public interface FunctionAPI {
 	default Callable getOperation(int cmdOpcode, int index)
 			throws UnimplementedDSECommandException {
 		int opcode = OPCODE.getValue(cmdOpcode);
-		Commands c = Commands.get(opcode);
+		var c = Commands.get(opcode);
 		if (c == null) {
 			throw new UnimplementedDSECommandException(index, opcode);
 		}
-		Callable opImpl = getOperationImpl(this, c);
+		var opImpl = getOperationImpl(this, c);
 		if (opImpl == null) {
 			throw new UnimplementedDSECommandException(index, c);
 		}

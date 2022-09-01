@@ -27,8 +27,8 @@ class TestChipInfo {
 
 	@Test
 	void testCreateWithBlankBuffer() {
-		ByteBuffer b = ByteBuffer.allocate(SIZE);
-		ChipInfo c = new ChipInfo(b);
+		var b = ByteBuffer.allocate(SIZE);
+		var c = new ChipInfo(b);
 		assertEquals(0, c.getSDRAMClock());
 	}
 

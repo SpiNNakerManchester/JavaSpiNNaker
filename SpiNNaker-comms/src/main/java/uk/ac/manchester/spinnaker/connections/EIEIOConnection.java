@@ -23,7 +23,6 @@ import static uk.ac.manchester.spinnaker.transceiver.Utils.newMessageBuffer;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.connections.model.EIEIOReceiver;
 import uk.ac.manchester.spinnaker.connections.model.EIEIOSender;
@@ -101,7 +100,7 @@ public class EIEIOConnection
 	@Override
 	public void sendEIEIOMessage(EIEIOMessage<?> eieioMessage)
 			throws IOException {
-		ByteBuffer b = newMessageBuffer();
+		var b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
 		b.flip();
 		send(b);
@@ -156,7 +155,7 @@ public class EIEIOConnection
 	 *             If receiving fails.
 	 */
 	protected EIEIOCommand receiveCommand() throws IOException {
-		EIEIOMessage<?> msg = receiveMessage();
+		var msg = receiveMessage();
 		if (msg instanceof EIEIOCommandMessage) {
 			return ((EIEIOCommandMessage) msg).getHeader().command;
 		}
@@ -178,7 +177,7 @@ public class EIEIOConnection
 	public void sendEIEIOMessageTo(
 			EIEIOMessage<? extends EIEIOHeader> eieioMessage,
 			InetAddress ipAddress, int port) throws IOException {
-		ByteBuffer b = newMessageBuffer();
+		var b = newMessageBuffer();
 		eieioMessage.addToBuffer(b);
 		b.flip();
 		sendTo(b, ipAddress, port);
@@ -191,7 +190,7 @@ public class EIEIOConnection
 	@Override
 	public EIEIOMessage<? extends EIEIOHeader> receiveMessage(int timeout)
 			throws IOException {
-		ByteBuffer b = receive(timeout);
+		var b = receive(timeout);
 		short header = b.getShort();
 		if ((header & MASK) == FLAG) {
 			return readCommandMessage(b);

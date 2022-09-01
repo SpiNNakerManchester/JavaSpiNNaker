@@ -48,7 +48,7 @@ public class WriteSerialFlash extends BMPRequest<BMPRequest.BMPResponse> {
 	private static ByteBuffer condition(ByteBuffer data) {
 		// Just in case
 		if (data.remaining() > FLASH_CHUNK_SIZE) {
-			ByteBuffer b = data.duplicate();
+			var b = data.duplicate();
 			b.limit(b.position() + FLASH_CHUNK_SIZE);
 			return b;
 		}

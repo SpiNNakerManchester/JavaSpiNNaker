@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.front_end.download;
 import static java.util.Collections.synchronizedMap;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MemoryLocation.NULL;
+import static uk.ac.manchester.spinnaker.utils.DefaultMap.newMapWithDefault;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import uk.ac.manchester.spinnaker.machine.RegionLocation;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region;
 import uk.ac.manchester.spinnaker.storage.StorageException;
-import uk.ac.manchester.spinnaker.utils.DefaultMap;
 
 /**
  * Stores the information received through the buffering output technique from
@@ -67,7 +67,7 @@ class BufferedReceivingData {
 	 */
 	BufferedReceivingData(BufferManagerStorage storage) {
 		this.storage = storage;
-		isFlushed = new DefaultMap<>(false);
+		isFlushed = newMapWithDefault(false);
 		recordingRegions = synchronizedMap(new HashMap<>());
 	}
 
@@ -116,8 +116,8 @@ class BufferedReceivingData {
 	 *             If the location doesn't have recording regions.
 	 */
 	public RecordingRegion getRecordingRegion(RegionLocation location) {
-		CoreLocation coreLocation = location.asCoreLocation();
-		List<RecordingRegion> value = recordingRegions.get(coreLocation);
+		var coreLocation = location.asCoreLocation();
+		var value = recordingRegions.get(coreLocation);
 		if (value == null) {
 			throw new IllegalArgumentException(
 					"no regions known for " + coreLocation);

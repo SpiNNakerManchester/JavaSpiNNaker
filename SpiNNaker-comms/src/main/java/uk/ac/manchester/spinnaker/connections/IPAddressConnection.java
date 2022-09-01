@@ -20,7 +20,6 @@ import static uk.ac.manchester.spinnaker.messages.Constants.UDP_BOOT_CONNECTION_
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 
 /**
  * A connection that detects any UDP packet that is transmitted by SpiNNaker
@@ -85,8 +84,8 @@ public class IPAddressConnection extends UDPConnection<InetAddress> {
 	@Override
 	public InetAddress receiveMessage(int timeout) {
 		try {
-			UDPPacket packet = receiveWithAddress(timeout);
-			InetSocketAddress addr = packet.getAddress();
+			var packet = receiveWithAddress(timeout);
+			var addr = packet.getAddress();
 			if (addr.getPort() == BOOTROM_SPINN_PORT) {
 				return addr.getAddress();
 			}

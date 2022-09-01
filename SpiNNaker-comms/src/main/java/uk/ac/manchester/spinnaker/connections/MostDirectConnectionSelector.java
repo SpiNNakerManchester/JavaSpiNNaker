@@ -62,7 +62,7 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		this.machine = machine;
 		this.connections = new HashMap<>();
 		C firstConnection = null;
-		for (C conn : connections) {
+		for (var conn : connections) {
 			if (firstConnection == null || conn.getChip().equals(ROOT)) {
 				firstConnection = conn;
 			}
@@ -76,10 +76,9 @@ public final class MostDirectConnectionSelector<C extends SCPSenderReceiver>
 		if (machine == null || connections.size() == 1) {
 			return defaultConnection;
 		}
-		ChipLocation destination = request.sdpHeader.getDestination()
-				.asChipLocation();
-		ChipLocation routeVia = machine.getChipAt(destination).nearestEthernet;
-		C conn = connections.get(routeVia);
+		var destination = request.sdpHeader.getDestination().asChipLocation();
+		var routeVia = machine.getChipAt(destination).nearestEthernet;
+		var conn = connections.get(routeVia);
 		if (log.isDebugEnabled()) {
 			if (conn != null) {
 				log.debug("will route packets for {} via {}", destination,

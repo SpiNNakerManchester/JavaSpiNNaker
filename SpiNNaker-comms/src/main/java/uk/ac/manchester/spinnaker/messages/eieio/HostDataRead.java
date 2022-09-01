@@ -91,9 +91,9 @@ public class HostDataRead extends EIEIOCommandMessage {
 		super(data);
 		this.header =
 				new Header((byte) (data.get() & NUM_REQUESTS_MASK), data.get());
-		byte[] channel = new byte[getNumRequests()];
-		byte[] regionID = new byte[getNumRequests()];
-		int[] spaceRead = new int[getNumRequests()];
+		var channel = new byte[getNumRequests()];
+		var regionID = new byte[getNumRequests()];
+		var spaceRead = new int[getNumRequests()];
 		for (int i = 0; i < getNumRequests(); i++) {
 			data.get();
 			data.get();

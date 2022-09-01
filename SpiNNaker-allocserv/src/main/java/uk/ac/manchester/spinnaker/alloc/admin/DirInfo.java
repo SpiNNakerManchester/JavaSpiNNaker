@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 
 /**
@@ -100,7 +99,7 @@ public final class DirInfo extends SQLQueries {
 		if (!(o instanceof DirInfo)) {
 			return false;
 		}
-		DirInfo di = (DirInfo) o;
+		var di = (DirInfo) o;
 		return z == di.z && dir == di.dir;
 	}
 
@@ -112,7 +111,7 @@ public final class DirInfo extends SQLQueries {
 	static void load(Connection conn) {
 		if (MAP.isEmpty()) {
 			conn.transaction(false, () -> {
-				try (Query di = conn.query(LOAD_DIR_INFO)) {
+				try (var di = conn.query(LOAD_DIR_INFO)) {
 					di.call()
 							.forEach(row -> new DirInfo(row.getInt("z"),
 									row.getEnum("direction", Direction.class),

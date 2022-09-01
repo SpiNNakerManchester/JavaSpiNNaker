@@ -24,7 +24,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.sqlite.SQLiteConfig;
@@ -70,14 +69,14 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 		if (log.isDebugEnabled()) {
 			log.debug("opening database connection {}", dbConnectionUrl);
 		}
-		SQLiteConfig config = new SQLiteConfig();
+		var config = new SQLiteConfig();
 		config.enforceForeignKeys(true);
 		config.setSynchronous(OFF);
 		config.setBusyTimeout(BUSY_TIMEOUT);
 		config.setTransactionMode(IMMEDIATE);
-		Connection conn = DriverManager.getConnection(dbConnectionUrl,
+		var conn = DriverManager.getConnection(dbConnectionUrl,
 				config.toProperties());
-		try (Statement statement = conn.createStatement()) {
+		try (var statement = conn.createStatement()) {
 			statement.executeUpdate(getDDL());
 		}
 		return conn;

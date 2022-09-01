@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Application security services.
+ * Application security services. Connected very deeply with Spring Security.
  */
 package uk.ac.manchester.spinnaker.alloc.security;

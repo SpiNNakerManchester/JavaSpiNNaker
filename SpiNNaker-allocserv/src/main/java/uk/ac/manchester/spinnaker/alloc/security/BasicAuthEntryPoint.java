@@ -22,8 +22,6 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +51,7 @@ public class BasicAuthEntryPoint implements AuthenticationEntryPoint {
 	}
 
 	private String openidChallenge() {
-		Set<String> scopes = props.getOpenid().getScopes();
+		var scopes = props.getOpenid().getScopes();
 		return format("Bearer realm=\"%s\", scope=\"%s\"", //
 				props.getRealm(), scopes.stream().collect(joining(", ")));
 	}
@@ -79,7 +77,7 @@ public class BasicAuthEntryPoint implements AuthenticationEntryPoint {
 		// Provide a basic body; NB, don't need to close the writer
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("text/plain");
-		PrintWriter writer = response.getWriter();
+		var writer = response.getWriter();
 		writer.println("log in required, "
 				+ "either with BASIC auth or HBP/EBRAINS bearer token "
 				+ "(if they are enabled)");

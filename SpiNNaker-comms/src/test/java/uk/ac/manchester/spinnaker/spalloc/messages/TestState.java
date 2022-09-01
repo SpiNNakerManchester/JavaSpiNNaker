@@ -22,8 +22,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import uk.ac.manchester.spinnaker.spalloc.SpallocClient;
 
 /**
@@ -34,14 +32,14 @@ public class TestState {
 
 	@Test
 	void testFromJson() throws IOException {
-		String json = "{\"state\":2,"
+		var json = "{\"state\":2,"
 				+ "\"power\":true,"
 				+ "\"keepalive\":60.0,"
 				+ "\"reason\":null,"
 				+ "\"start_time\":1.125,"
 				+ "\"keepalivehost\":\"86.82.216.229\"}";
-		ObjectMapper mapper = SpallocClient.createMapper();
-		JobState fromJson = mapper.readValue(json, JobState.class);
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, JobState.class);
 		assertEquals(State.POWER, fromJson.getState());
 		assertEquals(true, fromJson.getPower());
 		assertEquals(1.125, fromJson.getStartTime());
@@ -53,9 +51,9 @@ public class TestState {
 
 	@Test
 	void testNullJson() throws IOException {
-		String json = "{\"reason\":null}";
-		ObjectMapper mapper = SpallocClient.createMapper();
-		JobState fromJson = mapper.readValue(json, JobState.class);
+		var json = "{\"reason\":null}";
+		var mapper = SpallocClient.createMapper();
+		var fromJson = mapper.readValue(json, JobState.class);
 		assertNull(fromJson.getState());
 		assertNull(fromJson.getPower());
 		assertNull(fromJson.getReason());

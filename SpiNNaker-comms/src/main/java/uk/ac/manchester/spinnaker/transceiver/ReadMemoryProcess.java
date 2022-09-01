@@ -281,7 +281,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void readLink(HasChipLocation chip, Direction linkDirection,
 			MemoryLocation baseAddress, int size, File dataFile)
 			throws IOException, ProcessException {
-		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
+		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readLink(chip, linkDirection, baseAddress, size,
 					new FileAccumulator(s));
 		}
@@ -306,7 +306,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void readMemory(HasChipLocation chip, MemoryLocation baseAddress, int size,
 			File dataFile) throws IOException, ProcessException {
-		try (RandomAccessFile s = new RandomAccessFile(dataFile, "rw")) {
+		try (var s = new RandomAccessFile(dataFile, "rw")) {
 			readMemory(chip, baseAddress, size, s);
 		}
 	}
@@ -331,7 +331,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 	void readMemory(BufferManagerStorage.Region region,
 			BufferManagerStorage storage)
 			throws IOException, ProcessException, StorageException {
-		byte[] buffer = new byte[region.size];
+		var buffer = new byte[region.size];
 		readMemory(region.core.asChipLocation(), region.startAddress,
 				region.size, new BufferAccumulator(buffer));
 		storage.appendRecordingContents(region, buffer);

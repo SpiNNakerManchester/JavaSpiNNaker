@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import picocli.CommandLine.Parameters;
-import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 
 public final class CommandLineCheck {
 	private CommandLineCheck() {
@@ -45,11 +44,9 @@ public final class CommandLineCheck {
 
 	public static void main(String... args)
 			throws IOException, InterruptedException {
-		TestingClientArgs a =
-				populateCommand(new TestingClientArgs(), args);
-		SpallocClientFactory factory = new SpallocClientFactory();
-		SpallocClient client =
-				factory.createClient(a.baseUrl, a.username, a.password);
+		var a = populateCommand(new TestingClientArgs(), args);
+		var factory = new SpallocClientFactory();
+		var client = factory.createClient(a.baseUrl, a.username, a.password);
 
 		// Just so that the server gets its logging out the way first
 		Thread.sleep(SHORT_SLEEP);
@@ -57,8 +54,8 @@ public final class CommandLineCheck {
 		System.out.println(client.getVersion());
 		System.out.println(client.listMachines().stream()
 				.map(m -> m.getName()).collect(toList()));
-		for (Machine m : client.listMachines()) {
-			WhereIs where = m.getBoardByTriad(0, 0, 1);
+		for (var m : client.listMachines()) {
+			var where = m.getBoardByTriad(0, 0, 1);
 			if (where == null) {
 				System.out.println(
 						"board (0,0,1) not in machine " + m.getName());
