@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.allocator;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
@@ -39,7 +40,6 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -309,10 +309,10 @@ final class ClientSession {
 				return;
 			}
 			int callbackId = client.getId();
-			ValueHolder<Integer> result = new ValueHolder<>();
-			OneShotEvent event = new OneShotEvent();
+			var result = new ValueHolder<Integer>();
+			var event = new OneShotEvent();
 
-			ByteBuffer b = ProxyProtocol.CLOSE.allocate();
+			var b = ProxyProtocol.CLOSE.allocate();
 			b.putInt(ProxyProtocol.CLOSE.ordinal());
 			b.putInt(callbackId);
 			b.putInt(id);
@@ -346,7 +346,7 @@ final class ClientSession {
 		}
 
 		public void send(ByteBuffer msg) {
-			ByteBuffer b = ProxyProtocol.MSG.allocate();
+			var b = ProxyProtocol.MSG.allocate();
 			b.putInt(ProxyProtocol.MSG.ordinal());
 			b.putInt(id);
 			b.put(msg);
@@ -377,7 +377,7 @@ final class ClientSession {
 		}
 
 		public void send(ChipLocation chip, int port, ByteBuffer msg) {
-			ByteBuffer b = ProxyProtocol.MSG_TO.allocate();
+			var b = ProxyProtocol.MSG_TO.allocate();
 			b.putInt(ProxyProtocol.MSG_TO.ordinal());
 			b.putInt(id);
 			b.putInt(chip.getX());
@@ -397,12 +397,14 @@ final class ClientSession {
 
 		private int correlationCounter;
 
+		private Exception failure;
+
 		private synchronized int getId() {
 			return correlationCounter++;
 		}
 
-		ProxyProtocolClient(URI uri, Map<String, String> headers) {
-			super(uri, headers);
+		ProxyProtocolClient(URI uri) {
+			super(uri);
 			replyHandlers = new HashMap<>();
 			channelHandlers = new HashMap<>();
 		}
@@ -438,11 +440,12 @@ final class ClientSession {
 
 		public ConnectedChannel openChannel(ChipLocation chip, int port,
 				Consumer<ByteBuffer> receiver) throws InterruptedException {
+			requireNonNull(receiver);
 			int id = getId();
-			ValueHolder<ConnectedChannel> channel = new ValueHolder<>();
-			OneShotEvent event = new OneShotEvent();
+			var channel = new ValueHolder<ConnectedChannel>();
+			var event = new OneShotEvent();
 
-			ByteBuffer b = ProxyProtocol.OPEN.allocate();
+			var b = ProxyProtocol.OPEN.allocate();
 			b.putInt(ProxyProtocol.OPEN.ordinal());
 			b.putInt(id);
 			b.putInt(chip.getX());
@@ -464,18 +467,19 @@ final class ClientSession {
 
 		public UnconnectedChannel openUnconnectedChannel(
 				Consumer<ByteBuffer> receiver) throws InterruptedException {
+			requireNonNull(receiver);
 			int id = getId();
-			ValueHolder<UnconnectedChannel> channel = new ValueHolder<>();
-			OneShotEvent event = new OneShotEvent();
+			var channel = new ValueHolder<UnconnectedChannel>();
+			var event = new OneShotEvent();
 
-			ByteBuffer b = ProxyProtocol.OPEN_U.allocate();
+			var b = ProxyProtocol.OPEN_U.allocate();
 			b.putInt(ProxyProtocol.OPEN_U.ordinal());
 			b.putInt(id);
 			b.flip();
 
 			replyHandlers.put(id, msg -> {
 				int channelId = msg.getInt();
-				byte[] addr = new byte[INET_SIZE];
+				var addr = new byte[INET_SIZE];
 				msg.get(addr);
 				int port = msg.getInt();
 				channel.setValue(new UnconnectedChannel(channelId, addr, port,
@@ -495,22 +499,48 @@ final class ClientSession {
 		@Override
 		public void onError(Exception ex) {
 			log.error("Failure on websocket", ex);
+			failure = ex;
 		}
 	}
 
-	WebSocketClient websocket(URI url) {
-		// TODO use Map.of() in Java 11
-		Map<String, String> headers = new HashMap<>();
-		if (Objects.nonNull(session)) {
+	/**
+	 * Connect a Spalloc proxy protocol websocket to the given URL.
+	 *
+	 * @param url
+	 *            Where the websocket connects.
+	 * @return The connected websocket.
+	 * @throws InterruptedException
+	 *             If interrupted during connection
+	 * @throws IOException
+	 *             If there are network problems
+	 * @throws RuntimeException
+	 *             For various reasons
+	 */
+	ProxyProtocolClient websocket(URI url)
+			throws InterruptedException, IOException {
+		var wsc = new ProxyProtocolClient(url);
+		if (nonNull(session)) {
 			log.debug("Attaching websocket to session {}", session);
-			headers.put(COOKIE, SESSION_NAME + "=" + session);
+			wsc.addHeader(COOKIE, SESSION_NAME + "=" + session);
 		}
-		if (csrfHeader != null && csrf != null) {
+		if (nonNull(csrfHeader) && nonNull(csrf)) {
 			log.debug("Marking websocket with token {}={}", csrfHeader, csrf);
-			headers.put(csrfHeader, csrf);
+			wsc.addHeader(csrfHeader, csrf);
 		}
-		// TODO what's going on with threading?
-		return new ProxyProtocolClient(url, headers);
+		try {
+			if (!wsc.connectBlocking()) {
+				if (nonNull(wsc.failure)) {
+					throw wsc.failure;
+				}
+				// Don't know what went wrong! Log might say
+				throw new IOException("undiagnosed connection failure");
+			}
+		} catch (IOException | InterruptedException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IOException("unexpected exception", e);
+		}
+		return wsc;
 	}
 
 	private synchronized void authorizeConnection(HttpURLConnection c,

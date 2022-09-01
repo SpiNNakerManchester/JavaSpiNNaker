@@ -25,6 +25,8 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.io.IOUtils.readLines;
@@ -47,6 +49,7 @@ import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A factory for clients to connect to the Spalloc service.
@@ -73,6 +76,9 @@ public class SpallocClientFactory {
 	private static final URI POWER = URI.create("power");
 
 	private static final URI WAIT_FLAG = URI.create("?wait=true");
+
+	/** The default port of the connection. */
+	private static final int SCP_SCAMP_PORT = 17893;
 
 	/** Used to convert to/from JSON. */
 	static final JsonMapper JSON_MAPPER = JsonMapper.builder()
@@ -324,7 +330,7 @@ public class SpallocClientFactory {
 
 			@Override
 			List<URI> fetchNext() throws IOException {
-				if (first != null) {
+				if (nonNull(first)) {
 					try {
 						return first;
 					} finally {
@@ -338,16 +344,16 @@ public class SpallocClientFactory {
 
 			@Override
 			boolean canFetchMore() {
-				if (first != null) {
+				if (nonNull(first)) {
 					return true;
 				}
-				return next != null;
+				return nonNull(next);
 			}
 		}
 
 		private Stream<Job> listJobs(URI flags) throws IOException {
 			var basicData = new JobLister(
-					flags != null ? jobs.resolve(flags) : jobs);
+					nonNull(flags) ? jobs.resolve(flags) : jobs);
 			return basicData.stream().flatMap(Collection::stream)
 					.map(this::job);
 		}
@@ -517,6 +523,24 @@ public class SpallocClientFactory {
 		public WhereIs whereIs(HasChipLocation chip) throws IOException {
 			return whereis(uri.resolve(
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
+		}
+
+		@Override
+		public TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException {
+			var wssAddr = describe(false).getProxyAddress();
+			if (isNull(wssAddr)) {
+				throw new IOException("machine not allocated");
+			}
+			var am = machine();
+			var ws = s.websocket(wssAddr);
+			for (var bc : am.getConnections()) {
+				// FIXME remember channels
+				// FIXME define receivers
+				ws.openChannel(bc.getChip(), SCP_SCAMP_PORT, null);
+			}
+			// TODO Assemble into a transceiver
+			return null;
 		}
 	}
 

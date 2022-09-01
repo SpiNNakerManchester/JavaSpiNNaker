@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * An API for talking to the Spalloc service.
@@ -318,6 +319,20 @@ public interface SpallocClient {
 		 */
 		WhereIs whereIs(HasChipLocation chip)
 				throws FileNotFoundException, IOException;
+
+		/**
+		 * Create a proxied transceiver for talking to the boards of the job.
+		 * The transceiver will be configured so that it can talk to all the
+		 * boards of the job and nothing else.
+		 *
+		 * @return The transceiver.
+		 * @throws IOException
+		 *             If communication fails or the job is deleted.
+		 * @throws InterruptedException
+		 *             If interrupted waiting for the connection to be set up.
+		 */
+		TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException;
 	}
 
 	/**
