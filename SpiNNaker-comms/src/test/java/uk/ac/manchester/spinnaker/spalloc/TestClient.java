@@ -276,7 +276,7 @@ class TestClient {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({"deprecation", "removal"})
 	void testCommandCreateJob() throws Exception {
 		withConnection((s, c, bgAccept) -> {
 			c.connect();
