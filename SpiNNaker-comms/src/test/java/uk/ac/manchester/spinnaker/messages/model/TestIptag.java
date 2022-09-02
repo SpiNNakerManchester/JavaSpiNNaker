@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.messages.model;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -26,13 +27,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import testconfig.BoardTestConfiguration;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.tags.IPTag;
 
 class TestIptag {
 	private static BoardTestConfiguration boardConfig;
-
-	private static final ChipLocation ZERO_CHIP = new ChipLocation(0, 0);
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -45,7 +43,7 @@ class TestIptag {
 		var ip = InetAddress.getByName("8.8.8.8");
 		int port = 1337;
 		int tag = 255;
-		var iptag = new IPTag(boardConfig.remotehost, ZERO_CHIP, tag, ip, port);
+		var iptag = new IPTag(boardConfig.remotehost, ZERO_ZERO, tag, ip, port);
 		assertEquals(ip, iptag.getIPAddress());
 		assertEquals(port, (int) iptag.getPort());
 		assertEquals(tag, iptag.getTag());
