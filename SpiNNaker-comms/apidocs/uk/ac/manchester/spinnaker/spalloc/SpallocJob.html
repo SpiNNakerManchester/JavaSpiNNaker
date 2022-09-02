@@ -127,7 +127,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
  various methods:
 
  <pre>
- SpallocJob j = new SpallocJob(new CreateJob(6).owner(me)));
+ var j = new SpallocJob(new CreateJob(6).owner(me)));
  j.waitUntilReady();
  myApplication.boot(j.getHostname(), j.getDimensions());
  myApplication.run(j.getHostname());
