@@ -16,6 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.alloc.compat;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -23,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Donal Fellows
  */
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 final class ReturnResponse {
 	private Object returnValue;
 
@@ -35,7 +39,7 @@ final class ReturnResponse {
 		return returnValue;
 	}
 
-	public void setReturnValue(Object returnValue) {
+	void setReturnValue(Object returnValue) {
 		this.returnValue = returnValue;
 	}
 }

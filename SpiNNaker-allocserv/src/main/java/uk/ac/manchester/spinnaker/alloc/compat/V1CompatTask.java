@@ -90,6 +90,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	private final PrintWriter out;
 
 	/**
+	 * Make an instance that wraps a socket.
+	 *
 	 * @param srv
 	 *            The overall service, used for looking up shared resources that
 	 *            are uncomfortable as beans.
@@ -170,6 +172,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	protected abstract void closeNotifiers();
 
 	/**
+	 * What host is connected to this service instance?
+	 *
 	 * @return The remote host that this task is serving.
 	 */
 	public final String host() {
@@ -367,13 +371,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 	 */
 	public final boolean communicate()
 			throws IOException, InterruptedException {
-		Optional<Command> cmd;
+		Command cmd;
 		try {
-			cmd = readMessage();
-			if (!cmd.isPresent()) {
+			var c = readMessage();
+			if (!c.isPresent()) {
 				log.debug("null message");
 				return false;
 			}
+			cmd = c.orElseThrow();
 		} catch (SocketTimeoutException e) {
 			log.debug("timeout");
 			// Message was not read by time timeout expired
@@ -385,14 +390,14 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 
 		Object r;
 		try {
-			r = callOperation(cmd.get());
+			r = callOperation(cmd);
 		} catch (Oops | TaskException | IllegalArgumentException e) {
 			// Expected exceptions; don't log
 			writeException(e);
 			return true;
 		} catch (Exception e) {
 			log.warn("unexpected exception from {} operation",
-					cmd.get().getCommand(), e);
+					cmd.getCommand(), e);
 			writeException(e);
 			return true;
 		}
@@ -740,6 +745,8 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 			Integer p, String description);
 
 	/**
+	 * Get the service version.
+	 *
 	 * @return The service version. Never {@code null}.
 	 * @throws TaskException
 	 *             If anything goes wrong.

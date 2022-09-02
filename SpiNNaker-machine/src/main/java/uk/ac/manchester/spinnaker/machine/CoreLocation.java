@@ -35,10 +35,13 @@ public final class CoreLocation
 		implements HasCoreLocation, Comparable<CoreLocation>, Serializable {
 	private static final long serialVersionUID = 2930811082362121057L;
 
+	/** The X coordinate. */
 	private final int x;
 
+	/** The Y coordinate. */
 	private final int y;
 
+	/** The P coordinate. */
 	private final int p;
 
 	/**

@@ -43,9 +43,6 @@ public abstract class UnimplementedBMPTransceiver
 		implements BMPTransceiverInterface {
 	private BMPCoords boundBMP = new BMPCoords(0, 0);
 
-	protected UnimplementedBMPTransceiver() {
-	}
-
 	@Override
 	public void powerOnMachine()
 			throws InterruptedException, IOException, ProcessException {

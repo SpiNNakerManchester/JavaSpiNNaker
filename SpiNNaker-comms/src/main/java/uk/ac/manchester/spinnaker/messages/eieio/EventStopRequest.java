@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.eieio.EIEIOCommandID.EVENT_STO
  * input packet to terminate its execution.
  */
 public class EventStopRequest extends EIEIOCommandMessage {
+	/** Make a request to stop sending events. */
 	public EventStopRequest() {
 		super(EVENT_STOP);
 	}

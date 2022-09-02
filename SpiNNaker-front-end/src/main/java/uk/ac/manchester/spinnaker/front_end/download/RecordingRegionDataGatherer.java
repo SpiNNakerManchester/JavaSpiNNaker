@@ -58,7 +58,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	 */
 	private static final int TERMINATION_REPORT_THRESHOLD = 250;
 
-	protected static final Logger log =
+	private static final Logger log =
 			getLogger(RecordingRegionDataGatherer.class);
 
 	private final TransceiverInterface txrx;

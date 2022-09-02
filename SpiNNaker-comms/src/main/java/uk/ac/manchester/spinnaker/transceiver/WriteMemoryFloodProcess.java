@@ -18,9 +18,9 @@ package uk.ac.manchester.spinnaker.transceiver;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.min;
+import static org.apache.commons.io.IOUtils.buffer;
 import static uk.ac.manchester.spinnaker.messages.Constants.UDP_MESSAGE_MAX_SIZE;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -158,7 +158,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 	 */
 	void writeMemory(byte nearestNeighbourID, MemoryLocation baseAddress,
 			File dataFile) throws IOException, ProcessException {
-		try (var s = new BufferedInputStream(new FileInputStream(dataFile))) {
+		try (var s = buffer(new FileInputStream(dataFile))) {
 			writeMemory(nearestNeighbourID, baseAddress, s,
 					(int) dataFile.length());
 		}

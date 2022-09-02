@@ -85,7 +85,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 
 	private ConnectionIDIssuer idIssuer = new ConnectionIDIssuer();
 
-	public SpinWSHandler() {
+	SpinWSHandler() {
 		var group = new ThreadGroup("ws/udp workers");
 		executor = newCachedThreadPool(r -> {
 			var t = new Thread(group, r, "ws/udp worker");
@@ -109,7 +109,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 	@PostConstruct
 	private void initLocalHost() throws UnknownHostException {
 		var props = properties.getProxy();
-		if (!props.getLocalHost().isEmpty()) {
+		if (!props.getLocalHost().isBlank()) {
 			this.localHost = InetAddress.getByName(props.getLocalHost());
 		}
 	}

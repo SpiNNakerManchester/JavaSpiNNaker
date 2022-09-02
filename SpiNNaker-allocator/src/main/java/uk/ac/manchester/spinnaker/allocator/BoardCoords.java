@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/** Generalised coordinates of a board. */
 public class BoardCoords {
 	/** Logical triad X coordinate. */
 	private final int x;

@@ -64,6 +64,15 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.BadArgs;
 import uk.ac.manchester.spinnaker.alloc.web.RequestFailedException.NotFound;
 
+/**
+ * The implementation of the user-facing REST API. Operations are delegated to
+ * {@link SpallocAPI} for fulfilment; this class is responsible for turning the
+ * operations described by users into the form understood by the service core,
+ * and for converting the responses. It also handles the transfer of calls onto
+ * suitable worker threads, where appropriate.
+ *
+ * @author Donal Fellows
+ */
 @Service("service")
 @Path(SERV)
 public class SpallocServiceImpl extends BackgroundSupport
@@ -195,7 +204,7 @@ public class SpallocServiceImpl extends BackgroundSupport
 		if (isNull(str)) {
 			return null;
 		}
-		return str.trim();
+		return str.strip();
 	}
 
 	@Override
@@ -223,14 +232,14 @@ public class SpallocServiceImpl extends BackgroundSupport
 		}
 
 		if (!security.isUserInRole("ADMIN") || isNull(req.owner)
-				|| req.owner.trim().isEmpty()) {
+				|| req.owner.isBlank()) {
 			req.owner = security.getUserPrincipal().getName();
 		}
-		if (isNull(req.owner) || req.owner.trim().isEmpty()) {
+		if (isNull(req.owner) || req.owner.isBlank()) {
 			throw new BadArgs(
 					"request must be connected to an identified owner");
 		}
-		req.owner = req.owner.trim();
+		req.owner = req.owner.strip();
 
 		var ka = properties.getKeepalive();
 		if (isNull(req.keepaliveInterval)

@@ -25,10 +25,12 @@ import uk.ac.manchester.spinnaker.spalloc.messages.ExceptionResponse;
 public class SpallocServerException extends Exception {
 	private static final long serialVersionUID = 3865188016221866202L;
 
-	public SpallocServerException(String string) {
-		super(string);
+	/** @param msg The message of the exception. */
+	public SpallocServerException(String msg) {
+		super(msg);
 	}
 
+	/** @param r The deserialised message from the server. */
 	public SpallocServerException(ExceptionResponse r) {
 		super(r.getException());
 	}

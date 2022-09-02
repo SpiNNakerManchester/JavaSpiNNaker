@@ -61,6 +61,14 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
+/**
+ * The allocation engine. Allocations are performed by running suitable
+ * (non-trivial) SQL queries on a periodic basis, putting jobs that cannot be
+ * allocated back on the queue for a later attempt (and increasing their
+ * priority when it does so). This class is also responsible for destroying jobs
+ * that are not kept alive sufficiently frequently, and eventually migrating
+ * records of dead jobs to long-term storage ("tombstoning").
+ */
 @Service
 public class AllocatorTask extends DatabaseAwareBean
 		implements PowerController {
@@ -887,7 +895,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	private boolean setPower(PowerSQL sql, int jobId, PowerState power,
 			JobState targetState) {
-		var sourceState = sql.getJobState.call1(jobId).get()
+		var sourceState = sql.getJobState.call1(jobId).orElseThrow()
 				.getEnum("job_state", JobState.class);
 		var boards = sql.getJobBoards.call(jobId).map(integer("board_id"))
 				.toList();

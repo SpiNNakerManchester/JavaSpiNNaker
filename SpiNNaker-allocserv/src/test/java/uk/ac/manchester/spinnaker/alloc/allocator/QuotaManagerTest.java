@@ -66,7 +66,7 @@ class QuotaManagerTest extends TestSupport {
 
 	private Long getQuota(Connection c) {
 		try (Query q = c.query(TEST_GET_QUOTA)) {
-			return q.call1(MACHINE, USER).get().getLong("quota");
+			return q.call1(MACHINE, USER).orElseThrow().getLong("quota");
 		}
 	}
 

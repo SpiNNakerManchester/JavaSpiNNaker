@@ -16,9 +16,12 @@
  */
 package uk.ac.manchester.spinnaker.allocator;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
+
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -28,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({
 	"keepalive-ref", "machine-ref", "power-ref", "chip-ref"
 })
+@JsonAutoDetect(setterVisibility = NON_PRIVATE)
 public class JobDescription {
 	private State state;
 
@@ -43,63 +47,77 @@ public class JobDescription {
 
 	private Instant keepaliveTime;
 
+	/** @return The state of the job. */
 	public State getState() {
 		return state;
 	}
 
-	public void setState(State state) {
+	void setState(State state) {
 		this.state = state;
 	}
 
+	/**
+	 * @return Who owns the job. {@code null} if the information is shrouded
+	 *         from you.
+	 */
 	public String getOwner() {
 		return owner;
 	}
 
-	public void setOwner(String owner) {
+	void setOwner(String owner) {
 		this.owner = owner;
 	}
 
+	/** @return When the job started. */
 	@JsonAlias("start-time")
 	public Instant getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Instant startTime) {
+	void setStartTime(Instant startTime) {
 		this.startTime = startTime;
 	}
 
+	/** @return When the job was destroyed. {@code null} if not yet finished. */
 	@JsonAlias("finish-time")
 	public Instant getFinishTime() {
 		return finishTime;
 	}
 
-	public void setFinishTime(Instant finishTime) {
+	void setFinishTime(Instant finishTime) {
 		this.finishTime = finishTime;
 	}
 
+	/** @return Why the job was destroyed. {@code null} if the job is alive. */
 	public String getReason() {
 		return reason;
 	}
 
-	public void setReason(String reason) {
+	void setReason(String reason) {
 		this.reason = reason;
 	}
 
+	/**
+	 * @return Which host is believed to be keeping a job alive. May be
+	 *         {@code null} if the information is not known or shrouded from
+	 *         you.
+	 */
 	@JsonAlias("keepalive-host")
 	public String getKeepaliveHost() {
 		return keepaliveHost;
 	}
 
-	public void setKeepaliveHost(String keepaliveHost) {
+	void setKeepaliveHost(String keepaliveHost) {
 		this.keepaliveHost = keepaliveHost;
 	}
 
+	/** @return The most recent keepalive timestamp. */
 	@JsonAlias("keepalive-time")
 	public Instant getKeepaliveTime() {
 		return keepaliveTime;
 	}
 
-	public void setKeepaliveTime(Instant keepaliveTime) {
+	void setKeepaliveTime(Instant keepaliveTime) {
 		this.keepaliveTime = keepaliveTime;
 	}
 }

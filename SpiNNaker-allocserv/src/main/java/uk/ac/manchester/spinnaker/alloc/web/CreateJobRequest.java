@@ -118,7 +118,7 @@ public class CreateJobRequest {
 	@JsonIgnore
 	@AssertFalse(message = "machine-name, if given, must be non-blank")
 	private boolean isMachineNameInsane() {
-		return nonNull(machineName) && machineName.trim().isEmpty();
+		return nonNull(machineName) && machineName.isBlank();
 	}
 
 	@JsonIgnore

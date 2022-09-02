@@ -77,6 +77,7 @@ public class CredentialDB implements AutoCloseable {
 
 		private final String pass;
 
+		/** Make an instance. */
 		DBContainedCredentials() throws SQLException, IllegalStateException {
 			try (var s = db.createStatement();
 					var rs = s.executeQuery(

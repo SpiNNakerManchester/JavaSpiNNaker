@@ -249,7 +249,7 @@ public class CreateJob {
 	 *             deployed (or you automatically get it when meaningful). The
 	 *             default is fine.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public CreateJob requireTorus() {
 		return requireTorus(true);
 	}
@@ -265,7 +265,7 @@ public class CreateJob {
 	 *             deployed (or you automatically get it when meaningful). The
 	 *             default is fine.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public CreateJob requireTorus(boolean requireTorus) {
 		kwargs.put(REQUIRE_TORUS_PROPERTY, requireTorus);
 		return this;

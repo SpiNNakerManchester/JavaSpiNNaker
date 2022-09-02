@@ -206,10 +206,10 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	/**
-	 * <i>This method is unsupported, as this collection does not support
-	 * size-varying operations.</i>
-	 * <p>
 	 * {@inheritDoc}
+	 *
+	 * @deprecated This method is unsupported, as this collection does not
+	 *             support size-varying operations.
 	 */
 	@Override
 	@Deprecated
@@ -218,10 +218,10 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	/**
-	 * <i>This method is unsupported, as this collection does not support
-	 * size-varying operations.</i>
-	 * <p>
 	 * {@inheritDoc}
+	 *
+	 * @deprecated This method is unsupported, as this collection does not
+	 *             support size-varying operations.
 	 */
 	@Override
 	@Deprecated
@@ -230,10 +230,10 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	/**
-	 * <i>This method is unsupported, as this collection does not support
-	 * size-varying operations.</i>
-	 * <p>
 	 * {@inheritDoc}
+	 *
+	 * @deprecated This method is unsupported, as this collection does not
+	 *             support size-varying operations.
 	 */
 	@Override
 	@Deprecated
@@ -242,10 +242,10 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	/**
-	 * <i>This method is unsupported, as this collection does not support
-	 * size-varying operations.</i>
-	 * <p>
 	 * {@inheritDoc}
+	 *
+	 * @deprecated This method is unsupported, as this collection does not
+	 *             support size-varying operations.
 	 */
 	@Override
 	@Deprecated
@@ -254,10 +254,10 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	/**
-	 * <i>This method is unsupported, as this collection does not support
-	 * size-varying operations.</i>
-	 * <p>
 	 * {@inheritDoc}
+	 *
+	 * @deprecated This method is unsupported, as this collection does not
+	 *             support size-varying operations.
 	 */
 	@Override
 	@Deprecated
@@ -266,10 +266,10 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	}
 
 	/**
-	 * <i>This method is unsupported, as this collection does not support
-	 * size-varying operations.</i>
-	 * <p>
 	 * {@inheritDoc}
+	 *
+	 * @deprecated This method is unsupported, as this collection does not
+	 *             support size-varying operations.
 	 */
 	@Override
 	@Deprecated

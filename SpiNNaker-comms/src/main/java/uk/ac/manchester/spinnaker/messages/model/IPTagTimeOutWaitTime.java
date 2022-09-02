@@ -58,6 +58,13 @@ public enum IPTagTimeOutWaitTime {
 		this.value = value;
 	}
 
+	/**
+	 * Deserialise a value into the enum.
+	 *
+	 * @param value
+	 *            The value to deserialise.
+	 * @return The deserialised value, or {@code null} if it is unrecognised.
+	 */
 	public static IPTagTimeOutWaitTime get(int value) {
 		return MAP.get(value);
 	}

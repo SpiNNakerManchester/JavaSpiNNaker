@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
@@ -62,11 +64,10 @@ public class ReaderLineIterable implements MappableIterable<String>, Closeable {
 	 * Create a new <i>one-shot</i> iterable.
 	 *
 	 * @param inputStream
-	 *            The input stream to read from, using the platform default
-	 *            encoding.
+	 *            The input stream to read from, using UTF-8 as the encoding.
 	 */
 	public ReaderLineIterable(InputStream inputStream) {
-		this(new InputStreamReader(inputStream));
+		this(new InputStreamReader(inputStream, UTF_8));
 	}
 
 	/**

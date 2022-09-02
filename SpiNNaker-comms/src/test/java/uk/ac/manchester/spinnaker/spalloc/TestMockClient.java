@@ -149,7 +149,7 @@ public class TestMockClient {
 			var machineInfo = client.getJobMachineInfo(jobId, timeout);
 			var machineName = machineInfo.getMachineName();
 			if (client.isActual()) {
-				assert !machineName.isEmpty() : "must have a machine name";
+				assert !machineName.isBlank() : "must have a machine name";
 			} else {
 				assertEquals("Spin24b-223", machineName);
 			}

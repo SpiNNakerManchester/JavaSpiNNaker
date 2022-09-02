@@ -61,7 +61,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 			CoreSubsets monitorCores) throws IOException, ProcessException {
 		this.txrx = txrx;
 		this.monitorCores = monitorCores;
-		var firstCore = monitorCores.first().get();
+		var firstCore = monitorCores.first().orElseThrow();
 		firstChip = firstCore.asChipLocation();
 
 		log.info("switching multicast routing on board at {} to system mode",

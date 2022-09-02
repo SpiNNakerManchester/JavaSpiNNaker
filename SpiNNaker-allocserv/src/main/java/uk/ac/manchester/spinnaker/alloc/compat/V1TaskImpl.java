@@ -265,7 +265,7 @@ class V1TaskImpl extends V1CompatTask {
 			throw new TaskException("owner must be supplied as a string");
 		}
 		var owner = ownerObj.toString();
-		if (owner.isEmpty()) {
+		if (owner.isBlank()) {
 			throw new TaskException(
 					"invalid owner identifier; must be non-empty");
 		}
@@ -487,7 +487,7 @@ class V1TaskImpl extends V1CompatTask {
 		var j = bl.getJob();
 		if (nonNull(j)) {
 			wi.setJobId(j.getId());
-			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().get()));
+			wi.setJobChip(bl.getChipRelativeTo(j.getRootChip().orElseThrow()));
 		}
 		return wi;
 	}

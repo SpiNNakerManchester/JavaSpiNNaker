@@ -87,18 +87,25 @@ public final class MemoryRegionReal extends MemoryRegion {
 		buffer = allocate(size).order(LITTLE_ENDIAN);
 	}
 
+	/** @return The size of the working buffer. */
 	public int getAllocatedSize() {
 		return buffer.capacity();
 	}
 
+	/** @return How much space remains in the region's working buffer. */
 	public int getRemainingSpace() {
 		return buffer.remaining();
 	}
 
+	/** @return Whether this is an unfilled region. */
 	public boolean isUnfilled() {
 		return unfilled;
 	}
 
+	/**
+	 * @return The region data. Note that this is a live buffer; its current
+	 *         position may be anywhere.
+	 */
 	public ByteBuffer getRegionData() {
 		return buffer;
 	}
@@ -115,10 +122,12 @@ public final class MemoryRegionReal extends MemoryRegion {
 		maxWritePointer = max(maxWritePointer, buffer.position());
 	}
 
+	/** @return the current write pointer */
 	public int getWritePointer() {
 		return buffer.position();
 	}
 
+	/** @return the maximum write pointer */
 	public int getMaxWritePointer() {
 		return maxWritePointer;
 	}

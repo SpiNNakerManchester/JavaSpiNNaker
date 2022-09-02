@@ -28,6 +28,10 @@ public final class CF {
 	/** Frame number. */
 	public final int f;
 
+	/**
+	 * @param c Cabinet number.
+	 * @param f Frame number.
+	 */
 	public CF(int c, int f) {
 		this.c = c;
 		this.f = f;

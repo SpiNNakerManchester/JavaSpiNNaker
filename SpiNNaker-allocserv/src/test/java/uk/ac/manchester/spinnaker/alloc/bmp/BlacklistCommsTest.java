@@ -126,7 +126,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void getSerialNumber() throws Exception {
-		var bs = stateCtrl.findId(BOARD).get();
+		var bs = stateCtrl.findId(BOARD).orElseThrow();
 		var future = bmpWorker();
 
 		var serialNumber = stateCtrl.getSerialNumber(bs);
@@ -138,10 +138,10 @@ class BlacklistCommsTest extends TestSupport {
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void readBlacklistFromMachine() throws Exception {
-		var bs = stateCtrl.findId(BOARD).get();
+		var bs = stateCtrl.findId(BOARD).orElseThrow();
 		var future = bmpWorker();
 
-		var bl = stateCtrl.readBlacklistFromMachine(bs).get();
+		var bl = stateCtrl.readBlacklistFromMachine(bs).orElseThrow();
 
 		assertEquals(BMP_DONE_TOKEN, future.get());
 		assertEquals(new Blacklist("chip 5 5 core 5"), bl);
@@ -150,7 +150,7 @@ class BlacklistCommsTest extends TestSupport {
 	@Test
 	@Timeout(TEST_TIMEOUT)
 	public void writeBlacklistToMachine() throws Exception {
-		var bs = stateCtrl.findId(BOARD).get();
+		var bs = stateCtrl.findId(BOARD).orElseThrow();
 		var future = bmpWorker();
 		assertNotEquals(WRITE_BASELINE, txrxFactory.getCurrentBlacklist());
 

@@ -225,7 +225,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return parseInt(result);
 	}
 
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	@Override
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {

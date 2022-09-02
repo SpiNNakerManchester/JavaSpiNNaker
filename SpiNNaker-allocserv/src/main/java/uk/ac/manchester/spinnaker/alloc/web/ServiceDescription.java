@@ -52,6 +52,7 @@ public class ServiceDescription {
 	@JsonInclude(NON_NULL)
 	private String csrfToken;
 
+	/** Create an instance. */
 	public ServiceDescription() {
 	}
 
@@ -74,7 +75,7 @@ public class ServiceDescription {
 		return version;
 	}
 
-	public void setVersion(Version version) {
+	void setVersion(Version version) {
 		this.version = version;
 	}
 
@@ -83,7 +84,7 @@ public class ServiceDescription {
 		return jobsRef;
 	}
 
-	public void setJobsRef(URI jobsRef) {
+	void setJobsRef(URI jobsRef) {
 		this.jobsRef = jobsRef;
 	}
 
@@ -92,7 +93,7 @@ public class ServiceDescription {
 		return machinesRef;
 	}
 
-	public void setMachinesRef(URI machinesRef) {
+	void setMachinesRef(URI machinesRef) {
 		this.machinesRef = machinesRef;
 	}
 

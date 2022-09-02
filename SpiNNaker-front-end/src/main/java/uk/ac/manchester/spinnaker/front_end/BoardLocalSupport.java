@@ -32,6 +32,7 @@ public abstract class BoardLocalSupport {
 
 	private final Machine machine;
 
+	/** @param machine Which machine is this on? Used for address mapping. */
 	protected BoardLocalSupport(Machine machine) {
 		this.machine = machine;
 	}

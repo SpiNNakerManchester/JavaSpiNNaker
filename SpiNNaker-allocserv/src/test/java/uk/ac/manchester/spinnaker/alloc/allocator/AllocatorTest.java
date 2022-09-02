@@ -113,7 +113,7 @@ class AllocatorTest extends TestSupport {
 		// Table names CANNOT be parameters; they're not values
 		return conn.query(format(
 				"SELECT COUNT(*) AS c FROM %s WHERE job_id = :job", table))
-				.call1(job).get().getInt("c");
+				.call1(job).orElseThrow().getInt("c");
 	}
 
 	// The actual tests

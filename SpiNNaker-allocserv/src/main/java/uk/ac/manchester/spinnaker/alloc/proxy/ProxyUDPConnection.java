@@ -133,9 +133,15 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 		sendCount++;
 	}
 
+	/**
+	 * Writes the count of messages sent and received on this connection to the
+	 * log.
+	 */
 	protected void writeCountsToLog() {
-		log.info("{} message counts: sent {} received {}", name, sendCount,
-				receiveCount);
+		if (sendCount > 0 || receiveCount > 0) {
+			log.info("{} message counts: sent {} received {}", name, sendCount,
+					receiveCount);
+		}
 	}
 
 	@Override
@@ -168,16 +174,11 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	}
 
 	private void mainLoop() throws IOException {
-		while (!isClosed()) {
+		while (session.isOpen() && !isClosed()) {
 			var msg = receiveMessage(TIMEOUT);
-			if (!msg.isPresent()) {
-				// Timeout; go round the loop again.
-				if (!session.isOpen() || isClosed()) {
-					return;
-				}
-				continue;
-			}
-			handleReceivedMessage(msg.get());
+			if (msg.isPresent()) {
+				handleReceivedMessage(msg.orElseThrow());
+			} // Otherwise was a timeout; go round the loop again anyway.
 		}
 	}
 

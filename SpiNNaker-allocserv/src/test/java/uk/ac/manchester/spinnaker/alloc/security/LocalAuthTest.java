@@ -87,7 +87,7 @@ class LocalAuthTest extends TestSupport {
 			assertEquals(false, c.transaction(() -> {
 				try (var q = c.query("SELECT locked FROM user_info "
 						+ "WHERE user_id = :user_id")) {
-					return q.call1(USER).map(Row.bool("locked")).get();
+					return q.call1(USER).map(Row.bool("locked")).orElseThrow();
 				}
 			}));
 		}

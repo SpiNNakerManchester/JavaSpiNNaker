@@ -90,6 +90,40 @@ public class SpallocProperties {
 	/** Properties relating to control of the overall machine state. */
 	private StateControlProperties stateCtrl;
 
+	/**
+	 * @param databasePath
+	 *            Path to the main database file.
+	 * @param wait
+	 *            How long should long calls take before returning anyway?
+	 * @param pause
+	 *            Whether to pause <em>all</em> periodic callbacks. Probably
+	 *            only useful for debugging and testing.
+	 * @param workingDirectory
+	 *            The main working directory. Referred to by other properties.
+	 * @param allocator
+	 *            Properties relating to the allocation engine.
+	 * @param auth
+	 *            Properties relating to authentication and authorization.
+	 * @param compat
+	 *            Properties relating to the Spalloc v1 compatibility layer.
+	 * @param historicalData
+	 *            Properties relating to historical data management.
+	 * @param keepalive
+	 *            Properties relating to job keep-alive messages.
+	 * @param proxy
+	 *            Properties relating to the SDP proxying.
+	 * @param quota
+	 *            Properties relating to quota management.
+	 * @param sqlite
+	 *            Properties relating to the details of working with SQLite.
+	 * @param reportEmail
+	 *            Properties relating to board issue reporting.
+	 * @param transceiver
+	 *            Properties relating to low-level transceiver control and the
+	 *            BMPs.
+	 * @param stateControl
+	 *            Properties relating to control of the overall machine state.
+	 */
 	public SpallocProperties(//
 			@DefaultValue("spalloc.sqlite3") File databasePath,
 			@DefaultValue("30s") Duration wait,
@@ -133,7 +167,7 @@ public class SpallocProperties {
 		return databasePath;
 	}
 
-	public void setDatabasePath(File databasePath) {
+	void setDatabasePath(File databasePath) {
 		this.databasePath = databasePath;
 	}
 
@@ -152,7 +186,7 @@ public class SpallocProperties {
 		return wait;
 	}
 
-	public void setWait(Duration wait) {
+	void setWait(Duration wait) {
 		this.wait = wait;
 	}
 
@@ -168,7 +202,7 @@ public class SpallocProperties {
 		return pause;
 	}
 
-	public void setPause(boolean pause) {
+	void setPause(boolean pause) {
 		this.pause = pause;
 	}
 
@@ -182,7 +216,7 @@ public class SpallocProperties {
 		return workingDirectory;
 	}
 
-	public void setWorkingDirectory(File workingDirectory) {
+	void setWorkingDirectory(File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
 
@@ -200,7 +234,7 @@ public class SpallocProperties {
 		return historicalData;
 	}
 
-	public void setHistoricalData(HistoricalDataProperties historicalData) {
+	void setHistoricalData(HistoricalDataProperties historicalData) {
 		this.historicalData = historicalData;
 	}
 
@@ -213,7 +247,7 @@ public class SpallocProperties {
 		return keepalive;
 	}
 
-	public void setKeepalive(KeepaliveProperties keepalive) {
+	void setKeepalive(KeepaliveProperties keepalive) {
 		this.keepalive = keepalive;
 	}
 
@@ -226,7 +260,7 @@ public class SpallocProperties {
 		return allocator;
 	}
 
-	public void setAllocator(AllocatorProperties allocator) {
+	void setAllocator(AllocatorProperties allocator) {
 		this.allocator = allocator;
 	}
 
@@ -239,7 +273,7 @@ public class SpallocProperties {
 		return auth;
 	}
 
-	public void setAuth(AuthProperties auth) {
+	void setAuth(AuthProperties auth) {
 		this.auth = auth;
 	}
 
@@ -252,7 +286,7 @@ public class SpallocProperties {
 		return proxy;
 	}
 
-	public void setProxy(ProxyProperties proxy) {
+	void setProxy(ProxyProperties proxy) {
 		this.proxy = proxy;
 	}
 
@@ -265,7 +299,7 @@ public class SpallocProperties {
 		return quota;
 	}
 
-	public void setQuota(QuotaProperties quota) {
+	void setQuota(QuotaProperties quota) {
 		this.quota = quota;
 	}
 
@@ -279,7 +313,7 @@ public class SpallocProperties {
 		return transceiver;
 	}
 
-	public void setTransceiver(TxrxProperties transceiver) {
+	void setTransceiver(TxrxProperties transceiver) {
 		this.transceiver = transceiver;
 	}
 
@@ -292,7 +326,7 @@ public class SpallocProperties {
 		return sqlite;
 	}
 
-	public void setSqlite(DBProperties sqlite) {
+	void setSqlite(DBProperties sqlite) {
 		this.sqlite = sqlite;
 	}
 
@@ -303,7 +337,7 @@ public class SpallocProperties {
 		return reportEmail;
 	}
 
-	public void setReportEmail(ReportProperties reportEmail) {
+	void setReportEmail(ReportProperties reportEmail) {
 		this.reportEmail = reportEmail;
 	}
 
@@ -316,7 +350,7 @@ public class SpallocProperties {
 		return compat;
 	}
 
-	public void setCompat(CompatibilityProperties compat) {
+	void setCompat(CompatibilityProperties compat) {
 		this.compat = compat;
 	}
 
@@ -327,13 +361,16 @@ public class SpallocProperties {
 		return stateCtrl;
 	}
 
-	public void setStateControl(StateControlProperties stateCtrl) {
+	void setStateControl(StateControlProperties stateCtrl) {
 		this.stateCtrl = stateCtrl;
 	}
 
 	/** How to handle job data that is now only of historic interest. */
 	public static class HistoricalDataProperties {
-		/** Path to the historical job database file. */
+		/**
+		 * Path to the historical job database file. <em>Must be distinct from
+		 * the main database!</em>
+		 */
 		private File path;
 
 		/**
@@ -347,6 +384,17 @@ public class SpallocProperties {
 		 */
 		private String schedule;
 
+		/**
+		 * @param path
+		 *            Path to the historical job database file. <em>Must be
+		 *            distinct from the main database!</em>
+		 * @param gracePeriod
+		 *            How long after job completion should we wait before moving
+		 *            the data?
+		 * @param schedule
+		 *            Cron expression saying when to move completed jobs to the
+		 *            historical database.
+		 */
 		public HistoricalDataProperties(
 				@DefaultValue("spalloc-history.sqlite3") File path,
 				@DefaultValue("14d") Duration gracePeriod,
@@ -356,13 +404,16 @@ public class SpallocProperties {
 			this.schedule = schedule;
 		}
 
-		/** @return Path to the historical job database file. */
+		/**
+		 * @return Path to the historical job database file. <em>Must be
+		 *         distinct from the main database!</em>
+		 */
 		@NotNull
 		public File getPath() {
 			return path;
 		}
 
-		public void setPath(File path) {
+		void setPath(File path) {
 			this.path = path;
 		}
 
@@ -375,7 +426,7 @@ public class SpallocProperties {
 			return gracePeriod;
 		}
 
-		public void setGracePeriod(Duration gracePeriod) {
+		void setGracePeriod(Duration gracePeriod) {
 			this.gracePeriod = gracePeriod;
 		}
 
@@ -388,7 +439,7 @@ public class SpallocProperties {
 			return schedule;
 		}
 
-		public void setSchedule(String schedule) {
+		void setSchedule(String schedule) {
 			this.schedule = schedule;
 		}
 	}
@@ -406,6 +457,14 @@ public class SpallocProperties {
 		/** Maximum keepalive period. */
 		private Duration max;
 
+		/**
+		 * @param expiryPeriod
+		 *            Time between runs of the keepalive-expiry algorithm.
+		 * @param min
+		 *            Minimum keepalive period.
+		 * @param max
+		 *            Maximum keepalive period.
+		 */
 		public KeepaliveProperties(//
 				@DefaultValue("30s") Duration expiryPeriod,
 				@DefaultValue("30s") Duration min,
@@ -425,7 +484,7 @@ public class SpallocProperties {
 			return expiryPeriod;
 		}
 
-		public void setExpiryPeriod(Duration expiryPeriod) {
+		void setExpiryPeriod(Duration expiryPeriod) {
 			this.expiryPeriod = expiryPeriod;
 		}
 
@@ -435,7 +494,7 @@ public class SpallocProperties {
 			return min;
 		}
 
-		public void setMin(Duration min) {
+		void setMin(Duration min) {
 			this.min = min;
 		}
 
@@ -445,7 +504,7 @@ public class SpallocProperties {
 			return max;
 		}
 
-		public void setMax(Duration max) {
+		void setMax(Duration max) {
 			this.max = max;
 		}
 
@@ -480,6 +539,20 @@ public class SpallocProperties {
 		/** Name of user that system-generated reports are done by. */
 		private String systemReportUser;
 
+		/**
+		 * @param period
+		 *            Time between runs of the main allocation algorithm.
+		 * @param importanceSpan
+		 *            Maximum span of job importance that will be allocated at
+		 *            once. Priority is the rate at which importance is accrued.
+		 * @param priorityScale
+		 *            Properties relating to job priority scaling.
+		 * @param reportActionThreshold
+		 *            Number of reports of board problems at which the board is
+		 *            taken out of service.
+		 * @param systemReportUser
+		 *            Name of user that system-generated reports are done by.
+		 */
 		public AllocatorProperties(@DefaultValue("5s") Duration period,
 				@DefaultValue("10000") int importanceSpan,
 				@DefaultValue PriorityScale priorityScale,
@@ -502,7 +575,7 @@ public class SpallocProperties {
 			return period;
 		}
 
-		public void setPeriod(Duration period) {
+		void setPeriod(Duration period) {
 			this.period = period;
 		}
 
@@ -518,7 +591,7 @@ public class SpallocProperties {
 			return importanceSpan;
 		}
 
-		public void setImportanceSpan(int importanceSpan) {
+		void setImportanceSpan(int importanceSpan) {
 			this.importanceSpan = importanceSpan;
 		}
 
@@ -533,7 +606,7 @@ public class SpallocProperties {
 			return priorityScale;
 		}
 
-		public void setPriorityScale(PriorityScale priorityScale) {
+		void setPriorityScale(PriorityScale priorityScale) {
 			this.priorityScale = priorityScale;
 		}
 
@@ -546,7 +619,7 @@ public class SpallocProperties {
 			return reportActionThreshold;
 		}
 
-		public void setReportActionThreshold(int threshold) {
+		void setReportActionThreshold(int threshold) {
 			reportActionThreshold = threshold;
 		}
 
@@ -556,7 +629,7 @@ public class SpallocProperties {
 			return systemReportUser;
 		}
 
-		public void setSystemReportUser(String systemReportUser) {
+		void setSystemReportUser(String systemReportUser) {
 			this.systemReportUser = systemReportUser;
 		}
 	}
@@ -575,6 +648,17 @@ public class SpallocProperties {
 		/** Priority scaling factor for jobs requiring a specific board. */
 		private double specificBoard;
 
+		/**
+		 * @param size
+		 *            Priority scaling factor for jobs given by number of
+		 *            boards.
+		 * @param dimensions
+		 *            Priority scaling factor for jobs given by rectangular
+		 *            dimensions.
+		 * @param specificBoard
+		 *            Priority scaling factor for jobs requiring a specific
+		 *            board.
+		 */
 		public PriorityScale(@DefaultValue("1.0") double size,
 				@DefaultValue("1.5") double dimensions,
 				@DefaultValue("65.0") double specificBoard) {
@@ -591,7 +675,7 @@ public class SpallocProperties {
 			return size;
 		}
 
-		public void setSize(double factor) {
+		void setSize(double factor) {
 			size = factor;
 		}
 
@@ -604,7 +688,7 @@ public class SpallocProperties {
 			return dimensions;
 		}
 
-		public void setDimensions(double factor) {
+		void setDimensions(double factor) {
 			dimensions = factor;
 		}
 
@@ -616,7 +700,7 @@ public class SpallocProperties {
 			return specificBoard;
 		}
 
-		public void setSpecificBoard(double factor) {
+		void setSpecificBoard(double factor) {
 			specificBoard = factor;
 		}
 	}
@@ -638,6 +722,16 @@ public class SpallocProperties {
 		/** The {@code Subject:} header. */
 		private String subject;
 
+		/**
+		 * @param send
+		 *            Whether to send an email about reported boards.
+		 * @param from
+		 *            The {@code From:} email address.
+		 * @param to
+		 *            The {@code To:} email address.
+		 * @param subject
+		 *            The {@code Subject:} header.
+		 */
 		public ReportProperties(@DefaultValue("false") boolean send,
 				@DefaultValue("spalloc@localhost") String from,
 				@DefaultValue("root@localhost") String to,
@@ -653,7 +747,7 @@ public class SpallocProperties {
 			return send;
 		}
 
-		public void setSend(boolean send) {
+		void setSend(boolean send) {
 			this.send = send;
 		}
 
@@ -663,7 +757,7 @@ public class SpallocProperties {
 			return from;
 		}
 
-		public void setFrom(String address) {
+		void setFrom(String address) {
 			from = address;
 		}
 
@@ -673,7 +767,7 @@ public class SpallocProperties {
 			return to;
 		}
 
-		public void setTo(String address) {
+		void setTo(String address) {
 			to = address;
 		}
 
@@ -683,7 +777,7 @@ public class SpallocProperties {
 			return subject;
 		}
 
-		public void setSubject(String subject) {
+		void setSubject(String subject) {
 			this.subject = subject;
 		}
 
@@ -752,6 +846,38 @@ public class SpallocProperties {
 		 */
 		private OpenIDProperties openid;
 
+		/**
+		 * @param basic
+		 *            Whether to enable HTTP BASIC authentication. Useful for
+		 *            simple clients.
+		 * @param realm
+		 *            The authentication realm. Must not contain quote
+		 *            characters!
+		 * @param localForm
+		 *            Whether to enable HTTP form+session authentication. Much
+		 *            faster than BASIC, but requires a more complex client. You
+		 *            must enable this if you are supporting the Web UI.
+		 * @param addDummyUser
+		 *            Force a known local admin user to exist with a known (by
+		 *            default) password.
+		 * @param dummyRandomPass
+		 *            Whether to generate a random password for the above user.
+		 *            If so, the password will be written to the log.
+		 * @param systemGroup
+		 *            The name of the system default group. Only made if the
+		 *            dummy user is made.
+		 * @param debugFailures
+		 *            Provide extra information to callers on auth failures.
+		 * @param maxLoginFailures
+		 *            Number of login failures before automatic lock-out.
+		 * @param accountLockDuration
+		 *            Length of time that automatic lock-out lasts.
+		 * @param unlockPeriod
+		 *            How often do we look for users to end their lock-out?
+		 * @param openid
+		 *            OpenID-related security properties. Required for allowing
+		 *            people to use HBP/EBRAINS identities.
+		 */
 		public AuthProperties(//
 				@DefaultValue("true") boolean basic,
 				@DefaultValue("SpallocService") String realm,
@@ -787,7 +913,7 @@ public class SpallocProperties {
 			return basic;
 		}
 
-		public void setBasic(boolean basic) {
+		void setBasic(boolean basic) {
 			this.basic = basic;
 		}
 
@@ -801,7 +927,7 @@ public class SpallocProperties {
 			return realm;
 		}
 
-		public void setRealm(String realm) {
+		void setRealm(String realm) {
 			this.realm = realm;
 		}
 
@@ -816,7 +942,7 @@ public class SpallocProperties {
 			return localForm;
 		}
 
-		public void setLocalForm(boolean localForm) {
+		void setLocalForm(boolean localForm) {
 			this.localForm = localForm;
 		}
 
@@ -828,7 +954,7 @@ public class SpallocProperties {
 			return addDummyUser;
 		}
 
-		public void setAddDummyUser(boolean addDummyUser) {
+		void setAddDummyUser(boolean addDummyUser) {
 			this.addDummyUser = addDummyUser;
 		}
 
@@ -843,7 +969,7 @@ public class SpallocProperties {
 			return dummyRandomPass;
 		}
 
-		public void setDummyRandomPass(boolean dummyRandomPass) {
+		void setDummyRandomPass(boolean dummyRandomPass) {
 			this.dummyRandomPass = dummyRandomPass;
 		}
 
@@ -858,7 +984,7 @@ public class SpallocProperties {
 			return systemGroup;
 		}
 
-		public void setSystemGroup(String systemGroup) {
+		void setSystemGroup(String systemGroup) {
 			this.systemGroup = systemGroup;
 		}
 
@@ -867,7 +993,7 @@ public class SpallocProperties {
 			return debugFailures;
 		}
 
-		public void setDebugFailures(boolean debugFailures) {
+		void setDebugFailures(boolean debugFailures) {
 			this.debugFailures = debugFailures;
 		}
 
@@ -877,7 +1003,7 @@ public class SpallocProperties {
 			return maxLoginFailures;
 		}
 
-		public void setMaxLoginFailures(int maxLoginFailures) {
+		void setMaxLoginFailures(int maxLoginFailures) {
 			this.maxLoginFailures = maxLoginFailures;
 		}
 
@@ -887,7 +1013,7 @@ public class SpallocProperties {
 			return accountLockDuration;
 		}
 
-		public void setAccountLockDuration(Duration accountLockDuration) {
+		void setAccountLockDuration(Duration accountLockDuration) {
 			this.accountLockDuration = accountLockDuration;
 		}
 
@@ -901,7 +1027,7 @@ public class SpallocProperties {
 			return unlockPeriod;
 		}
 
-		public void setUnlockPeriod(Duration unlockPeriod) {
+		void setUnlockPeriod(Duration unlockPeriod) {
 			this.unlockPeriod = unlockPeriod;
 		}
 
@@ -917,7 +1043,7 @@ public class SpallocProperties {
 			return openid;
 		}
 
-		public void setOpenid(OpenIDProperties openid) {
+		void setOpenid(OpenIDProperties openid) {
 			this.openid = openid;
 		}
 	}
@@ -968,6 +1094,32 @@ public class SpallocProperties {
 		/** How to unlock the truststore. */
 		private String truststorePassword;
 
+		/**
+		 * @param enable
+		 *            Whether to enable OIDC authentication. Required for
+		 *            allowing people to use HBP/EBRAINS identities.
+		 * @param domain
+		 *            The root path of the OpenID 2 Discovery domain. Referred
+		 *            to elsewhere in the configuration file.
+		 * @param scopes
+		 *            The scopes desired. Referred to elsewhere in the
+		 *            configuration file.
+		 * @param id
+		 *            The application installation identity. Required for
+		 *            allowing people to use HBP/EBRAINS identities.
+		 * @param secret
+		 *            The application installation secret. Required for allowing
+		 *            people to use HBP/EBRAINS identities.
+		 * @param usernamePrefix
+		 *            Prefix for user names originating from OpenID
+		 *            auto-registration.
+		 * @param truststoreType
+		 *            What kind of truststore is it.
+		 * @param truststorePath
+		 *            Where the truststore is.
+		 * @param truststorePassword
+		 *            How to unlock the truststore.
+		 */
 		public OpenIDProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("") String domain, //
 				Set<String> scopes, //
@@ -999,7 +1151,7 @@ public class SpallocProperties {
 			return enable;
 		}
 
-		public void setEnable(boolean enable) {
+		void setEnable(boolean enable) {
 			this.enable = enable;
 		}
 
@@ -1010,10 +1162,10 @@ public class SpallocProperties {
 		 * @return The application installation identity.
 		 */
 		public String getId() {
-			return id == null ? null : id.trim();
+			return id == null ? null : id.strip();
 		}
 
-		public void setId(String id) {
+		void setId(String id) {
 			this.id = id;
 		}
 
@@ -1024,10 +1176,10 @@ public class SpallocProperties {
 		 * @return The application installation secret.
 		 */
 		public String getSecret() {
-			return secret == null ? null : secret.trim();
+			return secret == null ? null : secret.strip();
 		}
 
-		public void setSecret(String secret) {
+		void setSecret(String secret) {
 			this.secret = secret;
 		}
 
@@ -1043,7 +1195,7 @@ public class SpallocProperties {
 			return usernamePrefix;
 		}
 
-		public void setUsernamePrefix(String usernamePrefix) {
+		void setUsernamePrefix(String usernamePrefix) {
 			this.usernamePrefix = usernamePrefix;
 		}
 
@@ -1058,7 +1210,7 @@ public class SpallocProperties {
 			return domain;
 		}
 
-		public void setDomain(String domain) {
+		void setDomain(String domain) {
 			this.domain = domain;
 		}
 
@@ -1072,7 +1224,7 @@ public class SpallocProperties {
 			return scopes;
 		}
 
-		public void setScopes(Set<String> scopes) {
+		void setScopes(Set<String> scopes) {
 			this.scopes = scopes;
 		}
 
@@ -1086,7 +1238,7 @@ public class SpallocProperties {
 			return truststoreType;
 		}
 
-		public void setTruststoreType(String truststoreType) {
+		void setTruststoreType(String truststoreType) {
 			this.truststoreType = truststoreType;
 		}
 
@@ -1100,7 +1252,7 @@ public class SpallocProperties {
 			return truststorePath;
 		}
 
-		public void setTruststorePath(Resource truststorePath) {
+		void setTruststorePath(Resource truststorePath) {
 			this.truststorePath = truststorePath;
 		}
 
@@ -1116,15 +1268,15 @@ public class SpallocProperties {
 			return truststorePassword;
 		}
 
-		public void setTruststorePassword(String truststorePassword) {
+		void setTruststorePassword(String truststorePassword) {
 			this.truststorePassword = truststorePassword;
 		}
 
 		@AssertTrue(
 				message = "id and secret must be given if OpenID is enabled")
 		private boolean isValid() {
-			return !enable || (nonNull(id) && !id.trim().isEmpty()
-					&& nonNull(secret) && !secret.trim().isEmpty());
+			return !enable || (nonNull(id) && !id.isBlank()
+					&& nonNull(secret) && !secret.isBlank());
 		}
 	}
 
@@ -1151,6 +1303,19 @@ public class SpallocProperties {
 		 */
 		private String consolidationSchedule;
 
+		/**
+		 * @param defaultQuota
+		 *            Default user quota in board-seconds.
+		 * @param defaultOrgQuota
+		 *            Default quota for organisations inflated from OpenID, in
+		 *            board-seconds.
+		 * @param defaultCollabQuota
+		 *            Default quota for collabratories inflated from OpenID, in
+		 *            board-seconds.
+		 * @param consolidationSchedule
+		 *            Cron expression that says when we consolidate job quotas
+		 *            into the main quota table.
+		 */
 		public QuotaProperties(@DefaultValue("100") int defaultQuota,
 				@DefaultValue("0") long defaultOrgQuota,
 				@DefaultValue("3600000") long defaultCollabQuota,
@@ -1171,7 +1336,7 @@ public class SpallocProperties {
 			return defaultQuota;
 		}
 
-		public void setDefaultQuota(int defaultQuota) {
+		void setDefaultQuota(int defaultQuota) {
 			this.defaultQuota = defaultQuota;
 		}
 
@@ -1185,7 +1350,7 @@ public class SpallocProperties {
 			return orgQuota;
 		}
 
-		public void setDefaultOrgQuota(long orgQuota) {
+		void setDefaultOrgQuota(long orgQuota) {
 			this.orgQuota = orgQuota;
 		}
 
@@ -1199,7 +1364,7 @@ public class SpallocProperties {
 			return collabQuota;
 		}
 
-		public void setDefaultCollabQuota(long collabQuota) {
+		void setDefaultCollabQuota(long collabQuota) {
 			this.collabQuota = collabQuota;
 		}
 
@@ -1212,7 +1377,7 @@ public class SpallocProperties {
 			return consolidationSchedule;
 		}
 
-		public void setConsolidationSchedule(String consolidationSchedule) {
+		void setConsolidationSchedule(String consolidationSchedule) {
 			this.consolidationSchedule = consolidationSchedule;
 		}
 	}
@@ -1250,6 +1415,28 @@ public class SpallocProperties {
 		/** Whether to use a dummy transceiver. Useful for testing only. */
 		private boolean dummy;
 
+		/**
+		 * @param period
+		 *            How long between when we send requests to the BMP control
+		 *            tasks.
+		 * @param probeInterval
+		 *            The basic wait time used by the BMP control tasks.
+		 * @param powerAttempts
+		 *            Number of attempts that will be made to switch on a board.
+		 * @param fpgaAttempts
+		 *            Number of attempts that will be made to bring up an FPGA.
+		 * @param fpgaReload
+		 *            Whether to reload the FPGA bitfiles when they don't come
+		 *            up correctly.
+		 * @param buildAttempts
+		 *            Number of attempts that will be made to bring up a
+		 *            transceiver, provided the failures are due to timeouts and
+		 *            not outright network errors. Note that a failure to bring
+		 *            up a transceiver is lethal to the service.
+		 * @param dummy
+		 *            Whether to use a dummy transceiver. Useful for testing
+		 *            only.
+		 */
 		public TxrxProperties(@DefaultValue("10s") Duration period,
 				@DefaultValue("15s") Duration probeInterval,
 				@DefaultValue("2") int powerAttempts,
@@ -1277,7 +1464,7 @@ public class SpallocProperties {
 			return period;
 		}
 
-		public void setPeriod(Duration period) {
+		void setPeriod(Duration period) {
 			this.period = period;
 		}
 
@@ -1287,7 +1474,7 @@ public class SpallocProperties {
 			return probeInterval;
 		}
 
-		public void setProbeInterval(Duration probeInterval) {
+		void setProbeInterval(Duration probeInterval) {
 			this.probeInterval = probeInterval;
 		}
 
@@ -1299,7 +1486,7 @@ public class SpallocProperties {
 			return powerAttempts;
 		}
 
-		public void setPowerAttempts(int powerAttempts) {
+		void setPowerAttempts(int powerAttempts) {
 			this.powerAttempts = powerAttempts;
 		}
 
@@ -1309,7 +1496,7 @@ public class SpallocProperties {
 			return fpgaAttempts;
 		}
 
-		public void setFpgaAttempts(int fpgaAttempts) {
+		void setFpgaAttempts(int fpgaAttempts) {
 			this.fpgaAttempts = fpgaAttempts;
 		}
 
@@ -1321,7 +1508,7 @@ public class SpallocProperties {
 			return fpgaReload;
 		}
 
-		public void setFpgaReload(boolean fpgaReload) {
+		void setFpgaReload(boolean fpgaReload) {
 			this.fpgaReload = fpgaReload;
 		}
 
@@ -1339,7 +1526,7 @@ public class SpallocProperties {
 			return buildAttempts;
 		}
 
-		public void setBuildAttempts(int value) {
+		void setBuildAttempts(int value) {
 			this.buildAttempts = value;
 		}
 
@@ -1352,7 +1539,7 @@ public class SpallocProperties {
 			return dummy;
 		}
 
-		public void setDummy(boolean dummy) {
+		void setDummy(boolean dummy) {
 			this.dummy = dummy;
 		}
 	}
@@ -1406,6 +1593,36 @@ public class SpallocProperties {
 		/** Whether to determine the caller when doing transaction logging. */
 		private boolean enableExpensiveTransactionDebugging;
 
+		/**
+		 * @param timeout
+		 *            How long to wait to get a database lock.
+		 * @param debugFailures
+		 *            Whether to send details of SQL-related exceptions to
+		 *            users.
+		 * @param analysisLimit
+		 *            Amount of effort to spend on DB optimisation on
+		 *            application close. See the SQLite documentation for
+		 *            meaning. Note that this is spent by every worker thread
+		 *            that touches the database.
+		 * @param performanceLog
+		 *            Whether to collect and write query performance metrics to
+		 *            the log on termination.
+		 * @param performanceThreshold
+		 *            Performance stats not reported for queries with a max less
+		 *            than this (in nanoseconds).
+		 * @param lockTries
+		 *            Number of times to try to take the lock in a transaction.
+		 * @param lockFailedDelay
+		 *            Delay after transaction failure before retrying.
+		 * @param lockNoteThreshold
+		 *            Time delay before we issue a warning on transaction end.
+		 * @param lockWarnThreshold
+		 *            Time delay before we issue a warning during the execution
+		 *            of a transaction.
+		 * @param enableExpensiveTransactionDebugging
+		 *            Whether to determine the caller when doing transaction
+		 *            logging.
+		 */
 		public DBProperties(@DefaultValue("1s") Duration timeout,
 				@DefaultValue("false") boolean debugFailures,
 				@DefaultValue("400") int analysisLimit,
@@ -1436,7 +1653,7 @@ public class SpallocProperties {
 			return timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		void setTimeout(Duration timeout) {
 			this.timeout = timeout;
 		}
 
@@ -1447,7 +1664,7 @@ public class SpallocProperties {
 			return debugFailures;
 		}
 
-		public void setDebugFailures(boolean debugFailures) {
+		void setDebugFailures(boolean debugFailures) {
 			this.debugFailures = debugFailures;
 		}
 
@@ -1466,7 +1683,7 @@ public class SpallocProperties {
 			return analysisLimit;
 		}
 
-		public void setAnalysisLimit(int analysisLimit) {
+		void setAnalysisLimit(int analysisLimit) {
 			this.analysisLimit = analysisLimit;
 		}
 
@@ -1480,7 +1697,7 @@ public class SpallocProperties {
 			return performanceLog;
 		}
 
-		public void setPerformanceLog(boolean log) {
+		void setPerformanceLog(boolean log) {
 			this.performanceLog = log;
 		}
 
@@ -1493,7 +1710,7 @@ public class SpallocProperties {
 			return performanceThreshold;
 		}
 
-		public void setPerformanceThreshold(double threshold) {
+		void setPerformanceThreshold(double threshold) {
 			this.performanceThreshold = threshold;
 		}
 
@@ -1503,7 +1720,7 @@ public class SpallocProperties {
 			return lockTries;
 		}
 
-		public void setLockTries(int lockTries) {
+		void setLockTries(int lockTries) {
 			this.lockTries = lockTries;
 		}
 
@@ -1513,7 +1730,7 @@ public class SpallocProperties {
 			return lockFailedDelay;
 		}
 
-		public void setLockFailedDelay(Duration value) {
+		void setLockFailedDelay(Duration value) {
 			this.lockFailedDelay = value;
 		}
 
@@ -1523,7 +1740,7 @@ public class SpallocProperties {
 			return lockNoteThreshold;
 		}
 
-		public void setLockNoteThreshold(Duration value) {
+		void setLockNoteThreshold(Duration value) {
 			this.lockNoteThreshold = value;
 		}
 
@@ -1536,7 +1753,7 @@ public class SpallocProperties {
 			return lockWarnThreshold;
 		}
 
-		public void setLockWarnThreshold(Duration value) {
+		void setLockWarnThreshold(Duration value) {
 			this.lockWarnThreshold = value;
 		}
 
@@ -1548,7 +1765,7 @@ public class SpallocProperties {
 			return enableExpensiveTransactionDebugging;
 		}
 
-		public void setEnableExpensiveTransactionDebugging(boolean value) {
+		void setEnableExpensiveTransactionDebugging(boolean value) {
 			this.enableExpensiveTransactionDebugging = value;
 		}
 	}
@@ -1571,9 +1788,10 @@ public class SpallocProperties {
 		 */
 		private int threadPoolSize;
 
+		/** What hostname to run the spalloc v1 compatibility service on. */
 		private String host;
 
-		/** What port to run the spalloc v1 compatibility service on. */
+		/** What UDP port to run the spalloc v1 compatibility service on. */
 		private int port;
 
 		/** How long to wait for the executor to shut down, maximum. */
@@ -1609,6 +1827,43 @@ public class SpallocProperties {
 		/** The default value for the keepalive property of jobs. */
 		private Duration defaultKeepalive;
 
+		/**
+		 * @param enable
+		 *            Whether to turn the spalloc version 1 compatibility
+		 *            service interface on.
+		 * @param threadPoolSize
+		 *            The number of threads to use to service the v1 clients. 0
+		 *            means no limit.
+		 * @param host
+		 *            What hostname to run the spalloc v1 compatibility service
+		 *            on.
+		 * @param port
+		 *            What UDP port to run the spalloc v1 compatibility service
+		 *            on.
+		 * @param serviceUser
+		 *            What user to run jobs submitted through the spalloc v1
+		 *            compatibility service with. We recommend that this user
+		 *            exists but is disabled (i.e., login using this service
+		 *            identity need not be supported).
+		 * @param serviceGroup
+		 *            What group to run jobs submitted through the spalloc v1
+		 *            compatibility service against. This group needs to exist,
+		 *            and the service user needs to be a member of it, but does
+		 *            not need to have a quota set.
+		 * @param receiveTimeout
+		 *            How long to wait for a message to be received. Making this
+		 *            too short makes the service more expensive. Making this
+		 *            too long makes the service difficult to shut down
+		 *            correctly.
+		 * @param shutdownTimeout
+		 *            How long to wait for the executor to shut down, maximum.
+		 * @param notifyWaitTime
+		 *            How long to pass to the spalloc core to wait for timeouts
+		 *            relating to message notifications (i.e., due to machine or
+		 *            job status changes).
+		 * @param defaultKeepalive
+		 *            The default value for the keepalive property of jobs.
+		 */
 		public CompatibilityProperties(@DefaultValue("false") boolean enable,
 				@DefaultValue("0") int threadPoolSize,
 				@DefaultValue("0.0.0.0") String host,
@@ -1639,7 +1894,7 @@ public class SpallocProperties {
 			return enable;
 		}
 
-		public void setEnable(boolean enable) {
+		void setEnable(boolean enable) {
 			this.enable = enable;
 		}
 
@@ -1652,7 +1907,7 @@ public class SpallocProperties {
 			return threadPoolSize;
 		}
 
-		public void setThreadPoolSize(int threadPoolSize) {
+		void setThreadPoolSize(int threadPoolSize) {
 			this.threadPoolSize = threadPoolSize;
 		}
 
@@ -1665,7 +1920,7 @@ public class SpallocProperties {
 			return host;
 		}
 
-		public void setHost(String host) {
+		void setHost(String host) {
 			this.host = host;
 		}
 
@@ -1676,7 +1931,7 @@ public class SpallocProperties {
 			return port;
 		}
 
-		public void setPort(int port) {
+		void setPort(int port) {
 			this.port = port;
 		}
 
@@ -1692,7 +1947,7 @@ public class SpallocProperties {
 			return serviceUser;
 		}
 
-		public void setServiceUser(String serviceUser) {
+		void setServiceUser(String serviceUser) {
 			this.serviceUser = serviceUser;
 		}
 
@@ -1700,7 +1955,7 @@ public class SpallocProperties {
 				+ "if the v1 service is enabled")
 		private boolean isValidUserIfEnabled() {
 			return !enable
-					|| (nonNull(serviceUser) && !serviceUser.trim().isEmpty());
+					|| (nonNull(serviceUser) && !serviceUser.isBlank());
 		}
 
 		/**
@@ -1715,7 +1970,7 @@ public class SpallocProperties {
 			return serviceGroup;
 		}
 
-		public void setServiceGroup(String serviceUser) {
+		void setServiceGroup(String serviceUser) {
 			this.serviceGroup = serviceUser;
 		}
 
@@ -1723,7 +1978,7 @@ public class SpallocProperties {
 				+ "if the v1 service is enabled")
 		private boolean isValidGroupIfEnabled() {
 			return !enable || (nonNull(serviceGroup)
-					&& !serviceGroup.trim().isEmpty());
+					&& !serviceGroup.isBlank());
 		}
 
 		/**
@@ -1734,7 +1989,7 @@ public class SpallocProperties {
 			return shutdownTimeout;
 		}
 
-		public void setShutdownTimeout(Duration value) {
+		void setShutdownTimeout(Duration value) {
 			this.shutdownTimeout = value;
 		}
 
@@ -1751,7 +2006,7 @@ public class SpallocProperties {
 			return receiveTimeout;
 		}
 
-		public void setReceiveTimeout(Duration value) {
+		void setReceiveTimeout(Duration value) {
 			this.receiveTimeout = value;
 		}
 
@@ -1765,7 +2020,7 @@ public class SpallocProperties {
 			return notifyWaitTime;
 		}
 
-		public void setNotifyWaitTime(Duration value) {
+		void setNotifyWaitTime(Duration value) {
 			this.notifyWaitTime = value;
 		}
 
@@ -1777,7 +2032,7 @@ public class SpallocProperties {
 			return defaultKeepalive;
 		}
 
-		public void setDefaultKeepalive(Duration value) {
+		void setDefaultKeepalive(Duration value) {
 			this.defaultKeepalive = value;
 		}
 	}
@@ -1800,6 +2055,17 @@ public class SpallocProperties {
 		 */
 		private String localHost;
 
+		/**
+		 * @param enable
+		 *            Whether to enable the UDP proxy subsystem.
+		 * @param logWriteCounts
+		 *            Whether to log the number of packets read and written on
+		 *            each channel.
+		 * @param localHost
+		 *            The address for local proxied sockets to listen on if
+		 *            they're not being bound to a specific board. If empty,
+		 *            that type of socket will be disabled.
+		 */
 		public ProxyProperties(@DefaultValue("true") boolean enable,
 				@DefaultValue("false") boolean logWriteCounts,
 				@DefaultValue("") String localHost) {
@@ -1813,7 +2079,7 @@ public class SpallocProperties {
 			return enable;
 		}
 
-		public void setEnable(boolean enable) {
+		void setEnable(boolean enable) {
 			this.enable = enable;
 		}
 
@@ -1825,7 +2091,7 @@ public class SpallocProperties {
 			return logWriteCounts;
 		}
 
-		public void setLogWriteCounts(boolean logWriteCounts) {
+		void setLogWriteCounts(boolean logWriteCounts) {
 			this.logWriteCounts = logWriteCounts;
 		}
 
@@ -1840,7 +2106,7 @@ public class SpallocProperties {
 			return localHost;
 		}
 
-		public void setLocalHost(String localHost) {
+		void setLocalHost(String localHost) {
 			this.localHost = localHost;
 		}
 	}
@@ -1865,6 +2131,18 @@ public class SpallocProperties {
 		 */
 		private int blacklistReadBatchSize;
 
+		/**
+		 * @param blacklistPoll
+		 *            How long to wait between polls of the BMP controller.
+		 * @param blacklistTimeout
+		 *            How long to wait for a blacklist operation to complete.
+		 * @param serialReadBatchSize
+		 *            How many board serial numbers to read from a full machine
+		 *            at once when synchronizing the overall state?
+		 * @param blacklistReadBatchSize
+		 *            How many blacklists to read from a full machine at once
+		 *            when synchronizing the overall state?
+		 */
 		public StateControlProperties(
 				@DefaultValue("15s") Duration blacklistPoll,
 				@DefaultValue("60s") Duration blacklistTimeout,
@@ -1882,7 +2160,7 @@ public class SpallocProperties {
 			return blacklistPoll;
 		}
 
-		public void setBlacklistPoll(Duration blacklistPoll) {
+		void setBlacklistPoll(Duration blacklistPoll) {
 			this.blacklistPoll = blacklistPoll;
 		}
 
@@ -1892,7 +2170,7 @@ public class SpallocProperties {
 			return blacklistTimeout;
 		}
 
-		public void setBlacklistTimeout(Duration blacklistTimeout) {
+		void setBlacklistTimeout(Duration blacklistTimeout) {
 			this.blacklistTimeout = blacklistTimeout;
 		}
 
@@ -1905,7 +2183,7 @@ public class SpallocProperties {
 			return serialReadBatchSize;
 		}
 
-		public void setSerialReadBatchSize(int serialReadBatchSize) {
+		void setSerialReadBatchSize(int serialReadBatchSize) {
 			this.serialReadBatchSize = serialReadBatchSize;
 		}
 
@@ -1918,7 +2196,7 @@ public class SpallocProperties {
 			return blacklistReadBatchSize;
 		}
 
-		public void setBlacklistReadBatchSize(int blacklistReadBatchSize) {
+		void setBlacklistReadBatchSize(int blacklistReadBatchSize) {
 			this.blacklistReadBatchSize = blacklistReadBatchSize;
 		}
 	}

@@ -104,7 +104,7 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, u.call(BOARD, 1, 1));
 			}
 
-			var bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(new Blacklist(Set.of(C11), Map.of(), Map.of()), bl);
 		});
@@ -118,7 +118,7 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, u.call(BOARD, 0, 1));
 			}
 
-			var bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(new Blacklist(Set.of(C01, C10), Map.of(), Map.of()),
 					bl);
@@ -132,7 +132,7 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, u.call(BOARD, 1, 1, 15));
 			}
 
-			var bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(
 					new Blacklist(Set.of(), Map.of(C11, Set.of(15)), Map.of()),
@@ -148,7 +148,7 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, u.call(BOARD, 1, 0, 14));
 			}
 
-			var bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(
 					new Blacklist(Set.of(),
@@ -164,7 +164,7 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, u.call(BOARD, 1, 1, WEST));
 			}
 
-			var bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(new Blacklist(Set.of(), Map.of(),
 					Map.of(C11, Set.of(WEST))), bl);
@@ -179,7 +179,7 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, u.call(BOARD, 1, 0, SOUTH));
 			}
 
-			var bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(new Blacklist(Set.of(), Map.of(),
 					Map.of(C01, Set.of(NORTH), C10, Set.of(SOUTH))), bl);
@@ -200,7 +200,7 @@ class BlacklistStoreTest extends TestSupport {
 				assertEquals(1, link.call(BOARD, 3, 0, SOUTH));
 			}
 
-			var bl = testAPI.readBlacklist(c, BOARD).get();
+			var bl = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(
 					new Blacklist(Set.of(C10, C01),
@@ -307,7 +307,7 @@ class BlacklistStoreTest extends TestSupport {
 					Map.of(C77, Set.of(NORTH, SOUTH, EAST, WEST)));
 
 			testAPI.writeBlacklist(c, BOARD, blIn);
-			var blOut = testAPI.readBlacklist(c, BOARD).get();
+			var blOut = testAPI.readBlacklist(c, BOARD).orElseThrow();
 
 			assertEquals(blIn, blOut);
 		});

@@ -39,6 +39,7 @@ public class PasswordChangeRecord {
 
 	private String newPassword2;
 
+	/** Make an instance. */
 	public PasswordChangeRecord() {
 		this.userId = -1;
 		this.username = "";
@@ -47,6 +48,14 @@ public class PasswordChangeRecord {
 		this.newPassword2 = "";
 	}
 
+	/**
+	 * Make an instance.
+	 *
+	 * @param userId
+	 *            The user ID.
+	 * @param username
+	 *            The user name.
+	 */
 	public PasswordChangeRecord(int userId, String username) {
 		this();
 		this.userId = userId;
@@ -60,6 +69,9 @@ public class PasswordChangeRecord {
 		return userId;
 	}
 
+	/**
+	 * @param userId the user id
+	 */
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
@@ -71,6 +83,9 @@ public class PasswordChangeRecord {
 		return username;
 	}
 
+	/**
+	 * @param username the username
+	 */
 	public void setUsername(String username) {
 		this.username = username;
 	}
@@ -83,6 +98,9 @@ public class PasswordChangeRecord {
 		return oldPassword;
 	}
 
+	/**
+	 * @param password the old password
+	 */
 	public void setOldPassword(String password) {
 		this.oldPassword = password;
 	}
@@ -95,6 +113,9 @@ public class PasswordChangeRecord {
 		return newPassword;
 	}
 
+	/**
+	 * @param newPassword the first copy of the new password
+	 */
 	public void setNewPassword(String newPassword) {
 		this.newPassword = newPassword;
 	}
@@ -107,15 +128,20 @@ public class PasswordChangeRecord {
 		return newPassword2;
 	}
 
+	/**
+	 * @param newPassword2 the second copy of the new password
+	 */
 	public void setNewPassword2(String newPassword2) {
 		this.newPassword2 = newPassword2;
 	}
 
+	/** @return whether the password is being changed at all */
 	@AssertFalse(message = "old and new passwords must be different")
 	public boolean isNewPasswordSameAsOld() {
 		return newPassword.equals(oldPassword);
 	}
 
+	/** @return whether the two copies of the new password are the same */
 	@AssertTrue(
 			message = "second copy of new password must be same as first")
 	public boolean isNewPasswordMatched() {

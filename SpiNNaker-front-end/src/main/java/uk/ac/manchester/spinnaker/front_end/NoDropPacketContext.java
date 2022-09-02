@@ -94,7 +94,7 @@ public class NoDropPacketContext implements AutoCloseable {
 		this.monitorCores = monitorCores;
 		// Store the last reinjection status for resetting
 		// NOTE: This assumes the status is the same on all cores
-		var firstCore = monitorCores.first().get();
+		var firstCore = monitorCores.first().orElseThrow();
 		firstChip = firstCore.asChipLocation();
 		lastStatus = txrx.getReinjectionStatus(firstCore);
 		this.gatherers = gatherers;

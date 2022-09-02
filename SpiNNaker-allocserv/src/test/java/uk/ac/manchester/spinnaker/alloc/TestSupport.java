@@ -363,20 +363,22 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 
 	protected JobState getJobState(int job) {
 		try (var q = conn.query(GET_JOB)) {
-			return conn.transaction(() -> q.call1(job).get()
+			return conn.transaction(() -> q.call1(job).orElseThrow()
 					.getEnum("job_state", JobState.class));
 		}
 	}
 
 	protected int getJobRequestCount() {
 		try (var q = conn.query(TEST_COUNT_REQUESTS)) {
-			return conn.transaction(() -> q.call1(QUEUED).get().getInt("cnt"));
+			return conn.transaction(
+					() -> q.call1(QUEUED).orElseThrow().getInt("cnt"));
 		}
 	}
 
 	protected int getPendingPowerChanges() {
 		try (var q = conn.query(TEST_COUNT_POWER_CHANGES)) {
-			return conn.transaction(() -> q.call1().get().getInt("cnt"));
+			return conn
+					.transaction(() -> q.call1().orElseThrow().getInt("cnt"));
 		}
 	}
 

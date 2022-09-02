@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine.reports;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedWriter;
@@ -63,7 +64,7 @@ public abstract class Reports {
 		var file = new File(reportDirectory, FILENAME);
 		var timestamp = Calendar.getInstance();
 		try (var f = new PrintWriter(
-				new BufferedWriter(new FileWriter(file)))) {
+				new BufferedWriter(new FileWriter(file, UTF_8)))) {
 			writeHeader(f, timestamp, machine, connections);
 			for (int x = 0; x <= machine.maxChipX(); x++) {
 				for (int y = 0; y <= machine.maxChipY(); y++) {

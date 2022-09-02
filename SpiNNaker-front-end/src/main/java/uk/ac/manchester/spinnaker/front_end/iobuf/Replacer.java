@@ -78,7 +78,7 @@ class Replacer {
 	}
 
 	private void parseLine(String line) {
-		var parts = line.trim().split(",", NUM_PARTS);
+		var parts = line.split(",", NUM_PARTS);
 		if (parts.length == NUM_PARTS) {
 			try {
 				var tmpl = new Template(parts);
@@ -174,6 +174,7 @@ class Replacer {
 	public static final class WrappedException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 
+		/** The wrapped exception. */
 		private final IOException e;
 
 		private WrappedException(IOException e) {

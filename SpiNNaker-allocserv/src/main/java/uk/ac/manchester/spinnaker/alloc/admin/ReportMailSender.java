@@ -57,7 +57,7 @@ public class ReportMailSender {
 	}
 
 	private static boolean haveProp(String propValue) {
-		return nonNull(propValue) && !propValue.isEmpty();
+		return nonNull(propValue) && !propValue.isBlank();
 	}
 
 	/**

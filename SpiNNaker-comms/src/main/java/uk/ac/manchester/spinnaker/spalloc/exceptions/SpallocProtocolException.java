@@ -22,11 +22,13 @@ import java.io.IOException;
 public class SpallocProtocolException extends IOException {
 	private static final long serialVersionUID = -1591596793445886688L;
 
-	public SpallocProtocolException(Throwable e) {
-		super(e);
+	/** @param cause The cause of this exception. */
+	public SpallocProtocolException(Throwable cause) {
+		super(cause);
 	}
 
-	public SpallocProtocolException(String string) {
-		super(string);
+	/** @param msg The message of this exception. */
+	public SpallocProtocolException(String msg) {
+		super(msg);
 	}
 }

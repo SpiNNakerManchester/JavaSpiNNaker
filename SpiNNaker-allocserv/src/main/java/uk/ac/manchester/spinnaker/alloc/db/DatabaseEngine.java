@@ -446,7 +446,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				.startsWith(FUN_NAME_PREFIX)) {
 			name = name.substring(FUN_NAME_PREFIX.length());
 		}
-		if (name.isEmpty()) {
+		if (name.isBlank()) {
 			throw new UncategorizedScriptException("crazy function name");
 		}
 

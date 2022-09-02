@@ -110,51 +110,63 @@ public class Configuration {
 		return new HashMap<>(configurationMap);
 	}
 
+	/** @return The spalloc host. */
 	public String getHost() {
 		return (String) configurationMap.get(HOSTNAME_PROPERTY);
 	}
 
+	/** @return The spalloc port. */
 	public int getPort() {
 		return (Integer) configurationMap.get(PORT_PROPERTY);
 	}
 
+	/** @return The spalloc user. */
 	public String getUser() {
 		return (String) configurationMap.get(USER_PROPERTY);
 	}
 
+	/** @return The keepalive interval, in seconds. */
 	public double getKeepalive() {
 		return (Double) configurationMap.get(KEEPALIVE_PROPERTY);
 	}
 
+	/** @return The reconnection delay, in seconds. */
 	public double getReconnectDelay() {
 		return (Double) configurationMap.getOrDefault(RECONNECT_DELAY_PROPERTY,
 				RECONNECT_DELAY_DEFAULT);
 	}
 
+	/** @return The network timeout, in seconds. */
 	public double getTimeout() {
 		return (Double) configurationMap.get(TIMEOUT_PROPERTY);
 	}
 
+	/** @return The desired machine name. */
 	public String getMachine() {
 		return (String) configurationMap.get(MACHINE_PROPERTY);
 	}
 
+	/** @return The desired machine tags. */
 	public String[] getTags() {
 		return (String[]) configurationMap.get(TAGS_PROPERTY);
 	}
 
+	/** @return The minimum ratio for rectangular allocations. */
 	public double getMinRatio() {
 		return (Double) configurationMap.get(MIN_RATIO_PROPERTY);
 	}
 
+	/** @return The maximum number of dead boards wanted. */
 	public Integer getMaxDeadBoards() {
 		return (Integer) configurationMap.get(MAX_DEAD_BOARDS_PROPERTY);
 	}
 
+	/** @return The maximum number of dead links wanted. */
 	public Integer getMaxDeadLinks() {
 		return (Integer) configurationMap.get(MAX_DEAD_LINKS_PROPERTY);
 	}
 
+	/** @return Whether a torus is required. Ignored by spalloc! */
 	public boolean getRequireTorus() {
 		return (Boolean) configurationMap.get(REQUIRE_TORUS_PROPERTY);
 	}

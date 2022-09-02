@@ -169,7 +169,7 @@ class ExecutionContext implements AutoCloseable {
 							.append(region.core).append("); ");
 				}
 			});
-			errors.add(potentialRefs.toString().trim());
+			errors.add(potentialRefs.toString().strip());
 		} else {
 			if (!reg.core.onSameChipAs(toFill.core)) {
 				errors.add("Region " + ref + " on " + reg

@@ -226,6 +226,7 @@ public class SpallocClientFactory {
 
 		return new ClientImpl(s, s.discoverRoot());
 	}
+	// TODO Make a constructor that takes a bearer token
 
 	private abstract class Common {
 		private final SpallocClient client;

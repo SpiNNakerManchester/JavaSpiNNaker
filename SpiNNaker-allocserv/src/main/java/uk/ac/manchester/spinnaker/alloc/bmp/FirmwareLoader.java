@@ -24,6 +24,7 @@ import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.BITFILE;
 import static uk.ac.manchester.spinnaker.alloc.bmp.DataSectorTypes.REGISTER;
@@ -37,7 +38,6 @@ import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SCRM;
 import static uk.ac.manchester.spinnaker.messages.model.FPGAMainRegisters.SLEN;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -165,6 +165,7 @@ public class FirmwareLoader {
 		this.board = board;
 	}
 
+	/** Base class of exceptions thrown by the firmware loader. */
 	public abstract static class FirmwareLoaderException
 			extends RuntimeException {
 		private static final long serialVersionUID = -7057612243855126410L;
@@ -174,6 +175,7 @@ public class FirmwareLoader {
 		}
 	}
 
+	/** An update of the firmware on a BMP failed. */
 	public static class UpdateFailedException extends FirmwareLoaderException {
 		private static final long serialVersionUID = 7925582707336953554L;
 
@@ -187,6 +189,7 @@ public class FirmwareLoader {
 		}
 	}
 
+	/** A CRC check failed. */
 	public static class CRCFailedException extends FirmwareLoaderException {
 		private static final long serialVersionUID = -4111893327837084643L;
 
@@ -199,6 +202,7 @@ public class FirmwareLoader {
 		}
 	}
 
+	/** A data chunk was too large for the firmware loader to handle. */
 	public static class TooLargeException extends FirmwareLoaderException {
 		private static final long serialVersionUID = -9025065456329109710L;
 
@@ -302,12 +306,30 @@ public class FirmwareLoader {
 
 		private final int value;
 
+		/**
+		 * @param fpga
+		 *            Which FPGA's registers to set
+		 * @param register
+		 *            Which register is this
+		 * @param value
+		 *            The value to set
+		 */
 		public RegisterSet(FPGA fpga, FPGAMainRegisters register, int value) {
 			this.fpga = fpga;
 			this.address = register.getAddress();
 			this.value = value;
 		}
 
+		/**
+		 * @param fpga
+		 *            Which FPGA's registers to set
+		 * @param register
+		 *            Which register is this
+		 * @param bank
+		 *            In which register bank (i.e., for which link)
+		 * @param value
+		 *            The value to set
+		 */
 		public RegisterSet(FPGA fpga, FPGALinkRegisters register, int bank,
 				int value) {
 			this.fpga = fpga;
@@ -360,7 +382,7 @@ public class FirmwareLoader {
 	}
 
 	private static int crc(Resource r) throws IOException {
-		try (var s = new BufferedInputStream(r.getInputStream())) {
+		try (var s = buffer(r.getInputStream())) {
 			return crc(s);
 		}
 	}
@@ -478,7 +500,7 @@ public class FirmwareLoader {
 				SLOT_LABELS[i], state, CHIP_LABELS[flags & CHIP_MASK], base,
 				length, crc));
 		log.info("FPGA BOOT:           File      {}",
-				new String(filenameBytes, 0, size, UTF_8).trim());
+				new String(filenameBytes, 0, size, UTF_8).strip());
 		log.info("FPGA BOOT:           Written   {}",
 				Instant.ofEpochSecond(time));
 		log.info("FPGA BOOT:           ModTime   {}",
@@ -547,7 +569,7 @@ public class FirmwareLoader {
 		}
 
 		var base = BITFILE_BASE.add(slot * BITFILE_MAX_SIZE);
-		try (var s = new BufferedInputStream(resource.getInputStream())) {
+		try (var s = buffer(resource.getInputStream())) {
 			txrx.writeSerialFlash(board, base, size, s);
 		}
 		int otherCRC = txrx.readSerialFlashCRC(board, base, size);
@@ -670,7 +692,7 @@ class FirmwareDefinition {
 			props.load(is);
 		}
 		bitfileNames = stream(props.getProperty("bitfiles").split(","))
-				.map(String::trim).collect(toList());
+				.map(String::strip).collect(toList());
 		for (var f : bitfileNames) {
 			modTimes.put(f, parseUnsignedInt(props.getProperty(f)));
 			var r = manifestLocation.createRelative(f);

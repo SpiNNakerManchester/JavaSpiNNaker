@@ -38,43 +38,53 @@ public class JobMachineInfo {
 	/** Number of boards/Connections to list individually in the toString. */
 	private static final int PRINT_CONNECTIONS_THRESHOLD = 6;
 
+	/** @return The width of the allocated machine chunk. */
 	public int getWidth() {
 		return width;
 	}
 
+	/** @param width The width of the allocated machine chunk. */
 	public void setWidth(int width) {
 		this.width = width;
 	}
 
+	/** @return The height of the allocated machine chunk. */
 	public int getHeight() {
 		return height;
 	}
 
+	/** @param height The height of the allocated machine chunk. */
 	public void setHeight(int height) {
 		this.height = height;
 	}
 
+	/** @return How to talk to the allocated boards. */
 	public List<Connection> getConnections() {
 		return connections;
 	}
 
+	/** @param connections How to talk to the allocated boards. */
 	public void setConnections(List<Connection> connections) {
 		this.connections = connections == null ? List.of()
 				: unmodifiableList(connections);
 	}
 
+	/** @return The name of the machine handling the job. */
 	public String getMachineName() {
 		return machineName;
 	}
 
+	/** @param machineName The name of the machine handling the job. */
 	public void setMachineName(String machineName) {
 		this.machineName = machineName;
 	}
 
+	/** @return Locations of the allocated boards. */
 	public List<BoardCoordinates> getBoards() {
 		return boards;
 	}
 
+	/** @param boards Locations of the allocated boards. */
 	public void setBoards(List<BoardCoordinates> boards) {
 		this.boards = boards == null ? List.of() : unmodifiableList(boards);
 	}

@@ -124,10 +124,12 @@ public final class SCPResultMessage {
 		}
 	}
 
+	/** @return The result code from the header. */
 	public SCPResult getResult() {
 		return result;
 	}
 
+	/** @return The sequence number from the header. */
 	public int getSequenceNumber() {
 		return sequenceNumber;
 	}

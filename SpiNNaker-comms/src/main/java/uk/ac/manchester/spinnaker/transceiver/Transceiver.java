@@ -26,6 +26,7 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.io.IOUtils.buffer;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.NUM_ROUTER_DIAGNOSTIC_COUNTERS;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
@@ -56,7 +57,6 @@ import static uk.ac.manchester.spinnaker.transceiver.CommonMemoryLocations.SYS_V
 import static uk.ac.manchester.spinnaker.transceiver.Utils.defaultBMPforMachine;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -1715,7 +1715,7 @@ public class Transceiver extends UDPTransceiver
 			MemoryLocation baseAddress, File file)
 			throws IOException, ProcessException {
 		var wmp = new BMPWriteMemoryProcess(bmpConnection(bmp), this);
-		try (var f = new BufferedInputStream(new FileInputStream(file))) {
+		try (var f = buffer(new FileInputStream(file))) {
 			// The file had better fit...
 			wmp.writeMemory(board, baseAddress, f, (int) file.length());
 		}
@@ -1777,7 +1777,7 @@ public class Transceiver extends UDPTransceiver
 	public void writeSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, File file)
 			throws ProcessException, IOException {
-		try (var f = new BufferedInputStream(new FileInputStream(file))) {
+		try (var f = buffer(new FileInputStream(file))) {
 			// The file had better fit...
 			new BMPWriteSerialFlashProcess(bmpConnection(bmp), this)
 					.write(board, baseAddress, f, (int) file.length());

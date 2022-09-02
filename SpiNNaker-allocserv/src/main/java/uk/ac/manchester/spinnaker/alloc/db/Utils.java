@@ -84,7 +84,8 @@ public abstract class Utils {
 		if (isNull(sql)) {
 			return null;
 		}
-		return sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ").trim();
+		return sql.replaceAll("--[^\n]*\n", " ").replaceAll("\\s+", " ")
+				.strip();
 	}
 
 	/**

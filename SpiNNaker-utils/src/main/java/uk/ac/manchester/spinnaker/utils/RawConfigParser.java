@@ -173,7 +173,7 @@ public class RawConfigParser {
 		for (var line : lines) {
 			ln++;
 			line = clean(line);
-			if (line.isEmpty()) {
+			if (line.isBlank()) {
 				continue;
 			}
 			var m = sectRE.matcher(line);
@@ -208,7 +208,7 @@ public class RawConfigParser {
 		if (m.matches()) {
 			line = m.group("keep");
 		}
-		return line.trim();
+		return line.strip();
 	}
 
 	/**

@@ -462,7 +462,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
-		return getCPUInformation(new CoreSubsets(core)).first().get();
+		return getCPUInformation(new CoreSubsets(core)).first().orElseThrow();
 	}
 
 	/**
@@ -645,7 +645,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	@ParallelSafe
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
-		return getIobuf(new CoreSubsets(core)).first().get();
+		return getIobuf(new CoreSubsets(core)).first().orElseThrow();
 	}
 
 	/**
