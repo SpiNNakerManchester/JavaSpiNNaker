@@ -438,6 +438,8 @@ public class SpallocClientFactory {
 	private final class JobImpl extends Common implements Job {
 		private final URI uri;
 
+		private ProxyProtocolClient proxy;
+
 		JobImpl(SpallocClient client, ClientSession session, URI uri) {
 			super(client, session);
 			this.uri = uri;
@@ -485,6 +487,14 @@ public class SpallocClientFactory {
 				}
 				return this;
 			});
+			synchronized (this) {
+				if (nonNull(proxy)) {
+					if (proxy.isOpen()) {
+						proxy.close();
+					}
+					proxy = null;
+				}
+			}
 		}
 
 		@Override
@@ -545,8 +555,7 @@ public class SpallocClientFactory {
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
 		}
 
-		private ProxyProtocolClient proxy;
-
+		/** @return The websocket-based proxy. */
 		private ProxyProtocolClient getProxy()
 				throws IOException, InterruptedException {
 			if (nonNull(proxy) && proxy.isOpen()) {
@@ -601,6 +610,7 @@ public class SpallocClientFactory {
 		}
 	}
 
+	/** An SCP connection that routes messages across the proxy. */
 	private class ProxiedSCPConnection extends SCPConnection {
 		private final ConnectedChannel channel;
 
@@ -608,6 +618,16 @@ public class SpallocClientFactory {
 
 		private ProxyProtocolClient ws;
 
+		/**
+		 * @param chip
+		 *            Which ethernet chip in the job are we talking to?
+		 * @param ws
+		 *            The proxy handle.
+		 * @throws IOException
+		 *             If we couldn't finish setting up our networking.
+		 * @throws InterruptedException
+		 *             If interrupted while things were setting up.
+		 */
 		ProxiedSCPConnection(ChipLocation chip, ProxyProtocolClient ws)
 				throws IOException, InterruptedException {
 			super(chip);
@@ -624,7 +644,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public boolean isClosed() {
-			return isNull(ws) || ws.isClosed();
+			return isNull(ws) || !ws.isOpen();
 		}
 
 		@Override
@@ -639,6 +659,7 @@ public class SpallocClientFactory {
 		}
 	}
 
+	/** A boot connection that routes messages across the proxy. */
 	private class ProxiedBootConnection extends BootConnection {
 		private final ConnectedChannel channel;
 
@@ -646,6 +667,14 @@ public class SpallocClientFactory {
 
 		private ProxyProtocolClient ws;
 
+		/**
+		 * @param ws
+		 *            The proxy handle.
+		 * @throws IOException
+		 *             If we couldn't finish setting up our networking.
+		 * @throws InterruptedException
+		 *             If interrupted while things were setting up.
+		 */
 		ProxiedBootConnection(ProxyProtocolClient ws)
 				throws IOException, InterruptedException {
 			this.ws = requireNonNull(ws);
@@ -662,7 +691,7 @@ public class SpallocClientFactory {
 
 		@Override
 		public boolean isClosed() {
-			return isNull(ws) || ws.isClosed();
+			return isNull(ws) || !ws.isOpen();
 		}
 
 		@Override
@@ -677,9 +706,20 @@ public class SpallocClientFactory {
 		}
 	}
 
+	/** A transceiver that routes messages across the proxy. */
 	private class ProxiedTransceiver extends Transceiver {
 		private final ProxyProtocolClient websocket;
 
+		/**
+		 * @param connections
+		 *            The proxied connections we will use.
+		 * @param ws
+		 *            The proxy handle.
+		 * @throws IOException
+		 *             If we couldn't finish setting up our networking.
+		 * @throws SpinnmanExcception
+		 *             If SpiNNaker rejects a message.
+		 */
 		ProxiedTransceiver(Collection<Connection> connections,
 				ProxyProtocolClient websocket)
 				throws IOException, SpinnmanException {
@@ -693,7 +733,7 @@ public class SpallocClientFactory {
 		@Override
 		public void close() throws Exception {
 			super.close();
-			websocket.closeBlocking();
+			websocket.close();
 		}
 	}
 

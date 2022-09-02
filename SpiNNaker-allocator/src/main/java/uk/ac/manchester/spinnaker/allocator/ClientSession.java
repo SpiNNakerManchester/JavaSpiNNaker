@@ -264,8 +264,18 @@ final class ClientSession {
 		return connection(url, false);
 	}
 
+	/** Message IDs in the proxy protocol. */
 	private enum ProxyProtocol {
-		OPEN(20), CLOSE(12), MSG(1600), OPEN_U(8), MSG_TO(1600);
+		/** Open a connected channel. */
+		OPEN(20),
+		/** Close a channel. */
+		CLOSE(12),
+		/** Send a message on a connected channel. */
+		MSG(1600),
+		/** Open an unconnected channel. */
+		OPEN_U(8),
+		/** Send a message on an unconnected channel. */
+		MSG_TO(1600);
 
 		private int size;
 
@@ -278,19 +288,29 @@ final class ClientSession {
 		}
 	}
 
-	abstract static class Channel {
+	/** Base class for channels routed via the proxy. */
+	abstract static class Channel implements AutoCloseable {
 		/** Channel ID. Issued by server. */
 		final int id;
 
 		/** The websocket. */
-		private final ProxyProtocolClient client;
+		private final ProxyProtocolClientImpl client;
 
 		/** Whether this channel is closed. */
 		boolean closed;
 
 		private final Consumer<ByteBuffer> receiver;
 
-		Channel(int id, ProxyProtocolClient client,
+		/**
+		 * @param id
+		 *            The ID of the channel.
+		 * @param client
+		 *            The websocket.
+		 * @param receiver
+		 *            Where to send received messages, which is probably an
+		 *            operation to enqueue them somewhere.
+		 */
+		Channel(int id, ProxyProtocolClientImpl client,
 				Consumer<ByteBuffer> receiver) {
 			this.id = id;
 			this.client = client;
@@ -298,12 +318,25 @@ final class ClientSession {
 			client.channelHandlers.put(id, this::receive);
 		}
 
-		void receive(ByteBuffer msg) {
+		/**
+		 * The receive handler. Strips the header and sends the contents to the
+		 * registered receiver handler.
+		 *
+		 * @param msg
+		 *            The message off the websocket.
+		 */
+		private void receive(ByteBuffer msg) {
 			msg = msg.slice();
 			msg.order(LITTLE_ENDIAN);
 			receiver.accept(msg);
 		}
 
+		/**
+		 * Close this channel.
+		 *
+		 * @throws IOException
+		 */
+		@Override
 		public void close() throws IOException {
 			if (closed) {
 				return;
@@ -335,6 +368,16 @@ final class ClientSession {
 			client.channelHandlers.remove(id);
 		}
 
+		/**
+		 * Forward a (fully prepared) message to the websocket, provided the
+		 * channel is open.
+		 *
+		 * @param fullMessage
+		 *            The fully prepared message to send, <em>including the
+		 *            proxy protocol header</em>.
+		 * @throws IllegalStateException
+		 *             If the channel is closed.
+		 */
 		protected final void sendPreparedMessage(ByteBuffer fullMessage) {
 			if (closed) {
 				throw new IllegalStateException();
@@ -343,12 +386,31 @@ final class ClientSession {
 		}
 	}
 
+	/**
+	 * A channel that is connected to a particular board.
+	 */
 	static class ConnectedChannel extends Channel {
-		ConnectedChannel(int id, ProxyProtocolClient client,
+		/**
+		 * @param id
+		 *            The ID of the channel.
+		 * @param client
+		 *            The websocket.
+		 * @param receiver
+		 *            Where to send received messages, which is probably an
+		 *            operation to enqueue them somewhere.
+		 */
+		ConnectedChannel(int id, ProxyProtocolClientImpl client,
 				Consumer<ByteBuffer> receiver) {
 			super(id, client, receiver);
 		}
 
+		/**
+		 * Send a message to the board that the channel is connected to.
+		 *
+		 * @param msg
+		 *            The payload of the message to send. Might be a serialized
+		 *            SDP message, for example.
+		 */
 		public void send(ByteBuffer msg) {
 			var b = ProxyProtocol.MSG.allocate();
 			b.putInt(ProxyProtocol.MSG.ordinal());
@@ -360,26 +422,61 @@ final class ClientSession {
 		}
 	}
 
+	/**
+	 * A channel that is not connected to any particular board.
+	 */
 	static class UnconnectedChannel extends Channel {
 		private final byte[] addr;
 
 		private final int port;
 
+		/**
+		 * @param id
+		 *            The ID of the channel.
+		 * @param addr
+		 *            The "local" address for this channel (on the server)
+		 * @param port
+		 *            The "local" port for this channel (on the server)
+		 * @param client
+		 *            The websocket.
+		 * @param receiver
+		 *            Where to send received messages, which is probably an
+		 *            operation to enqueue them somewhere.
+		 */
 		UnconnectedChannel(int id, byte[] addr, int port,
-				ProxyProtocolClient client, Consumer<ByteBuffer> receiver) {
+				ProxyProtocolClientImpl client, Consumer<ByteBuffer> receiver) {
 			super(id, client, receiver);
 			this.addr = addr;
 			this.port = port;
 		}
 
+		/**
+		 * @return The "local" address for this channel.
+		 * @throws UnknownHostException
+		 *             If the address can't be parsed. Not expected.
+		 */
 		public Inet4Address getAddress() throws UnknownHostException {
 			return (Inet4Address) InetAddress.getByAddress(addr);
 		}
 
+		/**
+		 * @return The "local" port for this channel.
+		 */
 		public int getPort() {
 			return port;
 		}
 
+		/**
+		 * Send a message to a board in the allocation of the current job.
+		 *
+		 * @param chip
+		 *            Which ethernet chip to send to.
+		 * @param port
+		 *            Which UDP port to send to.
+		 * @param msg
+		 *            The payload of the message to send. Might be a serialized
+		 *            SDP message, for example.
+		 */
 		public void send(ChipLocation chip, int port, ByteBuffer msg) {
 			var b = ProxyProtocol.MSG_TO.allocate();
 			b.putInt(ProxyProtocol.MSG_TO.ordinal());
@@ -394,7 +491,56 @@ final class ClientSession {
 		}
 	}
 
-	class ProxyProtocolClient extends WebSocketClient {
+	interface ProxyProtocolClient extends AutoCloseable {
+		/**
+		 * Open a connected channel to a SpiNNaker board in the current job.
+		 *
+		 * @param chip
+		 *            The coordinates of the ethernet chip of the board to
+		 *            connect to.
+		 * @param port
+		 *            The UDP port to connect to.
+		 * @param receiver
+		 *            Where to send received messages, which is probably an
+		 *            operation to enqueue them somewhere.
+		 * @return The connected channel.
+		 * @throws InterruptedException
+		 *             If interrupted while waiting for a reply.
+		 */
+		ConnectedChannel openChannel(ChipLocation chip, int port,
+				Consumer<ByteBuffer> receiver) throws InterruptedException;
+
+		/**
+		 * Open an unconnected channel to any SpiNNaker board in the current
+		 * job.
+		 *
+		 * @param receiver
+		 *            Where to send received messages, which is probably an
+		 *            operation to enqueue them somewhere.
+		 * @return The unconnected channel.
+		 * @throws InterruptedException
+		 *             If interrupted while waiting for a reply.
+		 */
+		UnconnectedChannel openUnconnectedChannel(
+				Consumer<ByteBuffer> receiver) throws InterruptedException;
+
+		/**
+		 * Is the underlying websocket in the state OPEN.
+		 *
+		 * @return state equals ReadyState.OPEN
+		 */
+		boolean isOpen();
+
+		/** {@inheritDoc} */
+		@Override
+		void close();
+	}
+
+	/**
+	 * A websocket client that implements the Spalloc-proxied protocol.
+	 */
+	private class ProxyProtocolClientImpl extends WebSocketClient
+			implements ProxyProtocolClient {
 		private final Map<Integer, Consumer<ByteBuffer>> replyHandlers;
 
 		private final Map<Integer, Consumer<ByteBuffer>> channelHandlers;
@@ -407,7 +553,11 @@ final class ClientSession {
 			return correlationCounter++;
 		}
 
-		ProxyProtocolClient(URI uri) {
+		/**
+		 * @param uri
+		 *            The address of the websocket.
+		 */
+		ProxyProtocolClientImpl(URI uri) {
 			super(uri);
 			replyHandlers = new HashMap<>();
 			channelHandlers = new HashMap<>();
@@ -442,6 +592,7 @@ final class ClientSession {
 			}
 		}
 
+		@Override
 		public ConnectedChannel openChannel(ChipLocation chip, int port,
 				Consumer<ByteBuffer> receiver) throws InterruptedException {
 			requireNonNull(receiver);
@@ -469,6 +620,7 @@ final class ClientSession {
 
 		private static final int INET_SIZE = 4;
 
+		@Override
 		public UnconnectedChannel openUnconnectedChannel(
 				Consumer<ByteBuffer> receiver) throws InterruptedException {
 			requireNonNull(receiver);
@@ -522,7 +674,7 @@ final class ClientSession {
 	 */
 	ProxyProtocolClient websocket(URI url)
 			throws InterruptedException, IOException {
-		var wsc = new ProxyProtocolClient(url);
+		var wsc = new ProxyProtocolClientImpl(url);
 		if (nonNull(session)) {
 			log.debug("Attaching websocket to session {}", session);
 			wsc.addHeader(COOKIE, SESSION_NAME + "=" + session);
