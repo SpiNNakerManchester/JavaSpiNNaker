@@ -54,8 +54,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
-import uk.ac.manchester.spinnaker.allocator.ClientSession.ConnectedChannel;
-import uk.ac.manchester.spinnaker.allocator.ClientSession.ProxyProtocolClient;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
