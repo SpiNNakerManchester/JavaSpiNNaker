@@ -440,6 +440,8 @@ public class SpallocClientFactory {
 
 		private ProxyProtocolClient proxy;
 
+		private final Object lock = new Object();
+
 		JobImpl(SpallocClient client, ClientSession session, URI uri) {
 			super(client, session);
 			this.uri = uri;
@@ -487,11 +489,9 @@ public class SpallocClientFactory {
 				}
 				return this;
 			});
-			synchronized (this) {
-				if (nonNull(proxy)) {
-					if (proxy.isOpen()) {
-						proxy.close();
-					}
+			synchronized (lock) {
+				if (haveProxy()) {
+					proxy.close();
 					proxy = null;
 				}
 			}
@@ -534,7 +534,7 @@ public class SpallocClientFactory {
 		public boolean setPower(boolean switchOn) throws IOException {
 			var power = new Power();
 			power.power = (switchOn ? "ON" : "OFF");
-			return s.withRenewal(() -> {
+			boolean powered = s.withRenewal(() -> {
 				var conn = s.connection(uri, POWER, true);
 				conn.setRequestMethod("PUT");
 				writeObject(conn, power);
@@ -547,6 +547,16 @@ public class SpallocClientFactory {
 					s.trackCookie(conn);
 				}
 			});
+			if (!powered) {
+				// If someone turns the power off, close the proxy
+				synchronized (lock) {
+					if (haveProxy()) {
+						proxy.close();
+						proxy = null;
+					}
+				}
+			}
+			return powered;
 		}
 
 		@Override
@@ -555,21 +565,31 @@ public class SpallocClientFactory {
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
 		}
 
-		/** @return The websocket-based proxy. */
+		private boolean haveProxy() {
+			return nonNull(proxy) && proxy.isOpen();
+		}
+
+		/**
+		 * @return The websocket-based proxy.
+		 * @throws IOException
+		 *             if we can't connect
+		 * @throws InterruptedException
+		 *             if we're interrupted while connecting
+		 */
 		private ProxyProtocolClient getProxy()
 				throws IOException, InterruptedException {
-			if (nonNull(proxy) && proxy.isOpen()) {
-				return proxy;
+			synchronized (lock) {
+				if (haveProxy()) {
+					return proxy;
+				}
 			}
 			var wssAddr = describe(false).getProxyAddress();
 			if (isNull(wssAddr)) {
 				throw new IOException("machine not allocated");
 			}
-			if (!(nonNull(proxy) && proxy.isOpen())) {
-				synchronized (this) {
-					if (!(nonNull(proxy) && proxy.isOpen())) {
-						proxy = s.websocket(wssAddr);
-					}
+			synchronized (lock) {
+				if (!haveProxy()) {
+					proxy = s.withRenewal(() -> s.websocket(wssAddr));
 				}
 			}
 			return proxy;

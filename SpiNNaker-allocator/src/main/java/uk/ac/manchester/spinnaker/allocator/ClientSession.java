@@ -138,16 +138,20 @@ final class ClientSession {
 	 *
 	 * @param <T>
 	 *            The type of the result of the action.
+	 * @param <Exn>
+	 *            The extra exceptions that may be thrown by the action.
 	 */
-	interface Action<T> {
+	interface Action<T, Exn extends Exception> {
 		/**
 		 * Perform the action.
 		 *
 		 * @return The result of the action.
 		 * @throws IOException
 		 *             If network I/O fails.
+		 * @throws Exn
+		 *             If another failure happens.
 		 */
-		T act() throws IOException;
+		T act() throws Exn, IOException;
 	}
 
 	private static HttpURLConnection createConnection(URI url)
@@ -491,6 +495,11 @@ final class ClientSession {
 		}
 	}
 
+	/**
+	 * Our interface that specifies what top-level operations can be done by the
+	 * UDP socket proxying system. Used to hide the details of the websocket
+	 * from code that doesn't need to care and shouldn't care.
+	 */
 	interface ProxyProtocolClient extends AutoCloseable {
 		/**
 		 * Open a connected channel to a SpiNNaker board in the current job.
@@ -531,7 +540,11 @@ final class ClientSession {
 		 */
 		boolean isOpen();
 
-		/** {@inheritDoc} */
+		/**
+		 * {@inheritDoc}
+		 * <p>
+		 * Note that this may process the close asynchronously.
+		 */
 		@Override
 		void close();
 	}
@@ -830,13 +843,18 @@ final class ClientSession {
 	 *
 	 * @param <T>
 	 *            The type of the return value.
+	 * @param <Exn>
+	 *            The extra exceptions that may be thrown by the action.
 	 * @param action
 	 *            The action to be repeated if it fails due to session expiry.
 	 * @return The result of the action
 	 * @throws IOException
 	 *             If things go wrong.
+	 * @throws Exn
+	 *             If another kind of failure happens.
 	 */
-	<T> T withRenewal(Action<T> action) throws IOException {
+	<T, Exn extends Exception> T withRenewal(Action<T, Exn> action)
+			throws Exn, IOException {
 		try {
 			return action.act();
 		} catch (SpallocClient.Exception e) {
