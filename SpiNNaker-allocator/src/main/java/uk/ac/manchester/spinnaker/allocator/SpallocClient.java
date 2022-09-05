@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
+import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -225,15 +226,6 @@ public interface SpallocClient {
 	 * {@linkplain Machine machines}, and have boards allocated to them while
 	 * they do so. Those boards (which will be connected) are a fundamental
 	 * resource that allows SpiNNaker programs to be run.
-	 * <p>
-	 * <strong>Note:</strong> If you want a connection that can talk to any
-	 * board instead of being connected to a specific board (as supplied by
-	 * {@link #getConnection(HasChipLocation)}) or routing via a transceiver (as
-	 * supplied by {@link #getTransceiver()}), contact the SpiNNaker team. We
-	 * can support them, but they're currently only in the Python interface.
-	 * We're waiting until we have a use case before implementing them in the
-	 * Java client, as that will guide what connection types we need to wrap
-	 * over the basic protocol mechanism.
 	 */
 	interface Job {
 		/**
@@ -361,6 +353,21 @@ public interface SpallocClient {
 		 *             If interrupted waiting for the connection to be set up.
 		 */
 		SCPConnection getConnection(HasChipLocation chip)
+				throws IOException, InterruptedException;
+
+
+		/**
+		 * Create an <em>unconnected</em> EIEIO connection that can only talk
+		 * the boards of the job.
+		 *
+		 * @return The connection. It is the responsibility of the caller to
+		 *         close this connection at the right time.
+		 * @throws IOException
+		 *             If communication fails or the job is deleted.
+		 * @throws InterruptedException
+		 *             If interrupted waiting for the connection to be set up.
+		 */
+		EIEIOConnection getEIEIOConnection()
 				throws IOException, InterruptedException;
 	}
 

@@ -19,28 +19,29 @@ package uk.ac.manchester.spinnaker.allocator;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Objects.nonNull;
-import static java.util.Objects.requireNonNull;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.asDir;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.checkForError;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.readJson;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.writeForm;
+import static uk.ac.manchester.spinnaker.utils.InetFactory.getByAddressQuietly;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -49,11 +50,9 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.utils.OneShotEvent;
-import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
-import uk.ac.manchester.spinnaker.utils.ValueHolder;
 import uk.ac.manchester.spinnaker.allocator.ClientSession.ProxyProtocolClientImpl;
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
  * Manages the login session. This allows us to avoid the (heavy) cost of the
@@ -274,21 +273,19 @@ final class ClientSession {
 	 */
 	class ProxyProtocolClientImpl extends WebSocketClient
 			implements ProxyProtocolClient {
+		/** Correlation ID is always second 4-byte word. */
+		private static final int CORRELATION_ID_POSITION = 4;
+
+		/** Size of IPv4 address. SpiNNaker always uses IPv4. */
+		private static final int INET_SIZE = 4;
+
 		private final Map<Integer, Consumer<ByteBuffer>> replyHandlers;
 
-		/**
-		 * Channel handlers.
-		 */
-		final Map<Integer, Consumer<ByteBuffer>> channelHandlers;
+		private final Map<Integer, Consumer<ByteBuffer>> channelHandlers;
 
 		private int correlationCounter;
 
 		private Exception failure;
-
-		/** @return An ID for correlating call responses. */
-		synchronized int getId() {
-			return correlationCounter++;
-		}
 
 		/**
 		 * @param uri
@@ -300,33 +297,56 @@ final class ClientSession {
 			channelHandlers = new HashMap<>();
 		}
 
+		private synchronized int issueCorrelationId() {
+			return correlationCounter++;
+		}
+
 		/**
-		 * Arrange to handle an asynchronous reply to a message.
+		 * Do a synchronous call. Only some proxy operations support this.
 		 *
-		 * @param id
-		 *            The correlation ID of the message whose reply this is
-		 *            waiting for.
-		 * @param handler
-		 *            How to handle the body of the reply. The message will be
-		 *            regarded as handled after this returned, even if this
-		 *            throws an exception.
-		 * @return An event that can be waited for to find when the reply has
-		 *         been handled.
+		 * @param message
+		 *            The composed call message. The second word of this will be
+		 *            changed to be the correlation ID; all protocol messages
+		 *            that have correlated replies have a correlation ID at that
+		 *            position.
+		 * @return The payload of the response. The header (protocol message
+		 *         type ID, correlation ID) will have been stripped from the
+		 *         message body prior to returning.
+		 * @throws InterruptedException
+		 *             If interrupted waiting for a reply.
+		 * @throws RuntimeException
+		 *             If an unexpected exception occurs.
 		 */
-		OneShotEvent handleReply(int id, Consumer<ByteBuffer> handler) {
-			var event = new OneShotEvent();
-			replyHandlers.put(id, msg -> {
+		ByteBuffer call(ByteBuffer message) throws InterruptedException {
+			int correlationId = issueCorrelationId();
+			var event = new CompletableFuture<ByteBuffer>();
+			message.putInt(CORRELATION_ID_POSITION, correlationId);
+
+			// Prepare to handle the reply
+			replyHandlers.put(correlationId, event::complete);
+
+			// Do the send
+			send(message);
+
+			// Wait for the reply
+			try {
+				return event.get();
+			} catch (ExecutionException e) {
+				// Decode the cause
 				try {
-					handler.accept(msg);
-				} finally {
-					event.fire();
+					throw requireNonNull(e.getCause(),
+							"cause of execution exception was null");
+				} catch (Error | RuntimeException | InterruptedException ex) {
+					throw ex;
+				} catch (Throwable ex) {
+					throw new RuntimeException("unexpected exception", ex);
 				}
-			});
-			return event;
+			}
 		}
 
 		@Override
 		public void onOpen(ServerHandshake handshakedata) {
+			log.info("websocket connection opened");
 		}
 
 		@Override
@@ -358,51 +378,36 @@ final class ClientSession {
 		public ConnectedChannel openChannel(ChipLocation chip, int port,
 				Consumer<ByteBuffer> receiver) throws InterruptedException {
 			requireNonNull(receiver);
-			int id = getId();
-			var channel = new ValueHolder<ConnectedChannel>();
 
 			var b = ProxyProtocol.OPEN.allocate();
 			b.putInt(ProxyProtocol.OPEN.ordinal());
-			b.putInt(id);
+			b.putInt(0); // dummy
 			b.putInt(chip.getX());
 			b.putInt(chip.getY());
 			b.putInt(port);
 			b.flip();
 
-			var event = handleReply(id, msg -> {
-				channel.setValue(
-						new ConnectedChannel(msg.getInt(), this, receiver));
-			});
-			send(b);
-			event.await();
-			return channel.getValue();
+			return new ConnectedChannel(call(b).getInt(), this, receiver);
 		}
-
-		private static final int INET_SIZE = 4;
 
 		@Override
 		public UnconnectedChannel openUnconnectedChannel(
 				Consumer<ByteBuffer> receiver) throws InterruptedException {
 			requireNonNull(receiver);
-			int id = getId();
-			var channel = new ValueHolder<UnconnectedChannel>();
 
 			var b = ProxyProtocol.OPEN_U.allocate();
 			b.putInt(ProxyProtocol.OPEN_U.ordinal());
-			b.putInt(id);
+			b.putInt(0); // dummy
 			b.flip();
 
-			var event = handleReply(id, msg -> {
-				int channelId = msg.getInt();
-				var addr = new byte[INET_SIZE];
-				msg.get(addr);
-				int port = msg.getInt();
-				channel.setValue(new UnconnectedChannel(channelId, addr, port,
-						this, receiver));
-			});
-			send(b);
-			event.await();
-			return channel.getValue();
+			var msg = call(b);
+
+			int channelId = msg.getInt();
+			var addr = new byte[INET_SIZE];
+			msg.get(addr);
+			int port = msg.getInt();
+			return new UnconnectedChannel(channelId,
+					getByAddressQuietly(addr), port, this, receiver);
 		}
 
 		@Override
@@ -414,6 +419,98 @@ final class ClientSession {
 		public void onError(Exception ex) {
 			log.error("Failure on websocket", ex);
 			failure = ex;
+		}
+	}
+
+	/** Base class for channels routed via the proxy. */
+	abstract static class Channel implements AutoCloseable {
+		private static final Logger log = getLogger(ClientSession.class);
+
+		/** Channel ID. Issued by server. */
+		final int id;
+
+		/** The websocket. */
+		private final ProxyProtocolClientImpl client;
+
+		/** Whether this channel is closed. */
+		boolean closed;
+
+		private final Consumer<ByteBuffer> receiver;
+
+		/**
+		 * @param id
+		 *            The ID of the channel.
+		 * @param client
+		 *            The websocket.
+		 * @param receiver
+		 *            Where to send received messages, which is probably an
+		 *            operation to enqueue them somewhere.
+		 */
+		Channel(int id, ProxyProtocolClientImpl client,
+				Consumer<ByteBuffer> receiver) {
+			this.id = id;
+			this.client = client;
+			this.receiver = receiver;
+			client.channelHandlers.put(id, this::receive);
+		}
+
+		/**
+		 * The receive handler. Strips the header and sends the contents to the
+		 * registered receiver handler.
+		 *
+		 * @param msg
+		 *            The message off the websocket.
+		 */
+		private void receive(ByteBuffer msg) {
+			msg = msg.slice();
+			msg.order(LITTLE_ENDIAN);
+			receiver.accept(msg);
+		}
+
+		/**
+		 * Close this channel.
+		 *
+		 * @throws IOException
+		 */
+		@Override
+		public void close() throws IOException {
+			if (closed) {
+				return;
+			}
+
+			var b = ProxyProtocol.CLOSE.allocate();
+			b.putInt(ProxyProtocol.CLOSE.ordinal());
+			b.putInt(0); // dummy
+			b.putInt(id);
+			b.flip();
+
+			try {
+				int reply = client.call(b).getInt();
+				client.channelHandlers.remove(id);
+				if (reply != id) {
+					log.warn("did not properly close channel");
+				}
+				closed = true;
+			} catch (InterruptedException e) {
+				throw new IOException("failed to close channel", e);
+			}
+		}
+
+		/**
+		 * Forward a (fully prepared) message to the websocket, provided the
+		 * channel is open.
+		 *
+		 * @param fullMessage
+		 *            The fully prepared message to send, <em>including the
+		 *            proxy protocol header</em>.
+		 * @throws IllegalStateException
+		 *             If the channel is closed.
+		 */
+		protected final void sendPreparedMessage(ByteBuffer fullMessage) {
+			if (closed) {
+				throw new IllegalStateException();
+			}
+			client.send(fullMessage);
 		}
 	}
 
@@ -668,108 +765,10 @@ enum ProxyProtocol {
 	}
 }
 
-/** Base class for channels routed via the proxy. */
-abstract class Channel implements AutoCloseable {
-	private static final Logger log = getLogger(ClientSession.class);
-
-	/** Channel ID. Issued by server. */
-	final int id;
-
-	/** The websocket. */
-	private final ProxyProtocolClientImpl client;
-
-	/** Whether this channel is closed. */
-	boolean closed;
-
-	private final Consumer<ByteBuffer> receiver;
-
-	/**
-	 * @param id
-	 *            The ID of the channel.
-	 * @param client
-	 *            The websocket.
-	 * @param receiver
-	 *            Where to send received messages, which is probably an
-	 *            operation to enqueue them somewhere.
-	 */
-	Channel(int id, ProxyProtocolClientImpl client,
-			Consumer<ByteBuffer> receiver) {
-		this.id = id;
-		this.client = client;
-		this.receiver = receiver;
-		client.channelHandlers.put(id, this::receive);
-	}
-
-	/**
-	 * The receive handler. Strips the header and sends the contents to the
-	 * registered receiver handler.
-	 *
-	 * @param msg
-	 *            The message off the websocket.
-	 */
-	private void receive(ByteBuffer msg) {
-		msg = msg.slice();
-		msg.order(LITTLE_ENDIAN);
-		receiver.accept(msg);
-	}
-
-	/**
-	 * Close this channel.
-	 *
-	 * @throws IOException
-	 */
-	@Override
-	public void close() throws IOException {
-		if (closed) {
-			return;
-		}
-		int callbackId = client.getId();
-		var result = new ValueHolder<Integer>();
-
-		var b = ProxyProtocol.CLOSE.allocate();
-		b.putInt(ProxyProtocol.CLOSE.ordinal());
-		b.putInt(callbackId);
-		b.putInt(id);
-		b.flip();
-
-		var event = client.handleReply(callbackId, msg -> {
-			result.setValue(msg.getInt());
-			closed = true;
-		});
-		client.send(b);
-		try {
-			event.await();
-		} catch (InterruptedException e) {
-			throw new IOException("failed to close channel", e);
-		}
-		if (result.getValue() != id) {
-			log.warn("did not properly close channel");
-		}
-		client.channelHandlers.remove(id);
-	}
-
-	/**
-	 * Forward a (fully prepared) message to the websocket, provided the channel
-	 * is open.
-	 *
-	 * @param fullMessage
-	 *            The fully prepared message to send, <em>including the proxy
-	 *            protocol header</em>.
-	 * @throws IllegalStateException
-	 *             If the channel is closed.
-	 */
-	protected final void sendPreparedMessage(ByteBuffer fullMessage) {
-		if (closed) {
-			throw new IllegalStateException();
-		}
-		client.send(fullMessage);
-	}
-}
-
 /**
  * A channel that is connected to a particular board.
  */
-class ConnectedChannel extends Channel {
+class ConnectedChannel extends ClientSession.Channel {
 	/**
 	 * @param id
 	 *            The ID of the channel.
@@ -805,8 +804,8 @@ class ConnectedChannel extends Channel {
 /**
  * A channel that is not connected to any particular board.
  */
-class UnconnectedChannel extends Channel {
-	private final byte[] addr;
+class UnconnectedChannel extends ClientSession.Channel {
+	private final Inet4Address addr;
 
 	private final int port;
 
@@ -822,8 +821,10 @@ class UnconnectedChannel extends Channel {
 	 * @param receiver
 	 *            Where to send received messages, which is probably an
 	 *            operation to enqueue them somewhere.
+	 * @throws RuntimeException
+	 *             If the address can't be parsed. Really not expected!
 	 */
-	UnconnectedChannel(int id, byte[] addr, int port,
+	UnconnectedChannel(int id, Inet4Address addr, int port,
 			ProxyProtocolClientImpl client, Consumer<ByteBuffer> receiver) {
 		super(id, client, receiver);
 		this.addr = addr;
@@ -832,11 +833,9 @@ class UnconnectedChannel extends Channel {
 
 	/**
 	 * @return The "local" address for this channel.
-	 * @throws UnknownHostException
-	 *             If the address can't be parsed. Not expected.
 	 */
-	public Inet4Address getAddress() throws UnknownHostException {
-		return (Inet4Address) InetAddress.getByAddress(addr);
+	public Inet4Address getAddress() {
+		return addr;
 	}
 
 	/**
