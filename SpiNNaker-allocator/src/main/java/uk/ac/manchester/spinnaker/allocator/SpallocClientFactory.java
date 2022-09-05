@@ -27,14 +27,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.IOUtils.readLines;
-import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
-import static uk.ac.manchester.spinnaker.machine.MachineVersion.TRIAD_NO_WRAPAROUND;
 import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 
 import java.io.FileNotFoundException;
@@ -42,18 +38,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.SocketTimeoutException;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -61,15 +51,12 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import uk.ac.manchester.spinnaker.allocator.AllocatedMachine.ConnectionInfo;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
-import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
@@ -302,8 +289,7 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private static final class ClientImpl extends Common
-			implements SpallocClient {
+	private final class ClientImpl extends Common implements SpallocClient {
 		private Version v;
 
 		private URI jobs;
@@ -434,7 +420,7 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private static final class JobImpl extends Common implements Job {
+	private final class JobImpl extends Common implements Job {
 		private final URI uri;
 
 		private ProxyProtocolClient proxy;
@@ -606,7 +592,7 @@ public class SpallocClientFactory {
 			var hostToChip = machine().getConnections().stream()
 					.collect(toMap(c -> getByNameQuietly(c.getHostname()),
 							ConnectionInfo::getChip));
-			return new ProxiedEIEIOConnection(hostToChip, getProxy());
+			return new ProxiedEIEIOListenerConnection(hostToChip, getProxy());
 		}
 
 		@Override
@@ -624,7 +610,7 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private static final class MachineImpl extends Common implements Machine {
+	private final class MachineImpl extends Common implements Machine {
 		private static final int TRIAD = 3;
 
 		private final BriefMachineDescription bmd;
@@ -716,215 +702,5 @@ public class SpallocClientFactory {
 			return whereis(bmd.uri.resolve(
 					format("board-ip?address=%s", encode(address, UTF_8))));
 		}
-	}
-}
-
-/** Shared helper because we can't use a superclass. */
-abstract class ClientUtils {
-	private ClientUtils() {
-	}
-
-	/**
-	 * Receive a message from a queue or time out.
-	 *
-	 * @param received
-	 *            Where to receive from.
-	 * @param timeout
-	 *            Timeout, in milliseconds.
-	 * @return The message.
-	 * @throws SocketTimeoutException
-	 *             If a timeout happens.
-	 */
-	static ByteBuffer receiveHelper(BlockingQueue<ByteBuffer> received,
-			long timeout) throws SocketTimeoutException {
-		try {
-			var msg = received.poll(timeout, MILLISECONDS);
-			if (isNull(msg)) {
-				throw new SocketTimeoutException();
-			}
-			return msg;
-		} catch (InterruptedException e) {
-			throw new SocketTimeoutException();
-		}
-	}
-}
-
-/** An SCP connection that routes messages across the proxy. */
-class ProxiedSCPConnection extends SCPConnection {
-	/** The port of the connection. */
-	private static final int SCP_SCAMP_PORT = 17893;
-
-	private final ConnectedChannel channel;
-
-	private final BlockingQueue<ByteBuffer> received;
-
-	private ProxyProtocolClient ws;
-
-	/**
-	 * @param chip
-	 *            Which ethernet chip in the job are we talking to?
-	 * @param ws
-	 *            The proxy handle.
-	 * @throws IOException
-	 *             If we couldn't finish setting up our networking.
-	 * @throws InterruptedException
-	 *             If interrupted while things were setting up.
-	 */
-	ProxiedSCPConnection(ChipLocation chip, ProxyProtocolClient ws)
-			throws IOException, InterruptedException {
-		super(chip);
-		this.ws = ws;
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openChannel(chip, SCP_SCAMP_PORT, received::add);
-	}
-
-	@Override
-	public void close() throws IOException {
-		channel.close();
-		ws = null;
-	}
-
-	@Override
-	public boolean isClosed() {
-		return isNull(ws) || !ws.isOpen();
-	}
-
-	@Override
-	protected void doSend(ByteBuffer buffer) {
-		channel.send(buffer);
-	}
-
-	@Override
-	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException {
-		return ClientUtils.receiveHelper(received, timeout);
-	}
-}
-
-/** A boot connection that routes messages across the proxy. */
-class ProxiedBootConnection extends BootConnection {
-	/** The port of the connection. */
-	private static final int BOOT_PORT = 54321;
-
-	private final ConnectedChannel channel;
-
-	private final BlockingQueue<ByteBuffer> received;
-
-	private ProxyProtocolClient ws;
-
-	/**
-	 * @param ws
-	 *            The proxy handle.
-	 * @throws IOException
-	 *             If we couldn't finish setting up our networking.
-	 * @throws InterruptedException
-	 *             If interrupted while things were setting up.
-	 */
-	ProxiedBootConnection(ProxyProtocolClient ws)
-			throws IOException, InterruptedException {
-		this.ws = requireNonNull(ws);
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openChannel(ZERO_ZERO, BOOT_PORT, received::add);
-	}
-
-	@Override
-	public void close() throws IOException {
-		channel.close();
-		ws = null;
-	}
-
-	@Override
-	public boolean isClosed() {
-		return isNull(ws) || !ws.isOpen();
-	}
-
-	@Override
-	protected void doSend(ByteBuffer buffer) {
-		channel.send(buffer);
-	}
-
-	@Override
-	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException {
-		return ClientUtils.receiveHelper(received, timeout);
-	}
-}
-
-class ProxiedEIEIOConnection extends EIEIOConnection {
-	private final Map<Inet4Address, ChipLocation> hostToChip;
-
-	private final BlockingQueue<ByteBuffer> received;
-
-	private ProxyProtocolClient ws;
-
-	private UnconnectedChannel channel;
-
-	ProxiedEIEIOConnection(Map<Inet4Address, ChipLocation> hostToChip,
-			ProxyProtocolClient proxy)
-			throws IOException, InterruptedException {
-		super(null);
-		super.close();
-		this.hostToChip = hostToChip;
-		this.ws = proxy;
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openUnconnectedChannel(received::add);
-	}
-
-	@Override
-	public void close() throws IOException {
-		channel.close();
-		ws = null;
-	}
-
-	@Override
-	public boolean isClosed() {
-		return isNull(ws) || !ws.isOpen();
-	}
-
-	@Override
-	protected void doSend(ByteBuffer buffer) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	protected void doSendTo(ByteBuffer buffer, InetAddress addr, int port) {
-		channel.send(hostToChip.get(addr), port, buffer);
-	}
-
-	@Override
-	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException {
-		return ClientUtils.receiveHelper(received, timeout);
-	}
-}
-
-/** A transceiver that routes messages across the proxy. */
-class ProxiedTransceiver extends Transceiver {
-	private final ProxyProtocolClient websocket;
-
-	/**
-	 * @param connections
-	 *            The proxied connections we will use.
-	 * @param ws
-	 *            The proxy handle.
-	 * @throws IOException
-	 *             If we couldn't finish setting up our networking.
-	 * @throws SpinnmanExcception
-	 *             If SpiNNaker rejects a message.
-	 */
-	ProxiedTransceiver(Collection<Connection> connections,
-			ProxyProtocolClient websocket)
-			throws IOException, SpinnmanException {
-		// Assume unwrapped
-		super(TRIAD_NO_WRAPAROUND, connections, null, null, null, null,
-				null);
-		this.websocket = websocket;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public void close() throws Exception {
-		super.close();
-		websocket.close();
 	}
 }
