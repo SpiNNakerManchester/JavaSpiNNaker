@@ -225,6 +225,15 @@ public interface SpallocClient {
 	 * {@linkplain Machine machines}, and have boards allocated to them while
 	 * they do so. Those boards (which will be connected) are a fundamental
 	 * resource that allows SpiNNaker programs to be run.
+	 * <p>
+	 * <strong>Note:</strong> If you want a connection that can talk to any
+	 * board instead of being connected to a specific board (as supplied by
+	 * {@link #getConnection(HasChipLocation)}) or routing via a transceiver (as
+	 * supplied by {@link #getTransceiver()}), contact the SpiNNaker team. We
+	 * can support them, but they're currently only in the Python interface.
+	 * We're waiting until we have a use case before implementing them in the
+	 * Java client, as that will guide what connection types we need to wrap
+	 * over the basic protocol mechanism.
 	 */
 	interface Job {
 		/**
