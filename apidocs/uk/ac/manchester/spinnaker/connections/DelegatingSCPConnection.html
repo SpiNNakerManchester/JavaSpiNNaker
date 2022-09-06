@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -182,20 +182,65 @@ extends <a href="SCPConnection.html" title="class in uk.ac.manchester.spinnaker.
 </td>
 </tr>
 <tr class="rowColor" id="i1">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doReceive(int)">doReceive</a></span>&#8203;(int&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Receive data from the connection.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>protected <a href="UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doReceiveWithAddress(int)">doReceiveWithAddress</a></span>&#8203;(int&nbsp;timeout)</code></th>
+<td class="colLast">
+<div class="block">Receive data from the connection along with the address where the data
+ was received from.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doSend(java.nio.ByteBuffer)">doSend</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
+<td class="colLast">
+<div class="block">Send data down this connection.</div>
+</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address,
+int&nbsp;port)</code></th>
+<td class="colLast">
+<div class="block">Send data down this connection.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetSocketAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetSocketAddress</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocalAddress()">getLocalAddress</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Get the local socket address.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetSocketAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetSocketAddress</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRemoteAddress()">getRemoteAddress</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Get the remote socket address.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isClosed()">isClosed</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Determines if the medium is closed at this point in time.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isConnected()">isConnected</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Determines if the medium is connected at this point in time.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -282,6 +327,142 @@ extends <a href="SCPConnection.html" title="class in uk.ac.manchester.spinnaker.
 </a>
 <h2>Method Details</h2>
 <ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="getLocalAddress()">getLocalAddress</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetSocketAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetSocketAddress</a></span>&nbsp;<span class="memberName">getLocalAddress</span>()
+                                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="UDPConnection.html#getLocalAddress()">UDPConnection</a></code></span></div>
+<div class="block">Get the local socket address. (Sockets have two ends, one local, one
+ remote.)
+ <p>
+ This operation is <em>delegatable</em>; see
+ <a href="DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>DelegatingSCPConnection</code></a>.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="UDPConnection.html#getLocalAddress()">getLocalAddress</a></code>&nbsp;in class&nbsp;<code><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The socket's local address</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the socket is closed.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getRemoteAddress()">getRemoteAddress</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetSocketAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetSocketAddress</a></span>&nbsp;<span class="memberName">getRemoteAddress</span>()
+                                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="UDPConnection.html#getRemoteAddress()">UDPConnection</a></code></span></div>
+<div class="block">Get the remote socket address. (Sockets have two ends, one local, one
+ remote.)
+ <p>
+ This operation is <em>delegatable</em>; see
+ <a href="DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>DelegatingSCPConnection</code></a>.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="UDPConnection.html#getRemoteAddress()">getRemoteAddress</a></code>&nbsp;in class&nbsp;<code><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The socket's remote address</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If the socket is closed.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="doReceive(int)">doReceive</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></span>&nbsp;<span class="memberName">doReceive</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
+                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="UDPConnection.html#doReceive(int)">UDPConnection</a></code></span></div>
+<div class="block">Receive data from the connection.
+ <p>
+ This operation is <em>delegatable</em>; see
+ <a href="DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>DelegatingSCPConnection</code></a>.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="UDPConnection.html#doReceive(int)">doReceive</a></code>&nbsp;in class&nbsp;<code><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>timeout</code> - The timeout in milliseconds</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The data received, in a little-endian buffer</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If an error occurs receiving the data</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="doReceiveWithAddress(int)">doReceiveWithAddress</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType"><a href="UDPPacket.html" title="class in uk.ac.manchester.spinnaker.connections">UDPPacket</a></span>&nbsp;<span class="memberName">doReceiveWithAddress</span>&#8203;(<span class="arguments">int&nbsp;timeout)</span>
+                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a>,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="UDPConnection.html#doReceiveWithAddress(int)">UDPConnection</a></code></span></div>
+<div class="block">Receive data from the connection along with the address where the data
+ was received from.
+ <p>
+ This operation is <em>delegatable</em>; see
+ <a href="DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>DelegatingSCPConnection</code></a>.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="UDPConnection.html#doReceiveWithAddress(int)">doReceiveWithAddress</a></code>&nbsp;in class&nbsp;<code><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>timeout</code> - The timeout in milliseconds</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The datagram packet received</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/SocketTimeoutException.html?is-external=true" title="class or interface in java.net" class="externalLink">SocketTimeoutException</a></code> - If a timeout occurs before any data is received</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If an error occurs receiving the data</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="doSend(java.nio.ByteBuffer)">doSend</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">doSend</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</span>
+               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="UDPConnection.html#doSend(java.nio.ByteBuffer)">UDPConnection</a></code></span></div>
+<div class="block">Send data down this connection.
+ <p>
+ This operation is <em>delegatable</em>; see
+ <a href="DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>DelegatingSCPConnection</code></a>.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="UDPConnection.html#doSend(java.nio.ByteBuffer)">doSend</a></code>&nbsp;in class&nbsp;<code><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>data</code> - The data to be sent; the position in this buffer will
+            <em>not</em> be updated by this method</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the data</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">doSendTo</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address,
+int&nbsp;port)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="UDPConnection.html#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">UDPConnection</a></code></span></div>
+<div class="block">Send data down this connection.
+ <p>
+ This operation is <em>delegatable</em>; see
+ <a href="DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><code>DelegatingSCPConnection</code></a>.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="UDPConnection.html#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo</a></code>&nbsp;in class&nbsp;<code><a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a>&lt;<a href="../messages/sdp/SDPMessage.html" title="class in uk.ac.manchester.spinnaker.messages.sdp">SDPMessage</a>&gt;</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>data</code> - The data to be sent</dd>
+<dd><code>address</code> - Where to send (must be non-<code>null</code>)</dd>
+<dd><code>port</code> - What port to send to (must be non-zero)</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If there is an error sending the data</dd>
+</dl>
+</section>
+</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="isConnected()">isConnected</a></h3>

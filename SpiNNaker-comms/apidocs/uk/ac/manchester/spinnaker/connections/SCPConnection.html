@@ -135,18 +135,21 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
 <thead>
 <tr>
-<th class="colFirst" scope="col">Constructor</th>
+<th class="colFirst" scope="col">Modifier</th>
+<th class="colSecond" scope="col">Constructor</th>
 <th class="colLast" scope="col">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress)">SCPConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost)</code></th>
 <td class="colLast">
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
@@ -156,13 +159,23 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected </code></td>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</code></th>
+<td class="colLast">
+<div class="block">Create a connection where the mechanism for sending and receiving
+ messages is being overridden by a subclass.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress)">SCPConnection</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost)</code></th>
 <td class="colLast">
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
+<td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;remoteHost,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;remotePort)</code></th>
@@ -170,7 +183,8 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
+<td class="colFirst"><code>&nbsp;</code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;localHost,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&nbsp;localPort,
@@ -230,7 +244,7 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
 <h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.connections.<a href="UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></h3>
 <a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.connections.UDPConnection">
 <!--   -->
-</a><code><a href="UDPConnection.html#close()">close</a>, <a href="UDPConnection.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="UDPConnection.html#getLocalPort()">getLocalPort</a>, <a href="UDPConnection.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="UDPConnection.html#getRemotePort()">getRemotePort</a>, <a href="UDPConnection.html#isClosed()">isClosed</a>, <a href="UDPConnection.html#isConnected()">isConnected</a>, <a href="UDPConnection.html#receive(int)">receive</a>, <a href="UDPConnection.html#receive(java.lang.Integer)">receive</a>, <a href="UDPConnection.html#receiveWithAddress(int)">receiveWithAddress</a>, <a href="UDPConnection.html#send(java.net.DatagramPacket)">send</a>, <a href="UDPConnection.html#send(java.nio.ByteBuffer)">send</a>, <a href="UDPConnection.html#sendPortTriggerMessage(java.net.InetAddress)">sendPortTriggerMessage</a>, <a href="UDPConnection.html#sendTo(byte%5B%5D,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.net.DatagramPacket,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#setReceivePacketSize(int)">setReceivePacketSize</a>, <a href="UDPConnection.html#toString()">toString</a></code></div>
+</a><code><a href="UDPConnection.html#close()">close</a>, <a href="UDPConnection.html#doReceive(int)">doReceive</a>, <a href="UDPConnection.html#doReceiveWithAddress(int)">doReceiveWithAddress</a>, <a href="UDPConnection.html#doSend(java.nio.ByteBuffer)">doSend</a>, <a href="UDPConnection.html#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo</a>, <a href="UDPConnection.html#getLocalAddress()">getLocalAddress</a>, <a href="UDPConnection.html#getLocalIPAddress()">getLocalIPAddress</a>, <a href="UDPConnection.html#getLocalPort()">getLocalPort</a>, <a href="UDPConnection.html#getRemoteAddress()">getRemoteAddress</a>, <a href="UDPConnection.html#getRemoteIPAddress()">getRemoteIPAddress</a>, <a href="UDPConnection.html#getRemotePort()">getRemotePort</a>, <a href="UDPConnection.html#isClosed()">isClosed</a>, <a href="UDPConnection.html#isConnected()">isConnected</a>, <a href="UDPConnection.html#receive(int)">receive</a>, <a href="UDPConnection.html#receive(java.lang.Integer)">receive</a>, <a href="UDPConnection.html#receiveWithAddress(int)">receiveWithAddress</a>, <a href="UDPConnection.html#send(java.net.DatagramPacket)">send</a>, <a href="UDPConnection.html#send(java.nio.ByteBuffer)">send</a>, <a href="UDPConnection.html#sendPortTriggerMessage(java.net.InetAddress)">sendPortTriggerMessage</a>, <a href="UDPConnection.html#sendTo(byte%5B%5D,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.net.DatagramPacket,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#sendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">sendTo</a>, <a href="UDPConnection.html#setReceivePacketSize(int)">setReceivePacketSize</a>, <a href="UDPConnection.html#toString()">toString</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -375,6 +389,21 @@ implements <a href="model/SCPSenderReceiver.html" title="interface in uk.ac.manc
             <code>null</code>, the default remote port is used.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with socket setup.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection</a></h3>
+<div class="memberSignature"><span class="modifiers">protected</span>&nbsp;<span class="memberName">SCPConnection</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/HasChipLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">HasChipLocation</a>&nbsp;chip)</span>
+                 throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
+<div class="block">Create a connection where the mechanism for sending and receiving
+ messages is being overridden by a subclass.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>chip</code> - The location of the target chip on the board.</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code> - If anything goes wrong with socket manipulation.</dd>
 </dl>
 </section>
 </li>

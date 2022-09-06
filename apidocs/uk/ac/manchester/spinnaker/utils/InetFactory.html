@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":9,"i1":9};
+<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -158,7 +158,21 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </tr>
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/Inet4Address.html?is-external=true" title="class or interface in java.net" class="externalLink">Inet4Address</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getByAddressQuietly(byte%5B%5D)">getByAddressQuietly</a></span>&#8203;(byte[]&nbsp;addr)</code></th>
+<td class="colLast">
+<div class="block">Creates a IPv4 address from the bytes representing the raw address.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/Inet4Address.html?is-external=true" title="class or interface in java.net" class="externalLink">Inet4Address</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getByName(java.lang.String)">getByName</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;host)</code></th>
+<td class="colLast">
+<div class="block">Creates a IPv4 address from a host name.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/Inet4Address.html?is-external=true" title="class or interface in java.net" class="externalLink">Inet4Address</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getByNameQuietly(java.lang.String)">getByNameQuietly</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;host)</code></th>
 <td class="colLast">
 <div class="block">Creates a IPv4 address from a host name.</div>
 </td>
@@ -206,6 +220,22 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="getByAddressQuietly(byte[])">getByAddressQuietly</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/Inet4Address.html?is-external=true" title="class or interface in java.net" class="externalLink">Inet4Address</a></span>&nbsp;<span class="memberName">getByAddressQuietly</span>&#8203;(<span class="arguments">byte[]&nbsp;addr)</span></div>
+<div class="block">Creates a IPv4 address from the bytes representing the raw address.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>addr</code> - An array of bytes of length 4</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd><code>addr</code> as an IPv4 address</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></code> - if IP address is of illegal length or otherwise isn't
+             supported.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="getByName(java.lang.String)">getByName</a></h3>
 <div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/Inet4Address.html?is-external=true" title="class or interface in java.net" class="externalLink">Inet4Address</a></span>&nbsp;<span class="memberName">getByName</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;host)</span>
                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a>,
@@ -221,6 +251,21 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
              this is not supported by Spinnaker</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/UnknownHostException.html?is-external=true" title="class or interface in java.net" class="externalLink">UnknownHostException</a></code> - if no IP address for the host could be found, or if a
              scope_id was specified for a global IPv6 address.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getByNameQuietly(java.lang.String)">getByNameQuietly</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/Inet4Address.html?is-external=true" title="class or interface in java.net" class="externalLink">Inet4Address</a></span>&nbsp;<span class="memberName">getByNameQuietly</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;host)</span></div>
+<div class="block">Creates a IPv4 address from a host name.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>host</code> - the specified host name</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd><code>host</code> as an IPv4 address</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/RuntimeException.html?is-external=true" title="class or interface in java.lang" class="externalLink">RuntimeException</a></code> - if IP address is isn't supported as an IPv4 address.</dd>
 </dl>
 </section>
 </li>

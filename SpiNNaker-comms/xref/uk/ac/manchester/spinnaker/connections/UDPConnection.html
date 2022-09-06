@@ -250,7 +250,7 @@
 <a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">	 *             If the socket is closed.</em>
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 	InetSocketAddress getLocalAddress() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 	<strong class="jxr_keyword">protected</strong> InetSocketAddress getLocalAddress() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> 		<strong class="jxr_keyword">return</strong> (InetSocketAddress) socket.getLocalSocketAddress();
 <a class="jxr_linenumber" name="L247" href="#L247">247</a> 	}
 <a class="jxr_linenumber" name="L248" href="#L248">248</a> 
@@ -265,7 +265,7 @@
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">	 *             If the socket is closed.</em>
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 	InetSocketAddress getRemoteAddress() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 	<strong class="jxr_keyword">protected</strong> InetSocketAddress getRemoteAddress() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 		<strong class="jxr_keyword">return</strong> (InetSocketAddress) socket.getRemoteSocketAddress();
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> 	}
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> 
@@ -378,7 +378,7 @@
 <a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">	 *             If an error occurs receiving the data</em>
 <a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> 	ByteBuffer doReceive(<strong class="jxr_keyword">int</strong> timeout)
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> 	<strong class="jxr_keyword">protected</strong> ByteBuffer doReceive(<strong class="jxr_keyword">int</strong> timeout)
 <a class="jxr_linenumber" name="L374" href="#L374">374</a> 			<strong class="jxr_keyword">throws</strong> SocketTimeoutException, IOException {
 <a class="jxr_linenumber" name="L375" href="#L375">375</a> 		socket.setSoTimeout(timeout);
 <a class="jxr_linenumber" name="L376" href="#L376">376</a> 		<strong class="jxr_keyword">var</strong> buffer = allocate(receivePacketSize);
@@ -427,7 +427,7 @@
 <a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">	 *             If an error occurs receiving the data</em>
 <a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> 	UDPPacket doReceiveWithAddress(<strong class="jxr_keyword">int</strong> timeout)
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 	<strong class="jxr_keyword">protected</strong> <a name="UDPPacket" href="../../../../../uk/ac/manchester/spinnaker/connections/UDPPacket.html#UDPPacket">UDPPacket</a> doReceiveWithAddress(<strong class="jxr_keyword">int</strong> timeout)
 <a class="jxr_linenumber" name="L423" href="#L423">423</a> 			<strong class="jxr_keyword">throws</strong> SocketTimeoutException, IOException {
 <a class="jxr_linenumber" name="L424" href="#L424">424</a> 		socket.setSoTimeout(timeout);
 <a class="jxr_linenumber" name="L425" href="#L425">425</a> 		<strong class="jxr_keyword">var</strong> buffer = allocate(receivePacketSize);
@@ -493,7 +493,7 @@
 <a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">	 *             If there is an error sending the data</em>
 <a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	<strong class="jxr_keyword">void</strong> doSend(ByteBuffer data) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> doSend(ByteBuffer data) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L489" href="#L489">489</a> 		<strong class="jxr_keyword">if</strong> (log.isDebugEnabled()) {
 <a class="jxr_linenumber" name="L490" href="#L490">490</a> 			logSend(data, getRemoteAddress());
 <a class="jxr_linenumber" name="L491" href="#L491">491</a> 		}
@@ -621,7 +621,7 @@
 <a class="jxr_linenumber" name="L613" href="#L613">613</a> <em class="jxr_javadoccomment">	 * @throws IOException</em>
 <a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">	 *             If there is an error sending the data</em>
 <a class="jxr_linenumber" name="L615" href="#L615">615</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L616" href="#L616">616</a> 	<strong class="jxr_keyword">void</strong> doSendTo(ByteBuffer data, InetAddress address, <strong class="jxr_keyword">int</strong> port)
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> 	<strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> doSendTo(ByteBuffer data, InetAddress address, <strong class="jxr_keyword">int</strong> port)
 <a class="jxr_linenumber" name="L617" href="#L617">617</a> 			<strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L618" href="#L618">618</a> 		<strong class="jxr_keyword">var</strong> addr = <strong class="jxr_keyword">new</strong> InetSocketAddress(address, port);
 <a class="jxr_linenumber" name="L619" href="#L619">619</a> 		<strong class="jxr_keyword">if</strong> (log.isDebugEnabled()) {

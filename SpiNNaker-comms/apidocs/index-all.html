@@ -684,6 +684,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A connection to the SpiNNaker board that uses UDP to for booting.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/BootConnection.html#%3Cinit%3E()">BootConnection()</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BootConnection</a></dt>
+<dd>
+<div class="block">Create a boot connection where the mechanism for sending and receiving
+ messages is being overridden by a subclass.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/BootConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer)">BootConnection(InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/BootConnection.html" title="class in uk.ac.manchester.spinnaker.connections">BootConnection</a></dt>
 <dd>
 <div class="block">Creates a boot connection that binds to all local interfaces on an
@@ -1617,6 +1622,31 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/RunTimeError.html#DIVBY0">DIVBY0</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/RunTimeError.html" title="enum in uk.ac.manchester.spinnaker.messages.model">RunTimeError</a></dt>
 <dd>
 <div class="block">Divide by zero.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html#doReceive(int)">doReceive(int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#doReceive(int)">doReceive(int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
+<dd>
+<div class="block">Receive data from the connection.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html#doReceiveWithAddress(int)">doReceiveWithAddress(int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#doReceiveWithAddress(int)">doReceiveWithAddress(int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
+<dd>
+<div class="block">Receive data from the connection along with the address where the data
+ was received from.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html#doSend(java.nio.ByteBuffer)">doSend(ByteBuffer)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#doSend(java.nio.ByteBuffer)">doSend(ByteBuffer)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
+<dd>
+<div class="block">Send data down this connection.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo(ByteBuffer, InetAddress, int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#doSendTo(java.nio.ByteBuffer,java.net.InetAddress,int)">doSendTo(ByteBuffer, InetAddress, int)</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
+<dd>
+<div class="block">Send data down this connection.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/DiagnosticFilter.Destination.html#DUMP">DUMP</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/DiagnosticFilter.Destination.html" title="enum in uk.ac.manchester.spinnaker.messages.model">DiagnosticFilter.Destination</a></dt>
 <dd>
@@ -2863,6 +2893,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ChipInfo.html#getLinksAvailable()">getLinksAvailable()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ChipInfo</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html#getLocalAddress()">getLocalAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#getLocalAddress()">getLocalAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
+<dd>
+<div class="block">Get the local socket address.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/model/SocketHolder.html#getLocalIPAddress()">getLocalIPAddress()</a></span> - Method in interface uk.ac.manchester.spinnaker.connections.model.<a href="uk/ac/manchester/spinnaker/connections/model/SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#getLocalIPAddress()">getLocalIPAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
@@ -3109,6 +3145,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/messages/scp/GetReinjectionStatus.Response.html" title="class in uk.ac.manchester.spinnaker.messages.scp"><span class="typeNameLink">GetReinjectionStatus.Response</span></a> - Class in <a href="uk/ac/manchester/spinnaker/messages/scp/package-summary.html">uk.ac.manchester.spinnaker.messages.scp</a></dt>
 <dd>
 <div class="block">An SCP response to a request for the dropped packet reinjection status.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html#getRemoteAddress()">getRemoteAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/DelegatingSCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">DelegatingSCPConnection</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html#getRemoteAddress()">getRemoteAddress()</a></span> - Method in class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/UDPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">UDPConnection</a></dt>
+<dd>
+<div class="block">Get the remote socket address.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/model/SocketHolder.html#getRemoteIPAddress()">getRemoteIPAddress()</a></span> - Method in interface uk.ac.manchester.spinnaker.connections.model.<a href="uk/ac/manchester/spinnaker/connections/model/SocketHolder.html" title="interface in uk.ac.manchester.spinnaker.connections.model">SocketHolder</a></dt>
 <dd>&nbsp;</dd>
@@ -6245,6 +6287,11 @@ loadScripts(document, 'script');</script>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(java.net.InetAddress,java.lang.Integer,java.net.InetAddress,java.lang.Integer)">SCPConnection(InetAddress, Integer, InetAddress, Integer)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>
 <div class="block">Create a connection to a particular instance of SCAMP.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation)">SCPConnection(HasChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
+<dd>
+<div class="block">Create a connection where the mechanism for sending and receiving
+ messages is being overridden by a subclass.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.HasChipLocation,java.net.InetAddress)">SCPConnection(HasChipLocation, InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/SCPConnection.html" title="class in uk.ac.manchester.spinnaker.connections">SCPConnection</a></dt>
 <dd>

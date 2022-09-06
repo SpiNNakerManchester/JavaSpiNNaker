@@ -94,25 +94,37 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  						: remotePort, IPTOS_RELIABILITY);
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  	}
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  	@Override
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  	<strong class="jxr_keyword">public</strong> <a name="BootMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/boot/BootMessage.html#BootMessage">BootMessage</a> receiveMessage(<strong class="jxr_keyword">int</strong> timeout) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="BootMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/boot/BootMessage.html#BootMessage">BootMessage</a>(receive(timeout));
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  	}
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  	@Override
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sendBootMessage(<a name="BootMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/boot/BootMessage.html#BootMessage">BootMessage</a> bootMessage) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>  		<strong class="jxr_keyword">var</strong> b = allocate(BOOT_MESSAGE_SIZE).order(BIG_ENDIAN);
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>  		bootMessage.addToBuffer(b);
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  		b.flip();
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  		send(b);
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 		<em class="jxr_comment">// Sleep between messages to avoid flooding the machine</em>
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> 			sleep(ANTI_FLOOD_DELAY);
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 		} <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"interrupted during anti-flood delay"</span>, e);
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 		}
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 	}
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> }
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">	 * Create a boot connection where the mechanism for sending and receiving</em>
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">	 * messages is being overridden by a subclass.</em>
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">	 * @throws IOException</em>
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">	 *             If anything goes wrong with socket manipulation.</em>
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  	<strong class="jxr_keyword">protected</strong> <a name="BootConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/BootConnection.html#BootConnection">BootConnection</a>() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  		<strong class="jxr_keyword">super</strong>(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, IPTOS_RELIABILITY);
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  		<strong class="jxr_keyword">super</strong>.close();
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  	}
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> 
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> 	@Override
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 	<strong class="jxr_keyword">public</strong> <a name="BootMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/boot/BootMessage.html#BootMessage">BootMessage</a> receiveMessage(<strong class="jxr_keyword">int</strong> timeout) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="BootMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/boot/BootMessage.html#BootMessage">BootMessage</a>(receive(timeout));
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 	}
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> 	@Override
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> sendBootMessage(<a name="BootMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/boot/BootMessage.html#BootMessage">BootMessage</a> bootMessage) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 		<strong class="jxr_keyword">var</strong> b = allocate(BOOT_MESSAGE_SIZE).order(BIG_ENDIAN);
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 		bootMessage.addToBuffer(b);
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> 		b.flip();
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> 		send(b);
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 		<em class="jxr_comment">// Sleep between messages to avoid flooding the machine</em>
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> 			sleep(ANTI_FLOOD_DELAY);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 		} <strong class="jxr_keyword">catch</strong> (InterruptedException e) {
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> 			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"interrupted during anti-flood delay"</span>, e);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> 		}
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 	}
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>
