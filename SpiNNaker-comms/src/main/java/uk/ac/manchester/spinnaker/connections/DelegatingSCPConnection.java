@@ -51,12 +51,12 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	InetSocketAddress getLocalAddress() throws IOException {
+	protected InetSocketAddress getLocalAddress() throws IOException {
 		return delegate.getLocalAddress();
 	}
 
 	@Override
-	InetSocketAddress getRemoteAddress() throws IOException {
+	protected InetSocketAddress getRemoteAddress() throws IOException {
 		return delegate.getRemoteAddress();
 	}
 
@@ -69,24 +69,24 @@ public class DelegatingSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	ByteBuffer doReceive(int timeout)
+	protected ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		return delegate.doReceive(timeout);
 	}
 
 	@Override
-	UDPPacket doReceiveWithAddress(int timeout)
+	protected UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		return delegate.doReceiveWithAddress(timeout);
 	}
 
 	@Override
-	void doSend(ByteBuffer data) throws IOException {
+	protected void doSend(ByteBuffer data) throws IOException {
 		delegate.doSend(data);
 	}
 
 	@Override
-	void doSendTo(ByteBuffer data, InetAddress address, int port)
+	protected void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		delegate.doSendTo(data, address, port);
 	}

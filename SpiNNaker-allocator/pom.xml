@@ -70,6 +70,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<artifactId>SpiNNaker-comms</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.java-websocket</groupId>
+			<artifactId>Java-WebSocket</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
 			<scope>test</scope>

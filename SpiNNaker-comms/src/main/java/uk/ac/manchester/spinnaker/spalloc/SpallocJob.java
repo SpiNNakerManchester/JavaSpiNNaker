@@ -84,7 +84,7 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
  * various methods:
  *
  * <pre>
- * SpallocJob j = new SpallocJob(new CreateJob(6).owner(me)));
+ * var j = new SpallocJob(new CreateJob(6).owner(me)));
  * j.waitUntilReady();
  * myApplication.boot(j.getHostname(), j.getDimensions());
  * myApplication.run(j.getHostname());

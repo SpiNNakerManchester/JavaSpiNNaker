@@ -250,7 +250,7 @@ public abstract class V1CompatTask extends V1CompatService.Aware {
 				throw e;
 			}
 		} catch (InterruptedIOException e) {
-			InterruptedException ex = new InterruptedException();
+			var ex = new InterruptedException();
 			ex.initCause(e);
 			throw ex;
 		}

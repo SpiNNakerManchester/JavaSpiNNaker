@@ -32,7 +32,6 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import uk.ac.manchester.spinnaker.alloc.TestSupport;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
 
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)
@@ -65,7 +64,7 @@ class QuotaManagerTest extends TestSupport {
 	}
 
 	private Long getQuota(Connection c) {
-		try (Query q = c.query(TEST_GET_QUOTA)) {
+		try (var q = c.query(TEST_GET_QUOTA)) {
 			return q.call1(MACHINE, USER).orElseThrow().getLong("quota");
 		}
 	}

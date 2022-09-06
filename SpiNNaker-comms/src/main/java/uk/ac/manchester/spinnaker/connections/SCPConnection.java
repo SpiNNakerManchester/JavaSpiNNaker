@@ -128,6 +128,20 @@ public class SCPConnection extends SDPConnection
 				isNull(remotePort) ? SCP_SCAMP_PORT : remotePort);
 	}
 
+	/**
+	 * Create a connection where the mechanism for sending and receiving
+	 * messages is being overridden by a subclass.
+	 *
+	 * @param chip
+	 *            The location of the target chip on the board.
+	 * @throws IOException
+	 *             If anything goes wrong with socket manipulation.
+	 */
+	protected SCPConnection(HasChipLocation chip) throws IOException {
+		super(chip, null, null, null, null);
+		super.close();
+	}
+
 	@Override
 	public SCPResultMessage receiveSCPResponse(int timeout)
 			throws IOException {

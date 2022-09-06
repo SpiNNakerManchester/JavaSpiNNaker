@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.spalloc;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -28,7 +29,6 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.concurrent.BlockingDeque;
 
 import org.json.JSONException;
@@ -38,8 +38,6 @@ import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
 class MockServer implements SupportUtils.IServer {
-	private static final Charset UTF8 = Charset.forName("UTF-8");
-
 	private static final int BUFFER_SIZE = 1024;
 
 	private static final int QUEUE_LENGTH = 1;
@@ -73,9 +71,9 @@ class MockServer implements SupportUtils.IServer {
 		serverSocket.close();
 		serverSocket = null;
 		out = new PrintWriter(
-				new OutputStreamWriter(sock.getOutputStream(), UTF8));
+				new OutputStreamWriter(sock.getOutputStream(), UTF_8));
 		in = new BufferedReader(
-				new InputStreamReader(sock.getInputStream(), UTF8),
+				new InputStreamReader(sock.getInputStream(), UTF_8),
 				BUFFER_SIZE);
 		return sock.getInetAddress();
 	}
@@ -139,7 +137,7 @@ class MockServer implements SupportUtils.IServer {
 	private static void launchKeepaliveListener(
 			BlockingDeque<JSONObject> keepaliveQueue) {
 		new SupportUtils.Daemon(() -> {
-			try (MockServer s = new MockServer()) {
+			try (var s = new MockServer()) {
 				s.connect();
 				while (true) {
 					var o = s.recv();
