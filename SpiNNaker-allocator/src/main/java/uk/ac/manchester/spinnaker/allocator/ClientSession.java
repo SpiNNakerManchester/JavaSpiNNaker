@@ -136,7 +136,6 @@ final class ClientSession implements Session {
 		// This does the actual logging in process
 		renew(false);
 	}
-	// TODO make a constructor that takes a bearer token
 
 	/**
 	 * Create a session and log it in.
