@@ -151,9 +151,64 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
+				<!-- Explicitly override Spring Boot -->
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-jaxb-annotations</artifactId>
-				<version>2.13.3</version>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.module</groupId>
+				<artifactId>jackson-module-parameter-names</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-base</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jdk8</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<!-- Explicitly override Spring Boot -->
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-yaml</artifactId>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.json</groupId>
