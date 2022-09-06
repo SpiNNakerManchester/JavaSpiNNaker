@@ -242,7 +242,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If the socket is closed.
 	 */
-	InetSocketAddress getLocalAddress() throws IOException {
+	protected InetSocketAddress getLocalAddress() throws IOException {
 		return (InetSocketAddress) socket.getLocalSocketAddress();
 	}
 
@@ -257,7 +257,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If the socket is closed.
 	 */
-	InetSocketAddress getRemoteAddress() throws IOException {
+	protected InetSocketAddress getRemoteAddress() throws IOException {
 		return (InetSocketAddress) socket.getRemoteSocketAddress();
 	}
 
@@ -370,7 +370,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	ByteBuffer doReceive(int timeout)
+	protected ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
 		var buffer = allocate(receivePacketSize);
@@ -419,7 +419,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
-	UDPPacket doReceiveWithAddress(int timeout)
+	protected UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
 		var buffer = allocate(receivePacketSize);
@@ -485,7 +485,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	void doSend(ByteBuffer data) throws IOException {
+	protected void doSend(ByteBuffer data) throws IOException {
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
 		}
@@ -613,7 +613,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
-	void doSendTo(ByteBuffer data, InetAddress address, int port)
+	protected void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		var addr = new InetSocketAddress(address, port);
 		if (log.isDebugEnabled()) {

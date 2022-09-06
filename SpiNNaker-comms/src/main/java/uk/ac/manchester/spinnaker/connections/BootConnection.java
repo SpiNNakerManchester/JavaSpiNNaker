@@ -86,6 +86,18 @@ public class BootConnection extends UDPConnection<BootMessage>
 						: remotePort, IPTOS_RELIABILITY);
 	}
 
+	/**
+	 * Create a boot connection where the mechanism for sending and receiving
+	 * messages is being overridden by a subclass.
+	 *
+	 * @throws IOException
+	 *             If anything goes wrong with socket manipulation.
+	 */
+	protected BootConnection() throws IOException {
+		super(null, null, null, null, IPTOS_RELIABILITY);
+		super.close();
+	}
+
 	@Override
 	public BootMessage receiveMessage(int timeout) throws IOException {
 		return new BootMessage(receive(timeout));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,9 +25,13 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.io.IOUtils.readLines;
+import static uk.ac.manchester.spinnaker.utils.InetFactory.getByNameQuietly;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +39,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -43,10 +48,16 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import uk.ac.manchester.spinnaker.allocator.AllocatedMachine.ConnectionInfo;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
+import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * A factory for clients to connect to the Spalloc service.
@@ -228,10 +239,10 @@ public class SpallocClientFactory {
 	}
 	// TODO Make a constructor that takes a bearer token
 
-	private abstract class Common {
+	private abstract static class Common {
 		private final SpallocClient client;
 
-		final ClientSession s;
+		final Session s;
 
 		/**
 		 * Cache of machines, which don't expire.
@@ -239,7 +250,7 @@ public class SpallocClientFactory {
 		final Map<String, Machine> machineMap =
 				synchronizedMap(new HashMap<>());
 
-		Common(SpallocClient client, ClientSession s) {
+		Common(SpallocClient client, Session s) {
 			this.client = client != null ? client : (SpallocClient) this;
 			this.s = s;
 		}
@@ -285,7 +296,7 @@ public class SpallocClientFactory {
 
 		private URI machines;
 
-		private ClientImpl(ClientSession s, RootInfo ri) {
+		private ClientImpl(Session s, RootInfo ri) {
 			super(null, s);
 			this.v = ri.version;
 			this.jobs = ri.jobsURI;
@@ -324,7 +335,7 @@ public class SpallocClientFactory {
 
 			@Override
 			List<URI> fetchNext() throws IOException {
-				if (first != null) {
+				if (nonNull(first)) {
 					try {
 						return first;
 					} finally {
@@ -338,16 +349,16 @@ public class SpallocClientFactory {
 
 			@Override
 			boolean canFetchMore() {
-				if (first != null) {
+				if (nonNull(first)) {
 					return true;
 				}
-				return next != null;
+				return nonNull(next);
 			}
 		}
 
 		private Stream<Job> listJobs(URI flags) throws IOException {
 			var basicData = new JobLister(
-					flags != null ? jobs.resolve(flags) : jobs);
+					nonNull(flags) ? jobs.resolve(flags) : jobs);
 			return basicData.stream().flatMap(Collection::stream)
 					.map(this::job);
 		}
@@ -412,7 +423,11 @@ public class SpallocClientFactory {
 	private final class JobImpl extends Common implements Job {
 		private final URI uri;
 
-		JobImpl(SpallocClient client, ClientSession session, URI uri) {
+		private ProxyProtocolClient proxy;
+
+		private final Object lock = new Object();
+
+		JobImpl(SpallocClient client, Session session, URI uri) {
 			super(client, session);
 			this.uri = uri;
 		}
@@ -459,6 +474,12 @@ public class SpallocClientFactory {
 				}
 				return this;
 			});
+			synchronized (lock) {
+				if (haveProxy()) {
+					proxy.close();
+					proxy = null;
+				}
+			}
 		}
 
 		@Override
@@ -498,7 +519,7 @@ public class SpallocClientFactory {
 		public boolean setPower(boolean switchOn) throws IOException {
 			var power = new Power();
 			power.power = (switchOn ? "ON" : "OFF");
-			return s.withRenewal(() -> {
+			boolean powered = s.withRenewal(() -> {
 				var conn = s.connection(uri, POWER, true);
 				conn.setRequestMethod("PUT");
 				writeObject(conn, power);
@@ -511,12 +532,81 @@ public class SpallocClientFactory {
 					s.trackCookie(conn);
 				}
 			});
+			if (!powered) {
+				// If someone turns the power off, close the proxy
+				synchronized (lock) {
+					if (haveProxy()) {
+						proxy.close();
+						proxy = null;
+					}
+				}
+			}
+			return powered;
 		}
 
 		@Override
 		public WhereIs whereIs(HasChipLocation chip) throws IOException {
 			return whereis(uri.resolve(
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
+		}
+
+		private boolean haveProxy() {
+			return nonNull(proxy) && proxy.isOpen();
+		}
+
+		/**
+		 * @return The websocket-based proxy.
+		 * @throws IOException
+		 *             if we can't connect
+		 * @throws InterruptedException
+		 *             if we're interrupted while connecting
+		 */
+		private ProxyProtocolClient getProxy()
+				throws IOException, InterruptedException {
+			synchronized (lock) {
+				if (haveProxy()) {
+					return proxy;
+				}
+			}
+			var wssAddr = describe(false).getProxyAddress();
+			if (isNull(wssAddr)) {
+				throw new IOException("machine not allocated");
+			}
+			synchronized (lock) {
+				if (!haveProxy()) {
+					proxy = s.withRenewal(() -> s.websocket(wssAddr));
+				}
+			}
+			return proxy;
+		}
+
+		@Override
+		public SCPConnection getConnection(HasChipLocation chip)
+				throws IOException, InterruptedException {
+			return new ProxiedSCPConnection(chip.asChipLocation(), getProxy());
+		}
+
+		@Override
+		public EIEIOConnection getEIEIOConnection()
+				throws IOException, InterruptedException {
+			var hostToChip = machine().getConnections().stream()
+					.collect(toMap(c -> getByNameQuietly(c.getHostname()),
+							ConnectionInfo::getChip));
+			return new ProxiedEIEIOListenerConnection(hostToChip, getProxy());
+		}
+
+		@Override
+		public TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException {
+			var ws = getProxy();
+			var am = machine();
+			var conns = new ArrayList<Connection>();
+			for (var bc : am.getConnections()) {
+				conns.add(new ProxiedSCPConnection(
+						bc.getChip().asChipLocation(), ws));
+			}
+			conns.add(new ProxiedBootConnection(ws));
+			return new ProxiedTransceiver(conns, ws);
 		}
 	}
 
@@ -529,7 +619,7 @@ public class SpallocClientFactory {
 
 		private List<DeadLink> deadLinks;
 
-		MachineImpl(SpallocClient client, ClientSession session,
+		MachineImpl(SpallocClient client, Session session,
 				BriefMachineDescription bmd) {
 			super(client, session);
 			this.bmd = bmd;

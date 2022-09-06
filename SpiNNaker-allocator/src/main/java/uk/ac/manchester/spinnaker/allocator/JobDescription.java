@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NON_PRIVATE;
 
+import java.net.URI;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -46,6 +47,8 @@ public class JobDescription {
 	private String keepaliveHost;
 
 	private Instant keepaliveTime;
+
+	private URI proxyRef;
 
 	/** @return The state of the job. */
 	public State getState() {
@@ -119,5 +122,15 @@ public class JobDescription {
 
 	void setKeepaliveTime(Instant keepaliveTime) {
 		this.keepaliveTime = keepaliveTime;
+	}
+
+	/** @return The URL for connecting to the job's websocket-based proxy. */
+	@JsonAlias("proxy-ref")
+	public URI getProxyAddress() {
+		return proxyRef;
+	}
+
+	void setProxyAddress(URI proxyAddress) {
+		this.proxyRef = proxyAddress;
 	}
 }
