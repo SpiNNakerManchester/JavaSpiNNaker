@@ -242,7 +242,7 @@ public class SpallocClientFactory {
 	private abstract static class Common {
 		private final SpallocClient client;
 
-		final ClientSession s;
+		final Session s;
 
 		/**
 		 * Cache of machines, which don't expire.
@@ -250,7 +250,7 @@ public class SpallocClientFactory {
 		final Map<String, Machine> machineMap =
 				synchronizedMap(new HashMap<>());
 
-		Common(SpallocClient client, ClientSession s) {
+		Common(SpallocClient client, Session s) {
 			this.client = client != null ? client : (SpallocClient) this;
 			this.s = s;
 		}
@@ -296,7 +296,7 @@ public class SpallocClientFactory {
 
 		private URI machines;
 
-		private ClientImpl(ClientSession s, RootInfo ri) {
+		private ClientImpl(Session s, RootInfo ri) {
 			super(null, s);
 			this.v = ri.version;
 			this.jobs = ri.jobsURI;
@@ -427,7 +427,7 @@ public class SpallocClientFactory {
 
 		private final Object lock = new Object();
 
-		JobImpl(SpallocClient client, ClientSession session, URI uri) {
+		JobImpl(SpallocClient client, Session session, URI uri) {
 			super(client, session);
 			this.uri = uri;
 		}
@@ -619,7 +619,7 @@ public class SpallocClientFactory {
 
 		private List<DeadLink> deadLinks;
 
-		MachineImpl(SpallocClient client, ClientSession session,
+		MachineImpl(SpallocClient client, Session session,
 				BriefMachineDescription bmd) {
 			super(client, session);
 			this.bmd = bmd;

@@ -18,8 +18,8 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static java.util.Objects.isNull;
 
+import java.io.EOFException;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,7 +32,7 @@ final class ProxiedSCPConnection extends SCPConnection {
 	/** The port of the connection. */
 	private static final int SCP_SCAMP_PORT = 17893;
 
-	private final ConnectedChannel channel;
+	private final ProxyProtocolClient.ConnectedChannel channel;
 
 	private final BlockingQueue<ByteBuffer> received;
 
@@ -68,13 +68,16 @@ final class ProxiedSCPConnection extends SCPConnection {
 	}
 
 	@Override
-	protected void doSend(ByteBuffer buffer) {
+	protected void doSend(ByteBuffer buffer) throws IOException {
 		channel.send(buffer);
 	}
 
 	@Override
 	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException {
+			throws IOException {
+		if (isClosed() && received.isEmpty()) {
+			throw new EOFException("connection closed");
+		}
 		return ClientUtils.receiveHelper(received, timeout);
 	}
 }

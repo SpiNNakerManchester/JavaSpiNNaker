@@ -18,10 +18,10 @@ package uk.ac.manchester.spinnaker.allocator;
 
 import static java.util.Objects.isNull;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -37,7 +37,7 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 
 	private ProxyProtocolClient ws;
 
-	private UnconnectedChannel channel;
+	private ProxyProtocolClient.UnconnectedChannel channel;
 
 	ProxiedEIEIOListenerConnection(Map<Inet4Address, ChipLocation> hostToChip,
 			ProxyProtocolClient proxy)
@@ -67,13 +67,17 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	}
 
 	@Override
-	protected void doSendTo(ByteBuffer buffer, InetAddress addr, int port) {
+	protected void doSendTo(ByteBuffer buffer, InetAddress addr, int port)
+			throws IOException {
 		channel.send(hostToChip.get(addr), port, buffer);
 	}
 
 	@Override
 	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException {
+			throws IOException {
+		if (isClosed() && received.isEmpty()) {
+			throw new EOFException("connection closed");
+		}
 		return ClientUtils.receiveHelper(received, timeout);
 	}
 }

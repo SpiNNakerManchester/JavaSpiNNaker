@@ -20,8 +20,8 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
+import java.io.EOFException;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,7 +33,7 @@ final class ProxiedBootConnection extends BootConnection {
 	/** The port of the connection. */
 	private static final int BOOT_PORT = 54321;
 
-	private final ConnectedChannel channel;
+	private final ProxyProtocolClient.ConnectedChannel channel;
 
 	private final BlockingQueue<ByteBuffer> received;
 
@@ -66,13 +66,16 @@ final class ProxiedBootConnection extends BootConnection {
 	}
 
 	@Override
-	protected void doSend(ByteBuffer buffer) {
+	protected void doSend(ByteBuffer buffer) throws IOException {
 		channel.send(buffer);
 	}
 
 	@Override
 	protected ByteBuffer doReceive(int timeout)
-			throws SocketTimeoutException {
+			throws IOException {
+		if (isClosed() && received.isEmpty()) {
+			throw new EOFException("connection closed");
+		}
 		return ClientUtils.receiveHelper(received, timeout);
 	}
 }
