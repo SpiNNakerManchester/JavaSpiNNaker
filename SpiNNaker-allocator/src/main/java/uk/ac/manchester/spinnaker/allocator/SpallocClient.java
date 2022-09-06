@@ -26,8 +26,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
+import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
+import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.messages.model.Version;
+import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
+import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
 
 /**
  * An API for talking to the Spalloc service.
@@ -318,6 +322,53 @@ public interface SpallocClient {
 		 */
 		WhereIs whereIs(HasChipLocation chip)
 				throws FileNotFoundException, IOException;
+
+		/**
+		 * Create a proxied transceiver for talking to the boards of the job.
+		 * The transceiver will be configured so that it can talk to all the
+		 * boards of the job and nothing else.
+		 *
+		 * @return The transceiver.
+		 * @throws IOException
+		 *             If communication fails or the job is deleted.
+		 * @throws InterruptedException
+		 *             If interrupted waiting for the connection to be set up.
+		 * @throws SpinnmanException
+		 *             If transceiver construction fails.
+		 */
+		TransceiverInterface getTransceiver()
+				throws IOException, InterruptedException, SpinnmanException;
+
+		/**
+		 * Create a proxied SCP connection to a specific Ethernet chip of the
+		 * job.
+		 *
+		 * @param chip
+		 *            Which Ethernet chip to connect to.
+		 * @return The connection. It is the responsibility of the caller to
+		 *         close this connection at the right time.
+		 * @throws IOException
+		 *             If communication fails or the job is deleted.
+		 * @throws InterruptedException
+		 *             If interrupted waiting for the connection to be set up.
+		 */
+		SCPConnection getConnection(HasChipLocation chip)
+				throws IOException, InterruptedException;
+
+
+		/**
+		 * Create an <em>unconnected</em> EIEIO connection that can only talk
+		 * the boards of the job.
+		 *
+		 * @return The connection. It is the responsibility of the caller to
+		 *         close this connection at the right time.
+		 * @throws IOException
+		 *             If communication fails or the job is deleted.
+		 * @throws InterruptedException
+		 *             If interrupted waiting for the connection to be set up.
+		 */
+		EIEIOConnection getEIEIOConnection()
+				throws IOException, InterruptedException;
 	}
 
 	/**

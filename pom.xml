@@ -266,6 +266,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>jython-slim</artifactId>
 				<version>${jython.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.java-websocket</groupId>
+				<artifactId>Java-WebSocket</artifactId>
+				<version>1.5.3</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

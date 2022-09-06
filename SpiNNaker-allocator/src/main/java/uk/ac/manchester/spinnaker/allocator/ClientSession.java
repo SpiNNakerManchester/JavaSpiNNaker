@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 The University of Manchester
+ * Copyright (c) 2021-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +17,46 @@
 package uk.ac.manchester.spinnaker.allocator;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.IOUtils.readLines;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.allocator.ProxyProtocol.CLOSE;
+import static uk.ac.manchester.spinnaker.allocator.ProxyProtocol.MSG;
+import static uk.ac.manchester.spinnaker.allocator.ProxyProtocol.MSG_TO;
+import static uk.ac.manchester.spinnaker.allocator.ProxyProtocol.OPEN;
+import static uk.ac.manchester.spinnaker.allocator.ProxyProtocol.OPEN_U;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.asDir;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.checkForError;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.readJson;
 import static uk.ac.manchester.spinnaker.allocator.SpallocClientFactory.writeForm;
+import static uk.ac.manchester.spinnaker.utils.InetFactory.getByAddressQuietly;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
 import java.net.URI;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -46,7 +66,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  * @author Donal Fellows
  */
 @UsedInJavadocOnly(URLConnection.class)
-final class ClientSession {
+final class ClientSession implements Session {
 	private static final Logger log = getLogger(ClientSession.class);
 
 	private static final String HTTP_UNAUTHORIZED_MESSAGE =
@@ -115,26 +135,6 @@ final class ClientSession {
 	}
 	// TODO make a constructor that takes a bearer token
 
-	/**
-	 * An action used by {@link ClientSession#withRenewal(Action)
-	 * withRenewal()}. The action will be performed once, and if it fails with a
-	 * permission fault, the session will be renewed and the action performed
-	 * exactly once more.
-	 *
-	 * @param <T>
-	 *            The type of the result of the action.
-	 */
-	interface Action<T> {
-		/**
-		 * Perform the action.
-		 *
-		 * @return The result of the action.
-		 * @throws IOException
-		 *             If network I/O fails.
-		 */
-		T act() throws IOException;
-	}
-
 	private static HttpURLConnection createConnection(URI url)
 			throws IOException {
 		log.debug("will connect to {}", url);
@@ -143,23 +143,8 @@ final class ClientSession {
 		return c;
 	}
 
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param forStateChange
-	 *            If {@code true}, the connection will be configured so that it
-	 *            includes a relevant CSRF token.
-	 * @return the partially-configured connection;
-	 *         {@link HttpURLConnection#setRequestMethod(String)},
-	 *         {@link URLConnection#doOutput(boolean)} and
-	 *         {@link URLConnection#setRequestProperty(String,String)} may still
-	 *         need to be called.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	HttpURLConnection connection(URI url, boolean forStateChange)
+	@Override
+	public HttpURLConnection connection(URI url, boolean forStateChange)
 			throws IOException {
 		var realUrl = baseUri.resolve(url);
 		var c = createConnection(realUrl);
@@ -167,26 +152,18 @@ final class ClientSession {
 		return c;
 	}
 
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param url2
-	 *            Secondary URL, often a path tail and/or query suffix.
-	 * @param forStateChange
-	 *            If {@code true}, the connection will be configured so that it
-	 *            includes a relevant CSRF token.
-	 * @return the partially-configured connection;
-	 *         {@link HttpURLConnection#setRequestMethod(String)},
-	 *         {@link URLConnection#doOutput(boolean)} and
-	 *         {@link URLConnection#setRequestProperty(String,String)} may still
-	 *         need to be called.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	HttpURLConnection connection(URI url, URI url2, boolean forStateChange)
-			throws IOException {
+	@Override
+	public HttpURLConnection connection(URI url, URI url2,
+			boolean forStateChange) throws IOException {
+		var realUrl = baseUri.resolve(url).resolve(url2);
+		var c = createConnection(realUrl);
+		authorizeConnection(c, forStateChange);
+		return c;
+	}
+
+	@Override
+	public HttpURLConnection connection(URI url, String url2,
+			boolean forStateChange) throws IOException {
 		var realUrl = baseUri.resolve(url).resolve(url2);
 		var c = createConnection(realUrl);
 		authorizeConnection(c, forStateChange);
@@ -194,59 +171,357 @@ final class ClientSession {
 	}
 
 	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param url2
-	 *            Secondary URL, often a path tail and/or query suffix.
-	 * @param forStateChange
-	 *            If {@code true}, the connection will be configured so that it
-	 *            includes a relevant CSRF token.
-	 * @return the partially-configured connection;
-	 *         {@link HttpURLConnection#setRequestMethod(String)},
-	 *         {@link URLConnection#doOutput(boolean)} and
-	 *         {@link URLConnection#setRequestProperty(String,String)} may still
-	 *         need to be called.
-	 * @throws IOException
-	 *             If things go wrong
+	 * A websocket client that implements the Spalloc-proxied protocol.
 	 */
-	HttpURLConnection connection(URI url, String url2, boolean forStateChange)
-			throws IOException {
-		var realUrl = baseUri.resolve(url).resolve(url2);
-		var c = createConnection(realUrl);
-		authorizeConnection(c, forStateChange);
-		return c;
+	class ProxyProtocolClientImpl extends WebSocketClient
+			implements ProxyProtocolClient {
+		/** Correlation ID is always second 4-byte word. */
+		private static final int CORRELATION_ID_POSITION = 4;
+
+		/** Size of IPv4 address. SpiNNaker always uses IPv4. */
+		private static final int INET_SIZE = 4;
+
+		/**
+		 * Where to put the response messages from a call. Keys are correlation
+		 * IDs.
+		 */
+		private final Map<Integer, CompletableFuture<ByteBuffer>> replyHandlers;
+
+		/** What channels are we remembering. Keys are channel IDs. */
+		private final Map<Integer, ChannelBase> channels;
+
+		private int correlationCounter;
+
+		private Exception failure;
+
+		/**
+		 * @param uri
+		 *            The address of the websocket.
+		 */
+		ProxyProtocolClientImpl(URI uri) {
+			super(uri);
+			replyHandlers = new HashMap<>();
+			channels = new HashMap<>();
+		}
+
+		private synchronized int issueCorrelationId() {
+			return correlationCounter++;
+		}
+
+		/**
+		 * Do a synchronous call. Only some proxy operations support this.
+		 *
+		 * @param message
+		 *            The composed call message. The second word of this will be
+		 *            changed to be the correlation ID; all protocol messages
+		 *            that have correlated replies have a correlation ID at that
+		 *            position.
+		 * @return The payload of the response. The header (protocol message
+		 *         type ID, correlation ID) will have been stripped from the
+		 *         message body prior to returning.
+		 * @throws InterruptedException
+		 *             If interrupted waiting for a reply.
+		 * @throws RuntimeException
+		 *             If an unexpected exception occurs.
+		 */
+		ByteBuffer call(ByteBuffer message) throws InterruptedException {
+			int correlationId = issueCorrelationId();
+			var event = new CompletableFuture<ByteBuffer>();
+			message.putInt(CORRELATION_ID_POSITION, correlationId);
+
+			// Prepare to handle the reply
+			replyHandlers.put(correlationId, event);
+
+			// Do the send
+			send(message);
+
+			// Wait for the reply
+			try {
+				return event.get();
+			} catch (ExecutionException e) {
+				// Decode the cause
+				try {
+					throw requireNonNull(e.getCause(),
+							"cause of execution exception was null");
+				} catch (Error | RuntimeException | InterruptedException ex) {
+					throw ex;
+				} catch (Throwable ex) {
+					throw new RuntimeException("unexpected exception", ex);
+				}
+			}
+		}
+
+		@Override
+		public void onOpen(ServerHandshake handshakedata) {
+			log.info("websocket connection opened");
+		}
+
+		@Override
+		public void onMessage(String message) {
+			log.warn("Unexpected text message on websocket: {}", message);
+		}
+
+		@Override
+		public void onMessage(ByteBuffer message) {
+			message.order(LITTLE_ENDIAN);
+			int code = message.getInt();
+			switch (ProxyProtocol.values()[code]) {
+			case OPEN:
+			case CLOSE:
+			case OPEN_U:
+				requireNonNull(replyHandlers.remove(message.getInt()),
+						"uncorrelated response").complete(message);
+				break;
+			case MSG:
+				requireNonNull(channels.get(message.getInt()),
+						"unrecognised channel").receive(message);
+				break;
+			// case MSG_TO: // Never sent
+			default:
+				log.error("unexpected message code: {}", code);
+			}
+		}
+
+		@Override
+		public ConnectedChannel openChannel(ChipLocation chip, int port,
+				Consumer<ByteBuffer> receiver) throws InterruptedException {
+			requireNonNull(receiver);
+
+			var b = OPEN.allocate();
+			b.putInt(0); // dummy
+			b.putInt(chip.getX());
+			b.putInt(chip.getY());
+			b.putInt(port);
+			b.flip();
+
+			int channelId = call(b).getInt();
+
+			return new ConnectedChannelImpl(channelId, receiver);
+		}
+
+		@Override
+		public UnconnectedChannel openUnconnectedChannel(
+				Consumer<ByteBuffer> receiver) throws InterruptedException {
+			requireNonNull(receiver);
+
+			var b = OPEN_U.allocate();
+			b.putInt(0); // dummy
+			b.flip();
+
+			var msg = call(b);
+
+			int channelId = msg.getInt();
+			var addr = new byte[INET_SIZE];
+			msg.get(addr);
+			int port = msg.getInt();
+			return new UnconnectedChannelImpl(channelId,
+					getByAddressQuietly(addr), port, receiver);
+		}
+
+		@Override
+		public void onClose(int code, String reason, boolean remote) {
+			log.info("websocket connection closed: {}", reason);
+		}
+
+		@Override
+		public void onError(Exception ex) {
+			log.error("Failure on websocket", ex);
+			failure = ex;
+		}
+
+		/** Base class for channels routed via the proxy. */
+		private abstract class ChannelBase implements AutoCloseable {
+			/** Channel ID. Issued by server. */
+			final int id;
+
+			/** Whether this channel is closed. */
+			boolean closed;
+
+			private final Consumer<ByteBuffer> receiver;
+
+			/**
+			 * @param id
+			 *            The ID of the channel.
+			 * @param receiver
+			 *            Where to send received messages, which is probably an
+			 *            operation to enqueue them somewhere.
+			 */
+			ChannelBase(int id, Consumer<ByteBuffer> receiver) {
+				this.id = id;
+				this.receiver = receiver;
+				channels.put(id, this);
+			}
+
+			/**
+			 * The receive handler. Strips the header and sends the contents to
+			 * the registered receiver handler.
+			 *
+			 * @param msg
+			 *            The message off the websocket.
+			 */
+			private void receive(ByteBuffer msg) {
+				msg = msg.slice();
+				msg.order(LITTLE_ENDIAN);
+				receiver.accept(msg);
+			}
+
+			/**
+			 * Close this channel.
+			 *
+			 * @throws IOException
+			 */
+			@Override
+			public void close() throws IOException {
+				if (closed) {
+					return;
+				}
+
+				var b = CLOSE.allocate();
+				b.putInt(0); // dummy
+				b.putInt(id);
+				b.flip();
+
+				try {
+					int reply = call(b).getInt();
+					channels.remove(id);
+					if (reply != id) {
+						log.warn("did not properly close channel");
+					}
+					closed = true;
+				} catch (InterruptedException e) {
+					throw new IOException("failed to close channel", e);
+				}
+			}
+
+			/**
+			 * Forward a (fully prepared) message to the websocket, provided the
+			 * channel is open.
+			 *
+			 * @param fullMessage
+			 *            The fully prepared message to send, <em>including the
+			 *            proxy protocol header</em>.
+			 * @throws EOFException
+			 *             If the channel is closed.
+			 */
+			final void sendPreparedMessage(ByteBuffer fullMessage)
+					throws EOFException {
+				if (closed) {
+					throw new EOFException("connection closed");
+				}
+				send(fullMessage);
+			}
+		}
+
+		/**
+		 * A channel that is connected to a particular board.
+		 */
+		private class ConnectedChannelImpl extends ChannelBase
+				implements ProxyProtocolClient.ConnectedChannel {
+			/**
+			 * @param id
+			 *            The ID of the channel.
+			 * @param receiver
+			 *            Where to send received messages, which is probably an
+			 *            operation to enqueue them somewhere.
+			 */
+			ConnectedChannelImpl(int id, Consumer<ByteBuffer> receiver) {
+				super(id, receiver);
+			}
+
+			@Override
+			public void send(ByteBuffer msg) throws IOException {
+				var b = MSG.allocate();
+				b.putInt(id);
+				b.put(msg);
+				b.flip();
+
+				sendPreparedMessage(b);
+			}
+		}
+
+		/**
+		 * A channel that is not connected to any particular board.
+		 */
+		private class UnconnectedChannelImpl extends ChannelBase
+				implements ProxyProtocolClient.UnconnectedChannel {
+			private final Inet4Address addr;
+
+			private final int port;
+
+			/**
+			 * @param id
+			 *            The ID of the channel.
+			 * @param addr
+			 *            The "local" address for this channel (on the server)
+			 * @param port
+			 *            The "local" port for this channel (on the server)
+			 * @param client
+			 *            The websocket.
+			 * @param receiver
+			 *            Where to send received messages, which is probably an
+			 *            operation to enqueue them somewhere.
+			 * @throws RuntimeException
+			 *             If the address can't be parsed. Really not expected!
+			 */
+			UnconnectedChannelImpl(int id, Inet4Address addr, int port,
+					Consumer<ByteBuffer> receiver) {
+				super(id, receiver);
+				this.addr = addr;
+				this.port = port;
+			}
+
+			@Override
+			public Inet4Address getAddress() {
+				return addr;
+			}
+
+			@Override
+			public int getPort() {
+				return port;
+			}
+
+			@Override
+			public void send(ChipLocation chip, int port, ByteBuffer msg)
+					throws IOException {
+				var b = MSG_TO.allocate();
+				b.putInt(id);
+				b.putInt(chip.getX());
+				b.putInt(chip.getY());
+				b.putInt(port);
+				b.put(msg);
+				b.flip();
+
+				sendPreparedMessage(b);
+			}
+		}
 	}
 
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @param url2
-	 *            Secondary URL, often a path tail and/or query suffix.
-	 * @return the connection, which should not be used to change the service
-	 *         state.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	HttpURLConnection connection(URI url, URI url2) throws IOException {
-		return connection(url, url2, false);
-	}
-
-	/**
-	 * Create a connection that's part of the session.
-	 *
-	 * @param url
-	 *            The URL (relative or absolute) for where to access.
-	 * @return the connection, which should not be used to change the service
-	 *         state.
-	 * @throws IOException
-	 *             If things go wrong
-	 */
-	HttpURLConnection connection(URI url) throws IOException {
-		return connection(url, false);
+	@Override
+	public ProxyProtocolClient websocket(URI url)
+			throws InterruptedException, IOException {
+		var wsc = new ProxyProtocolClientImpl(url);
+		if (nonNull(session)) {
+			log.debug("Attaching websocket to session {}", session);
+			wsc.addHeader(COOKIE, SESSION_NAME + "=" + session);
+		}
+		if (nonNull(csrfHeader) && nonNull(csrf)) {
+			log.debug("Marking websocket with token {}={}", csrfHeader, csrf);
+			wsc.addHeader(csrfHeader, csrf);
+		}
+		try {
+			if (!wsc.connectBlocking()) {
+				if (nonNull(wsc.failure)) {
+					throw wsc.failure;
+				}
+				// Don't know what went wrong! Log might say
+				throw new IOException("undiagnosed connection failure");
+			}
+		} catch (IOException | InterruptedException | RuntimeException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IOException("unexpected exception", e);
+		}
+		return wsc;
 	}
 
 	private synchronized void authorizeConnection(HttpURLConnection c,
@@ -276,10 +551,9 @@ final class ClientSession {
 	 * @param conn
 	 *            Connection that's had a transaction processed.
 	 * @return Whether the session cookie was set. Normally uninteresting.
-	 * @throws IOException
-	 *             If things go wrong.
 	 */
-	synchronized boolean trackCookie(HttpURLConnection conn) {
+	@Override
+	public synchronized boolean trackCookie(HttpURLConnection conn) {
 		// Careful: spec allows for multiple Set-Cookie fields
 		boolean found = false;
 		for (int i = 0; true; i++) {
@@ -375,18 +649,9 @@ final class ClientSession {
 		}
 	}
 
-	/**
-	 * Carry out an action, applying session renewal <em>once</em> if needed.
-	 *
-	 * @param <T>
-	 *            The type of the return value.
-	 * @param action
-	 *            The action to be repeated if it fails due to session expiry.
-	 * @return The result of the action
-	 * @throws IOException
-	 *             If things go wrong.
-	 */
-	<T> T withRenewal(Action<T> action) throws IOException {
+	@Override
+	public <T, Exn extends Exception> T withRenewal(Action<T, Exn> action)
+			throws Exn, IOException {
 		try {
 			return action.act();
 		} catch (SpallocClient.Exception e) {
@@ -405,15 +670,8 @@ final class ClientSession {
 		}
 	}
 
-	/**
-	 * Discovers the root of a Spalloc service. Also sets up the true CSRF token
-	 * handling.
-	 *
-	 * @return The service root information.
-	 * @throws IOException
-	 *             If access fails.
-	 */
-	synchronized RootInfo discoverRoot() throws IOException {
+	@Override
+	public synchronized RootInfo discoverRoot() throws IOException {
 		var conn = connection(SPALLOC_ROOT);
 		try (var is = checkForError(conn, "couldn't read service root")) {
 			var root = readJson(is, RootInfo.class);
