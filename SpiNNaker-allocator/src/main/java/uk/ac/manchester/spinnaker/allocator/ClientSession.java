@@ -106,6 +106,8 @@ final class ClientSession implements Session {
 
 	private final String password;
 
+	private final String bearerToken;
+
 	private String session;
 
 	private String csrfHeader;
@@ -128,12 +130,33 @@ final class ClientSession implements Session {
 	ClientSession(URI baseURI, String username, String password)
 			throws IOException {
 		baseUri = asDir(baseURI);
-		this.username = username;
-		this.password = password;
+		this.username = requireNonNull(username);
+		this.password = requireNonNull(password);
+		this.bearerToken = null;
 		// This does the actual logging in process
 		renew(false);
 	}
 	// TODO make a constructor that takes a bearer token
+
+	/**
+	 * Create a session and log it in.
+	 *
+	 * @param baseURI
+	 *            The service base URI. <em>Must</em> be absolute! <em>Must
+	 *            not</em> include a username or password!
+	 * @param bearerToken
+	 *            The bearer token to use
+	 * @throws IOException
+	 *             If things go wrong.
+	 */
+	ClientSession(URI baseURI, String bearerToken) throws IOException {
+		baseUri = asDir(baseURI);
+		this.username = null;
+		this.password = null;
+		this.bearerToken = requireNonNull(bearerToken);
+		// This does the actual logging in process
+		renew(false);
+	}
 
 	private static HttpURLConnection createConnection(URI url)
 			throws IOException {
@@ -618,10 +641,16 @@ final class ClientSession implements Session {
 	private void logSessionIn(String tempCsrf) throws IOException {
 		var c = connection(LOGIN_HANDLER, true);
 		c.setRequestMethod("POST");
-		writeForm(c,
-				ofEntries(entry("_csrf", tempCsrf), entry("submit", "submit"),
-						entry("username", username),
-						entry("password", password)));
+		if (nonNull(username)) {
+			writeForm(c, ofEntries(entry("_csrf", tempCsrf),
+					entry("submit", "submit"), entry("username", username),
+					entry("password", password)));
+		} else {
+			// TODO does this work?
+			c.addRequestProperty("Authorization", "Bearer " + bearerToken);
+			writeForm(c, ofEntries(entry("_csrf", tempCsrf),
+					entry("submit", "submit")));
+		}
 		checkForError(c, "login failed");
 		// There should be a new session cookie after login
 		if (!trackCookie(c)) {

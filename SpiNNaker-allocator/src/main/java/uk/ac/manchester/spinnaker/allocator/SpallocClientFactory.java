@@ -237,7 +237,24 @@ public class SpallocClientFactory {
 
 		return new ClientImpl(s, s.discoverRoot());
 	}
-	// TODO Make a constructor that takes a bearer token
+
+	/**
+	 * Create a client.
+	 *
+	 * @param baseUrl
+	 *            Where the server is.
+	 * @param bearerToken
+	 *            The HBP/EBRAINS bearer token to authenticate with.
+	 * @return client API for the given server
+	 * @throws IOException
+	 *             If the server doesn't respond or logging in fails.
+	 */
+	public SpallocClient createClient(URI baseUrl, String bearerToken)
+			throws IOException {
+		var s = new ClientSession(baseUrl, bearerToken);
+
+		return new ClientImpl(s, s.discoverRoot());
+	}
 
 	private abstract static class Common {
 		private final SpallocClient client;
