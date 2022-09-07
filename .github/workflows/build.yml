@@ -39,11 +39,12 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
+        cache: 'maven'
 
     - name: Ensure dependencies are present
-      run: mvn -B dependency:resolve dependency:resolve-plugins clean install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+      run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
     - name: Compile
-      run: mvn clean install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+      run: mvn clean install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true -P "!jsp-precompile"
 
   test:
     needs: compile
@@ -58,6 +59,7 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
+        cache: 'maven'
 
     - name: Build with Java ${{ matrix.java }}
       run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
@@ -96,10 +98,11 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
+        cache: 'maven'
 
     - name: "Check: Code Style"
       # Dependencies are such that compile needs to run before checkstyle
-      run: mvn checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true -P "!jsp-precompile"
+      run: mvn checkstyle:check --settings $SETTINGS_FILE -DskipTests=true -P "!jsp-precompile"
     - name: "Check: Documentation"
       run: mvn javadoc:aggregate --settings $SETTINGS_FILE -P "!jsp-precompile"
 
@@ -113,8 +116,9 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: 11
+        cache: 'maven'
 
     - name: "Check: No FIXMEs left"
-      run: mvn --settings $SETTINGS_FILE -P CheckForFIXME exec:exec@check-for-fixme
+      run: mvn exec:exec@check-for-fixme --settings $SETTINGS_FILE -P CheckForFIXME
     - name: "Check: copyright declarations"
       run: mvn apache-rat:check --settings $SETTINGS_FILE -V || (find . -type f -name 'rat*.txt' -print | xargs grep -l unapproved | xargs cat; exit 1)
