@@ -952,8 +952,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										<argument>${forbidden.keywords.re}</argument>
 										<argument>--</argument>
 										<!-- search path -->
-										<argument>:!.github**</argument>
-										<argument>:!**/pom.xml</argument>
+										<argument>:!/.github/**</argument> <!-- Exclude workflows and metadata -->
+										<argument>:!/pom.xml</argument> <!-- Exclude this file! -->
 									</arguments>
 								</configuration>
 								<goals>
