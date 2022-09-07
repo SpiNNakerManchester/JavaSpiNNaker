@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-# Copyright (c) 2020 The University of Manchester
+# Copyright (c) 2020-2022 The University of Manchester
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,11 +26,12 @@ env:
   SETTINGS_FILE: .github/settings.xml
 
 jobs:
-  test:
+  compile:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [11, 14, 17]
+        # Minimum Java version!
+        java: [11]
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK ${{ matrix.java }}
@@ -38,18 +39,27 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2
-        key: build-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
-        restore-keys: build-m2-j${{ matrix.java }}
 
     - name: Ensure dependencies are present
-      run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
-      continue-on-error: true
+      run: mvn -B dependency:resolve dependency:resolve-plugins clean install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+    - name: Compile
+      run: mvn clean install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
 
-    - name: Build
+  test:
+    needs: compile
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [11, 14, 17]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK
+      uses: actions/setup-java@v3.4.1
+      with:
+        distribution: 'zulu'
+        java-version: ${{ matrix.java }}
+
+    - name: Build with Java ${{ matrix.java }}
       run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
     - name: "Check: Test"
       run: mvn verify --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true jacoco:report
@@ -65,21 +75,16 @@ jobs:
         CI_BUILD_URL: https://github.com/${{ github.repository }}/commit/${{ github.event.after }}/checks
         COVERALLS_SECRET: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: true
-    - name: Upload Build (JDK 8 only)
-      if: matrix.java == 8
+    - name: Upload Build (JDK 11 only)
+      if: matrix.java == 11
       uses: actions/upload-artifact@v3
       with:
         name: spinnaker-exe.jar
         path: SpiNNaker-front-end/target/spinnaker-exe.jar
         retention-days: 5
 
-    - name: "Post: Purge SNAPSHOTs"
-      # Do not cache SNAPSHOT dependencies; we don't use external snapshots
-      # and we will always rebuild internal snapshots.
-      run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
-      continue-on-error: true
-
   validate:
+    needs: compile
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -91,32 +96,15 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: ${{ matrix.java }}
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2
-        key: validate-m2-j${{ matrix.java }}-${{ hashFiles('**/pom.xml') }}
-        restore-keys: validate-m2-j${{ matrix.java }}
-
-    - name: Ensure dependencies are present
-      run: mvn -B dependency:resolve dependency:resolve-plugins --settings $SETTINGS_FILE
-      continue-on-error: true
 
     - name: "Check: Code Style"
       # Dependencies are such that compile needs to run before checkstyle
-      run: mvn compile checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true -P "!jsp-precompile"
-    - name: Build
-      run: mvn install --settings $SETTINGS_FILE -DskipTests=true -Dmaven.javadoc.skip=true
+      run: mvn checkstyle:check --settings $SETTINGS_FILE -Dmaven.javadoc.skip=true -P "!jsp-precompile"
     - name: "Check: Documentation"
       run: mvn javadoc:aggregate --settings $SETTINGS_FILE -P "!jsp-precompile"
 
-    - name: "Post: Purge SNAPSHOTs"
-      # Do not cache SNAPSHOT dependencies; we don't use external snapshots
-      # and we will always rebuild internal snapshots.
-      run: mvn dependency:purge-local-repository --settings $SETTINGS_FILE -DsnapshotsOnly=true -DreResolve=false
-      continue-on-error: true
-
   minor-style:
+    needs: compile
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -125,12 +113,6 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: 11
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2
-        key: minor-style-m2-j11-${{ hashFiles('**/pom.xml') }}
-        restore-keys: minor-style-m2-j11
 
     - name: "Check: No FIXMEs left"
       run: mvn --settings $SETTINGS_FILE -P CheckForFIXME exec:exec@check-for-fixme
