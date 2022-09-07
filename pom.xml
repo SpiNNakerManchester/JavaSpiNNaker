@@ -936,7 +936,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>${exec.version}</version>
 						<executions>
 							<execution>
 								<id>check-for-fixme</id>
