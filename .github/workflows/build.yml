@@ -99,7 +99,7 @@ jobs:
         cache: 'maven'
 
     - name: "Check: Code Style"
-      run: mvn checkstyle:check --settings $SETTINGS_FILE
+      run: mvn directory:highest-basedir@find-root checkstyle:check --settings $SETTINGS_FILE
     - name: "Check: Documentation"
       run: mvn javadoc:aggregate --settings $SETTINGS_FILE
 
