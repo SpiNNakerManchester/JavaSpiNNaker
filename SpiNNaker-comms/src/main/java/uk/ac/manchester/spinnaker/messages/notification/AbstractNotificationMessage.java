@@ -63,8 +63,9 @@ public abstract class AbstractNotificationMessage
 	 *
 	 * @param buffer
 	 *            The received message data buffer.
-	 * @return The parsed message, or {@code null} if the message's command code
-	 *         is not understood.
+	 * @return The parsed message.
+	 * @throws UnsupportedOperationException
+	 *             If the message is not understood.
 	 */
 	public static NotificationMessage build(ByteBuffer buffer) {
 		switch (NotificationMessageCode.get(buffer.getShort(0) & MAX_COMMAND)) {
@@ -75,8 +76,7 @@ public abstract class AbstractNotificationMessage
 		case STOP_PAUSE_NOTIFICATION:
 			return new PauseStop(buffer);
 		default:
-			// TODO Auto-generated method stub
-			return null;
+			throw new UnsupportedOperationException();
 		}
 	}
 }

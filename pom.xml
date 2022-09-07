@@ -936,22 +936,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>${exec.version}</version>
 						<executions>
 							<execution>
 								<id>check-for-fixme</id>
 								<phase>process-sources</phase>
 								<configuration>
-									<executable>egrep</executable>
+									<executable>git</executable>
 									<successCodes>
 										<successCode>1</successCode>
 									</successCodes>
 									<arguments>
-										<argument>-rn</argument>
+										<argument>grep</argument>
+										<argument>-nE</argument>
 										<!-- Forbidden Keywords -->
 										<argument>${forbidden.keywords.re}</argument>
+										<argument>--</argument>
 										<!-- search path -->
-										<argument>src</argument>
+										<argument>:!/.github/**</argument> <!-- Exclude workflows and metadata -->
+										<argument>:!/pom.xml</argument> <!-- Exclude this file! -->
 									</arguments>
 								</configuration>
 								<goals>
