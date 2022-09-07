@@ -941,16 +941,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<id>check-for-fixme</id>
 								<phase>process-sources</phase>
 								<configuration>
-									<executable>egrep</executable>
+									<executable>git</executable>
 									<successCodes>
 										<successCode>1</successCode>
 									</successCodes>
 									<arguments>
-										<argument>-rn</argument>
+										<argument>grep</argument>
+										<argument>-nE</argument>
 										<!-- Forbidden Keywords -->
 										<argument>${forbidden.keywords.re}</argument>
 										<!-- search path -->
-										<argument>src</argument>
+										<argument>:^.github</argument>
+										<argument>:^pom.xml</argument>
 									</arguments>
 								</configuration>
 								<goals>
