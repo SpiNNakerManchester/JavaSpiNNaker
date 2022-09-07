@@ -101,7 +101,7 @@ jobs:
     - name: "Check: Code Style"
       run: mvn directory:highest-basedir@find-root checkstyle:check --settings $SETTINGS_FILE
     - name: "Check: Documentation"
-      run: mvn javadoc:aggregate --settings $SETTINGS_FILE
+      run: mvn javadoc:aggregate --settings $SETTINGS_FILE -P "!jsp-precompile"
 
   minor-style:
     needs: compile

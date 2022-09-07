@@ -950,9 +950,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 										<argument>-nE</argument>
 										<!-- Forbidden Keywords -->
 										<argument>${forbidden.keywords.re}</argument>
+										<argument>--</argument>
 										<!-- search path -->
-										<argument>:^.github</argument>
-										<argument>:^pom.xml</argument>
+										<argument>:!.github**</argument>
+										<argument>:!**/pom.xml</argument>
 									</arguments>
 								</configuration>
 								<goals>
