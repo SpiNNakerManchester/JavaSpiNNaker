@@ -275,9 +275,4 @@ public class SQLiteDataSpecStorage extends SQLiteConnectionManager<DSEStorage>
 			return SQLiteDataSpecStorage.this.getDataSpec(this);
 		}
 	}
-
-	@Override
-	public int getSizeForCore(CoreToLoad coreToLoad) {
-		return 0; // FIXME incomplete method
-	}
 }
