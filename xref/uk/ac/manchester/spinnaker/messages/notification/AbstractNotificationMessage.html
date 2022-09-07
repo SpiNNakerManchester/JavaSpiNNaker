@@ -71,20 +71,20 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">	 *</em>
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">	 * @param buffer</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">	 *            The received message data buffer.</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">	 * @return The parsed message, or {@code null} if the message's command code</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">	 *         is not understood.</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="NotificationMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/NotificationMessage.html#NotificationMessage">NotificationMessage</a> build(ByteBuffer buffer) {
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  		<strong class="jxr_keyword">switch</strong> (NotificationMessageCode.get(buffer.getShort(0) &amp; MAX_COMMAND)) {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  		<strong class="jxr_keyword">case</strong> DATABASE_CONFIRMATION:
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="DatabaseConfirmation" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/DatabaseConfirmation.html#DatabaseConfirmation">DatabaseConfirmation</a>(buffer);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  		<strong class="jxr_keyword">case</strong> START_RESUME_NOTIFICATION:
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StartResume" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/StartResume.html#StartResume">StartResume</a>(buffer);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  		<strong class="jxr_keyword">case</strong> STOP_PAUSE_NOTIFICATION:
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="PauseStop" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/PauseStop.html#PauseStop">PauseStop</a>(buffer);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  		<strong class="jxr_keyword">default</strong>:
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  			<em class="jxr_comment">// TODO Auto-generated method stub</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">	 * @return The parsed message.</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">	 * @throws UnsupportedOperationException</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">	 *             If the message is not understood.</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="NotificationMessage" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/NotificationMessage.html#NotificationMessage">NotificationMessage</a> build(ByteBuffer buffer) {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  		<strong class="jxr_keyword">switch</strong> (NotificationMessageCode.get(buffer.getShort(0) &amp; MAX_COMMAND)) {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  		<strong class="jxr_keyword">case</strong> DATABASE_CONFIRMATION:
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="DatabaseConfirmation" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/DatabaseConfirmation.html#DatabaseConfirmation">DatabaseConfirmation</a>(buffer);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  		<strong class="jxr_keyword">case</strong> START_RESUME_NOTIFICATION:
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StartResume" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/StartResume.html#StartResume">StartResume</a>(buffer);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  		<strong class="jxr_keyword">case</strong> STOP_PAUSE_NOTIFICATION:
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="PauseStop" href="../../../../../../uk/ac/manchester/spinnaker/messages/notification/PauseStop.html#PauseStop">PauseStop</a>(buffer);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  		<strong class="jxr_keyword">default</strong>:
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  			<strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException();
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  		}
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  	}
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  }

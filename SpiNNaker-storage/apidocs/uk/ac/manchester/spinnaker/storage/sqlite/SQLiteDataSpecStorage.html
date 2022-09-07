@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -173,13 +173,6 @@ implements <a href="../DSEStorage.html" title="interface in uk.ac.manchester.spi
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code>int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSizeForCore(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad)">getSizeForCore</a></span>&#8203;(<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;coreToLoad)</code></th>
-<td class="colLast">
-<div class="block">Get a size for a given core on a given ethernet chip.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet)">listCoresToLoad</a></span>&#8203;(<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet)</code></th>
 <td class="colLast">
@@ -187,7 +180,7 @@ implements <a href="../DSEStorage.html" title="interface in uk.ac.manchester.spi
  particular ethernet.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listCoresToLoad(uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet,boolean)">listCoresToLoad</a></span>&#8203;(<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&nbsp;ethernet,
 boolean&nbsp;loadSystemCores)</code></th>
@@ -196,14 +189,14 @@ boolean&nbsp;loadSystemCores)</code></th>
  particular ethernet.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#listEthernetsToLoad()">listEthernetsToLoad</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Get a list of all ethernets that need to have DSE loading done on them.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#saveLoadingMetadata(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,int)">saveLoadingMetadata</a></span>&#8203;(<a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;core,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;start,
@@ -354,22 +347,6 @@ int&nbsp;memoryWritten)</span>
 <dd><code>memoryWritten</code> - How much memory was written by loading.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="../StorageException.html" title="class in uk.ac.manchester.spinnaker.storage">StorageException</a></code> - If the database access fails.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getSizeForCore(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad)">getSizeForCore</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getSizeForCore</span>&#8203;(<span class="arguments"><a href="../DSEStorage.CoreToLoad.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.CoreToLoad</a>&nbsp;coreToLoad)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../DSEStorage.html#getSizeForCore(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad)">DSEStorage</a></code></span></div>
-<div class="block">Get a size for a given core on a given ethernet chip.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../DSEStorage.html#getSizeForCore(uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad)">getSizeForCore</a></code>&nbsp;in interface&nbsp;<code><a href="../DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>coreToLoad</code> - The instruction to load a particular core.</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The size required for the DSE for this given core.</dd>
 </dl>
 </section>
 </li>
