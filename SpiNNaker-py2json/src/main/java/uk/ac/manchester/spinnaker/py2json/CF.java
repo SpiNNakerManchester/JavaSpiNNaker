@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
 import org.python.core.PyObject;
 
 /** Frame/BMP coordinates. May be a hash table key. */
-public final class CF {
+public final class CF { // FIXME
 	/** Cabinet number. */
 	public final int c;
 

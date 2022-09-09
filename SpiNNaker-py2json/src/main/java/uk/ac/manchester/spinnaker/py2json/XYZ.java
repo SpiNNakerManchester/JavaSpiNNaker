@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
 import org.python.core.PyObject;
 
 /** Triad coordinates. May be a hash table key. */
-public final class XYZ {
+public final class XYZ { // FIXME
 	/** X coordinate. */
 	public final int x;
 

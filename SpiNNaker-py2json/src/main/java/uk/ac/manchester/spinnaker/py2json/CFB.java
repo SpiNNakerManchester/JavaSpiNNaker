@@ -21,7 +21,7 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
 import org.python.core.PyObject;
 
 /** Physical board coordinates. May be a hash table key. */
-public final class CFB {
+public final class CFB { // FIXME
 	/** Cabinet number. */
 	public final int c;
 

@@ -28,7 +28,7 @@ package uk.ac.manchester.spinnaker.py2json;
  * opposite link is {@code (link+3)%6}.
  * </ul>
  */
-public enum Link {
+public enum Link { // FIXME
 	/** East. */
 	east,
 	/** North-East. */
