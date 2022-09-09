@@ -94,6 +94,9 @@ public final class MachineDefaults {
 	/** The maximum number of cores present on a chip. */
 	public static final int MAX_NUM_CORES = 18;
 
+	/** The maximum number of SDP tags. */
+	public static final int MAX_SDP_TAGS = 8;
+
 	/** Width of field of hashcode for holding processor ID. */
 	public static final int CORE_SHIFT = 5;
 

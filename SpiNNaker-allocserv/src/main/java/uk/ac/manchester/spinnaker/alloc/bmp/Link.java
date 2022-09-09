@@ -24,7 +24,7 @@ import uk.ac.manchester.spinnaker.alloc.model.Direction;
  *
  * @author Donal Fellows
  */
-public final class Link {
+public final class Link { // FIXME
 	/** The database ID of the board that the FPGA is located on. */
 	private final int board;
 

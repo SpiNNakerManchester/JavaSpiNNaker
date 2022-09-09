@@ -23,6 +23,8 @@ import static uk.ac.manchester.spinnaker.machine.tags.TrafficIdentifier.DEFAULT;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -40,6 +42,7 @@ public final class IPTag extends Tag {
 	private static final Integer DEFAULT_PORT = null;
 
 	/** The IP address to which SDP packets with the tag will be sent. */
+	@NotNull
 	private final InetAddress ipAddress;
 
 	/** Indicates whether the SDP header should be removed. */
@@ -49,6 +52,7 @@ public final class IPTag extends Tag {
 	private final TrafficIdentifier trafficIdentifier;
 
 	/** The coordinates where users of this tag should send packets to. */
+	@NotNull
 	private final ChipLocation destination;
 
 	/**

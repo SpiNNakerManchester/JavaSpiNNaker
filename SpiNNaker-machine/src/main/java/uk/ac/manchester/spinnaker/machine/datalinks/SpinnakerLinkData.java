@@ -17,6 +17,10 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
@@ -25,15 +29,16 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * @author Christian-B
  */
 public class SpinnakerLinkData extends AbstractDataLink {
-
-	/** The link ID from the spinnaker prospective. */
+	/** The link ID from the SpiNNaker prospective. */
+	@Min(0)
+	@Max(1)
 	public final int spinnakerLinkId;
 
 	/**
 	 * Main Constructor of an FPGALinkData.
 	 *
 	 * @param spinnakerLinkId
-	 *            The link ID from the spinnaker prospective.
+	 *            The link ID from the SpiNNaker prospective.
 	 * @param location
 	 *            The location/Chip being linked to
 	 * @param linkId

@@ -33,6 +33,7 @@ public final class MemoryLocation implements Comparable<MemoryLocation> {
 	public static final MemoryLocation NULL = new MemoryLocation(0);
 
 	/** The actual location. */
+	// No validation rule; no defined invalid range!
 	public final int address;
 
 	/** @param address The actual location. */

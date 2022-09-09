@@ -16,9 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
@@ -31,15 +36,23 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
  */
 @UsedInJavadocOnly(Machine.class)
 public class MachineBean {
+	@Valid
+	@NotNull
 	private final MachineDimensions dimensions;
 
+	@NotNull
 	private final ChipLocation root;
 
+	@Valid
+	@NotNull
 	private final ChipResources ethernetResources;
 
+	@Valid
+	@NotNull
 	private final ChipResources standardResources;
 
-	private final List<ChipBean> chips;
+	@NotNull
+	private final List<@Valid ChipBean> chips;
 
 	/**
 	 * Main Constructor that sets all values.

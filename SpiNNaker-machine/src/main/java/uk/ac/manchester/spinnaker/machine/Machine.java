@@ -23,6 +23,10 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.Collections.unmodifiableSortedMap;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ONE_ZERO;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
 import static uk.ac.manchester.spinnaker.machine.SpiNNakerTriadGeometry.getSpinn5Geometry;
 
 import java.net.InetAddress;
@@ -38,6 +42,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 
@@ -66,20 +73,25 @@ public class Machine implements MappableIterable<Chip> {
 	private static final Logger log = getLogger(Link.class);
 
 	/** Size of the machine along the x and y axes in Chips. */
+	@NotNull
+	@Valid
 	public final MachineDimensions machineDimensions;
 
 	// This is not final as will change as processors become monitors.
 	private int maxUserProssorsOnAChip;
 
-	private final ArrayList<Chip> ethernetConnectedChips;
+	@Valid
+	private final ArrayList<@Valid Chip> ethernetConnectedChips;
 
 	// This may change to a map of maps
-	private final Map<InetIdTuple, SpinnakerLinkData> spinnakerLinks;
+	private final Map<@Valid InetIdTuple,
+			@Valid SpinnakerLinkData> spinnakerLinks;
 
 	/** Map of map of map implementation done to allow access to submaps. */
 	// If never required this could be changed to single map with tuple key.
+	@Valid
 	private final Map<InetAddress,
-			Map<FpgaId, Map<Integer, FPGALinkData>>> fpgaLinks;
+			@Valid Map<FpgaId, @Valid Map<Integer, FPGALinkData>>> fpgaLinks;
 
 	/** The coordinates of the chip used to boot the machine. */
 	public final ChipLocation boot;
@@ -91,6 +103,7 @@ public class Machine implements MappableIterable<Chip> {
 	// private final Chip[][] chipArray;
 
 	/** The version of the Machine based on its height and Width. */
+	@NotNull
 	public final MachineVersion version;
 
 	/**
@@ -595,24 +608,24 @@ public class Machine implements MappableIterable<Chip> {
 	 */
 	public final void addSpinnakerLinks() {
 		if (version.isFourChip) {
-			var chip00 = getChipAt(new ChipLocation(0, 0));
-			if (!chip00.router.hasLink(Direction.WEST)) {
+			var chip00 = getChipAt(ZERO_ZERO);
+			if (!chip00.router.hasLink(WEST)) {
 				spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 0),
-						new SpinnakerLinkData(0, chip00, Direction.WEST,
+						new SpinnakerLinkData(0, chip00, WEST,
 								chip00.ipAddress));
 			}
-			var chip10 = getChipAt(new ChipLocation(1, 0));
+			var chip10 = getChipAt(ONE_ZERO);
 			if (!chip10.router.hasLink(Direction.EAST)) {
 				// As in Python, the Ethernet address of chip 0 0 is used.
 				spinnakerLinks.put(new InetIdTuple(chip00.ipAddress, 1),
-						new SpinnakerLinkData(1, chip10, Direction.WEST,
+						new SpinnakerLinkData(1, chip10, WEST,
 								chip00.ipAddress));
 			}
 		} else {
 			for (var chip : ethernetConnectedChips) {
-				if (!chip.router.hasLink(Direction.SOUTHWEST)) {
+				if (!chip.router.hasLink(SOUTHWEST)) {
 					spinnakerLinks.put(new InetIdTuple(chip.ipAddress, 0),
-							new SpinnakerLinkData(0, chip, Direction.SOUTHWEST,
+							new SpinnakerLinkData(0, chip, SOUTHWEST,
 									chip.ipAddress));
 				}
 			}

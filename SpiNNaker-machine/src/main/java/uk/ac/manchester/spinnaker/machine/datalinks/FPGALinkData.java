@@ -17,6 +17,11 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
@@ -25,11 +30,16 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  * @author Christian-B
  */
 public final class FPGALinkData extends AbstractDataLink {
+	/** The maximum link ID. */
+	public static final int MAX_FPGA_LINK_ID = 15;
 
 	/** The link ID from the FPGA prospective. */
+	@Min(0)
+	@Max(MAX_FPGA_LINK_ID)
 	public final int fpgaLinkId;
 
 	/** The ID of the FPGA port being used. */
+	@NotNull
 	public final FpgaId fpgaId;
 
 	/**

@@ -64,7 +64,7 @@ public final class Row {
 	 * @param <T>
 	 *            The type of value to produce.
 	 */
-	private interface Getter<T> {
+	private interface Getter<T> { // FIXME
 		/**
 		 * Produce a value or throw.
 		 *

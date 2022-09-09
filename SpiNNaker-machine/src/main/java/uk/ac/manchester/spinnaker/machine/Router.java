@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_LINKS_PER_ROUTER;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
 
 import java.util.Collection;
@@ -27,6 +28,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipDetails;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -38,10 +44,14 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @author Christian-B
  */
 public final class Router implements MappableIterable<Link> {
-	private final EnumMap<Direction, Link> links =
+	@Valid
+	@Size(max = MAX_LINKS_PER_ROUTER)
+	private final EnumMap<Direction, @Valid Link> links =
 			new EnumMap<>(Direction.class);
 
 	/** The number of entries available in the routing table. */
+	@Min(0)
+	@Max(ROUTER_AVAILABLE_ENTRIES)
 	public final int nAvailableMulticastEntries;
 
 	// Note: emergency_routing_enabled not implemented as not used

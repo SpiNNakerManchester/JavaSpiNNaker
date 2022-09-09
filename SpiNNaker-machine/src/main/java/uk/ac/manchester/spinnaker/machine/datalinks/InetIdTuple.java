@@ -19,6 +19,9 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /**
  *
  * @author Christian-B
@@ -28,6 +31,8 @@ public class InetIdTuple {
 	public final InetAddress address;
 
 	/** The ID of this tuple. */
+	@Min(0)
+	@Max(1)
 	public final int id;
 
 	/**

@@ -17,8 +17,13 @@
 package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.Integer.rotateLeft;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_SDP_TAGS;
 
 import java.net.InetAddress;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -30,8 +35,11 @@ import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 public final class ReverseIPTag extends Tag {
 	private static final int DEFAULT_SDP_PORT = 1;
 
+	@NotNull
 	private final CoreLocation destination;
 
+	@Min(0)
+	@Max(MAX_SDP_TAGS)
 	private final int sdpPort;
 
 	/**

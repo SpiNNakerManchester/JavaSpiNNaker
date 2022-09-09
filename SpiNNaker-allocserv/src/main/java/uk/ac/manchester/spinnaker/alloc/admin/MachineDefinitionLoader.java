@@ -104,7 +104,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class TriadCoords implements Comparable<TriadCoords> {
+	public static final class TriadCoords // FIXME
+			implements Comparable<TriadCoords> {
 		/** X coordinate. */
 		@PositiveOrZero(message = "x coordinate must not be negative")
 		public final int x;
@@ -260,7 +261,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class BMPCoords implements Comparable<BMPCoords> {
+	public static final class BMPCoords // FIXME
+			implements Comparable<BMPCoords> {
 		/** Cabinet number. */
 		@PositiveOrZero(message = "cabinet number must not be negative")
 		public final int c;
@@ -341,7 +343,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *
 	 * @author Donal Fellows
 	 */
-	public static final class BoardPhysicalCoords
+	public static final class BoardPhysicalCoords // FIXME
 			implements Comparable<BoardPhysicalCoords> {
 		/** Cabinet number. */
 		@PositiveOrZero(message = "cabinet number must not be negative")
@@ -451,7 +453,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @see Direction
 	 * @author Donal Fellows
 	 */
-	public enum Link {
+	public enum Link { // FIXME
 		/** East. */
 		east(Direction.SE),
 		/** North-East. */

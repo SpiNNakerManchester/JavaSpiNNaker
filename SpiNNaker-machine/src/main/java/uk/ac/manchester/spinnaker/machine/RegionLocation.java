@@ -19,9 +19,15 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.util.Comparator.comparing;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.CORE_SHIFT;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_X;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_Y;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT;
 
 import java.util.Comparator;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
@@ -30,20 +36,32 @@ import java.util.Comparator;
  */
 public class RegionLocation
 		implements HasCoreLocation, Comparable<RegionLocation> {
+	// Matches value in DSE
+	private static final int MAX_REGION = 31;
+
 	/** The Chip / Core's X value. */
+	@Min(value = 0, message = "region must be on a real chip")
+	@Max(value = MAX_X, message = "region must be on a real chip")
 	public final int x;
 
 	/** The Chip / Core's Y value. */
+	@Min(value = 0, message = "region must be on a real chip")
+	@Max(value = MAX_Y, message = "region must be on a real chip")
 	public final int y;
 
 	/** The Core's P value. */
+	@Min(value = 0, message = "region must be on a real core")
+	@Max(value = PROCESSORS_PER_CHIP
+			- 1, message = "region must be on a real core")
 	public final int p;
 
 	/** The recording Region. */
+	@Min(value = 0, message = "region must have sane ID")
+	@Max(value = MAX_REGION, message = "region must have sane ID")
 	public final int region;
 
 	/** Precalculated hashcode. */
-	public final int hashcode;
+	private final int hashcode;
 
 	/**
 	 * Creates the Region based on a Core and a region.

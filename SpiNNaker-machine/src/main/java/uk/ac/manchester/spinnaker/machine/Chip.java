@@ -19,6 +19,7 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.util.Collections.sort;
 import static java.util.Collections.unmodifiableCollection;
 import static java.util.Collections.unmodifiableList;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_SDP_TAGS;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
 import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SDRAM_PER_CHIP;
 
@@ -29,6 +30,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
 
@@ -45,30 +51,40 @@ import uk.ac.manchester.spinnaker.machine.bean.ChipBean;
  * @author Christian-B
  */
 public class Chip implements HasChipLocation {
-
+	@Valid
 	private final ChipLocation location;
 
-	private TreeMap<Integer, Processor> monitorProcessors;
+	@Size(max = PROCESSORS_PER_CHIP)
+	private final TreeMap<@Min(0) @Max(PROCESSORS_PER_CHIP - 1) Integer,
+			Processor> monitorProcessors;
 
-	private TreeMap<Integer, Processor> userProcessors;
+	@Size(max = PROCESSORS_PER_CHIP - 1)
+	private final TreeMap<@Min(1) @Max(PROCESSORS_PER_CHIP - 1) Integer,
+			Processor> userProcessors;
 
 	/** A router for the chip. */
+	@Valid
 	public final Router router;
 
 	// Changed from an Object to just an int as Object only had a single value
 	/** The size of the SDRAM. */
+	@Min(value = 0)
+	@Max(value = SDRAM_PER_CHIP)
 	public final int sdram;
 
-	/** The IP address of the chip or None if no Ethernet attached. */
+	/** The IP address of the chip or null if no Ethernet attached. */
 	public final InetAddress ipAddress;
 
 	/** boolean which defines if this chip is a virtual one. */
 	public final boolean virtual;
 
 	/** List of SDP identifiers available. */
-	private final List<Integer> tagIds;
+	@Size(max = MAX_SDP_TAGS)
+	// 0 is reserved for SCAMP
+	private final List<@Min(1) @Max(MAX_SDP_TAGS - 1) Integer> tagIds;
 
 	/** The nearest Ethernet coordinates, or {@code null} if none known. */
+	@Valid
 	public final ChipLocation nearestEthernet;
 
 	private static final TreeMap<Integer, Processor> DEFAULT_USER_PROCESSORS =

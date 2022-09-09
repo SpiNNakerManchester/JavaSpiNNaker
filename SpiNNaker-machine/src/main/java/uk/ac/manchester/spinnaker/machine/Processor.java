@@ -23,6 +23,9 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSOR_CLOCK
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_KILOHERTZ;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /**
  * A processor object included in a SpiNNaker chip.
  * <p>
@@ -42,6 +45,8 @@ public final class Processor implements Comparable<Processor> {
 			new Processor[PROCESSORS_PER_CHIP];
 
 	/** The ID of the processor. */
+	@Min(0)
+	@Max(PROCESSORS_PER_CHIP - 1)
 	public final int processorId;
 
 	/** The clock speed of the processor in cycles per second. */
@@ -54,6 +59,8 @@ public final class Processor implements Comparable<Processor> {
 	public final boolean isMonitor;
 
 	/** The amount of DTCM available on this processor. */
+	@Min(0)
+	@Max(DTCM_AVAILABLE)
 	public final int dtcmAvailable;
 
 	/**

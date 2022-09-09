@@ -25,11 +25,20 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 /** A basic SpiNNaker routing entry. */
 public class RoutingEntry {
-	private final Set<Integer> processorIDs = new LinkedHashSet<>();
+	@Valid
+	private final Set<
+			@NotNull @Min(0) @Max(MAX_NUM_CORES - 1) Integer> processorIDs =
+					new LinkedHashSet<>();
 
-	private final Set<Direction> linkIDs = new LinkedHashSet<>();
+	@Valid
+	private final Set<@NotNull Direction> linkIDs = new LinkedHashSet<>();
 
 	private static boolean bitset(int word, int bit) {
 		return (word & (1 << bit)) != 0;

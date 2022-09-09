@@ -16,8 +16,18 @@
  */
 package uk.ac.manchester.spinnaker.machine.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_SDP_TAGS;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSORS_PER_CHIP;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.ROUTER_AVAILABLE_ENTRIES;
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.SDRAM_PER_CHIP;
+
 import java.util.List;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Bean to represent values on a Chip that are typically the same on all Chips.
@@ -88,6 +98,8 @@ public class ChipResources {
 	/**
 	 * @return the number of cores.
 	 */
+	@Min(0)
+	@Max(PROCESSORS_PER_CHIP)
 	public int getCores() {
 		return cores;
 	}
@@ -103,6 +115,8 @@ public class ChipResources {
 	/**
 	 * @return the monitors
 	 */
+	@Min(0)
+	@Max(PROCESSORS_PER_CHIP)
 	public int getMonitors() {
 		return monitors;
 	}
@@ -118,6 +132,8 @@ public class ChipResources {
 	/**
 	 * @return the sdram
 	 */
+	@Min(0)
+	@Max(SDRAM_PER_CHIP)
 	public int getSdram() {
 		return sdram;
 	}
@@ -133,6 +149,7 @@ public class ChipResources {
 	/**
 	 * @return the tags
 	 */
+	@Size(min = 0, max = MAX_SDP_TAGS)
 	public List<Integer> getTags() {
 		return tags;
 	}
@@ -148,6 +165,8 @@ public class ChipResources {
 	/**
 	 * @return the router_entries
 	 */
+	@Min(0)
+	@Max(ROUTER_AVAILABLE_ENTRIES)
 	public int getRouterEntries() {
 		return routerEntries;
 	}

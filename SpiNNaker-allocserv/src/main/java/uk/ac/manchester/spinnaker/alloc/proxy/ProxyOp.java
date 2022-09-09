@@ -21,7 +21,7 @@ package uk.ac.manchester.spinnaker.alloc.proxy;
  *
  * @author Donal Fellows
  */
-public enum ProxyOp {
+public enum ProxyOp { // FIXME
 	/**
 	 * Ask for a bidirectional channel to a board to be opened. Also the
 	 * response to such a request.

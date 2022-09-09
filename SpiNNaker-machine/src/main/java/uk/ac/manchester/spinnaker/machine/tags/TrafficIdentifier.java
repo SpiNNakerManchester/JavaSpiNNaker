@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.machine.tags;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +64,7 @@ public final class TrafficIdentifier {
 	 *             If this is an unexpected label.
 	 */
 	public static TrafficIdentifier getInstance(String label) {
-		if (!MAP.containsKey(label)) {
+		if (!MAP.containsKey(requireNonNull(label))) {
 			new TrafficIdentifier(label);
 		}
 		return MAP.get(label);

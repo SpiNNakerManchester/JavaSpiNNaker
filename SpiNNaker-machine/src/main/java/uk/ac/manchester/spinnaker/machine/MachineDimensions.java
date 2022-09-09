@@ -16,9 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static uk.ac.manchester.spinnaker.machine.MachineDefaults.MAX_X;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 /** Represents the size of a machine in chips. */
 public final class MachineDimensions {
 	/** The width of the machine in chips. */
+	@Min(value = 0)
+	@Max(value = MAX_X + 1)
 	public final int width;
 
 	/** The height of the machine in chips. */

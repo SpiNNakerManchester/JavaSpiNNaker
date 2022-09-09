@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -35,9 +37,11 @@ public class AbstractDataLink implements HasChipLocation {
 	public final InetAddress boardAddress;
 
 	/** Coordinates of the location/Chip being linked to. */
+	@NotNull
 	public final ChipLocation location;
 
 	/** link Direction/id for this link. */
+	@NotNull
 	public final Direction direction;
 
 	/**

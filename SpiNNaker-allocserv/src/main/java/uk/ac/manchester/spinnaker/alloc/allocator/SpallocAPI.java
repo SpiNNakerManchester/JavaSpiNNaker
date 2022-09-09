@@ -559,7 +559,7 @@ public interface SpallocAPI {
 	}
 
 	/** A triad coordinate. */
-	final class Triad {
+	final class Triad { // FIXME
 		private Triad(int x, int y, int z) {
 			this.x = x;
 			this.y = y;
@@ -577,7 +577,7 @@ public interface SpallocAPI {
 	}
 
 	/** A physical coordinate. */
-	final class Phys {
+	final class Phys { // FIXME
 		private Phys(int cabinet, int frame, int board) {
 			this.cabinet = cabinet;
 			this.frame = frame;
