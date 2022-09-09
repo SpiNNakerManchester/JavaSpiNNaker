@@ -14,57 +14,46 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.py2json;
+package uk.ac.manchester.spinnaker.machine.board;
 
-import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
+/** Physical board coordinates. May be a hash table key. */
+public final class CFB { // FIXME
+	/** Cabinet number. */
+	public final int c;
 
-import org.python.core.PyObject;
+	/** Frame number. */
+	public final int f;
 
-/** Triad coordinates. May be a hash table key. */
-public final class XYZ { // FIXME
-	/** X coordinate. */
-	public final int x;
-
-	/** Y coordinate. */
-	public final int y;
-
-	/** Z coordinate. */
-	public final int z;
+	/** Board number. */
+	public final int b;
 
 	/**
-	 * @param x X coordinate.
-	 * @param y Y coordinate.
-	 * @param z Z coordinate.
+	 * @param c Cabinet number.
+	 * @param f Frame number.
+	 * @param b Board number.
 	 */
-	public XYZ(int x, int y, int z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-
-	XYZ(PyObject tuple) {
-		int index = 0;
-		x = item(tuple, index++).asInt();
-		y = item(tuple, index++).asInt();
-		z = item(tuple, index++).asInt();
+	public CFB(int c, int f, int b) {
+		this.c = c;
+		this.f = f;
+		this.b = b;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof XYZ) {
-			var other = (XYZ) obj;
-			return x == other.x && y == other.y && z == other.z;
+		if (obj instanceof CFB) {
+			var other = (CFB) obj;
+			return c == other.c && f == other.f && b == other.b;
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return (((x << 2 + x) ^ y) << 2 + y) ^ z;
+		return (((c << 2 + c) ^ f) << 2 + f) ^ b;
 	}
 
 	@Override
 	public String toString() {
-		return "[x:" + x + ",y:" + y + ",z:" + z + "]";
+		return "[c:" + c + ",f:" + f + ",b:" + b + "]";
 	}
 }

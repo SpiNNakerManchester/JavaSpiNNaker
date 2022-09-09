@@ -14,11 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.py2json;
-
-import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
-
-import org.python.core.PyObject;
+package uk.ac.manchester.spinnaker.machine.board;
 
 /** Frame/BMP coordinates. May be a hash table key. */
 public final class CF { // FIXME
@@ -35,12 +31,6 @@ public final class CF { // FIXME
 	public CF(int c, int f) {
 		this.c = c;
 		this.f = f;
-	}
-
-	CF(PyObject tuple) {
-		int index = 0;
-		c = item(tuple, index++).asInt();
-		f = item(tuple, index++).asInt();
 	}
 
 	@Override

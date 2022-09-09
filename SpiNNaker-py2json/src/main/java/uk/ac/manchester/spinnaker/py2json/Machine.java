@@ -31,6 +31,10 @@ import org.python.core.PyObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import uk.ac.manchester.spinnaker.machine.board.CF;
+import uk.ac.manchester.spinnaker.machine.board.CFB;
+import uk.ac.manchester.spinnaker.machine.board.XYZ;
+
 /** A machine description. JSON-serializable. */
 public final class Machine {
 	/** The name of the machine. */
@@ -72,16 +76,39 @@ public final class Machine {
 		tags = toSet(getattr(machine, "tags"), PyObject::asString);
 		width = getattr(machine, "width").asInt();
 		height = getattr(machine, "height").asInt();
-		deadBoards = toSet(getattr(machine, "dead_boards"), XYZ::new);
-		deadLinks = toCollectingMap(getattr(machine, "dead_links"), XYZ::new,
-				() -> noneOf(Link.class),
+		deadBoards = toSet(getattr(machine, "dead_boards"), Machine::newXYZ);
+		deadLinks = toCollectingMap(getattr(machine, "dead_links"),
+				Machine::newXYZ, () -> noneOf(Link.class),
 				key -> Link.values()[item(key, IDX).asInt()]);
-		boardLocations =
-				toMap(getattr(machine, "board_locations"), XYZ::new, CFB::new);
-		bmpIPs = toMap(getattr(machine, "bmp_ips"), CF::new,
+		boardLocations = toMap(getattr(machine, "board_locations"),
+				Machine::newXYZ, Machine::newCFB);
+		bmpIPs = toMap(getattr(machine, "bmp_ips"), Machine::newCF,
 				PyObject::asString);
-		spinnakerIPs = toMap(getattr(machine, "spinnaker_ips"), XYZ::new,
+		spinnakerIPs = toMap(getattr(machine, "spinnaker_ips"), Machine::newXYZ,
 				PyObject::asString);
+	}
+
+	private static CF newCF(PyObject tuple) {
+		int index = 0;
+		var c = item(tuple, index++);
+		var f = item(tuple, index++);
+		return new CF(c.asInt(), f.asInt());
+	}
+
+	private static CFB newCFB(PyObject tuple) {
+		int index = 0;
+		var c = item(tuple, index++);
+		var f = item(tuple, index++);
+		var b = item(tuple, index++);
+		return new CFB(c.asInt(), f.asInt(), b.asInt());
+	}
+
+	private static XYZ newXYZ(PyObject tuple) {
+		int index = 0;
+		var x = item(tuple, index++);
+		var y = item(tuple, index++);
+		var z = item(tuple, index++);
+		return new XYZ(x.asInt(), y.asInt(), z.asInt());
 	}
 
 	@Override
