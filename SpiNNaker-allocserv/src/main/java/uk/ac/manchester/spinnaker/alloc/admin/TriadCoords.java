@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.lang.Integer.compare;
+import static java.lang.Integer.parseUnsignedInt;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
-import static uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.parseDec;
 
 import java.util.regex.Pattern;
 
@@ -95,9 +95,9 @@ public final class TriadCoords // FIXME
 					"bad argument: " + serialForm);
 		}
 		int idx = 0;
-		x = parseDec(m.group(++idx));
-		y = parseDec(m.group(++idx));
-		z = parseDec(m.group(++idx));
+		x = parseUnsignedInt(m.group(++idx));
+		y = parseUnsignedInt(m.group(++idx));
+		z = parseUnsignedInt(m.group(++idx));
 	}
 
 	private static final int TRIAD_MAJOR_OFFSET = 8;

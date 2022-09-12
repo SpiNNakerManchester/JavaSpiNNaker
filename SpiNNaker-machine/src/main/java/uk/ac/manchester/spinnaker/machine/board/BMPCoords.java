@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.machine.board;
 
 import static java.lang.Integer.compare;
-import static java.lang.Integer.parseInt;
+import static java.lang.Integer.parseUnsignedInt;
 
 import java.util.regex.Pattern;
 
@@ -84,8 +84,8 @@ public final class BMPCoords implements Comparable<BMPCoords> {
 					"bad argument: " + serialForm);
 		}
 		int idx = 0;
-		cabinet = parseInt(m.group(++idx));
-		frame = parseInt(m.group(++idx));
+		cabinet = parseUnsignedInt(m.group(++idx));
+		frame = parseUnsignedInt(m.group(++idx));
 	}
 
 	/**

@@ -17,7 +17,7 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.lang.Integer.compare;
-import static uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.parseDec;
+import static java.lang.Integer.parseUnsignedInt;
 
 import java.util.regex.Pattern;
 
@@ -89,9 +89,9 @@ public final class BoardPhysicalCoords // FIXME
 					"bad argument: " + serialForm);
 		}
 		int idx = 0;
-		c = parseDec(m.group(++idx));
-		f = parseDec(m.group(++idx));
-		b = parseDec(m.group(++idx));
+		c = parseUnsignedInt(m.group(++idx));
+		f = parseUnsignedInt(m.group(++idx));
+		b = parseUnsignedInt(m.group(++idx));
 	}
 
 	@Override

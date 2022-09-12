@@ -16,7 +16,6 @@
  */
 package uk.ac.manchester.spinnaker.alloc.admin;
 
-import static java.lang.Integer.parseInt;
 import static java.lang.Math.max;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
@@ -76,21 +75,6 @@ import uk.ac.manchester.spinnaker.machine.board.Link;
 @Service
 public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private static final Logger log = getLogger(MachineDefinitionLoader.class);
-
-	private static final int DECIMAL = 10;
-
-	/**
-	 * Parse a <em>decimal</em> integer.
-	 *
-	 * @param string
-	 *            The string containing the number to parse.
-	 * @return The parsed number.
-	 * @throws NumberFormatException
-	 *             If the string doesn't contain such a number.
-	 */
-	static int parseDec(String string) throws NumberFormatException {
-		return parseInt(string, DECIMAL);
-	}
 
 	/**
 	 * A machine description. JSON-serializable.
