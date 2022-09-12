@@ -64,6 +64,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.Direction;
 import uk.ac.manchester.spinnaker.machine.board.Link;
 
@@ -628,9 +629,9 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private Map<BMPCoords, Integer> makeBMPs(Updates sql, Machine machine,
 			int machineId) {
 		var bmpIds = new HashMap<BMPCoords, Integer>();
-		machine.bmpIPs.forEach(
-				(bmp, ip) -> sql.makeBMP.key(machineId, ip, bmp.c, bmp.f)
-						.ifPresent(id -> bmpIds.put(bmp, id)));
+		machine.bmpIPs.forEach((bmp, ip) -> sql.makeBMP
+				.key(machineId, ip, bmp.getCabinet(), bmp.getFrame())
+				.ifPresent(id -> bmpIds.put(bmp, id)));
 		return bmpIds;
 	}
 

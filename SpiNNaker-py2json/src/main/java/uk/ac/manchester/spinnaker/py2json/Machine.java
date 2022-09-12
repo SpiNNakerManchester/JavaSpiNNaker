@@ -31,7 +31,7 @@ import org.python.core.PyObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.manchester.spinnaker.machine.board.CF;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.CFB;
 import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.XYZ;
@@ -64,7 +64,7 @@ public final class Machine {
 
 	/** The IP addresses of the BMPs. */
 	@JsonProperty("bmp-ips")
-	public final Map<CF, String> bmpIPs;
+	public final Map<BMPCoords, String> bmpIPs;
 
 	/** The IP addresses of the boards. */
 	@JsonProperty("spinnaker-ips")
@@ -89,11 +89,11 @@ public final class Machine {
 				PyObject::asString);
 	}
 
-	private static CF newCF(PyObject tuple) {
+	private static BMPCoords newCF(PyObject tuple) {
 		int index = 0;
 		var c = item(tuple, index++);
 		var f = item(tuple, index++);
-		return new CF(c.asInt(), f.asInt());
+		return new BMPCoords(c.asInt(), f.asInt());
 	}
 
 	private static CFB newCFB(PyObject tuple) {

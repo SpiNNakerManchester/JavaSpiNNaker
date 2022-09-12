@@ -16,6 +16,15 @@
  */
 package uk.ac.manchester.spinnaker.machine.board;
 
+import static java.lang.Integer.compare;
+import static java.lang.Integer.parseInt;
+
+import java.util.regex.Pattern;
+
+import javax.validation.constraints.PositiveOrZero;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * A simple description of a BMP to talk to. Supports equality and being used as
  * a hash key.
@@ -24,14 +33,16 @@ package uk.ac.manchester.spinnaker.machine.board;
  * a frame (when a sufficient quantity of boards is used, typically but not
  * necessarily 24). Cabinets contain frames.
  */
-public final class BMPCoords {
+public final class BMPCoords implements Comparable<BMPCoords> {
 	/** The ID of the cabinet that contains the frame that contains the BMPs. */
+	@PositiveOrZero(message = "cabinet number must not be negative")
 	private final int cabinet;
 
 	/**
 	 * The ID of the frame that contains the master BMP. Frames are contained
 	 * within a cabinet.
 	 */
+	@PositiveOrZero(message = "frame number must not be negative")
 	private final int frame;
 
 	/**
@@ -47,6 +58,34 @@ public final class BMPCoords {
 	public BMPCoords(int cabinet, int frame) {
 		this.cabinet = cabinet;
 		this.frame = frame;
+	}
+
+	private static final Pattern PATTERN =
+			Pattern.compile("^\\[c:(\\d+),f:(\\d+)\\]$");
+
+	/**
+	 * Create an instance from its serial form. The serial form (where the
+	 * numbers may vary) is:
+	 *
+	 * <pre>
+	 * [c:34,f:12]
+	 * </pre>
+	 *
+	 * @param serialForm
+	 *            The form to deserialise.
+	 * @throws IllegalArgumentException
+	 *             If the string is not in the right form.
+	 */
+	@JsonCreator
+	public BMPCoords(String serialForm) {
+		var m = PATTERN.matcher(serialForm);
+		if (!m.matches()) {
+			throw new IllegalArgumentException(
+					"bad argument: " + serialForm);
+		}
+		int idx = 0;
+		cabinet = parseInt(m.group(++idx));
+		frame = parseInt(m.group(++idx));
 	}
 
 	/**
@@ -81,6 +120,15 @@ public final class BMPCoords {
 
 	@Override
 	public String toString() {
-		return "BMP[C:" + cabinet + ",F:" + frame + "]";
+		return "[c:" + cabinet + ",f:" + frame + "]";
+	}
+
+	@Override
+	public int compareTo(BMPCoords other) {
+		int cmp = compare(cabinet, other.cabinet);
+		if (cmp != 0) {
+			return cmp;
+		}
+		return compare(frame, other.frame);
 	}
 }

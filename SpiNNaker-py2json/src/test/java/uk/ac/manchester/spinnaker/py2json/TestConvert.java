@@ -37,7 +37,7 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import uk.ac.manchester.spinnaker.machine.board.CF;
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.CFB;
 import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.XYZ;
@@ -88,7 +88,8 @@ class TestConvert {
 			assertNotNull(machine);
 			assertEquals("my-board", machine.name);
 			assertEquals(1, machine.boardLocations.size());
-			assertEquals("192.168.0.2", machine.bmpIPs.get(new CF(0, 0)));
+			assertEquals("192.168.0.2",
+					machine.bmpIPs.get(new BMPCoords(0, 0)));
 			assertEquals(new CFB(0, 0, 0),
 					machine.boardLocations.get(new XYZ(0, 0, 0)));
 			assertEquals("192.168.0.3",

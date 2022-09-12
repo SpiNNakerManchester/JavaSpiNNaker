@@ -26,6 +26,8 @@ import javax.validation.constraints.PositiveOrZero;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+
 /**
  * Physical board coordinates.
  *
