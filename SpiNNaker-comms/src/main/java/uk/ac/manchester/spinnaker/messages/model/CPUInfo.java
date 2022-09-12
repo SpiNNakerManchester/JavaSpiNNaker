@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.messages.model;
 
 import static java.lang.Byte.toUnsignedInt;
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static uk.ac.manchester.spinnaker.messages.model.CPUState.RUN_TIME_EXCEPTION;
 import static uk.ac.manchester.spinnaker.messages.Constants.WORD_SIZE;
 import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r0;
@@ -30,7 +31,6 @@ import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r6;
 import static uk.ac.manchester.spinnaker.messages.model.ARMRegisters.r7;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -100,8 +100,6 @@ public class CPUInfo implements HasCoreLocation {
 	@SARKField("user0...user3")
 	private final int[] user;
 
-	private static final Charset ASCII = Charset.forName("ascii");
-
 	private static final int NUM_REGISTERS = 8;
 
 	private static final int APP_NAME_WIDTH = 16;
@@ -128,7 +126,7 @@ public class CPUInfo implements HasCoreLocation {
 			}
 			len++;
 		}
-		return new String(data, 0, len, ASCII);
+		return new String(data, 0, len, US_ASCII);
 	}
 
 	/**

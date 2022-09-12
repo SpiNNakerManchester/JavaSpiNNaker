@@ -57,6 +57,26 @@ public abstract class InetFactory {
 	}
 
 	/**
+	 * Creates a IPv4 address from the bytes representing the raw address.
+	 *
+	 * @param addr
+	 *            An array of bytes of length 4
+	 * @return {@code addr} as an IPv4 address
+	 * @throws RuntimeException
+	 *             if IP address is of illegal length or otherwise isn't
+	 *             supported.
+	 */
+	public static Inet4Address getByAddressQuietly(byte[] addr) {
+		try {
+			var general = InetAddress.getByAddress(addr);
+			return (Inet4Address) general;
+		} catch (ClassCastException | UnknownHostException ex) {
+			throw new RuntimeException(
+					"unexpected problem when parsing IPv4 address", ex);
+		}
+	}
+
+	/**
 	 * Creates a IPv4 address from a host name.
 	 *
 	 * @param host
@@ -81,6 +101,24 @@ public abstract class InetFactory {
 								+ "which Spinnaker does not support");
 			}
 			throw ex;
+		}
+	}
+
+	/**
+	 * Creates a IPv4 address from a host name.
+	 *
+	 * @param host
+	 *            the specified host name
+	 * @return {@code host} as an IPv4 address
+	 * @throws RuntimeException
+	 *             if IP address is isn't supported as an IPv4 address.
+	 */
+	public static Inet4Address getByNameQuietly(String host) {
+		try {
+			return (Inet4Address) InetAddress.getByName(host);
+		} catch (ClassCastException | UnknownHostException ex) {
+			throw new RuntimeException(
+					"unexpected problem when parsing IPv4 address", ex);
 		}
 	}
 
