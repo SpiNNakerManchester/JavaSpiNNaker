@@ -27,8 +27,6 @@ import javax.validation.constraints.Min;
 
 /** Common properties of SpiNNaker IP tags and reverse IP tags. */
 public abstract class Tag implements Comparable<Tag> {
-	private static final int MAX_UDP_PORT = 65535;
-
 	/** The board address associated with this tagID. */
 	private final InetAddress boardAddress;
 
@@ -38,8 +36,7 @@ public abstract class Tag implements Comparable<Tag> {
 	private final int tagID;
 
 	/** The port number associated with this tagID. */
-	@Min(0)
-	@Max(MAX_UDP_PORT)
+	@UDPPort
 	private Integer port;
 
 	/**

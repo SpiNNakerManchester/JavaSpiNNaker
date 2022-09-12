@@ -20,7 +20,10 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
+import javax.validation.constraints.PositiveOrZero;
+
 import uk.ac.manchester.spinnaker.alloc.db.Row;
+import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
 
 /**
  * Basic coordinates of a board.
@@ -29,24 +32,30 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  */
 public final class BoardCoords {
 	/** Logical triad X coordinate. */
+	@PositiveOrZero
 	private final int x;
 
 	/** Logical triad Y coordinate. */
+	@PositiveOrZero
 	private final int y;
 
 	/** Logical triad Z coordinate. */
+	@PositiveOrZero
 	private final int z;
 
 	/** Physical cabinet number. */
+	@PositiveOrZero
 	private final int cabinet;
 
 	/** Physical frame number. */
+	@PositiveOrZero
 	private final int frame;
 
 	/**
 	 * Physical board number. May be {@code null} if the board is dead (e.g.,
 	 * because it is outright absent from the machine).
 	 */
+	@PositiveOrZero
 	private final Integer board;
 
 	/**
@@ -54,6 +63,7 @@ public final class BoardCoords {
 	 * doesn't have permission to see the board address at this point, or the
 	 * board is dead (e.g., because it is outright absent from the machine).
 	 */
+	@IPAddress
 	private final String address;
 
 	/**

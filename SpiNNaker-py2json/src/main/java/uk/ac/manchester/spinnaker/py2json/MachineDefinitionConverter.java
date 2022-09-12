@@ -147,6 +147,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 			var a = populateCommand(new Arguments(), args);
 			var config = loader.loadClassicConfigurationDefinition(a.configFile,
 					false);
+			// TODO validate the config?
 			getJsonWriter().writeValue(a.destination, config);
 		} catch (ParameterException e) {
 			err.println(e.getMessage());

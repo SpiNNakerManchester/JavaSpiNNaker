@@ -21,6 +21,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
+import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
+
 /**
  * Entry in a table of machines. The table is like this:
  *
@@ -71,24 +77,30 @@ public class JobListEntryRecord {
 
 	private URI detailsUrl;
 
+	@NotNull
 	private JobState state;
 
 	private boolean powered;
 
+	@Positive
 	private Integer numBoards;
 
 	private int machineId;
 
+	@NotBlank
 	private String machineName;
 
 	private URI machineUrl;
 
+	@NotNull
 	private Instant creationTimestamp;
 
+	@NotNull
 	private Duration keepaliveInterval;
 
 	private String owner;
 
+	@IPAddress
 	private String host;
 
 	/** @return the job's ID */

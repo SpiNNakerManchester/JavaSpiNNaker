@@ -26,6 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
+import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
+
 /**
  * Descriptive detail for a job. Used for HTML generation, something like:
  *
@@ -53,7 +58,7 @@ Board power: on
 public class JobDescription {
 	private int id;
 
-	private Optional<String> owner = Optional.empty();
+	private Optional<@NotBlank String> owner = Optional.empty();
 
 	private JobState state;
 
@@ -61,16 +66,19 @@ public class JobDescription {
 
 	private Duration keepAlive;
 
-	private Optional<String> ownerHost = Optional.empty();
+	private Optional<@IPAddress String> ownerHost = Optional.empty();
 
 	private String request;
 
+	@Positive
 	private Integer width;
 
+	@Positive
 	private Integer height;
 
 	private boolean powered;
 
+	@NotBlank
 	private String machine;
 
 	private URI machineUrl;

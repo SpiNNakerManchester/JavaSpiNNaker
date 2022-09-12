@@ -21,28 +21,39 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.toList;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
+
 import org.python.core.PyObject;
+
+import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
+import uk.ac.manchester.spinnaker.machine.tags.UDPPort;
 
 /** A configuration description. JSON-serializable. */
 public final class Configuration {
 	/** The machines to manage. */
-	public final List<Machine> machines;
+	public final List<@Valid Machine> machines;
 
 	/** The port for the service to listen on. */
+	@UDPPort
 	public final int port;
 
 	/**
 	 * The host address for the service to listen on. Empty = all interfaces.
 	 */
+	@IPAddress
 	public final String ip;
 
 	/** How often (in seconds) to check for timeouts. */
+	@PositiveOrZero
 	public final double timeoutCheckInterval;
 
 	/** How many retired jobs to retain. */
+	@PositiveOrZero
 	public final int maxRetiredJobs;
 
 	/** Time to wait before freeing. */
+	@PositiveOrZero
 	public final int secondsBeforeFree;
 
 	Configuration(PyObject configuration) {

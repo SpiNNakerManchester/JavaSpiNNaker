@@ -27,6 +27,10 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+
 import org.python.core.PyObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,40 +39,44 @@ import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.CFB;
 import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.XYZ;
+import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
 
 /** A machine description. JSON-serializable. */
 public final class Machine {
 	/** The name of the machine. */
+	@NotBlank
 	public final String name;
 
 	/** The tags of the machine. */
-	public final Set<String> tags;
+	public final Set<@NotBlank String> tags;
 
 	/** The width of the machine, in triads. */
+	@Positive
 	public final int width;
 
 	/** The height of the machine, in triads. */
+	@Positive
 	public final int height;
 
 	/** The dead boards of the machine. */
-	public final Set<XYZ> deadBoards;
+	public final Set<@Valid XYZ> deadBoards;
 
 	/**
 	 * The extra dead links of the machine. Doesn't include links to dead
 	 * boards.
 	 */
-	public final Map<XYZ, EnumSet<Link>> deadLinks;
+	public final Map<@Valid XYZ, EnumSet<Link>> deadLinks;
 
 	/** The logical-to-physical board location map. */
-	public final Map<XYZ, CFB> boardLocations;
+	public final Map<@Valid XYZ, @Valid CFB> boardLocations;
 
 	/** The IP addresses of the BMPs. */
 	@JsonProperty("bmp-ips")
-	public final Map<BMPCoords, String> bmpIPs;
+	public final Map<@Valid BMPCoords, @IPAddress String> bmpIPs;
 
 	/** The IP addresses of the boards. */
 	@JsonProperty("spinnaker-ips")
-	public final Map<XYZ, String> spinnakerIPs;
+	public final Map<@Valid XYZ, @IPAddress String> spinnakerIPs;
 
 	private static final int IDX = 3;
 

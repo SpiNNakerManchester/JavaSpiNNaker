@@ -37,6 +37,7 @@ public class MemberRecord {
 
 	private int groupId;
 
+	@NotBlank
 	private String groupName;
 
 	private URI groupUrl;

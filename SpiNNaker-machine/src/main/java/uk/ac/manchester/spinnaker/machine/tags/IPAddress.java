@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.model;
+package uk.ac.manchester.spinnaker.machine.tags;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -40,11 +40,9 @@ import javax.validation.Payload;
  */
 @Documented
 @Retention(RUNTIME)
-@Target({
-	METHOD, FIELD, PARAMETER, TYPE_USE
-})
-@Constraint(validatedBy = IPAddressValidator.class)
-public @interface IPAddress { // FIXME move and use elsewhere too
+@Target({ METHOD, FIELD, PARAMETER, TYPE_USE })
+@Constraint(validatedBy = IPAddress.Validator.class)
+public @interface IPAddress {
 	/**
 	 * Whether the empty string is allowed. It defaults to being disallowed.
 	 *
@@ -72,29 +70,30 @@ public @interface IPAddress { // FIXME move and use elsewhere too
 	 * @return Payloads, if any.
 	 */
 	Class<? extends Payload>[] payload() default {};
-}
 
-class IPAddressValidator implements ConstraintValidator<IPAddress, String> {
-	private Pattern pattern;
+	class Validator implements ConstraintValidator<IPAddress, String> {
+		private Pattern pattern;
 
-	private boolean emptyOK;
+		private boolean emptyOK;
 
-	@Override
-	public void initialize(IPAddress annotation) {
-		if (isNull(pattern)) {
-			pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
+		@Override
+		public void initialize(IPAddress annotation) {
+			if (isNull(pattern)) {
+				pattern = Pattern.compile("^\\d+[.]\\d+[.]\\d+[.]\\d+$");
+			}
+			emptyOK = annotation.emptyOK();
 		}
-		emptyOK = annotation.emptyOK();
-	}
 
-	@Override
-	public boolean isValid(String value, ConstraintValidatorContext context) {
-		if (isNull(value)) {
-			return false;
+		@Override
+		public boolean isValid(String value,
+				ConstraintValidatorContext context) {
+			if (isNull(value)) {
+				return false;
+			}
+			if (emptyOK && value.isBlank()) {
+				return true;
+			}
+			return pattern.matcher(value).matches();
 		}
-		if (emptyOK && value.isBlank()) {
-			return true;
-		}
-		return pattern.matcher(value).matches();
 	}
 }

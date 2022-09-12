@@ -39,7 +39,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.core.io.Resource;
 import org.springframework.validation.annotation.Validated;
 
-import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
+import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
+import uk.ac.manchester.spinnaker.machine.tags.UDPPort;
 
 /**
  * Spalloc service management properties. These are all intended to be set via
@@ -1772,10 +1773,6 @@ public class SpallocProperties {
 
 	/** Settings relating to the v1 spalloc configuration interface. */
 	public static class CompatibilityProperties {
-		private static final int MIN_PORT = 1024;
-
-		private static final int MAX_PORT = 65535;
-
 		/**
 		 * Whether to turn the spalloc version 1 compatibility service interface
 		 * on.
@@ -1925,8 +1922,7 @@ public class SpallocProperties {
 		}
 
 		/** @return What port to run the spalloc v1 compatibility service on. */
-		@Min(MIN_PORT)
-		@Max(MAX_PORT)
+		@UDPPort
 		public int getPort() {
 			return port;
 		}
