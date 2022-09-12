@@ -14,12 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.admin;
+package uk.ac.manchester.spinnaker.machine.board;
 
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseUnsignedInt;
-import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
+import static uk.ac.manchester.spinnaker.machine.board.Direction.E;
+import static uk.ac.manchester.spinnaker.machine.board.Direction.N;
+import static uk.ac.manchester.spinnaker.machine.board.Direction.NW;
+import static uk.ac.manchester.spinnaker.machine.board.Direction.S;
+import static uk.ac.manchester.spinnaker.machine.board.Direction.SE;
+import static uk.ac.manchester.spinnaker.machine.board.Direction.W;
+import static java.util.Map.entry;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.validation.constraints.Max;
@@ -29,17 +36,25 @@ import javax.validation.constraints.PositiveOrZero;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
 
 /**
  * Triad coordinates.
+ * <p>
+ * Consider this board layout (a classic 24 board machine, with wrap-arounds not
+ * shown):
+ * <p>
+ * <img src="doc-files/DirInfo1.png" width="450" alt="24-board layout">
  *
  * @author Donal Fellows
  */
-public final class TriadCoords // FIXME
-		implements Comparable<TriadCoords> {
+public final class TriadCoords implements Comparable<TriadCoords> {
+	/** The number of boards in a triad. */
+	public static final int TRIAD_DEPTH = 3;
+
+	/** The width and height of a triad, in chips. */
+	public static final int TRIAD_CHIP_SIZE = 12;
+
 	/** X coordinate. */
 	@PositiveOrZero(message = "x coordinate must not be negative")
 	public final int x;
@@ -104,7 +119,14 @@ public final class TriadCoords // FIXME
 
 	private static final int TRIAD_MINOR_OFFSET = 4;
 
-	ChipLocation chipLocation() {
+	/**
+	 * Get the computed location of the root ethernet chip of a board.
+	 *
+	 * @return The location of the chip, in machine-global chip coordinates.
+	 * @throws IllegalArgumentException
+	 *             If there's a bad configuration. Should be unreachable.
+	 */
+	public ChipLocation chipLocation() {
 		int rootX = x * TRIAD_CHIP_SIZE;
 		int rootY = y * TRIAD_CHIP_SIZE;
 		switch (z) {
@@ -145,20 +167,51 @@ public final class TriadCoords // FIXME
 	}
 
 	/**
+	 * The potential movements, assuming we're dealing with SpiNN-5 boards.
+	 * They're also in spalloc server's DB's {@code movement_directions} table.
+	 */
+	private static final Map<Integer, Map<Direction, DirInfo>> MOVES = Map.of(
+			// Z = 0
+			0, Map.ofEntries(//
+					entry(N,  new DirInfo(0, N,   0,  0, +2)),
+					entry(E,  new DirInfo(0, E,   0,  0, +1)),
+					entry(SE, new DirInfo(0, SE,  0, -1, +2)),
+					entry(S,  new DirInfo(0, S,  -1, -1, +1)),
+					entry(W,  new DirInfo(0, W,  -1, -1, +2)),
+					entry(NW, new DirInfo(0, NW, -1,  0, +1))),
+			// Z = 1
+			1, Map.ofEntries(//
+					entry(N,  new DirInfo(1, N,  +1, +1, -1)),
+					entry(E,  new DirInfo(1, E,  +1,  0, +1)),
+					entry(SE, new DirInfo(1, SE, +1,  0, -1)),
+					entry(S,  new DirInfo(1, S,   0, -1, +1)),
+					entry(W,  new DirInfo(1, W,   0,  0, -1)),
+					entry(NW, new DirInfo(1, NW,  0,  0, +1))),
+			// Z = 2
+			2, Map.ofEntries(//
+					entry(N,  new DirInfo(2, N,   0, +1, -1)),
+					entry(E,  new DirInfo(2, E,  +1, +1, -2)),
+					entry(SE, new DirInfo(2, SE,  0,  0, -1)),
+					entry(S,  new DirInfo(2, S,   0,  0, -2)),
+					entry(W,  new DirInfo(2, W,  -1,  0, -1)),
+					entry(NW, new DirInfo(2, NW,  0, +1, -2))));
+
+	/**
 	 * Get the triad coordinate that you arrive at when you move from the
 	 * current location in the indicated direction on the given machine. This
 	 * ignores dead links and dead boards.
 	 *
 	 * @param direction
 	 *            Which way to move
-	 * @param machine
+	 * @param machineDimensions
 	 *            Used to determine where wraparounds are
 	 * @return The new location
 	 */
-	TriadCoords move(Direction direction, Machine machine) {
-		var di = DirInfo.get(z, direction);
-		return new TriadCoords(limit(x + di.dx, machine.getWidth()),
-				limit(y + di.dy, machine.getHeight()), z + di.dz);
+	public TriadCoords move(Direction direction,
+			MachineBoardDimensions machineDimensions) {
+		var di = MOVES.get(z).get(direction);
+		return new TriadCoords(limit(x + di.dx, machineDimensions.width),
+				limit(y + di.dy, machineDimensions.height), z + di.dz);
 	}
 
 	@Override

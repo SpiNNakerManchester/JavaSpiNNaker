@@ -500,18 +500,6 @@ class DQLTest extends SQLQueries {
 	}
 
 	@Test
-	void loadDirInfo() {
-		try (var q = c.query(LOAD_DIR_INFO)) {
-			assertEquals(0, q.getNumArguments());
-			assertEquals(Set.of("z", "direction", "dx", "dy", "dz"),
-					q.getRowColumnNames());
-			c.transaction(() -> {
-				q.call();
-			});
-		}
-	}
-
-	@Test
 	void getChanges() {
 		try (var q = c.query(GET_CHANGES)) {
 			assertEquals(1, q.getNumArguments());

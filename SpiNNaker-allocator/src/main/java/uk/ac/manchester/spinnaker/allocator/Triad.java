@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 /** Logical coordinates of a board. */
 @JsonFormat(shape = ARRAY)
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
-public class Triad {
+public class Triad { // FIXME
 	private int x;
 
 	private int y;

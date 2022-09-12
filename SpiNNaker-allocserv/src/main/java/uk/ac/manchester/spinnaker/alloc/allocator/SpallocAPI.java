@@ -47,6 +47,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -334,7 +335,7 @@ public interface SpallocAPI {
 	/** Some requests have the locations of boards. */
 	abstract class HasBoardCoords extends CreateDescriptor {
 		/** The logical coordinates, or {@code null}. */
-		public final Triad triad;
+		public final TriadCoords triad;
 
 		/** The physical coordinates, or {@code null}. */
 		public final Phys physical;
@@ -342,7 +343,7 @@ public interface SpallocAPI {
 		/** The network coordinates, or {@code null}. */
 		public final String ip;
 
-		private HasBoardCoords(Triad triad, Phys physical, String ip,
+		private HasBoardCoords(TriadCoords triad, Phys physical, String ip,
 				Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.triad = triad;
@@ -384,7 +385,7 @@ public interface SpallocAPI {
 		 */
 		public CreateDimensionsAt(int width, int height, int x, int y,
 				Integer maxDeadBoards) {
-			super(new Triad(x, y, 0), null, null, maxDeadBoards);
+			super(new TriadCoords(x, y, 0), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
 		}
@@ -407,8 +408,8 @@ public interface SpallocAPI {
 		 */
 		public CreateDimensionsAt(int width, int height, Integer x, Integer y,
 				Integer maxDeadBoards) {
-			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y), 0),
-					null, null, maxDeadBoards);
+			super(new TriadCoords(HasBoardCoords.get(x), HasBoardCoords.get(y),
+					0), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
 		}
@@ -433,7 +434,7 @@ public interface SpallocAPI {
 		 */
 		public CreateDimensionsAt(int width, int height, int x, int y, int z,
 				Integer maxDeadBoards) {
-			super(new Triad(x, y, z), null, null, maxDeadBoards);
+			super(new TriadCoords(x, y, z), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
 		}
@@ -458,7 +459,7 @@ public interface SpallocAPI {
 		 */
 		public CreateDimensionsAt(int width, int height, Integer x, Integer y,
 				Integer z, Integer maxDeadBoards) {
-			super(new Triad(HasBoardCoords.get(x), HasBoardCoords.get(y),
+			super(new TriadCoords(HasBoardCoords.get(x), HasBoardCoords.get(y),
 					HasBoardCoords.get(z)), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -558,24 +559,6 @@ public interface SpallocAPI {
 		}
 	}
 
-	/** A triad coordinate. */
-	final class Triad { // FIXME
-		private Triad(int x, int y, int z) {
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-
-		/** X coordinate. */
-		public final int x;
-
-		/** Y coordinate. */
-		public final int y;
-
-		/** Z coordinate. */
-		public final int z;
-	}
-
 	/** A physical coordinate. */
 	final class Phys { // FIXME
 		private Phys(int cabinet, int frame, int board) {
@@ -598,7 +581,7 @@ public interface SpallocAPI {
 	 * A request for a specific board.
 	 */
 	final class CreateBoard extends HasBoardCoords {
-		private CreateBoard(Triad triad, Phys physical, String ip) {
+		private CreateBoard(TriadCoords triad, Phys physical, String ip) {
 			super(triad, physical, ip, null);
 		}
 
@@ -614,7 +597,7 @@ public interface SpallocAPI {
 		 * @return Descriptor
 		 */
 		public static CreateBoard triad(int x, int y, int z) {
-			return new CreateBoard(new Triad(x, y, z), null, null);
+			return new CreateBoard(new TriadCoords(x, y, z), null, null);
 		}
 
 		/**

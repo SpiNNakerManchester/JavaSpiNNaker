@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.CFB;
 import uk.ac.manchester.spinnaker.machine.board.Link;
-import uk.ac.manchester.spinnaker.machine.board.XYZ;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
 
 /** A machine description. JSON-serializable. */
@@ -59,16 +59,16 @@ public final class Machine {
 	public final int height;
 
 	/** The dead boards of the machine. */
-	public final Set<@Valid XYZ> deadBoards;
+	public final Set<@Valid TriadCoords> deadBoards;
 
 	/**
 	 * The extra dead links of the machine. Doesn't include links to dead
 	 * boards.
 	 */
-	public final Map<@Valid XYZ, EnumSet<Link>> deadLinks;
+	public final Map<@Valid TriadCoords, EnumSet<Link>> deadLinks;
 
 	/** The logical-to-physical board location map. */
-	public final Map<@Valid XYZ, @Valid CFB> boardLocations;
+	public final Map<@Valid TriadCoords, @Valid CFB> boardLocations;
 
 	/** The IP addresses of the BMPs. */
 	@JsonProperty("bmp-ips")
@@ -76,7 +76,7 @@ public final class Machine {
 
 	/** The IP addresses of the boards. */
 	@JsonProperty("spinnaker-ips")
-	public final Map<@Valid XYZ, @IPAddress String> spinnakerIPs;
+	public final Map<@Valid TriadCoords, @IPAddress String> spinnakerIPs;
 
 	private static final int IDX = 3;
 
@@ -112,12 +112,12 @@ public final class Machine {
 		return new CFB(c.asInt(), f.asInt(), b.asInt());
 	}
 
-	private static XYZ newXYZ(PyObject tuple) {
+	private static TriadCoords newXYZ(PyObject tuple) {
 		int index = 0;
 		var x = item(tuple, index++);
 		var y = item(tuple, index++);
 		var z = item(tuple, index++);
-		return new XYZ(x.asInt(), y.asInt(), z.asInt());
+		return new TriadCoords(x.asInt(), y.asInt(), z.asInt());
 	}
 
 	@Override

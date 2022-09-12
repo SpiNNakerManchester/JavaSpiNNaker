@@ -19,7 +19,6 @@ package uk.ac.manchester.spinnaker.alloc.db;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
-import uk.ac.manchester.spinnaker.alloc.admin.DirInfo;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineDefinitionLoader;
 import uk.ac.manchester.spinnaker.alloc.admin.MachineStateControl;
 import uk.ac.manchester.spinnaker.alloc.admin.UserControl;
@@ -47,7 +46,7 @@ import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 @SuppressWarnings("checkstyle:visibilitymodifier")
 // @formatter:off
 @UsedInJavadocOnly({
-	DirInfo.class, MachineDefinitionLoader.class, MachineStateControl.class,
+	MachineDefinitionLoader.class, MachineStateControl.class,
 	UserControl.class, AllocatorTask.class, QuotaManager.class,
 	Spalloc.class, BMPController.class, BoardIssueReport.class,
 	LocalAuthProviderImpl.class, BlacklistStore.class
@@ -705,19 +704,6 @@ public abstract class SQLQueries {
 	@Parameter("change_id")
 	protected static final String FINISHED_PENDING =
 			"DELETE FROM pending_changes WHERE change_id = :change_id";
-
-	/**
-	 * Get descriptions of how to move from a board to its neighbours.
-	 *
-	 * @see DirInfo
-	 */
-	@ResultColumn("z")
-	@ResultColumn("direction")
-	@ResultColumn("dx")
-	@ResultColumn("dy")
-	@ResultColumn("dz")
-	protected static final String LOAD_DIR_INFO =
-			"SELECT z, direction, dx, dy, dz FROM movement_directions";
 
 	/**
 	 * Get how many requests to change the power state of a board are currently

@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.constraints.AssertFalse;
@@ -67,6 +66,8 @@ import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.Direction;
 import uk.ac.manchester.spinnaker.machine.board.Link;
+import uk.ac.manchester.spinnaker.machine.board.MachineBoardDimensions;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
 import uk.ac.manchester.spinnaker.machine.tags.UDPPort;
 
@@ -127,13 +128,19 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return height;
 		}
 
+		/** @return The dimensions of the machine. */
+		@JsonIgnore
+		public MachineBoardDimensions getDimensions() {
+			return new MachineBoardDimensions(width, height);
+		}
+
 		/** @return The depth of the machine, the number of boards per triad. */
 		public int getDepth() {
 			return boardLocations.size() == 1 ? 1 : TRIAD_DEPTH;
 		}
 
 		/** @return The dead boards of the machine. */
-		public Set<@Valid TriadCoords> getDeadBoards() {
+		public Set<TriadCoords> getDeadBoards() {
 			return unmodifiableSet(deadBoards);
 		}
 
@@ -141,12 +148,12 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 * @return The extra dead links of the machine. Doesn't include links to
 		 *         dead boards.
 		 */
-		public Map<@Valid TriadCoords, @NotNull EnumSet<Link>> getDeadLinks() {
+		public Map<TriadCoords, @NotNull EnumSet<Link>> getDeadLinks() {
 			return unmodifiableMap(deadLinks);
 		}
 
 		/** @return The logical-to-physical board location map. */
-		public Map<@Valid TriadCoords, @Valid BoardPhysicalCoords>
+		public Map<TriadCoords, @Valid BoardPhysicalCoords>
 				getBoardLocations() {
 			return unmodifiableMap(boardLocations);
 		}
@@ -157,7 +164,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		}
 
 		/** @return The IP addresses of the boards. */
-		public Map<@Valid TriadCoords, @IPAddress String> getSpinnakerIPs() {
+		public Map<TriadCoords, @IPAddress String> getSpinnakerIPs() {
 			return unmodifiableMap(spinnakerIPs);
 		}
 
@@ -418,13 +425,6 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	@Autowired
 	private Validator validator;
 
-	@PostConstruct
-	private void setUp() {
-		try (var conn = getConnection()) {
-			DirInfo.load(conn);
-		}
-	}
-
 	/**
 	 * Read a JSON-converted traditional spalloc configuration and get the
 	 * machine definitions from inside.
@@ -673,7 +673,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			Map<TriadCoords, Integer> boardIds) {
 		for (var here : boardIds.keySet()) {
 			for (var d : Direction.values()) {
-				var there = here.move(d, machine);
+				var there = here.move(d, machine.getDimensions());
 				if (boardIds.containsKey(there)) {
 					makeLink(sql, machine, boardIds, here, d, there,
 							d.opposite());

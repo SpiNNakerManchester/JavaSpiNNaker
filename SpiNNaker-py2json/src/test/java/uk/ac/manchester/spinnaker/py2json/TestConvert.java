@@ -40,7 +40,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.CFB;
 import uk.ac.manchester.spinnaker.machine.board.Link;
-import uk.ac.manchester.spinnaker.machine.board.XYZ;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 class TestConvert {
 	/**
@@ -91,9 +91,9 @@ class TestConvert {
 			assertEquals("192.168.0.2",
 					machine.bmpIPs.get(new BMPCoords(0, 0)));
 			assertEquals(new CFB(0, 0, 0),
-					machine.boardLocations.get(new XYZ(0, 0, 0)));
+					machine.boardLocations.get(new TriadCoords(0, 0, 0)));
 			assertEquals("192.168.0.3",
-					machine.spinnakerIPs.get(new XYZ(0, 0, 0)));
+					machine.spinnakerIPs.get(new TriadCoords(0, 0, 0)));
 			assertEquals(
 					"Machine(name=my-board,tags=[default],width=1,height=1,"
 							+ "deadBoards=[[x:0,y:0,z:1], [x:0,y:0,z:2]],"
@@ -113,7 +113,7 @@ class TestConvert {
 			var m = c.machines.get(0);
 			assertNotNull(m);
 			assertEquals(EnumSet.of(Link.east),
-					m.deadLinks.get(new XYZ(0, 0, 0)));
+					m.deadLinks.get(new TriadCoords(0, 0, 0)));
 			assertNotEquals("", c.toString());
 		}
 	}
@@ -129,8 +129,10 @@ class TestConvert {
 			assertEquals("SpiNNaker1M", machine.name);
 			// This is actually cut down a lot from the real 1M machine
 			assertEquals(3, machine.boardLocations.size());
-			assertEquals(Set.of(new XYZ(0, 0, 0), new XYZ(0, 0, 1),
-					new XYZ(0, 0, 2)), machine.boardLocations.keySet());
+			assertEquals(
+					Set.of(new TriadCoords(0, 0, 0), new TriadCoords(0, 0, 1),
+							new TriadCoords(0, 0, 2)),
+					machine.boardLocations.keySet());
 			assertEquals(1, machine.bmpIPs.size());
 			assertEquals(3, machine.spinnakerIPs.size());
 			assertEquals(Set.of("10.11.193.1", "10.11.193.17", "10.11.193.9"),
