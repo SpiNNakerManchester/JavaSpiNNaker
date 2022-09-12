@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
-import uk.ac.manchester.spinnaker.messages.model.FPGA;
+import uk.ac.manchester.spinnaker.machine.board.FPGA;
 import uk.ac.manchester.spinnaker.messages.model.UnexpectedResponseCodeException;
 
 /**

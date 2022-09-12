@@ -20,6 +20,8 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import uk.ac.manchester.spinnaker.machine.board.Direction;
+
 /**
  * Describes a link that is disabled.
  *

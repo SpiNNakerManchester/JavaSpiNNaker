@@ -33,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.board.CF;
 import uk.ac.manchester.spinnaker.machine.board.CFB;
+import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.XYZ;
 
 /** A machine description. JSON-serializable. */

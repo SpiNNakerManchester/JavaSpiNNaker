@@ -14,13 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.model;
+package uk.ac.manchester.spinnaker.machine.board;
 
-import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_E_S;
-import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_N_NE;
-import static uk.ac.manchester.spinnaker.messages.model.FPGA.FPGA_SW_W;
-
-import uk.ac.manchester.spinnaker.messages.model.FPGA;
+import static uk.ac.manchester.spinnaker.machine.board.FPGA.FPGA_E_S;
+import static uk.ac.manchester.spinnaker.machine.board.FPGA.FPGA_N_NE;
+import static uk.ac.manchester.spinnaker.machine.board.FPGA.FPGA_SW_W;
 
 /**
  * Represents link directions of a board.
@@ -34,7 +32,6 @@ import uk.ac.manchester.spinnaker.messages.model.FPGA;
  * go straight north (by an offset of 12 chips); {@code a} is vertically north
  * of {@code c}, and {@code f} is vertically north of {@code d}.
  *
- * @see uk.ac.manchester.spinnaker.alloc.admin.DirInfo DirInfo
  * @author Donal Fellows
  */
 public enum Direction {

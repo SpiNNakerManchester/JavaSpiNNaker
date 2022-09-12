@@ -49,8 +49,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
+import uk.ac.manchester.spinnaker.machine.board.Direction;
 
 /**
  * Tests of queries. Ensures that the SQL and the schema remain synchronized.

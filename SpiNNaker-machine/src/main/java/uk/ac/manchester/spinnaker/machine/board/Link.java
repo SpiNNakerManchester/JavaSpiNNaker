@@ -14,10 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.py2json;
+package uk.ac.manchester.spinnaker.machine.board;
+
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
+import java.util.Map;
 
 /**
- * Enumeration of links from a SpiNNaker chip.
+ * Enumeration of links from a SpiNNaker chip, as used in the old spalloc.
  * <p>
  * Note that the numbers chosen have two useful properties:
  *
@@ -27,18 +31,42 @@ package uk.ac.manchester.spinnaker.py2json;
  * <li>The links are ordered consecutively in anticlockwise order meaning the
  * opposite link is {@code (link+3)%6}.
  * </ul>
+ * Note that the new Spalloc uses a different notation for link directions!
+ *
+ * @see Direction
+ * @author Donal Fellows
  */
 public enum Link { // FIXME
 	/** East. */
-	east,
+	east(Direction.SE),
 	/** North-East. */
-	northEast,
+	northEast(Direction.E),
 	/** North. */
-	north,
+	north(Direction.N),
 	/** West. */
-	west,
+	west(Direction.NW),
 	/** South-West. */
-	southWest,
+	southWest(Direction.W),
 	/** South. */
-	south
+	south(Direction.S);
+
+	private static final Map<Direction, Link> MAP =
+			makeEnumBackingMap(values(), v -> v.d);
+
+	private final Direction d;
+
+	Link(Direction d) {
+		this.d = d;
+	}
+
+	/**
+	 * Get the link corresponding to a direction.
+	 *
+	 * @param direction
+	 *            The direction from a board.
+	 * @return The link that corresponds to the given direction.
+	 */
+	public static Link of(Direction direction) {
+		return MAP.get(direction);
+	}
 }

@@ -44,7 +44,7 @@ import javax.validation.Payload;
 	METHOD, FIELD, PARAMETER, TYPE_USE
 })
 @Constraint(validatedBy = IPAddressValidator.class)
-public @interface IPAddress {
+public @interface IPAddress { // FIXME move and use elsewhere too
 	/**
 	 * Whether the empty string is allowed. It defaults to being disallowed.
 	 *

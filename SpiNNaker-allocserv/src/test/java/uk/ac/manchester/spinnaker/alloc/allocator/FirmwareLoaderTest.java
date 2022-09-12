@@ -41,7 +41,7 @@ import uk.ac.manchester.spinnaker.alloc.bmp.MockTransceiver;
 import uk.ac.manchester.spinnaker.alloc.bmp.TransceiverFactory;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
-import uk.ac.manchester.spinnaker.messages.model.FPGA;
+import uk.ac.manchester.spinnaker.machine.board.FPGA;
 
 @SpringBootTest
 @SpringJUnitWebConfig(TestSupport.Config.class)

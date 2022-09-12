@@ -16,7 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.alloc.bmp;
 
-import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.machine.board.Direction;
 
 /**
  * Describes a part of a request that modifies the power of an FPGA-managed

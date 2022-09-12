@@ -39,6 +39,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import uk.ac.manchester.spinnaker.machine.board.CF;
 import uk.ac.manchester.spinnaker.machine.board.CFB;
+import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.XYZ;
 
 class TestConvert {

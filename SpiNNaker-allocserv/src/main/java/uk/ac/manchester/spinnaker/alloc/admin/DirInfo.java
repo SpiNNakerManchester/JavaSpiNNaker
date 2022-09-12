@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
-import uk.ac.manchester.spinnaker.alloc.model.Direction;
+import uk.ac.manchester.spinnaker.machine.board.Direction;
 
 /**
  * A mapping that says how to go from one board's coordinates (only the Z
