@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<cxf.version>3.5.3</cxf.version>
 		<jackson.version>2.13.4</jackson.version>
-		<sqlite.version>3.39.2.1</sqlite.version>
+		<sqlite.version>3.39.3.0</sqlite.version>
 		<keycloak.version>19.0.1</keycloak.version>
 		<swagger.version>4.14.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
