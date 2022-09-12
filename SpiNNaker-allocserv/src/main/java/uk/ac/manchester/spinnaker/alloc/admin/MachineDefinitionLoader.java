@@ -64,6 +64,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
 import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.Direction;
 import uk.ac.manchester.spinnaker.machine.board.Link;
 
@@ -207,7 +208,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@AssertTrue(message = "all boards must have BMPs")
 		private boolean isBMPSane() {
 			return boardLocations.values().stream()
-					.allMatch(loc -> bmpIPs.containsKey(loc.bmp()));
+					.allMatch(loc -> bmpIPs.containsKey(loc.getBmp()));
 		}
 
 		/**
@@ -625,14 +626,14 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		int maxX = 0, maxY = 0;
 		for (var triad : machine.boardLocations.keySet()) {
 			var phys = machine.boardLocations.get(triad);
-			int bmpID = bmpIds.get(phys.bmp());
+			int bmpID = bmpIds.get(phys.getBmp());
 			var addr = machine.spinnakerIPs.get(triad);
 			var root = triad.chipLocation();
 			log.debug("making {} board {}",
 					machine.deadBoards.contains(triad) ? "dead" : "live",
 					triad);
 			sql.makeBoard
-					.key(machineId, addr, bmpID, phys.b, triad.x, triad.y,
+					.key(machineId, addr, bmpID, phys.board, triad.x, triad.y,
 							triad.z, root.getX(), root.getY(),
 							!machine.deadBoards.contains(triad))
 					.ifPresent(id -> boardIds.put(triad, id));
@@ -650,7 +651,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		for (var triad : machine.deadBoards) {
 			// Fake with the machine root if no real coords available
 			var phys = machine.boardLocations.getOrDefault(triad, rootPhys);
-			int bmpID = bmpIds.get(phys.bmp());
+			int bmpID = bmpIds.get(phys.getBmp());
 			var root = triad.chipLocation();
 			log.debug("making {} board {}", "dead", triad);
 			sql.makeBoard

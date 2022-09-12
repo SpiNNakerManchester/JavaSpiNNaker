@@ -38,6 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
 import uk.ac.manchester.spinnaker.storage.SingleRowResult;
 

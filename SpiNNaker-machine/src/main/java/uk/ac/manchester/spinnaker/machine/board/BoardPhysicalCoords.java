@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package uk.ac.manchester.spinnaker.alloc.admin;
+package uk.ac.manchester.spinnaker.machine.board;
 
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseUnsignedInt;
@@ -24,28 +24,27 @@ import java.util.regex.Pattern;
 import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 
 /**
  * Physical board coordinates.
  *
  * @author Donal Fellows
  */
-public final class BoardPhysicalCoords // FIXME
+public final class BoardPhysicalCoords
 		implements Comparable<BoardPhysicalCoords> {
 	/** Cabinet number. */
 	@PositiveOrZero(message = "cabinet number must not be negative")
-	public final int c;
+	public final int cabinet;
 
 	/** Frame number. */
 	@PositiveOrZero(message = "frame number must not be negative")
-	public final int f;
+	public final int frame;
 
 	/** Board number. */
 	@PositiveOrZero(message = "board number must not be negative")
-	public final int b;
+	public final int board;
 
 	/**
 	 * Create an instance.
@@ -58,11 +57,11 @@ public final class BoardPhysicalCoords // FIXME
 	 *            Board number.
 	 */
 	@JsonCreator
-	public BoardPhysicalCoords(@JsonProperty("c") int c,
-			@JsonProperty("f") int f, @JsonProperty("b") int b) {
-		this.c = c;
-		this.f = f;
-		this.b = b;
+	public BoardPhysicalCoords(@JsonProperty("cabinet") int c,
+			@JsonProperty("frame") int f, @JsonProperty("board") int b) {
+		this.cabinet = c;
+		this.frame = f;
+		this.board = b;
 	}
 
 	private static final Pattern PATTERN =
@@ -89,44 +88,53 @@ public final class BoardPhysicalCoords // FIXME
 					"bad argument: " + serialForm);
 		}
 		int idx = 0;
-		c = parseUnsignedInt(m.group(++idx));
-		f = parseUnsignedInt(m.group(++idx));
-		b = parseUnsignedInt(m.group(++idx));
+		cabinet = parseUnsignedInt(m.group(++idx));
+		frame = parseUnsignedInt(m.group(++idx));
+		board = parseUnsignedInt(m.group(++idx));
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BoardPhysicalCoords) {
 			var other = (BoardPhysicalCoords) obj;
-			return c == other.c && f == other.f && b == other.b;
+			return (cabinet == other.cabinet) && (frame == other.frame)
+					&& (board == other.board);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return (((c << 2 + c) ^ f) << 2 + f) ^ b;
+		return (((cabinet << 2 + cabinet) ^ frame) << 2 + frame) ^ board;
 	}
 
 	@Override
 	public String toString() {
-		return "[c:" + c + ",f:" + f + ",b:" + b + "]";
+		return "[c:" + cabinet + ",f:" + frame + ",b:" + board + "]";
 	}
 
-	BMPCoords bmp() {
-		return new BMPCoords(c, f);
+	/** @return The managing BMP address. */
+	@JsonIgnore
+	public BMPCoords getBmp() {
+		return new BMPCoords(cabinet, frame);
+	}
+
+	/** @return The board number handle. */
+	@JsonIgnore
+	public BMPBoard getBoardNumber() {
+		return new BMPBoard(board);
 	}
 
 	@Override
 	public int compareTo(BoardPhysicalCoords other) {
-		int cmp = compare(c, other.c);
+		int cmp = compare(cabinet, other.cabinet);
 		if (cmp != 0) {
 			return cmp;
 		}
-		cmp = compare(f, other.f);
+		cmp = compare(frame, other.frame);
 		if (cmp != 0) {
 			return cmp;
 		}
-		return compare(b, other.b);
+		return compare(board, other.board);
 	}
 }
