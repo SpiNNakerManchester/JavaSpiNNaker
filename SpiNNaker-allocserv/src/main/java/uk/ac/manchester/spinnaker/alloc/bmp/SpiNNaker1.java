@@ -225,8 +225,8 @@ class SpiNNaker1 implements SpiNNakerControl {
 	 * that link. We assume that the other end of the link also behaves.
 	 */
 	@Override
-	public void setLinkOff(Link link) throws ProcessException, IOException {
-		var board = requireNonNull(idToBoard.get(link.getBoard()));
+	public void setLinkOff(LinkReq link) throws ProcessException, IOException {
+		var board = requireNonNull(idToBoard.get(link.getBoardId()));
 		var d = link.getLink();
 		// skip FPGA link configuration if old BMP version
 		if (!canBoardManageFPGAs(board)) {

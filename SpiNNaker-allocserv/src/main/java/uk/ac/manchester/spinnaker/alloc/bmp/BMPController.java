@@ -78,6 +78,7 @@ import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
+import uk.ac.manchester.spinnaker.alloc.bmp.SpiNNakerControl.LinkReq;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Query;
@@ -470,7 +471,7 @@ public class BMPController extends DatabaseAwareBean {
 
 		private final Map<BMPCoords, List<Integer>> powerOffBoards;
 
-		private final Map<BMPCoords, List<Link>> linkRequests;
+		private final Map<BMPCoords, List<LinkReq>> linkRequests;
 
 		private final Integer jobId;
 
@@ -519,8 +520,8 @@ public class BMPController extends DatabaseAwareBean {
 		PowerRequest(TakeReqsSQL sql, Machine machine,
 				Map<BMPCoords, List<Integer>> powerOn,
 				Map<BMPCoords, List<Integer>> powerOff,
-				Map<BMPCoords, List<Link>> links, Integer jobId, JobState from,
-				JobState to, List<Integer> changeIds,
+				Map<BMPCoords, List<LinkReq>> links, Integer jobId,
+				JobState from, JobState to, List<Integer> changeIds,
 				Map<BMPCoords, Map<Integer, BMPBoard>> idToBoard) {
 			super(machine);
 			powerOnBoards = isNull(powerOn) ? Map.of() : powerOn;
@@ -1100,7 +1101,7 @@ public class BMPController extends DatabaseAwareBean {
 		var boardsOn = new DefaultMap<BMPCoords, List<Integer>>(ArrayList::new);
 		var boardsOff =
 				new DefaultMap<BMPCoords, List<Integer>>(ArrayList::new);
-		var linksOff = new DefaultMap<BMPCoords, List<Link>>(ArrayList::new);
+		var linksOff = new DefaultMap<BMPCoords, List<LinkReq>>(ArrayList::new);
 		JobState from = UNKNOWN, to = UNKNOWN;
 		var idToBoard =
 				new DefaultMap<BMPCoords, Map<Integer, BMPBoard>>(HashMap::new);
@@ -1108,8 +1109,8 @@ public class BMPController extends DatabaseAwareBean {
 		for (var row : sql.getPowerChangesToDo.call(jobId)) {
 			changeIds.add(row.getInteger("change_id"));
 			var bmp = new BMPCoords(row.getInt("cabinet"), row.getInt("frame"));
-			var board = row.getInteger("board_id");
-			idToBoard.get(bmp).put(board,
+			var boardId = row.getInteger("board_id");
+			idToBoard.get(bmp).put(boardId,
 					new BMPBoard(row.getInteger("board_num")));
 			boolean switchOn = row.getBoolean("power");
 			/*
@@ -1119,7 +1120,7 @@ public class BMPController extends DatabaseAwareBean {
 			from = row.getEnum("from_state", JobState.class);
 			to = row.getEnum("to_state", JobState.class);
 			if (switchOn) {
-				boardsOn.get(bmp).add(board);
+				boardsOn.get(bmp).add(boardId);
 				/*
 				 * Decode a collection of boolean columns to say which links to
 				 * switch back off
@@ -1127,9 +1128,9 @@ public class BMPController extends DatabaseAwareBean {
 				List.of(Direction.values()).stream()
 						.filter(link -> !row.getBoolean(link.columnName))
 						.forEach(link -> linksOff.get(bmp)
-								.add(new Link(board, link)));
+								.add(new LinkReq(boardId, link)));
 			} else {
-				boardsOff.get(bmp).add(board);
+				boardsOff.get(bmp).add(boardId);
 			}
 		}
 
@@ -1139,8 +1140,8 @@ public class BMPController extends DatabaseAwareBean {
 				// Nothing to do, but we know the target state; just move to it
 				sql.setJobState.call(to, 0, jobId);
 			} else {
-				// Eeep! This should be a logic bug
-				log.warn("refusing to switch job {} to {} state", jobId, to);
+				// This may happen while processing an FPGA reload
+				log.info("refusing to switch job {} to {} state", jobId, to);
 			}
 			return;
 		}

@@ -23,6 +23,7 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.Direction;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -70,7 +71,7 @@ public interface SpiNNakerControl {
 	 * @throws IOException
 	 *             If network I/O fails.
 	 */
-	void setLinkOff(Link link) throws ProcessException, IOException;
+	void setLinkOff(LinkReq link) throws ProcessException, IOException;
 
 	/**
 	 * Turn off boards managed by a BMP. Turning off a board also turns off its
@@ -168,5 +169,50 @@ public interface SpiNNakerControl {
 		 * @return The board controller.
 		 */
 		SpiNNakerControl create(Machine machine, BMPCoords coords);
+	}
+
+	/**
+	 * Describes a part of a request that modifies the power of an FPGA-managed
+	 * inter-board link to be off.
+	 *
+	 * @author Donal Fellows
+	 */
+	final class LinkReq {
+		/** The database ID of the board that the FPGA is located on. */
+		private final int boardId;
+
+		/** Which link (and hence which FPGA). */
+		private final Direction link;
+
+		/**
+		 * Create a request.
+		 *
+		 * @param boardId
+		 *            The DB ID of the board that the FPGA is located on.
+		 * @param link
+		 *            Which link (and hence which FPGA).
+		 */
+		LinkReq(int boardId, Direction link) {
+			this.boardId = boardId;
+			this.link = link;
+		}
+
+		@Override
+		public String toString() {
+			return "Link(" + boardId + "," + link + ":OFF)";
+		}
+
+		/**
+		 * @return The <em>database ID</em> of the board that the FPGA is
+		 *         located on.
+		 */
+		public int getBoardId() {
+			return boardId;
+		}
+
+		/** @return Which link (and hence which FPGA). */
+		public Direction getLink() {
+			return link;
+		}
 	}
 }
