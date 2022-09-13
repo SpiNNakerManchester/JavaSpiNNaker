@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
@@ -64,15 +65,17 @@ public final class Row {
 	 * @param <T>
 	 *            The type of value to produce.
 	 */
-	private interface Getter<T> { // FIXME
+	@FunctionalInterface
+	private interface SQLCallable<T> extends Callable<T> {
 		/**
-		 * Produce a value or throw.
+		 * {@inheritDoc}
 		 *
-		 * @return The value produced.
+		 * @return {@inheritDoc}
 		 * @throws SQLException
 		 *             If things fail.
 		 */
-		T get() throws SQLException;
+		@Override
+		T call() throws SQLException;
 	}
 
 	/**
@@ -80,15 +83,15 @@ public final class Row {
 	 *
 	 * @param <T>
 	 *            The type of the result.
-	 * @param getter
+	 * @param callable
 	 *            How to get the result. May throw.
 	 * @return The result.
 	 * @throws DataAccessException
 	 *             If the interior code throws an {@link SQLException}.
 	 */
-	private <T> T get(Getter<T> getter) {
+	private <T> T get(SQLCallable<T> callable) {
 		try {
-			return getter.get();
+			return callable.call();
 		} catch (SQLException e) {
 			throw mapException(e, getSQL());
 		}

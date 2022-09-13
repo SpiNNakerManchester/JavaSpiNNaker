@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.web;
 
 import static java.util.Objects.isNull;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 import javax.ws.rs.container.AsyncResponse;
@@ -49,9 +50,9 @@ public abstract class BackgroundSupport {
 	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
-	protected interface BackgroundAction {
+	protected interface BackgroundAction extends Callable<Object> {
 		/**
-		 * Does the action that produces the result.
+		 * {@inheritDoc}
 		 *
 		 * @return The result of the action. A {@code null} is mapped as a
 		 *         generic 404 with no special message. Custom messages should
@@ -67,7 +68,8 @@ public abstract class BackgroundSupport {
 		 *             If anything goes wrong. This is reported as an
 		 *             <em>unexpected</em> exception and logged.
 		 */
-		Object respond() throws RequestFailedException, Exception;
+		@Override
+		Object call() throws RequestFailedException, Exception;
 	}
 
 	/**
@@ -114,7 +116,7 @@ public abstract class BackgroundSupport {
 	protected static void fgAction(AsyncResponse response,
 			BackgroundAction action) {
 		try {
-			var r = action.respond();
+			var r = action.call();
 			if (isNull(r)) {
 				// If you want something else, don't return null
 				response.resume(new NotFound("not found"));

@@ -311,6 +311,7 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	/** An action that may throw any of a range of exceptions. */
+	@FunctionalInterface
 	private interface ThrowingAction {
 		void act() throws ProcessException, IOException, InterruptedException;
 	}

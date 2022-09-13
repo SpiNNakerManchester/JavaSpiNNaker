@@ -64,7 +64,8 @@ public class TransceiverFactory
 		implements TransceiverFactoryAPI<BMPTransceiverInterface> {
 	private static final Logger log = getLogger(TransceiverFactory.class);
 
-	private static final class Key { // FIXME
+	private static final class Key {
+		// TODO convert to record once new enough Java language profile in use
 		final String machine;
 
 		final BMPCoords bmp;

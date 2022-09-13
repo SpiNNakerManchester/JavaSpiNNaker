@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLConnection;
+import java.util.concurrent.Callable;
 
 /**
  * Operations on the low level session that are intended to be used by the
@@ -129,7 +130,7 @@ interface Session {
 	boolean trackCookie(HttpURLConnection conn);
 
 	/**
-	 * An action used by {@link ClientSession#withRenewal(Action)
+	 * A callable used by {@link ClientSession#withRenewal(Action)
 	 * withRenewal()}. The action will be performed once, and if it fails with a
 	 * permission fault, the session will be renewed and the action performed
 	 * exactly once more.
@@ -140,17 +141,18 @@ interface Session {
 	 *            The extra exceptions that may be thrown by the action.
 	 */
 	@FunctionalInterface
-	interface Action<T, Exn extends Exception> {
+	interface Action<T, Exn extends Exception> extends Callable<T> {
 		/**
-		 * Perform the action.
+		 * {@inheritDoc}
 		 *
-		 * @return The result of the action.
+		 * @return {@inheritDoc}
 		 * @throws IOException
 		 *             If network I/O fails.
 		 * @throws Exn
 		 *             If another failure happens.
 		 */
-		T act() throws Exn, IOException;
+		@Override
+		T call() throws Exn, IOException;
 	}
 
 	/**
