@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
-import uk.ac.manchester.spinnaker.machine.board.CFB;
+import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
@@ -90,7 +90,7 @@ class TestConvert {
 			assertEquals(1, machine.boardLocations.size());
 			assertEquals("192.168.0.2",
 					machine.bmpIPs.get(new BMPCoords(0, 0)));
-			assertEquals(new CFB(0, 0, 0),
+			assertEquals(new BoardPhysicalCoords(0, 0, 0),
 					machine.boardLocations.get(new TriadCoords(0, 0, 0)));
 			assertEquals("192.168.0.3",
 					machine.spinnakerIPs.get(new TriadCoords(0, 0, 0)));

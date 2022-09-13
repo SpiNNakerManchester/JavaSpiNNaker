@@ -4,21 +4,13 @@
     "tags" : [ "default" ],
     "width" : 1,
     "height" : 1,
-    "dead-boards" : [ {
-      "x" : 0,
-      "y" : 0,
-      "z" : 1
-    }, {
-      "x" : 0,
-      "y" : 0,
-      "z" : 2
-    } ],
+    "dead-boards" : [ [0, 0, 1], [0, 0, 2] ],
     "dead-links" : {},
     "board-locations" : {
       "[x:0,y:0,z:0]" : {
-        "c" : 0,
-        "f" : 0,
-        "b" : 0
+        "cabinet" : 0,
+        "frame" : 0,
+        "board" : 0
       }
     },
     "bmp-ips" : {

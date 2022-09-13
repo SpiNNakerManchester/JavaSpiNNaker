@@ -17,10 +17,12 @@
 package uk.ac.manchester.spinnaker.alloc.admin;
 
 import static java.lang.Math.max;
+import static java.util.Collections.disjoint;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
 import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
@@ -44,6 +46,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,7 +144,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		/** @return The dead boards of the machine. */
 		public Set<TriadCoords> getDeadBoards() {
-			return unmodifiableSet(deadBoards);
+			return deadBoards;
 		}
 
 		/**
@@ -149,23 +152,52 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 *         dead boards.
 		 */
 		public Map<TriadCoords, @NotNull EnumSet<Link>> getDeadLinks() {
-			return unmodifiableMap(deadLinks);
+			return deadLinks;
 		}
 
 		/** @return The logical-to-physical board location map. */
-		public Map<TriadCoords, @Valid BoardPhysicalCoords>
+		public Map<@Valid TriadCoords, @Valid BoardPhysicalCoords>
 				getBoardLocations() {
-			return unmodifiableMap(boardLocations);
+			return boardLocations;
 		}
 
 		/** @return The IP addresses of the BMPs. */
 		public Map<@Valid BMPCoords, @IPAddress String> getBmpIPs() {
-			return unmodifiableMap(bmpIPs);
+			return bmpIPs;
 		}
 
 		/** @return The IP addresses of the boards. */
-		public Map<TriadCoords, @IPAddress String> getSpinnakerIPs() {
-			return unmodifiableMap(spinnakerIPs);
+		public Map<@Valid TriadCoords, @IPAddress String> getSpinnakerIPs() {
+			return spinnakerIPs;
+		}
+
+		/**
+		 * If a board has an address, it must have a physical location. Dead
+		 * boards must not have physical locations. Dead links must be on
+		 * not-dead boards.
+		 *
+		 * @return Whether the triad locations are inter-collection valid.
+		 */
+		@AssertTrue
+		@JsonIgnore
+		boolean isValidTriadLocationSet() {
+			var boards = boardLocations.keySet();
+			return boards.containsAll(spinnakerIPs.keySet())
+					&& disjoint(boards, deadBoards)
+					&& boards.containsAll(deadLinks.keySet());
+		}
+
+		/**
+		 * Every (controlling) BMP must have an IP address.
+		 *
+		 * @return Whether the BMP locations are inter-collection valid.
+		 */
+		@AssertTrue
+		@JsonIgnore
+		boolean isValidBMPLocationSet() {
+			var bmps = boardLocations.values().stream()
+					.map(BoardPhysicalCoords::getBmp).collect(toSet());
+			return bmps.equals(bmpIPs.keySet());
 		}
 
 		@Override
@@ -267,7 +299,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			}
 
 			public Builder withTags(Set<String> tags) {
-				this.tags = tags;
+				this.tags = unmodifiableSet(tags);
 				return this;
 			}
 
@@ -282,30 +314,30 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			}
 
 			public Builder withDeadBoards(Set<TriadCoords> deadBoards) {
-				this.deadBoards = deadBoards;
+				this.deadBoards = unmodifiableSet(deadBoards);
 				return this;
 			}
 
 			public Builder
 					withDeadLinks(Map<TriadCoords, EnumSet<Link>> deadLinks) {
-				this.deadLinks = deadLinks;
+				this.deadLinks = unmodifiableMap(deadLinks);
 				return this;
 			}
 
 			public Builder withBoardLocations(
 					Map<TriadCoords, BoardPhysicalCoords> boardLocations) {
-				this.boardLocations = boardLocations;
+				this.boardLocations = unmodifiableMap(boardLocations);
 				return this;
 			}
 
 			public Builder withBmpIps(Map<BMPCoords, String> bmpIps) {
-				this.bmpIps = bmpIps;
+				this.bmpIps = unmodifiableMap(bmpIps);
 				return this;
 			}
 
 			public Builder
 					withSpinnakerIps(Map<TriadCoords, String> spinnakerIps) {
-				this.spinnakerIps = spinnakerIps;
+				this.spinnakerIps = unmodifiableMap(spinnakerIps);
 				return this;
 			}
 
@@ -333,6 +365,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @author Donal Fellows
 	 */
 	static final class Configuration {
+		@NotNull
+		@Size(min = 1, message = "will not handle an empty configuration")
 		private List<@Valid Machine> machines;
 
 		@UDPPort
@@ -351,12 +385,12 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		private int secondsBeforeFree;
 
 		/** @return The machines to manage. */
-		public @NotNull List<@Valid Machine> getMachines() {
-			return unmodifiableList(machines);
+		public List<Machine> getMachines() {
+			return machines;
 		}
 
-		public void setMachines(List<Machine> machines) {
-			this.machines = machines;
+		void setMachines(List<Machine> machines) {
+			this.machines = unmodifiableList(machines);
 		}
 
 		/** @return The port for the service to listen on. (Ignored) */
@@ -364,7 +398,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return port;
 		}
 
-		public void setPort(int port) {
+		void setPort(int port) {
 			this.port = port;
 		}
 
@@ -376,7 +410,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return ip;
 		}
 
-		public void setIp(String ip) {
+		void setIp(String ip) {
 			this.ip = ip;
 		}
 
@@ -385,7 +419,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return timeoutCheckInterval;
 		}
 
-		public void setTimeoutCheckInterval(double timeoutCheckInterval) {
+		void setTimeoutCheckInterval(double timeoutCheckInterval) {
 			this.timeoutCheckInterval = timeoutCheckInterval;
 		}
 
@@ -394,7 +428,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return maxRetiredJobs;
 		}
 
-		public void setMaxRetiredJobs(int maxRetiredJobs) {
+		void setMaxRetiredJobs(int maxRetiredJobs) {
 			this.maxRetiredJobs = maxRetiredJobs;
 		}
 
@@ -403,7 +437,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			return secondsBeforeFree;
 		}
 
-		public void setSecondsBeforeFree(int secondsBeforeFree) {
+		void setSecondsBeforeFree(int secondsBeforeFree) {
 			this.secondsBeforeFree = secondsBeforeFree;
 		}
 

@@ -36,7 +36,7 @@ import org.python.core.PyObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
-import uk.ac.manchester.spinnaker.machine.board.CFB;
+import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
@@ -68,7 +68,8 @@ public final class Machine {
 	public final Map<@Valid TriadCoords, EnumSet<Link>> deadLinks;
 
 	/** The logical-to-physical board location map. */
-	public final Map<@Valid TriadCoords, @Valid CFB> boardLocations;
+	public final Map<@Valid TriadCoords,
+			@Valid BoardPhysicalCoords> boardLocations;
 
 	/** The IP addresses of the BMPs. */
 	@JsonProperty("bmp-ips")
@@ -85,34 +86,55 @@ public final class Machine {
 		tags = toSet(getattr(machine, "tags"), PyObject::asString);
 		width = getattr(machine, "width").asInt();
 		height = getattr(machine, "height").asInt();
-		deadBoards = toSet(getattr(machine, "dead_boards"), Machine::newXYZ);
+		deadBoards = toSet(getattr(machine, "dead_boards"), Machine::xyz);
 		deadLinks = toCollectingMap(getattr(machine, "dead_links"),
-				Machine::newXYZ, () -> noneOf(Link.class),
+				Machine::xyz, () -> noneOf(Link.class),
 				key -> Link.values()[item(key, IDX).asInt()]);
 		boardLocations = toMap(getattr(machine, "board_locations"),
-				Machine::newXYZ, Machine::newCFB);
-		bmpIPs = toMap(getattr(machine, "bmp_ips"), Machine::newCF,
+				Machine::xyz, Machine::cfb);
+		bmpIPs = toMap(getattr(machine, "bmp_ips"), Machine::cf,
 				PyObject::asString);
-		spinnakerIPs = toMap(getattr(machine, "spinnaker_ips"), Machine::newXYZ,
+		spinnakerIPs = toMap(getattr(machine, "spinnaker_ips"), Machine::xyz,
 				PyObject::asString);
 	}
 
-	private static BMPCoords newCF(PyObject tuple) {
+	/**
+	 * Tuple converter.
+	 *
+	 * @param tuple
+	 *            {@code (cabinet, frame)}
+	 * @return converted value
+	 */
+	private static BMPCoords cf(PyObject tuple) {
 		int index = 0;
 		var c = item(tuple, index++);
 		var f = item(tuple, index++);
 		return new BMPCoords(c.asInt(), f.asInt());
 	}
 
-	private static CFB newCFB(PyObject tuple) {
+	/**
+	 * Tuple converter.
+	 *
+	 * @param tuple
+	 *            {@code (cabinet, frame, board)}
+	 * @return converted value
+	 */
+	private static BoardPhysicalCoords cfb(PyObject tuple) {
 		int index = 0;
 		var c = item(tuple, index++);
 		var f = item(tuple, index++);
 		var b = item(tuple, index++);
-		return new CFB(c.asInt(), f.asInt(), b.asInt());
+		return new BoardPhysicalCoords(c.asInt(), f.asInt(), b.asInt());
 	}
 
-	private static TriadCoords newXYZ(PyObject tuple) {
+	/**
+	 * Tuple converter.
+	 *
+	 * @param tuple
+	 *            {@code (x, y, z)}
+	 * @return converted value
+	 */
+	private static TriadCoords xyz(PyObject tuple) {
 		int index = 0;
 		var x = item(tuple, index++);
 		var y = item(tuple, index++);
