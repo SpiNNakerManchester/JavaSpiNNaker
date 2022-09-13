@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 /** A description of where a board is and what it is doing. */
 @JsonAutoDetect(setterVisibility = NON_PRIVATE)
@@ -50,7 +51,7 @@ public class WhereIs {
 
 	private ChipLocation boardChip;
 
-	private Triad logicalCoords;
+	private TriadCoords logicalCoords;
 
 	private Physical physicalCoords;
 
@@ -144,11 +145,11 @@ public class WhereIs {
 
 	/** @return The logical coordinates for the board containing the chip. */
 	@JsonAlias("logical-board-coordinates")
-	public Triad getLogicalCoords() {
+	public TriadCoords getLogicalCoords() {
 		return logicalCoords;
 	}
 
-	void setLogicalCoords(Triad logicalCoords) {
+	void setLogicalCoords(TriadCoords logicalCoords) {
 		this.logicalCoords = logicalCoords;
 	}
 

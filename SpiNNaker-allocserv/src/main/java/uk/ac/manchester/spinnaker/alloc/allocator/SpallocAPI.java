@@ -603,6 +603,17 @@ public interface SpallocAPI {
 		/**
 		 * Create a request for a specific board.
 		 *
+		 * @param triad
+		 *            The triad coordinates of the board.
+		 * @return Descriptor
+		 */
+		public static CreateBoard triad(TriadCoords triad) {
+			return new CreateBoard(triad, null, null);
+		}
+
+		/**
+		 * Create a request for a specific board.
+		 *
 		 * @param cabinet
 		 *            The cabinet number of the board.
 		 * @param frame

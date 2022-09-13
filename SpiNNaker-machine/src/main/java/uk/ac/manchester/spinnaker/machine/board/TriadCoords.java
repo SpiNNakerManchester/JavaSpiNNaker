@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.machine.board;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseUnsignedInt;
 import static uk.ac.manchester.spinnaker.machine.board.Direction.E;
@@ -25,6 +26,7 @@ import static uk.ac.manchester.spinnaker.machine.board.Direction.S;
 import static uk.ac.manchester.spinnaker.machine.board.Direction.SE;
 import static uk.ac.manchester.spinnaker.machine.board.Direction.W;
 import static java.util.Map.entry;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -34,7 +36,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -48,6 +52,10 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
  *
  * @author Donal Fellows
  */
+@JsonPropertyOrder({
+	"x", "y", "z"
+})
+@JsonFormat(shape = ARRAY)
 public final class TriadCoords implements Comparable<TriadCoords> {
 	/** The number of boards in a triad. */
 	public static final int TRIAD_DEPTH = 3;
@@ -57,16 +65,16 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 
 	/** X coordinate. */
 	@PositiveOrZero(message = "x coordinate must not be negative")
-	public final int x;
+	private final int x;
 
 	/** Y coordinate. */
 	@PositiveOrZero(message = "y coordinate must not be negative")
-	public final int y;
+	private final int y;
 
 	/** Z coordinate. */
 	@Min(value = 0, message = "z coordinate must not be negative")
 	@Max(value = 2, message = "z coordinate must not be more than 2")
-	public final int z;
+	private final int z;
 
 	/**
 	 * Create an instance.
@@ -104,7 +112,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 */
 	@JsonCreator
 	public TriadCoords(String serialForm) {
-		var m = PATTERN.matcher(serialForm);
+		var m = PATTERN.matcher(requireNonNull(serialForm));
 		if (!m.matches()) {
 			throw new IllegalArgumentException(
 					"bad argument: " + serialForm);
@@ -113,6 +121,21 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 		x = parseUnsignedInt(m.group(++idx));
 		y = parseUnsignedInt(m.group(++idx));
 		z = parseUnsignedInt(m.group(++idx));
+	}
+
+	/** @return The X coordinate of the board. */
+	public int getX() {
+		return x;
+	}
+
+	/** @return The Y coordinate of the board. */
+	public int getY() {
+		return y;
+	}
+
+	/** @return The Z coordinate of the board. */
+	public int getZ() {
+		return z;
 	}
 
 	private static final int TRIAD_MAJOR_OFFSET = 8;
@@ -167,39 +190,76 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	}
 
 	/**
-	 * The potential movements, assuming we're dealing with SpiNN-5 boards.
-	 * They're also in spalloc server's DB's {@code movement_directions} table.
+	 * How much to change a triad coordinate by to move in a particular
+	 * direction from a board.
 	 */
-	private static final Map<Integer, Map<Direction, DirInfo>> MOVES = Map.of(
-			// Z = 0
+	// TODO make into a record once Java language profile is new enough
+	static final class Delta {
+		/** Change your X coordinate by this. */
+		final int dx;
+
+		/** Change your Y coordinate by this. */
+		final int dy;
+
+		/** Change your Z coordinate by this. */
+		final int dz;
+
+		private Delta(int dx, int dy, int dz) {
+			this.dx = dx;
+			this.dy = dy;
+			this.dz = dz;
+		}
+	}
+
+	/**
+	 * A mapping that says how to go from one board's coordinates (only the Z
+	 * coordinate matters for this) to another when you move in a particular
+	 * direction. Assumes that we are handling a SpiNN-5 board.
+	 * They're also in spalloc server's DB's {@code movement_directions} table.
+	 * <p>
+	 * Consider this board layout (a classic 24 board machine, with wrap-arounds
+	 * not shown):
+	 * <p>
+	 * <img src="doc-files/DirInfo1.png" width="450" alt="24-board layout">
+	 * <p>
+	 * Bear in mind that 0,1,0 is <em>actually</em> 12 chips vertically and 0
+	 * chips horizontally offset from 0,0,0. (Also, the real boards are slightly
+	 * offset from this layout.)
+	 *
+	 * @author Donal Fellows
+	 * @see Direction
+	 * @see TriadCoords
+	 */
+	private static final Map<Integer, Map<Direction, Delta>> MOVES = Map.of(
+			// When Z = 0
 			0, Map.ofEntries(//
-					entry(N,  new DirInfo(0, N,   0,  0, +2)),
-					entry(E,  new DirInfo(0, E,   0,  0, +1)),
-					entry(SE, new DirInfo(0, SE,  0, -1, +2)),
-					entry(S,  new DirInfo(0, S,  -1, -1, +1)),
-					entry(W,  new DirInfo(0, W,  -1, -1, +2)),
-					entry(NW, new DirInfo(0, NW, -1,  0, +1))),
-			// Z = 1
+					entry(N,  new Delta(+0, +0, +2)),
+					entry(E,  new Delta(+0, +0, +1)),
+					entry(SE, new Delta(+0, -1, +2)),
+					entry(S,  new Delta(-1, -1, +1)),
+					entry(W,  new Delta(-1, -1, +2)),
+					entry(NW, new Delta(-1, +0, +1))),
+			// When Z = 1
 			1, Map.ofEntries(//
-					entry(N,  new DirInfo(1, N,  +1, +1, -1)),
-					entry(E,  new DirInfo(1, E,  +1,  0, +1)),
-					entry(SE, new DirInfo(1, SE, +1,  0, -1)),
-					entry(S,  new DirInfo(1, S,   0, -1, +1)),
-					entry(W,  new DirInfo(1, W,   0,  0, -1)),
-					entry(NW, new DirInfo(1, NW,  0,  0, +1))),
-			// Z = 2
+					entry(N,  new Delta(+1, +1, -1)),
+					entry(E,  new Delta(+1, +0, +1)),
+					entry(SE, new Delta(+1, +0, -1)),
+					entry(S,  new Delta(+0, -1, +1)),
+					entry(W,  new Delta(+0, +0, -1)),
+					entry(NW, new Delta(+0, +0, +1))),
+			// When Z = 2
 			2, Map.ofEntries(//
-					entry(N,  new DirInfo(2, N,   0, +1, -1)),
-					entry(E,  new DirInfo(2, E,  +1, +1, -2)),
-					entry(SE, new DirInfo(2, SE,  0,  0, -1)),
-					entry(S,  new DirInfo(2, S,   0,  0, -2)),
-					entry(W,  new DirInfo(2, W,  -1,  0, -1)),
-					entry(NW, new DirInfo(2, NW,  0, +1, -2))));
+					entry(N,  new Delta(+0, +1, -1)),
+					entry(E,  new Delta(+1, +1, -2)),
+					entry(SE, new Delta(+0, +0, -1)),
+					entry(S,  new Delta(+0, +0, -2)),
+					entry(W,  new Delta(-1, +0, -1)),
+					entry(NW, new Delta(+0, +1, -2))));
 
 	/**
 	 * Get the triad coordinate that you arrive at when you move from the
 	 * current location in the indicated direction on the given machine. This
-	 * ignores dead links and dead boards.
+	 * ignores dead links and dead boards; it is a geometric determination only.
 	 *
 	 * @param direction
 	 *            Which way to move
@@ -235,6 +295,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 
 	@Override
 	public int compareTo(TriadCoords other) {
+		requireNonNull(other);
 		int cmp = compare(x, other.x);
 		if (cmp != 0) {
 			return cmp;

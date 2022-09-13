@@ -553,7 +553,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				var findIP = conn.query(FIND_BOARD_BY_NAME_AND_IP_ADDRESS)) {
 			if (nonNull(b.triad)) {
 				return findTriad
-						.call1(machineName, b.triad.x, b.triad.y, b.triad.z)
+						.call1(machineName, b.triad.getX(), b.triad.getY(),
+								b.triad.getZ())
 						.filter(r -> !requireTriadRoot || r.getInt("z") == 0)
 						.map(integer("board_id"))
 						.orElseThrow(() -> new IllegalArgumentException(

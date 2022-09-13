@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.messages.model.Version;
 
 class JsonTest {
@@ -107,10 +108,10 @@ class JsonTest {
 
 	@Test
 	void triad() throws Exception {
-		var t = new Triad(1, 2, 3);
+		var t = new TriadCoords(1, 2, 3);
 		assertEquals("[1,2,3]", serialize(t));
 		assertEquals(t.toString(),
-				deserialize(serialize(t), Triad.class).toString());
+				deserialize(serialize(t), TriadCoords.class).toString());
 	}
 
 }

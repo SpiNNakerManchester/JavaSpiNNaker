@@ -255,7 +255,7 @@ class V1TaskImpl extends V1CompatTask {
 	@Override
 	protected final Optional<Integer> createJobSpecificBoard(TriadCoords coords,
 			Map<String, Object> kwargs, byte[] cmd) throws TaskException {
-		return createJob(triad(coords.x, coords.y, coords.z), kwargs, cmd);
+		return createJob(triad(coords), kwargs, cmd);
 	}
 
 	private static String getOwner(Map<String, Object> kwargs)

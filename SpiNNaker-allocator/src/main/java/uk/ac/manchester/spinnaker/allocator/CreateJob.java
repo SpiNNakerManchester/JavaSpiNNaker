@@ -23,6 +23,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
+
 /**
  * A request to create a job.
  *
@@ -262,7 +264,7 @@ public final class CreateJob {
 	 *            Which board of the machine to request? This is the logical
 	 *            coordinates.
 	 */
-	public CreateJob(String machine, Triad triad) {
+	public CreateJob(String machine, TriadCoords triad) {
 		board = new SpecificBoard(true, triad.getX(), triad.getY(),
 				triad.getZ());
 		machineName = machine;
