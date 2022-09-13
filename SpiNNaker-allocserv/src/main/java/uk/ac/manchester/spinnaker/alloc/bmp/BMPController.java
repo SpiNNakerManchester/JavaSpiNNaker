@@ -88,7 +88,7 @@ import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException.CallerProcessException;
@@ -1125,7 +1125,7 @@ public class BMPController extends DatabaseAwareBean {
 				 * Decode a collection of boolean columns to say which links to
 				 * switch back off
 				 */
-				List.of(Direction.values()).stream()
+				List.of(BoardDirection.values()).stream()
 						.filter(link -> !row.getBoolean(link.columnName))
 						.forEach(link -> linksOff.get(bmp)
 								.add(new LinkReq(boardId, link)));

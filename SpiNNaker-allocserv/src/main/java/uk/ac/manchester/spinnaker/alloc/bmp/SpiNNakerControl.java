@@ -23,7 +23,7 @@ import java.util.Map;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Machine;
 import uk.ac.manchester.spinnaker.machine.board.BMPBoard;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
 
@@ -182,7 +182,7 @@ public interface SpiNNakerControl {
 		private final int boardId;
 
 		/** Which link (and hence which FPGA). */
-		private final Direction link;
+		private final BoardDirection link;
 
 		/**
 		 * Create a request.
@@ -192,7 +192,7 @@ public interface SpiNNakerControl {
 		 * @param link
 		 *            Which link (and hence which FPGA).
 		 */
-		LinkReq(int boardId, Direction link) {
+		LinkReq(int boardId, BoardDirection link) {
 			this.boardId = boardId;
 			this.link = link;
 		}
@@ -211,7 +211,7 @@ public interface SpiNNakerControl {
 		}
 
 		/** @return Which link (and hence which FPGA). */
-		public Direction getLink() {
+		public BoardDirection getLink() {
 			return link;
 		}
 	}

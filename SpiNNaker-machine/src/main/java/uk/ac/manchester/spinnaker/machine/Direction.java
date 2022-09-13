@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 The University of Manchester
+ * Copyright (c) 2018-2022 The University of Manchester
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,25 +16,43 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import static uk.ac.manchester.spinnaker.utils.CollectionUtils.makeEnumBackingMap;
+
+import java.util.Map;
+
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
+
 /**
  * A direction from one SpiNNaker chip to another.
+ * <p>
+ * Note that the numbers chosen have two useful properties:
+ *
+ * <ul>
+ * <li>The integer values assigned are chosen to match the numbers used to
+ * identify the links in the low-level software API and hardware registers.
+ * <li>The links are ordered consecutively in anticlockwise order meaning the
+ * opposite link is {@code (link+3)%6}.
+ * </ul>
+ * Note that the new Spalloc internally uses a {@linkplain BoardDirection
+ * different notation} for link directions.
  *
  * @author Christian-B
+ * @author Donal Fellows
  */
 public enum Direction {
 
 	/** Direction 0 typically towards a location x + 1, y. */
-	EAST(0, +1, 0, "east"),
+	EAST(0, +1, 0, "east", BoardDirection.SE),
 	/** Direction 1 typically towards a location x + 1, y +1. */
-	NORTHEAST(1, +1, +1, "north_east"),
+	NORTHEAST(1, +1, +1, "north_east", BoardDirection.E),
 	/** Direction 2 typically towards a location x, y +1. */
-	NORTH(2, 0, +1, "north"),
+	NORTH(2, 0, +1, "north", BoardDirection.N),
 	/** Direction 3 typically towards a location x - 1, y. */
-	WEST(3, -1, 0, "west"),
+	WEST(3, -1, 0, "west", BoardDirection.NW),
 	/** Direction 4 typically towards a location x -1, y -1. */
-	SOUTHWEST(4, -1, -1, "south_west"),
+	SOUTHWEST(4, -1, -1, "south_west", BoardDirection.W),
 	/** Direction 5 typically towards a location x, y -1. */
-	SOUTH(5, 0, -1, "south");
+	SOUTH(5, 0, -1, "south", BoardDirection.S);
 
 	private static final Direction[] BY_ID = {
 		EAST, NORTHEAST, NORTH, WEST, SOUTHWEST, SOUTH
@@ -58,6 +76,11 @@ public enum Direction {
 	 */
 	public final String label;
 
+	private final BoardDirection d;
+
+	private static final Map<BoardDirection, Direction> MAP =
+			makeEnumBackingMap(values(), v -> v.d);
+
 	/**
 	 * Constructs an element of the Enum.
 	 *
@@ -67,12 +90,16 @@ public enum Direction {
 	 *            Typical change to X if moving in this Direction.
 	 * @param yChange
 	 *            Typical change to Y if moving in this Direction.
+	 * @param d
+	 *            The corresponding board direction.
 	 */
-	Direction(int id, int xChange, int yChange, String label) {
+	Direction(int id, int xChange, int yChange, String label,
+			BoardDirection d) {
 		this.id = id;
 		this.xChange = xChange;
 		this.yChange = yChange;
 		this.label = label;
+		this.d = d;
 	}
 
 	/**
@@ -134,5 +161,16 @@ public enum Direction {
 		}
 		throw new IllegalArgumentException(
 				"No direction found for \"" + label + "\"");
+	}
+
+	/**
+	 * Get the inter-chip direction corresponding to a board direction.
+	 *
+	 * @param direction
+	 *            The direction from a board.
+	 * @return The inter-chip direction that corresponds.
+	 */
+	public static Direction of(BoardDirection direction) {
+		return MAP.get(direction);
 	}
 }

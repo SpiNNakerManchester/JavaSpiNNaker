@@ -65,10 +65,10 @@ import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Update;
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
-import uk.ac.manchester.spinnaker.machine.board.Link;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 import uk.ac.manchester.spinnaker.machine.board.MachineBoardDimensions;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
@@ -100,7 +100,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		private Set<TriadCoords> deadBoards;
 
-		private Map<TriadCoords, EnumSet<Link>> deadLinks;
+		private Map<TriadCoords, EnumSet<Direction>> deadLinks;
 
 		private Map<TriadCoords, BoardPhysicalCoords> boardLocations;
 
@@ -151,7 +151,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 * @return The extra dead links of the machine. Doesn't include links to
 		 *         dead boards.
 		 */
-		public Map<TriadCoords, @NotNull EnumSet<Link>> getDeadLinks() {
+		public Map<TriadCoords, @NotNull EnumSet<Direction>> getDeadLinks() {
 			return deadLinks;
 		}
 
@@ -264,12 +264,13 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		 *         the given direction. Note that if the board doesn't exist at
 		 *         all, this returns false.
 		 */
-		boolean hasDeadLinkAt(TriadCoords board, Direction direction) {
+		boolean hasDeadLinkAt(TriadCoords board, BoardDirection direction) {
 			if (deadLinks.isEmpty()) {
 				return false;
 			}
-			return deadLinks.getOrDefault(board, EnumSet.noneOf(Link.class))
-					.contains(Link.of(direction));
+			return deadLinks
+					.getOrDefault(board, EnumSet.noneOf(Direction.class))
+					.contains(Direction.of(direction));
 		}
 
 		@JsonPOJOBuilder
@@ -284,7 +285,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 			private Set<TriadCoords> deadBoards = Set.of();
 
-			private Map<TriadCoords, EnumSet<Link>> deadLinks = Map.of();
+			private Map<TriadCoords, EnumSet<Direction>> deadLinks = Map.of();
 
 			private Map<TriadCoords, BoardPhysicalCoords> boardLocations =
 					Map.of();
@@ -318,8 +319,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 				return this;
 			}
 
-			public Builder
-					withDeadLinks(Map<TriadCoords, EnumSet<Link>> deadLinks) {
+			public Builder withDeadLinks(
+					Map<TriadCoords, EnumSet<Direction>> deadLinks) {
 				this.deadLinks = unmodifiableMap(deadLinks);
 				return this;
 			}
@@ -706,7 +707,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	private void makeLinks(Updates sql, Machine machine,
 			Map<TriadCoords, Integer> boardIds) {
 		for (var here : boardIds.keySet()) {
-			for (var d : Direction.values()) {
+			for (var d : BoardDirection.values()) {
 				var there = here.move(d, machine.getDimensions());
 				if (boardIds.containsKey(there)) {
 					makeLink(sql, machine, boardIds, here, d, there,
@@ -717,8 +718,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	}
 
 	private Optional<Integer> makeLink(Updates sql, Machine machine,
-			Map<TriadCoords, Integer> boardIds, TriadCoords here, Direction d1,
-			TriadCoords there, Direction d2) {
+			Map<TriadCoords, Integer> boardIds, TriadCoords here,
+			BoardDirection d1, TriadCoords there, BoardDirection d2) {
 		var b1 = boardIds.get(here);
 		var b2 = boardIds.get(there);
 		if (isNull(b1) || isNull(b2)) {

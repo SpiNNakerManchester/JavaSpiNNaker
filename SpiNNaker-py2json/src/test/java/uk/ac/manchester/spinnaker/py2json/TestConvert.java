@@ -37,9 +37,9 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
-import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 
 class TestConvert {
@@ -112,7 +112,7 @@ class TestConvert {
 			var c = mdl.loadClassicConfigurationDefinition(f, false);
 			var m = c.machines.get(0);
 			assertNotNull(m);
-			assertEquals(EnumSet.of(Link.east),
+			assertEquals(EnumSet.of(Direction.EAST),
 					m.deadLinks.get(new TriadCoords(0, 0, 0)));
 			assertNotEquals("", c.toString());
 		}

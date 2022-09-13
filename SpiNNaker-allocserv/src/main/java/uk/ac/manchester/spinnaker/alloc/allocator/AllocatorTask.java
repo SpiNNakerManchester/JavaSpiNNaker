@@ -58,7 +58,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /**
@@ -75,8 +75,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	/**
 	 * @see #setPower(Connection,int,PowerState)
 	 */
-	private static final EnumSet<Direction> NO_PERIMETER =
-			EnumSet.noneOf(Direction.class);
+	private static final EnumSet<BoardDirection> NO_PERIMETER =
+			EnumSet.noneOf(BoardDirection.class);
 
 	private static final Logger log = getLogger(AllocatorTask.class);
 
@@ -916,12 +916,12 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			var perimeterLinks = new HashMap<Integer, EnumSet<Direction>>();
+			var perimeterLinks = new HashMap<Integer, EnumSet<BoardDirection>>();
 			for (var row : sql.getPerimeter.call(jobId)) {
 				perimeterLinks
 						.computeIfAbsent(row.getInt("board_id"),
-								k -> EnumSet.noneOf(Direction.class))
-						.add(row.getEnum("direction", Direction.class));
+								k -> EnumSet.noneOf(BoardDirection.class))
+						.add(row.getEnum("direction", BoardDirection.class));
 			}
 
 			for (var boardId : boards) {
@@ -929,12 +929,12 @@ public class AllocatorTask extends DatabaseAwareBean
 						NO_PERIMETER);
 				numPending += sql.issuePowerChange.call(jobId, boardId,
 						sourceState, targetState, true,
-						!toChange.contains(Direction.N),
-						!toChange.contains(Direction.E),
-						!toChange.contains(Direction.SE),
-						!toChange.contains(Direction.S),
-						!toChange.contains(Direction.W),
-						!toChange.contains(Direction.NW));
+						!toChange.contains(BoardDirection.N),
+						!toChange.contains(BoardDirection.E),
+						!toChange.contains(BoardDirection.SE),
+						!toChange.contains(BoardDirection.S),
+						!toChange.contains(BoardDirection.W),
+						!toChange.contains(BoardDirection.NW));
 			}
 		} else {
 			// Powering off; all links switch to off so no perimeter check

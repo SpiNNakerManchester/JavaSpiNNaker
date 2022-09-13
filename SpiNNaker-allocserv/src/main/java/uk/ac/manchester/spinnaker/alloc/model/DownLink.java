@@ -20,7 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import uk.ac.manchester.spinnaker.machine.board.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 
 /**
  * Describes a link that is disabled.
@@ -35,7 +35,7 @@ public final class DownLink {
 	 * @author Donal Fellows
 	 */
 	public static final class End {
-		private End(BoardCoords board, Direction direction) {
+		private End(BoardCoords board, BoardDirection direction) {
 			this.board = board;
 			this.direction = direction;
 		}
@@ -48,7 +48,7 @@ public final class DownLink {
 		/**
 		 * In which direction does this end of the link go?
 		 */
-		public final Direction direction;
+		public final BoardDirection direction;
 	}
 
 	/**
@@ -63,8 +63,8 @@ public final class DownLink {
 	 * @param dir2
 	 *            In which direction off of {@code board2} is the link.
 	 */
-	public DownLink(BoardCoords board1, Direction dir1, BoardCoords board2,
-			Direction dir2) {
+	public DownLink(BoardCoords board1, BoardDirection dir1, BoardCoords board2,
+			BoardDirection dir2) {
 		end1 = new End(board1, dir1);
 		end2 = new End(board2, dir2);
 	}

@@ -81,7 +81,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
@@ -701,8 +701,8 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 				row.getInt("board_2_y"), row.getInt("board_2_z"),
 				row.getInt("board_2_c"), row.getInt("board_2_f"),
 				row.getInteger("board_2_b"), row.getString("board_2_addr"));
-		return new DownLink(board1, row.getEnum("dir_1", Direction.class),
-				board2, row.getEnum("dir_2", Direction.class));
+		return new DownLink(board1, row.getEnum("dir_1", BoardDirection.class),
+				board2, row.getEnum("dir_2", BoardDirection.class));
 	}
 
 	private class MachineImpl implements Machine {

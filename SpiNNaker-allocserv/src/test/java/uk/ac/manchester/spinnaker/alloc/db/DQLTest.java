@@ -50,7 +50,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 
 /**
  * Tests of queries. Ensures that the SQL and the schema remain synchronized.
@@ -511,7 +511,7 @@ class DQLTest extends SQLQueries {
 							"board_num", "cabinet", "frame", "bmp_id"),
 					colNames);
 			// Ensure that this link is maintained
-			for (var d : Direction.values()) {
+			for (var d : BoardDirection.values()) {
 				assertTrue(colNames.contains(d.columnName),
 						() -> format("%s must contain %s", colNames,
 								d.columnName));

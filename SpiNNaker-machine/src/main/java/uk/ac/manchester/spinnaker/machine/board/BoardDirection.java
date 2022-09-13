@@ -20,11 +20,17 @@ import static uk.ac.manchester.spinnaker.machine.board.FPGA.FPGA_E_S;
 import static uk.ac.manchester.spinnaker.machine.board.FPGA.FPGA_N_NE;
 import static uk.ac.manchester.spinnaker.machine.board.FPGA.FPGA_SW_W;
 
+import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
- * Represents link directions of a board.
+ * Represents link directions of a SpiNNaker board.
  * <p>
- * <img src="doc-files/Directions.png" width="300"
- *		alt="SpiNNaker board neighbourhood">
+ * Note that {@linkplain Direction inter-chip directions} are
+ * <em>different!</em> Do not mix them up!
+ * <p>
+ * <img src="doc-files/Directions.png" width="300" alt="SpiNNaker board
+ * neighbourhood">
  * <p>
  * Note how this is tilted over with respect to classical compass directions; to
  * <em>actually</em> go "true vertically north", you have to go first {@link #N}
@@ -34,7 +40,8 @@ import static uk.ac.manchester.spinnaker.machine.board.FPGA.FPGA_SW_W;
  *
  * @author Donal Fellows
  */
-public enum Direction {
+@UsedInJavadocOnly(Direction.class)
+public enum BoardDirection {
 	// Order must match that in database
 	/** Northward, from {@code x} to {@code a}. */
 	N(FPGA_N_NE, 0, "fpga_n", 3),
@@ -71,7 +78,7 @@ public enum Direction {
 	/** The number of the opposite of the link. */
 	private int oppo;
 
-	Direction(FPGA fpga, int bankSelect, String columnName, int opposite) {
+	BoardDirection(FPGA fpga, int bankSelect, String columnName, int opposite) {
 		this.fpga = fpga;
 		this.bank = bankSelect;
 		this.columnName = columnName;
@@ -84,7 +91,7 @@ public enum Direction {
 	 *
 	 * @return The opposite direction.
 	 */
-	public Direction opposite() {
+	public BoardDirection opposite() {
 		return values()[oppo];
 	}
 }

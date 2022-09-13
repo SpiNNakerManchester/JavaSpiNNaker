@@ -42,11 +42,13 @@ import uk.ac.manchester.spinnaker.alloc.model.MachineListEntryRecord;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.proxy.ProxyCore;
 import uk.ac.manchester.spinnaker.alloc.security.Permit;
+import uk.ac.manchester.spinnaker.alloc.web.CreateJobRequest.Dimensions;
 import uk.ac.manchester.spinnaker.alloc.web.IssueReportRequest;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
+import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardCoordinates;
 import uk.ac.manchester.spinnaker.spalloc.messages.BoardPhysicalCoordinates;
@@ -321,6 +323,22 @@ public interface SpallocAPI {
 			this.height = height;
 		}
 
+		/**
+		 * Request a rectangle of boards. The service <em>may</em>
+		 * over-allocate.
+		 *
+		 * @param dimensions
+		 *            The size of rectangle to request, in boards.
+		 * @param maxDeadBoards
+		 *            The number of dead boards that can be tolerated in that
+		 *            rectangle.
+		 */
+		public CreateDimensions(Dimensions dimensions, Integer maxDeadBoards) {
+			super(maxDeadBoards);
+			this.width = dimensions.width;
+			this.height = dimensions.height;
+		}
+
 		@Override
 		<T> T doVisit(CreateVisitor<T> visitor) {
 			return visitor.dimensions(this);
@@ -338,13 +356,13 @@ public interface SpallocAPI {
 		public final TriadCoords triad;
 
 		/** The physical coordinates, or {@code null}. */
-		public final Phys physical;
+		public final BoardPhysicalCoords physical;
 
 		/** The network coordinates, or {@code null}. */
 		public final String ip;
 
-		private HasBoardCoords(TriadCoords triad, Phys physical, String ip,
-				Integer maxDeadBoards) {
+		private HasBoardCoords(TriadCoords triad, BoardPhysicalCoords physical,
+				String ip, Integer maxDeadBoards) {
 			super(maxDeadBoards);
 			this.triad = triad;
 			this.physical = physical;
@@ -394,6 +412,65 @@ public interface SpallocAPI {
 		 * Create a request for a rectangle at a specific board. The board will
 		 * have a Z coordinate of 0.
 		 *
+		 * @param dimensions
+		 *            Size of request, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(Dimensions dimensions, int x, int y,
+				Integer maxDeadBoards) {
+			super(new TriadCoords(x, y, 0), null, null, maxDeadBoards);
+			this.width = dimensions.width;
+			this.height = dimensions.height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board will
+		 * have a Z coordinate of 0.
+		 *
+		 * @param dimensions
+		 *            Size of request, in triads.
+		 * @param rootTriad
+		 *            The triad coordinates of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(Dimensions dimensions, TriadCoords rootTriad,
+				Integer maxDeadBoards) {
+			super(rootTriad, null, null, maxDeadBoards);
+			this.width = dimensions.width;
+			this.height = dimensions.height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board will
+		 * have a Z coordinate of 0.
+		 *
+		 * @param dimensions
+		 *            Size of request, in triads.
+		 * @param rootPhysical
+		 *            The physical coordinates of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(Dimensions dimensions,
+				BoardPhysicalCoords rootPhysical, Integer maxDeadBoards) {
+			super(null, rootPhysical, null, maxDeadBoards);
+			this.width = dimensions.width;
+			this.height = dimensions.height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board will
+		 * have a Z coordinate of 0.
+		 *
 		 * @param width
 		 *            Width requested, in triads.
 		 * @param height
@@ -412,6 +489,28 @@ public interface SpallocAPI {
 					0), null, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board will
+		 * have a Z coordinate of 0.
+		 *
+		 * @param dimensions
+		 *            Size of request, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(Dimensions dimensions, Integer x, Integer y,
+				Integer maxDeadBoards) {
+			super(new TriadCoords(HasBoardCoords.get(x), HasBoardCoords.get(y),
+					0), null, null, maxDeadBoards);
+			this.width = dimensions.width;
+			this.height = dimensions.height;
 		}
 
 		/**
@@ -469,6 +568,30 @@ public interface SpallocAPI {
 		 * Create a request for a rectangle at a specific board. The board must
 		 * have a Z coordinate of 0.
 		 *
+		 * @param dimensions
+		 *            Size requested, in triads.
+		 * @param x
+		 *            The X coordinate of the root board of the request.
+		 * @param y
+		 *            The Y coordinate of the root board of the request.
+		 * @param z
+		 *            The Z coordinate of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(Dimensions dimensions, Integer x, Integer y,
+				Integer z, Integer maxDeadBoards) {
+			super(new TriadCoords(HasBoardCoords.get(x), HasBoardCoords.get(y),
+					HasBoardCoords.get(z)), null, null, maxDeadBoards);
+			this.width = dimensions.width;
+			this.height = dimensions.height;
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
 		 * @param width
 		 *            Width requested, in triads.
 		 * @param height
@@ -486,8 +609,27 @@ public interface SpallocAPI {
 			this.height = height;
 		}
 
-		private CreateDimensionsAt(int width, int height, Phys physical,
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param dimensions
+		 *            Size requested, in triads.
+		 * @param ip
+		 *            The network address of the root board of the request.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 */
+		public CreateDimensionsAt(Dimensions dimensions, String ip,
 				Integer maxDeadBoards) {
+			super(null, null, ip, maxDeadBoards);
+			this.width = dimensions.width;
+			this.height = dimensions.height;
+		}
+
+		private CreateDimensionsAt(int width, int height,
+				BoardPhysicalCoords physical, Integer maxDeadBoards) {
 			super(null, physical, null, maxDeadBoards);
 			this.width = width;
 			this.height = height;
@@ -516,7 +658,8 @@ public interface SpallocAPI {
 				int cabinet, int frame, int board, Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
-					new Phys(cabinet, frame, board), maxDeadBoards);
+					new BoardPhysicalCoords(cabinet, frame, board),
+					maxDeadBoards);
 		}
 
 		/**
@@ -543,7 +686,34 @@ public interface SpallocAPI {
 				Integer maxDeadBoards) {
 			// Done like this to avoid syntactic ambiguity
 			return new CreateDimensionsAt(width, height,
-					new Phys(HasBoardCoords.get(cabinet),
+					new BoardPhysicalCoords(HasBoardCoords.get(cabinet),
+							HasBoardCoords.get(frame),
+							HasBoardCoords.get(board)), maxDeadBoards);
+		}
+
+		/**
+		 * Create a request for a rectangle at a specific board. The board must
+		 * have a Z coordinate of 0.
+		 *
+		 * @param dimensions
+		 *            Size requested, in triads.
+		 * @param cabinet
+		 *            The cabinet number of the root board of the request.
+		 * @param frame
+		 *            The frame number of the root board.
+		 * @param board
+		 *            The board number of the root board.
+		 * @param maxDeadBoards
+		 *            The maximum number of dead boards tolerated in the
+		 *            allocation. Ignored when asking for a single board.
+		 * @return Descriptor
+		 */
+		public static CreateDimensionsAt physical(Dimensions dimensions,
+				Integer cabinet, Integer frame, Integer board,
+				Integer maxDeadBoards) {
+			// Done like this to avoid syntactic ambiguity
+			return new CreateDimensionsAt(dimensions.width, dimensions.height,
+					new BoardPhysicalCoords(HasBoardCoords.get(cabinet),
 							HasBoardCoords.get(frame),
 							HasBoardCoords.get(board)), maxDeadBoards);
 		}
@@ -559,29 +729,12 @@ public interface SpallocAPI {
 		}
 	}
 
-	/** A physical coordinate. */
-	final class Phys { // FIXME
-		private Phys(int cabinet, int frame, int board) {
-			this.cabinet = cabinet;
-			this.frame = frame;
-			this.board = board;
-		}
-
-		/** Cabinet number. */
-		public final int cabinet;
-
-		/** Frame number. */
-		public final int frame;
-
-		/** Board number. */
-		public final int board;
-	}
-
 	/**
 	 * A request for a specific board.
 	 */
 	final class CreateBoard extends HasBoardCoords {
-		private CreateBoard(TriadCoords triad, Phys physical, String ip) {
+		private CreateBoard(TriadCoords triad, BoardPhysicalCoords physical,
+				String ip) {
 			super(triad, physical, ip, null);
 		}
 
@@ -623,7 +776,19 @@ public interface SpallocAPI {
 		 * @return Descriptor
 		 */
 		public static CreateBoard physical(int cabinet, int frame, int board) {
-			return new CreateBoard(null, new Phys(cabinet, frame, board), null);
+			return new CreateBoard(null,
+					new BoardPhysicalCoords(cabinet, frame, board), null);
+		}
+
+		/**
+		 * Create a request for a specific board.
+		 *
+		 * @param physical
+		 *            The physical coordinates of the board.
+		 * @return Descriptor
+		 */
+		public static CreateBoard physical(BoardPhysicalCoords physical) {
+			return new CreateBoard(null, physical, null);
 		}
 
 		/**

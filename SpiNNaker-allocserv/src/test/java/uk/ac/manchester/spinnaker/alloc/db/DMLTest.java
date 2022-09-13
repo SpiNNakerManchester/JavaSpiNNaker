@@ -49,7 +49,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
-import uk.ac.manchester.spinnaker.machine.board.Direction;
+import uk.ac.manchester.spinnaker.machine.board.BoardDirection;
 import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 
 /**
@@ -379,8 +379,8 @@ class DMLTest extends SQLQueries {
 			assertEquals(5, u.getNumArguments());
 			c.transaction(() -> {
 				// No board
-				assertThrowsFK(() -> u.keys(NO_BOARD, Direction.N, NO_BOARD,
-						Direction.S, false));
+				assertThrowsFK(() -> u.keys(NO_BOARD, BoardDirection.N,
+						NO_BOARD, BoardDirection.S, false));
 			});
 		}
 	}
@@ -872,7 +872,7 @@ class DMLTest extends SQLQueries {
 			assertEquals(4, u.getNumArguments());
 			c.transaction(() -> {
 				// No such board, so no insert
-				assertEquals(0, u.call(NO_BOARD, -1, -1, Direction.N));
+				assertEquals(0, u.call(NO_BOARD, -1, -1, BoardDirection.N));
 			});
 		}
 	}

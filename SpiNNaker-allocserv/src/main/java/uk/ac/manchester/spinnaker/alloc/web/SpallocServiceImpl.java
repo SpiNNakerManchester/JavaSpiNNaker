@@ -276,28 +276,22 @@ public class SpallocServiceImpl extends BackgroundSupport
 			if (nonNull(req.board)) {
 				// Both dimensions AND board; rooted rectangle
 				if (nonNull(req.board.x)) {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.x, req.board.y,
-							req.board.z);
+					return new CreateDimensionsAt(req.dimensions,
+							req.board.getTriad(), req.maxDeadBoards);
 				} else if (nonNull(req.board.cabinet)) {
-					return CreateDimensionsAt.physical(req.dimensions.width,
-							req.dimensions.height, req.board.cabinet,
-							req.board.frame, req.board.board,
-							req.maxDeadBoards);
+					return new CreateDimensionsAt(req.dimensions,
+							req.board.getPhysical(), req.maxDeadBoards);
 				} else {
-					return new CreateDimensionsAt(req.dimensions.width,
-							req.dimensions.height, req.board.address,
-							req.maxDeadBoards);
+					return new CreateDimensionsAt(req.dimensions,
+							req.board.address, req.maxDeadBoards);
 				}
 			}
-			return new CreateDimensions(req.dimensions.width,
-					req.dimensions.height, req.maxDeadBoards);
+			return new CreateDimensions(req.dimensions, req.maxDeadBoards);
 		} else if (nonNull(req.board)) {
 			if (nonNull(req.board.x)) {
-				return triad(req.board.x, req.board.y, req.board.z);
+				return triad(req.board.getTriad());
 			} else if (nonNull(req.board.cabinet)) {
-				return physical(req.board.cabinet, req.board.frame,
-						req.board.board);
+				return physical(req.board.getPhysical());
 			} else {
 				return address(req.board.address);
 			}

@@ -33,6 +33,8 @@ import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
+import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
 
 /**
@@ -194,6 +196,18 @@ public class CreateJobRequest {
 		/** The IP address of the board. */
 		@IPAddress(message = "address must be an IP address")
 		public String address;
+
+		/** @return The triad coordinates of the board. */
+		@JsonIgnore
+		public TriadCoords getTriad() {
+			return new TriadCoords(x, y, z);
+		}
+
+		/** @return The physical coordinates of the board. */
+		@JsonIgnore
+		public BoardPhysicalCoords getPhysical() {
+			return new BoardPhysicalCoords(cabinet, frame, board);
+		}
 
 		@JsonIgnore
 		private boolean isTriadValid() {

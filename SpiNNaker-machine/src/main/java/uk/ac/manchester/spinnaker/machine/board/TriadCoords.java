@@ -19,12 +19,12 @@ package uk.ac.manchester.spinnaker.machine.board;
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.ARRAY;
 import static java.lang.Integer.compare;
 import static java.lang.Integer.parseUnsignedInt;
-import static uk.ac.manchester.spinnaker.machine.board.Direction.E;
-import static uk.ac.manchester.spinnaker.machine.board.Direction.N;
-import static uk.ac.manchester.spinnaker.machine.board.Direction.NW;
-import static uk.ac.manchester.spinnaker.machine.board.Direction.S;
-import static uk.ac.manchester.spinnaker.machine.board.Direction.SE;
-import static uk.ac.manchester.spinnaker.machine.board.Direction.W;
+import static uk.ac.manchester.spinnaker.machine.board.BoardDirection.E;
+import static uk.ac.manchester.spinnaker.machine.board.BoardDirection.N;
+import static uk.ac.manchester.spinnaker.machine.board.BoardDirection.NW;
+import static uk.ac.manchester.spinnaker.machine.board.BoardDirection.S;
+import static uk.ac.manchester.spinnaker.machine.board.BoardDirection.SE;
+import static uk.ac.manchester.spinnaker.machine.board.BoardDirection.W;
 import static java.util.Map.entry;
 import static java.util.Objects.requireNonNull;
 
@@ -227,34 +227,35 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 * offset from this layout.)
 	 *
 	 * @author Donal Fellows
-	 * @see Direction
+	 * @see BoardDirection
 	 * @see TriadCoords
 	 */
-	private static final Map<Integer, Map<Direction, Delta>> MOVES = Map.of(
-			// When Z = 0
-			0, Map.ofEntries(//
-					entry(N,  new Delta(+0, +0, +2)),
-					entry(E,  new Delta(+0, +0, +1)),
-					entry(SE, new Delta(+0, -1, +2)),
-					entry(S,  new Delta(-1, -1, +1)),
-					entry(W,  new Delta(-1, -1, +2)),
-					entry(NW, new Delta(-1, +0, +1))),
-			// When Z = 1
-			1, Map.ofEntries(//
-					entry(N,  new Delta(+1, +1, -1)),
-					entry(E,  new Delta(+1, +0, +1)),
-					entry(SE, new Delta(+1, +0, -1)),
-					entry(S,  new Delta(+0, -1, +1)),
-					entry(W,  new Delta(+0, +0, -1)),
-					entry(NW, new Delta(+0, +0, +1))),
-			// When Z = 2
-			2, Map.ofEntries(//
-					entry(N,  new Delta(+0, +1, -1)),
-					entry(E,  new Delta(+1, +1, -2)),
-					entry(SE, new Delta(+0, +0, -1)),
-					entry(S,  new Delta(+0, +0, -2)),
-					entry(W,  new Delta(-1, +0, -1)),
-					entry(NW, new Delta(+0, +1, -2))));
+	private static final Map<Integer, Map<BoardDirection, Delta>> MOVES =
+			Map.of(
+					// When Z = 0
+					0, Map.ofEntries(//
+							entry(N,  new Delta(+0, +0, +2)),
+							entry(E,  new Delta(+0, +0, +1)),
+							entry(SE, new Delta(+0, -1, +2)),
+							entry(S,  new Delta(-1, -1, +1)),
+							entry(W,  new Delta(-1, -1, +2)),
+							entry(NW, new Delta(-1, +0, +1))),
+					// When Z = 1
+					1, Map.ofEntries(//
+							entry(N,  new Delta(+1, +1, -1)),
+							entry(E,  new Delta(+1, +0, +1)),
+							entry(SE, new Delta(+1, +0, -1)),
+							entry(S,  new Delta(+0, -1, +1)),
+							entry(W,  new Delta(+0, +0, -1)),
+							entry(NW, new Delta(+0, +0, +1))),
+					// When Z = 2
+					2, Map.ofEntries(//
+							entry(N,  new Delta(+0, +1, -1)),
+							entry(E,  new Delta(+1, +1, -2)),
+							entry(SE, new Delta(+0, +0, -1)),
+							entry(S,  new Delta(+0, +0, -2)),
+							entry(W,  new Delta(-1, +0, -1)),
+							entry(NW, new Delta(+0, +1, -2))));
 
 	/**
 	 * Get the triad coordinate that you arrive at when you move from the
@@ -267,7 +268,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 	 *            Used to determine where wraparounds are
 	 * @return The new location
 	 */
-	public TriadCoords move(Direction direction,
+	public TriadCoords move(BoardDirection direction,
 			MachineBoardDimensions machineDimensions) {
 		var di = MOVES.get(z).get(direction);
 		return new TriadCoords(limit(x + di.dx, machineDimensions.width),

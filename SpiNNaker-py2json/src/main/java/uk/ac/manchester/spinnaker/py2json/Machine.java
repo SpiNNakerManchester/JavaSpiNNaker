@@ -35,9 +35,9 @@ import org.python.core.PyObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.board.BMPCoords;
 import uk.ac.manchester.spinnaker.machine.board.BoardPhysicalCoords;
-import uk.ac.manchester.spinnaker.machine.board.Link;
 import uk.ac.manchester.spinnaker.machine.board.TriadCoords;
 import uk.ac.manchester.spinnaker.machine.tags.IPAddress;
 
@@ -65,7 +65,7 @@ public final class Machine {
 	 * The extra dead links of the machine. Doesn't include links to dead
 	 * boards.
 	 */
-	public final Map<@Valid TriadCoords, EnumSet<Link>> deadLinks;
+	public final Map<@Valid TriadCoords, EnumSet<Direction>> deadLinks;
 
 	/** The logical-to-physical board location map. */
 	public final Map<@Valid TriadCoords,
@@ -88,8 +88,8 @@ public final class Machine {
 		height = getattr(machine, "height").asInt();
 		deadBoards = toSet(getattr(machine, "dead_boards"), Machine::xyz);
 		deadLinks = toCollectingMap(getattr(machine, "dead_links"),
-				Machine::xyz, () -> noneOf(Link.class),
-				key -> Link.values()[item(key, IDX).asInt()]);
+				Machine::xyz, () -> noneOf(Direction.class),
+				key -> Direction.byId(item(key, IDX).asInt()));
 		boardLocations = toMap(getattr(machine, "board_locations"),
 				Machine::xyz, Machine::cfb);
 		bmpIPs = toMap(getattr(machine, "bmp_ips"), Machine::cf,
