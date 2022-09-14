@@ -25,8 +25,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
-import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.int64;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
@@ -35,6 +33,8 @@ import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
 import static uk.ac.manchester.spinnaker.alloc.model.Utils.chip;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.machine.board.TriadCoords.TRIAD_CHIP_SIZE;
+import static uk.ac.manchester.spinnaker.machine.board.TriadCoords.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.utils.OptionalUtils.apply;
 
 import java.time.Duration;

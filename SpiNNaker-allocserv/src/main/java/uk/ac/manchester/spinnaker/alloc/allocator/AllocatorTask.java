@@ -22,7 +22,6 @@ import static java.lang.Math.sqrt;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.enumerate;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.isBusy;
@@ -32,6 +31,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.machine.board.TriadCoords.TRIAD_DEPTH;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -916,7 +916,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			 * switched off because they are links to boards that are not
 			 * allocated to the job. Off-board links are shut off by default.
 			 */
-			var perimeterLinks = new HashMap<Integer, EnumSet<BoardDirection>>();
+			var perimeterLinks =
+					new HashMap<Integer, EnumSet<BoardDirection>>();
 			for (var row : sql.getPerimeter.call(jobId)) {
 				perimeterLinks
 						.computeIfAbsent(row.getInt("board_id"),

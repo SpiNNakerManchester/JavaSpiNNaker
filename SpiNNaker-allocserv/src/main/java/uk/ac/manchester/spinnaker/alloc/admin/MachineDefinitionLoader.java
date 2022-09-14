@@ -25,8 +25,8 @@ import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toSet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.sqlite.SQLiteErrorCode.SQLITE_CONSTRAINT_CHECK;
-import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_CHIP_SIZE;
-import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
+import static uk.ac.manchester.spinnaker.machine.board.TriadCoords.TRIAD_CHIP_SIZE;
+import static uk.ac.manchester.spinnaker.machine.board.TriadCoords.TRIAD_DEPTH;
 
 import java.io.File;
 import java.io.IOException;

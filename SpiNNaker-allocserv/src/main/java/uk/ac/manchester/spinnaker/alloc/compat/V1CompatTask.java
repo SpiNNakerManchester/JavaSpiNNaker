@@ -68,6 +68,10 @@ import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 public abstract class V1CompatTask extends V1CompatService.Aware {
 	private static final Logger log = getLogger(V1CompatTask.class);
 
+	/**
+	 * Number of positional arguments when creating a job that indicates a
+	 * specific board by its triad coordinates.
+	 */
 	private static final int TRIAD_COORD_COUNT = 3;
 
 	/**

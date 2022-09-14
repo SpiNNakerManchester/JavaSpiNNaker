@@ -20,6 +20,7 @@ import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
+ * Constants relating to physical units.
  *
  * @author Christian-B
  * @author Donal Fellows

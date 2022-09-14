@@ -20,6 +20,11 @@ import static java.lang.System.arraycopy;
 import static java.lang.System.currentTimeMillis;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static org.slf4j.LoggerFactory.getLogger;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIFTH;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FIRST;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.FOURTH;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.SECOND;
+import static uk.ac.manchester.spinnaker.storage.sqlite.Ordinals.THIRD;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_CONTENT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.ADD_EXTRA_CONTENT;
 import static uk.ac.manchester.spinnaker.storage.sqlite.SQL.FETCH_EXTRA_RECORDING;
@@ -58,16 +63,6 @@ public class SQLiteBufferStorage
 		extends SQLiteConnectionManager<BufferManagerStorage>
 		implements BufferManagerStorage {
 	private static final Logger log = getLogger(SQLiteBufferStorage.class);
-
-	private static final int FIRST = 1;
-
-	private static final int SECOND = 2;
-
-	private static final int THIRD = 3;
-
-	private static final int FOURTH = 4;
-
-	private static final int FIFTH = 5;
 
 	/**
 	 * Create an instance.

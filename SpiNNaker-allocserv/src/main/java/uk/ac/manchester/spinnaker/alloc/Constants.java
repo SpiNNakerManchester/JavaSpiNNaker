@@ -16,24 +16,22 @@
  */
 package uk.ac.manchester.spinnaker.alloc;
 
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
+
 /**
  * Miscellaneous constants.
  *
  * @author Donal Fellows
  */
 public interface Constants {
-	/** The number of boards in a triad. */
-	int TRIAD_DEPTH = 3;
-
-	/** The width and height of a triad, in chips. */
-	int TRIAD_CHIP_SIZE = 12;
-
 	/** Nanoseconds per microsecond. */
-	double NS_PER_US = 1000;
+	double NS_PER_US = NSEC_PER_USEC;
 
 	/** Nanoseconds per millisecond. */
-	double NS_PER_MS = 1000000;
+	double NS_PER_MS = NSEC_PER_SEC / MSEC_PER_SEC;
 
 	/** Nanoseconds per second. */
-	double NS_PER_S = 1e9;
+	double NS_PER_S = NSEC_PER_SEC;
 }

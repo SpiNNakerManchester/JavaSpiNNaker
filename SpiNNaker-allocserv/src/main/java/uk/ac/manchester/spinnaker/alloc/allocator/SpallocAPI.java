@@ -17,8 +17,8 @@
 package uk.ac.manchester.spinnaker.alloc.allocator;
 
 import static java.util.Objects.isNull;
-import static uk.ac.manchester.spinnaker.alloc.Constants.TRIAD_DEPTH;
 import static uk.ac.manchester.spinnaker.alloc.security.SecurityConfig.MAY_SEE_JOB_DETAILS;
+import static uk.ac.manchester.spinnaker.machine.board.TriadCoords.TRIAD_DEPTH;
 
 import java.time.Duration;
 import java.time.Instant;
