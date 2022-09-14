@@ -25,11 +25,12 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
+ * The ID of a SpiNNaker link.
  *
  * @author Christian-B
  */
 public class SpinnakerLinkData extends AbstractDataLink {
-	/** The link ID from the SpiNNaker prospective. */
+	/** The link ID from the SpiNNaker perspective. */
 	@Min(0)
 	@Max(1)
 	public final int spinnakerLinkId;

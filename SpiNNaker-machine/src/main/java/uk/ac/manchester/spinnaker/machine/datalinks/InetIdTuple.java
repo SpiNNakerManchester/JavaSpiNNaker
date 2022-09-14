@@ -23,6 +23,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 /**
+ * A tuple of an IP address and a SpiNNaker link ID.
  *
  * @author Christian-B
  */
@@ -30,7 +31,7 @@ public class InetIdTuple {
 	/** The InetAddress of this tuple which may be {@code null}. */
 	public final InetAddress address;
 
-	/** The ID of this tuple. */
+	/** The SpiNNaker link ID of this tuple. */
 	@Min(0)
 	@Max(1)
 	public final int id;
