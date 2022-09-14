@@ -21,7 +21,7 @@ import static java.lang.Thread.interrupted;
 import static java.lang.reflect.Array.newInstance;
 import static java.util.Objects.isNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_S;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -201,7 +201,7 @@ abstract class Utils {
 			return null;
 		}
 		double ts = instant.getEpochSecond();
-		ts += instant.getNano() / NS_PER_S;
+		ts += instant.getNano() / (double) NSEC_PER_SEC;
 		return ts;
 	}
 

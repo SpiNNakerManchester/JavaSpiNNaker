@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.utils;
 
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 /**
  * Constants relating to physical units.
@@ -49,6 +51,9 @@ public final class UnitConstants {
 
 	/** The number of nanoseconds per microsecond. */
 	public static final double NSEC_PER_USEC = 1000.0;
+
+	/** The number of nanoseconds per millisecond. */
+	public static final double NSEC_PER_MSEC = 1000000.0;
 
 	/**
 	 * Formats a duration with hours, minutes seconds and milliseconds as

@@ -20,13 +20,13 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
-import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_S;
 import static uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateBoard.triad;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.mapToArray;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.parseDec;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.state;
 import static uk.ac.manchester.spinnaker.alloc.compat.Utils.timestamp;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -210,7 +210,7 @@ class V1TaskImpl extends V1CompatTask {
 			return d;
 		}
 		double fractionalPart = keepalive.doubleValue() - keepalive.longValue();
-		return d.plusNanos((long) (fractionalPart * NS_PER_S));
+		return d.plusNanos((long) (fractionalPart * NSEC_PER_SEC));
 	}
 
 	/**

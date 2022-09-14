@@ -39,8 +39,6 @@ import static org.sqlite.SQLiteConfig.JournalMode.WAL;
 import static org.sqlite.SQLiteConfig.SynchronousMode.NORMAL;
 import static org.sqlite.SQLiteConfig.TransactionMode.DEFERRED;
 import static org.sqlite.SQLiteConfig.TransactionMode.IMMEDIATE;
-import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_MS;
-import static uk.ac.manchester.spinnaker.alloc.Constants.NS_PER_US;
 import static uk.ac.manchester.spinnaker.alloc.IOUtils.serialize;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.SQLiteFlags.SQLITE_DIRECTONLY;
@@ -50,6 +48,8 @@ import static uk.ac.manchester.spinnaker.alloc.db.Utils.mapException;
 import static uk.ac.manchester.spinnaker.alloc.db.Utils.trimSQL;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.threadBound;
 import static uk.ac.manchester.spinnaker.storage.threading.OneThread.uncloseableThreadBound;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_MSEC;
+import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_USEC;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -270,8 +270,8 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 					.forEach(e -> log.info(
 							"statement execution time "
 									+ "{}us (max: {}us) for: {}",
-							e.getValue().getMean() / NS_PER_US,
-							e.getValue().getMax() / NS_PER_US,
+							e.getValue().getMean() / NSEC_PER_USEC,
+							e.getValue().getMax() / NSEC_PER_USEC,
 							trimSQL(e.getKey(), TRIM_PERF_LOG_LENGTH)));
 		}
 	}
@@ -727,7 +727,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				long dt = unlockTimestamp - lockTimestamp;
 				if (dt > noteThreshold) {
 					log.info("transaction lock was held for {}ms",
-							dt / NS_PER_MS);
+							dt / NSEC_PER_MSEC);
 				}
 			}
 
@@ -740,7 +740,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 				log.warn(
 						"transaction lock being held excessively by "
 								+ "{} (> {}ms); current transactions are {}",
-						lockingContext, dt / NS_PER_MS,
+						lockingContext, dt / NSEC_PER_MSEC,
 						currentTransactionHolders());
 			}
 		}
