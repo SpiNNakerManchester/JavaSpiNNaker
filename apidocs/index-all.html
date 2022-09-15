@@ -1651,7 +1651,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A Description of a Spinnaker Chip including its Router.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Iterable,uk.ac.manchester.spinnaker.machine.Router,int,java.net.InetAddress,boolean,java.util.List,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip(ChipLocation, Iterable&lt;Processor&gt;, Router, int, InetAddress, boolean, List&lt;Integer&gt;, ChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Iterable,uk.ac.manchester.spinnaker.machine.Router,int,java.net.InetAddress,java.util.List,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip(ChipLocation, Iterable&lt;Processor&gt;, Router, int, InetAddress, List&lt;Integer&gt;, ChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>
 <div class="block">Main constructor which sets all parameters.</div>
 </dd>
@@ -1661,11 +1661,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Iterable,uk.ac.manchester.spinnaker.machine.Router,java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip(ChipLocation, Iterable&lt;Processor&gt;, Router, InetAddress, ChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>
-<div class="block">Constructor for a virtual Chip with the non-default processors.</div>
+<div class="block">Constructor for a Chip with the non-default processors.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,uk.ac.manchester.spinnaker.machine.Router,java.net.InetAddress,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip(ChipLocation, Router, InetAddress, ChipLocation)</a></span> - Constructor for class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
 <dd>
-<div class="block">Constructor for a virtual Chip with the default processors.</div>
+<div class="block">Constructor for a Chip with the default processors.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html#CHIP_X">CHIP_X</a></span> - Static variable in interface uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/WebServiceComponentNames.html" title="interface in uk.ac.manchester.spinnaker.alloc.web">WebServiceComponentNames</a></dt>
 <dd>
@@ -8134,8 +8134,6 @@ loadScripts(document, 'script');</script>
 <div class="block">An SCP response to a request for the version of software running.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/front_end/download/request/Placement.html#getVertex()">getVertex()</a></span> - Method in class uk.ac.manchester.spinnaker.front_end.download.request.<a href="uk/ac/manchester/spinnaker/front_end/download/request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#getVirtual()">getVirtual()</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/ChipInfo.html#getVirtualCoreIDs()">getVirtualCoreIDs()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/ChipInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ChipInfo</a></dt>
 <dd>&nbsp;</dd>
@@ -15132,8 +15130,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set a particular boot value.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html#setVirtual(java.lang.Boolean)">setVirtual(Boolean)</a></span> - Method in class uk.ac.manchester.spinnaker.machine.bean.<a href="uk/ac/manchester/spinnaker/machine/bean/ChipResources.html" title="class in uk.ac.manchester.spinnaker.machine.bean">ChipResources</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html#setWatchDogTimeout(int)">setWatchDogTimeout(int)</a></span> - Method in interface uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a></dt>
 <dd>
 <div class="block">Set the value of the watch dog timer.</div>
@@ -18309,10 +18305,6 @@ the order they are declared.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/alloc/web/ControllerUtils.ViewFactory.html#%3Cinit%3E(java.lang.String)">ViewFactory(String)</a></span> - Constructor for class uk.ac.manchester.spinnaker.alloc.web.<a href="uk/ac/manchester/spinnaker/alloc/web/ControllerUtils.ViewFactory.html" title="class in uk.ac.manchester.spinnaker.alloc.web">ControllerUtils.ViewFactory</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/machine/Chip.html#virtual">virtual</a></span> - Variable in class uk.ac.manchester.spinnaker.machine.<a href="uk/ac/manchester/spinnaker/machine/Chip.html" title="class in uk.ac.manchester.spinnaker.machine">Chip</a></dt>
-<dd>
-<div class="block">boolean which defines if this chip is a virtual one.</div>
-</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html#virtual_to_physical_core_map">virtual_to_physical_core_map</a></span> - uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/SystemVariableDefinition.html" title="enum in uk.ac.manchester.spinnaker.messages.model">SystemVariableDefinition</a></dt>
 <dd>
 <div class="block">The virtual core ID to physical core ID map.</div>

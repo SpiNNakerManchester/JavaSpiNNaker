@@ -157,13 +157,6 @@ implements <a href="HasChipLocation.html" title="interface in uk.ac.manchester.s
 <div class="block">The size of the SDRAM.</div>
 </td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#virtual">virtual</a></span></code></th>
-<td class="colLast">
-<div class="block">boolean which defines if this chip is a virtual one.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -186,12 +179,11 @@ implements <a href="HasChipLocation.html" title="interface in uk.ac.manchester.s
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Iterable,uk.ac.manchester.spinnaker.machine.Router,int,java.net.InetAddress,boolean,java.util.List,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip</a></span>&#8203;(<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;location,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Iterable,uk.ac.manchester.spinnaker.machine.Router,int,java.net.InetAddress,java.util.List,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip</a></span>&#8203;(<a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;location,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;&nbsp;processors,
 <a href="Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a>&nbsp;router,
 int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
-boolean&nbsp;virtual,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;tagIds,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
@@ -216,7 +208,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
-<div class="block">Constructor for a virtual Chip with the non-default processors.</div>
+<div class="block">Constructor for a Chip with the non-default processors.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -225,7 +217,7 @@ int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</code></th>
 <td class="colLast">
-<div class="block">Constructor for a virtual Chip with the default processors.</div>
+<div class="block">Constructor for a Chip with the default processors.</div>
 </td>
 </tr>
 </tbody>
@@ -394,13 +386,6 @@ int&nbsp;sdram,
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="virtual">virtual</a></h3>
-<div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">virtual</span></div>
-<div class="block">boolean which defines if this chip is a virtual one.</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
 <h3><a id="nearestEthernet">nearestEthernet</a></h3>
 <div class="memberSignature"><span class="modifiers">public final</span>&nbsp;<span class="returnType"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a></span>&nbsp;<span class="memberName">nearestEthernet</span></div>
 <div class="block">The nearest Ethernet coordinates, or <code>null</code> if none known.</div>
@@ -418,13 +403,12 @@ int&nbsp;sdram,
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Iterable,uk.ac.manchester.spinnaker.machine.Router,int,java.net.InetAddress,boolean,java.util.List,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip</a></h3>
+<h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.ChipLocation,java.lang.Iterable,uk.ac.manchester.spinnaker.machine.Router,int,java.net.InetAddress,java.util.List,uk.ac.manchester.spinnaker.machine.ChipLocation)">Chip</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Chip</span>&#8203;(<span class="arguments"><a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;location,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html?is-external=true" title="class or interface in java.lang" class="externalLink">Iterable</a>&lt;<a href="Processor.html" title="class in uk.ac.manchester.spinnaker.machine">Processor</a>&gt;&nbsp;processors,
 <a href="Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a>&nbsp;router,
 int&nbsp;sdram,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
-boolean&nbsp;virtual,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;tagIds,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</span></div>
 <div class="block">Main constructor which sets all parameters.</div>
@@ -437,7 +421,6 @@ boolean&nbsp;virtual,
 <dd><code>sdram</code> - The size of the SDRAM.</dd>
 <dd><code>ipAddress</code> - The IP address of the chip or <code>null</code> if no Ethernet
             attached.</dd>
-<dd><code>virtual</code> - boolean which defines if this chip is a virtual one</dd>
 <dd><code>tagIds</code> - List of SDP identifiers available. Can be empty to force
             empty. If <code>null</code>, will use the default list for Ethernet
             Chips and empty for non-ethernet Chips</dd>
@@ -484,7 +467,7 @@ int&nbsp;sdram,
 <a href="Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a>&nbsp;router,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</span></div>
-<div class="block">Constructor for a virtual Chip with the non-default processors.
+<div class="block">Constructor for a Chip with the non-default processors.
  <p>
  Creates the Router on the fly based on the links.</div>
 <dl>
@@ -510,7 +493,7 @@ int&nbsp;sdram,
 <a href="Router.html" title="class in uk.ac.manchester.spinnaker.machine">Router</a>&nbsp;router,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;ipAddress,
 <a href="ChipLocation.html" title="class in uk.ac.manchester.spinnaker.machine">ChipLocation</a>&nbsp;nearestEthernet)</span></div>
-<div class="block">Constructor for a virtual Chip with the default processors.
+<div class="block">Constructor for a Chip with the default processors.
  <p>
  Creates the Router on the fly based on the links.</div>
 <dl>
