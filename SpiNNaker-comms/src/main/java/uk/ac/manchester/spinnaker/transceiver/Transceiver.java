@@ -1300,10 +1300,6 @@ public class Transceiver extends UDPTransceiver
 		}
 		var coreSubsets = new CoreSubsets();
 		for (var chip : machine.chips()) {
-			if (chip.virtual) {
-				// Skip virtual chips; we can't talk to them
-				continue;
-			}
 			for (var processor : chip.allProcessors()) {
 				coreSubsets.addCore(new CoreLocation(chip.getX(), chip.getY(),
 						processor.processorId));

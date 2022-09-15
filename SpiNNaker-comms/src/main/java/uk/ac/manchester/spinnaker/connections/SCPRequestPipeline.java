@@ -438,13 +438,8 @@ public class SCPRequestPipeline {
 					.issueSequenceNumber(outstandingRequests.keySet()));
 
 			log.debug("sending message with sequence {}", sequence);
-<<<<<<< HEAD
-			Request<T> req = new Request<>(request, callback, errorCallback);
-			if (nonNull(outstandingRequests.put(sequence, req))) {
-=======
 			var req = new Request<>(request, callback, errorCallback);
-			if (outstandingRequests.put(sequence, req) != null) {
->>>>>>> refs/heads/master
+			if (nonNull(outstandingRequests.put(sequence, req))) {
 				throw new DuplicateSequenceNumberException();
 			}
 			numRequests++;
@@ -566,13 +561,8 @@ public class SCPRequestPipeline {
 		}
 		for (int seq : currentSeqs) {
 			log.debug("resending seq {}", seq);
-<<<<<<< HEAD
-			Request<?> req = outstandingRequests.get(seq);
-			if (isNull(req)) {
-=======
 			var req = outstandingRequests.get(seq);
-			if (req == null) {
->>>>>>> refs/heads/master
+			if (isNull(req)) {
 				// Shouldn't happen, but if it does we should nuke it.
 				toRemove.set(seq);
 				continue;

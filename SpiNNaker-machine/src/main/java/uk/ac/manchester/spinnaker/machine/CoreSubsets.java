@@ -265,7 +265,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return integer to use as the hashcode.
 	 */
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		immutable = true;
 		int hash = 7;
 		for (var subset : locations.values()) {
@@ -290,7 +290,7 @@ public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *         exactly the same subsets.
 	 */
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
