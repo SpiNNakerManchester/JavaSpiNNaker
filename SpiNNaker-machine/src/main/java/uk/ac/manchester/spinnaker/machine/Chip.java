@@ -62,9 +62,6 @@ public class Chip implements HasChipLocation {
 	/** The IP address of the chip or None if no Ethernet attached. */
 	public final InetAddress ipAddress;
 
-	/** boolean which defines if this chip is a virtual one. */
-	public final boolean virtual;
-
 	/** List of SDP identifiers available. */
 	private final List<Integer> tagIds;
 
@@ -98,8 +95,6 @@ public class Chip implements HasChipLocation {
 	 * @param ipAddress
 	 *            The IP address of the chip or {@code null} if no Ethernet
 	 *            attached.
-	 * @param virtual
-	 *            boolean which defines if this chip is a virtual one
 	 * @param tagIds
 	 *            List of SDP identifiers available. Can be empty to force
 	 *            empty. If {@code null}, will use the default list for Ethernet
@@ -111,7 +106,7 @@ public class Chip implements HasChipLocation {
 	 *             Thrown if multiple chips share the same id.
 	 */
 	public Chip(ChipLocation location, Iterable<Processor> processors,
-			Router router, int sdram, InetAddress ipAddress, boolean virtual,
+			Router router, int sdram, InetAddress ipAddress,
 			List<Integer> tagIds, ChipLocation nearestEthernet) {
 		this.location = location;
 		monitorProcessors = new TreeMap<>();
@@ -131,7 +126,6 @@ public class Chip implements HasChipLocation {
 		this.router = router;
 		this.sdram = sdram;
 		this.ipAddress = ipAddress;
-		this.virtual = virtual;
 		if (tagIds == null) {
 			if (ipAddress == null) {
 				this.tagIds = List.of();
@@ -172,12 +166,12 @@ public class Chip implements HasChipLocation {
 	public Chip(ChipLocation location, Iterable<Processor> processors,
 			Router router, int sdram, InetAddress ipAddress,
 			ChipLocation nearestEthernet) {
-		this(location, processors, router, sdram, ipAddress, false, null,
+		this(location, processors, router, sdram, ipAddress, null,
 				nearestEthernet);
 	}
 
 	/**
-	 * Constructor for a virtual Chip with the non-default processors.
+	 * Constructor for a Chip with the non-default processors.
 	 * <p>
 	 * Creates the Router on the fly based on the links.
 	 *
@@ -201,12 +195,12 @@ public class Chip implements HasChipLocation {
 	public Chip(ChipLocation location, Iterable<Processor> processors,
 			Router router, InetAddress ipAddress,
 			ChipLocation nearestEthernet) {
-		this(location, processors, router, SDRAM_PER_CHIP, ipAddress, false,
+		this(location, processors, router, SDRAM_PER_CHIP, ipAddress,
 				null, nearestEthernet);
 	}
 
 	/**
-	 * Constructor for a virtual Chip with the default processors.
+	 * Constructor for a Chip with the default processors.
 	 * <p>
 	 * Creates the Router on the fly based on the links.
 	 *
@@ -235,7 +229,6 @@ public class Chip implements HasChipLocation {
 		sdram = SDRAM_PER_CHIP;
 		this.ipAddress = ipAddress;
 
-		virtual = false;
 		if (ipAddress == null) {
 			tagIds = List.of();
 		} else {
@@ -243,11 +236,7 @@ public class Chip implements HasChipLocation {
 		}
 
 		this.nearestEthernet = nearestEthernet;
-		if (virtual) {
-			assert this.nearestEthernet == null;
-		} else {
-			assert this.nearestEthernet != null;
-		}
+		assert this.nearestEthernet != null;
 	}
 
 	Chip(Chip chip, Router newRouter) {
@@ -259,7 +248,6 @@ public class Chip implements HasChipLocation {
 		sdram = chip.sdram;
 		ipAddress = chip.ipAddress;
 
-		virtual = chip.virtual;
 		tagIds = chip.tagIds;
 
 		nearestEthernet = chip.nearestEthernet;
@@ -279,7 +267,6 @@ public class Chip implements HasChipLocation {
 
 		sdram = resources.getSdram();
 		ipAddress = details.getIpAddress();
-		virtual = resources.getVirtual();
 		tagIds = resources.getTags();
 
 		nearestEthernet = details.getEthernet(); // chip.nearestEthernet;
@@ -500,9 +487,6 @@ public class Chip implements HasChipLocation {
 		}
 		if (!Objects.equals(ipAddress, other.ipAddress)) {
 			return "ipAddress";
-		}
-		if (virtual != other.virtual) {
-			return "virtual";
 		}
 		if (!tagIds.equals(other.tagIds)) {
 			return "tagIds " + tagIds + " != " + other.tagIds;

@@ -30,7 +30,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author Christian-B
  */
 public class TestChip {
-
 	private static final ChipLocation LOCATION_00 = new ChipLocation(0, 0);
 
 	private static final ChipLocation LOCATION_01 = new ChipLocation(0, 1);
@@ -80,7 +79,7 @@ public class TestChip {
 	public void testChipBasic() throws UnknownHostException {
 		var tags = List.of(1, 2, 3, 4, 5, 6);
 		var chip = new Chip(LOCATION_00, getProcessors(), createRouter(), 100,
-				createInetAddress(), false, tags, LOCATION_11);
+				createInetAddress(), tags, LOCATION_11);
 		assertEquals(0, chip.getX());
 		assertEquals(0, chip.getY());
 		assertEquals(3, chip.nProcessors());
@@ -102,14 +101,13 @@ public class TestChip {
 		var chip = new Chip(LOCATION_00, getProcessors(), createRouter(), 100,
 				createInetAddress(), LOCATION_11);
 		assertEquals(tags, chip.getTagIds());
-		assertFalse(chip.virtual);
 	}
 
 	@Test
 	public void testChipMonitors() throws UnknownHostException {
 		var tags = List.of(1, 2, 3, 4, 5, 6);
 		var chip = new Chip(LOCATION_00, getProcessors(), createRouter(), 100,
-				createInetAddress(), false, tags, LOCATION_11);
+				createInetAddress(), tags, LOCATION_11);
 		var result = chip.getFirstUserProcessor();
 		assertEquals(Processor.factory(1), result);
 		assertEquals(2, chip.nUserProcessors());
@@ -122,9 +120,9 @@ public class TestChip {
 	public void testToString() throws UnknownHostException {
 		var tags = List.of(1, 2, 3, 4, 5, 6);
 		var chip1 = new Chip(LOCATION_00, getProcessors(), createRouter(), 100,
-				createInetAddress(), false, tags, LOCATION_11);
+				createInetAddress(), tags, LOCATION_11);
 		var chip2 = new Chip(LOCATION_00, getProcessors(), createRouter(), 100,
-				createInetAddress(), false, tags, LOCATION_11);
+				createInetAddress(), tags, LOCATION_11);
 		assertEquals(chip1.toString(), chip2.toString());
 	}
 
@@ -151,7 +149,7 @@ public class TestChip {
 	@Test
 	public void testAsLocation() throws UnknownHostException {
 		var chip1 = new Chip(LOCATION_00, getProcessors(), createRouter(), 100,
-				createInetAddress(), false, null, LOCATION_11);
+				createInetAddress(), null, LOCATION_11);
 		assertEquals(LOCATION_00, chip1.asChipLocation());
 	}
 
@@ -166,9 +164,8 @@ public class TestChip {
 
 	@Test
 	public void testDefault1() {
-		var chip = new Chip(LOCATION_00, createRouter(), null, LOCATION_11);
-		assertEquals(LOCATION_00, chip.asChipLocation());
-		assertFalse(chip.virtual, "Chips on virtual nmachine are not virtual!");
+		var chip = new Chip(LOCATION_10, createRouter(), null, LOCATION_11);
+		assertEquals(LOCATION_10, chip.asChipLocation());
 		assertEquals(17, chip.nUserProcessors());
 		assertEquals(18, chip.nProcessors());
 		assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);
@@ -181,7 +178,6 @@ public class TestChip {
 		var chip = new Chip(LOCATION_00, createRouter(), createInetAddress(),
 				LOCATION_11);
 		assertEquals(LOCATION_00, chip.asChipLocation());
-		assertFalse(chip.virtual, "Chips on virtual nmachine are not virtual!");
 		assertEquals(17, chip.nUserProcessors());
 		assertEquals(18, chip.nProcessors());
 		assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);
