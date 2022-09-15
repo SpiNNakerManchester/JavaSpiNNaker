@@ -43,12 +43,13 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  * within the frame is being referred to.
  *
  * <h2>Serialisation Formats</h2>
- * Defaults to being serialised as a JSON array:
- * <pre>[3, 2, 1]</pre>
- * but can also accept being deserialised from a JSON object:
- * <pre>{"c": 3, "f": 2, "b": 1}</pre>
- * or:
+ * Defaults to being serialised as a JSON object:
  * <pre>{"cabinet": 3, "frame": 2, "board": 1}</pre>
+ * and can be deserialized from that, or:
+ * <pre>{"c": 3, "f": 2, "b": 1}</pre>
+ * It can also accept being deserialised from a JSON array, for a more compact
+ * notation:
+ * <pre>[3, 2, 1]</pre>
  *
  * @author Donal Fellows
  */
@@ -160,6 +161,7 @@ public final class BoardPhysicalCoords
 		return compare(board, other.board);
 	}
 
+	/** JSON deserializer for {@link BoardPhysicalCoords}. */
 	static class Deserializer extends StdDeserializer<BoardPhysicalCoords> {
 		private static final long serialVersionUID = 1L;
 

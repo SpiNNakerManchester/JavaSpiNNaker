@@ -324,6 +324,7 @@ public final class TriadCoords implements Comparable<TriadCoords> {
 		return compare(z, other.z);
 	}
 
+	/** JSON deserializer for {@link TriadCoords}. */
 	static class Deserializer extends StdDeserializer<TriadCoords> {
 		private static final long serialVersionUID = 1L;
 
