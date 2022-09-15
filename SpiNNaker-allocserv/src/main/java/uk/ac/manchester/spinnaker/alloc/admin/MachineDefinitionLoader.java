@@ -373,7 +373,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 		@UDPPort
 		private int port;
 
-		@IPAddress
+		@IPAddress(emptyOK = true)
 		private String ip;
 
 		@Positive

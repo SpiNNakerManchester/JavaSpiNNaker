@@ -20,6 +20,8 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import uk.ac.manchester.spinnaker.machine.ChipLocation;
+
 /**
  *
  * @author Christian
@@ -33,7 +35,8 @@ public class TestChipbean {
 				+ "\"routerEntries\": 1013, \"monitors\": 2}]";
 		var mapper = MapperFactory.createMapper();
 		var fromJson = mapper.readValue(json, ChipBean.class);
-		assertNotNull(fromJson);
-		System.out.println(fromJson);
+		assertNotNull(fromJson.details);
+		assertNotNull(fromJson.getResources());
+		assertEquals(new ChipLocation(1, 2), fromJson.location);
 	}
 }
