@@ -51,8 +51,6 @@ import uk.ac.manchester.spinnaker.spalloc.messages.State;
  * @author Donal Fellows
  */
 abstract class Utils {
-	private static final int BASE_TEN = 10;
-
 	private static final Logger log = getLogger(V1CompatService.class);
 
 	private Utils() {
@@ -113,12 +111,10 @@ abstract class Utils {
 	static Integer parseDec(Object value) {
 		if (isNull(value)) {
 			return null;
-		} else if (value instanceof Integer) {
-			return (Integer) value;
 		} else if (value instanceof Number) {
 			return ((Number) value).intValue();
 		} else if (value instanceof String) {
-			return parseInt((String) value, BASE_TEN);
+			return parseInt((String) value);
 		} else {
 			throw new IllegalArgumentException(
 					"needed a number, got a " + value.getClass().getName());

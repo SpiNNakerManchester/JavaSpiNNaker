@@ -28,7 +28,7 @@ import java.util.Comparator;
  *
  * @author Christian
  */
-public class RegionLocation
+public final class RegionLocation
 		implements HasCoreLocation, Comparable<RegionLocation> {
 	/** The Chip / Core's X value. */
 	public final int x;

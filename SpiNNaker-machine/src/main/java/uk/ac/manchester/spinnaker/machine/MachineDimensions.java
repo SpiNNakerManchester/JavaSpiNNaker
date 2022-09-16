@@ -54,7 +54,7 @@ public final class MachineDimensions {
 		if (dimension == null) {
 			return false;
 		}
-		return width == dimension.width && height == dimension.height;
+		return (width == dimension.width) && (height == dimension.height);
 	}
 
 	@Override

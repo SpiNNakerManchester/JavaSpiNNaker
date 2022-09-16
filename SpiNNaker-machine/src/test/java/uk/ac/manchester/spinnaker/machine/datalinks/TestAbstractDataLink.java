@@ -16,39 +16,42 @@
  */
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
-import uk.ac.manchester.spinnaker.machine.ChipLocation;
+
 import uk.ac.manchester.spinnaker.machine.Direction;
+import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
  *
  * @author Christian-B
  */
 public class TestAbstractDataLink {
-
-	private ChipLocation location00 = new ChipLocation(0, 0);
-
-	private InetAddress createInetAddress() throws UnknownHostException {
+	private static InetAddress localhost() throws UnknownHostException {
 		byte[] bytes = {127, 0, 0, 0};
 		return InetAddress.getByAddress(bytes);
 	}
 
-	public TestAbstractDataLink() {
-	}
-
 	@Test
 	public void testEquals() throws UnknownHostException {
-		var link1 = new AbstractDataLink(location00,
-				Direction.NORTHEAST, createInetAddress());
-		var link2 = new AbstractDataLink(location00,
-				Direction.NORTHEAST, createInetAddress());
+		var link1 = new TestDataLink(ZERO_ZERO, NORTHEAST, localhost());
+		var link2 = new TestDataLink(ZERO_ZERO, NORTHEAST, localhost());
 		assertEquals(link1, link2);
 		assertEquals(link1, link1);
 		assertNotEquals(link1, null);
 		assertNotEquals(link1, "link1");
 	}
 
+	private static class TestDataLink extends AbstractDataLink {
+		TestDataLink(HasChipLocation location, Direction linkId,
+				InetAddress boardAddress) {
+			super(location, linkId, boardAddress);
+		}
+	}
 }

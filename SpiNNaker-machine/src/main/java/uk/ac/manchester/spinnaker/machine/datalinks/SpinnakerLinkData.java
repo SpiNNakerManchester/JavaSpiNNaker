@@ -21,19 +21,20 @@ import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
 /**
+ * A description of a data link that uses the SpiNNaker-link protocol.
  *
  * @author Christian-B
  */
-public class SpinnakerLinkData extends AbstractDataLink {
+public final class SpinnakerLinkData extends AbstractDataLink {
 
-	/** The link ID from the spinnaker prospective. */
+	/** The link ID from the SpiNNaker perspective. */
 	public final int spinnakerLinkId;
 
 	/**
-	 * Main Constructor of an FPGALinkData.
+	 * Build an instance.
 	 *
 	 * @param spinnakerLinkId
-	 *            The link ID from the spinnaker prospective.
+	 *            The link ID from the SpiNNaker perspective.
 	 * @param location
 	 *            The location/Chip being linked to
 	 * @param linkId
@@ -59,18 +60,11 @@ public class SpinnakerLinkData extends AbstractDataLink {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
+		if (obj instanceof SpinnakerLinkData) {
+			var other = (SpinnakerLinkData) obj;
+			return sameAs(other) && (spinnakerLinkId == other.spinnakerLinkId);
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		var other = (SpinnakerLinkData) obj;
-		if (sameAs(other)) {
-			return spinnakerLinkId == other.spinnakerLinkId;
-		} else {
-			return false;
-		}
+		return false;
 	}
 
 	@Override
@@ -79,5 +73,4 @@ public class SpinnakerLinkData extends AbstractDataLink {
 				+ ", boardAddress=" + boardAddress + ", linkId=" + direction
 				+ ", SpinnakerLinkId=" + spinnakerLinkId + "}";
 	}
-
 }

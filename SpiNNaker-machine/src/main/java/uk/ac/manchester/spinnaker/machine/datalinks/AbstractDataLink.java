@@ -30,14 +30,14 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
-public class AbstractDataLink implements HasChipLocation {
+public abstract class AbstractDataLink implements HasChipLocation {
 	/** IP address of the Datalink on the board. */
 	public final InetAddress boardAddress;
 
 	/** Coordinates of the location/Chip being linked to. */
 	public final ChipLocation location;
 
-	/** link Direction/id for this link. */
+	/** Direction/id for this link. */
 	public final Direction direction;
 
 	/**
@@ -90,8 +90,7 @@ public class AbstractDataLink implements HasChipLocation {
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		}
-		if (obj == null) {
+		} else if (obj == null) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {

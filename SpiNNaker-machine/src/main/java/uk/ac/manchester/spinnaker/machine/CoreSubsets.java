@@ -38,7 +38,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *      Python Version</a>
  * @author Christian-B
  */
-public class CoreSubsets implements MappableIterable<CoreLocation> {
+public final class CoreSubsets implements MappableIterable<CoreLocation> {
 	private final Map<ChipLocation, Map<Integer, CoreLocation>> locations;
 
 	private boolean immutable;
@@ -263,7 +263,7 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 * @return integer to use as the hashcode.
 	 */
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		immutable = true;
 		int hash = 7;
 		for (var subset : locations.values()) {
@@ -288,18 +288,15 @@ public class CoreSubsets implements MappableIterable<CoreLocation> {
 	 *         exactly the same subsets.
 	 */
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
+		if (obj instanceof CoreSubsets) {
+			var other = (CoreSubsets) obj;
+			return Objects.equals(locations, other.locations);
 		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		var other = (CoreSubsets) obj;
-		return Objects.equals(locations, other.locations);
+		return false;
 	}
 
 	@Override

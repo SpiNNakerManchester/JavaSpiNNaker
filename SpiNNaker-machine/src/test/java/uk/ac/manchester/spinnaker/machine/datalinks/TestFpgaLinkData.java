@@ -19,6 +19,10 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.TOP_RIGHT;
+
 import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -29,16 +33,13 @@ import uk.ac.manchester.spinnaker.machine.Direction;
  */
 public class TestFpgaLinkData {
 
-	private ChipLocation location00 = new ChipLocation(0, 0);
+	private static ChipLocation location00 = new ChipLocation(0, 0);
 
-	private ChipLocation location01 = new ChipLocation(0, 1);
+	private static ChipLocation location01 = new ChipLocation(0, 1);
 
-	private InetAddress createInetAddress() throws UnknownHostException {
-		byte[] bytes = {127, 0, 0, 0};
+	private static InetAddress localhost() throws UnknownHostException {
+		byte[] bytes = {127, 0, 0, 1};
 		return InetAddress.getByAddress(bytes);
-	}
-
-	public TestFpgaLinkData() {
 	}
 
 	private void checkDifferent(FPGALinkData link1, FPGALinkData link2) {
@@ -55,10 +56,10 @@ public class TestFpgaLinkData {
 
 	@Test
 	public void testEquals() throws UnknownHostException {
-		var link1 = new FPGALinkData(34, FpgaId.TOP_RIGHT, location00,
-				Direction.NORTHEAST, createInetAddress());
-		var link2 = new FPGALinkData(34, FpgaId.byId(2), location00,
-				Direction.NORTHEAST, createInetAddress());
+		var link1 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
+				localhost());
+		var link2 = new FPGALinkData(34, FpgaId.byId(2), location00, NORTHEAST,
+				localhost());
 		assertTrue(link1.sameAs(link2));
 		checkSame(link1, link2);
 		assertEquals(link1, link1);
@@ -67,20 +68,20 @@ public class TestFpgaLinkData {
 
 	@Test
 	public void testDifferent() throws UnknownHostException {
-		var link1 = new FPGALinkData(34, FpgaId.TOP_RIGHT, location00,
-				Direction.NORTHEAST, createInetAddress());
-		var link2 = new FPGALinkData(33, FpgaId.TOP_RIGHT, location00,
-				Direction.NORTHEAST, createInetAddress());
-		var link3 = new FPGALinkData(34, FpgaId.TOP_RIGHT, location01,
-				Direction.NORTHEAST, createInetAddress());
-		var link4 = new FPGALinkData(34, FpgaId.TOP_RIGHT, location00,
-				Direction.NORTH, createInetAddress());
-		byte[] bytes = {127, 0, 0, 1};
+		var link1 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
+				localhost());
+		var link2 = new FPGALinkData(33, TOP_RIGHT, location00, NORTHEAST,
+				localhost());
+		var link3 = new FPGALinkData(34, TOP_RIGHT, location01, NORTHEAST,
+				localhost());
+		var link4 =
+				new FPGALinkData(34, TOP_RIGHT, location00, NORTH, localhost());
+		byte[] bytes = {127, 0, 0, 2};
 		var address2 = InetAddress.getByAddress(bytes);
-		var link5 = new FPGALinkData(34, FpgaId.TOP_RIGHT, location00,
-				Direction.NORTHEAST, address2);
+		var link5 = new FPGALinkData(34, TOP_RIGHT, location00, NORTHEAST,
+				address2);
 		var link6 = new FPGALinkData(34, FpgaId.LEFT, location00,
-				Direction.NORTHEAST, createInetAddress());
+				Direction.NORTHEAST, localhost());
 
 		checkDifferent(link1, link2);
 		checkDifferent(link1, link3);

@@ -160,10 +160,7 @@ public final class BoardCoords {
 		if (other == this) {
 			return true;
 		}
-		if (other instanceof BoardCoords) {
-			return equals((BoardCoords) other);
-		}
-		return false;
+		return (other instanceof BoardCoords) && equals((BoardCoords) other);
 	}
 
 	/**
@@ -174,8 +171,8 @@ public final class BoardCoords {
 	 * @return Whether the two are equal.
 	 */
 	public boolean equals(BoardCoords other) {
-		return x == other.x && y == other.y && z == other.z
-				&& cabinet == other.cabinet && frame == other.frame
+		return (x == other.x) && (y == other.y) && (z == other.z)
+				&& (cabinet == other.cabinet) && (frame == other.frame)
 				&& Objects.equals(board, other.board)
 				&& Objects.equals(address, other.address);
 	}

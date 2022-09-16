@@ -93,8 +93,7 @@ public final class Processor implements Comparable<Processor> {
 	 *         {@code isMonitor} which will always be true.
 	 */
 	public Processor cloneAsSystemProcessor() {
-		if (clockSpeed == PROCESSOR_CLOCK_SPEED
-				&& dtcmAvailable == DTCM_AVAILABLE) {
+		if (isStandard(clockSpeed, dtcmAvailable)) {
 			return factory(processorId, true);
 		} else {
 			return new Processor(processorId, clockSpeed, dtcmAvailable, true);
@@ -123,23 +122,14 @@ public final class Processor implements Comparable<Processor> {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof Processor)) {
 			return false;
 		}
 		var other = (Processor) obj;
-		if (processorId != other.processorId) {
-			return false;
-		}
-		if (clockSpeed != other.clockSpeed) {
-			return false;
-		}
-		if (isMonitor != other.isMonitor) {
-			return false;
-		}
-		return dtcmAvailable == other.dtcmAvailable;
+		return (processorId == other.processorId)
+				&& (clockSpeed == other.clockSpeed)
+				&& (isMonitor == other.isMonitor)
+				&& (dtcmAvailable == other.dtcmAvailable);
 	}
 
 	@Override
@@ -161,6 +151,21 @@ public final class Processor implements Comparable<Processor> {
 	}
 
 	/**
+	 * Do these parameters conform to standard values? Standard values mean that
+	 * the processor can be handled by a cached/memoized instance.
+	 *
+	 * @param clockSpeed
+	 *            The number of CPU cycles per second of the processor.
+	 * @param dtcmAvailable
+	 *            Data Tightly Coupled Memory available.
+	 * @return True if they're both equal to expected values.
+	 */
+	private static boolean isStandard(int clockSpeed, int dtcmAvailable) {
+		return (clockSpeed == PROCESSOR_CLOCK_SPEED)
+				&& (dtcmAvailable == DTCM_AVAILABLE);
+	}
+
+	/**
 	 * Obtain a Processor object for this ID and with these properties.
 	 *
 	 * @param processorId
@@ -179,8 +184,7 @@ public final class Processor implements Comparable<Processor> {
 	public static Processor factory(int processorId, int clockSpeed,
 			int dtcmAvailable, boolean isMonitor)
 			throws IllegalArgumentException {
-		if (clockSpeed == PROCESSOR_CLOCK_SPEED
-				&& dtcmAvailable == DTCM_AVAILABLE) {
+		if (isStandard(clockSpeed, dtcmAvailable)) {
 			return factory(processorId, isMonitor);
 		}
 		if (clockSpeed <= 0) {

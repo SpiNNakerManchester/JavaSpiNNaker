@@ -490,10 +490,7 @@ public final class Blacklist implements Serializable {
 		if (this == object) {
 			return true;
 		}
-		if (object != null && object instanceof Blacklist) {
-			return equals((Blacklist) object);
-		}
-		return false;
+		return (object instanceof Blacklist) && equals((Blacklist) object);
 	}
 
 	private boolean equals(Blacklist other) {

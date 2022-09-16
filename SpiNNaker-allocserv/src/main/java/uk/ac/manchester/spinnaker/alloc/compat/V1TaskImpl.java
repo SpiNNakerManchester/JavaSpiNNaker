@@ -261,10 +261,10 @@ class V1TaskImpl extends V1CompatTask {
 	private static String getOwner(Map<String, Object> kwargs)
 			throws TaskException {
 		var ownerObj = kwargs.get("owner");
-		if (isNull(ownerObj) || !(ownerObj instanceof String)) {
+		if (!(ownerObj instanceof String)) {
 			throw new TaskException("owner must be supplied as a string");
 		}
-		var owner = ownerObj.toString();
+		var owner = (String) ownerObj;
 		if (owner.isBlank()) {
 			throw new TaskException(
 					"invalid owner identifier; must be non-empty");

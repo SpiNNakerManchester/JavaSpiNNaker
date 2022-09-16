@@ -1402,12 +1402,10 @@ public class BMPController extends DatabaseAwareBean {
 					 * this queue.
 					 */
 					var r = requests.poll();
-					if (r != null) {
-						if (r instanceof PowerRequest) {
-							processRequest((PowerRequest) r);
-						} else {
-							processRequest((BlacklistRequest) r);
-						}
+					if (r instanceof PowerRequest) {
+						processRequest((PowerRequest) r);
+					} else if (r instanceof BlacklistRequest) {
+						processRequest((BlacklistRequest) r);
 					}
 
 					/*

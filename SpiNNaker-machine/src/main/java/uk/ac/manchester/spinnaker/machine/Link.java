@@ -109,11 +109,7 @@ public final class Link {
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		} else if (!(obj instanceof Link)) {
 			return false;
 		}
 		var other = (Link) obj;
@@ -121,10 +117,8 @@ public final class Link {
 		if (sourceLinkDirection != other.sourceLinkDirection) {
 			return false;
 		}
-		if (!Objects.equals(source, other.source)) {
-			return false;
-		}
-		return Objects.equals(destination, other.destination);
+		return Objects.equals(source, other.source)
+				&& Objects.equals(destination, other.destination);
 	}
 
 	@Override

@@ -17,6 +17,16 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static uk.ac.manchester.spinnaker.machine.Direction.EAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.NORTHEAST;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTH;
+import static uk.ac.manchester.spinnaker.machine.Direction.SOUTHWEST;
+import static uk.ac.manchester.spinnaker.machine.Direction.WEST;
+import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.BOTTOM;
+import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.LEFT;
+import static uk.ac.manchester.spinnaker.machine.datalinks.FpgaId.TOP_RIGHT;
+
 import org.junit.jupiter.api.Test;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
@@ -37,108 +47,80 @@ public class TestFpgaLinkId {
 	}
 
 	private int checkLeftFpgaLinks(int leftLinkId, int x, int y) {
-		leftLinkId = checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y,
-				Direction.SOUTHWEST);
-		leftLinkId =
-				checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.WEST);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, SOUTHWEST);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, WEST);
 		return leftLinkId;
 	}
 
 	private int checkLeftUpperLeftFpgaLinks(int leftLinkId, int x, int y) {
-		leftLinkId = checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y,
-				Direction.SOUTHWEST);
-		leftLinkId =
-				checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.WEST);
-		leftLinkId =
-				checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.NORTH);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, SOUTHWEST);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, WEST);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, NORTH);
 		return leftLinkId;
 	}
 
 	private int checkUpperLeftFpgaLinks(int leftLinkId, int x, int y) {
-		leftLinkId =
-				checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.WEST);
-		leftLinkId =
-				checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.NORTH);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, WEST);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, NORTH);
 		return leftLinkId;
 	}
 
 	private int checkUpperLeftTopFpgaLinks(int leftLinkId, int topLinkId, int x,
 			int y) {
-		leftLinkId =
-				checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.WEST);
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTH);
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTHEAST);
+		leftLinkId = checkFpgaLink(LEFT, leftLinkId, x, y, WEST);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTH);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTHEAST);
 		return topLinkId;
 	}
 
 	private int checkTopFpgaLinks(int topLinkId, int x, int y) {
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTH);
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTHEAST);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTH);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTHEAST);
 		return topLinkId;
 	}
 
 	private int checkTopRightFpgaLinks(int topLinkId, int x, int y) {
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTH);
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTHEAST);
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.EAST);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTH);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTHEAST);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, EAST);
 		return topLinkId;
 	}
 
 	private int checkRightFpgaLinks(int topLinkId, int x, int y) {
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTHEAST);
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.EAST);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTHEAST);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, EAST);
 		return topLinkId;
 	}
 
 	private int checkRightLowerRightFpgaLinks(int topLinkId, int bottomLinkId,
 			int x, int y) {
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTHEAST);
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.EAST);
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.SOUTH);
+		topLinkId = checkFpgaLink(TOP_RIGHT, topLinkId, x, y, NORTHEAST);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, EAST);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, SOUTH);
 		return bottomLinkId;
 	}
 
 	private int checkLowerRightFpgaLinks(int bottomLinkId, int x, int y) {
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.EAST);
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.SOUTH);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, EAST);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, SOUTH);
 		return bottomLinkId;
 	}
 
 	private int checkLowerRightBottomFpgaLinks(int bottomLinkId, int x, int y) {
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.EAST);
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.SOUTH);
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.SOUTHWEST);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, EAST);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, SOUTH);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, SOUTHWEST);
 		return bottomLinkId;
 	}
 
 	private int checkBottomFpgaLinks(int bottomLinkId, int x, int y) {
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.SOUTH);
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.SOUTHWEST);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, SOUTH);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, SOUTHWEST);
 		return bottomLinkId;
 	}
 
 	private int checkBottomLeftFpgaLinks(int bottomLinkId, int x, int y) {
-		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
-				Direction.SOUTH);
+		bottomLinkId = checkFpgaLink(BOTTOM, bottomLinkId, x, y, SOUTH);
 		return bottomLinkId;
 	}
 

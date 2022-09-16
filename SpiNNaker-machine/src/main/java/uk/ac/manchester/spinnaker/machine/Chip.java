@@ -440,10 +440,7 @@ public class Chip implements HasChipLocation {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof Chip)) {
-			return false;
-		}
-		return difference((Chip) obj) == null;
+		return (obj instanceof Chip) && (difference((Chip) obj) == null);
 	}
 
 	/**
