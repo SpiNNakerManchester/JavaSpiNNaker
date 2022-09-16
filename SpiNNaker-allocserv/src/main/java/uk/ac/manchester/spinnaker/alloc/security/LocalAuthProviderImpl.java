@@ -827,8 +827,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				var teamsClaim = rolesClaim.get("team");
 				if (teamsClaim instanceof List) {
 					if (!teamsClaim.isEmpty()) {
-						// Dummy check to determine if first element is string
-						teamsClaim.get(0).isBlank();
+						firstClaimIsString(teamsClaim);
 					}
 					return teamsClaim;
 				}
@@ -837,6 +836,11 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 			log.debug("failed to convert claim", e);
 		}
 		return List.of();
+	}
+
+	private static void firstClaimIsString(List<String> claim) {
+		String item = claim.get(0);
+		requireNonNull(item);
 	}
 
 	private void mapAuthorities(String source, ClaimAccessor claimSet,

@@ -1058,7 +1058,7 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 
 		void serviceActionDone(Row r) {
 			b.format(
-					"\tAction: board (X:%d,Y:%d,Z:) (IP: %s) "
+					"\tAction: board (X:%d,Y:%d,Z:%d) (IP: %s) "
 							+ "taken out of service once not in use "
 							+ "(%d problems reported)\n",
 					r.getInt("x"), r.getInt("y"), r.getInt("z"),

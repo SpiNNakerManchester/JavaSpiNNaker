@@ -316,7 +316,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	private abstract class Request {
 		private static final String BOARD_MARKED_DEAD_TEMPLATE =
-				"Marked board at {},{},{} of {} (serial: {}) as dead: {}";
+				"Marked board at %d,%d,%d of %s (serial: %s) as dead: %s";
 
 		final Machine machine;
 
@@ -443,9 +443,8 @@ public class BMPController extends DatabaseAwareBean {
 						ser = "<UNKNOWN>";
 					}
 					var fullMessage = format(BOARD_MARKED_DEAD_TEMPLATE,
-							row.getString("x"), row.getString("y"),
-							row.getString("z"), row.getString("machineName"),
-							ser, msg);
+							row.getInt("x"), row.getInt("y"), row.getInt("z"),
+							row.getString("machineName"), ser, msg);
 					// Postpone email sending until out of transaction
 					postCleanupTasks.add(
 							() -> emailSender.sendServiceMail(fullMessage));

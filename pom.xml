@@ -63,6 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<swagger.version>4.14.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.2</jython.version>
+		<error-prone.version>2.15.0</error-prone.version>
 	</properties>
 
 	<dependencyManagement>
@@ -336,6 +337,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.10.1</version>
+					<configuration>
+						<compilerArgs>
+							<arg>-XDcompilePolicy=simple</arg>
+							<arg>-Xplugin:ErrorProne</arg>
+						</compilerArgs>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>com.google.errorprone</groupId>
+								<artifactId>error_prone_core</artifactId>
+								<version>${error-prone.version}</version>
+							</path>
+							<!-- Other annotation processors go here.
+
+							If 'annotationProcessorPaths' is set, processors will no longer be
+							discovered on the regular -classpath; see also 'Using Error Prone
+							together with other annotation processors' below. -->
+						</annotationProcessorPaths>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

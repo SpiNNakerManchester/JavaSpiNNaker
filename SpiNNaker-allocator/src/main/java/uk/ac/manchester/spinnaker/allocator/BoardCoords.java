@@ -79,6 +79,8 @@ public class BoardCoords {
 	}
 
 	/**
+	 * Get the triad X coordinate. Range: 0-255.
+	 *
 	 * @return Logical triad X coordinate.
 	 */
 	public int getX() {
@@ -86,6 +88,8 @@ public class BoardCoords {
 	}
 
 	/**
+	 * Get the triad Y coordinate. Range: 0-255.
+	 *
 	 * @return Logical triad Y coordinate.
 	 */
 	public int getY() {
@@ -93,6 +97,8 @@ public class BoardCoords {
 	}
 
 	/**
+	 * Get the triad Z coordinate. Range: 0-2.
+	 *
 	 * @return Logical triad Z coordinate.
 	 */
 	public int getZ() {
@@ -100,6 +106,8 @@ public class BoardCoords {
 	}
 
 	/**
+	 * Get the number of the cabinet containing the frame containing the board.
+	 *
 	 * @return Physical cabinet number.
 	 */
 	public int getCabinet() {
@@ -107,6 +115,8 @@ public class BoardCoords {
 	}
 
 	/**
+	 * Get the number of the frame (within the cabinet) containing the board.
+	 *
 	 * @return Physical frame number.
 	 */
 	public int getFrame() {
@@ -114,6 +124,8 @@ public class BoardCoords {
 	}
 
 	/**
+	 * Get the number of the board within its frame.
+	 *
 	 * @return Physical board number.
 	 */
 	public int getBoard() {
@@ -121,6 +133,8 @@ public class BoardCoords {
 	}
 
 	/**
+	 * Get the IP address of the Ethernet chip of the board, if available.
+	 *
 	 * @return IP address of ethernet chip. May be {@code null} if the
 	 *         current user doesn't have permission to see the board address
 	 *         at this point.

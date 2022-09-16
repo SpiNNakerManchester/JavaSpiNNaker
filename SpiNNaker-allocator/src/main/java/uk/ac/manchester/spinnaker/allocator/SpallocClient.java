@@ -125,25 +125,46 @@ public interface SpallocClient {
 
 	/** The services offered relating to a Spalloc machine. */
 	interface Machine {
-		/** @return The name of the machine. */
+		/**
+		 * The machine's name. Never empty, never {@code null}.
+		 *
+		 * @return The name of the machine.
+		 */
 		String getName();
 
-		/** @return The tags of the machine. */
+		/**
+		 * The tags of the machine. If this includes "{@code default}", this is
+		 * the machine that jobs will usually go to.
+		 *
+		 * @return The tags of the machine.
+		 */
 		List<String> getTags();
 
-		/** @return The width of the machine, in triads. */
+		/** The width of the machine.
+		 *  @return The width of the machine, in triads. */
 		int getWidth();
 
-		/** @return The height of the machine, in triads. */
+		/** The height of the machine.
+		 *  @return The height of the machine, in triads. */
 		int getHeight();
 
-		/** @return The (estimated) number of live boards in the machine. */
+		/** The number of live boards.
+		 *  @return The (estimated) number of live boards in the machine. */
 		int getLiveBoardCount();
 
-		/** @return The dead boards of the machine. */
+		/**
+		 * What boards in the machine are dead?
+		 *
+		 * @return The dead boards of the machine.
+		 */
 		List<BoardCoords> getDeadBoards();
 
-		/** @return The dead links of the machine. */
+		/**
+		 * What links in the machine are dead? Only links where both boards are
+		 * alive.
+		 *
+		 * @return The dead links of the machine.
+		 */
 		List<DeadLink> getDeadLinks();
 
 		/**
