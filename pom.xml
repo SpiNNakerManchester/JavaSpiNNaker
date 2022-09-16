@@ -344,6 +344,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 								<compilerArgs>
 									<arg>-XDcompilePolicy=simple</arg>
 									<arg>-Xplugin:ErrorProne</arg>
+									<!-- Disable the MissingSummary check; we use an abbreviated
+										 documentation for getters, and its suggested replacement
+										 is terrible. -->
+									<arg>-Xep:MissingSummary:OFF</arg>
 								</compilerArgs>
 								<annotationProcessorPaths>
 									<path>
