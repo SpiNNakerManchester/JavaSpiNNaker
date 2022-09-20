@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.utils.progress;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import org.junit.jupiter.api.Test;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -36,13 +38,18 @@ public class TestBar {
 
 	private static final String NEWLINE = "\\r?\\n";
 
-	public TestBar() {
+	private static PrintStream printer(ByteArrayOutputStream baos) {
+		return new PrintStream(baos, true, UTF_8);
+	}
+
+	private static String[] lines(ByteArrayOutputStream baos) {
+		return baos.toString(UTF_8).split(NEWLINE, -1);
 	}
 
 	@Test
 	public void testBasic() {
 		var pb = new ProgressBar(5, null,
-				new PrintStream(new ByteArrayOutputStream()));
+				printer(new ByteArrayOutputStream()));
 		for (int i = 0; i < 3; i++) {
 			pb.update();
 		}
@@ -59,7 +66,7 @@ public class TestBar {
 	public void testToMany() {
 		var description = "tooMany";
 		var pb = new ProgressBar(5, description,
-				new PrintStream(new ByteArrayOutputStream()));
+				printer(new ByteArrayOutputStream()));
 		for (int i = 0; i < 5; i++) {
 			pb.update();
 		}
@@ -73,12 +80,12 @@ public class TestBar {
 	public void testSimple() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Easiest";
-		var pb = new ProgressBar(5, description, new PrintStream(baos));
+		var pb = new ProgressBar(5, description, printer(baos));
 		for (int i = 0; i < 5; i++) {
 			pb.update();
 		}
 		pb.close();
-		var lines = baos.toString().split(NEWLINE);
+		var lines = lines(baos);
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);
@@ -89,12 +96,12 @@ public class TestBar {
 	public void testNoDivSmall() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Thirteen";
-		try (var pb = new ProgressBar(13, description, new PrintStream(baos))) {
+		try (var pb = new ProgressBar(13, description, printer(baos))) {
 			for (int i = 0; i < 13; i++) {
 				pb.update();
 			}
 		}
-		var lines = baos.toString().split(NEWLINE);
+		var lines = lines(baos);
 		// Include duration as try calls close.
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
@@ -106,11 +113,11 @@ public class TestBar {
 	public void testNoDivBig() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Big";
-		var pb = new ProgressBar(133, description, new PrintStream(baos));
+		var pb = new ProgressBar(133, description, printer(baos));
 		for (int i = 0; i < 133; i++) {
 			pb.update();
 		}
-		var lines = baos.toString().split(NEWLINE);
+		var lines = lines(baos);
 		// No close so no duration
 		assertEquals(3, lines.length);
 		assertEquals(description, lines[0]);
@@ -123,12 +130,12 @@ public class TestBar {
 	public void testStopEarly() {
 		var baos = new ByteArrayOutputStream();
 		var description = "Early";
-		var pb = new ProgressBar(10, description, new PrintStream(baos));
+		var pb = new ProgressBar(10, description, printer(baos));
 		for (int i = 0; i < 3; i++) {
 			pb.update();
 		}
 		pb.close();
-		var lines = baos.toString().split(NEWLINE);
+		var lines = lines(baos);
 		assertEquals(4, lines.length);
 		assertEquals(description, lines[0]);
 		assertEquals(PERCENTS, lines[1]);

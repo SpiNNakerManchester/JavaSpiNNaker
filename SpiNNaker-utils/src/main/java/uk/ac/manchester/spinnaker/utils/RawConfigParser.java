@@ -41,9 +41,11 @@ public class RawConfigParser {
 	// Regular expressions for parsing section headers and options
 	private static final String SECT_TMPL = "\\[(?<name>[^]]+)\\]";
 
+	@SuppressWarnings("InlineFormatString")
 	private static final String OPT_TMPL =
 			"(?<key>.*?)\\s*[%s]\\s*(?<value>.*)$";
 
+	@SuppressWarnings("InlineFormatString")
 	private static final String COMMENT_TMPL = "^(?<keep>.*?)[%s].*$";
 
 	private final Pattern sectRE;

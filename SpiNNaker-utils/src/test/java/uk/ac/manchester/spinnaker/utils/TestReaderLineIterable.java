@@ -16,13 +16,16 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.NoSuchElementException;
+
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -54,8 +57,8 @@ public class TestReaderLineIterable {
 
 	@Test
 	public void testStream() throws IOException {
-		var inputStream =
-				new ByteArrayInputStream("First\nSecond\nThird".getBytes());
+		var inputStream = new ByteArrayInputStream(
+				"First\nSecond\nThird".getBytes(UTF_8));
 		var iterable = new ReaderLineIterable(inputStream);
 		int count = 0;
 		for (var line : iterable) {
@@ -132,19 +135,19 @@ public class TestReaderLineIterable {
 		try (var iterable = new ReaderLineIterable(reader)) {
 			var iterator = iterable.iterator();
 			assertEquals("First", iterator.next());
-			iterator.hasNext();
-			iterator.hasNext();
-			iterator.hasNext();
+			assertTrue(iterator.hasNext());
+			assertTrue(iterator.hasNext());
+			assertTrue(iterator.hasNext());
 			assertEquals("Second", iterator.next());
 			assertEquals("Third", iterator.next());
 			assertThrows(NoSuchElementException.class, () -> {
 				iterator.next();
 			});
-			iterator.hasNext();
+			assertFalse(iterator.hasNext());
 		}
 	}
 
-	private class CloseError extends Reader {
+	private static class CloseError extends Reader {
 
 		@Override
 		public int read(char[] cbuf, int off, int len) throws IOException {
@@ -158,7 +161,7 @@ public class TestReaderLineIterable {
 
 	}
 
-	private class WeirdReader extends Reader {
+	private static class WeirdReader extends Reader {
 
 		@Override
 		public int read(char[] cbuf, int off, int len) throws IOException {
