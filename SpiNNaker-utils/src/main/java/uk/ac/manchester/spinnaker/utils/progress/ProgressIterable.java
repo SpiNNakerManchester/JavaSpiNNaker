@@ -46,6 +46,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @param <E>
  *            Type of elements to be iterated over.
  */
+@SuppressWarnings("MustBeClosedChecker")
 public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
 	private final Collection<E> things;
 

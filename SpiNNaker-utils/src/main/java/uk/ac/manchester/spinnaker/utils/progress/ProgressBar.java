@@ -108,6 +108,7 @@ public class ProgressBar implements Closeable {
 	 *            A text description to add at the start and when reporting
 	 *            duration.
 	 */
+	@MustBeClosed
 	public ProgressBar(int numberOfThings, String description) {
 		this(numberOfThings, description, out);
 	}

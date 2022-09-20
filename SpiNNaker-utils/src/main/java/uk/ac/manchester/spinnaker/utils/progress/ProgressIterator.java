@@ -55,6 +55,7 @@ public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	 *            The Stream to write output too. For example {@link System#out}
 	 */
 	@MustBeClosed
+	@SuppressWarnings("MustBeClosedChecker")
 	public ProgressIterator(Collection<E> outer, String description,
 			PrintStream output) {
 		bar = new ProgressBar(outer.size(), description, output);
