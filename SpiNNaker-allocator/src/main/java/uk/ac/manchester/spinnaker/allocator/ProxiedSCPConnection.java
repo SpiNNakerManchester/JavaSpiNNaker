@@ -34,7 +34,7 @@ final class ProxiedSCPConnection extends SCPConnection {
 
 	private final ProxyProtocolClient.ConnectedChannel channel;
 
-	private final BlockingQueue<ByteBuffer> received;
+	private final BlockingQueue<ByteBuffer> receiveQueue;
 
 	private ProxyProtocolClient ws;
 
@@ -52,8 +52,8 @@ final class ProxiedSCPConnection extends SCPConnection {
 			throws IOException, InterruptedException {
 		super(chip);
 		this.ws = ws;
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openChannel(chip, SCP_SCAMP_PORT, received::add);
+		receiveQueue = new LinkedBlockingQueue<>();
+		channel = ws.openChannel(chip, SCP_SCAMP_PORT, receiveQueue);
 	}
 
 	@Override
@@ -75,9 +75,9 @@ final class ProxiedSCPConnection extends SCPConnection {
 	@Override
 	protected ByteBuffer doReceive(int timeout)
 			throws IOException {
-		if (isClosed() && received.isEmpty()) {
+		if (isClosed() && receiveQueue.isEmpty()) {
 			throw new EOFException("connection closed");
 		}
-		return ClientUtils.receiveHelper(received, timeout);
+		return ClientUtils.receiveHelper(receiveQueue, timeout);
 	}
 }

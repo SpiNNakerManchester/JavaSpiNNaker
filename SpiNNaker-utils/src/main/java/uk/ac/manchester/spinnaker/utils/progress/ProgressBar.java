@@ -23,6 +23,8 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.formatDuration;
 import java.io.Closeable;
 import java.io.PrintStream;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 /**
  * Progress bar for telling the user where a task is up to and for reporting the
  * duration.
@@ -86,6 +88,7 @@ public class ProgressBar implements Closeable {
 	 *            The stream to write output too. For example
 	 *            {@link System#out}.
 	 */
+	@MustBeClosed
 	public ProgressBar(int numberOfThings, String description,
 			PrintStream output) {
 		this.numberOfThings = numberOfThings;

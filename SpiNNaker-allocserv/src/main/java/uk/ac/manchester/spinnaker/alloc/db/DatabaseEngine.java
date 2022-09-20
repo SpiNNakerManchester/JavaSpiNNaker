@@ -711,7 +711,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			}
 
 			private Lock getLock(boolean lockForWriting) {
-				lockForWriting |= true; // HACK
+				lockForWriting |= true; // TODO fix this HACK
 				if (lockForWriting) {
 					return lock.writeLock();
 				} else {

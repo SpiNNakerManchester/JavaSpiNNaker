@@ -32,7 +32,7 @@ final class ProxiedTransceiver extends Transceiver {
 	/**
 	 * @param connections
 	 *            The proxied connections we will use.
-	 * @param ws
+	 * @param websocket
 	 *            The proxy handle.
 	 * @throws IOException
 	 *             If we couldn't finish setting up our networking.

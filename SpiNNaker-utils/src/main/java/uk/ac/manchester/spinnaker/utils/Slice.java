@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.utils;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * A description of a slice (range) of an object. Modelled after the concept
  * with the same name in Python. Note that this does not create the actual
@@ -23,6 +25,7 @@ package uk.ac.manchester.spinnaker.utils;
  *
  * @author Donal Fellows
  */
+@Immutable
 public final class Slice {
 	/** The index where the slice starts. */
 	public final Integer start;

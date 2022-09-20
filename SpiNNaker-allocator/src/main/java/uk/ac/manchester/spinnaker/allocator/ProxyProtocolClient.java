@@ -20,7 +20,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.nio.ByteBuffer;
-import java.util.function.Consumer;
+import java.util.concurrent.BlockingQueue;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -38,28 +38,26 @@ interface ProxyProtocolClient extends AutoCloseable {
 	 *            to.
 	 * @param port
 	 *            The UDP port to connect to.
-	 * @param receiver
-	 *            Where to send received messages, which is probably an
-	 *            operation to enqueue them somewhere.
+	 * @param receiveQueue
+	 *            Where to enqueue received messages.
 	 * @return The connected channel.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting for a reply.
 	 */
 	ConnectedChannel openChannel(ChipLocation chip, int port,
-			Consumer<ByteBuffer> receiver) throws InterruptedException;
+			BlockingQueue<ByteBuffer> receiveQueue) throws InterruptedException;
 
 	/**
 	 * Open an unconnected channel to any SpiNNaker board in the current job.
 	 *
-	 * @param receiver
-	 *            Where to send received messages, which is probably an
-	 *            operation to enqueue them somewhere.
+	 * @param receiveQueue
+	 *            Where to enqueue received messages.
 	 * @return The unconnected channel.
 	 * @throws InterruptedException
 	 *             If interrupted while waiting for a reply.
 	 */
 	UnconnectedChannel openUnconnectedChannel(
-			Consumer<ByteBuffer> receiver) throws InterruptedException;
+			BlockingQueue<ByteBuffer> receiveQueue) throws InterruptedException;
 
 	/**
 	 * Is the underlying websocket in the state OPEN.

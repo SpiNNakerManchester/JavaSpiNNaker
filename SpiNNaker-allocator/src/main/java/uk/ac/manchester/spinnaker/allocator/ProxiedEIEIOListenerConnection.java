@@ -33,7 +33,7 @@ import uk.ac.manchester.spinnaker.machine.ChipLocation;
 final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	private final Map<Inet4Address, ChipLocation> hostToChip;
 
-	private final BlockingQueue<ByteBuffer> received;
+	private final BlockingQueue<ByteBuffer> receiveQueue;
 
 	private ProxyProtocolClient ws;
 
@@ -46,8 +46,8 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 		super.close();
 		this.hostToChip = hostToChip;
 		this.ws = proxy;
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openUnconnectedChannel(received::add);
+		receiveQueue = new LinkedBlockingQueue<>();
+		channel = ws.openUnconnectedChannel(receiveQueue);
 	}
 
 	@Override
@@ -75,9 +75,9 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	@Override
 	protected ByteBuffer doReceive(int timeout)
 			throws IOException {
-		if (isClosed() && received.isEmpty()) {
+		if (isClosed() && receiveQueue.isEmpty()) {
 			throw new EOFException("connection closed");
 		}
-		return ClientUtils.receiveHelper(received, timeout);
+		return ClientUtils.receiveHelper(receiveQueue, timeout);
 	}
 }

@@ -35,7 +35,7 @@ final class ProxiedBootConnection extends BootConnection {
 
 	private final ProxyProtocolClient.ConnectedChannel channel;
 
-	private final BlockingQueue<ByteBuffer> received;
+	private final BlockingQueue<ByteBuffer> receiveQueue;
 
 	private ProxyProtocolClient ws;
 
@@ -50,8 +50,8 @@ final class ProxiedBootConnection extends BootConnection {
 	ProxiedBootConnection(ProxyProtocolClient ws)
 			throws IOException, InterruptedException {
 		this.ws = requireNonNull(ws);
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openChannel(ZERO_ZERO, BOOT_PORT, received::add);
+		receiveQueue = new LinkedBlockingQueue<>();
+		channel = ws.openChannel(ZERO_ZERO, BOOT_PORT, receiveQueue);
 	}
 
 	@Override
@@ -73,9 +73,9 @@ final class ProxiedBootConnection extends BootConnection {
 	@Override
 	protected ByteBuffer doReceive(int timeout)
 			throws IOException {
-		if (isClosed() && received.isEmpty()) {
+		if (isClosed() && receiveQueue.isEmpty()) {
 			throw new EOFException("connection closed");
 		}
-		return ClientUtils.receiveHelper(received, timeout);
+		return ClientUtils.receiveHelper(receiveQueue, timeout);
 	}
 }

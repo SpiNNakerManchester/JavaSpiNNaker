@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 /**
  * An {@link Iterator} wrapper with and an attached {@link ProgressBar}. Mainly
  * designed as a support class for {@link ProgressIterable}.
@@ -52,6 +54,7 @@ public class ProgressIterator<E> implements Iterator<E>, Closeable {
 	 * @param output
 	 *            The Stream to write output too. For example {@link System#out}
 	 */
+	@MustBeClosed
 	public ProgressIterator(Collection<E> outer, String description,
 			PrintStream output) {
 		bar = new ProgressBar(outer.size(), description, output);
