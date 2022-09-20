@@ -561,7 +561,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.rat</groupId>
 					<artifactId>apache-rat-plugin</artifactId>
-					<version>0.14</version>
+					<version>0.15</version>
 					<configuration>
 						<excludes>
 							<!-- Files without comment formats should be excluded -->
