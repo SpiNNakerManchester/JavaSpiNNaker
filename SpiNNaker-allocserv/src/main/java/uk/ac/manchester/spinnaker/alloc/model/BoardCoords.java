@@ -20,6 +20,8 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
@@ -27,6 +29,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  *
  * @author Donal Fellows
  */
+@Immutable
 public final class BoardCoords {
 	/** Logical triad X coordinate. */
 	private final int x;

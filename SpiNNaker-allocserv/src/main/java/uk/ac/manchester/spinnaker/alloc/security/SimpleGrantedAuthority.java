@@ -18,13 +18,16 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * Contains a single basic role grant.
  */
+@Immutable
 class SimpleGrantedAuthority implements GrantedAuthority {
 	private static final long serialVersionUID = 7765648523730760900L;
 
-	private String role;
+	private final String role;
 
 	/**
 	 * @param role

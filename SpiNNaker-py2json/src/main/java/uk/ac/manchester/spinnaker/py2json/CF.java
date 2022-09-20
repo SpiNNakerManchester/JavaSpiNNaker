@@ -20,7 +20,10 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
 
 import org.python.core.PyObject;
 
+import com.google.errorprone.annotations.Immutable;
+
 /** Frame/BMP coordinates. May be a hash table key. */
+@Immutable
 public final class CF {
 	/** Cabinet number. */
 	public final int c;
@@ -54,7 +57,7 @@ public final class CF {
 
 	@Override
 	public int hashCode() {
-		return ((c << 2 + c) ^ f) << 2 + f;
+		return (c * 5) + f;
 	}
 
 	@Override

@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -30,6 +32,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
+@Immutable
 public class AbstractDataLink implements HasChipLocation {
 	/** IP address of the Datalink on the board. */
 	public final InetAddress boardAddress;

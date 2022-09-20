@@ -23,11 +23,14 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.REGION_SHIFT;
 
 import java.util.Comparator;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * Holding case for a CoreLocation (X, Y and P) and the recording region ID.
  *
  * @author Christian
  */
+@Immutable
 public class RegionLocation
 		implements HasCoreLocation, Comparable<RegionLocation> {
 	/** The Chip / Core's X value. */

@@ -71,13 +71,14 @@ public abstract class Utils {
 			return null;
 		}
 		sql = trimSQLComments(sql);
-		// Trim long queries to no more than TRIM_LENGTH...
+		// Try to trim long queries to no more than TRIM_LENGTH...
 		var sql2 = sql.replaceAll("^(.{0," + length + "})\\b.*$", "$1");
-		if (sql2 != sql) {
-			// and add an ellipsis if we do the trimming
-			sql = sql2 + ELLIPSIS;
+		// If that did nothing, return the whole string
+		if (sql2.equals(sql)) {
+			return sql2;
 		}
-		return sql;
+		// We're using the trimming, so add an ellipsis
+		return sql2 + ELLIPSIS;
 	}
 
 	private static String trimSQLComments(String sql) {

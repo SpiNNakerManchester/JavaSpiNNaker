@@ -26,6 +26,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
 /** Utilities to support MVC controllers. */
@@ -90,6 +92,7 @@ public abstract class ControllerUtils {
 	 *
 	 * @author Donal Fellows
 	 */
+	@Immutable
 	public static class ViewFactory {
 		private final String view;
 

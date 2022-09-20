@@ -66,6 +66,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
@@ -653,48 +655,57 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 			private Map<TriadCoords, String> spinnakerIps = Map.of();
 
+			@CanIgnoreReturnValue
 			public Builder withName(String name) {
 				this.name = name;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withTags(Set<String> tags) {
 				this.tags = tags;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withWidth(int width) {
 				this.width = width;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withHeight(int height) {
 				this.height = height;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withDeadBoards(Set<TriadCoords> deadBoards) {
 				this.deadBoards = deadBoards;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder
 					withDeadLinks(Map<TriadCoords, EnumSet<Link>> deadLinks) {
 				this.deadLinks = deadLinks;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withBoardLocations(
 					Map<TriadCoords, BoardPhysicalCoords> boardLocations) {
 				this.boardLocations = boardLocations;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withBmpIps(Map<BMPCoords, String> bmpIps) {
 				this.bmpIps = bmpIps;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder
 					withSpinnakerIps(Map<TriadCoords, String> spinnakerIps) {
 				this.spinnakerIps = spinnakerIps;
@@ -1136,6 +1147,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 */
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = "src/test/java/.*")
 	@Deprecated
 	@ForTestingOnly
 	TestAPI getTestAPI(Connection c) {

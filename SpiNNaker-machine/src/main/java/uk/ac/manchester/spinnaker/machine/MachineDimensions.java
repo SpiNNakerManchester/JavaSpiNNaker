@@ -16,7 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import com.google.errorprone.annotations.Immutable;
+
 /** Represents the size of a machine in chips. */
+@Immutable
 public final class MachineDimensions {
 	/** The width of the machine in chips. */
 	public final int width;

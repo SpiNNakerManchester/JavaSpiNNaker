@@ -74,6 +74,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.Immutable;
+import com.google.errorprone.annotations.RestrictedApi;
+
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
@@ -726,6 +729,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
+	@Immutable
 	final class CollabratoryAuthority extends SimpleGrantedAuthority {
 		private static final long serialVersionUID = 4964366746649162092L;
 
@@ -741,6 +745,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
+	@Immutable
 	final class OrganisationAuthority extends SimpleGrantedAuthority {
 		private static final long serialVersionUID = 8260068770503054502L;
 
@@ -868,6 +873,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		mapAuthorities("token", token, ga);
 	}
 
+	@Immutable
 	private static final class LocalAuthResult {
 		final int userId;
 
@@ -991,9 +997,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            How to access the DB.
 	 * @param details
 	 *            The results of looking up the user
-	 * @return
 	 */
-	private LocalAuthResult checkPassword(String username, String password,
+	private void checkPassword(String username, String password,
 			LocalAuthResult details, AuthQueries queries) {
 		if (!passServices.matchPassword(password, details.passInfo)) {
 			queries.transaction(() -> {
@@ -1002,7 +1007,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				throw new BadCredentialsException("bad password");
 			});
 		}
-		return details;
 	}
 
 	/**
@@ -1205,6 +1209,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	@Override
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = "src/test/java/.*")
 	@Deprecated
 	public TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

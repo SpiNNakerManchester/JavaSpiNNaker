@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
@@ -24,6 +27,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
+@Immutable
 public final class FPGALinkData extends AbstractDataLink {
 
 	/** The link ID from the FPGA prospective. */

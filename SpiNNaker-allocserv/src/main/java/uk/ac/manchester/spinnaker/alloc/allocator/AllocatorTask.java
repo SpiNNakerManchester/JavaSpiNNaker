@@ -46,6 +46,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.RestrictedApi;
+
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
@@ -999,6 +1001,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @deprecated This interface is just for testing.
 	 */
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = "src/test/java/.*")
 	@Deprecated
 	TestAPI getTestAPI(Connection conn) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

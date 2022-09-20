@@ -21,8 +21,10 @@ import static java.lang.String.format;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.errorprone.annotations.Immutable;
 
 /** Generalised coordinates of a board. */
+@Immutable
 public class BoardCoords {
 	/** Logical triad X coordinate. */
 	private final int x;

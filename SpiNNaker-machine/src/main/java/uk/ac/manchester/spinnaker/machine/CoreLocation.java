@@ -23,6 +23,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateCoreLoc
 
 import java.io.Serializable;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * The location of a Core as an X, Y, P tuple.
  * <p>
@@ -31,6 +33,7 @@ import java.io.Serializable;
  * @author alan
  * @author dkf
  */
+@Immutable
 public final class CoreLocation
 		implements HasCoreLocation, Comparable<CoreLocation>, Serializable {
 	private static final long serialVersionUID = 2930811082362121057L;

@@ -70,6 +70,8 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.RestrictedApi;
+
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
@@ -110,7 +112,7 @@ public class BMPController extends DatabaseAwareBean {
 
 	private boolean stop;
 
-	private Map<Machine, WorkerState> state = new HashMap<>();
+	private final Map<Machine, WorkerState> state = new HashMap<>();
 
 	@Autowired
 	private SpallocAPI spallocCore;
@@ -1609,6 +1611,8 @@ public class BMPController extends DatabaseAwareBean {
 	 * @deprecated This interface is just for testing.
 	 */
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = "src/test/java/.*")
 	@Deprecated
 	public final TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

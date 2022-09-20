@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
@@ -196,6 +198,7 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	// Migrate to record in new enough Java
+	@Immutable
 	private static class RegionToRef {
 		final CoreLocation core;
 

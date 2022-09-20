@@ -104,6 +104,8 @@ import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
 import uk.ac.manchester.spinnaker.storage.ResultColumn;
@@ -750,6 +752,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 			private final Thread holder;
 
+			@MustBeClosed
 			Hold() {
 				it = inTransaction;
 				holder = currentThread();
@@ -764,7 +767,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			@Override
 			public void close() {
 				if (!it) {
-					inTransaction = it;
+					inTransaction = false;
 					synchronized (transactionHolders) {
 						transactionHolders.remove(holder);
 					}

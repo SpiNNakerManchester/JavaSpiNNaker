@@ -19,10 +19,13 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  *
  * @author Christian-B
  */
+@Immutable
 public class InetIdTuple {
 	/** The InetAddress of this tuple which may be {@code null}. */
 	public final InetAddress address;

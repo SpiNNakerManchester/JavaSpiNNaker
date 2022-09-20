@@ -171,6 +171,7 @@ public class SpallocProperties {
 		this.databasePath = databasePath;
 	}
 
+	@SuppressWarnings("UnusedMethod")
 	@AssertTrue(message = "directory of database path must exist")
 	private boolean isDatabaseInSaneLocation() {
 		return databasePath.getAbsoluteFile().getParentFile().exists();
@@ -220,6 +221,7 @@ public class SpallocProperties {
 		this.workingDirectory = workingDirectory;
 	}
 
+	@SuppressWarnings("UnusedMethod")
 	@AssertTrue(message = "working directory must exist")
 	private boolean isValidWorkingDirectory() {
 		return workingDirectory.exists() && workingDirectory.isDirectory();
@@ -508,6 +510,7 @@ public class SpallocProperties {
 			this.max = max;
 		}
 
+		@SuppressWarnings("UnusedMethod")
 		@AssertTrue(message = "max must be more than min")
 		private boolean isMaxMoreThanMin() {
 			return max.compareTo(min) > 0;
@@ -781,6 +784,7 @@ public class SpallocProperties {
 			this.subject = subject;
 		}
 
+		@SuppressWarnings("UnusedMethod")
 		@AssertTrue(
 				message = "must supply from, to, and subject if send enabled")
 		private boolean fieldsIfEnabled() {
@@ -1272,6 +1276,7 @@ public class SpallocProperties {
 			this.truststorePassword = truststorePassword;
 		}
 
+		@SuppressWarnings("UnusedMethod")
 		@AssertTrue(
 				message = "id and secret must be given if OpenID is enabled")
 		private boolean isValid() {
@@ -1951,6 +1956,7 @@ public class SpallocProperties {
 			this.serviceUser = serviceUser;
 		}
 
+		@SuppressWarnings("UnusedMethod")
 		@AssertTrue(message = "a service username must be given "
 				+ "if the v1 service is enabled")
 		private boolean isValidUserIfEnabled() {
@@ -1974,6 +1980,7 @@ public class SpallocProperties {
 			this.serviceGroup = serviceUser;
 		}
 
+		@SuppressWarnings("UnusedMethod")
 		@AssertTrue(message = "a service group must be given "
 				+ "if the v1 service is enabled")
 		private boolean isValidGroupIfEnabled() {
