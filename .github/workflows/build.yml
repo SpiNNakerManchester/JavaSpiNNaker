@@ -98,6 +98,8 @@ jobs:
         java-version: ${{ matrix.java }}
         cache: 'maven'
 
+    - name: "Check: Error Prone"
+      run: mvn clean package -DskipTests=true -P "ErrorProne,!jsp-precompile" --settings $SETTINGS_FILE
     - name: "Check: Code Style"
       run: mvn directory:highest-basedir@find-root checkstyle:check --settings $SETTINGS_FILE
     - name: "Check: Documentation"
