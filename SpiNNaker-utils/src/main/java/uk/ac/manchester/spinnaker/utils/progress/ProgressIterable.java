@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.google.errorprone.annotations.MustBeClosed;
-
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
@@ -46,7 +44,6 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  * @param <E>
  *            Type of elements to be iterated over.
  */
-@SuppressWarnings("MustBeClosedChecker")
 public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
 	private final Collection<E> things;
 
@@ -70,7 +67,6 @@ public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
 	 *            The Stream to write output too. For example,
 	 *            {@link System#out}.
 	 */
-	@MustBeClosed
 	public ProgressIterable(Collection<E> things, String description,
 			PrintStream output) {
 		this.things = things;
@@ -91,7 +87,6 @@ public class ProgressIterable<E> implements MappableIterable<E>, Closeable {
 	 *            A text description to add at the start and when reporting
 	 *            duration.
 	 */
-	@MustBeClosed
 	public ProgressIterable(Collection<E> things, String description) {
 		this(things, description, out);
 	}

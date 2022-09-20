@@ -51,6 +51,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
@@ -634,6 +636,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SpiNNaker rejects a message.
 		 */
+		@MustBeClosed
 		NoDropPacketContext dontDropPackets(Gather core)
 				throws IOException, ProcessException {
 			return new NoDropPacketContext(txrx,
