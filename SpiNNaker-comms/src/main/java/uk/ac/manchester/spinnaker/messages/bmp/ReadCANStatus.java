@@ -45,7 +45,7 @@ public class ReadCANStatus extends BMPRequest<ReadCANStatus.Response> {
 	}
 
 	/** An SCP response to a request for the CAN status. */
-	public final class Response extends BMPRequest.BMPResponse {
+	public static final class Response extends BMPRequest.BMPResponse {
 		/**
 		 * The status data. The byte at {@code x} is zero if the BMP with that
 		 * index is disabled.

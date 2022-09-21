@@ -76,7 +76,7 @@ class TestMemoryRegionCollection {
 		assertTrue(c.needsToWriteRegion(1));
 		assertFalse(c.needsToWriteRegion(5));
 		assertEquals(6, c.size());
-		c.spliterator();
+		assertNotNull(c.spliterator());
 		assertArrayEquals(new Object[] {
 			null, null, mr1, null, mr2, null, null
 		}, c.toArray(new Object[7]));

@@ -27,7 +27,7 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /** An abstract process for talking to SpiNNaker efficiently. */
-abstract class Process {
+abstract class TxrxProcess {
 	private SCPRequest<?> errorRequest;
 
 	private Throwable exception;

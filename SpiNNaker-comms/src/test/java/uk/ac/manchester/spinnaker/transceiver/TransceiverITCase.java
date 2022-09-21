@@ -206,7 +206,7 @@ public class TransceiverITCase {
 		writeData.flip();
 		txrx.writeMemory(SCAMP, MEM, writeData);
 		var readData = txrx.readMemory(SCAMP, MEM, 1000);
-		assertArrayEquals(writeData.array(), readData.array());
+		assertEquals(writeData, readData);
 	}
 
 	private void floodWrite(Transceiver txrx) throws Exception {

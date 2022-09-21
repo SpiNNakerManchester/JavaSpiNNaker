@@ -1416,7 +1416,7 @@ public class Transceiver extends UDPTransceiver
 	 * @see ExecuteLock
 	 * @author Donal Fellows
 	 */
-	private class FloodLock {
+	private static class FloodLock {
 		private int count = 0;
 
 		/**
@@ -2312,7 +2312,7 @@ public class Transceiver extends UDPTransceiver
 		}
 		if (enable) {
 			for (int counterID : counterIDs) {
-				clearData |= 1 << counterID + ENABLE_SHIFT;
+				clearData |= 1 << (counterID + ENABLE_SHIFT);
 			}
 		}
 		writeMemory(chip, ROUTER_DIAGNOSTIC_COUNTER, clearData);

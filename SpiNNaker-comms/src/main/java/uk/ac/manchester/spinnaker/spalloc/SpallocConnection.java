@@ -42,6 +42,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocServerException;
@@ -86,7 +88,9 @@ public abstract class SpallocConnection implements Closeable {
 	/**
 	 * The thread-aware socket factory. Every thread gets exactly one socket.
 	 */
-	private final TextSocketFactory local = new TextSocketFactory();
+	@SuppressWarnings("ThreadLocalUsage")
+	private final ThreadLocal<TextSocket> threadLocalSocket =
+			ThreadLocal.withInitial(TextSocket::new);
 
 	/** A queue of unprocessed notifications. */
 	protected final Queue<Notification> notifications =
@@ -122,6 +126,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * @throws IOException
 	 *             If the connect to the spalloc server fails.
 	 */
+	@MustBeClosed
 	public AutoCloseable withConnection() throws IOException {
 		connect();
 		return this::close;
@@ -164,7 +169,7 @@ public abstract class SpallocConnection implements Closeable {
 		TextSocket sock;
 		boolean connectNeeded = false;
 		synchronized (socksLock) {
-			sock = local.get();
+			sock = threadLocalSocket.get();
 			if (!socks.containsKey(key)) {
 				socks.put(key, sock);
 				connectNeeded = true;
@@ -214,7 +219,7 @@ public abstract class SpallocConnection implements Closeable {
 	 */
 	public void connect(Integer timeout) throws IOException {
 		// Close any existing connection
-		var s = local.get();
+		var s = threadLocalSocket.get();
 		if (s.isClosed()) {
 			closeThreadConnection(currentThread());
 		} else if (!s.isConnected()) {
@@ -240,7 +245,7 @@ public abstract class SpallocConnection implements Closeable {
 		if (sock != null) {
 			// Mark the thread local so it will reinitialise
 			if (key == currentThread()) {
-				local.remove();
+				threadLocalSocket.remove();
 			}
 			// Close the socket itself
 			sock.close();
@@ -264,7 +269,7 @@ public abstract class SpallocConnection implements Closeable {
 		for (var key : keys) {
 			closeThreadConnection(key);
 		}
-		local.remove();
+		threadLocalSocket.remove();
 	}
 
 	private static String readLine(TextSocket sock)
@@ -453,17 +458,6 @@ public abstract class SpallocConnection implements Closeable {
 						new InputStreamReader(getInputStream(), UTF_8));
 			}
 			return br;
-		}
-	}
-
-	/**
-	 * Subclass of ThreadLocal to ensure that we get sane initialisation of our
-	 * state in each thread.
-	 */
-	private static class TextSocketFactory extends ThreadLocal<TextSocket> {
-		@Override
-		protected TextSocket initialValue() {
-			return new TextSocket();
 		}
 	}
 

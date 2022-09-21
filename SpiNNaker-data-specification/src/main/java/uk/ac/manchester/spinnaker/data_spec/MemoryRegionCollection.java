@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.System.arraycopy;
-import static java.util.Arrays.copyOf;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.range;
 
@@ -183,7 +182,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	public <T> T[] toArray(T[] a) {
 		if (a.length < regions.length) {
 			// This line of code copied from ArrayList
-			return (T[]) copyOf(regions, regions.length, a.getClass());
+			return (T[]) Arrays.copyOf(regions, regions.length, a.getClass());
 		}
 		arraycopy(regions, 0, a, 0, regions.length);
 		if (a.length > regions.length) {

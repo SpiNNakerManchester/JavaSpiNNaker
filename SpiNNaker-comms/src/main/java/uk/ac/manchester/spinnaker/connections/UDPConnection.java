@@ -21,6 +21,7 @@ import static java.net.InetAddress.getByAddress;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Objects.requireNonNullElse;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -140,7 +141,8 @@ public abstract class UDPConnection<T>
 		socket = initialiseSocket(localHost, localPort, remoteHost, remotePort,
 				trafficClass);
 		if (log.isDebugEnabled()) {
-			logInitialCreation();
+			log.debug("{} socket created ({} <--> {})", getClass().getName(),
+					localAddr(), remoteAddr());
 		}
 	}
 
@@ -156,26 +158,8 @@ public abstract class UDPConnection<T>
 		this.receivePacketSize = receivePacketSize;
 	}
 
-	private void logInitialCreation() {
-		InetSocketAddress us = null;
-		try {
-			us = getLocalAddress();
-		} catch (Exception ignore) {
-		}
-		if (us == null) {
-			us = new InetSocketAddress((InetAddress) null, 0);
-		}
-		InetSocketAddress them = null;
-		try {
-			them = getRemoteAddress();
-		} catch (Exception ignore) {
-		}
-		if (them == null) {
-			them = new InetSocketAddress((InetAddress) null, 0);
-		}
-		log.debug("{} socket created ({} <--> {})", getClass().getName(), us,
-				them);
-	}
+	private static final InetSocketAddress ANY =
+			new InetSocketAddress((InetAddress) null, 0);
 
 	/**
 	 * Set up a UDP/IPv4 socket.
@@ -246,6 +230,14 @@ public abstract class UDPConnection<T>
 		return (InetSocketAddress) socket.getLocalSocketAddress();
 	}
 
+	private InetSocketAddress localAddr() {
+		try {
+			return requireNonNullElse(getLocalAddress(), ANY);
+		} catch (IOException e) {
+			return ANY;
+		}
+	}
+
 	/**
 	 * Get the remote socket address. (Sockets have two ends, one local, one
 	 * remote.)
@@ -259,6 +251,14 @@ public abstract class UDPConnection<T>
 	 */
 	protected InetSocketAddress getRemoteAddress() throws IOException {
 		return (InetSocketAddress) socket.getRemoteSocketAddress();
+	}
+
+	private InetSocketAddress remoteAddr() {
+		try {
+			return requireNonNullElse(getRemoteAddress(), ANY);
+		} catch (IOException e) {
+			return ANY;
+		}
 	}
 
 	/** @return The local IP address to which the connection is bound. */
@@ -656,7 +656,7 @@ public abstract class UDPConnection<T>
 		try {
 			socket.disconnect();
 		} catch (Exception e) {
-			// Ignore any possible exception here
+			log.debug("failed to disconnect prior to close", e);
 		}
 		socket.close();
 	}
@@ -691,17 +691,8 @@ public abstract class UDPConnection<T>
 
 	@Override
 	public String toString() {
-		InetSocketAddress la = null, ra = null;
-		try {
-			la = getLocalAddress();
-		} catch (IOException ignore) {
-		}
-		try {
-			ra = getRemoteAddress();
-		} catch (IOException ignore) {
-		}
 		return format("%s(%s <-%s-> %s)",
-				getClass().getSimpleName().replaceAll("^.*\\.", ""), la,
-				isClosed() ? "|" : "", ra);
+				getClass().getSimpleName().replaceAll("^.*\\.", ""),
+				localAddr(), isClosed() ? "|" : "", remoteAddr());
 	}
 }

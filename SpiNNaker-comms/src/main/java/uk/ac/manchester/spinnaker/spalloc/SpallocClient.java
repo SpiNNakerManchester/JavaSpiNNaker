@@ -227,6 +227,7 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 
 	@Deprecated(forRemoval = true)
 	@Override
+	@SuppressWarnings("deprecation")
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {
 		// If no owner, don't bother with the call

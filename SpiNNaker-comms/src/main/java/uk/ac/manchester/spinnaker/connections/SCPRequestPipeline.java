@@ -247,7 +247,7 @@ public class SCPRequestPipeline {
 		/**
 		 * Handle the reception of a message.
 		 *
-		 * @param responseData
+		 * @param msg
 		 *            the content of the message, in a little-endian buffer.
 		 */
 		private void parseReceivedResponse(SCPResultMessage msg)

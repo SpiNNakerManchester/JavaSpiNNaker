@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.spalloc;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -31,11 +32,14 @@ import java.util.concurrent.BlockingDeque;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
 class MockServer implements SupportUtils.IServer {
+	private static final Logger log = getLogger(MockServer.class);
+
 	private static final int BUFFER_SIZE = 1024;
 
 	private static final int QUEUE_LENGTH = 1;
@@ -74,6 +78,19 @@ class MockServer implements SupportUtils.IServer {
 				new InputStreamReader(sock.getInputStream(), UTF_8),
 				BUFFER_SIZE);
 		return sock.getInetAddress();
+	}
+
+	void connectQuietly() {
+		try {
+			connect();
+		} catch (IOException e) {
+			// Just totally ignore early closing of sockets
+			if (!e.getMessage().equals("Socket closed")) {
+				log.warn("problem with mock IO", e);
+			}
+		} catch (RuntimeException e) {
+			log.warn("problem with mock IO", e);
+		}
 	}
 
 	@Override
@@ -127,7 +144,7 @@ class MockServer implements SupportUtils.IServer {
 					} while (send.peek().contains("changed"));
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("failure in mock server", e);
 			}
 		}, "mock server advanced emulator");
 	}
@@ -148,7 +165,7 @@ class MockServer implements SupportUtils.IServer {
 			} catch (EOFException e) {
 				// do nothing
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("failure in keepalive listener", e);
 			}
 		}, "mock server keepalive listener");
 	}

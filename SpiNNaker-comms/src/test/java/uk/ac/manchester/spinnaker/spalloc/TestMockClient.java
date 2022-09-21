@@ -122,7 +122,7 @@ public class TestMockClient {
 		Notification notification = null;
 		try (var c = client.withConnection()) {
 			var args = new ArrayList<Integer>();
-			@SuppressWarnings("deprecation")
+			@SuppressWarnings("removal")
 			int jobId = client.createJob(args,
 					Map.of("owner", "Unittest. OK to kill after 1 minute."),
 					timeout);
@@ -149,7 +149,7 @@ public class TestMockClient {
 			var machineInfo = client.getJobMachineInfo(jobId, timeout);
 			var machineName = machineInfo.getMachineName();
 			if (client.isActual()) {
-				assert !machineName.isBlank() : "must have a machine name";
+				assertFalse(machineName.isBlank(), "must have a machine name");
 			} else {
 				assertEquals("Spin24b-223", machineName);
 			}
@@ -168,7 +168,7 @@ public class TestMockClient {
 			}
 			if (client.isActual()) {
 				notification = client.waitForNotification(-1);
-				JobsChangedNotification.class.cast(notification);
+				assertTrue(notification instanceof JobsChangedNotification);
 			}
 			assertEquals(State.POWER, state.getState());
 			if (client.isActual()) {

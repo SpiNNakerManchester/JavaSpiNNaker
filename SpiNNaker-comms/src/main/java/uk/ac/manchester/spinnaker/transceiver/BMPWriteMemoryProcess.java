@@ -111,18 +111,23 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
 		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
 
 		execute(new BMPWriteIterator(board, baseAddress, bytesToWrite) {
+			private ByteBuffer getChunk(int chunkSize) throws IOException {
+				var buffer = workingBuffer.duplicate();
+				// After this, chunkSize is REAL chunk size or -1
+				chunkSize = data.read(buffer.array(), buffer.arrayOffset(),
+						chunkSize);
+				if (chunkSize < 1) {
+					// Read failed to generate anything we want to send
+					return null;
+				}
+				buffer.limit(chunkSize);
+				return buffer;
+			}
+
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
 				try {
-					var buffer = workingBuffer.duplicate();
-					// After this, chunkSize is REAL chunk size or -1
-					chunkSize = data.read(buffer.array(), 0, chunkSize);
-					if (chunkSize < 1) {
-						// Read failed to generate anything we want to send
-						return empty();
-					}
-					buffer.limit(chunkSize);
-					return Optional.of(buffer);
+					return Optional.ofNullable(getChunk(chunkSize));
 				} catch (IOException e) {
 					exn.setValue(e); // Smuggle the exception out!
 					return empty();
@@ -140,12 +145,11 @@ class BMPWriteMemoryProcess extends BMPCommandProcess<BMPResponse> {
  * at a time on demand. The complexity is because chunk construction is
  * permitted to fail!
  * <p>
- * This is also an iterable, albeit a one-shot iterable.
+ * This is a one-shot iterable.
  *
  * @author Donal Fellows
  */
-abstract class BMPWriteIterator
-		implements Iterator<BMPWriteMemory>, Iterable<BMPWriteMemory> {
+abstract class BMPWriteIterator implements Iterable<BMPWriteMemory> {
 	private final BMPBoard board;
 
 	private int sizeRemaining;
@@ -181,28 +185,29 @@ abstract class BMPWriteIterator
 	abstract Optional<ByteBuffer> prepareSendBuffer(int plannedSize);
 
 	@Override
-	public final boolean hasNext() {
-		if (sizeRemaining < 1) {
-			return false;
-		}
-		var bb = prepareSendBuffer(min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
-		sendBuffer = bb.orElse(null);
-		return bb.isPresent();
-	}
-
-	@Override
-	public final BMPWriteMemory next() {
-		int chunkSize = sendBuffer.remaining();
-		try {
-			return new BMPWriteMemory(board, address, sendBuffer);
-		} finally {
-			address = address.add(chunkSize);
-			sizeRemaining -= chunkSize;
-		}
-	}
-
-	@Override
 	public Iterator<BMPWriteMemory> iterator() {
-		return this;
+		return new Iterator<>() {
+			@Override
+			public boolean hasNext() {
+				if (sizeRemaining < 1) {
+					return false;
+				}
+				var bb = prepareSendBuffer(
+						min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
+				sendBuffer = bb.orElse(null);
+				return bb.isPresent();
+			}
+
+			@Override
+			public BMPWriteMemory next() {
+				int chunkSize = sendBuffer.remaining();
+				try {
+					return new BMPWriteMemory(board, address, sendBuffer);
+				} finally {
+					address = address.add(chunkSize);
+					sizeRemaining -= chunkSize;
+				}
+			}
+		};
 	}
 }

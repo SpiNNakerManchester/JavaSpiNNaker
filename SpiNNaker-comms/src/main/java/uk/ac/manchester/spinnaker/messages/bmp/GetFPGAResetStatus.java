@@ -43,7 +43,7 @@ public class GetFPGAResetStatus
 	private static final int XIL_RST_BIT = 14;
 
 	/** The response to a request to get the FPGA reset status of a board. */
-	public final class Response extends BMPRequest.BMPResponse {
+	public static final class Response extends BMPRequest.BMPResponse {
 		private int ioPortControlWord;
 
 		private Response(ByteBuffer buffer)

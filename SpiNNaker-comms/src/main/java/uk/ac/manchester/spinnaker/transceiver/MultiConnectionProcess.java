@@ -37,7 +37,8 @@ import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
  * @param <T>
  *            The type of connection used by the process.
  */
-abstract class MultiConnectionProcess<T extends SCPConnection> extends Process {
+abstract class MultiConnectionProcess<T extends SCPConnection>
+		extends TxrxProcess {
 	/** The default for the number of parallel channels. */
 	public static final int DEFAULT_NUM_CHANNELS = 8;
 
