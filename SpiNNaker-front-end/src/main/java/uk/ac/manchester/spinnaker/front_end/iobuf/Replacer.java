@@ -83,7 +83,8 @@ class Replacer {
 			try {
 				var tmpl = new Template(parts);
 				messages.put(tmpl.key, tmpl);
-			} catch (NumberFormatException ignore) {
+			} catch (NumberFormatException e) {
+				log.trace("bad template ID: {}", parts[0], e);
 			}
 		}
 	}

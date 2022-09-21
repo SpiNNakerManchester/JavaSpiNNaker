@@ -145,6 +145,7 @@ class ThrottledConnection implements Closeable {
 	}
 
 	@Override
+	@SuppressWarnings("FutureReturnValueIgnored")
 	public void close() {
 		var c = connection;
 		connection = null;

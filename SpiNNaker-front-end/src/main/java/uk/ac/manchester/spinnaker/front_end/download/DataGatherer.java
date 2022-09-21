@@ -669,7 +669,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @param timeout
 		 *            How long to wait for the queue to deliver a packet, in
 		 *            milliseconds.
-		 * @param transactionID
+		 * @param transactionId
 		 *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
@@ -677,10 +677,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
-		 * @throws ProcessException
 		 */
 		private boolean processOnePacket(int timeout, int transactionId)
-				throws IOException, TimeoutException, ProcessException {
+				throws IOException, TimeoutException {
 			var p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
@@ -837,14 +836,12 @@ final class TimeoutException extends Exception {
 final class InsaneSequenceNumberException extends IllegalStateException {
 	private static final long serialVersionUID = 2L;
 
-	private static final String TMPL =
-			"got insane sequence number %d: expected maximum %d (%s)";
-
 	private static final String MID = "totally bad sequence";
 
 	private static final String END = "non-empty terminal-only packet";
 
 	InsaneSequenceNumberException(int maxNum, int seqNum) {
-		super(format(TMPL, seqNum, maxNum, (maxNum == seqNum ? END : MID)));
+		super(format("got insane sequence number %d: expected maximum %d (%s)",
+				seqNum, maxNum, (maxNum == seqNum ? END : MID)));
 	}
 }

@@ -83,7 +83,7 @@ public final class Generator {
 
 	/**
 	 * Various shifts for fields used with
-	 * {@link #command(Command,int,int,Object[]) command(...)}.
+	 * {@link #command(Commands,int,int,Object[]) command(...)}.
 	 */
 	enum Field {
 		/** length field. */

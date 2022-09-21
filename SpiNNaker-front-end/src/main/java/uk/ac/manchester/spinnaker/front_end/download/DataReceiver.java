@@ -193,7 +193,7 @@ public class DataReceiver extends BoardLocalSupport {
 	/**
 	 * Read memory from SDRAM on SpiNNaker.
 	 *
-	 * @param placement
+	 * @param location
 	 *            The coords where data is to be extracted from.
 	 * @param address
 	 *            The memory address to start at

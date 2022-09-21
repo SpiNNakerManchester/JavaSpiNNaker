@@ -34,6 +34,8 @@ import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.machine.Machine;
 import uk.ac.manchester.spinnaker.storage.BufferManagerStorage;
@@ -65,7 +67,8 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	private final BufferManagerStorage database;
 
-	private Map<Placement, List<RecordingRegion>> recordingRegions =
+	@GuardedBy("itself")
+	private final Map<Placement, List<RecordingRegion>> recordingRegions =
 			new HashMap<>();
 
 	private final ExecutorService dbWorker = newSingleThreadExecutor();

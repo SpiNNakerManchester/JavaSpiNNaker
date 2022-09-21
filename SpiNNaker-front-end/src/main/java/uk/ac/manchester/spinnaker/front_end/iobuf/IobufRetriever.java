@@ -210,7 +210,7 @@ public class IobufRetriever extends BoardLocalSupport {
 							iobuf.asCoreLocation(), replacer.origin, file);
 					// ISO 8859-1: bytes are zero-extended to chars
 					for (var originalLine : iobuf
-							.getContentsString(ISO_8859_1).split("\n")) {
+							.getContentsString(ISO_8859_1).split("\n", -1)) {
 						var line = replacer.replace(originalLine);
 						w.write(line);
 						w.newLine();

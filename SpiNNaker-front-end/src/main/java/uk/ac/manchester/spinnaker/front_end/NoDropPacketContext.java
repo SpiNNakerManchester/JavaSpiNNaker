@@ -259,11 +259,13 @@ public class NoDropPacketContext implements AutoCloseable {
 	private void quietlySetTemporaryTimeouts() {
 		try {
 			txrx.setReinjectionTimeout(gatherers, TEMP_TIMEOUT);
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			log.debug("failed to reset reinjection timeout", e);
 		}
 		try {
 			txrx.setReinjectionEmergencyTimeout(gatherers, ZERO_TIMEOUT);
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			log.debug("failed to reset emergency reinjection timeout", e);
 		}
 	}
 }

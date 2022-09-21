@@ -42,10 +42,10 @@ import java.io.PrintWriter;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -453,8 +453,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @param ctl
 		 *            The definition of what to run and where to send the
 		 *            results.
-		 * @param transactionId
-		 *            The transaction id for the stream.
+		 * @param gather
+		 *            Where the relevant packet gatherer is that we will be
+		 *            routing data via.
+		 * @param start
+		 *            Start of the memory chunk to put the data in.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
 		 * @throws ProcessException
@@ -542,7 +545,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @author Donal Fellows
 		 */
 		@SuppressWarnings("serial")
-		private class MissingRecorder extends LinkedList<BitSet>
+		private class MissingRecorder extends ArrayDeque<BitSet>
 				implements AutoCloseable {
 			MissingRecorder() {
 				missingSequenceNumbers = this;
@@ -599,8 +602,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            The region to write.
 		 * @param baseAddress
 		 *            Where to write the region.
-		 * @param transactionId
-		 *            the transaction id for the stream
+		 * @param gather
+		 *            The information about where messages are routed via.
 		 * @return How many bytes were actually written.
 		 * @throws IOException
 		 *             If anything goes wrong with I/O.
@@ -668,9 +671,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 *            Whether the data will be written.
 		 * @param data
 		 *            The data to be written.
-		 *
-		 * @param trasnactionId
-		 *            The transaction id for this stream.
+		 * @param gather
+		 *            The information about packet routing. In particular,
+		 *            responsible for Fast Data In transaction ID issuing.
 		 * @throws IOException
 		 *             If IO fails.
 		 */

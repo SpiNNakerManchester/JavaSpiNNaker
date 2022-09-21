@@ -454,10 +454,8 @@ interface CLICommands {
 	String VERSION = "version";
 
 	/** All the command names. Sorted. */
-	String[] ALL = {
-		DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS, GATHER, IOBUF, LISTEN,
-		VERSION
-	};
+	List<String> ALL = List.of(DOWNLOAD, DSE, DSE_APP, DSE_APP_MON, DSE_SYS,
+			GATHER, IOBUF, LISTEN, VERSION);
 
 	/**
 	 * @return A human-readable list of all command names.
@@ -468,7 +466,7 @@ interface CLICommands {
 		for (var item : ALL) {
 			sb.append(sep);
 			sep = ", ";
-			if (item == VERSION) {
+			if (item.equals(VERSION)) {
 				sb.append("or ");
 			}
 			sb.append(item);
