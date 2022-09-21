@@ -64,8 +64,7 @@ public class TestFpgaLinkId {
 
 	private int checkUpperLeftTopFpgaLinks(int leftLinkId, int topLinkId, int x,
 			int y) {
-		leftLinkId =
-				checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.WEST);
+		checkFpgaLink(FpgaId.LEFT, leftLinkId, x, y, Direction.WEST);
 		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
 				Direction.NORTH);
 		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
@@ -101,8 +100,7 @@ public class TestFpgaLinkId {
 
 	private int checkRightLowerRightFpgaLinks(int topLinkId, int bottomLinkId,
 			int x, int y) {
-		topLinkId = checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y,
-				Direction.NORTHEAST);
+		checkFpgaLink(FpgaId.TOP_RIGHT, topLinkId, x, y, Direction.NORTHEAST);
 		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,
 				Direction.EAST);
 		bottomLinkId = checkFpgaLink(FpgaId.BOTTOM, bottomLinkId, x, y,

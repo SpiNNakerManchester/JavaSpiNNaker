@@ -26,7 +26,7 @@ import com.google.errorprone.annotations.Immutable;
  * @author Christian-B
  */
 @Immutable
-public class InetIdTuple {
+public final class InetIdTuple {
 	/** The InetAddress of this tuple which may be {@code null}. */
 	public final InetAddress address;
 
@@ -37,7 +37,7 @@ public class InetIdTuple {
 	 * The main Constructor which sets all values.
 	 *
 	 * @param address
-	 *            The InetAddress of this tuple which may be {@code null}.
+	 *            The InetAddress of this tuple, which may be {@code null}.
 	 * @param id
 	 *            The ID of this tuple.
 	 */
@@ -56,19 +56,10 @@ public class InetIdTuple {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
+		if (obj instanceof InetIdTuple) {
+			var other = (InetIdTuple) obj;
+			return (id == other.id) && Objects.equals(address, other.address);
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		var other = (InetIdTuple) obj;
-		if (id != other.id) {
-			return false;
-		}
-		return Objects.equals(address, other.address);
+		return false;
 	}
 }

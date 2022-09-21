@@ -56,6 +56,9 @@ public class TestProcessor {
 		assertThat(larger, greaterThan(smaller));
 	}
 
+	private static final int FAST_PROCESSOR =
+			MachineDefaults.PROCESSOR_CLOCK_SPEED + 10000000;
+
 	@Test
 	public void testEquals() {
 		var p1 = Processor.factory(1);
@@ -67,11 +70,9 @@ public class TestProcessor {
 		checkDifferent(p1, p1m);
 		assertNotEquals(p1, null);
 		assertNotEquals(p1, "p1");
-		var faster = Processor.factory(1,
-				MachineDefaults.PROCESSOR_CLOCK_SPEED * +10000000,
+		var faster = Processor.factory(1, FAST_PROCESSOR,
 				MachineDefaults.DTCM_AVAILABLE, false);
-		var faster2 = Processor.factory(1,
-				MachineDefaults.PROCESSOR_CLOCK_SPEED * +10000000,
+		var faster2 = Processor.factory(1, FAST_PROCESSOR,
 				MachineDefaults.DTCM_AVAILABLE, false);
 		checkSame(faster, faster2);
 	}
@@ -87,8 +88,7 @@ public class TestProcessor {
 		var monitor =
 				Processor.factory(1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
 						MachineDefaults.DTCM_AVAILABLE, true);
-		var faster = Processor.factory(1,
-				MachineDefaults.PROCESSOR_CLOCK_SPEED * +10000000,
+		var faster = Processor.factory(1, FAST_PROCESSOR,
 				MachineDefaults.DTCM_AVAILABLE, false);
 		var more = Processor.factory(1, MachineDefaults.PROCESSOR_CLOCK_SPEED,
 				MachineDefaults.DTCM_AVAILABLE + 10, false);

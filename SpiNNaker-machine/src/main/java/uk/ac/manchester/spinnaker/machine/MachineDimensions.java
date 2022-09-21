@@ -42,22 +42,11 @@ public final class MachineDimensions {
 
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof MachineDimensions)
-				&& equals((MachineDimensions) o);
-	}
-
-	/**
-	 * Tests whether this object is equal to another dimension.
-	 *
-	 * @param dimension
-	 *            The other dimension object to compare to.
-	 * @return True exactly when they are equal.
-	 */
-	public boolean equals(MachineDimensions dimension) {
-		if (dimension == null) {
-			return false;
+		if (o instanceof MachineDimensions) {
+			var dim = (MachineDimensions) o;
+			return (width == dim.width) && (height == dim.height);
 		}
-		return width == dimension.width && height == dimension.height;
+		return false;
 	}
 
 	@Override

@@ -141,7 +141,7 @@ public class TestReaderLineIterable {
 			assertEquals("Second", iterator.next());
 			assertEquals("Third", iterator.next());
 			assertThrows(NoSuchElementException.class, () -> {
-				iterator.next();
+				assertNull(iterator.next());
 			});
 			assertFalse(iterator.hasNext());
 		}
