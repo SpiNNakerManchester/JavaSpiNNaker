@@ -50,7 +50,7 @@ public class TestIterable {
 	}
 
 	private static String[] lines(ByteArrayOutputStream baos) {
-		return baos.toString(UTF_8).split(NEWLINE, -1);
+		return baos.toString(UTF_8).stripTrailing().split(NEWLINE, -1);
 	}
 
 	@Test

@@ -16,12 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.utils.progress;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import org.junit.jupiter.api.Test;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import org.junit.jupiter.api.Test;
+
 
 /**
  *
@@ -43,7 +45,7 @@ public class TestBar {
 	}
 
 	private static String[] lines(ByteArrayOutputStream baos) {
-		return baos.toString(UTF_8).split(NEWLINE, -1);
+		return baos.toString(UTF_8).stripTrailing().split(NEWLINE, -1);
 	}
 
 	@Test
