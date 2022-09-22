@@ -57,6 +57,8 @@ public class TestMockClient {
 
 	private static final Logger log = getLogger(TestMockClient.class);
 
+	private static final boolean PRINT_JOBS = false;
+
 	@Test
 	void testListJobs() throws IOException, SpallocServerException, Exception {
 		try (var c = client.withConnection()) {
@@ -65,7 +67,9 @@ public class TestMockClient {
 				// Don't know the jobids currently on the machine if any
 				jobs.forEach(d -> assertThat("Jobid > 0", d.getJobID(),
 						greaterThan(0)));
-				jobs.forEach(j -> System.out.println(j));
+				if (PRINT_JOBS) {
+					jobs.forEach(System.out::println);
+				}
 			} else {
 				int[] expectedIDs = {
 					47224, 47444
@@ -167,8 +171,11 @@ public class TestMockClient {
 				state = client.getJobState(jobId, timeout);
 			}
 			if (client.isActual()) {
+				// Drain any notification received
 				notification = client.waitForNotification(-1);
-				assertTrue(notification instanceof JobsChangedNotification);
+				if (notification != null) {
+					assertTrue(notification instanceof JobsChangedNotification);
+				}
 			}
 			assertEquals(State.POWER, state.getState());
 			if (client.isActual()) {
