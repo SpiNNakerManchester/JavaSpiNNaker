@@ -68,7 +68,7 @@ public final class UnitConstants {
 			return format("%d:%02d:%02d.%03d h", hr, min, sec, ms);
 		}
 		if (min > 0) {
-			return format("%02d:%02d.%03d m", min, sec, ms);
+			return format("%d:%02d.%03d m", min, sec, ms);
 		}
 		if (sec > 0) {
 			return format("%d.%03d s", sec, ms);
