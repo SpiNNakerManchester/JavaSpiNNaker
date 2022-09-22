@@ -317,9 +317,6 @@ public class BMPController extends DatabaseAwareBean {
 	}
 
 	private abstract class Request {
-		private static final String BOARD_MARKED_DEAD_TEMPLATE =
-				"Marked board at %d,%d,%d of %s (serial: %s) as dead: %s";
-
 		final Machine machine;
 
 		private int numTries = 0;
@@ -444,7 +441,9 @@ public class BMPController extends DatabaseAwareBean {
 					if (ser == null) {
 						ser = "<UNKNOWN>";
 					}
-					var fullMessage = format(BOARD_MARKED_DEAD_TEMPLATE,
+					var fullMessage = format(
+							"Marked board at %d,%d,%d of %s (serial: %s) "
+									+ "as dead: %s",
 							row.getInt("x"), row.getInt("y"), row.getInt("z"),
 							row.getString("machineName"), ser, msg);
 					// Postpone email sending until out of transaction
@@ -1612,7 +1611,7 @@ public class BMPController extends DatabaseAwareBean {
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = "src/test/java/.*")
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	public final TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

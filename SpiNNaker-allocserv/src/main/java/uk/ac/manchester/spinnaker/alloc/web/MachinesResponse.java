@@ -42,7 +42,7 @@ public final class MachinesResponse {
 	 *
 	 * @author Donal Fellows
 	 */
-	public final class BriefMachineDescription {
+	public static final class BriefMachineDescription {
 		/** The name of the machine. */
 		public final String name;
 

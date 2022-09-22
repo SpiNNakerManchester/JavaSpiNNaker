@@ -260,7 +260,7 @@ public class QuotaManager extends DatabaseAwareBean {
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = "src/test/java/.*")
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

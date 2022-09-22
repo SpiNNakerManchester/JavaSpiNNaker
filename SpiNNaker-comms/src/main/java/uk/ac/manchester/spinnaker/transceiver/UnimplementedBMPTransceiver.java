@@ -33,8 +33,8 @@ import uk.ac.manchester.spinnaker.messages.model.VersionInfo;
 import uk.ac.manchester.spinnaker.utils.MappableIterable;
 
 /**
- * A transceiver where every operation fails with
- * {@link UnsupportedOperationException}. A suitable base for partial
+ * A transceiver where every operation (except the few mandatory ones) fails
+ * with {@link UnsupportedOperationException}. A suitable base for partial
  * implementations.
  *
  * @author Donal Fellows
@@ -218,5 +218,9 @@ public abstract class UnimplementedBMPTransceiver
 	@Override
 	public BMPCoords getBoundBMP() {
 		return boundBMP;
+	}
+
+	@Override
+	public void close() throws Exception {
 	}
 }

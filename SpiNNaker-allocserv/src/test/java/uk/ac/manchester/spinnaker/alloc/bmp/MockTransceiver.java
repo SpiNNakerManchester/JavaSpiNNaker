@@ -27,9 +27,9 @@ import static uk.ac.manchester.spinnaker.messages.model.PowerCommand.POWER_ON;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.zip.CRC32;
 
@@ -144,7 +144,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	 * FPGA registers.
 	 */
 	@SuppressWarnings("checkstyle:visibilitymodifier")
-	public static LinkedList<FPGA> fpgaResults = new LinkedList<>();
+	public static ArrayDeque<FPGA> fpgaResults = new ArrayDeque<>();
 
 	@Override
 	public int readFPGARegister(FPGA fpga, MemoryLocation register,
@@ -229,6 +229,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 			new MemoryLocation(0x12345678);
 
 	@Override
+	@Deprecated
 	public MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int size) {
 		log.info("eraseBMPFlash({},{},{},{})", bmp, board, baseAddress, size);
@@ -249,6 +250,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	}
 
 	@Override
+	@Deprecated
 	public void chunkBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address) {
 		log.info("chunkBMPFlash({},{},{})", bmp, board, address);
@@ -258,6 +260,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 	private static final int BMP_FLASH_BLACKLIST_OFFSET = 0xe00;
 
 	@Override
+	@Deprecated
 	public void copyBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int size) {
 		log.info("copyBMPFlash({},{},{},{})", bmp, board, baseAddress, size);

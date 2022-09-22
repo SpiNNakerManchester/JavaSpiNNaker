@@ -56,6 +56,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
@@ -115,7 +116,7 @@ final class ClientSession implements Session {
 	/**
 	 * Create a session and log it in.
 	 *
-	 * @param baseURI
+	 * @param baseUri
 	 *            The service base URI. <em>Must</em> be absolute! <em>Must
 	 *            not</em> include a username or password!
 	 * @param username
@@ -125,9 +126,9 @@ final class ClientSession implements Session {
 	 * @throws IOException
 	 *             If things go wrong.
 	 */
-	ClientSession(URI baseURI, String username, String password)
+	ClientSession(URI baseUri, String username, String password)
 			throws IOException {
-		baseUri = asDir(baseURI);
+		this.baseUri = asDir(baseUri);
 		this.username = username;
 		this.password = password;
 		// This does the actual logging in process
@@ -622,10 +623,15 @@ final class ClientSession implements Session {
 				ofEntries(entry("_csrf", tempCsrf), entry("submit", "submit"),
 						entry("username", username),
 						entry("password", password)));
-		checkForError(c, "login failed");
-		// There should be a new session cookie after login
-		if (!trackCookie(c)) {
-			throw new IOException("could not establish session");
+		try (var ignored = checkForError(c, "login failed")) {
+			/*
+			 * The result should be a redirect; the body is irrelevant but the
+			 * headers matter. In particular, there should be a new session
+			 * cookie after login.
+			 */
+			if (!trackCookie(c)) {
+				throw new IOException("could not establish session");
+			}
 		}
 	}
 
@@ -654,7 +660,7 @@ final class ClientSession implements Session {
 			throws Exn, IOException {
 		try {
 			return action.act();
-		} catch (SpallocClient.Exception e) {
+		} catch (SpallocException e) {
 			if (e.getResponseCode() == HTTP_UNAUTHORIZED) {
 				renew(true);
 				return action.act();

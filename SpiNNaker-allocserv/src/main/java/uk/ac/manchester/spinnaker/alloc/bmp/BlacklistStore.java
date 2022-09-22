@@ -181,7 +181,7 @@ public class BlacklistStore extends DatabaseAwareBean {
 	 */
 	@Deprecated
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = "src/test/java/.*")
+			allowedOnPath = ".*/src/test/java/.*")
 	@ForTestingOnly
 	TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

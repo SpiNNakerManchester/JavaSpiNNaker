@@ -37,9 +37,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,13 +84,30 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	private StateControlProperties props;
 
+	private ScheduledFuture<?> readAllTask;
+
 	@PostConstruct
 	private void launchBackground() {
 		props = properties.getStateControl();
 		// After a minute, start retrieving board serial numbers
-		executor.schedule((Runnable) this::readAllBoardSerialNumbers,
-				props.getBlacklistTimeout().getSeconds(), SECONDS);
+		readAllTask =
+				executor.schedule((Runnable) this::readAllBoardSerialNumbers,
+						props.getBlacklistTimeout().getSeconds(), SECONDS);
 		// Why can't I pass a Duration directly there?
+	}
+
+	@PreDestroy
+	private void stopBackground() {
+		if (readAllTask != null) {
+			readAllTask.cancel(true);
+			try {
+				readAllTask.get();
+			} catch (InterruptedException e) {
+				log.trace("interrupted background loader", e);
+			} catch (Exception e) {
+				log.info("failure in background board serial number fetch", e);
+			}
+		}
 	}
 
 	/**

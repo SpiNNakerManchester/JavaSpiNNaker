@@ -69,7 +69,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-public interface BMPTransceiverInterface {
+public interface BMPTransceiverInterface extends AutoCloseable {
 	/**
 	 * Set the default BMP coordinates, at least for cabinet and frame.
 	 *

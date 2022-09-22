@@ -438,7 +438,7 @@ public class FirmwareLoader {
 			byte type = chunk.get();
 			switch (DataSectorTypes.get(type)) {
 			case REGISTER:
-				logRegisterSets(chunk, i);
+				logRegisterSets(chunk);
 				break;
 			case BITFILE:
 				logFPGABootBitfile(chunk, i);
@@ -456,10 +456,8 @@ public class FirmwareLoader {
 	 *
 	 * @param chunk
 	 *            The chunk, positioned immediately after the type byte.
-	 * @param i
-	 *            The index of the chunk
 	 */
-	private void logRegisterSets(ByteBuffer chunk, int i) {
+	private void logRegisterSets(ByteBuffer chunk) {
 		int size = chunk.get();
 		// Position after the header
 		chunk.position(DATA_SECTOR_HEADER_BYTES);

@@ -34,6 +34,7 @@ import javax.validation.constraints.Null;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 import uk.ac.manchester.spinnaker.alloc.db.SQLQueries;
@@ -326,6 +327,7 @@ public final class UserRecord {
 	 *
 	 * @return the object (for convenience)
 	 */
+	@CanIgnoreReturnValue
 	public UserRecord sanitise() {
 		// Make SURE that the password doesn't go back
 		if (nonNull(password)) {

@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -604,8 +605,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			if (numBoards % TRIAD_DEPTH > 0) {
 				numTriads++;
 			}
-			width = (int) min(ceil(sqrt(numTriads)), max.width);
-			height = (int) min(ceil(numTriads / width), max.height);
+			width = min((int) ceil(sqrt(numTriads)), max.width);
+			height = min(ceildiv(numTriads, width), max.height);
 			tolerance = (width * height * TRIAD_DEPTH) - numBoards;
 			if (width < 1 || height < 1) {
 				throw new IllegalArgumentException(
@@ -1002,7 +1003,7 @@ public class AllocatorTask extends DatabaseAwareBean
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = "src/test/java/.*")
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	TestAPI getTestAPI(Connection conn) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

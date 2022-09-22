@@ -372,7 +372,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(BOARD_COORDS_REQUIRED_COLUMNS, q.getRowColumnNames());
 			c.transaction(() -> {
 				// As long as this doesn't throw, the test passes
-				q.call1().isPresent();
+				return q.call1().isPresent();
 			});
 		}
 	}

@@ -78,8 +78,11 @@ public class TransceiverFactory
 
 		@Override
 		public boolean equals(Object o) {
-			var other = (Key) o;
-			return machine.equals(other.machine) && bmp.equals(other.bmp);
+			if (o instanceof Key) {
+				var other = (Key) o;
+				return machine.equals(other.machine) && bmp.equals(other.bmp);
+			}
+			return false;
 		}
 
 		@Override
@@ -88,7 +91,7 @@ public class TransceiverFactory
 		}
 	}
 
-	private Map<Key, BMPTransceiverInterface> txrxMap = new HashMap<>();
+	private final Map<Key, BMPTransceiverInterface> txrxMap = new HashMap<>();
 
 	@Autowired
 	private ServiceMasterControl control;
@@ -209,9 +212,7 @@ public class TransceiverFactory
 	@PreDestroy
 	void closeTransceivers() throws Exception {
 		for (var txrx : txrxMap.values()) {
-			if (txrx instanceof AutoCloseable) {
-				((AutoCloseable) txrx).close();
-			}
+			txrx.close();
 		}
 	}
 
@@ -256,7 +257,7 @@ public class TransceiverFactory
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = "src/test/java/.*")
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	public final TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

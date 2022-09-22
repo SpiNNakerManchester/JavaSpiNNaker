@@ -696,7 +696,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *
 		 * @param data
 		 *            The content of the packet.
-		 * @param transactionID
+		 * @param transactionId
 		 *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException

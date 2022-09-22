@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -357,6 +359,7 @@ public interface SpallocClient {
 		 * @throws SpinnmanException
 		 *             If transceiver construction fails.
 		 */
+		@MustBeClosed
 		TransceiverInterface getTransceiver()
 				throws IOException, InterruptedException, SpinnmanException;
 
@@ -373,9 +376,9 @@ public interface SpallocClient {
 		 * @throws InterruptedException
 		 *             If interrupted waiting for the connection to be set up.
 		 */
+		@MustBeClosed
 		SCPConnection getConnection(HasChipLocation chip)
 				throws IOException, InterruptedException;
-
 
 		/**
 		 * Create an <em>unconnected</em> EIEIO connection that can only talk
@@ -388,6 +391,7 @@ public interface SpallocClient {
 		 * @throws InterruptedException
 		 *             If interrupted waiting for the connection to be set up.
 		 */
+		@MustBeClosed
 		EIEIOConnection getEIEIOConnection()
 				throws IOException, InterruptedException;
 	}
@@ -395,7 +399,7 @@ public interface SpallocClient {
 	/**
 	 * Exception caused by the server sending an error.
 	 */
-	class Exception extends RuntimeException {
+	class SpallocException extends RuntimeException {
 		private static final long serialVersionUID = -1363689283367574333L;
 
 		/** The HTTP response code that triggered the exception. */
@@ -409,12 +413,13 @@ public interface SpallocClient {
 		 * @param responseCode
 		 *            The HTTP response code that triggered the exception.
 		 */
-		public Exception(String message, int responseCode) {
+		public SpallocException(String message, int responseCode) {
 			super(message);
 			this.responseCode = responseCode;
 		}
 
-		Exception(InputStream stream, int responseCode) throws IOException {
+		SpallocException(InputStream stream, int responseCode)
+				throws IOException {
 			super(consume(stream));
 			this.responseCode = responseCode;
 		}

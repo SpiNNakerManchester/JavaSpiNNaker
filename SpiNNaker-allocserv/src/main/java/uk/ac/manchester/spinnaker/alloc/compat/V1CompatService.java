@@ -260,7 +260,7 @@ public class V1CompatService {
 	 */
 	@ForTestingOnly
 	@RestrictedApi(explanation = "just for testing", link = "index.html",
-			allowedOnPath = "src/test/java/.*")
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	public TestAPI getTestApi() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

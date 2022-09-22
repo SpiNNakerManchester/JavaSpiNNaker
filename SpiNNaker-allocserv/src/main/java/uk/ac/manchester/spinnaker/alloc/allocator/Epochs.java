@@ -109,6 +109,8 @@ public class Epochs {
 		return currentTimeMillis() < expiry;
 	}
 
+	// The loops are in the callers
+	@SuppressWarnings("WaitNotInLoop")
 	private void waitUntil(long expiry) throws InterruptedException {
 		wait(expiry - currentTimeMillis());
 	}
