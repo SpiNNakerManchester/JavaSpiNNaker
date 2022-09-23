@@ -706,15 +706,17 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			}
 
 			@CanIgnoreReturnValue
-			public Builder withBmpIps(Map<BMPCoords, String> bmpIps) {
-				this.bmpAddrs = bmpIps;
+			@JsonProperty("bmp-ips")
+			public Builder withBmpAddrs(Map<BMPCoords, String> bmpAddrs) {
+				this.bmpAddrs = bmpAddrs;
 				return this;
 			}
 
 			@CanIgnoreReturnValue
-			public Builder
-					withSpinnakerIps(Map<TriadCoords, String> spinnakerIps) {
-				this.spinnakerAddrs = spinnakerIps;
+			@JsonProperty("spinnaker-ips")
+			public Builder withSpinnakerAddrs(
+					Map<TriadCoords, String> spinnakerAddrs) {
+				this.spinnakerAddrs = spinnakerAddrs;
 				return this;
 			}
 
