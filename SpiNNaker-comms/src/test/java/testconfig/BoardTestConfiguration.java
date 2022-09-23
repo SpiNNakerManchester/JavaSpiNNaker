@@ -109,7 +109,7 @@ public class BoardTestConfiguration {
 		}
 	}
 
-	public void setUpLocalVirtualBoard() throws UnknownHostException {
+	public void setUpLocalVirtualBoard() {
 		localhost = LOCALHOST;
 		localport = PORT;
 		initRemoteHost(LOCALHOST, false);

@@ -225,8 +225,9 @@ public class SpallocClient extends SpallocConnection implements SpallocAPI {
 		return parseInt(result);
 	}
 
-	@Deprecated(forRemoval = true)
+	@Deprecated(forRemoval = true) // TODO remove this
 	@Override
+	@SuppressWarnings("removal")
 	public int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException, SpallocServerException {
 		// If no owner, don't bother with the call
