@@ -17,6 +17,7 @@
 package uk.ac.manchester.spinnaker.utils;
 
 import static java.lang.System.nanoTime;
+import static java.lang.Thread.interrupted;
 import static java.util.concurrent.locks.LockSupport.parkNanos;
 
 import java.util.concurrent.locks.LockSupport;
@@ -37,17 +38,21 @@ public abstract class WaitUtils {
 	 * @param nanoTimestamp
 	 *            The first time at which the code may return. If in the past,
 	 *            returns immediately.
+	 * @return Whether the wait stopped because the thread was interrupted. The
+	 *         caller <em>must</em> decide what to do in that case.
 	 * @see System#nanoTime()
 	 * @see LockSupport#parkNanos(long)
 	 * @see <a href="https://stackoverflow.com/q/35875117/301832">Stack
 	 *      Overflow</a>
 	 */
-	public static void waitUntil(long nanoTimestamp) {
-		// Critical: this is static so JRE can inline this code!
+	public static boolean waitUntil(long nanoTimestamp) {
+		// Critical: this is static so JVM can inline this code!
 		while (true) {
 			long dt = nanoTimestamp - nanoTime();
 			if (dt <= 0) {
-				break;
+				return interrupted();
+			} else if (interrupted()) {
+				return true;
 			}
 			parkNanos(dt);
 		}
