@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -213,7 +214,10 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
-			waitUntil(nextSendTime);
+			if (waitUntil(nextSendTime)) {
+				throw new InterruptedIOException(
+						"interrupted while waiting to send");
+			}
 			connection.send(requestData.asReadOnlyBuffer());
 			nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 		}
