@@ -51,6 +51,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import difflib.ChangeDelta;
@@ -150,6 +151,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
+	@SuppressWarnings("MustBeClosed")
+	@MustBeClosed
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
 			File reportDir) throws IOException, ProcessException {
 		super(machine);
@@ -428,6 +431,8 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 
 		private ExecutionContext execContext;
 
+		@MustBeClosed
+		@SuppressWarnings("MustBeClosed")
 		BoardWorker(Ethernet board, DSEStorage storage, Progress bar)
 				throws IOException, ProcessException {
 			this.board = board;
@@ -656,6 +661,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		 * @throws ProcessException
 		 *             If SpiNNaker rejects a message.
 		 */
+		@MustBeClosed
 		SystemRouterTableContext systemRouterTables()
 				throws IOException, ProcessException {
 			return new SystemRouterTableContext(txrx,
@@ -790,6 +796,7 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			}
 		}
 
+		@CheckReturnValue
 		private SeenFlags addMissedSeqNums(IntBuffer received, BitSet seqNums,
 				int expectedMax) {
 			var flags = new SeenFlags();

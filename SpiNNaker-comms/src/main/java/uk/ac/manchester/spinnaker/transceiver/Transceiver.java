@@ -76,6 +76,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
@@ -716,6 +719,7 @@ public class Transceiver extends UDPTransceiver
 		return List.of(connection);
 	}
 
+	@CheckReturnValue
 	private Object getSystemVariable(HasChipLocation chip,
 			SystemVariableDefinition dataItem)
 			throws IOException, ProcessException {
@@ -836,6 +840,7 @@ public class Transceiver extends UDPTransceiver
 	 *            the chip coordinates to try to talk to
 	 * @return True if a valid response is received, False otherwise
 	 */
+	@CheckReturnValue
 	private boolean checkConnection(SCPConnection connection,
 			HasChipLocation chip) {
 		for (int r = 0; r < CONNECTION_CHECK_RETRY_COUNT; r++) {
@@ -942,6 +947,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	public List<SCPConnection> discoverScampConnections()
 			throws IOException, ProcessException {
 		/*
@@ -1071,6 +1077,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	public VersionInfo getScampVersion(HasChipLocation chip,
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
@@ -1244,6 +1251,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	private VersionInfo findScampAndBoot(int numAttempts,
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws InterruptedException, IOException, ProcessException {
@@ -1307,6 +1315,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafeWithCare
 	public MappableIterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
@@ -1319,6 +1328,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafeWithCare
 	public MappableIterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException {
@@ -1403,6 +1413,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelUnsafe
 	public int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException {
@@ -1468,6 +1479,7 @@ public class Transceiver extends UDPTransceiver
 		 * @throws InterruptedException
 		 *             If any waits to acquire locks are interrupted.
 		 */
+		@MustBeClosed
 		ExecuteLock(HasChipLocation chip) throws InterruptedException {
 			var key = chip.asChipLocation();
 			synchronized (executeFloodLock) {
@@ -1659,6 +1671,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelUnsafe
 	public int readFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPCoords bmp, BMPBoard board)
@@ -1676,6 +1689,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelUnsafe
 	public ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
@@ -1683,6 +1697,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelUnsafe
 	public VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
@@ -1690,6 +1705,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafeWithCare
 	public ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length)
@@ -1735,6 +1751,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	public ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException {
@@ -1746,6 +1763,7 @@ public class Transceiver extends UDPTransceiver
 	private static final int CRC_TIMEOUT = 2000;
 
 	@Override
+	@CheckReturnValue
 	public int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address, int length)
 			throws IOException, ProcessException {
@@ -1826,6 +1844,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	public MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
 			throws IOException, ProcessException {
 		return bmpCall(bmp, new ReadCANStatus()).availableBoards()
@@ -1936,6 +1955,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafe
 	public ByteBuffer readMemory(HasCoreLocation core,
 			MemoryLocation baseAddress, int length)
@@ -1953,6 +1973,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelUnsafe
 	public ByteBuffer readNeighbourMemory(HasCoreLocation core, Direction link,
 			MemoryLocation baseAddress, int length)
@@ -1973,6 +1994,7 @@ public class Transceiver extends UDPTransceiver
 		simpleProcess().execute(new ApplicationStop(appID));
 	}
 
+	@CheckReturnValue
 	private boolean inErrorStates(AppID appID, Set<CPUState> errorStates)
 			throws IOException, ProcessException {
 		for (var state : errorStates) {
@@ -2160,6 +2182,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafeWithCare
 	public List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException {
@@ -2172,6 +2195,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafeWithCare
 	public Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException {
@@ -2184,6 +2208,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafe
 	public MemoryLocation mallocSDRAM(HasChipLocation chip, int size,
 			AppID appID, int tag) throws IOException, ProcessException {
@@ -2224,6 +2249,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafe
 	public RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException {
@@ -2232,6 +2258,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafe
 	public List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			AppID appID) throws IOException, ProcessException {
@@ -2249,6 +2276,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafe
 	public RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException {
@@ -2420,6 +2448,7 @@ public class Transceiver extends UDPTransceiver
 	}
 
 	@Override
+	@CheckReturnValue
 	@ParallelSafe
 	public List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap)

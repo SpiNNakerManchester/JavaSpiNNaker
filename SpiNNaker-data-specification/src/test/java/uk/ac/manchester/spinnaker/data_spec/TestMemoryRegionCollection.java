@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 class TestMemoryRegionCollection {
 
 	@Test
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({"deprecation", "DoNotCall"})
 	void testUnimplemented() {
 		var c = new MemoryRegionCollection(1);
 		assertThrows(UnsupportedOperationException.class, () -> c.add(null));

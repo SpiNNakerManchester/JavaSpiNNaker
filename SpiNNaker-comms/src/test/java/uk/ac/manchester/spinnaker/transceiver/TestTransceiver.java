@@ -228,9 +228,9 @@ class TestTransceiver {
 
 		for (int i = 0; i < REPETITIONS; i++) {
 			try (var txrx = new Transceiver(boardConfig.remotehost, FIVE)) {
-				txrx.ensureBoardIsReady();
-				txrx.getMachineDimensions();
-				txrx.getScampVersion();
+				assertNotNull(txrx.ensureBoardIsReady());
+				assertNotNull(txrx.getMachineDimensions());
+				assertNotNull(txrx.getScampVersion());
 				if (first == null) {
 					first = txrx.getMachineDetails();
 				} else {

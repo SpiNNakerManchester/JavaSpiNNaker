@@ -41,6 +41,8 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
@@ -73,7 +75,8 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public abstract class DataGatherer extends BoardLocalSupport {
+public abstract class DataGatherer extends BoardLocalSupport
+		implements AutoCloseable {
 	/**
 	 * Logger for the gatherer.
 	 */
@@ -144,6 +147,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public DataGatherer(TransceiverInterface transceiver, Machine machine)
 			throws IOException, ProcessException {
 		super(machine);
@@ -151,6 +156,11 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		this.machine = machine;
 		this.pool = new BasicExecutor(PARALLEL_SIZE);
 		this.missCount = 0;
+	}
+
+	@Override
+	public void close() throws InterruptedException {
+		pool.close();
 	}
 
 	private static final String META_LABEL = "reading region metadata";

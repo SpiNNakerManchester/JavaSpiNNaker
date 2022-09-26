@@ -20,6 +20,8 @@ import static java.util.Objects.requireNonNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.ConnectedWithResult;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.TransactedWithResult;
@@ -45,6 +47,7 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 	 *
 	 * @return Database connection. Requires closing.
 	 */
+	@MustBeClosed
 	protected final Connection getConnection() {
 		return db.getConnection();
 	}

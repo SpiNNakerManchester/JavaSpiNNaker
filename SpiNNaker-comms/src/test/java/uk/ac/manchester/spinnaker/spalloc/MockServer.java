@@ -34,6 +34,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.spalloc.SupportUtils.Joinable;
 import uk.ac.manchester.spinnaker.utils.OneShotEvent;
 
@@ -56,6 +58,7 @@ class MockServer implements SupportUtils.IServer {
 
 	private BufferedReader in;
 
+	@MustBeClosed
 	MockServer() throws IOException {
 		started = new OneShotEvent();
 		serverSocket = new ServerSocket(0, QUEUE_LENGTH);

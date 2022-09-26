@@ -48,6 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties;
 import uk.ac.manchester.spinnaker.alloc.allocator.Epochs;
@@ -736,6 +738,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * @param args
 		 *            Values to bind to parameters in the SQL.
 		 */
+		@MustBeClosed
 		Op(String operation, Object... args) {
 			boardId = ((Integer) args[0]).intValue(); // TODO yuck!
 			epoch = epochs.getBlacklistEpoch();

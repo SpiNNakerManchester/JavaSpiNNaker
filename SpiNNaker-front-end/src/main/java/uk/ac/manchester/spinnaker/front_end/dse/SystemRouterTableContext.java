@@ -24,6 +24,8 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
@@ -57,6 +59,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
+	@MustBeClosed
 	public SystemRouterTableContext(TransceiverInterface txrx,
 			CoreSubsets monitorCores) throws IOException, ProcessException {
 		this.txrx = txrx;
@@ -90,6 +93,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
+	@MustBeClosed
 	public SystemRouterTableContext(TransceiverInterface txrx,
 			List<? extends HasCoreLocation> monitorCoreLocations)
 			throws IOException, ProcessException {
@@ -109,6 +113,7 @@ public class SystemRouterTableContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
+	@MustBeClosed
 	public SystemRouterTableContext(TransceiverInterface txrx,
 			Stream<? extends HasCoreLocation> monitorCoreLocations)
 			throws IOException, ProcessException {

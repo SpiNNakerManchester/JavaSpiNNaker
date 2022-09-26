@@ -308,16 +308,20 @@ public final class CommandLineInterface {
 	 *             If the communications fail.
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
+	 * @throws InterruptedException
+	 *             If interrupted (not expected).
 	 */
 	public static void iobufRun(String machineJsonFile, String iobufMapFile,
-			String runFolder) throws IOException, SpinnmanException {
+			String runFolder)
+			throws IOException, SpinnmanException, InterruptedException {
 		var machine = getMachine(machineJsonFile);
 		var request = getIobufRequest(iobufMapFile);
 
-		var retriever = new IobufRetriever(new Transceiver(machine),
-				machine, PARALLEL_SIZE);
-		var result = retriever.retrieveIobufContents(request, runFolder);
-		MAPPER.writeValue(out, result);
+		try (var retriever = new IobufRetriever(new Transceiver(machine),
+				machine, PARALLEL_SIZE)) {
+			var result = retriever.retrieveIobufContents(request, runFolder);
+			MAPPER.writeValue(out, result);
+		}
 	}
 
 	/**

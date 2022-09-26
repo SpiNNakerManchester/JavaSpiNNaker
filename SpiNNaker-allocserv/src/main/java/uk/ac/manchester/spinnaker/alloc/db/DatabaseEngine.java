@@ -709,6 +709,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 			 *            <em>cannot</em> be upgraded (because that causes
 			 *            deadlocks).
 			 */
+			@MustBeClosed
 			Locker(boolean lockForWriting) {
 				noteThreshold = props.getLockNoteThreshold().toNanos();
 				var l = getLock(lockForWriting);
@@ -927,6 +928,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 
 			private final Object context;
 
+			@MustBeClosed
 			RollbackHandler(Object context) {
 				this.context = context;
 			}
@@ -1224,6 +1226,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * cleanup actions; they're simply deleted from memory when no longer used
 	 * (but the connection should be {@code close()}d after use for efficiency
 	 * nonetheless).
+	 * <p>
+	 * This would be marked with {@link MustBeClosed} except that causes a mess
+	 * elsewhere.
 	 *
 	 * @return A configured initialised connection to the database.
 	 */

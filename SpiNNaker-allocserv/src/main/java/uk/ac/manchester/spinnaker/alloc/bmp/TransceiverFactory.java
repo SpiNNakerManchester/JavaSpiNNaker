@@ -204,7 +204,7 @@ public class TransceiverFactory
 					throw e;
 				}
 				log.error("failed to connect to BMP; will ping and retry", e);
-				ping(data.ipAddress);
+				log.debug("ping result was {}", ping(data.ipAddress));
 			}
 		}
 	}

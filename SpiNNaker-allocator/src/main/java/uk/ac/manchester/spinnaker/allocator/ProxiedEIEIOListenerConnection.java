@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.errorprone.annotations.DoNotCall;
+
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
@@ -62,6 +64,7 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	}
 
 	@Override
+	@DoNotCall
 	protected void doSend(ByteBuffer buffer) {
 		throw new UnsupportedOperationException();
 	}

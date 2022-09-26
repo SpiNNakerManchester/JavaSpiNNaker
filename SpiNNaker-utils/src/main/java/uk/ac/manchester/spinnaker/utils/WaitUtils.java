@@ -22,6 +22,8 @@ import static java.util.concurrent.locks.LockSupport.parkNanos;
 
 import java.util.concurrent.locks.LockSupport;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 /**
  * Utilities for waiting very short periods of time.
  *
@@ -45,6 +47,7 @@ public abstract class WaitUtils {
 	 * @see <a href="https://stackoverflow.com/q/35875117/301832">Stack
 	 *      Overflow</a>
 	 */
+	@CheckReturnValue
 	public static boolean waitUntil(long nanoTimestamp) {
 		// Critical: this is static so JVM can inline this code!
 		while (true) {

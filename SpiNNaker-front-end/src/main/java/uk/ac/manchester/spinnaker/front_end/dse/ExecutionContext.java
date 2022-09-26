@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.errorprone.annotations.Immutable;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
@@ -52,6 +53,7 @@ class ExecutionContext implements AutoCloseable {
 
 	private final List<CoreToFill> regionsToFill = new ArrayList<>();
 
+	@MustBeClosed
 	ExecutionContext(TransceiverInterface txrx) {
 		this.txrx = txrx;
 	}

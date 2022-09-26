@@ -34,6 +34,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
@@ -52,8 +53,7 @@ import uk.ac.manchester.spinnaker.transceiver.TransceiverInterface;
  *
  * @author Donal Fellows
  */
-public class RecordingRegionDataGatherer extends DataGatherer
-		implements AutoCloseable {
+public class RecordingRegionDataGatherer extends DataGatherer {
 	/**
 	 * How long a termination delay has to be to be worth reporting, in
 	 * milliseconds.
@@ -90,6 +90,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
+	@MustBeClosed
 	public RecordingRegionDataGatherer(TransceiverInterface transceiver,
 			Machine machine, BufferManagerStorage database)
 			throws IOException, ProcessException {
@@ -151,6 +152,7 @@ public class RecordingRegionDataGatherer extends DataGatherer
 
 	@Override
 	public void close() throws InterruptedException {
+		super.close();
 		log.info("waiting for database usage to complete");
 		long start = currentTimeMillis();
 		dbWorker.shutdown();

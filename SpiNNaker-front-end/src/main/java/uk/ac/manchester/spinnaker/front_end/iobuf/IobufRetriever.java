@@ -33,6 +33,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
 import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -48,7 +50,7 @@ import uk.ac.manchester.spinnaker.utils.DefaultMap;
  *
  * @author Donal Fellows
  */
-public class IobufRetriever extends BoardLocalSupport {
+public class IobufRetriever extends BoardLocalSupport implements AutoCloseable {
 	private static final Logger log = getLogger(IobufRetriever.class);
 
 	private static final Pattern ERROR_ENTRY =
@@ -77,12 +79,19 @@ public class IobufRetriever extends BoardLocalSupport {
 	 * @param parallelSize
 	 *            How many tasks to do at once (at most).
 	 */
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public IobufRetriever(Transceiver transceiver, Machine machine,
 			int parallelSize) {
 		super(machine);
 		txrx = transceiver;
 		this.machine = machine;
 		executor = new BasicExecutor(parallelSize);
+	}
+
+	@Override
+	public void close() throws InterruptedException {
+		executor.close();
 	}
 
 	/**

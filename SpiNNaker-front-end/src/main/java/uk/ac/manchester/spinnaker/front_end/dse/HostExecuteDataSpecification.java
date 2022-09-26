@@ -29,6 +29,8 @@ import java.util.function.Function;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
@@ -85,6 +87,8 @@ public class HostExecuteDataSpecification extends BoardLocalSupport
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public HostExecuteDataSpecification(Machine machine)
 			throws IOException, ProcessException {
 		super(machine);

@@ -70,6 +70,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
@@ -1371,6 +1372,7 @@ public class BMPController extends DatabaseAwareBean {
 			}
 		}
 
+		@MustBeClosed
 		private AutoCloseable bind(Thread t) {
 			t.setName("bmp-worker:" + machine.getName());
 			synchronized (state) {

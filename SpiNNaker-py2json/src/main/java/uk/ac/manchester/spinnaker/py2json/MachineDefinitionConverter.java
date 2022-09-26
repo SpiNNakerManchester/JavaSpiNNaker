@@ -33,6 +33,7 @@ import org.python.util.PythonInterpreter;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.ParameterException;
@@ -51,6 +52,7 @@ public class MachineDefinitionConverter implements AutoCloseable {
 	/**
 	 * Create a converter.
 	 */
+	@MustBeClosed
 	public MachineDefinitionConverter() {
 		initialize(null, null);
 		sys = getSystemState();

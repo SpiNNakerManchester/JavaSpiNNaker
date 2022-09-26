@@ -27,6 +27,8 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.DoNotCall;
+
 /**
  * A collection of memory regions. Note that the collection cannot be modified
  * by the standard collection API; those modification operations will fail. The
@@ -213,6 +215,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean add(MemoryRegion e) {
 		throw new UnsupportedOperationException();
@@ -225,6 +228,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
@@ -237,6 +241,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean addAll(Collection<? extends MemoryRegion> c) {
 		throw new UnsupportedOperationException();
@@ -249,6 +254,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
@@ -261,6 +267,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
@@ -273,6 +280,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public void clear() {
 		throw new UnsupportedOperationException();
