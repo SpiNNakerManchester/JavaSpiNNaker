@@ -48,6 +48,8 @@ import java.util.function.IntFunction;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.ForOverride;
+
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 import uk.ac.manchester.spinnaker.machine.CoreLocation;
@@ -179,6 +181,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If anything fails.
 	 */
+	@ForOverride
 	DatagramSocket initialiseSocket(InetAddress localHost, Integer localPort,
 			InetAddress remoteHost, Integer remotePort,
 			TrafficClass trafficClass) throws IOException {
@@ -226,6 +229,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If the socket is closed.
 	 */
+	@ForOverride
 	protected InetSocketAddress getLocalAddress() throws IOException {
 		return (InetSocketAddress) socket.getLocalSocketAddress();
 	}
@@ -249,6 +253,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If the socket is closed.
 	 */
+	@ForOverride
 	protected InetSocketAddress getRemoteAddress() throws IOException {
 		return (InetSocketAddress) socket.getRemoteSocketAddress();
 	}
@@ -370,6 +375,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
+	@ForOverride
 	protected ByteBuffer doReceive(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
@@ -419,6 +425,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If an error occurs receiving the data
 	 */
+	@ForOverride
 	protected UDPPacket doReceiveWithAddress(int timeout)
 			throws SocketTimeoutException, IOException {
 		socket.setSoTimeout(timeout);
@@ -485,6 +492,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
+	@ForOverride
 	protected void doSend(ByteBuffer data) throws IOException {
 		if (log.isDebugEnabled()) {
 			logSend(data, getRemoteAddress());
@@ -613,6 +621,7 @@ public abstract class UDPConnection<T>
 	 * @throws IOException
 	 *             If there is an error sending the data
 	 */
+	@ForOverride
 	protected void doSendTo(ByteBuffer data, InetAddress address, int port)
 			throws IOException {
 		var addr = new InetSocketAddress(address, port);

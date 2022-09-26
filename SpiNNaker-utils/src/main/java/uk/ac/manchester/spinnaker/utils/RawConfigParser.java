@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.google.errorprone.annotations.ForOverride;
+
 /**
  * A cut-down limited version of the parser used in Python.
  *
@@ -126,6 +128,7 @@ public class RawConfigParser {
 	 *            The raw section name.
 	 * @return The canonicalised section name.
 	 */
+	@ForOverride
 	protected String normaliseSectionName(String name) {
 		return name;
 	}
@@ -137,6 +140,7 @@ public class RawConfigParser {
 	 *            The raw option name.
 	 * @return The canonicalised option name.
 	 */
+	@ForOverride
 	protected String normaliseOptionName(String name) {
 		return name;
 	}

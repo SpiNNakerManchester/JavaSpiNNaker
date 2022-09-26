@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.serial;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.batch;
-import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
 import java.time.Instant;
@@ -48,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
@@ -494,20 +494,22 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param machineName
 	 *            Which machine to read the serial numbers of.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	public void readAllBoardSerialNumbers(String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
-				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
+				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
 	}
 
 	/**
 	 * Ensure that the database has the actual serial numbers of all known
 	 * boards.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	private void readAllBoardSerialNumbers() {
 		batchReqs(null, "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
-				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
+				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
 	}
 
 	private interface InterruptableConsumer<T> {
@@ -578,10 +580,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param machineName
 	 *            Which machine to get the blacklists of.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	public void updateAllBlacklists(String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving blacklists",
 				props.getBlacklistReadBatchSize(),
-				curry(Op::new, CREATE_BLACKLIST_READ),
+				id -> new Op(CREATE_BLACKLIST_READ, id),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> {
 							blacklistStore.writeBlacklist(op.boardId, bl);
@@ -739,7 +742,7 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 *            Values to bind to parameters in the SQL.
 		 */
 		@MustBeClosed
-		Op(String operation, Object... args) {
+		Op(@CompileTimeConstant String operation, Object... args) {
 			boardId = ((Integer) args[0]).intValue(); // TODO yuck!
 			epoch = epochs.getBlacklistEpoch();
 			op = execute(conn -> {

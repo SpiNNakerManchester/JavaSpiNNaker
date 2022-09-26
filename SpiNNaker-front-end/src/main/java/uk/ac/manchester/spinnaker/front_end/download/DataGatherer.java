@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import difflib.ChangeDelta;
@@ -524,6 +525,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 *             If the database doesn't like something.
 	 */
 	@UsedInJavadocOnly(BufferManagerStorage.class)
+	@ForOverride
 	protected abstract List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, StorageException;
 
@@ -540,6 +542,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	 * @throws StorageException
 	 *             If the database refuses to do the store.
 	 */
+	@ForOverride
 	protected abstract void storeData(Region r, ByteBuffer data)
 			throws StorageException;
 

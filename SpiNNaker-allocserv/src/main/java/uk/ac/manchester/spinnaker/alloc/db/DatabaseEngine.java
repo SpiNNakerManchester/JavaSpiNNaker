@@ -104,6 +104,7 @@ import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteConnection;
 import org.sqlite.SQLiteException;
 
+import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
@@ -987,7 +988,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see SQLQueries
 		 */
 		// @formatter:on
-		public Query query(String sql) {
+		public Query query(@CompileTimeConstant String sql) {
 			return new Query(this, false, sql);
 		}
 
@@ -1020,7 +1021,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see SQLQueries
 		 */
 		// @formatter:on
-		public Query query(String sql, boolean lockType) {
+		public Query query(@CompileTimeConstant String sql, boolean lockType) {
 			return new Query(this, lockType, sql);
 		}
 
@@ -1126,7 +1127,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see SQLQueries
 		 */
 		// @formatter:on
-		public Update update(String sql) {
+		public Update update(@CompileTimeConstant String sql) {
 			return new Update(this, sql);
 		}
 
@@ -1180,7 +1181,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #query(String)
 		 * @see #update(String)
 		 */
-		public void exec(String sql) {
+		void exec(String sql) {
 			checkInTransaction(true);
 			try (var s = createStatement()) {
 				// MUST be executeUpdate() to run multiple statements at once!
@@ -1204,7 +1205,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 		 * @see #query(Resource)
 		 * @see #update(Resource)
 		 */
-		public void exec(Resource sqlResource) {
+		void exec(Resource sqlResource) {
 			exec(readSQL(sqlResource));
 		}
 	}
