@@ -27,7 +27,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.ac.manchester.spinnaker.front_end.Constants.CORE_DATA_SDRAM_BASE_TAG;
-import static uk.ac.manchester.spinnaker.front_end.Constants.PARALLEL_SIZE;
 import static uk.ac.manchester.spinnaker.front_end.dse.FastDataInProtocol.computeNumPackets;
 import static uk.ac.manchester.spinnaker.messages.Constants.NBBY;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.NSEC_PER_SEC;
@@ -62,8 +61,6 @@ import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegion;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
-import uk.ac.manchester.spinnaker.front_end.BasicExecutor;
-import uk.ac.manchester.spinnaker.front_end.BoardLocalSupport;
 import uk.ac.manchester.spinnaker.front_end.NoDropPacketContext;
 import uk.ac.manchester.spinnaker.front_end.Progress;
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
@@ -81,8 +78,6 @@ import uk.ac.manchester.spinnaker.storage.DSEStorage.CoreToLoad;
 import uk.ac.manchester.spinnaker.storage.DSEStorage.Ethernet;
 import uk.ac.manchester.spinnaker.storage.StorageException;
 import uk.ac.manchester.spinnaker.transceiver.ProcessException;
-import uk.ac.manchester.spinnaker.transceiver.SpinnmanException;
-import uk.ac.manchester.spinnaker.transceiver.Transceiver;
 import uk.ac.manchester.spinnaker.utils.MathUtils;
 
 /**
@@ -92,8 +87,7 @@ import uk.ac.manchester.spinnaker.utils.MathUtils;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public class FastExecuteDataSpecification extends BoardLocalSupport
-		implements AutoCloseable {
+public class FastExecuteDataSpecification extends ExecuteDataSpecification {
 	private static final Logger log =
 			getLogger(FastExecuteDataSpecification.class);
 
@@ -117,17 +111,11 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	/** Sequence number that marks the end of a sequence number stream. */
 	private static final int MISSING_SEQS_END = -1;
 
-	private final Transceiver txrx;
-
 	private final Map<ChipLocation, Gather> gathererForChip;
 
 	private final Map<ChipLocation, Monitor> monitorForChip;
 
 	private final Map<ChipLocation, CoreSubsets> monitorsForBoard;
-
-	private final BasicExecutor executor;
-
-	private final Machine machine;
 
 	private boolean writeReports = false;
 
@@ -151,7 +139,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 	 *             If something really strange occurs with talking to the BMP;
 	 *             this constructor should not be doing that!
 	 */
-	@SuppressWarnings("MustBeClosed")
 	@MustBeClosed
 	public FastExecuteDataSpecification(Machine machine, List<Gather> gatherers,
 			File reportDir) throws IOException, ProcessException {
@@ -160,8 +147,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 			log.warn("detailed comparison of uploaded data enabled; "
 					+ "this may destabilize the protocol");
 		}
-		this.machine = machine;
-		executor = new BasicExecutor(PARALLEL_SIZE);
 
 		if (reportDir != null) {
 			writeReports = true;
@@ -171,15 +156,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		gathererForChip = new HashMap<>();
 		monitorForChip = new HashMap<>();
 		monitorsForBoard = new HashMap<>();
-
-		try {
-			txrx = new Transceiver(machine);
-		} catch (ProcessException e) {
-			throw e;
-		} catch (SpinnmanException e) {
-			throw new IllegalStateException("failed to talk to BMP, "
-					+ "but that shouldn't have happened at all", e);
-		}
 
 		buildMaps(gatherers);
 	}
@@ -227,14 +203,9 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		var ethernets = storage.listEthernetsToLoad();
 		int opsToRun = storage.countWorkRequired();
 		try (var bar = new Progress(opsToRun, LOADING_MSG)) {
-			executor.submitTasks(ethernets, board -> {
+			processTasksInParallel(ethernets, board -> {
 				return () -> loadBoard(board, storage, bar);
-			}).awaitAndCombineExceptions();
-		} catch (StorageException | IOException | ProcessException
-				| DataSpecificationException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected exception", e);
+			});
 		}
 	}
 
@@ -275,17 +246,6 @@ public class FastExecuteDataSpecification extends BoardLocalSupport
 		return txrx.mallocSDRAM(ctl.core.getScampCore(), bytesUsed,
 				new AppID(ctl.appID),
 				ctl.core.getP() + CORE_DATA_SDRAM_BASE_TAG);
-	}
-
-	@Override
-	public void close() throws IOException {
-		try {
-			txrx.close();
-		} catch (IOException | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new IllegalStateException("unexpected failure in close", e);
-		}
 	}
 
 	private static MemoryRegionReal getRealRegionOrNull(MemoryRegion reg) {

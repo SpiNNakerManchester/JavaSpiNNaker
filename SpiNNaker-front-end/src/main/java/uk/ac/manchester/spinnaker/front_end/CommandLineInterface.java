@@ -238,15 +238,15 @@ public final class CommandLineInterface {
 			StorageException, ExecutionException, InterruptedException,
 			DataSpecificationException {
 		var machine = getMachine(machineJsonFile);
-		var database = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 
 		try (var dseExec = new HostExecuteDataSpecification(machine)) {
 			if (filterSystemCores == null) {
-				dseExec.loadAllCores(database);
+				dseExec.loadAllCores(db);
 			} else if (filterSystemCores) {
-				dseExec.loadApplicationCores(database);
+				dseExec.loadApplicationCores(db);
 			} else {
-				dseExec.loadSystemCores(database);
+				dseExec.loadSystemCores(db);
 			}
 		}
 	}
@@ -284,12 +284,12 @@ public final class CommandLineInterface {
 			DataSpecificationException {
 		var gathers = getGatherers(gatherersJsonFile);
 		var machine = getMachine(machineJsonFile);
-		var database = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
+		var db = new DSEDatabaseEngine(new File(runFolder, DSE_DB_FILE));
 		var reportDir = reportFolder == null ? null : new File(reportFolder);
 
 		try (var dseExec = new FastExecuteDataSpecification(
 				machine, gathers, reportDir)) {
-			dseExec.loadCores(database);
+			dseExec.loadCores(db);
 		}
 	}
 
@@ -317,9 +317,9 @@ public final class CommandLineInterface {
 		var machine = getMachine(machineJsonFile);
 		var request = getIobufRequest(iobufMapFile);
 
-		try (var retriever = new IobufRetriever(new Transceiver(machine),
-				machine, PARALLEL_SIZE)) {
-			var result = retriever.retrieveIobufContents(request, runFolder);
+		try (var txrx = new Transceiver(machine);
+				var r = new IobufRetriever(txrx, machine, PARALLEL_SIZE)) {
+			var result = r.retrieveIobufContents(request, runFolder);
 			MAPPER.writeValue(out, result);
 		}
 	}
@@ -346,11 +346,12 @@ public final class CommandLineInterface {
 			SpinnmanException, StorageException {
 		var placements = getPlacements(placementsJsonFile);
 		var machine = getMachine(machineJsonFile);
-		var trans = new Transceiver(machine);
-		var database = getDatabase(runFolder);
+		var db = getDatabase(runFolder);
 
-		var receiver = new DataReceiver(trans, machine, database);
-		receiver.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
+		try (var trans = new Transceiver(machine)) {
+			var r = new DataReceiver(trans, machine, db);
+			r.getDataForPlacementsParallel(placements, PARALLEL_SIZE);
+		}
 	}
 
 	/**
@@ -378,12 +379,10 @@ public final class CommandLineInterface {
 			SpinnmanException, StorageException, InterruptedException {
 		var gathers = getGatherers(gatherersJsonFile);
 		var machine = getMachine(machineJsonFile);
-		var trans = new Transceiver(machine);
-		var database = getDatabase(runFolder);
-
-		try (var runner = new RecordingRegionDataGatherer(
-				trans, machine, database)) {
-			int misses = runner.gather(gathers);
+		var db = getDatabase(runFolder);
+		try (var trans = new Transceiver(machine);
+				var r = new RecordingRegionDataGatherer(trans, machine, db)) {
+			int misses = r.gather(gathers);
 			getLogger(CommandLineInterface.class).info("total misses: {}",
 					misses);
 		}

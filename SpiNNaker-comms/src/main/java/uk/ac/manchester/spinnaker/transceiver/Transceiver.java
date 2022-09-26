@@ -395,6 +395,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
+	@MustBeClosed
 	public Transceiver(InetAddress host, MachineVersion version,
 			Collection<BMPConnectionData> bmpConnectionData,
 			Integer numberOfBoards, Set<ChipLocation> ignoredChips,
@@ -484,6 +485,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
+	@MustBeClosed
 	public Transceiver(InetAddress hostname, MachineVersion version)
 			throws IOException, SpinnmanException {
 		this(hostname, version, null, 0, Set.of(), Map.of(), Map.of(), false,
@@ -500,6 +502,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
+	@MustBeClosed
 	public Transceiver(MachineVersion version)
 			throws IOException, SpinnmanException {
 		this(version, null, null, null, null, null, null);
@@ -520,6 +523,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
+	@MustBeClosed
 	public Transceiver(MachineVersion version,
 			Collection<Connection> connections)
 			throws IOException, SpinnmanException {
@@ -537,6 +541,7 @@ public class Transceiver extends UDPTransceiver
 	 * @throws SpinnmanException
 	 *             If a BMP is uncontactable or SpiNNaker rejects a message.
 	 */
+	@MustBeClosed
 	public Transceiver(Machine machine) throws IOException, SpinnmanException {
 		this(requireNonNull(machine, "need a real machine")
 				.getBootEthernetAddress(), machine.version, null, null, null,
@@ -2495,11 +2500,11 @@ public class Transceiver extends UDPTransceiver
 	/**
 	 * Close the transceiver and any threads that are running.
 	 *
-	 * @throws Exception
+	 * @throws IOException
 	 *             If anything goes wrong
 	 */
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		close(true, false);
 	}
 
@@ -2513,13 +2518,17 @@ public class Transceiver extends UDPTransceiver
 	 * @param powerOffMachine
 	 *            if true, the machine is sent a power down command via its BMP
 	 *            (if it has one)
-	 * @throws Exception
+	 * @throws IOException
 	 *             If anything goes wrong
 	 */
 	public void close(boolean closeOriginalConnections, boolean powerOffMachine)
-			throws Exception {
+			throws IOException {
 		if (powerOffMachine && !bmpConnections.isEmpty()) {
-			powerOffMachine();
+			try {
+				powerOffMachine();
+			} catch (InterruptedException | ProcessException e) {
+				log.warn("failed to power off machine", e);
+			}
 		}
 
 		super.close();

@@ -107,6 +107,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * @param timeout
 	 *            The default timeout.
 	 */
+	@MustBeClosed
 	protected SpallocConnection(String hostname, int port, Integer timeout) {
 		addr = new InetSocketAddress(hostname, port);
 		this.dead = true;

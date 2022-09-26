@@ -103,6 +103,7 @@ public class TransceiverITCase {
 
 	@BeforeAll
 	@Timeout(60) // Two minutes is enough
+	@SuppressWarnings("MustBeClosed")
 	static void setUpBeforeClass() throws Exception {
 		boardConfig = new BoardTestConfiguration();
 		try {

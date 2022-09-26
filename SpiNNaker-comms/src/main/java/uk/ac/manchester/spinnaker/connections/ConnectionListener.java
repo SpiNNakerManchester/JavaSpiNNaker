@@ -34,6 +34,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
 
@@ -83,6 +85,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 * @param connection
 	 *            The connection to listen to.
 	 */
+	@MustBeClosed
 	public ConnectionListener(MessageReceiver<MessageType> connection) {
 		this(connection, POOL_SIZE, TIMEOUT);
 	}
@@ -98,6 +101,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            How long to wait in the OS for a message to arrive; if
 	 *            0, wait indefinitely.
 	 */
+	@MustBeClosed
 	public ConnectionListener(MessageReceiver<MessageType> connection,
 			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);

@@ -50,7 +50,7 @@ final class ProxiedTransceiver extends Transceiver {
 
 	/** {@inheritDoc} */
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		super.close();
 		websocket.close();
 	}

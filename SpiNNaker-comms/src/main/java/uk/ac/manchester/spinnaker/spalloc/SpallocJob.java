@@ -38,6 +38,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MachineDimensions;
 import uk.ac.manchester.spinnaker.messages.model.Version;
@@ -191,8 +193,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
 	 */
-	public SpallocJob(String hostname, Integer timeout,
-			CreateJob builder)
+	@MustBeClosed
+	public SpallocJob(String hostname, Integer timeout, CreateJob builder)
 			throws IOException, SpallocServerException {
 		this(hostname, config.getPort(), timeout, builder);
 	}
@@ -209,6 +211,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
 	 */
+	@MustBeClosed
 	public SpallocJob(String hostname, CreateJob builder)
 			throws IOException, SpallocServerException {
 		this(hostname, config.getPort(), f2ms(config.getTimeout()), builder);
@@ -224,6 +227,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws SpallocServerException
 	 *             If the spalloc server rejects the operation request.
 	 */
+	@MustBeClosed
 	public SpallocJob(CreateJob builder)
 			throws IOException, SpallocServerException {
 		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()),
@@ -302,6 +306,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws IllegalArgumentException
 	 *             If a bad builder is given.
 	 */
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public SpallocJob(String hostname, Integer port, Integer timeout,
 			CreateJob builder)
 			throws IOException, SpallocServerException {
@@ -334,6 +340,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
 	 */
+	@MustBeClosed
 	public SpallocJob(int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
 		this(config.getHost(), config.getPort(), f2ms(config.getTimeout()), id);
@@ -353,6 +360,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
 	 */
+	@MustBeClosed
 	public SpallocJob(String hostname, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
 		this(hostname, config.getPort(), f2ms(config.getTimeout()), id);
@@ -374,6 +382,7 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
 	 */
+	@MustBeClosed
 	public SpallocJob(String hostname, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
 		this(hostname, config.getPort(), timeout, id);
@@ -413,6 +422,8 @@ public class SpallocJob implements AutoCloseable, SpallocJobAPI {
 	 * @throws JobDestroyedException
 	 *             If the job doesn't exist (any more).
 	 */
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public SpallocJob(String hostname, int port, Integer timeout, int id)
 			throws IOException, SpallocServerException, JobDestroyedException {
 		this.client = new SpallocClient(hostname, port, timeout);

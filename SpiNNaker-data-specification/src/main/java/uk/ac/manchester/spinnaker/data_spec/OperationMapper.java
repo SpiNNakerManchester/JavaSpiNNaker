@@ -30,6 +30,8 @@ import java.util.WeakHashMap;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 /**
  * Clever stuff to turn a method annotated with {@link Operation @Operation}
  * into a {@link Callable}.
@@ -66,6 +68,7 @@ abstract class OperationMapper {
 	 * @return How to invoke that operation, or {@code null} if that operation
 	 *         has no registered implementation.
 	 */
+	@CheckReturnValue
 	static Callable getOperationImpl(FunctionAPI funcs, Commands opcode) {
 		// Note that MAP is using the object identity; this is by design
 		var map = MAP.computeIfAbsent(requireNonNull(funcs,

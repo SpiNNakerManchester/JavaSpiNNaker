@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -52,12 +54,22 @@ public class TestMockClient {
 
 	private static int timeout = SECOND;
 
-	private static MockConnectedClient client =
-			new MockConnectedClient(timeout);
+	private static MockConnectedClient client;
 
 	private static final Logger log = getLogger(TestMockClient.class);
 
 	private static final boolean PRINT_JOBS = false;
+
+	@BeforeAll
+	@SuppressWarnings("MustBeClosed")
+	static void makeMockClient() {
+		client = new MockConnectedClient(timeout);
+	}
+
+	@AfterAll
+	static void closeMockClient() throws IOException {
+		client.close();
+	}
 
 	@Test
 	void testListJobs() throws IOException, SpallocServerException, Exception {
