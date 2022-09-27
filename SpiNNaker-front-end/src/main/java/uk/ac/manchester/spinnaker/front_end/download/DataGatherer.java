@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.ForOverride;
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import difflib.ChangeDelta;
 import difflib.Chunk;
@@ -160,6 +161,7 @@ public abstract class DataGatherer extends BoardLocalSupport
 	}
 
 	@Override
+	@OverridingMethodsMustInvokeSuper
 	public void close() throws InterruptedException {
 		pool.close();
 	}

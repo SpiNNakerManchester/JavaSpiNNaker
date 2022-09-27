@@ -30,6 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.google.errorprone.annotations.DoNotCall;
 
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
@@ -43,9 +44,7 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 
 	ProxiedEIEIOListenerConnection(Map<Inet4Address, ChipLocation> hostToChip,
 			ProxyProtocolClient proxy)
-			throws IOException, InterruptedException {
-		super(null);
-		super.close();
+			throws InterruptedException {
 		this.hostToChip = hostToChip;
 		this.ws = proxy;
 		receiveQueue = new LinkedBlockingQueue<>();
@@ -53,6 +52,7 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	}
 
 	@Override
+	@SuppressWarnings("MissingSuperCall")
 	public void close() throws IOException {
 		channel.close();
 		ws = null;
@@ -61,6 +61,11 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	@Override
 	public boolean isClosed() {
 		return isNull(ws) || !ws.isOpen();
+	}
+
+	@Override
+	public boolean isConnected() {
+		return !isClosed();
 	}
 
 	@Override
@@ -82,5 +87,12 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 			throw new EOFException("connection closed");
 		}
 		return ClientUtils.receiveHelper(receiveQueue, timeout);
+	}
+
+	@Override
+	@DoNotCall
+	protected UDPPacket doReceiveWithAddress(int timeout) {
+		throw new UnsupportedOperationException(
+				"receiveWithAddress() not supported by this connection type");
 	}
 }

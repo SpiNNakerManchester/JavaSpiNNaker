@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.allocator.AllocatedMachine.ConnectionInfo;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
@@ -426,6 +427,7 @@ public class SpallocClientFactory {
 	private static final class JobImpl extends Common implements Job {
 		private final URI uri;
 
+		@GuardedBy("lock")
 		private ProxyProtocolClient proxy;
 
 		private final Object lock = new Object();
@@ -553,6 +555,7 @@ public class SpallocClientFactory {
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
 		}
 
+		@GuardedBy("lock")
 		private boolean haveProxy() {
 			return nonNull(proxy) && proxy.isOpen();
 		}
@@ -579,8 +582,8 @@ public class SpallocClientFactory {
 				if (!haveProxy()) {
 					proxy = s.withRenewal(() -> s.websocket(wssAddr));
 				}
+				return proxy;
 			}
-			return proxy;
 		}
 
 		@Override

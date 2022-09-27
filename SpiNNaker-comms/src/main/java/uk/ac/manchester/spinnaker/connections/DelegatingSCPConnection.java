@@ -107,6 +107,7 @@ public class DelegatingSCPConnection extends SCPConnection {
 	 * be closed directly.
 	 */
 	@Override
+	@SuppressWarnings("MissingSuperCall")
 	public void close() throws IOException {
 		// Do nothing
 	}

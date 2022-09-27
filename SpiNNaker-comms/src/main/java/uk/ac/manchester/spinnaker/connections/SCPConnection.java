@@ -137,8 +137,7 @@ public class SCPConnection extends SDPConnection
 	 *             If anything goes wrong with socket manipulation.
 	 */
 	protected SCPConnection(HasChipLocation chip) throws IOException {
-		super(chip, null, null, null, null);
-		super.close();
+		super(chip, true);
 	}
 
 	@Override

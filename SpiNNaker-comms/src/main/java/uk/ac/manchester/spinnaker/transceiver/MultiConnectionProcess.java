@@ -132,7 +132,7 @@ abstract class MultiConnectionProcess<T extends SCPConnection>
 	}
 
 	@Override
-	protected void finish() throws IOException {
+	protected final void finish() throws IOException {
 		for (var pipe : requestPipelines.values()) {
 			pipe.finish();
 		}

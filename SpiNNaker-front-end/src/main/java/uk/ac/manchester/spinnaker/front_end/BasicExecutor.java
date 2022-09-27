@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 /**
  * A thread pool designed for simple task execution with combining of
@@ -153,6 +154,7 @@ public class BasicExecutor implements AutoCloseable {
 	 * @author Donal Fellows
 	 */
 	public static final class Tasks {
+		@GuardedBy("this")
 		private List<Future<Exception>> tasks;
 
 		private Tasks() {

@@ -111,6 +111,8 @@ public abstract class DatabaseAwareBean extends SQLQueries {
 		private final boolean doClose;
 
 		/** Manage a connection ourselves. */
+		// Should be @MustBeClosed but that gets messy in subclasses
+		@SuppressWarnings("MustBeClosed")
 		protected AbstractSQL() {
 			conn = requireNonNull(db, "DatabaseEngine not set").getConnection();
 			doClose = true;

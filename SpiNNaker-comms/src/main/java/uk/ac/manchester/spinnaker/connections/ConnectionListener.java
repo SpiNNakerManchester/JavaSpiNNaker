@@ -35,6 +35,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
@@ -64,12 +65,14 @@ public class ConnectionListener<MessageType> extends Thread
 	private ThreadPoolExecutor callbackPool;
 
 	/** The callbacks we make on receiving a message. */
+	@GuardedBy("itself")
 	private final Set<MessageHandler<MessageType>> callbacks;
 
 	/**
 	 * Contents of {@link #callbacks} at the last time
 	 * {@link #checkpointCallbacks()} was called.
 	 */
+	@GuardedBy("callbacks")
 	private List<MessageHandler<MessageType>> callbacksCheckpointed;
 
 	private final MessageReceiver<MessageType> connection;

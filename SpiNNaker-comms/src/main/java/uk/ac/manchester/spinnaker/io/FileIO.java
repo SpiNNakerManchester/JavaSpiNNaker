@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
 import uk.ac.manchester.spinnaker.utils.Slice;
@@ -30,6 +32,7 @@ import uk.ac.manchester.spinnaker.utils.Slice;
 /** A file input/output interface to match the MemoryIO interface. */
 public class FileIO extends BaseIO {
 	/** The file to write to. */
+	@GuardedBy("itself")
 	private final RandomAccessFile file;
 
 	/**
@@ -44,7 +47,8 @@ public class FileIO extends BaseIO {
 	 */
 	public FileIO(File file, MemoryLocation startOffset,
 			MemoryLocation endOffset) throws IOException {
-		this(new RandomAccessFile(file, "rw"), startOffset, endOffset);
+		super(startOffset, endOffset);
+		this.file = new RandomAccessFile(file, "rw");
 	}
 
 	/**
@@ -55,15 +59,23 @@ public class FileIO extends BaseIO {
 	 * @param endOffset
 	 *            The end offset from the start of the file
 	 */
-	private FileIO(RandomAccessFile file, MemoryLocation startOffset,
+	private FileIO(FileIO file, MemoryLocation startOffset,
 			MemoryLocation endOffset) {
 		super(startOffset, endOffset);
-		this.file = file;
+		this.file = file.ref();
+	}
+
+	private RandomAccessFile ref() {
+		synchronized (file) {
+			return file;
+		}
 	}
 
 	@Override
 	public void close() throws Exception {
-		file.close();
+		synchronized (file) {
+			file.close();
+		}
 	}
 
 	@Override
@@ -71,17 +83,19 @@ public class FileIO extends BaseIO {
 		if (slice < 0 || slice >= size()) {
 			throw new ArrayIndexOutOfBoundsException(slice);
 		}
-		return new FileIO(file, start.add(slice), start.add(slice + 1));
+		return new FileIO(this, start.add(slice), start.add(slice + 1));
 	}
 
 	@Override
 	public FileIO get(Slice slice) {
-		return get(slice, (from, to) -> new FileIO(file, from, to));
+		return get(slice, (from, to) -> new FileIO(this, from, to));
 	}
 
 	@Override
 	public boolean isClosed() {
-		return !file.getChannel().isOpen();
+		synchronized (file) {
+			return !file.getChannel().isOpen();
+		}
 	}
 
 	@Override

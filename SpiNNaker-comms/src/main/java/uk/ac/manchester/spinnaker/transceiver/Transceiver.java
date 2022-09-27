@@ -78,6 +78,7 @@ import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.connections.BMPConnection;
 import uk.ac.manchester.spinnaker.connections.BootConnection;
@@ -318,6 +319,7 @@ public class Transceiver extends UDPTransceiver
 	private final ConnectionSelector<SCPConnection> scpSelector;
 
 	/** The nearest neighbour start ID. */
+	@GuardedBy("nearestNeighbourLock")
 	private int nearestNeighbourID = 1;
 
 	/** The nearest neighbour lock. */
@@ -339,6 +341,7 @@ public class Transceiver extends UDPTransceiver
 	private final Map<ChipLocation, Semaphore> chipExecuteLocks =
 			new HashMap<>();
 
+	@GuardedBy("itself")
 	private final FloodLock executeFloodLock = new FloodLock();
 
 	private boolean machineOff = false;

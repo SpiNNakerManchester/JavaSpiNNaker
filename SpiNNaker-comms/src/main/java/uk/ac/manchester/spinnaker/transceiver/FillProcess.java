@@ -110,8 +110,7 @@ class FillProcess extends MultiConnectionProcess<SCPConnection> {
 		 * Wait for all the packets to be confirmed and then check there are no
 		 * errors.
 		 */
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	private void generateWriteMessages(HasChipLocation chip,

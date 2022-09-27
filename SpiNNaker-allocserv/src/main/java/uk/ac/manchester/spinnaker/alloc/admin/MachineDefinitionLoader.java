@@ -845,7 +845,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *
 	 * @param file
 	 *            The file of JSON.
-	 * @return The machines from that file.
+	 * @return The machines from that file. Not {@code null}.
 	 * @throws IOException
 	 *             If anything goes wrong with file access.
 	 * @throws JsonParseException

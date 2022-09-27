@@ -43,6 +43,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolException;
 import uk.ac.manchester.spinnaker.spalloc.exceptions.SpallocProtocolTimeoutException;
@@ -80,6 +81,7 @@ public abstract class SpallocConnection implements Closeable {
 	 * Mapping from threads to sockets. Kept because we need to have way to shut
 	 * down all sockets at once.
 	 */
+	@GuardedBy("socksLock")
 	private final Map<Thread, TextSocket> socks = new HashMap<>();
 
 	/** Lock for access to {@link #socks}. */

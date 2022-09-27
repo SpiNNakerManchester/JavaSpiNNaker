@@ -49,6 +49,7 @@ import java.util.function.IntFunction;
 import org.slf4j.Logger;
 
 import com.google.errorprone.annotations.ForOverride;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import uk.ac.manchester.spinnaker.connections.model.Connection;
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
@@ -146,6 +147,20 @@ public abstract class UDPConnection<T>
 			log.debug("{} socket created ({} <--> {})", getClass().getName(),
 					localAddr(), remoteAddr());
 		}
+	}
+
+	/**
+	 * Make a connection where actual operations on the socket will be
+	 * delegated. If you use this constructor, you <strong>must</strong>
+	 * override {@link #isClosed()}, and possibly {@link #isConnected()} as
+	 * well.
+	 *
+	 * @param canSend
+	 *            Whether this is a connection that can send messages.
+	 */
+	UDPConnection(boolean canSend) {
+		this.canSend = canSend;
+		socket = null;
 	}
 
 	/**
@@ -661,7 +676,11 @@ public abstract class UDPConnection<T>
 	}
 
 	@Override
+	@OverridingMethodsMustInvokeSuper
 	public void close() throws IOException {
+		if (socket == null) {
+			return;
+		}
 		try {
 			socket.disconnect();
 		} catch (Exception e) {

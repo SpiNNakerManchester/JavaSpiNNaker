@@ -72,6 +72,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.MustBeClosed;
 import com.google.errorprone.annotations.RestrictedApi;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -1300,14 +1301,7 @@ public class BMPController extends DatabaseAwareBean {
 		 * doesn't need that... provided we get the transceiver now.
 		 */
 		getControllers(request);
-		var ws = getWorkerState(request.machine);
-		ws.requests.add(request);
-		synchronized (this) {
-			if (!ws.requestsPending) {
-				ws.requestsPending = true;
-			}
-			notifyAll();
-		}
+		getWorkerState(request.machine).addRequest(request);
 	}
 
 	/**
@@ -1329,6 +1323,12 @@ public class BMPController extends DatabaseAwareBean {
 		}
 	}
 
+	private List<WorkerState> listWorkers() {
+		synchronized (state) {
+			return new ArrayList<>(state.values());
+		}
+	}
+
 	// ----------------------------------------------------------------
 	// WORKER IMPLEMENTATION
 
@@ -1344,12 +1344,14 @@ public class BMPController extends DatabaseAwareBean {
 		 * Whether there are any requests pending. Protected by a lock on the
 		 * {@link BMPController} object.
 		 */
+		@GuardedBy("BMPController.this")
 		private boolean requestsPending = false;
 
 		/**
 		 * What thread is serving as the worker? Protected by a lock on the
 		 * {@link BMPController#state} object.
 		 */
+		@GuardedBy("state")
 		private Thread workerThread;
 
 		WorkerState(Machine machine) {
@@ -1357,17 +1359,21 @@ public class BMPController extends DatabaseAwareBean {
 		}
 
 		void interrupt() {
-			var wt = workerThread;
-			if (nonNull(wt)) {
-				wt.interrupt();
+			synchronized (state) {
+				var wt = workerThread;
+				if (nonNull(wt)) {
+					wt.interrupt();
+				}
 			}
 		}
 
 		void launchThreadIfNecessary() throws InterruptedException {
-			if (isNull(workerThread)) {
-				executor.execute(this::backgroundThread);
-				while (isNull(workerThread)) {
-					state.wait();
+			synchronized (state) {
+				if (isNull(workerThread)) {
+					executor.execute(this::backgroundThread);
+					while (isNull(workerThread)) {
+						state.wait();
+					}
 				}
 			}
 		}
@@ -1397,7 +1403,7 @@ public class BMPController extends DatabaseAwareBean {
 
 			try (var binding = bind(t)) {
 				do {
-					waitForPending(this);
+					waitForPending();
 
 					/*
 					 * No lock needed; this is the only thread that removes from
@@ -1416,7 +1422,7 @@ public class BMPController extends DatabaseAwareBean {
 					 * If nothing left in the queues, clear the request flag and
 					 * break out of queue-processing loop.
 					 */
-				} while (!shouldTerminate(this));
+				} while (!shouldTerminate());
 			} catch (InterruptedException e) {
 				// Thread is being shut down
 				markAllForStop();
@@ -1432,39 +1438,56 @@ public class BMPController extends DatabaseAwareBean {
 				log.error("unhandled exception for '{}'", t.getName(), e);
 			}
 		}
+
+		/**
+		 * Add a request to this worker's input queue.
+		 *
+		 * @param request
+		 *            The request to add. Not {@code null}.
+		 */
+		void addRequest(Request request) {
+			requests.add(request);
+			synchronized (BMPController.this) {
+				if (!requestsPending) {
+					requestsPending = true;
+				}
+				BMPController.this.notifyAll();
+			}
+		}
+
+		private void waitForPending() throws InterruptedException {
+			synchronized (BMPController.this) {
+				while (!requestsPending) {
+					BMPController.this.wait();
+				}
+			}
+		}
+
+		private boolean shouldTerminate() {
+			synchronized (BMPController.this) {
+				if (requests.isEmpty()) {
+					requestsPending = false;
+					BMPController.this.notifyAll();
+
+					if (stop) {
+						return true;
+					}
+				}
+				return false;
+			}
+		}
 	}
 
 	@PreDestroy
 	private void shutDownWorkers() throws InterruptedException {
 		markAllForStop();
 		executor.shutdown();
-		synchronized (state) {
-			for (var ws : state.values()) {
-				ws.interrupt();
-			}
+		for (var ws : listWorkers()) {
+			ws.interrupt();
 		}
 		executor.awaitTermination(props.getProbeInterval().toMillis(),
 				MILLISECONDS);
 		group.interrupt();
-	}
-
-	private synchronized void waitForPending(WorkerState ws)
-			throws InterruptedException {
-		while (!ws.requestsPending) {
-			wait();
-		}
-	}
-
-	private synchronized boolean shouldTerminate(WorkerState ws) {
-		if (ws.requests.isEmpty()) {
-			ws.requestsPending = false;
-			notifyAll();
-
-			if (stop) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private synchronized void markAllForStop() {

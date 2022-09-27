@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.front_end.download.request.Placement;
 import uk.ac.manchester.spinnaker.front_end.download.request.Vertex;
@@ -63,6 +64,7 @@ public class DirectDataGatherer extends DataGatherer {
 
 	private final BufferManagerStorage database;
 
+	@GuardedBy("itself")
 	private final Map<CoreLocation,
 			Map<MemoryLocation, ByteBuffer>> coreTableCache;
 

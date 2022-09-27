@@ -90,8 +90,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 			baseAddress = baseAddress.add(chunk);
 			data.position(data.position() + chunk);
 		}
-		finish();
-		checkForError();
+		finishBatch();
 
 		synchronousCall(new FloodFillEnd(nearestNeighbourID));
 	}
@@ -136,8 +135,7 @@ class WriteMemoryFloodProcess extends MultiConnectionProcess<SCPConnection> {
 			numBytes -= chunk;
 			baseAddress = baseAddress.add(chunk);
 		}
-		finish();
-		checkForError();
+		finishBatch();
 
 		synchronousCall(new FloodFillEnd(nearestNeighbourID));
 	}

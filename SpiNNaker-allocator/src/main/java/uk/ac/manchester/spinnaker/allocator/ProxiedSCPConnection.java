@@ -20,11 +20,15 @@ import static java.util.Objects.isNull;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.errorprone.annotations.DoNotCall;
+
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /** An SCP connection that routes messages across the proxy. */
@@ -57,6 +61,7 @@ final class ProxiedSCPConnection extends SCPConnection {
 	}
 
 	@Override
+	@SuppressWarnings("MissingSuperCall")
 	public void close() throws IOException {
 		channel.close();
 		ws = null;
@@ -68,8 +73,20 @@ final class ProxiedSCPConnection extends SCPConnection {
 	}
 
 	@Override
+	public boolean isConnected() {
+		return !isClosed();
+	}
+
+	@Override
 	protected void doSend(ByteBuffer buffer) throws IOException {
 		channel.send(buffer);
+	}
+
+	@Override
+	@DoNotCall
+	protected void doSendTo(ByteBuffer buffer, InetAddress addr, int port)
+			throws IOException {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -79,5 +96,12 @@ final class ProxiedSCPConnection extends SCPConnection {
 			throw new EOFException("connection closed");
 		}
 		return ClientUtils.receiveHelper(receiveQueue, timeout);
+	}
+
+	@Override
+	@DoNotCall
+	protected UDPPacket doReceiveWithAddress(int timeout) {
+		throw new UnsupportedOperationException(
+				"receiveWithAddress() not supported by this connection type");
 	}
 }

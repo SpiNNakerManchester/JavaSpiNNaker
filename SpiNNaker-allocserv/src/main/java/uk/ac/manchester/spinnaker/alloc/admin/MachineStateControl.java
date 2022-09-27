@@ -742,7 +742,8 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 *            Values to bind to parameters in the SQL.
 		 */
 		@MustBeClosed
-		Op(@CompileTimeConstant String operation, Object... args) {
+		@SuppressWarnings("CompileTimeConstant")
+		Op(@CompileTimeConstant final String operation, Object... args) {
 			boardId = ((Integer) args[0]).intValue(); // TODO yuck!
 			epoch = epochs.getBlacklistEpoch();
 			op = execute(conn -> {

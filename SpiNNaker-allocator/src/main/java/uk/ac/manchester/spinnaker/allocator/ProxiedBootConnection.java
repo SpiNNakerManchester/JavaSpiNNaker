@@ -22,11 +22,15 @@ import static uk.ac.manchester.spinnaker.machine.ChipLocation.ZERO_ZERO;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.errorprone.annotations.DoNotCall;
+
 import uk.ac.manchester.spinnaker.connections.BootConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 
 /** A boot connection that routes messages across the proxy. */
 final class ProxiedBootConnection extends BootConnection {
@@ -55,6 +59,7 @@ final class ProxiedBootConnection extends BootConnection {
 	}
 
 	@Override
+	@SuppressWarnings("MissingSuperCall")
 	public void close() throws IOException {
 		channel.close();
 		ws = null;
@@ -66,8 +71,20 @@ final class ProxiedBootConnection extends BootConnection {
 	}
 
 	@Override
+	public boolean isConnected() {
+		return !isClosed();
+	}
+
+	@Override
 	protected void doSend(ByteBuffer buffer) throws IOException {
 		channel.send(buffer);
+	}
+
+	@Override
+	@DoNotCall
+	protected void doSendTo(ByteBuffer data, InetAddress address, int port) {
+		throw new UnsupportedOperationException(
+				"sendTo() not supported by this connection type");
 	}
 
 	@Override
@@ -77,5 +94,12 @@ final class ProxiedBootConnection extends BootConnection {
 			throw new EOFException("connection closed");
 		}
 		return ClientUtils.receiveHelper(receiveQueue, timeout);
+	}
+
+	@Override
+	@DoNotCall
+	protected UDPPacket doReceiveWithAddress(int timeout) {
+		throw new UnsupportedOperationException(
+				"receiveWithAddress() not supported by this connection type");
 	}
 }

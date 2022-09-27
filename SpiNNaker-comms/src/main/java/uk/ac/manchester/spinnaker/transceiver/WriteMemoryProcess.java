@@ -276,8 +276,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			writePosition = writePosition.add(bytesToSend);
 			bytesToWrite -= bytesToSend;
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -317,7 +316,6 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			writePosition = writePosition.add(bytesToSend);
 			bytesToWrite -= bytesToSend;
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 }

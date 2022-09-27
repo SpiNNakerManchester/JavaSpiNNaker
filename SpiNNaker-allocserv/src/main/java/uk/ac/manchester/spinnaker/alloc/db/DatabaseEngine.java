@@ -106,6 +106,7 @@ import org.sqlite.SQLiteException;
 
 import com.google.errorprone.annotations.CompileTimeConstant;
 import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.DBProperties;
@@ -143,6 +144,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	private static final String COUNT_MOVEMENTS =
 			"SELECT count(*) AS c FROM movement_directions";
 
+	@GuardedBy("itself")
 	private final Map<Resource, String> queryCache = new HashMap<>();
 
 	/**
@@ -200,9 +202,11 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 * Mapping from SQL string to summary statistics about the execution times
 	 * for that statement. The statistics are collected in microseconds.
 	 */
+	@GuardedBy("itself")
 	private final Map<String, SummaryStatistics> statementLengths =
 			new DefaultMap<>(SummaryStatistics::new);
 
+	@GuardedBy("itself")
 	private final Set<Thread> transactionHolders = new HashSet<>();
 
 	/**
@@ -248,12 +252,9 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 */
 	private void statementLength(Statement s, long pre, long post) {
 		if (props.isPerformanceLog()) {
-			SummaryStatistics stats;
-			synchronized (statementLengths) {
-				stats = statementLengths.get(s.toString());
-			}
 			long delta = post - pre;
-			synchronized (stats) {
+			synchronized (statementLengths) {
+				var stats = statementLengths.get(s.toString());
 				stats.addValue(delta / NS_PER_US);
 			}
 		}
@@ -1233,6 +1234,7 @@ public final class DatabaseEngine extends DatabaseCache<SQLiteConnection> {
 	 *
 	 * @return A configured initialised connection to the database.
 	 */
+	@MustBeClosed
 	public Connection getConnection() {
 		if (isNull(dbPath)) {
 			// In-memory DB (dbPath null) always must be initialised

@@ -35,6 +35,8 @@ import java.util.zip.CRC32;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
@@ -89,6 +91,7 @@ public final class MockTransceiver extends UnimplementedBMPTransceiver {
 
 	private Map<Integer, Boolean> status;
 
+	@GuardedBy("itself")
 	private final ValueHolder<Blacklist> setBlacklist;
 
 	private MockTransceiver(String machineName, BMPConnectionData data,

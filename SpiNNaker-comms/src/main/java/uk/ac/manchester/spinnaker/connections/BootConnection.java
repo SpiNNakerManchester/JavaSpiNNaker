@@ -94,8 +94,7 @@ public class BootConnection extends UDPConnection<BootMessage>
 	 *             If anything goes wrong with socket manipulation.
 	 */
 	protected BootConnection() throws IOException {
-		super(null, null, null, null, IPTOS_RELIABILITY);
-		super.close();
+		super(true);
 	}
 
 	@Override

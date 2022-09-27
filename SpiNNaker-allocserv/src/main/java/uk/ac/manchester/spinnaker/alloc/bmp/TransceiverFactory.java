@@ -22,6 +22,8 @@ import static uk.ac.manchester.spinnaker.utils.InetFactory.getByName;
 import static uk.ac.manchester.spinnaker.utils.Ping.ping;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.errorprone.annotations.RestrictedApi;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -91,6 +94,7 @@ public class TransceiverFactory
 		}
 	}
 
+	@GuardedBy("itself")
 	private final Map<Key, BMPTransceiverInterface> txrxMap = new HashMap<>();
 
 	@Autowired
@@ -209,9 +213,15 @@ public class TransceiverFactory
 		}
 	}
 
+	private Collection<BMPTransceiverInterface> transceivers() {
+		synchronized (txrxMap) {
+			return new ArrayList<>(txrxMap.values());
+		}
+	}
+
 	@PreDestroy
 	void closeTransceivers() throws Exception {
-		for (var txrx : txrxMap.values()) {
+		for (var txrx : transceivers()) {
 			txrx.close();
 		}
 	}

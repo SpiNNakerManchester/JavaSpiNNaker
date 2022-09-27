@@ -55,6 +55,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AllocatorProperties;
 import uk.ac.manchester.spinnaker.alloc.admin.ReportMailSender;
@@ -118,9 +119,11 @@ public class Spalloc extends DatabaseAwareBean implements SpallocAPI {
 	@Autowired
 	private ProxyRememberer rememberer;
 
+	@GuardedBy("this")
 	private transient Map<String, List<BoardCoords>> downBoardsCache =
 			new HashMap<>();
 
+	@GuardedBy("this")
 	private transient Map<String, List<DownLink>> downLinksCache =
 			new HashMap<>();
 
