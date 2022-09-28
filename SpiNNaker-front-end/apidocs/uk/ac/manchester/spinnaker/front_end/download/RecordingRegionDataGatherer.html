@@ -101,8 +101,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">RecordingRegionDataGatherer</span>
-extends <a href="DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a>
-implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></pre>
+extends <a href="DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></pre>
 <div class="block">A data gatherer that pulls the data from a recording region. Internally, this
  accepts requests to store data (after it has been retrieved from SpiNNaker)
  in parallel and passes them to a worker thread so that only that thread needs
@@ -225,7 +224,8 @@ int&nbsp;index)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine,uk.ac.manchester.spinnaker.storage.BufferManagerStorage)">RecordingRegionDataGatherer</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">RecordingRegionDataGatherer</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;transceiver,
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">RecordingRegionDataGatherer</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;transceiver,
 uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage</a>&nbsp;database)</span>
                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -309,6 +309,8 @@ int&nbsp;index)</span>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="DataGatherer.html#close()">close</a></code>&nbsp;in class&nbsp;<code><a href="DataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DataGatherer</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code></dd>
 </dl>

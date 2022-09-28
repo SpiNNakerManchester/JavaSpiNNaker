@@ -495,6 +495,14 @@ int&nbsp;index)</code></th>
  executions.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected void</code></td>
+<th class="colSecond" scope="row"><span class="typeNameLabel">ExecuteDataSpecification.</span><code><span class="memberNameLink"><a href="../../front_end/dse/ExecuteDataSpecification.html#processTasksInParallel(java.util.List,java.util.function.Function)">processTasksInParallel</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../storage/DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>&gt;&nbsp;tasks,
+<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html?is-external=true" title="class or interface in java.util.function" class="externalLink">Function</a>&lt;<a href="../../storage/DSEStorage.Ethernet.html" title="class in uk.ac.manchester.spinnaker.storage">DSEStorage.Ethernet</a>,&#8203;<a href="../../front_end/BasicExecutor.SimpleCallable.html" title="interface in uk.ac.manchester.spinnaker.front_end">BasicExecutor.SimpleCallable</a>&gt;&nbsp;mapper)</code></th>
+<td class="colLast">
+<div class="block">Run the tasks in parallel.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -509,6 +517,10 @@ int&nbsp;index)</code></th>
 </thead>
 <tbody>
 <tr class="altColor">
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/ExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine)">ExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/FastExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File)">FastExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../../front_end/download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir)</code></th>
@@ -516,27 +528,27 @@ int&nbsp;index)</code></th>
 <div class="block">Create an instance of this class.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/HostExecuteDataSpecification.html#%3Cinit%3E(uk.ac.manchester.spinnaker.machine.Machine)">HostExecuteDataSpecification</a></span>&#8203;(<a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine)</code></th>
 <td class="colLast">
 <div class="block">Create a high-level DSE interface.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.List)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
 <td class="colLast">
 <div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,java.util.stream.Stream)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Stream.html?is-external=true" title="class or interface in java.util.stream" class="externalLink">Stream</a>&lt;? extends <a href="../../machine/HasCoreLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasCoreLocation</a>&gt;&nbsp;monitorCoreLocations)</code></th>
 <td class="colLast">
 <div class="block">Create a no-drop-packets context.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="../../front_end/dse/SystemRouterTableContext.html#%3Cinit%3E(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.CoreSubsets)">SystemRouterTableContext</a></span>&#8203;(<a href="../TransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">TransceiverInterface</a>&nbsp;txrx,
 <a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;monitorCores)</code></th>
 <td class="colLast">

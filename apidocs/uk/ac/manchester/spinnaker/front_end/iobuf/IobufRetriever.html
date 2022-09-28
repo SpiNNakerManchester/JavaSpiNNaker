@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -93,9 +93,14 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="description">
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+</dl>
 <hr>
 <pre>public class <span class="typeNameLabel">IobufRetriever</span>
-extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></pre>
+extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a>
+implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></pre>
 <div class="block">Retrieves and processes IOBUFs.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
@@ -165,6 +170,11 @@ int&nbsp;parallelSize)</code></th>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="NotableMessages.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">NotableMessages</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieveIobufContents(uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest,java.lang.String)">retrieveIobufContents</a></span>&#8203;(<a href="IobufRequest.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">IobufRequest</a>&nbsp;request,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;provenanceDir)</code></th>
@@ -172,7 +182,7 @@ int&nbsp;parallelSize)</code></th>
 <div class="block">Retrieve and translate some IOBUFs.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="NotableMessages.html" title="class in uk.ac.manchester.spinnaker.front_end.iobuf">NotableMessages</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#retrieveIobufContents(uk.ac.manchester.spinnaker.machine.CoreSubsets,java.io.File,java.io.File)">retrieveIobufContents</a></span>&#8203;(<a href="../../machine/CoreSubsets.html" title="class in uk.ac.manchester.spinnaker.machine">CoreSubsets</a>&nbsp;cores,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;binaryFile,
@@ -206,7 +216,8 @@ int&nbsp;parallelSize)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.Transceiver,uk.ac.manchester.spinnaker.machine.Machine,int)">IobufRetriever</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">IobufRetriever</span>&#8203;(<span class="arguments"><a href="../../transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a>&nbsp;transceiver,
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">IobufRetriever</span>&#8203;(<span class="arguments"><a href="../../transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a>&nbsp;transceiver,
 <a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 int&nbsp;parallelSize)</span></div>
 <div class="block">Create a IOBUF retriever.</div>
@@ -228,6 +239,19 @@ int&nbsp;parallelSize)</span></div>
 </a>
 <h2>Method Details</h2>
 <ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="close()">close</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code></dd>
+</dl>
+</section>
+</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="retrieveIobufContents(uk.ac.manchester.spinnaker.front_end.iobuf.IobufRequest,java.lang.String)">retrieveIobufContents</a></h3>

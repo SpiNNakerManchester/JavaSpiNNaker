@@ -304,7 +304,8 @@ int&nbsp;timeout)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.model.MessageReceiver)">ConnectionListener</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</span></div>
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection)</span></div>
 <div class="block">Create a connection listener with the default number of listening threads
  and the default OS-level timeout.</div>
 <dl>
@@ -316,7 +317,8 @@ int&nbsp;timeout)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.connections.model.MessageReceiver,int,int)">ConnectionListener</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">ConnectionListener</span>&#8203;(<span class="arguments"><a href="model/MessageReceiver.html" title="interface in uk.ac.manchester.spinnaker.connections.model">MessageReceiver</a>&lt;<a href="ConnectionListener.html" title="type parameter in ConnectionListener">MessageType</a>&gt;&nbsp;connection,
 int&nbsp;numProcesses,
 int&nbsp;timeout)</span></div>
 <div class="block">Create a connection listener.</div>

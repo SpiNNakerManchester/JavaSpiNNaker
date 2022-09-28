@@ -243,56 +243,47 @@
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> 	@Override
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(Object o) {
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> 		<strong class="jxr_keyword">return</strong> (o instanceof <a name="IPTag" href="../../../../../../uk/ac/manchester/spinnaker/machine/tags/IPTag.html#IPTag">IPTag</a>) &amp;&amp; equals((<a name="IPTag" href="../../../../../../uk/ac/manchester/spinnaker/machine/tags/IPTag.html#IPTag">IPTag</a>) o);
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 	}
-<a class="jxr_linenumber" name="L240" href="#L240">240</a> 
-<a class="jxr_linenumber" name="L241" href="#L241">241</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">	 * An optimised test for whether two {@link IPTag}s are equal.</em>
-<a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">	 * @param otherTag</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> <em class="jxr_javadoccomment">	 *            The other tag</em>
-<a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">	 * @return whether they are equal</em>
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L248" href="#L248">248</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(<a name="IPTag" href="../../../../../../uk/ac/manchester/spinnaker/machine/tags/IPTag.html#IPTag">IPTag</a> otherTag) {
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 		<strong class="jxr_keyword">if</strong> (otherTag == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 			<strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 		}
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> 		<strong class="jxr_keyword">return</strong> partialEquals(otherTag) &amp;&amp; ipAddress.equals(otherTag.ipAddress)
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> 				&amp;&amp; stripSDP == otherTag.stripSDP
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> 				&amp;&amp; destination.equals(otherTag.destination);
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 	}
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 	@Override
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 		<strong class="jxr_keyword">int</strong> h = partialHashCode();
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> 		h ^= rotateLeft(ipAddress.hashCode(), 9);
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> 		<strong class="jxr_keyword">if</strong> (stripSDP) {
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 			h ^= 1;
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 		}
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 		h ^= rotateLeft(destination.hashCode(), 19);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 		<strong class="jxr_keyword">return</strong> h;
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 	}
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 	@Override
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 	<strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> 		<strong class="jxr_keyword">var</strong> sb = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"IPTag("</span>);
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> 		sb.append(getTag()).append(<span class="jxr_string">" {"</span>).append(getBoardAddress());
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 		sb.append(<span class="jxr_string">"} -"</span>);
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 		<strong class="jxr_keyword">if</strong> (stripSDP) {
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> 			sb.append(<span class="jxr_string">"strip"</span>);
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> 		}
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> 		sb.append(<span class="jxr_string">"-&gt; {"</span>).append(getIPAddress());
-<a class="jxr_linenumber" name="L277" href="#L277">277</a> 		<strong class="jxr_keyword">if</strong> (getPort() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 			sb.append(<span class="jxr_string">":"</span>).append(getPort());
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 		}
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 		sb.append(<span class="jxr_string">"}"</span>);
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 		<strong class="jxr_keyword">if</strong> (trafficIdentifier != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> 			sb.append(<span class="jxr_string">" TRF:"</span>).append(trafficIdentifier.label);
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> 		}
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 		sb.append(<span class="jxr_string">" "</span>).append(destination);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> 		<strong class="jxr_keyword">return</strong> sb.append(<span class="jxr_string">")"</span>).toString();
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 	}
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> }
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> 		<strong class="jxr_keyword">if</strong> (o instanceof <a name="IPTag" href="../../../../../../uk/ac/manchester/spinnaker/machine/tags/IPTag.html#IPTag">IPTag</a>) {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 			<strong class="jxr_keyword">var</strong> otherTag = (<a name="IPTag" href="../../../../../../uk/ac/manchester/spinnaker/machine/tags/IPTag.html#IPTag">IPTag</a>) o;
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> 			<strong class="jxr_keyword">return</strong> partialEquals(otherTag)
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 					&amp;&amp; ipAddress.equals(otherTag.ipAddress)
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 					&amp;&amp; stripSDP == otherTag.stripSDP
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> 					&amp;&amp; destination.equals(otherTag.destination);
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 		}
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 		<strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> 	}
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 	@Override
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> hashCode() {
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> 		<strong class="jxr_keyword">int</strong> h = partialHashCode();
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 		h ^= rotateLeft(ipAddress.hashCode(), 9);
+<a class="jxr_linenumber" name="L252" href="#L252">252</a> 		<strong class="jxr_keyword">if</strong> (stripSDP) {
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 			h ^= 1;
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> 		}
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 		h ^= rotateLeft(destination.hashCode(), 19);
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 		<strong class="jxr_keyword">return</strong> h;
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 	}
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> 
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 	@Override
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 	<strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> 		<strong class="jxr_keyword">var</strong> sb = <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"IPTag("</span>);
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> 		sb.append(getTag()).append(<span class="jxr_string">" {"</span>).append(getBoardAddress());
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> 		sb.append(<span class="jxr_string">"} -"</span>);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 		<strong class="jxr_keyword">if</strong> (stripSDP) {
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 			sb.append(<span class="jxr_string">"strip"</span>);
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 		}
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 		sb.append(<span class="jxr_string">"-&gt; {"</span>).append(getIPAddress());
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> 		<strong class="jxr_keyword">if</strong> (getPort() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 			sb.append(<span class="jxr_string">":"</span>).append(getPort());
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 		}
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 		sb.append(<span class="jxr_string">"}"</span>);
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 		<strong class="jxr_keyword">if</strong> (trafficIdentifier != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> 			sb.append(<span class="jxr_string">" TRF:"</span>).append(trafficIdentifier.label);
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 		}
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> 		sb.append(<span class="jxr_string">" "</span>).append(destination);
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 		<strong class="jxr_keyword">return</strong> sb.append(<span class="jxr_string">")"</span>).toString();
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 	}
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

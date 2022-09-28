@@ -122,7 +122,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
-<td class="colFirst"><code>protected static void</code></td>
+<td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLoggerDir(java.lang.String)">setLoggerDir</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;directoryName)</code></th>
 <td class="colLast">
 <div class="block">Initialise the logging subsystem to log to the correct directory.</div>
@@ -153,10 +153,11 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="setLoggerDir(java.lang.String)">setLoggerDir</a></h3>
-<div class="memberSignature"><span class="modifiers">protected static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setLoggerDir</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;directoryName)</span></div>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">setLoggerDir</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;directoryName)</span></div>
 <div class="block">Initialise the logging subsystem to log to the correct directory.
  <p>
- Note that this reads system properties.</div>
+ Note that this reads system properties, and probably should only be
+ called once.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>directoryName</code> - The directory where the log should written inside.</dd>

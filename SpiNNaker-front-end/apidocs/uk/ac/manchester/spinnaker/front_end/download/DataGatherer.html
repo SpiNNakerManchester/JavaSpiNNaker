@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":6,"i2":6};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":6,"i3":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -94,12 +94,17 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+</dl>
+<dl>
 <dt>Direct Known Subclasses:</dt>
 <dd><code><a href="DirectDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">DirectDataGatherer</a></code>, <code><a href="RecordingRegionDataGatherer.html" title="class in uk.ac.manchester.spinnaker.front_end.download">RecordingRegionDataGatherer</a></code></dd>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">DataGatherer</span>
-extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a></pre>
+extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a>
+implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></pre>
 <div class="block">Implementation of the SpiNNaker Fast Data Download Protocol.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
@@ -197,6 +202,11 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine)</code></th>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#gather(java.util.List)">gather</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</code></th>
 <td class="colLast">
@@ -204,7 +214,7 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine)</code></th>
  gatherers.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code>protected abstract <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion</a></span>&#8203;(<a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
 int&nbsp;regionID)</code></th>
@@ -212,7 +222,7 @@ int&nbsp;regionID)</code></th>
 <div class="block">Work out exactly where is going to be downloaded.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData</a></span>&#8203;(<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&nbsp;r,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</code></th>
@@ -262,7 +272,8 @@ int&nbsp;regionID)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.transceiver.TransceiverInterface,uk.ac.manchester.spinnaker.machine.Machine)">DataGatherer</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">DataGatherer</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;transceiver,
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">DataGatherer</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a>&nbsp;transceiver,
 uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine)</span>
              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a></span></div>
@@ -292,6 +303,20 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine)</span>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
+<h3><a id="close()">close</a></h3>
+<div class="memberSignature"><span class="annotations">@OverridingMethodsMustInvokeSuper
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></code></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="gather(java.util.List)">gather</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">gather</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers)</span>
            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -315,7 +340,8 @@ uk.ac.manchester.spinnaker.machine.Machine&nbsp;machine)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getRegion(uk.ac.manchester.spinnaker.front_end.download.request.Placement,int)">getRegion</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&gt;</span>&nbsp;<span class="memberName">getRegion</span>&#8203;(<span class="arguments"><a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
+<div class="memberSignature"><span class="annotations">@ForOverride
+</span><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&gt;</span>&nbsp;<span class="memberName">getRegion</span>&#8203;(<span class="arguments"><a href="request/Placement.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Placement</a>&nbsp;placement,
 int&nbsp;regionID)</span>
                                                         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/ProcessException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">ProcessException</a>,
@@ -344,7 +370,8 @@ int&nbsp;regionID)</span>
 <li class="blockList">
 <section class="detail">
 <h3><a id="storeData(uk.ac.manchester.spinnaker.storage.BufferManagerStorage.Region,java.nio.ByteBuffer)">storeData</a></h3>
-<div class="memberSignature"><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">storeData</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&nbsp;r,
+<div class="memberSignature"><span class="annotations">@ForOverride
+</span><span class="modifiers">protected abstract</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">storeData</span>&#8203;(<span class="arguments"><a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/BufferManagerStorage.Region.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">BufferManagerStorage.Region</a>&nbsp;r,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;data)</span>
                            throws <span class="exceptions"><a href="http://spinnakermanchester.github.io/SpiNNaker-storage/apidocs/uk/ac/manchester/spinnaker/storage/StorageException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.storage" class="externalLink">StorageException</a></span></div>
 <div class="block">Store the data retrieved from a region. Called (at most) once for each

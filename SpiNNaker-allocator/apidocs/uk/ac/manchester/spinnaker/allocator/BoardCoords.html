@@ -91,7 +91,8 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="description">
 <hr>
-<pre>public class <span class="typeNameLabel">BoardCoords</span>
+<pre>@Immutable
+public class <span class="typeNameLabel">BoardCoords</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></pre>
 <div class="block">Generalised coordinates of a board.</div>
 </section>
@@ -123,37 +124,51 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <tr class="rowColor" id="i1">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getAddress()">getAddress</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the IP address of the Ethernet chip of the board, if available.</div>
+</td>
 </tr>
 <tr class="altColor" id="i2">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoard()">getBoard</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the number of the board within its frame.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCabinet()">getCabinet</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the number of the cabinet containing the frame containing the board.</div>
+</td>
 </tr>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getFrame()">getFrame</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the number of the frame (within the cabinet) containing the board.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getX()">getX</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the triad X coordinate.</div>
+</td>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getY()">getY</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the triad Y coordinate.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getZ()">getZ</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Get the triad Z coordinate.</div>
+</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code>int</code></td>
@@ -191,6 +206,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getX()">getX</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getX</span>()</div>
+<div class="block">Get the triad X coordinate. Range: 0-255.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Logical triad X coordinate.</dd>
@@ -201,6 +217,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getY()">getY</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getY</span>()</div>
+<div class="block">Get the triad Y coordinate. Range: 0-255.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Logical triad Y coordinate.</dd>
@@ -211,6 +228,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getZ()">getZ</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getZ</span>()</div>
+<div class="block">Get the triad Z coordinate. Range: 0-2.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Logical triad Z coordinate.</dd>
@@ -221,6 +239,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getCabinet()">getCabinet</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getCabinet</span>()</div>
+<div class="block">Get the number of the cabinet containing the frame containing the board.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Physical cabinet number.</dd>
@@ -231,6 +250,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getFrame()">getFrame</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getFrame</span>()</div>
+<div class="block">Get the number of the frame (within the cabinet) containing the board.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Physical frame number.</dd>
@@ -241,6 +261,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getBoard()">getBoard</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">getBoard</span>()</div>
+<div class="block">Get the number of the board within its frame.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>Physical board number.</dd>
@@ -251,6 +272,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail">
 <h3><a id="getAddress()">getAddress</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getAddress</span>()</div>
+<div class="block">Get the IP address of the Ethernet chip of the board, if available.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>IP address of ethernet chip. May be <code>null</code> if the

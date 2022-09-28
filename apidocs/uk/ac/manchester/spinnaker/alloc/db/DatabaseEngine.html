@@ -397,7 +397,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="getConnection()">getConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
 <div class="block">Get a connection. This connection is thread-bound and pooled; it <em>must
  not</em> be passed to other threads. They should get their own
  connections instead. The connection has auto-commit disabled; use the
@@ -410,7 +411,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  database. Such in-memory databases are not subject to thread-bound
  cleanup actions; they're simply deleted from memory when no longer used
  (but the connection should be <code>close()</code>d after use for efficiency
- nonetheless).</div>
+ nonetheless).
+ <p>
+ This would be marked with <code>MustBeClosed</code> except that causes a mess
+ elsewhere.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>A configured initialised connection to the database.</dd>

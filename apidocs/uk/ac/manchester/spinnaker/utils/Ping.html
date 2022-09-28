@@ -159,7 +159,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="ping(java.lang.String)">ping</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">ping</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
+<div class="memberSignature"><span class="annotations">@CheckReturnValue
+</span><span class="modifiers">public static</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">ping</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&nbsp;address)</span></div>
 <div class="block">Pings to detect if a host or IP address is reachable. May wait for up to
  about five seconds (or longer <i>in extremis</i>). Technically, it only
  detects if a host is reachable by ICMP ECHO requests.</div>
@@ -175,7 +176,8 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li class="blockList">
 <section class="detail">
 <h3><a id="ping(java.net.InetAddress)">ping</a></h3>
-<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">ping</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address)</span></div>
+<div class="memberSignature"><span class="annotations">@CheckReturnValue
+</span><span class="modifiers">public static</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">ping</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/net/InetAddress.html?is-external=true" title="class or interface in java.net" class="externalLink">InetAddress</a>&nbsp;address)</span></div>
 <div class="block">Pings to detect if a host or IP address is reachable. May wait for up to
  about five seconds (or longer <i>in extremis</i>). Technically, it only
  detects if a host is reachable by ICMP ECHO requests.</div>

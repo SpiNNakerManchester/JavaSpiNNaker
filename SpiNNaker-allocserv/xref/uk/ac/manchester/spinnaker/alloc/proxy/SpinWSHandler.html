@@ -203,7 +203,7 @@
 <a class="jxr_linenumber" name="L195" href="#L195">195</a> 		<strong class="jxr_keyword">return</strong> permit.authorize(() -&gt; spallocCore.getJob(permit, jobId));
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> 	}
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 
-<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	@SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> 	@SuppressWarnings({<span class="jxr_string">"unchecked"</span>, <span class="jxr_string">"TypeParameterUnusedInFormals"</span>})
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; T attr(WebSocketSession session, String key) {
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> 		<em class="jxr_comment">// Fetch something from the attributes and auto-cast it</em>
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> 		<strong class="jxr_keyword">return</strong> (T) session.getAttributes().get(key);

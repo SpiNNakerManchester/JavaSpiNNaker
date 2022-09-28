@@ -41,8 +41,8 @@
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> uk.ac.manchester.spinnaker.utils.MappableIterable;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> * A transceiver where every operation fails with</em>
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * {@link UnsupportedOperationException}. A suitable base for partial</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> * A transceiver where every operation (except the few mandatory ones) fails</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * with {@link UnsupportedOperationException}. A suitable base for partial</em>
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * implementations.</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * @author Donal Fellows</em>
@@ -227,7 +227,11 @@
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 	<strong class="jxr_keyword">public</strong> <a name="BMPCoords" href="../../../../../uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#BMPCoords">BMPCoords</a> getBoundBMP() {
 <a class="jxr_linenumber" name="L220" href="#L220">220</a> 		<strong class="jxr_keyword">return</strong> boundBMP;
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 	}
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> }
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 	@Override
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> close() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> 	}
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

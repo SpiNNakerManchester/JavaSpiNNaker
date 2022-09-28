@@ -225,11 +225,11 @@
 <a class="jxr_linenumber" name="L217" href="#L217">217</a> 	}
 <a class="jxr_linenumber" name="L218" href="#L218">218</a> 
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> 	@Override
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> 	<strong class="jxr_keyword">public</strong> Response deleteUser(<strong class="jxr_keyword">int</strong> id, SecurityContext security) {
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 	<strong class="jxr_keyword">public</strong> String deleteUser(<strong class="jxr_keyword">int</strong> id, SecurityContext security) {
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 		log.warn(<span class="jxr_string">"CALLED deleteUser({})"</span>, id);
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> 		<strong class="jxr_keyword">var</strong> adminUser = security.getUserPrincipal().getName();
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> 		userManager.deleteUser(id, adminUser).orElseThrow(AdminImpl::noUser);
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> 		<strong class="jxr_keyword">return</strong> noContent().build();
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 		<strong class="jxr_keyword">return</strong> <span class="jxr_string">"deleted user "</span> + userManager.deleteUser(id, adminUser)
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 				.orElseThrow(AdminImpl::noUser);
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> 	}
 <a class="jxr_linenumber" name="L226" href="#L226">226</a> 
 <a class="jxr_linenumber" name="L227" href="#L227">227</a> 	@Override
@@ -269,10 +269,10 @@
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 	}
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> 
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> 	@Override
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 	<strong class="jxr_keyword">public</strong> Response deleteGroup(<strong class="jxr_keyword">int</strong> groupId) {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 	<strong class="jxr_keyword">public</strong> String deleteGroup(<strong class="jxr_keyword">int</strong> groupId) {
 <a class="jxr_linenumber" name="L265" href="#L265">265</a> 		log.warn(<span class="jxr_string">"CALLED deleteGroup({})"</span>, groupId);
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> 		userManager.deleteGroup(groupId).orElseThrow(AdminImpl::noGroup);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a> 		<strong class="jxr_keyword">return</strong> noContent().build();
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 		<strong class="jxr_keyword">return</strong> <span class="jxr_string">"deleted group "</span> + userManager.deleteGroup(groupId)
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 				.orElseThrow(AdminImpl::noGroup);
 <a class="jxr_linenumber" name="L268" href="#L268">268</a> 	}
 <a class="jxr_linenumber" name="L269" href="#L269">269</a> 
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> 	@Override

@@ -972,6 +972,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html#close()">close()</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/UDPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UDPTransceiver</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html#close()">close()</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UnimplementedBMPTransceiver</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html#close(boolean,boolean)">close(boolean, boolean)</a></span> - Method in class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/Transceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">Transceiver</a></dt>
 <dd>
 <div class="block">Close the transceiver and any threads that are running.</div>
@@ -1709,6 +1711,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections"><span class="typeNameLink">EIEIOConnection</span></a> - Class in <a href="uk/ac/manchester/spinnaker/connections/package-summary.html">uk.ac.manchester.spinnaker.connections</a></dt>
 <dd>
 <div class="block">A UDP connection for sending and receiving raw EIEIO messages.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E()">EIEIOConnection()</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
+<dd>
+<div class="block">Create an EIEIO connection where the mechanism for the sending and
+ listening is implemented by a subclass.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html#%3Cinit%3E(java.net.InetAddress)">EIEIOConnection(InetAddress)</a></span> - Constructor for class uk.ac.manchester.spinnaker.connections.<a href="uk/ac/manchester/spinnaker/connections/EIEIOConnection.html" title="class in uk.ac.manchester.spinnaker.connections">EIEIOConnection</a></dt>
 <dd>
@@ -7595,6 +7602,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.bmp.<a href="uk/ac/manchester/spinnaker/messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/AppID.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/AppID.html" title="class in uk.ac.manchester.spinnaker.messages.model">AppID</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/Blacklist.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/Blacklist.html" title="class in uk.ac.manchester.spinnaker.messages.model">Blacklist</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/messages/model/BMPConnectionData.html#toString()">toString()</a></span> - Method in class uk.ac.manchester.spinnaker.messages.model.<a href="uk/ac/manchester/spinnaker/messages/model/BMPConnectionData.html" title="class in uk.ac.manchester.spinnaker.messages.model">BMPConnectionData</a></dt>
@@ -7834,8 +7843,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver"><span class="typeNameLink">UnimplementedBMPTransceiver</span></a> - Class in <a href="uk/ac/manchester/spinnaker/transceiver/package-summary.html">uk.ac.manchester.spinnaker.transceiver</a></dt>
 <dd>
-<div class="block">A transceiver where every operation fails with
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/UnsupportedOperationException.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>UnsupportedOperationException</code></a>.</div>
+<div class="block">A transceiver where every operation (except the few mandatory ones) fails
+ with <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/UnsupportedOperationException.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>UnsupportedOperationException</code></a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html#%3Cinit%3E()">UnimplementedBMPTransceiver()</a></span> - Constructor for class uk.ac.manchester.spinnaker.transceiver.<a href="uk/ac/manchester/spinnaker/transceiver/UnimplementedBMPTransceiver.html" title="class in uk.ac.manchester.spinnaker.transceiver">UnimplementedBMPTransceiver</a></dt>
 <dd>&nbsp;</dd>

@@ -151,37 +151,52 @@ int&nbsp;z)</code></th>
 <tr class="altColor" id="i4">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="BoardCoords.html" title="class in uk.ac.manchester.spinnaker.allocator">BoardCoords</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDeadBoards()">getDeadBoards</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">What boards in the machine are dead?</div>
+</td>
 </tr>
 <tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="DeadLink.html" title="class in uk.ac.manchester.spinnaker.allocator">DeadLink</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDeadLinks()">getDeadLinks</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">What links in the machine are dead? Only links where both boards are
+ alive.</div>
+</td>
 </tr>
 <tr class="altColor" id="i6">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getHeight()">getHeight</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The height of the machine.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i7">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLiveBoardCount()">getLiveBoardCount</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The number of live boards.</div>
+</td>
 </tr>
 <tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getName()">getName</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The machine's name.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i9">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTags()">getTags</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The tags of the machine.</div>
+</td>
 </tr>
 <tr class="altColor" id="i10">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getWidth()">getWidth</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">The width of the machine.</div>
+</td>
 </tr>
 <tr class="rowColor" id="i11">
 <td class="colFirst"><code>void</code></td>
@@ -212,6 +227,7 @@ int&nbsp;z)</code></th>
 <section class="detail">
 <h3><a id="getName()">getName</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">getName</span>()</div>
+<div class="block">The machine's name. Never empty, never <code>null</code>.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The name of the machine.</dd>
@@ -222,6 +238,8 @@ int&nbsp;z)</code></th>
 <section class="detail">
 <h3><a id="getTags()">getTags</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a>&gt;</span>&nbsp;<span class="memberName">getTags</span>()</div>
+<div class="block">The tags of the machine. If this includes "<code>default</code>", this is
+ the machine that jobs will usually go to.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The tags of the machine.</dd>
@@ -232,6 +250,7 @@ int&nbsp;z)</code></th>
 <section class="detail">
 <h3><a id="getWidth()">getWidth</a></h3>
 <div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">getWidth</span>()</div>
+<div class="block">The width of the machine.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The width of the machine, in triads.</dd>
@@ -242,6 +261,7 @@ int&nbsp;z)</code></th>
 <section class="detail">
 <h3><a id="getHeight()">getHeight</a></h3>
 <div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">getHeight</span>()</div>
+<div class="block">The height of the machine.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The height of the machine, in triads.</dd>
@@ -252,6 +272,7 @@ int&nbsp;z)</code></th>
 <section class="detail">
 <h3><a id="getLiveBoardCount()">getLiveBoardCount</a></h3>
 <div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">getLiveBoardCount</span>()</div>
+<div class="block">The number of live boards.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The (estimated) number of live boards in the machine.</dd>
@@ -262,6 +283,7 @@ int&nbsp;z)</code></th>
 <section class="detail">
 <h3><a id="getDeadBoards()">getDeadBoards</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="BoardCoords.html" title="class in uk.ac.manchester.spinnaker.allocator">BoardCoords</a>&gt;</span>&nbsp;<span class="memberName">getDeadBoards</span>()</div>
+<div class="block">What boards in the machine are dead?</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The dead boards of the machine.</dd>
@@ -272,6 +294,8 @@ int&nbsp;z)</code></th>
 <section class="detail">
 <h3><a id="getDeadLinks()">getDeadLinks</a></h3>
 <div class="memberSignature"><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="DeadLink.html" title="class in uk.ac.manchester.spinnaker.allocator">DeadLink</a>&gt;</span>&nbsp;<span class="memberName">getDeadLinks</span>()</div>
+<div class="block">What links in the machine are dead? Only links where both boards are
+ alive.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The dead links of the machine.</dd>

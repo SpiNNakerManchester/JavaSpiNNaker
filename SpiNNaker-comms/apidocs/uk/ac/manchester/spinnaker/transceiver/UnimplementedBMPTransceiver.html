@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":42,"i3":42,"i4":42,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":42,"i3":10,"i4":42,"i5":42,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -93,14 +93,14 @@ loadScripts(document, 'script');</script>
 <section class="description">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code>, <code><a href="BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></code></dd>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">UnimplementedBMPTransceiver</span>
 extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a>
 implements <a href="BMPTransceiverInterface.html" title="interface in uk.ac.manchester.spinnaker.transceiver">BMPTransceiverInterface</a></pre>
-<div class="block">A transceiver where every operation fails with
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/UnsupportedOperationException.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>UnsupportedOperationException</code></a>. A suitable base for partial
+<div class="block">A transceiver where every operation (except the few mandatory ones) fails
+ with <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/UnsupportedOperationException.html?is-external=true" title="class or interface in java.lang" class="externalLink"><code>UnsupportedOperationException</code></a>. A suitable base for partial
  implementations.</div>
 <dl>
 <dt><span class="simpleTagLabel">Author:</span></dt>
@@ -191,6 +191,11 @@ implements <a href="BMPTransceiverInterface.html" title="interface in uk.ac.manc
 </tr>
 <tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="altColor" id="i4">
+<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#copyBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">copyBMPFlash</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;baseAddress,
@@ -199,7 +204,7 @@ int&nbsp;size)</code></th>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#eraseBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">eraseBMPFlash</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -209,12 +214,12 @@ int&nbsp;size)</code></th>
 <div class="block"><span class="deprecatedLabel">Deprecated.</span></div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code><a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoundBMP()">getBoundBMP</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getResetStatus(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getResetStatus</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
@@ -222,7 +227,7 @@ int&nbsp;size)</code></th>
 <div class="block">Get the FPGA reset status.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code><a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSerialFlashBuffer(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">getSerialFlashBuffer</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
@@ -230,7 +235,7 @@ int&nbsp;size)</code></th>
 <div class="block">Get the address of the serial flash buffer.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#power(uk.ac.manchester.spinnaker.messages.model.PowerCommand,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">power</a></span>&#8203;(<a href="../messages/model/PowerCommand.html" title="enum in uk.ac.manchester.spinnaker.messages.model">PowerCommand</a>&nbsp;powerCommand,
 <a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
@@ -239,21 +244,21 @@ int&nbsp;size)</code></th>
 <div class="block">Send a power request to the machine.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOffMachine()">powerOffMachine</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Power off the whole machine.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#powerOnMachine()">powerOnMachine</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Power on the whole machine.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code><a href="../messages/model/ADCInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">ADCInfo</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readADCData(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readADCData</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
@@ -261,7 +266,7 @@ int&nbsp;size)</code></th>
 <div class="block">Read the ADC data.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="rowColor" id="i13">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readBMPMemory</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -271,7 +276,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read BMP memory.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i13">
+<tr class="altColor" id="i14">
 <td class="colFirst"><code><a href="../messages/model/VersionInfo.html" title="class in uk.ac.manchester.spinnaker.messages.model">VersionInfo</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBMPVersion(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBMPVersion</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
@@ -279,7 +284,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read the BMP version.</div>
 </td>
 </tr>
-<tr class="altColor" id="i14">
+<tr class="rowColor" id="i15">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readBoardSerialNumber(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readBoardSerialNumber</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board)</code></th>
@@ -287,7 +292,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read the BMP serial number from a board.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i15">
+<tr class="altColor" id="i16">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">readFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
@@ -297,7 +302,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read a register on a FPGA of a board.</div>
 </td>
 </tr>
-<tr class="altColor" id="i16">
+<tr class="rowColor" id="i17">
 <td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlash</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -307,7 +312,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read BMP serial flash memory.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i17">
+<tr class="altColor" id="i18">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#readSerialFlashCRC(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int)">readSerialFlashCRC</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -317,7 +322,7 @@ int&nbsp;length)</code></th>
 <div class="block">Read the CRC32 checksum of BMP serial flash memory.</div>
 </td>
 </tr>
-<tr class="altColor" id="i18">
+<tr class="rowColor" id="i19">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#resetFPGA(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.transceiver.BMPTransceiverInterface.FPGAResetType)">resetFPGA</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -326,7 +331,7 @@ int&nbsp;length)</code></th>
 <div class="block">Reset the FPGAs on a board.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i19">
+<tr class="altColor" id="i20">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setLED(java.util.Collection,uk.ac.manchester.spinnaker.messages.model.LEDAction,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,java.util.Collection)">setLED</a></span>&#8203;(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html?is-external=true" title="class or interface in java.util" class="externalLink">Collection</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html?is-external=true" title="class or interface in java.lang" class="externalLink">Integer</a>&gt;&nbsp;leds,
 <a href="../messages/model/LEDAction.html" title="enum in uk.ac.manchester.spinnaker.messages.model">LEDAction</a>&nbsp;action,
@@ -336,7 +341,7 @@ int&nbsp;length)</code></th>
 <div class="block">Set the LED state of a board in the machine.</div>
 </td>
 </tr>
-<tr class="altColor" id="i20">
+<tr class="rowColor" id="i21">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation)">writeBMPFlash</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -346,7 +351,7 @@ int&nbsp;length)</code></th>
  to flash memory of a BMP with erase.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i21">
+<tr class="altColor" id="i22">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeBMPMemory</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -356,7 +361,7 @@ int&nbsp;length)</code></th>
 <div class="block">Write BMP memory from a file.</div>
 </td>
 </tr>
-<tr class="altColor" id="i22">
+<tr class="rowColor" id="i23">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeBMPMemory(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeBMPMemory</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -366,7 +371,7 @@ int&nbsp;length)</code></th>
 <div class="block">Write BMP memory.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i23">
+<tr class="altColor" id="i24">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeFPGARegister(uk.ac.manchester.spinnaker.messages.model.FPGA,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard)">writeFPGARegister</a></span>&#8203;(<a href="../messages/model/FPGA.html" title="enum in uk.ac.manchester.spinnaker.messages.model">FPGA</a>&nbsp;fpga,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-machine/apidocs/uk/ac/manchester/spinnaker/machine/MemoryLocation.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.machine" class="externalLink">MemoryLocation</a>&nbsp;register,
@@ -377,7 +382,7 @@ int&nbsp;value,
 <div class="block">Write a register on a FPGA of a board.</div>
 </td>
 </tr>
-<tr class="altColor" id="i24">
+<tr class="rowColor" id="i25">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,int,java.io.InputStream)">writeSerialFlash</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -388,7 +393,7 @@ int&nbsp;size,
 <div class="block">Write BMP serial flash memory from a stream.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i25">
+<tr class="altColor" id="i26">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.io.File)">writeSerialFlash</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -398,7 +403,7 @@ int&nbsp;size,
 <div class="block">Write BMP serial flash memory from a file.</div>
 </td>
 </tr>
-<tr class="altColor" id="i26">
+<tr class="rowColor" id="i27">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeSerialFlash(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords,uk.ac.manchester.spinnaker.messages.bmp.BMPBoard,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.nio.ByteBuffer)">writeSerialFlash</a></span>&#8203;(<a href="../messages/bmp/BMPCoords.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPCoords</a>&nbsp;bmp,
 <a href="../messages/bmp/BMPBoard.html" title="class in uk.ac.manchester.spinnaker.messages.bmp">BMPBoard</a>&nbsp;board,
@@ -1129,6 +1134,19 @@ int&nbsp;size,
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The currently bound BMP coordinates. Defaults to 0,0 if not set
          by <a href="BMPTransceiverInterface.html#bind(uk.ac.manchester.spinnaker.messages.bmp.BMPCoords)"><code>BMPTransceiverInterface.bind(BMPCoords)</code></a>.</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="close()">close</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></span></div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Exception.html?is-external=true" title="class or interface in java.lang" class="externalLink">Exception</a></code></dd>
 </dl>
 </section>
 </li>

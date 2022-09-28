@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -57,7 +57,7 @@ loadScripts(document, 'script');</script>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
@@ -89,7 +89,9 @@ loadScripts(document, 'script');</script>
 <div class="contentContainer">
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">java.lang.Object</a>
 <div class="inheritance"><a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">uk.ac.manchester.spinnaker.front_end.BoardLocalSupport</a>
+<div class="inheritance"><a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">uk.ac.manchester.spinnaker.front_end.dse.ExecuteDataSpecification</a>
 <div class="inheritance">uk.ac.manchester.spinnaker.front_end.dse.FastExecuteDataSpecification</div>
+</div>
 </div>
 </div>
 <section class="description">
@@ -99,8 +101,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">FastExecuteDataSpecification</span>
-extends <a href="../BoardLocalSupport.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport</a>
-implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></pre>
+extends <a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></pre>
 <div class="block">Implementation of the Data Specification Executor that uses the Fast Data In
  protocol to upload the results to a SpiNNaker machine.</div>
 <dl>
@@ -121,6 +122,19 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <a id="nested.classes.inherited.from.class.uk.ac.manchester.spinnaker.front_end.BoardLocalSupport">
 <!--   -->
 </a><code><a href="../BoardLocalSupport.BoardLocal.html" title="class in uk.ac.manchester.spinnaker.front_end">BoardLocalSupport.BoardLocal</a></code></div>
+</section>
+</li>
+<!-- =========== FIELD SUMMARY =========== -->
+<li class="blockList">
+<section class="fieldSummary"><a id="field.summary">
+<!--   -->
+</a>
+<h2>Field Summary</h2>
+<div class="inheritedList">
+<h3>Fields inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.dse.<a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></h3>
+<a id="fields.inherited.from.class.uk.ac.manchester.spinnaker.front_end.dse.ExecuteDataSpecification">
+<!--   -->
+</a><code><a href="ExecuteDataSpecification.html#machine">machine</a>, <a href="ExecuteDataSpecification.html#txrx">txrx</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -172,11 +186,6 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
-<td class="colLast">&nbsp;</td>
-</tr>
-<tr class="rowColor" id="i1">
-<td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadCores(uk.ac.manchester.spinnaker.storage.ConnectionProvider)">loadCores</a></span>&#8203;(<a href="../../storage/ConnectionProvider.html" title="interface in uk.ac.manchester.spinnaker.storage">ConnectionProvider</a>&lt;<a href="../../storage/DSEStorage.html" title="interface in uk.ac.manchester.spinnaker.storage">DSEStorage</a>&gt;&nbsp;connection)</code></th>
 <td class="colLast">
 <div class="block">Execute all application data specifications that a particular connection
@@ -184,7 +193,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
  those executions.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#writeReport(uk.ac.manchester.spinnaker.machine.HasChipLocation,long,int,uk.ac.manchester.spinnaker.machine.MemoryLocation,java.lang.Object)">writeReport</a></span>&#8203;(<a href="../../machine/HasChipLocation.html" title="interface in uk.ac.manchester.spinnaker.machine">HasChipLocation</a>&nbsp;chip,
 long&nbsp;timeDiff,
@@ -200,6 +209,11 @@ int&nbsp;size,
 </table>
 </div>
 </div>
+<div class="inheritedList">
+<h3>Methods inherited from class&nbsp;uk.ac.manchester.spinnaker.front_end.dse.<a href="ExecuteDataSpecification.html" title="class in uk.ac.manchester.spinnaker.front_end.dse">ExecuteDataSpecification</a></h3>
+<a id="methods.inherited.from.class.uk.ac.manchester.spinnaker.front_end.dse.ExecuteDataSpecification">
+<!--   -->
+</a><code><a href="ExecuteDataSpecification.html#close()">close</a>, <a href="ExecuteDataSpecification.html#processTasksInParallel(java.util.List,java.util.function.Function)">processTasksInParallel</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html?is-external=true" title="class or interface in java.lang" class="externalLink">Object</a></h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -221,7 +235,8 @@ int&nbsp;size,
 <li class="blockList">
 <section class="detail">
 <h3><a id="&lt;init&gt;(uk.ac.manchester.spinnaker.machine.Machine,java.util.List,java.io.File)">FastExecuteDataSpecification</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">FastExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">public</span>&nbsp;<span class="memberName">FastExecuteDataSpecification</span>&#8203;(<span class="arguments"><a href="../../machine/Machine.html" title="class in uk.ac.manchester.spinnaker.machine">Machine</a>&nbsp;machine,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html?is-external=true" title="class or interface in java.util" class="externalLink">List</a>&lt;<a href="../download/request/Gather.html" title="class in uk.ac.manchester.spinnaker.front_end.download.request">Gather</a>&gt;&nbsp;gatherers,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html?is-external=true" title="class or interface in java.io" class="externalLink">File</a>&nbsp;reportDir)</span>
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
@@ -272,19 +287,6 @@ int&nbsp;size,
 <dd><code><a href="../../data_spec/DataSpecificationException.html" title="class in uk.ac.manchester.spinnaker.data_spec">DataSpecificationException</a></code> - If a data specification in the database is invalid.</dd>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalStateException.html?is-external=true" title="class or interface in java.lang" class="externalLink">IllegalStateException</a></code> - If an unexpected exception occurs in any of the parallel
              tasks.</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="close()">close</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">close</span>()
-           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></span></div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang" class="externalLink">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang" class="externalLink">AutoCloseable</a></code></dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -345,7 +347,7 @@ int&nbsp;size,
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
-<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>

@@ -349,7 +349,8 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getTransceiver()">getTransceiver</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a></span>&nbsp;<span class="memberName">getTransceiver</span>()
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/TransceiverInterface.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">TransceiverInterface</a></span>&nbsp;<span class="memberName">getTransceiver</span>()
                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a>,
 <a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/transceiver/SpinnmanException.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.transceiver" class="externalLink">SpinnmanException</a></span></div>
@@ -369,7 +370,8 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getConnection(uk.ac.manchester.spinnaker.machine.HasChipLocation)">getConnection</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/connections/SCPConnection.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.connections" class="externalLink">SCPConnection</a></span>&nbsp;<span class="memberName">getConnection</span>&#8203;(<span class="arguments">uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</span>
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/connections/SCPConnection.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.connections" class="externalLink">SCPConnection</a></span>&nbsp;<span class="memberName">getConnection</span>&#8203;(<span class="arguments">uk.ac.manchester.spinnaker.machine.HasChipLocation&nbsp;chip)</span>
                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Create a proxied SCP connection to a specific Ethernet chip of the
@@ -389,7 +391,8 @@ loadScripts(document, 'script');</script>
 <li class="blockList">
 <section class="detail">
 <h3><a id="getEIEIOConnection()">getEIEIOConnection</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/connections/EIEIOConnection.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.connections" class="externalLink">EIEIOConnection</a></span>&nbsp;<span class="memberName">getEIEIOConnection</span>()
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="returnType"><a href="http://spinnakermanchester.github.io/SpiNNaker-comms/apidocs/uk/ac/manchester/spinnaker/connections/EIEIOConnection.html?is-external=true" title="class or interface in uk.ac.manchester.spinnaker.connections" class="externalLink">EIEIOConnection</a></span>&nbsp;<span class="memberName">getEIEIOConnection</span>()
                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html?is-external=true" title="class or interface in java.io" class="externalLink">IOException</a>,
 <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/InterruptedException.html?is-external=true" title="class or interface in java.lang" class="externalLink">InterruptedException</a></span></div>
 <div class="block">Create an <em>unconnected</em> EIEIO connection that can only talk

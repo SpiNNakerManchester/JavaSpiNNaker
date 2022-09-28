@@ -257,7 +257,8 @@ extends <a href="SQLQueries.html" title="class in uk.ac.manchester.spinnaker.all
 <li class="blockList">
 <section class="detail">
 <h3><a id="getConnection()">getConnection</a></h3>
-<div class="memberSignature"><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
+<div class="memberSignature"><span class="annotations">@MustBeClosed
+</span><span class="modifiers">protected final</span>&nbsp;<span class="returnType"><a href="DatabaseEngine.Connection.html" title="class in uk.ac.manchester.spinnaker.alloc.db">DatabaseEngine.Connection</a></span>&nbsp;<span class="memberName">getConnection</span>()</div>
 <div class="block">Get a connection to the application database. Connections <em>may</em> be
  shared, but might not be (especially in the case of testing databases).</div>
 <dl>

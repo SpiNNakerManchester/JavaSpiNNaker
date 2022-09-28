@@ -415,135 +415,137 @@
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">	 *            The ID of the user</em>
 <a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">	 * @param security</em>
 <a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">	 *            Used to check who the current user actually is.</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">	 * @return REST response</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">	 * @return Description of what user was deleted.</em>
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L412" href="#L412">412</a> 	@DELETE
 <a class="jxr_linenumber" name="L413" href="#L413">413</a> 	@Path(USER + <span class="jxr_string">"/{id}"</span>)
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> 	Response deleteUser(@PathParam(<span class="jxr_string">"id"</span>) <strong class="jxr_keyword">int</strong> id,
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> 			@Context SecurityContext security);
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">	 * List the groups and the URIs used to describe and manipulate them.</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">	 * @param ui</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">	 * @return A sorted map from group name to details-handling URI</em>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> 	@GET
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 	@Path(GROUP)
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 	@Produces(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> 	Map&lt;String, URI&gt; listGroups(@Context UriInfo ui);
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> 
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">	 * Create a new group.</em>
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">	 * @param group</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">	 *            Description of group to create. Group name must be unique.</em>
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">	 * @param ui</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">	 * @return REST response (CREATED on success)</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> 	@POST
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 	@Path(GROUP)
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> 	@Consumes(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> 	@Produces(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 	Response createGroup(@Valid <a name="GroupRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/GroupRecord.html#GroupRecord">GroupRecord</a> group, @Context UriInfo ui);
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">	 * Read a particular group's details.</em>
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">	 * @param ui</em>
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">	 * @return Description of the group.</em>
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> 	@GET
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}"</span>)
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 	@Produces(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	GroupRecord describeGroup(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
-<a class="jxr_linenumber" name="L457" href="#L457">457</a> 			@Context UriInfo ui);
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 
-<a class="jxr_linenumber" name="L459" href="#L459">459</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">	 * Update a particular group's details. This particularly includes the name</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">	 * and the quota, but &lt;em&gt;excludes the memberships;&lt;/em&gt; those are separate</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">	 * resources.</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 * @param group</em>
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">	 *            The description of the group to update to be like.</em>
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">	 * @param ui</em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">	 * @return Description of the group.</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> 	@PUT
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}"</span>)
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 	@Consumes(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L475" href="#L475">475</a> 	@Produces(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 	GroupRecord updateGroup(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> 			@Valid <a name="GroupRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/GroupRecord.html#GroupRecord">GroupRecord</a> group, @Context UriInfo ui);
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">	 * Delete a user.</em>
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">	 *            The ID of the user</em>
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">	 * @return REST response</em>
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 	@DELETE
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}"</span>)
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	Response deleteGroup(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId);
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> 
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">	 * Add a user to a group.</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">	 *            Which group to add to.</em>
-<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">	 * @param user</em>
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">	 *            Description of user to add. User name must be present.</em>
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">	 * @param ui</em>
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">	 * @return REST response (CREATED on success)</em>
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> 	@POST
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}/"</span> + MEMBER)
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> 	@Consumes(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> 	@Produces(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> 	Response addMember(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 			@Valid <a name="MemberRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/MemberRecord.html#MemberRecord">MemberRecord</a> user, @Context UriInfo ui);
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> 
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">	 * Read a particular group's details.</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
-<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">	 * @param memberId</em>
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">	 *            The ID of the membership.</em>
-<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">	 * @param ui</em>
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> <em class="jxr_javadoccomment">	 * @return Description of the membership.</em>
-<a class="jxr_linenumber" name="L518" href="#L518">518</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 	@GET
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}/"</span> + MEMBER + <span class="jxr_string">"/{memberId}"</span>)
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> 	@Produces(APPLICATION_JSON)
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> 	MemberRecord describeMember(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> 			@PathParam(<span class="jxr_string">"memberId"</span>) <strong class="jxr_keyword">int</strong> memberId, @Context UriInfo ui);
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> 
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">	 * Delete a membership of a group.</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">	 *</em>
-<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
-<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">	 * @param memberId</em>
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">	 *            The ID of the membership</em>
-<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">	 * @return REST response</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> 	@DELETE
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}/"</span> + MEMBER + <span class="jxr_string">"/{memberId}"</span>)
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> 	Response removeMember(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> 			@PathParam(<span class="jxr_string">"memberId"</span>) <strong class="jxr_keyword">int</strong> memberId);
-<a class="jxr_linenumber" name="L538" href="#L538">538</a> }
+<a class="jxr_linenumber" name="L414" href="#L414">414</a> 	@Produces(TEXT_PLAIN)
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> 	String deleteUser(@PathParam(<span class="jxr_string">"id"</span>) <strong class="jxr_keyword">int</strong> id,
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> 			@Context SecurityContext security);
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">	 * List the groups and the URIs used to describe and manipulate them.</em>
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">	 * @param ui</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">	 * @return A sorted map from group name to details-handling URI</em>
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> 	@GET
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> 	@Path(GROUP)
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> 	@Produces(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> 	Map&lt;String, URI&gt; listGroups(@Context UriInfo ui);
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">	 * Create a new group.</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">	 * @param group</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">	 *            Description of group to create. Group name must be unique.</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">	 * @param ui</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">	 * @return REST response (CREATED on success)</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> 	@POST
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> 	@Path(GROUP)
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> 	@Consumes(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 	@Produces(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 	Response createGroup(@Valid <a name="GroupRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/GroupRecord.html#GroupRecord">GroupRecord</a> group, @Context UriInfo ui);
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> 
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">	 * Read a particular group's details.</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">	 * @param ui</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">	 * @return Description of the group.</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> 	@GET
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}"</span>)
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 	@Produces(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 	GroupRecord describeGroup(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> 			@Context UriInfo ui);
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">	 * Update a particular group's details. This particularly includes the name</em>
+<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">	 * and the quota, but &lt;em&gt;excludes the memberships;&lt;/em&gt; those are separate</em>
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">	 * resources.</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">	 * @param group</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">	 *            The description of the group to update to be like.</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">	 * @param ui</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">	 * @return Description of the group.</em>
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> 	@PUT
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}"</span>)
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> 	@Consumes(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 	@Produces(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> 	GroupRecord updateGroup(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> 			@Valid <a name="GroupRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/GroupRecord.html#GroupRecord">GroupRecord</a> group, @Context UriInfo ui);
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">	 * Delete a group.</em>
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">	 * @return Description of what group was deleted</em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> 	@DELETE
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}"</span>)
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> 	@Produces(TEXT_PLAIN)
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 	String deleteGroup(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId);
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> 
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">	 * Add a user to a group.</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">	 *            Which group to add to.</em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">	 * @param user</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">	 *            Description of user to add. User name must be present.</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">	 * @param ui</em>
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
+<a class="jxr_linenumber" name="L501" href="#L501">501</a> <em class="jxr_javadoccomment">	 * @return REST response (CREATED on success)</em>
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 	@POST
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}/"</span> + MEMBER)
+<a class="jxr_linenumber" name="L505" href="#L505">505</a> 	@Consumes(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 	@Produces(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L507" href="#L507">507</a> 	Response addMember(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> 			@Valid <a name="MemberRecord" href="../../../../../../uk/ac/manchester/spinnaker/alloc/model/MemberRecord.html#MemberRecord">MemberRecord</a> user, @Context UriInfo ui);
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">	 * Read a particular group's details.</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">	 * @param memberId</em>
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">	 *            The ID of the membership.</em>
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> <em class="jxr_javadoccomment">	 * @param ui</em>
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> <em class="jxr_javadoccomment">	 *            For building URIs.</em>
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">	 * @return Description of the membership.</em>
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L521" href="#L521">521</a> 	@GET
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}/"</span> + MEMBER + <span class="jxr_string">"/{memberId}"</span>)
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> 	@Produces(APPLICATION_JSON)
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> 	MemberRecord describeMember(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> 			@PathParam(<span class="jxr_string">"memberId"</span>) <strong class="jxr_keyword">int</strong> memberId, @Context UriInfo ui);
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> 
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">	 * Delete a membership of a group.</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">	 *</em>
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> <em class="jxr_javadoccomment">	 * @param groupId</em>
+<a class="jxr_linenumber" name="L531" href="#L531">531</a> <em class="jxr_javadoccomment">	 *            The ID of the group</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> <em class="jxr_javadoccomment">	 * @param memberId</em>
+<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">	 *            The ID of the membership</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">	 * @return REST response</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> 	@DELETE
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> 	@Path(GROUP + <span class="jxr_string">"/{groupId}/"</span> + MEMBER + <span class="jxr_string">"/{memberId}"</span>)
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> 	Response removeMember(@PathParam(<span class="jxr_string">"groupId"</span>) <strong class="jxr_keyword">int</strong> groupId,
+<a class="jxr_linenumber" name="L539" href="#L539">539</a> 			@PathParam(<span class="jxr_string">"memberId"</span>) <strong class="jxr_keyword">int</strong> memberId);
+<a class="jxr_linenumber" name="L540" href="#L540">540</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

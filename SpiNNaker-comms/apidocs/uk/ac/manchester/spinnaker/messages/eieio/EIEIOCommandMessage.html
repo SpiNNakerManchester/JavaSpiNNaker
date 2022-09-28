@@ -245,7 +245,8 @@ implements <a href="EIEIOMessage.html" title="interface in uk.ac.manchester.spin
 <li class="blockList">
 <section class="detail">
 <h3><a id="addToBuffer(java.nio.ByteBuffer)">addToBuffer</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">addToBuffer</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span></div>
+<div class="memberSignature"><span class="annotations">@OverridingMethodsMustInvokeSuper
+</span><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">addToBuffer</span>&#8203;(<span class="arguments"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html?is-external=true" title="class or interface in java.nio" class="externalLink">ByteBuffer</a>&nbsp;buffer)</span></div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../SerializableMessage.html#addToBuffer(java.nio.ByteBuffer)">SerializableMessage</a></code></span></div>
 <div class="block">Writes this message into the given buffer as a contiguous range of bytes.
  This is so that a message can be sent. Implementors may assume that the

@@ -61,7 +61,22 @@
     <div id="bodyColumn">
       <div id="contentBox">
 <a name="Project_Dependencies"></a><section>
-<h2><a name="Project_Dependencies"></a>Project Dependencies</h2><a name="Project_Dependencies_test"></a><section>
+<h2><a name="Project_Dependencies"></a>Project Dependencies</h2><a name="Project_Dependencies_compile"></a><section>
+<h3><a name="compile"></a>compile</h3>
+<p>The following is a list of compile dependencies for this project. These dependencies are required to compile and run the application:</p>
+<table border="0" class="bodyTable">
+<tr class="a">
+<th>GroupId</th>
+<th>ArtifactId</th>
+<th>Version</th>
+<th>Type</th>
+<th>Licenses</th></tr>
+<tr class="b">
+<td align="left">com.google.errorprone</td>
+<td><a class="externalLink" href="https://errorprone.info/error_prone_annotations">error_prone_annotations</a></td>
+<td>2.15.0</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a></td></tr></table></section><a name="Project_Dependencies_test"></a><section>
 <h3><a name="test"></a>test</h3>
 <p>The following is a list of test dependencies for this project. These dependencies are only required to compile and run unit tests for the application:</p>
 <table border="0" class="bodyTable">
@@ -252,9 +267,19 @@
 <td>
 <p><b>Description: </b>Hamcrest matcher library for Java</p>
 <p><b>URL: </b><a class="externalLink" href="http://hamcrest.org/JavaHamcrest/">http://hamcrest.org/JavaHamcrest/</a></p>
-<p><b>Project Licenses: </b><a class="externalLink" href="http://opensource.org/licenses/BSD-3-Clause">BSD Licence 3</a></p></td></tr></table></div></li></ul></li></ul></section></section><a name="Licenses"></a><section>
+<p><b>Project Licenses: </b><a class="externalLink" href="http://opensource.org/licenses/BSD-3-Clause">BSD Licence 3</a></p></td></tr></table></div></li>
+<li>com.google.errorprone:error_prone_annotations:jar:2.15.0 (compile) <img id="_img21" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep20', '_img21' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep20" style="display:none">
+<table border="0" class="bodyTable">
+<tr class="a">
+<th>error-prone annotations</th></tr>
+<tr class="b">
+<td>
+<p><b>Description: </b>Error Prone is a static analysis tool for Java that catches common programming mistakes at compile-time.</p>
+<p><b>URL: </b><a class="externalLink" href="https://errorprone.info/error_prone_annotations">https://errorprone.info/error_prone_annotations</a></p>
+<p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a></p></td></tr></table></div></li></ul></li></ul></section></section><a name="Licenses"></a><section>
 <h2><a name="Licenses"></a>Licenses</h2>
 <p><b>The Apache License, Version 2.0: </b>org.apiguardian:apiguardian-api, org.opentest4j:opentest4j</p>
+<p><b>Apache 2.0: </b>error-prone annotations</p>
 <p><b>Eclipse Public License v2.0: </b>JUnit Jupiter (Aggregator), JUnit Jupiter API, JUnit Jupiter Engine, JUnit Jupiter Params, JUnit Platform Commons, JUnit Platform Engine API</p>
 <p><b>GNU General Public License, version 3: </b>SpiNNaker Utilities</p>
 <p><b>BSD Licence 3: </b>Java Hamcrest</p></section><a name="Dependency_File_Details"></a><section>
@@ -269,6 +294,14 @@
 <th>Java Version</th>
 <th title="Indicates whether these dependencies have been compiled with debug information.">Debug Information</th></tr>
 <tr class="b">
+<td align="left">error_prone_annotations-2.15.0.jar</td>
+<td align="right">16 kB</td>
+<td align="right">38</td>
+<td align="right">26</td>
+<td align="right">2</td>
+<td align="center">1.7</td>
+<td align="center">Yes</td></tr>
+<tr class="a">
 <td align="left">apiguardian-api-1.1.2.jar</td>
 <td align="right">6.8 kB</td>
 <td align="right">9</td>
@@ -276,7 +309,7 @@
 <td align="right">2</td>
 <td align="center">-</td>
 <td align="center">Yes</td></tr>
-<tr class="a">
+<tr class="b">
 <td align="left">java-hamcrest-2.0.0.0.jar</td>
 <td align="right">112.9 kB</td>
 <td align="right">115</td>
@@ -284,7 +317,7 @@
 <td align="right">11</td>
 <td align="center">1.7</td>
 <td align="center">Yes</td></tr>
-<tr class="b">
+<tr class="a">
 <td align="left">junit-jupiter-5.9.1.jar</td>
 <td align="right">6.4 kB</td>
 <td align="right">5</td>
@@ -292,7 +325,7 @@
 <td align="right">1</td>
 <td align="center">-</td>
 <td align="center">No</td></tr>
-<tr class="a">
+<tr class="b">
 <td align="left">junit-jupiter-api-5.9.1.jar</td>
 <td align="right">207.7 kB</td>
 <td align="right">194</td>
@@ -300,7 +333,7 @@
 <td align="right">8</td>
 <td align="center">-</td>
 <td align="center">Yes</td></tr>
-<tr class="b">
+<tr class="a">
 <td align="left">junit-jupiter-engine-5.9.1.jar</td>
 <td align="right">246.5 kB</td>
 <td align="right">151</td>
@@ -308,7 +341,7 @@
 <td align="right">9</td>
 <td align="center">-</td>
 <td align="center">Yes</td></tr>
-<tr class="a">
+<tr class="b">
 <td align="left">junit-jupiter-params-5.9.1.jar</td>
 <td align="right">578.9 kB</td>
 <td align="right">377</td>
@@ -316,7 +349,7 @@
 <td align="right">22</td>
 <td align="center">-</td>
 <td align="center">Yes</td></tr>
-<tr class="b">
+<tr class="a">
 <td align="left">junit-platform-commons-1.9.1.jar</td>
 <td align="right">103 kB</td>
 <td align="right">64</td>
@@ -324,7 +357,7 @@
 <td align="right">7</td>
 <td align="center">-</td>
 <td align="center">Yes</td></tr>
-<tr class="a">
+<tr class="b">
 <td align="left">junit-platform-engine-1.9.1.jar</td>
 <td align="right">188.2 kB</td>
 <td align="right">143</td>
@@ -332,7 +365,7 @@
 <td align="right">9</td>
 <td align="center">-</td>
 <td align="center">Yes</td></tr>
-<tr class="b">
+<tr class="a">
 <td align="left">opentest4j-1.2.0.jar</td>
 <td align="right">7.7 kB</td>
 <td align="right">11</td>
@@ -340,7 +373,7 @@
 <td align="right">2</td>
 <td align="center">-</td>
 <td align="center">Yes</td></tr>
-<tr class="a">
+<tr class="b">
 <th>Total</th>
 <th>Size</th>
 <th>Entries</th>
@@ -348,14 +381,22 @@
 <th>Packages</th>
 <th>Java Version</th>
 <th>Debug Information</th></tr>
-<tr class="b">
-<td align="right">9</td>
+<tr class="a">
+<td align="right">10</td>
 <td align="right">1.5 MB</td>
-<td align="right">1069</td>
-<td align="right">939</td>
-<td align="right">71</td>
+<td align="right">1107</td>
+<td align="right">965</td>
+<td align="right">73</td>
 <td align="center">1.7</td>
-<td align="right">8</td></tr>
+<td align="right">9</td></tr>
+<tr class="b">
+<td align="right">compile: 1</td>
+<td align="right">compile: 16 kB</td>
+<td align="right">compile: 38</td>
+<td align="right">compile: 26</td>
+<td align="right">compile: 2</td>
+<td align="center">-</td>
+<td align="right">compile: 1</td></tr>
 <tr class="a">
 <td align="right">test: 9</td>
 <td align="right">test: 1.5 MB</td>

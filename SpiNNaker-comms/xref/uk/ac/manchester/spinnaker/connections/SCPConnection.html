@@ -145,21 +145,20 @@
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">	 *             If anything goes wrong with socket manipulation.</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">	 */</em>
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> 	<strong class="jxr_keyword">protected</strong> <a name="SCPConnection" href="../../../../../uk/ac/manchester/spinnaker/connections/SCPConnection.html#SCPConnection">SCPConnection</a>(HasChipLocation chip) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L140" href="#L140">140</a> 		<strong class="jxr_keyword">super</strong>(chip, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> 		<strong class="jxr_keyword">super</strong>.close();
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> 	}
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> 
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> 	@Override
-<a class="jxr_linenumber" name="L145" href="#L145">145</a> 	<strong class="jxr_keyword">public</strong> <a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a> receiveSCPResponse(<strong class="jxr_keyword">int</strong> timeout)
-<a class="jxr_linenumber" name="L146" href="#L146">146</a> 			<strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a>(receive(timeout));
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 	}
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
-<a class="jxr_linenumber" name="L150" href="#L150">150</a> 	@Override
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> send(SCPRequest&lt;?&gt; scpRequest) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a> 		send(getSCPData(scpRequest));
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 	}
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> }
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 		<strong class="jxr_keyword">super</strong>(chip, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> 	}
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> 
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> 	@Override
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 	<strong class="jxr_keyword">public</strong> <a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a> receiveSCPResponse(<strong class="jxr_keyword">int</strong> timeout)
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 			<strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L146" href="#L146">146</a> 		<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="SCPResultMessage" href="../../../../../uk/ac/manchester/spinnaker/messages/scp/SCPResultMessage.html#SCPResultMessage">SCPResultMessage</a>(receive(timeout));
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 	}
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
+<a class="jxr_linenumber" name="L149" href="#L149">149</a> 	@Override
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> send(SCPRequest&lt;?&gt; scpRequest) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 		send(getSCPData(scpRequest));
+<a class="jxr_linenumber" name="L152" href="#L152">152</a> 	}
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2018&#x2013;2022 <a href="http://apt.cs.manchester.ac.uk/projects/SpiNNaker/">SpiNNaker Team @ University of Manchester</a>. All rights reserved.</div>

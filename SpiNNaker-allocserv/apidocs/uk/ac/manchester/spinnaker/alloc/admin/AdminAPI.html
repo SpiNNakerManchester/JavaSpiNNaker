@@ -183,14 +183,14 @@ javax.ws.rs.core.UriInfo&nbsp;ui)</code></th>
 </td>
 </tr>
 <tr class="rowColor" id="i3">
-<td class="colFirst"><code>javax.ws.rs.core.Response</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteGroup(int)">deleteGroup</a></span>&#8203;(int&nbsp;groupId)</code></th>
 <td class="colLast">
-<div class="block">Delete a user.</div>
+<div class="block">Delete a group.</div>
 </td>
 </tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>javax.ws.rs.core.Response</code></td>
+<td class="colFirst"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#deleteUser(int,javax.ws.rs.core.SecurityContext)">deleteUser</a></span>&#8203;(int&nbsp;id,
 javax.ws.rs.core.SecurityContext&nbsp;security)</code></th>
 <td class="colLast">
@@ -737,7 +737,8 @@ javax.ws.rs.core.SecurityContext&nbsp;security)</span></div>
 <h3><a id="deleteUser(int,javax.ws.rs.core.SecurityContext)">deleteUser</a></h3>
 <div class="memberSignature"><span class="annotations">@DELETE
 @Path("users/{id}")
-</span><span class="returnType">javax.ws.rs.core.Response</span>&nbsp;<span class="memberName">deleteUser</span>&#8203;(<span class="arguments">@PathParam("id")
+@Produces("text/plain")
+</span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">deleteUser</span>&#8203;(<span class="arguments">@PathParam("id")
 int&nbsp;id,
 @Context
 javax.ws.rs.core.SecurityContext&nbsp;security)</span></div>
@@ -747,7 +748,7 @@ javax.ws.rs.core.SecurityContext&nbsp;security)</span></div>
 <dd><code>id</code> - The ID of the user</dd>
 <dd><code>security</code> - Used to check who the current user actually is.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>REST response</dd>
+<dd>Description of what user was deleted.</dd>
 </dl>
 </section>
 </li>
@@ -840,14 +841,15 @@ javax.ws.rs.core.UriInfo&nbsp;ui)</span></div>
 <h3><a id="deleteGroup(int)">deleteGroup</a></h3>
 <div class="memberSignature"><span class="annotations">@DELETE
 @Path("groups/{groupId}")
-</span><span class="returnType">javax.ws.rs.core.Response</span>&nbsp;<span class="memberName">deleteGroup</span>&#8203;(<span class="arguments">@PathParam("groupId")
+@Produces("text/plain")
+</span><span class="returnType"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html?is-external=true" title="class or interface in java.lang" class="externalLink">String</a></span>&nbsp;<span class="memberName">deleteGroup</span>&#8203;(<span class="arguments">@PathParam("groupId")
 int&nbsp;groupId)</span></div>
-<div class="block">Delete a user.</div>
+<div class="block">Delete a group.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>groupId</code> - The ID of the user</dd>
+<dd><code>groupId</code> - The ID of the group</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>REST response</dd>
+<dd>Description of what group was deleted</dd>
 </dl>
 </section>
 </li>
