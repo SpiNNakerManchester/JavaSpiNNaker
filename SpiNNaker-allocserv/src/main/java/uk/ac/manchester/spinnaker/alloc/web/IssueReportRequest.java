@@ -28,6 +28,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -105,6 +106,7 @@ public class IssueReportRequest {
 		 *
 		 * @return Yes if at least one way of giving coordinates is valid.
 		 */
+		@Keep
 		@JsonIgnore
 		@AssertTrue(message = "at least one way of identifying a board "
 				+ "must be given")

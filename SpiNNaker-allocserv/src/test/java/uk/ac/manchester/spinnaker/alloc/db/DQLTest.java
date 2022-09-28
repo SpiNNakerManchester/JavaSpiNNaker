@@ -18,7 +18,6 @@ package uk.ac.manchester.spinnaker.alloc.db;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.BASIC_MACHINE_INFO;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.BOARD_COORDS_REQUIRED_COLUMNS;
@@ -39,16 +38,11 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 
@@ -60,28 +54,7 @@ import uk.ac.manchester.spinnaker.alloc.model.GroupRecord.GroupType;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
-class DQLTest extends SQLQueries {
-	private DatabaseEngine memdb;
-
-	private Connection c;
-
-	@BeforeAll
-	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
-		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
-		memdb = mainDBEngine.getInMemoryDB();
-	}
-
-	@BeforeEach
-	void getConnection() {
-		c = memdb.getConnection();
-		assumeTrue(c != null, "connection not generated");
-	}
-
-	@AfterEach
-	void closeConnection() {
-		c.close();
-	}
-
+class DQLTest extends MemDBTestBase {
 	@Test
 	void getAllMachines() {
 		try (var q = c.query(GET_ALL_MACHINES)) {
@@ -372,7 +345,7 @@ class DQLTest extends SQLQueries {
 			assertEquals(BOARD_COORDS_REQUIRED_COLUMNS, q.getRowColumnNames());
 			c.transaction(() -> {
 				// As long as this doesn't throw, the test passes
-				q.call1().isPresent();
+				return q.call1().isPresent();
 			});
 		}
 	}

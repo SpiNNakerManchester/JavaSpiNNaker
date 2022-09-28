@@ -48,7 +48,7 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
 /**
  * A process for handling communicating with the BMP.
  * <p>
- * Does not inherit from {@link Process} for ugly type reasons.
+ * Does not inherit from {@link TxrxProcess} for ugly type reasons.
  *
  * @param <R>
  *            The type of the response; implicit in the type of the request.

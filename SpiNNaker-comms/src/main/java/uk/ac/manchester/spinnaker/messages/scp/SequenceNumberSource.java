@@ -16,6 +16,8 @@
  */
 package uk.ac.manchester.spinnaker.messages.scp;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 /** Where to get sequence numbers from. */
 public abstract class SequenceNumberSource {
 	/** The number of items in the sequence. */
@@ -25,6 +27,7 @@ public abstract class SequenceNumberSource {
 	}
 
 	/** Keep a global track of the sequence numbers used. */
+	@GuardedBy("SequenceNumberSource.class")
 	private static int nextSequence = 0;
 
 	/**

@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BLACKLIST_OP;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.NO_BMP;
@@ -37,16 +36,11 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.UNKNOWN;
 import java.time.Duration;
 import java.util.Set;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 import uk.ac.manchester.spinnaker.alloc.model.Direction;
 import uk.ac.manchester.spinnaker.alloc.model.JobState;
 import uk.ac.manchester.spinnaker.alloc.security.TrustLevel;
@@ -61,33 +55,12 @@ import uk.ac.manchester.spinnaker.messages.model.Blacklist;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
-class DMLTest extends SQLQueries {
+class DMLTest extends MemDBTestBase {
 	// Many many seconds
 	private static final int A_LONG_TIME = 1000000;
 
 	// No such alloc record
 	private static final int NO_ALLOC = -1;
-
-	private DatabaseEngine memdb;
-
-	private Connection c;
-
-	@BeforeAll
-	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
-		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
-		memdb = mainDBEngine.getInMemoryDB();
-	}
-
-	@BeforeEach
-	void getConnection() {
-		c = memdb.getConnection();
-		assumeTrue(c != null, "connection not generated");
-	}
-
-	@AfterEach
-	void closeConnection() {
-		c.close();
-	}
 
 	@Test
 	void insertJob() {

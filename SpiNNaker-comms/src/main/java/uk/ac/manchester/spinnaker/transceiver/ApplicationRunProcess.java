@@ -62,7 +62,6 @@ class ApplicationRunProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new ApplicationRun(appID, chip,
 					coreSubsets.pByChip(chip), wait));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 }

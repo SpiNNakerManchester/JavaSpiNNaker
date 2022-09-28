@@ -32,7 +32,7 @@ final class ProxiedTransceiver extends Transceiver {
 	/**
 	 * @param connections
 	 *            The proxied connections we will use.
-	 * @param ws
+	 * @param websocket
 	 *            The proxy handle.
 	 * @throws IOException
 	 *             If we couldn't finish setting up our networking.
@@ -50,7 +50,7 @@ final class ProxiedTransceiver extends Transceiver {
 
 	/** {@inheritDoc} */
 	@Override
-	public void close() throws Exception {
+	public void close() throws IOException {
 		super.close();
 		websocket.close();
 	}

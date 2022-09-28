@@ -21,6 +21,8 @@ import static java.lang.System.getProperty;
 
 import org.python.util.PythonInterpreter;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 /**
  * Hack for Java 11 and later, where just changing {@code user.dir} is no longer
  * enough. We force the change inside Jython as that's the environment that
@@ -29,6 +31,7 @@ import org.python.util.PythonInterpreter;
 final class WithCurrentDirectory implements AutoCloseable {
 	private final PythonInterpreter python;
 
+	@MustBeClosed
 	WithCurrentDirectory(PythonInterpreter python, boolean doCd) {
 		var cwd = getProperty("user.dir");
 		if (doCd) {

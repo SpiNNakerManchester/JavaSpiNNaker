@@ -159,7 +159,7 @@ public interface SpallocAPI {
 	 * @throws IOException
 	 *             if network communications fail.
 	 */
-	@Deprecated(forRemoval = true)
+	@Deprecated(forRemoval = true) // TODO remove this
 	int createJob(List<Integer> args, Map<String, Object> kwargs,
 			Integer timeout) throws IOException,
 			SpallocProtocolTimeoutException, SpallocServerException;

@@ -31,6 +31,7 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MSEC_PER_SEC;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -157,6 +158,7 @@ public class SCPRequestPipeline {
 	private int numTimeouts;
 
 	/** A dictionary of sequence number &rarr; requests in progress. */
+	// @GuardedBy("itself") // Not needed: synchronized map
 	private final Map<Integer, Request<?>> outstandingRequests;
 
 	/**
@@ -213,7 +215,10 @@ public class SCPRequestPipeline {
 		}
 
 		private void send() throws IOException {
-			waitUntil(nextSendTime);
+			if (waitUntil(nextSendTime)) {
+				throw new InterruptedIOException(
+						"interrupted while waiting to send");
+			}
 			connection.send(requestData.asReadOnlyBuffer());
 			nextSendTime = nanoTime() + INTER_SEND_INTERVAL_NS;
 		}
@@ -247,7 +252,7 @@ public class SCPRequestPipeline {
 		/**
 		 * Handle the reception of a message.
 		 *
-		 * @param responseData
+		 * @param msg
 		 *            the content of the message, in a little-endian buffer.
 		 */
 		private void parseReceivedResponse(SCPResultMessage msg)

@@ -27,6 +27,9 @@ import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 /**
  * A thread pool designed for simple task execution with combining of
  * exceptions.
@@ -42,6 +45,7 @@ public class BasicExecutor implements AutoCloseable {
 	 * @param parallelSize
 	 *            The number of threads to use inside the pool.
 	 */
+	@MustBeClosed
 	public BasicExecutor(int parallelSize) {
 		executor = newFixedThreadPool(parallelSize);
 	}
@@ -150,6 +154,7 @@ public class BasicExecutor implements AutoCloseable {
 	 * @author Donal Fellows
 	 */
 	public static final class Tasks {
+		@GuardedBy("this")
 		private List<Future<Exception>> tasks;
 
 		private Tasks() {

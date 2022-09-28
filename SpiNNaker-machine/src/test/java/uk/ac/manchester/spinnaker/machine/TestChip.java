@@ -130,9 +130,9 @@ public class TestChip {
 	public void testRepeatMonitor() {
 		var processors = getProcessors(Processor.factory(2, false));
 		assertThrows(IllegalArgumentException.class, () -> {
-			@SuppressWarnings("unused")
 			var chip = new Chip(LOCATION_00, processors, createRouter(), 100,
 					createInetAddress(), LOCATION_11);
+			assertNotNull(chip);
 		});
 	}
 
@@ -140,9 +140,9 @@ public class TestChip {
 	public void testRepeatUser() {
 		var processors = getProcessors(Processor.factory(4, true));
 		assertThrows(IllegalArgumentException.class, () -> {
-			@SuppressWarnings("unused")
 			var chip = new Chip(LOCATION_00, processors, createRouter(), 100,
 					createInetAddress(), LOCATION_11);
+			assertNotNull(chip);
 		});
 	}
 
@@ -169,7 +169,7 @@ public class TestChip {
 		assertEquals(17, chip.nUserProcessors());
 		assertEquals(18, chip.nProcessors());
 		assertEquals(MachineDefaults.SDRAM_PER_CHIP, chip.sdram);
-		assert (chip.getTagIds().isEmpty());
+		assertTrue(chip.getTagIds().isEmpty());
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class TestChip {
 		assertEquals(LINK_00_01, iterator.next());
 		assertEquals(LINK_00_10, iterator.next());
 		assertFalse(iterator.hasNext());
-		assert (chip.router.hasLink(Direction.NORTH));
+		assertTrue(chip.router.hasLink(Direction.NORTH));
 	}
 
 }

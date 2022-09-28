@@ -28,6 +28,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
+import com.google.errorprone.annotations.InlineMe;
+
 import uk.ac.manchester.spinnaker.connections.UDPConnection;
 import uk.ac.manchester.spinnaker.machine.HasCoreLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
@@ -104,6 +106,7 @@ public abstract class Utils {
 	 *             If anything goes wrong
 	 */
 	@Deprecated(forRemoval = true)
+	@InlineMe(replacement = "connection.sendPortTriggerMessage(host)")
 	public static void sendPortTriggerMessage(UDPConnection<?> connection,
 			InetAddress host) throws IOException {
 		connection.sendPortTriggerMessage(host);
@@ -132,7 +135,8 @@ public abstract class Utils {
 	 */
 	static void fill(ByteBuffer buffer, int start, int len, byte value) {
 		if (buffer.hasArray()) {
-			Arrays.fill(buffer.array(), start, start + len, value);
+			int ao = buffer.arrayOffset();
+			Arrays.fill(buffer.array(), ao + start, ao + start + len, value);
 		} else {
 			var work = new byte[len];
 			Arrays.fill(work, value);

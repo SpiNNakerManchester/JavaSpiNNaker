@@ -42,9 +42,9 @@ public class TestIobufRequest {
 		var req = createMapper().readValue(input, IobufRequest.class);
 		var details = req.getRequestDetails();
 
-		var f1 = (new File("/some/path/abc.aplx")).getAbsoluteFile();
-		var f2 = (new File("/some/path/def.aplx")).getAbsoluteFile();
-		var f3 = (new File("/some/path/ghi.aplx")).getAbsoluteFile();
+		var f1 = new File("/some/path/abc.aplx").getAbsoluteFile();
+		var f2 = new File("/some/path/def.aplx").getAbsoluteFile();
+		var f3 = new File("/some/path/ghi.aplx").getAbsoluteFile();
 		assertEquals(Set.of(f1, f2, f3), details.keySet());
 		assertEquals(Set.of(new ChipLocation(0, 0)),
 				details.get(f1).getChips());

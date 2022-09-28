@@ -128,24 +128,18 @@ public class JobStateResponse {
 		powerRef =
 				b.path("{subresource}").build(JOB_MACHINE, JOB_MACHINE_POWER);
 
-		switch (state) {
-		case POWER:
-		case READY:
-			if (servletPath != null) {
-				proxyRef = makeProxyURI(job, ui, servletPath);
-				break;
-			}
-		default:
-			// Not telling the user the proxy URL if queued or destroyed
+		if ((state == JobState.POWER || state == JobState.READY)
+				&& (servletPath != null)) {
+			proxyRef = makeProxyURI(job, ui, servletPath);
+		} else {
 			proxyRef = null;
 		}
 	}
 
 	private static URI makeProxyURI(Job job, UriInfo ui, String servletPath) {
 		// Messy; needs to refer to the other half of the application
-		var u = ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
+		return ui.getBaseUriBuilder().scheme("wss").replacePath(servletPath)
 				.path(SpinWSHandler.PATH).build(job.getId());
-		return u;
 	}
 
 	/** @return The formal state of the job */

@@ -22,6 +22,8 @@ import java.time.Duration;
 
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 /**
  * Manages epoch counters.
  *
@@ -29,10 +31,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class Epochs {
+	@GuardedBy("this")
 	private long jobsEpoch = 0L;
 
+	@GuardedBy("this")
 	private long machineEpoch = 0L;
 
+	@GuardedBy("this")
 	private long blacklistEpoch = 0L;
 
 	/**
@@ -109,6 +114,8 @@ public class Epochs {
 		return currentTimeMillis() < expiry;
 	}
 
+	// The loops are in the callers
+	@SuppressWarnings("WaitNotInLoop")
 	private void waitUntil(long expiry) throws InterruptedException {
 		wait(expiry - currentTimeMillis());
 	}

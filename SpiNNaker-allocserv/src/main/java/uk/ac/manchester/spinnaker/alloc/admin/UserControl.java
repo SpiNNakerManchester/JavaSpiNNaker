@@ -27,6 +27,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -485,14 +486,16 @@ public class UserControl extends DatabaseAwareBean {
 		}
 
 		if (nonNull(user.getEnabled())
-				&& oldUser.getEnabled() != user.getEnabled() && adminId != id) {
+				&& !Objects.equals(oldUser.getEnabled(), user.getEnabled())
+				&& (adminId != id)) {
 			// Admins can't change their own disable state
 			if (sql.setUserDisabled.call(!user.getEnabled(), id) > 0) {
 				log.info("setting user {} to {}", id,
 						user.getEnabled() ? "enabled" : "disabled");
 			}
 		}
-		if (nonNull(user.getLocked()) && oldUser.getLocked() != user.getLocked()
+		if (nonNull(user.getLocked())
+				&& !Objects.equals(oldUser.getLocked(), user.getLocked())
 				&& !user.getLocked() && adminId != id) {
 			// Admins can't change their own locked state
 			// Locked can't be set via this API, only reset

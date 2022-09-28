@@ -215,9 +215,6 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *
 	 * @param mav
 	 *            The model-and-view.
-	 * @param attrs
-	 *            The redirect attributes, or {@code null} if this is not a
-	 *            redirect.
 	 * @return The enhanced model-and-view.
 	 */
 	private static ModelAndView addStandardContext(ModelAndView mav) {
@@ -231,6 +228,9 @@ public class AdminControllerImpl extends DatabaseAwareBean
 	 *
 	 * @param uri
 	 *            The URI to redirect to. Only the path is currently used.
+	 * @param attrs
+	 *            The redirect attributes, or {@code null} if this is not a
+	 *            redirect.
 	 * @return The model-and-view.
 	 */
 	private static ModelAndView redirectTo(URI uri, RedirectAttributes attrs) {

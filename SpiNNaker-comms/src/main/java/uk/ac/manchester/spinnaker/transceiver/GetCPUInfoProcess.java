@@ -68,8 +68,7 @@ class GetCPUInfoProcess extends MultiConnectionProcess<SCPConnection> {
 							CPU_INFO_BYTES),
 					response -> cpuInfo.add(new CPUInfo(core, response.data)));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 		return cpuInfo::iterator;
 	}
 }

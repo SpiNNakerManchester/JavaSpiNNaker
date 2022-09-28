@@ -78,8 +78,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new ReadMemory(chip, baseAddress.add(offset), chunk),
 					response -> a.add(thisOffset, response.data));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 		return a.finish();
 	}
 
@@ -115,8 +114,7 @@ class ReadMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 							chunk),
 					response -> a.add(thisOffset, response.data));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 		return a.finish();
 	}
 

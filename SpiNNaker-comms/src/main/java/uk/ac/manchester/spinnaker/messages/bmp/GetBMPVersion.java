@@ -41,7 +41,7 @@ public class GetBMPVersion extends BMPRequest<GetBMPVersion.Response> {
 	}
 
 	/** An SCP response to a request for the version of software running. */
-	public final class Response extends BMPRequest.BMPResponse {
+	public static final class Response extends BMPRequest.BMPResponse {
 		/** The version information received. */
 		public final VersionInfo versionInfo;
 

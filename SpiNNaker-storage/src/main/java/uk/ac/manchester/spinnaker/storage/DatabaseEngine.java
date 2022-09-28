@@ -28,6 +28,8 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.sqlite.SQLiteConfig;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 /**
  * The database engine interface. Based on SQLite.
  *
@@ -65,6 +67,7 @@ public abstract class DatabaseEngine<APIType extends DatabaseAPI>
 	}
 
 	@Override
+	@MustBeClosed
 	public Connection getConnection() throws SQLException {
 		if (log.isDebugEnabled()) {
 			log.debug("opening database connection {}", dbConnectionUrl);

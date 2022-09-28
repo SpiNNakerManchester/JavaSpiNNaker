@@ -20,7 +20,10 @@ import static uk.ac.manchester.spinnaker.py2json.PythonUtils.item;
 
 import org.python.core.PyObject;
 
+import com.google.errorprone.annotations.Immutable;
+
 /** Triad coordinates. May be a hash table key. */
+@Immutable
 public final class XYZ {
 	/** X coordinate. */
 	public final int x;
@@ -60,7 +63,7 @@ public final class XYZ {
 
 	@Override
 	public int hashCode() {
-		return (((x << 2 + x) ^ y) << 2 + y) ^ z;
+		return (x * 5 + y) * 5 + z;
 	}
 
 	@Override

@@ -19,12 +19,15 @@ package uk.ac.manchester.spinnaker.machine;
 import static java.lang.Integer.compareUnsigned;
 import static java.lang.String.format;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * A location in SpiNNaker or BMP memory. Does not say which address space this
  * is in.
  *
  * @author Donal Fellows
  */
+@Immutable
 public final class MemoryLocation implements Comparable<MemoryLocation> {
 	/** Number of bytes in a SpiNNaker (ARM) word. */
 	private static final int WORD_SIZE = 4;

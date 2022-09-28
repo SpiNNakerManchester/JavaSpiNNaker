@@ -29,7 +29,7 @@ import uk.ac.manchester.spinnaker.alloc.security.Permit;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 /**
- * A job that just throws {@link UnsupportedOperationException} for every
+ * A job that just throws {@link UnsupportedOperationException} for every
  * operation. Subclass to add the behaviours you want.
  *
  * @author Donal Fellows

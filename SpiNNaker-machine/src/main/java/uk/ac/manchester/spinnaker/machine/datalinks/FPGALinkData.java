@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
@@ -24,6 +27,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
+@Immutable
 public final class FPGALinkData extends AbstractDataLink {
 
 	/** The link ID from the FPGA prospective. */
@@ -55,32 +59,17 @@ public final class FPGALinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		int hash = super.hashCode();
-		hash = 53 * hash + fpgaLinkId;
-		hash = 53 * hash + fpgaId.id;
-		return hash;
+		return 53 * (53 * hash() + fpgaLinkId) + fpgaId.id;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
+		if (obj instanceof FPGALinkData) {
+			var other = (FPGALinkData) obj;
+			return sameAs(other) && (fpgaLinkId == other.fpgaLinkId)
+					&& (fpgaId == other.fpgaId);
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		var other = (FPGALinkData) obj;
-		if (sameAs(other)) {
-			if (fpgaLinkId != other.fpgaLinkId) {
-				return false;
-			}
-			return fpgaId == other.fpgaId;
-		} else {
-			return false;
-		}
+		return false;
 	}
 
 	@Override

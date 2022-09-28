@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.front_end.download.request.Gather;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.CoreSubsets;
@@ -87,6 +89,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
+	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			CoreSubsets monitorCores, CoreSubsets gatherers)
 			throws IOException, ProcessException {
@@ -134,6 +137,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
+	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			CoreSubsets monitorCoreLocations, Gather gatherer)
 			throws IOException, ProcessException {
@@ -157,6 +161,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
+	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			List<? extends HasCoreLocation> monitorCoreLocations,
 			Gather gatherer) throws IOException, ProcessException {
@@ -181,6 +186,7 @@ public class NoDropPacketContext implements AutoCloseable {
 	 * @throws ProcessException
 	 *             If SCAMP or an extra monitor rejects a message.
 	 */
+	@MustBeClosed
 	public NoDropPacketContext(TransceiverInterface txrx,
 			Stream<? extends HasCoreLocation> monitorCoreLocations,
 			Stream<Gather> gatherers) throws IOException, ProcessException {
@@ -253,11 +259,13 @@ public class NoDropPacketContext implements AutoCloseable {
 	private void quietlySetTemporaryTimeouts() {
 		try {
 			txrx.setReinjectionTimeout(gatherers, TEMP_TIMEOUT);
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			log.debug("failed to reset reinjection timeout", e);
 		}
 		try {
 			txrx.setReinjectionEmergencyTimeout(gatherers, ZERO_TIMEOUT);
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			log.debug("failed to reset emergency reinjection timeout", e);
 		}
 	}
 }

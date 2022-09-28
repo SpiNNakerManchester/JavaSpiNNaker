@@ -195,7 +195,7 @@ public class SpinWSHandler extends BinaryWebSocketHandler
 		return permit.authorize(() -> spallocCore.getJob(permit, jobId));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
 	private static <T> T attr(WebSocketSession session, String key) {
 		// Fetch something from the attributes and auto-cast it
 		return (T) session.getAttributes().get(key);

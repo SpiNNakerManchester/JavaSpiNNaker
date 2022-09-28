@@ -35,16 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
-		<junit.version>5.9.0</junit.version>
+		<junit.version>5.9.1</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
 
-		<slf4j.version>2.0.1</slf4j.version>
+		<slf4j.version>2.0.2</slf4j.version>
 		<log4j.version>2.19.0</log4j.version>
 
 		<spring.version>5.3.23</spring.version>
-		<spring.boot.version>2.7.3</spring.boot.version>
+		<spring.boot.version>2.7.4</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -63,6 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<swagger.version>4.14.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
+		<error-prone.version>2.15.0</error-prone.version>
 	</properties>
 
 	<dependencyManagement>
@@ -146,7 +147,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
+				<artifactId>log4j-slf4j2-impl</artifactId>
 				<version>${log4j.version}</version>
 				<scope>runtime</scope>
 			</dependency>
@@ -213,7 +214,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20220320</version>
+				<version>20220924</version>
 			</dependency>
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
@@ -325,6 +326,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<groupId>org.java-websocket</groupId>
 				<artifactId>Java-WebSocket</artifactId>
 				<version>1.5.3</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.errorprone</groupId>
+				<artifactId>error_prone_annotations</artifactId>
+				<version>${error-prone.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -566,6 +572,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<excludes>
 							<!-- Files without comment formats should be excluded -->
 							<exclude>.github/*</exclude>
+							<exclude>.mvn/*</exclude>
 							<exclude>nbactions.xml</exclude>
 							<exclude>support/**</exclude>
 							<exclude>**/*.json</exclude>
@@ -987,6 +994,77 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</configuration>
 					</plugin>
 				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>ErrorProne</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>default-compile</id>
+									<configuration>
+										<compilerArgs>
+											<arg>-XDcompilePolicy=simple</arg>
+											<!-- Options to EP must go in same arg. Ugh. -->
+											<arg>
+												-Xplugin:ErrorProne
+												<!-- Disable the MissingSummary check; we use an abbreviated
+													 documentation for getters, and its suggested replacement
+													 is terrible. -->
+												-Xep:MissingSummary:OFF
+											</arg>
+										</compilerArgs>
+										<annotationProcessorPaths>
+											<path>
+												<groupId>com.google.errorprone</groupId>
+												<artifactId>error_prone_core</artifactId>
+												<version>${error-prone.version}</version>
+											</path>
+											<!-- Other annotation processors go here.
+
+											If 'annotationProcessorPaths' is set, processors will no longer be
+											discovered on the regular -classpath; see also 'Using Error Prone
+											together with other annotation processors' below. -->
+										</annotationProcessorPaths>
+									</configuration>
+								</execution>
+								<execution>
+									<id>default-testCompile</id>
+									<configuration>
+										<compilerArgs>
+											<arg>-XDcompilePolicy=simple</arg>
+											<!-- Options to EP must go in same arg. Ugh. -->
+											<arg>
+												-Xplugin:ErrorProne
+												<!-- Disable the MissingSummary check; we use an abbreviated
+													 documentation for getters, and its suggested replacement
+													 is terrible. -->
+												-Xep:MissingSummary:OFF
+											</arg>
+										</compilerArgs>
+										<annotationProcessorPaths>
+											<path>
+												<groupId>com.google.errorprone</groupId>
+												<artifactId>error_prone_core</artifactId>
+												<version>${error-prone.version}</version>
+											</path>
+											<!-- Other annotation processors go here.
+
+											If 'annotationProcessorPaths' is set, processors will no longer be
+											discovered on the regular -classpath; see also 'Using Error Prone
+											together with other annotation processors' below. -->
+										</annotationProcessorPaths>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
 			</build>
 		</profile>
 	</profiles>

@@ -24,6 +24,8 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 /**
  * Control over general aspects of the service's manageability. Not exposed as
  * part of service because this includes the bits that shut the service off when
@@ -34,8 +36,10 @@ import org.springframework.stereotype.Service;
 @Service("control")
 @ManagedResource("Spalloc:type=ServiceMasterControl,name=control")
 public class ServiceMasterControl {
+	@GuardedBy("this")
 	private boolean paused = false;
 
+	@GuardedBy("this")
 	private boolean dummyBMP = false;
 
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);

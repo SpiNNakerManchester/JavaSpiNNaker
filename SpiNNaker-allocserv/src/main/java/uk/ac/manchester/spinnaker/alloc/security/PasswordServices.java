@@ -54,6 +54,7 @@ public class PasswordServices {
 	 * @return A password consisting of 16 random ASCII printable
 	 *         characters.
 	 */
+	@SuppressWarnings("UnicodeEscape") // It's clearer like this
 	public final String generatePassword() {
 		var sb = new StringBuilder();
 		rng.ints(PASSWORD_LENGTH, '\u0021', '\u007f')

@@ -111,7 +111,7 @@ public class TestCoreLocation {
 		});
 	}
 
-	private class MockCoreLocation implements HasCoreLocation {
+	private static class MockCoreLocation implements HasCoreLocation {
 
 		@Override
 		public int getX() {
@@ -137,6 +137,7 @@ public class TestCoreLocation {
 	}
 
 	@Test
+	@SuppressWarnings("SelfComparison")
 	public void testCompare() {
 		var core001 = new CoreLocation(0, 0, 1);
 		var core001a = new CoreLocation(0, 0, 1);

@@ -75,7 +75,7 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 	 */
 	void write(BMPBoard board, MemoryLocation baseAddress, ByteBuffer data)
 			throws IOException, ProcessException {
-		execute(new BMPWriteSFIterator(board, baseAddress, data.remaining()) {
+		execute(new BMPWriteSFIterable(board, baseAddress, data.remaining()) {
 			private int offset = data.position();
 
 			@Override
@@ -109,19 +109,24 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
 			int bytesToWrite) throws IOException, ProcessException {
 		var exn = new ValueHolder<IOException>();
 		var workingBuffer = allocate(UDP_MESSAGE_MAX_SIZE);
-		execute(new BMPWriteSFIterator(board, baseAddress, bytesToWrite) {
+		execute(new BMPWriteSFIterable(board, baseAddress, bytesToWrite) {
+			private ByteBuffer readChunk(int chunkSize) throws IOException {
+				var buffer = workingBuffer.duplicate();
+				// After this, chunkSize is REAL chunk size or -1
+				chunkSize = data.read(buffer.array(), buffer.arrayOffset(),
+						chunkSize);
+				if (chunkSize < 1) {
+					// Read failed to generate anything we want to send
+					return null;
+				}
+				buffer.limit(chunkSize);
+				return buffer;
+			}
+
 			@Override
 			Optional<ByteBuffer> prepareSendBuffer(int chunkSize) {
 				try {
-					var buffer = workingBuffer.duplicate();
-					// After this, chunkSize is REAL chunk size or -1
-					chunkSize = data.read(buffer.array(), 0, chunkSize);
-					if (chunkSize < 1) {
-						// Read failed to generate anything we want to send
-						return empty();
-					}
-					buffer.limit(chunkSize);
-					return Optional.of(buffer);
+					return Optional.ofNullable(readChunk(chunkSize));
 				} catch (IOException e) {
 					exn.setValue(e); // Smuggle the exception out!
 					return empty();
@@ -139,12 +144,11 @@ class BMPWriteSerialFlashProcess extends BMPCommandProcess<BMPResponse> {
  * at a time on demand. The complexity is because chunk construction is
  * permitted to fail!
  * <p>
- * This is also an iterable, albeit a one-shot iterable.
+ * This can only produce an iterator <em>once</em>.
  *
  * @author Donal Fellows
  */
-abstract class BMPWriteSFIterator
-		implements Iterator<WriteSerialFlash>, Iterable<WriteSerialFlash> {
+abstract class BMPWriteSFIterable implements Iterable<WriteSerialFlash> {
 	private final BMPBoard board;
 
 	private int sizeRemaining;
@@ -161,7 +165,7 @@ abstract class BMPWriteSFIterator
 	 * @param size
 	 *            What size of memory will be written.
 	 */
-	BMPWriteSFIterator(BMPBoard board, MemoryLocation address, int size) {
+	BMPWriteSFIterable(BMPBoard board, MemoryLocation address, int size) {
 		this.board = board;
 		this.address = address;
 		this.sizeRemaining = size;
@@ -180,28 +184,29 @@ abstract class BMPWriteSFIterator
 	abstract Optional<ByteBuffer> prepareSendBuffer(int plannedSize);
 
 	@Override
-	public final boolean hasNext() {
-		if (sizeRemaining < 1) {
-			return false;
-		}
-		var bb = prepareSendBuffer(min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
-		sendBuffer = bb.orElse(null);
-		return bb.isPresent();
-	}
-
-	@Override
-	public final WriteSerialFlash next() {
-		int chunkSize = sendBuffer.remaining();
-		try {
-			return new WriteSerialFlash(board, address, sendBuffer);
-		} finally {
-			address = address.add(chunkSize);
-			sizeRemaining -= chunkSize;
-		}
-	}
-
-	@Override
 	public Iterator<WriteSerialFlash> iterator() {
-		return this;
+		return new Iterator<>() {
+			@Override
+			public boolean hasNext() {
+				if (sizeRemaining < 1) {
+					return false;
+				}
+				var bb = prepareSendBuffer(
+						min(sizeRemaining, UDP_MESSAGE_MAX_SIZE));
+				sendBuffer = bb.orElse(null);
+				return bb.isPresent();
+			}
+
+			@Override
+			public WriteSerialFlash next() {
+				int chunkSize = sendBuffer.remaining();
+				try {
+					return new WriteSerialFlash(board, address, sendBuffer);
+				} finally {
+					address = address.add(chunkSize);
+					sizeRemaining -= chunkSize;
+				}
+			}
+		};
 	}
 }

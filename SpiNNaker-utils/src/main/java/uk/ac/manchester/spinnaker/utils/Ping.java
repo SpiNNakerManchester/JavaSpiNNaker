@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 /**
  * How to ping a host to test for (ICMP) network connectivity.
  *
@@ -77,6 +79,7 @@ public abstract class Ping {
 	 * @return 0 on success, other values on failure (reflecting the result of
 	 *         the OS subprocess).
 	 */
+	@CheckReturnValue
 	public static int ping(String address) {
 		int result = -1;
 		int i = 0;
@@ -104,6 +107,7 @@ public abstract class Ping {
 	 * @return 0 on success, other values on failure (reflecting the result of
 	 *         the OS subprocess).
 	 */
+	@CheckReturnValue
 	public static int ping(InetAddress address) {
 		return ping(address.getHostAddress());
 	}

@@ -20,6 +20,8 @@ import static java.lang.String.format;
 
 import java.util.Objects;
 
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.alloc.db.Row;
 
 /**
@@ -27,6 +29,7 @@ import uk.ac.manchester.spinnaker.alloc.db.Row;
  *
  * @author Donal Fellows
  */
+@Immutable
 public final class BoardCoords {
 	/** Logical triad X coordinate. */
 	private final int x;
@@ -156,32 +159,20 @@ public final class BoardCoords {
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (other == this) {
-			return true;
-		}
-		if (other instanceof BoardCoords) {
-			return equals((BoardCoords) other);
+	public boolean equals(Object o) {
+		if (o instanceof BoardCoords) {
+			var other = (BoardCoords) o;
+			return (x == other.x) && (y == other.y) && (z == other.z)
+					&& (cabinet == other.cabinet) && (frame == other.frame)
+					&& Objects.equals(board, other.board)
+					&& Objects.equals(address, other.address);
 		}
 		return false;
 	}
 
-	/**
-	 * Equality test when you know the other value is a BoardCoords.
-	 *
-	 * @param other
-	 *            The other value.
-	 * @return Whether the two are equal.
-	 */
-	public boolean equals(BoardCoords other) {
-		return x == other.x && y == other.y && z == other.z
-				&& cabinet == other.cabinet && frame == other.frame
-				&& Objects.equals(board, other.board)
-				&& Objects.equals(address, other.address);
-	}
-
 	@Override
 	public int hashCode() {
+		// Just uses the triad coordinates
 		return x << 16 | y << 8 | z;
 	}
 

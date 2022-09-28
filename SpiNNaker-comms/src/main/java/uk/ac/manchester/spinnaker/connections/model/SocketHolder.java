@@ -16,6 +16,7 @@
  */
 package uk.ac.manchester.spinnaker.connections.model;
 
+import java.io.Closeable;
 import java.net.InetAddress;
 
 /**
@@ -24,7 +25,7 @@ import java.net.InetAddress;
  *
  * @author Donal Fellows
  */
-public interface SocketHolder extends AutoCloseable {
+public interface SocketHolder extends Closeable {
 	/**
 	 * @return the local (host) IP address of the socket. Expected to be an IPv4
 	 *         address when talking to SpiNNaker.

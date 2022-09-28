@@ -50,6 +50,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import uk.ac.manchester.spinnaker.connections.ConnectionSelector;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.SDPConnection;
@@ -188,6 +190,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	MachineDimensions getMachineDimensions()
 			throws IOException, ProcessException;
 
@@ -206,6 +209,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	Machine getMachineDetails() throws IOException, ProcessException;
 
 	/**
@@ -240,6 +244,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default VersionInfo getScampVersion() throws IOException, ProcessException {
 		return getScampVersion(BOOT_CHIP, getScampConnectionSelector());
 	}
@@ -257,6 +262,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default VersionInfo getScampVersion(
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException {
@@ -275,6 +281,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default VersionInfo getScampVersion(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getScampVersion(chip, getScampConnectionSelector());
@@ -295,6 +302,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	VersionInfo getScampVersion(HasChipLocation chip,
 			ConnectionSelector<SCPConnection> connectionSelector)
 			throws IOException, ProcessException;
@@ -351,6 +359,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default VersionInfo ensureBoardIsReady()
 			throws IOException, ProcessException, InterruptedException {
 		return ensureBoardIsReady(BOARD_BOOT_RETRIES, null);
@@ -375,6 +384,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If the thread is interrupted while waiting.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default VersionInfo ensureBoardIsReady(
 			Map<SystemVariableDefinition, Object> extraBootValues)
 			throws IOException, ProcessException, InterruptedException {
@@ -443,6 +453,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default MappableIterable<CPUInfo> getCPUInformation()
 			throws IOException, ProcessException {
 		return getCPUInformation((CoreSubsets) null);
@@ -460,6 +471,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default CPUInfo getCPUInformation(HasCoreLocation core)
 			throws IOException, ProcessException {
 		return getCPUInformation(new CoreSubsets(core)).first().orElseThrow();
@@ -484,6 +496,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	MappableIterable<CPUInfo> getCPUInformation(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
@@ -626,6 +639,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default MappableIterable<IOBuffer> getIobuf()
 			throws IOException, ProcessException {
 		return getIobuf((CoreSubsets) null);
@@ -643,6 +657,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default IOBuffer getIobuf(HasCoreLocation core)
 			throws IOException, ProcessException {
 		return getIobuf(new CoreSubsets(core)).first().orElseThrow();
@@ -661,6 +676,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	MappableIterable<IOBuffer> getIobuf(CoreSubsets coreSubsets)
 			throws IOException, ProcessException;
 
@@ -793,6 +809,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	int getCoreStateCount(AppID appID, CPUState state)
 			throws IOException, ProcessException;
 
@@ -2201,6 +2218,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default ByteBuffer readMemory(HasChipLocation chip,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException {
@@ -2226,6 +2244,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	ByteBuffer readMemory(HasCoreLocation core, MemoryLocation baseAddress,
 			int length) throws IOException, ProcessException;
 
@@ -2247,6 +2266,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default ByteBuffer readMemory(HasCoreLocation core, HeapElement element)
 			throws IOException, ProcessException {
 		if (element.isFree) {
@@ -2288,6 +2308,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	default int readUser0(HasCoreLocation core)
 			throws ProcessException, IOException {
 		var user0 = getUser0RegisterAddress(core);
@@ -2305,6 +2326,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	default int readUser1(HasCoreLocation core)
 			throws ProcessException, IOException {
 		var user1 = getUser1RegisterAddress(core);
@@ -2322,6 +2344,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	default int readUser2(HasCoreLocation core)
 			throws ProcessException, IOException {
 		var user2 = getUser2RegisterAddress(core);
@@ -2498,6 +2521,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			CPUState state) throws IOException, ProcessException {
 		return getCoresInState(allCoreSubsets, Set.of(state));
@@ -2521,6 +2545,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default CoreSubsets getCoresInState(CoreSubsets allCoreSubsets,
 			Set<CPUState> states) throws IOException, ProcessException {
 		return new CoreSubsets(getCPUInformation(allCoreSubsets)
@@ -2546,6 +2571,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, CPUState state)
 			throws IOException, ProcessException {
@@ -2570,6 +2596,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default Map<CoreLocation, CPUInfo> getCoresNotInState(
 			CoreSubsets allCoreSubsets, Set<CPUState> states)
 			throws IOException, ProcessException {
@@ -2756,6 +2783,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default List<Tag> getTags() throws IOException, ProcessException {
 		return getTags(null);
 	}
@@ -2772,6 +2800,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	List<Tag> getTags(SCPConnection connection)
 			throws IOException, ProcessException;
 
@@ -2789,6 +2818,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default Map<Tag, Integer> getTagUsage()
 			throws IOException, ProcessException {
 		return getTagUsage(null);
@@ -2807,6 +2837,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	Map<Tag, Integer> getTagUsage(SCPConnection connection)
 			throws IOException, ProcessException;
 
@@ -2824,6 +2855,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default MemoryLocation mallocSDRAM(HasChipLocation chip, int size)
 			throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, DEFAULT, 0);
@@ -2845,6 +2877,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default MemoryLocation mallocSDRAM(HasChipLocation chip, int size,
 			AppID appID) throws IOException, ProcessException {
 		return mallocSDRAM(chip, size, appID, 0);
@@ -2993,6 +3026,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default RoutingEntry readFixedRoute(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return readFixedRoute(chip, DEFAULT);
@@ -3012,6 +3046,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	RoutingEntry readFixedRoute(HasChipLocation chip, AppID appID)
 			throws IOException, ProcessException;
 
@@ -3027,6 +3062,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getMulticastRoutes(chip, null);
@@ -3046,6 +3082,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	List<MulticastRoutingEntry> getMulticastRoutes(HasChipLocation chip,
 			AppID appID) throws IOException, ProcessException;
 
@@ -3075,6 +3112,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	RouterDiagnostics getRouterDiagnostics(HasChipLocation chip)
 			throws IOException, ProcessException;
 
@@ -3116,6 +3154,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	DiagnosticFilter getRouterDiagnosticFilter(HasChipLocation chip,
 			int position) throws IOException, ProcessException;
 
@@ -3210,6 +3249,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default List<HeapElement> getHeap(HasChipLocation chip)
 			throws IOException, ProcessException {
 		return getHeap(chip, sdram_heap_address);
@@ -3229,6 +3269,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	List<HeapElement> getHeap(HasChipLocation chip,
 			SystemVariableDefinition heap) throws IOException, ProcessException;
 
@@ -3321,6 +3362,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	ReinjectionStatus getReinjectionStatus(HasCoreLocation monitorCore)
 			throws IOException, ProcessException;
 
@@ -3336,6 +3378,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	Map<CoreLocation, ReinjectionStatus> getReinjectionStatus(
 			CoreSubsets monitorCores) throws IOException, ProcessException;
 
@@ -3350,6 +3393,7 @@ public interface TransceiverInterface extends BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+
 	void resetReinjectionCounters(HasCoreLocation monitorCore)
 			throws IOException, ProcessException;
 

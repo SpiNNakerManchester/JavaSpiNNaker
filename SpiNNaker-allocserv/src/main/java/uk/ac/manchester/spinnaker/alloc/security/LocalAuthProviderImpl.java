@@ -74,6 +74,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import com.google.errorprone.annotations.Immutable;
+import com.google.errorprone.annotations.RestrictedApi;
+
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.AuthProperties;
@@ -726,7 +729,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	final class CollabratoryAuthority extends SimpleGrantedAuthority {
+	@Immutable
+	static final class CollabratoryAuthority extends SimpleGrantedAuthority {
 		private static final long serialVersionUID = 4964366746649162092L;
 
 		private final String collabratory;
@@ -741,7 +745,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		}
 	}
 
-	final class OrganisationAuthority extends SimpleGrantedAuthority {
+	@Immutable
+	static final class OrganisationAuthority extends SimpleGrantedAuthority {
 		private static final long serialVersionUID = 8260068770503054502L;
 
 		private final String organisation;
@@ -811,29 +816,35 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	}
 
 	/**
-	 * Extract the {@code team/roles} sub-claim.
+	 * Extract the {@code team/roles} sub-claim. This is <em>awful</em> because
+	 * the promised types are all inferred and the <em>actual</em> types
+	 * guaranteed by the way claims are encoded are more that we are taking an
+	 * {@link Object} because {@link ClaimAccessor#getClaim(String)} is merely
+	 * pinky-swearing that objects are of the right type, not enforcing it.
 	 *
 	 * @param rolesClaim
 	 *            Overall claim.
 	 * @return The {@code team/roles} sub-claim, provided it exists and really
 	 *         looks like a list of strings.
 	 */
-	@SuppressWarnings("cast")
 	private static List<String>
 			getTeamsFromClaim(Map<String, List<String>> rolesClaim) {
 		// Messy; all the implicit types and hidden casts!
 		try {
-			if (rolesClaim instanceof Map) {
-				var teamsClaim = rolesClaim.get("team");
-				if (teamsClaim instanceof List) {
-					if (!teamsClaim.isEmpty()) {
-						// Dummy check to determine if first element is string
-						teamsClaim.get(0).isBlank();
-					}
-					return teamsClaim;
-				}
+			var teamsClaim = rolesClaim.get("team");
+			if (!teamsClaim.isEmpty()) {
+				/*
+				 * Check invokes a String instance method on the first item of
+				 * the list; if this works, we're valid. It's pitched into
+				 * log.trace so things don't complain, but we never expect to
+				 * enable this.
+				 */
+				log.trace("team claim first item length",
+						teamsClaim.get(0).length());
 			}
-		} catch (ClassCastException e) {
+			return teamsClaim;
+		} catch (ClassCastException | NullPointerException
+				| IndexOutOfBoundsException e) {
 			log.debug("failed to convert claim", e);
 		}
 		return List.of();
@@ -864,6 +875,7 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 		mapAuthorities("token", token, ga);
 	}
 
+	@Immutable
 	private static final class LocalAuthResult {
 		final int userId;
 
@@ -987,9 +999,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 *            How to access the DB.
 	 * @param details
 	 *            The results of looking up the user
-	 * @return
 	 */
-	private LocalAuthResult checkPassword(String username, String password,
+	private void checkPassword(String username, String password,
 			LocalAuthResult details, AuthQueries queries) {
 		if (!passServices.matchPassword(password, details.passInfo)) {
 			queries.transaction(() -> {
@@ -998,7 +1009,6 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 				throw new BadCredentialsException("bad password");
 			});
 		}
-		return details;
 	}
 
 	/**
@@ -1201,6 +1211,8 @@ public class LocalAuthProviderImpl extends DatabaseAwareBean
 	 */
 	@Override
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	public TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

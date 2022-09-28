@@ -163,11 +163,26 @@ public enum SystemVariableDefinition {
 	/** The fourth user variable. */
 	user_temp_4(INT, 0x7c),
 	/** The status map set during SCAMP boot. */
-	status_map(BYTE_ARRAY, 0x80, new byte[PER_CORE_WIDTH]),
+	status_map(BYTE_ARRAY, 0x80, null) {
+		@Override
+		public Object getDefault() {
+			return new byte[PER_CORE_WIDTH];
+		}
+	},
 	/** The physical core ID to virtual core ID map. */
-	physical_to_virtual_core_map(BYTE_ARRAY, 0x94, new byte[PER_CORE_WIDTH]),
+	physical_to_virtual_core_map(BYTE_ARRAY, 0x94, null) {
+		@Override
+		public Object getDefault() {
+			return new byte[PER_CORE_WIDTH];
+		}
+	},
 	/** The virtual core ID to physical core ID map. */
-	virtual_to_physical_core_map(BYTE_ARRAY, 0xa8, new byte[PER_CORE_WIDTH]),
+	virtual_to_physical_core_map(BYTE_ARRAY, 0xa8, null) {
+		@Override
+		public Object getDefault() {
+			return new byte[PER_CORE_WIDTH];
+		}
+	},
 	/** The number of working cores. */
 	n_working_cores(BYTE, 0xbc),
 	/** The number of SCAMP working cores. */
@@ -202,7 +217,12 @@ public enum SystemVariableDefinition {
 	/** The monitor incoming mailbox flags. */
 	monitor_mailbox_flags(INT, 0xec),
 	/** The IP address of the chip. */
-	ethernet_ip_address(BYTE_ARRAY, 0xf0, new byte[IP_ADDR_WIDTH]),
+	ethernet_ip_address(BYTE_ARRAY, 0xf0, null) {
+		@Override
+		public Object getDefault() {
+			return new byte[IP_ADDR_WIDTH];
+		}
+	},
 	/** A (virtual) copy of the router FR register. */
 	fixed_route_copy(INT, 0xf4),
 	/** A pointer to the board information structure. */
@@ -224,7 +244,13 @@ public enum SystemVariableDefinition {
 	 * The default value assigned to the variable if not overridden; this can be
 	 * an integer or a byte array.
 	 */
-	private final Object def;
+	private final int def;
+
+	/**
+	 * The default value assigned to the variable if not overridden; this can be
+	 * an integer or a byte array.
+	 */
+	private final MemoryLocation defAddr;
 
 	private final boolean hasDefinedDefault;
 
@@ -232,21 +258,26 @@ public enum SystemVariableDefinition {
 		this.type = type;
 		this.offset = offset;
 		hasDefinedDefault = false;
-		if (type == ADDRESS) {
-			this.def = NULL;
-		} else {
-			this.def = 0;
-		}
+		this.defAddr = NULL;
+		this.def = 0;
 	}
 
 	SystemVariableDefinition(DataType type, int offset, Object def) {
 		this.type = type;
 		this.offset = offset;
 		hasDefinedDefault = true;
-		if (type == ADDRESS) {
-			this.def = new MemoryLocation(((Number) def).intValue());
-		} else {
-			this.def = def;
+		switch (type) {
+		case ADDRESS:
+			this.defAddr = new MemoryLocation(((Number) def).intValue());
+			this.def = 0;
+			break;
+		case BYTE_ARRAY:
+			this.defAddr = NULL;
+			this.def = 0;
+			break;
+		default:
+			this.defAddr = NULL;
+			this.def = ((Number) def).intValue();
 		}
 	}
 
@@ -257,10 +288,14 @@ public enum SystemVariableDefinition {
 	 * @return The default value, or a copy of it if the type of the value is an
 	 *         array.
 	 */
+	@SuppressWarnings("checkstyle:JavadocMethod")
+	// AssertionError not in signature because it should be unreachable
 	public Object getDefault() {
 		switch (type) {
 		case BYTE_ARRAY:
-			return ((byte[]) def).clone();
+			throw new AssertionError("unreachable location reached");
+		case ADDRESS:
+			return defAddr;
 		default:
 			return def;
 		}

@@ -93,7 +93,7 @@ public class TestDefaultMap {
 		assertEquals(2, two.intValue());
 	}
 
-	public class Doubler implements KeyAwareFactory<Integer, Integer> {
+	public static class Doubler implements KeyAwareFactory<Integer, Integer> {
 		@Override
 		public Integer createValue(Integer key) {
 			return Integer.valueOf(key.intValue() * 2);

@@ -414,21 +414,25 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 
 		private static final int TWO_BITS_MASK = 0b00000011;
 
+		private static byte shift(int val, int shift) {
+			return (byte) (val << shift);
+		}
+
 		@Override
 		public void addToBuffer(ByteBuffer buffer) {
 			byte data = 0;
 			if (prefix != null) {
-				data |= 1 << PREFIX_BIT;
-				data |= prefixType.getValue() << PREFIX_TYPE_BIT;
+				data |= shift(1, PREFIX_BIT);
+				data |= shift(prefixType.getValue(), PREFIX_TYPE_BIT);
 			}
 			if (payloadBase != null) {
-				data |= 1 << PAYLOAD_BIT;
+				data |= shift(1, PAYLOAD_BIT);
 			}
 			if (isTime) {
-				data |= 1 << TIME_BIT;
+				data |= shift(1, TIME_BIT);
 			}
-			data |= eieioType.getValue() << TYPE_BITS;
-			data |= tag << TAG_BITS;
+			data |= shift(eieioType.getValue(), TYPE_BITS);
+			data |= shift(tag, TAG_BITS);
 
 			buffer.put(count);
 			buffer.put(data);
@@ -441,11 +445,11 @@ public class EIEIODataMessage implements EIEIOMessage<EIEIODataMessage.Header>,
 			switch (eieioType) {
 			case KEY_PAYLOAD_16_BIT:
 			case KEY_16_BIT:
-				buffer.putShort((short) (int) payloadBase);
+				buffer.putShort((short) payloadBase.intValue());
 				return;
 			case KEY_PAYLOAD_32_BIT:
 			case KEY_32_BIT:
-				buffer.putInt(payloadBase);
+				buffer.putInt(payloadBase.intValue());
 				return;
 			default:
 				throw new IllegalStateException("unexpected EIEIO type");

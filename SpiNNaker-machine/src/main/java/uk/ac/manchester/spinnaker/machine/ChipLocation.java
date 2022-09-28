@@ -28,6 +28,7 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.validateChipLoc
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.errorprone.annotations.Immutable;
 
 /**
  * The location of a Chip as an X and Y tuple.
@@ -37,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author alan
  * @author dkf
  */
+@Immutable
 @JsonFormat(shape = ARRAY)
 /*
  * This is needed in Java 8, but not by Java 10 (which can find the @JsonIgnore

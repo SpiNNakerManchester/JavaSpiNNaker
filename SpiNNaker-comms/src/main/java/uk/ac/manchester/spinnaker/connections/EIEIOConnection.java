@@ -97,6 +97,14 @@ public class EIEIOConnection
 		super(localHost, localPort, remoteHost, remotePort, IPTOS_THROUGHPUT);
 	}
 
+	/**
+	 * Create an EIEIO connection where the mechanism for the sending and
+	 * listening is implemented by a subclass.
+	 */
+	protected EIEIOConnection() {
+		super(true);
+	}
+
 	@Override
 	public void sendEIEIOMessage(EIEIOMessage<?> eieioMessage)
 			throws IOException {
