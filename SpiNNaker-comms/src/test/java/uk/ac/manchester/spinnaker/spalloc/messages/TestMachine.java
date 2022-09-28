@@ -79,11 +79,13 @@ public class TestMachine {
 		var mapper = SpallocClient.createMapper();
 		var fromJson = mapper.readValue(json, Machine.class);
 		assertNull(fromJson.getName());
-		assert fromJson.getTags().isEmpty() : "must have no tags";
+		assertTrue(fromJson.getTags().isEmpty(), "must have no tags");
 		assertEquals(0, fromJson.getWidth());
 		assertEquals(0, fromJson.getHeight());
-		assert fromJson.getDeadBoards().isEmpty() : "must have no dead boards";
-		assert fromJson.getDeadLinks().isEmpty() : "must have no dead links";
+		assertTrue(fromJson.getDeadBoards().isEmpty(),
+				"must have no dead boards");
+		assertTrue(fromJson.getDeadLinks().isEmpty(),
+				"must have no dead links");
 		assertNotNull(fromJson.toString());
 	}
 }

@@ -43,7 +43,7 @@ public class ReadSerialVector extends BMPRequest<ReadSerialVector.Response> {
 	}
 
 	/** An SCP response to a request for serial data. */
-	public final class Response extends BMPRequest.BMPResponse {
+	public static final class Response extends BMPRequest.BMPResponse {
 		/** The serial data. */
 		public final SerialVector vector;
 

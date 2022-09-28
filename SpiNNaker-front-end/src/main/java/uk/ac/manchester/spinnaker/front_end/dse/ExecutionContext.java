@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.errorprone.annotations.Immutable;
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.data_spec.DataSpecificationException;
 import uk.ac.manchester.spinnaker.data_spec.Executor;
 import uk.ac.manchester.spinnaker.data_spec.MemoryRegionReal;
@@ -50,6 +53,7 @@ class ExecutionContext implements AutoCloseable {
 
 	private final List<CoreToFill> regionsToFill = new ArrayList<>();
 
+	@MustBeClosed
 	ExecutionContext(TransceiverInterface txrx) {
 		this.txrx = txrx;
 	}
@@ -196,6 +200,7 @@ class ExecutionContext implements AutoCloseable {
 	}
 
 	// Migrate to record in new enough Java
+	@Immutable
 	private static class RegionToRef {
 		final CoreLocation core;
 

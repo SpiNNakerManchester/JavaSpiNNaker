@@ -19,6 +19,8 @@ package uk.ac.manchester.spinnaker.connections.model;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
+import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
+
 /**
  * A receiver of SpiNNaker messages.
  *
@@ -58,15 +60,6 @@ public interface MessageReceiver<MessageType> extends SocketHolder {
 	 * @throws IllegalArgumentException
 	 *             If one of the fields of the SpiNNaker message is invalid
 	 */
+	@UsedInJavadocOnly(SocketTimeoutException.class)
 	MessageType receiveMessage(int timeout) throws IOException;
-}
-
-/**
- * Class just to satisfy Javadoc <em>and</em> Checkstyle in
- * {@link MessageReceiver}.
- */
-abstract class MessageReceiverUseClasses {
-	private MessageReceiverUseClasses(SocketTimeoutException e) {
-		// no instances
-	}
 }

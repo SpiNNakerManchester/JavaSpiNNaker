@@ -66,6 +66,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.Keep;
+import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
@@ -233,7 +236,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		@Override
 		public int hashCode() {
-			return (((x << 2 + x) ^ y) << 2 + y) ^ z;
+			return x * 25 + y * 5 + z;
 		}
 
 		@Override
@@ -318,7 +321,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		@Override
 		public int hashCode() {
-			return ((c << 2 + c) ^ f) << 2 + f;
+			return c * 5 + f;
 		}
 
 		@Override
@@ -409,7 +412,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 
 		@Override
 		public int hashCode() {
-			return (((c << 2 + c) ^ f) << 2 + f) ^ b;
+			return c * 25 + f * 5 + b;
 		}
 
 		@Override
@@ -575,12 +578,14 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 					.toString();
 		}
 
+		@Keep
 		@JsonIgnore
 		@AssertFalse(message = "machine name must not contain braces or spaces")
 		private boolean isBadMachineName() {
 			return badName(name);
 		}
 
+		@Keep
 		@JsonIgnore
 		@AssertFalse(message = "tag must not contain braces or spaces")
 		private boolean isBadTag() {
@@ -593,6 +598,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 					|| name.codePoints().anyMatch(Character::isWhitespace);
 		}
 
+		@Keep
 		@JsonIgnore
 		@AssertTrue(message = "all boards must have sane logical coordinates")
 		private boolean isCoordinateSane() {
@@ -600,12 +606,14 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 					&& (loc.x < width) && (loc.y >= 0) && (loc.y < height));
 		}
 
+		@Keep
 		@JsonIgnore
 		@AssertTrue(message = "all boards must have addresses")
 		private boolean isNetworkSane() {
 			return spinnakerIPs.size() == boardLocations.size();
 		}
 
+		@Keep
 		@JsonIgnore
 		@AssertTrue(message = "all boards must have BMPs")
 		private boolean isBMPSane() {
@@ -649,55 +657,66 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 			private Map<TriadCoords, BoardPhysicalCoords> boardLocations =
 					Map.of();
 
-			private Map<BMPCoords, String> bmpIps = Map.of();
+			private Map<BMPCoords, String> bmpAddrs = Map.of();
 
-			private Map<TriadCoords, String> spinnakerIps = Map.of();
+			private Map<TriadCoords, String> spinnakerAddrs = Map.of();
 
+			@CanIgnoreReturnValue
 			public Builder withName(String name) {
 				this.name = name;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withTags(Set<String> tags) {
 				this.tags = tags;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withWidth(int width) {
 				this.width = width;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withHeight(int height) {
 				this.height = height;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withDeadBoards(Set<TriadCoords> deadBoards) {
 				this.deadBoards = deadBoards;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder
 					withDeadLinks(Map<TriadCoords, EnumSet<Link>> deadLinks) {
 				this.deadLinks = deadLinks;
 				return this;
 			}
 
+			@CanIgnoreReturnValue
 			public Builder withBoardLocations(
 					Map<TriadCoords, BoardPhysicalCoords> boardLocations) {
 				this.boardLocations = boardLocations;
 				return this;
 			}
 
-			public Builder withBmpIps(Map<BMPCoords, String> bmpIps) {
-				this.bmpIps = bmpIps;
+			@CanIgnoreReturnValue
+			@JsonProperty("bmp-ips")
+			public Builder withBmpAddrs(Map<BMPCoords, String> bmpAddrs) {
+				this.bmpAddrs = bmpAddrs;
 				return this;
 			}
 
-			public Builder
-					withSpinnakerIps(Map<TriadCoords, String> spinnakerIps) {
-				this.spinnakerIps = spinnakerIps;
+			@CanIgnoreReturnValue
+			@JsonProperty("spinnaker-ips")
+			public Builder withSpinnakerAddrs(
+					Map<TriadCoords, String> spinnakerAddrs) {
+				this.spinnakerAddrs = spinnakerAddrs;
 				return this;
 			}
 
@@ -710,8 +729,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 				m.deadBoards = deadBoards;
 				m.deadLinks = deadLinks;
 				m.boardLocations = boardLocations;
-				m.bmpIPs = bmpIps;
-				m.spinnakerIPs = spinnakerIps;
+				m.bmpIPs = bmpAddrs;
+				m.spinnakerIPs = spinnakerAddrs;
 				return m;
 			}
 		}
@@ -826,7 +845,7 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 *
 	 * @param file
 	 *            The file of JSON.
-	 * @return The machines from that file.
+	 * @return The machines from that file. Not {@code null}.
 	 * @throws IOException
 	 *             If anything goes wrong with file access.
 	 * @throws JsonParseException
@@ -1136,6 +1155,8 @@ public class MachineDefinitionLoader extends DatabaseAwareBean {
 	 * @return The test interface.
 	 * @deprecated This interface is just for testing.
 	 */
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	@ForTestingOnly
 	TestAPI getTestAPI(Connection c) {

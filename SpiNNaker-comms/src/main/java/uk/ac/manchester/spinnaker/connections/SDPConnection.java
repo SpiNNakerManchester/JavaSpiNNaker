@@ -76,6 +76,21 @@ public class SDPConnection extends UDPConnection<SDPMessage>
 		this.chip = remoteChip.asChipLocation();
 	}
 
+	/**
+	 * Constructor for delegation.
+	 *
+	 * @param remoteChip
+	 *            Which chip are we talking to? This is not necessarily the chip
+	 *            that is connected to the Ethernet connector on the SpiNNaker
+	 *            board, or even on the same board.
+	 * @param canSend
+	 *            Whether sending on this connection is possible.
+	 */
+	SDPConnection(HasChipLocation remoteChip, boolean canSend) {
+		super(canSend);
+		this.chip = remoteChip.asChipLocation();
+	}
+
 	@Override
 	public void send(SDPMessage sdpMessage) throws IOException {
 		send(sdpMessage.getMessageData(chip));

@@ -23,14 +23,16 @@ import java.net.URI;
 import javax.ws.rs.core.UriInfo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.errorprone.annotations.Immutable;
 
-import uk.ac.manchester.spinnaker.alloc.allocator.Spalloc;
+import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI;
 
 /**
  * Describes a newly-created job.
  *
  * @author Donal Fellows
  */
+@Immutable
 public class CreateJobResponse {
 	/** The ID of the job. Probably should be ignored. */
 	public final int jobId;
@@ -39,7 +41,7 @@ public class CreateJobResponse {
 	@JsonInclude(NON_NULL)
 	public final URI jobRef;
 
-	CreateJobResponse(Spalloc.Job j, UriInfo ui) {
+	CreateJobResponse(SpallocAPI.Job j, UriInfo ui) {
 		jobId = j.getId();
 		jobRef = ui.getRequestUriBuilder().path("{id}").build(j.getId());
 	}

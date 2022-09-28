@@ -193,8 +193,12 @@ public enum MachineVersion {
 	 *            layout.
 	 * @param isFortyEightChip
 	 *            Indicates if this machine has exactly one 48 chip board.
-	 * @param wrapAround
-	 *            Indicates if this machine is expected to have wrap-arounds.
+	 * @param horizontalWrap
+	 *            Indicates if this machine is expected to have wrap-arounds in
+	 *            the horizontal direction.
+	 * @param verticalWrap
+	 *            Indicates if this machine is expected to have wrap-arounds in
+	 *            the vertical direction.
 	 * @param isTriad
 	 *            Indicates if this board is made up of triads.
 	 */
@@ -208,8 +212,12 @@ public enum MachineVersion {
 	/**
 	 * Unspecified size constructor, assumed to be multi-board.
 	 *
-	 * @param wrapAround
-	 *            Indicates if this machine is expected to have wrap-arounds.
+	 * @param horizontalWrap
+	 *            Indicates if this machine is expected to have wrap-arounds in
+	 *            the horizontal direction.
+	 * @param verticalWrap
+	 *            Indicates if this machine is expected to have wrap-arounds in
+	 *            the vertical direction.
 	 * @param isTriad
 	 *            Indicates if this board is made up of triads,
 	 */

@@ -17,25 +17,18 @@
 package uk.ac.manchester.spinnaker.alloc.db;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static uk.ac.manchester.spinnaker.alloc.db.DBTestingUtils.assumeWritable;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.InvalidResultSetAccessException;
 import org.springframework.test.context.ActiveProfiles;
-
-import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 
 /**
  * Test that the database engine interface works and that the queries are
@@ -47,28 +40,7 @@ import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
 @SpringBootTest
 @TestInstance(PER_CLASS)
 @ActiveProfiles("unittest")
-class DbBasicTest {
-	private DatabaseEngine memdb;
-
-	private Connection c;
-
-	@BeforeAll
-	void getMemoryDatabase(@Autowired DatabaseEngine mainDBEngine) {
-		assumeTrue(mainDBEngine != null, "spring-configured DB engine absent");
-		memdb = mainDBEngine.getInMemoryDB();
-	}
-
-	@BeforeEach
-	void getConnection() {
-		c = memdb.getConnection();
-		assumeTrue(c != null, "connection not generated");
-	}
-
-	@AfterEach
-	void closeConnection() {
-		c.close();
-	}
-
+class DbBasicTest extends MemDBTestBase {
 	private static void assertContains(String expected, String value) {
 		assertTrue(value.contains(expected),
 				() -> "did not find " + expected + " in " + value);

@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test;
 
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
+@SuppressWarnings("ClassCanBeStatic")
 class TestBlacklist {
 	private static final ChipLocation C00 = new ChipLocation(0, 0);
 

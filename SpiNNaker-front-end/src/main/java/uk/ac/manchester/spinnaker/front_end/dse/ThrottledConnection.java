@@ -39,6 +39,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
@@ -98,6 +100,7 @@ class ThrottledConnection implements Closeable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the reprogramming.
 	 */
+	@MustBeClosed
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
 			IPTag iptag) throws IOException, ProcessException {
 		location = board.location;
@@ -153,6 +156,7 @@ class ThrottledConnection implements Closeable {
 	}
 
 	@Override
+	@SuppressWarnings("FutureReturnValueIgnored")
 	public void close() {
 		var c = connection;
 		connection = null;

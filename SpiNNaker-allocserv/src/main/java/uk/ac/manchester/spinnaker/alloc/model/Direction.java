@@ -72,7 +72,7 @@ public enum Direction {
 	public final String columnName;
 
 	/** The number of the opposite of the link. */
-	private int oppo;
+	private final int oppo;
 
 	Direction(FPGA fpga, int bankSelect, String columnName, int opposite) {
 		this.fpga = fpga;

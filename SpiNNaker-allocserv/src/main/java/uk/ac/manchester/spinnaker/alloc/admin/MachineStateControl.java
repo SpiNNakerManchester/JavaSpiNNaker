@@ -28,7 +28,6 @@ import static uk.ac.manchester.spinnaker.alloc.db.Row.integer;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.serial;
 import static uk.ac.manchester.spinnaker.alloc.db.Row.string;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.batch;
-import static uk.ac.manchester.spinnaker.utils.CollectionUtils.curry;
 import static uk.ac.manchester.spinnaker.utils.CollectionUtils.lmap;
 
 import java.time.Instant;
@@ -37,14 +36,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+
+import com.google.errorprone.annotations.CompileTimeConstant;
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.StateControlProperties;
@@ -82,13 +86,30 @@ public class MachineStateControl extends DatabaseAwareBean {
 
 	private StateControlProperties props;
 
+	private ScheduledFuture<?> readAllTask;
+
 	@PostConstruct
 	private void launchBackground() {
 		props = properties.getStateControl();
 		// After a minute, start retrieving board serial numbers
-		executor.schedule((Runnable) this::readAllBoardSerialNumbers,
-				props.getBlacklistTimeout().getSeconds(), SECONDS);
+		readAllTask =
+				executor.schedule((Runnable) this::readAllBoardSerialNumbers,
+						props.getBlacklistTimeout().getSeconds(), SECONDS);
 		// Why can't I pass a Duration directly there?
+	}
+
+	@PreDestroy
+	private void stopBackground() {
+		if (readAllTask != null) {
+			readAllTask.cancel(true);
+			try {
+				readAllTask.get();
+			} catch (InterruptedException e) {
+				log.trace("interrupted background loader", e);
+			} catch (Exception e) {
+				log.info("failure in background board serial number fetch", e);
+			}
+		}
 	}
 
 	/**
@@ -473,20 +494,22 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param machineName
 	 *            Which machine to read the serial numbers of.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	public void readAllBoardSerialNumbers(String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
-				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
+				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
 	}
 
 	/**
 	 * Ensure that the database has the actual serial numbers of all known
 	 * boards.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	private void readAllBoardSerialNumbers() {
 		batchReqs(null, "retrieving serial numbers",
 				props.getSerialReadBatchSize(),
-				curry(Op::new, CREATE_SERIAL_READ_REQ), Op::completed);
+				id -> new Op(CREATE_SERIAL_READ_REQ, id), Op::completed);
 	}
 
 	private interface InterruptableConsumer<T> {
@@ -557,10 +580,11 @@ public class MachineStateControl extends DatabaseAwareBean {
 	 * @param machineName
 	 *            Which machine to get the blacklists of.
 	 */
+	@SuppressWarnings("MustBeClosed")
 	public void updateAllBlacklists(String machineName) {
 		batchReqs(requireNonNull(machineName), "retrieving blacklists",
 				props.getBlacklistReadBatchSize(),
-				curry(Op::new, CREATE_BLACKLIST_READ),
+				id -> new Op(CREATE_BLACKLIST_READ, id),
 				op -> op.getResult(serial("data", Blacklist.class))
 						.ifPresent(bl -> {
 							blacklistStore.writeBlacklist(op.boardId, bl);
@@ -717,7 +741,9 @@ public class MachineStateControl extends DatabaseAwareBean {
 		 * @param args
 		 *            Values to bind to parameters in the SQL.
 		 */
-		Op(String operation, Object... args) {
+		@MustBeClosed
+		@SuppressWarnings("CompileTimeConstant")
+		Op(@CompileTimeConstant final String operation, Object... args) {
 			boardId = ((Integer) args[0]).intValue(); // TODO yuck!
 			epoch = epochs.getBlacklistEpoch();
 			op = execute(conn -> {

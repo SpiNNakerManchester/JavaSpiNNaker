@@ -18,6 +18,7 @@ package uk.ac.manchester.spinnaker.alloc.security;
 
 import static java.util.Objects.nonNull;
 import static javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -31,11 +32,30 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.slf4j.Logger;
+
+import com.google.errorprone.annotations.Var;
+import com.google.errorprone.annotations.concurrent.LazyInit;
+
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties.OpenIDProperties;
 
 /** Support utility methods for working with SSL stuff. */
 public abstract class Utils {
+	@LazyInit
+	private static Logger log;
+
 	private Utils() {
+	}
+
+	// Late init
+	private static synchronized Logger log() {
+		@Var
+		var l = log;
+		if (l == null) {
+			l = getLogger(Utils.class);
+			log = l;
+		}
+		return l;
 	}
 
 	/**
@@ -94,6 +114,7 @@ public abstract class Utils {
 							// If we got here, we passed!
 							return;
 						} catch (CertificateException e) {
+							log().trace("ignoring certificate exception", e);
 						}
 					}
 					defaultTm.checkServerTrusted(chain, authType);

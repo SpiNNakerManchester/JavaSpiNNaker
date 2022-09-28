@@ -65,7 +65,7 @@ public final class EraseFlash extends BMPRequest<EraseFlash.Response> {
 	}
 
 	/** The response from a request to erase flash. */
-	public final class Response extends BMPRequest.BMPResponse {
+	public static final class Response extends BMPRequest.BMPResponse {
 		/** Where the buffer is located. */
 		public final MemoryLocation address;
 

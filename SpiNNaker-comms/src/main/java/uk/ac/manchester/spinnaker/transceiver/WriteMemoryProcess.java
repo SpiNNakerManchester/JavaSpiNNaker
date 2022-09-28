@@ -276,8 +276,7 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			writePosition = writePosition.add(bytesToSend);
 			bytesToWrite -= bytesToSend;
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -307,7 +306,8 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 		while (bytesToWrite > 0) {
 			int bytesToSend = min(bytesToWrite, UDP_MESSAGE_MAX_SIZE);
 			var tmp = workingBuffer.duplicate();
-			bytesToSend = data.read(tmp.array(), 0, bytesToSend);
+			bytesToSend =
+					data.read(tmp.array(), tmp.arrayOffset(), bytesToSend);
 			if (bytesToSend <= 0) {
 				break;
 			}
@@ -316,7 +316,6 @@ class WriteMemoryProcess extends MultiConnectionProcess<SCPConnection> {
 			writePosition = writePosition.add(bytesToSend);
 			bytesToWrite -= bytesToSend;
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 }

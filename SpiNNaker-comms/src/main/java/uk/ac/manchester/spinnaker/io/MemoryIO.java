@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.io;
 
 import java.io.IOException;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.transceiver.FillDataType;
@@ -28,6 +30,7 @@ import uk.ac.manchester.spinnaker.utils.Slice;
 /** A file-like object for reading and writing memory. */
 public class MemoryIO extends BaseIO {
 	/** The transceiver for speaking to the machine. */
+	@GuardedBy("itself")
 	private final ChipMemoryIO io;
 
 	/**
@@ -47,10 +50,10 @@ public class MemoryIO extends BaseIO {
 		io = ChipMemoryIO.getInstance(transceiver, chip);
 	}
 
-	private MemoryIO(ChipMemoryIO io, MemoryLocation startAddress,
+	private MemoryIO(MemoryIO mem, MemoryLocation startAddress,
 			MemoryLocation endAddress) {
 		super(startAddress, endAddress);
-		this.io = io;
+		this.io = mem.ref();
 	}
 
 	@Override
@@ -60,17 +63,23 @@ public class MemoryIO extends BaseIO {
 		}
 	}
 
+	private ChipMemoryIO ref() {
+		synchronized (io) {
+			return io;
+		}
+	}
+
 	@Override
 	public MemoryIO get(int slice) throws IOException {
 		if (slice < 0 || slice >= size()) {
 			throw new ArrayIndexOutOfBoundsException(slice);
 		}
-		return new MemoryIO(io, start.add(slice), start.add(slice + 1));
+		return new MemoryIO(this, start.add(slice), start.add(slice + 1));
 	}
 
 	@Override
 	public MemoryIO get(Slice slice) throws IOException {
-		return get(slice, (from, to) -> new MemoryIO(io, from, to));
+		return get(slice, (from, to) -> new MemoryIO(this, from, to));
 	}
 
 	@Override

@@ -42,6 +42,8 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Set;
 
+import com.google.errorprone.annotations.CheckReturnValue;
+
 import uk.ac.manchester.spinnaker.machine.MemoryLocation;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPBoard;
 import uk.ac.manchester.spinnaker.messages.bmp.BMPCoords;
@@ -69,7 +71,7 @@ import uk.ac.manchester.spinnaker.utils.MappableIterable;
  *
  * @author Donal Fellows
  */
-public interface BMPTransceiverInterface {
+public interface BMPTransceiverInterface extends AutoCloseable {
 	/**
 	 * Set the default BMP coordinates, at least for cabinet and frame.
 	 *
@@ -97,6 +99,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	MappableIterable<BMPBoard> availableBoards(BMPCoords bmp)
 			throws IOException, ProcessException;
 
@@ -111,6 +114,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default MappableIterable<BMPBoard> availableBoards()
 			throws IOException, ProcessException {
 		return availableBoards(getBoundBMP());
@@ -317,6 +321,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
@@ -341,6 +346,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, FPGAMainRegisters register,
 			BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
@@ -366,6 +372,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, BMPBoard board)
 			throws IOException, ProcessException {
@@ -394,6 +401,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, int registerBank,
 			FPGALinkRegisters register, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
@@ -420,6 +428,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGARecevingLinkCounters counter, BMPBoard board)
 			throws IOException, ProcessException {
@@ -448,6 +457,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGARecevingLinkCounters counter, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
@@ -473,6 +483,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGASendingLinkCounters counter, BMPBoard board)
 			throws IOException, ProcessException {
@@ -501,6 +512,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGALinkCounter(FPGA fpga, int linkNumber,
 			FPGASendingLinkCounters counter, BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
@@ -525,6 +537,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default int readFPGARegister(FPGA fpga, MemoryLocation register,
 			BMPBoard board) throws IOException, ProcessException {
 		return readFPGARegister(fpga, register, getBoundBMP(), board);
@@ -550,6 +563,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	int readFPGARegister(FPGA fpga, MemoryLocation register, BMPCoords bmp,
 			BMPBoard board) throws IOException, ProcessException;
 
@@ -718,6 +732,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default ADCInfo readADCData(BMPBoard board)
 			throws IOException, ProcessException {
 		return readADCData(getBoundBMP(), board);
@@ -737,6 +752,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	ADCInfo readADCData(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
@@ -753,10 +769,10 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default VersionInfo readBMPVersion(
 			Iterable<BMPBoard> boards) throws IOException, ProcessException {
-		return readBMPVersion(getBoundBMP(),
-				boards.iterator().next());
+		return readBMPVersion(getBoundBMP(), boards.iterator().next());
 	}
 
 	/**
@@ -771,6 +787,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafe
+	@CheckReturnValue
 	default VersionInfo readBMPVersion(BMPBoard board)
 			throws IOException, ProcessException {
 		return readBMPVersion(getBoundBMP(), board);
@@ -791,6 +808,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelUnsafe
+	@CheckReturnValue
 	default VersionInfo readBMPVersion(BMPCoords bmp, Iterable<BMPBoard> boards)
 			throws IOException, ProcessException {
 		return readBMPVersion(bmp, boards.iterator().next());
@@ -810,6 +828,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	VersionInfo readBMPVersion(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
@@ -827,6 +846,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default FirmwareDescriptor readBMPFirmwareDescriptor(
 			BMPBoard board, FirmwareDescriptors type)
 			throws IOException, ProcessException {
@@ -849,6 +869,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default FirmwareDescriptor readBMPFirmwareDescriptor(BMPCoords bmp,
 			BMPBoard board, FirmwareDescriptors type)
 			throws IOException, ProcessException {
@@ -868,6 +889,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default boolean getResetStatus(BMPBoard board)
 			throws IOException, ProcessException {
 		return getResetStatus(getBoundBMP(), board);
@@ -887,6 +909,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	boolean getResetStatus(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
@@ -989,6 +1012,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default ByteBuffer readBMPMemory(BMPBoard board, MemoryLocation baseAddress,
 			int length) throws IOException, ProcessException {
 		return readBMPMemory(getBoundBMP(), board, baseAddress, length);
@@ -1014,6 +1038,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	ByteBuffer readBMPMemory(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException;
@@ -1033,6 +1058,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default int readBMPMemoryWord(BMPBoard board, MemoryLocation address)
 			throws IOException, ProcessException {
 		return readBMPMemoryWord(getBoundBMP(), board, address);
@@ -1055,6 +1081,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default int readBMPMemoryWord(BMPCoords bmp, BMPBoard board,
 			MemoryLocation address) throws IOException, ProcessException {
 		var b = readBMPMemory(bmp, board, address, WORD_SIZE);
@@ -1211,6 +1238,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default ByteBuffer readSerialFlash(BMPBoard board,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException {
@@ -1237,6 +1265,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	ByteBuffer readSerialFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException;
@@ -1256,6 +1285,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	String readBoardSerialNumber(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException;
 
@@ -1271,6 +1301,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	default String readBoardSerialNumber(BMPBoard board)
 			throws ProcessException, IOException {
 		return readBoardSerialNumber(getBoundBMP(), board);
@@ -1289,6 +1320,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	default Blacklist readBlacklist(BMPCoords bmp, BMPBoard board)
 			throws IOException, ProcessException {
 		return new Blacklist(
@@ -1307,6 +1339,7 @@ public interface BMPTransceiverInterface {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects a message.
 	 */
+	@CheckReturnValue
 	default Blacklist readBlacklist(BMPBoard board)
 			throws IOException, ProcessException {
 		return readBlacklist(getBoundBMP(), board);
@@ -1409,6 +1442,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	default int readSerialFlashCRC(BMPBoard board, MemoryLocation baseAddress,
 			int length) throws IOException, ProcessException {
 		return readSerialFlashCRC(getBoundBMP(), board, baseAddress, length);
@@ -1433,6 +1467,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@ParallelSafeWithCare
+	@CheckReturnValue
 	int readSerialFlashCRC(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int length)
 			throws IOException, ProcessException;
@@ -1584,6 +1619,7 @@ public interface BMPTransceiverInterface {
 	 *             If SpiNNaker rejects a message.
 	 */
 	@Deprecated
+	@CheckReturnValue
 	MemoryLocation eraseBMPFlash(BMPCoords bmp, BMPBoard board,
 			MemoryLocation baseAddress, int size)
 			throws IOException, ProcessException;

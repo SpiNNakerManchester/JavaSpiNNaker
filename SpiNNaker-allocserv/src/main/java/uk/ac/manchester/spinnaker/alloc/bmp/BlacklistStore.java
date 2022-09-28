@@ -28,6 +28,8 @@ import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
+import com.google.errorprone.annotations.RestrictedApi;
+
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseEngine.Connection;
@@ -178,6 +180,8 @@ public class BlacklistStore extends DatabaseAwareBean {
 	 * @deprecated Only use for testing, as circumvents transaction management.
 	 */
 	@Deprecated
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
 	@ForTestingOnly
 	TestAPI getTestAPI() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

@@ -66,27 +66,7 @@ abstract class Utils {
 	 * @author Donal Fellows
 	 */
 	@FunctionalInterface
-	interface Notifier extends Callable<Void> {
-		@Override
-		default Void call() {
-			try {
-				while (!interrupted()) {
-					waitAndNotify();
-				}
-			} catch (UnknownIOException e) {
-				// Nothing useful we can do here
-			} catch (DataAccessException e) {
-				log.error("SQL failure", e);
-			} catch (IOException e) {
-				log.warn("failed to notify", e);
-			} catch (InterruptedException ignored) {
-				// Nothing to do
-			} catch (RuntimeException e) {
-				log.error("unexpected exception", e);
-			}
-			return null;
-		}
-
+	interface Notifier {
 		/**
 		 * How to wait for an event and send a notification about it.
 		 *
@@ -99,6 +79,35 @@ abstract class Utils {
 		 */
 		void waitAndNotify()
 				throws InterruptedException, DataAccessException, IOException;
+
+		/**
+		 * Wrap a notifier into a callable, doing some of the exception
+		 * handling.
+		 *
+		 * @param notifier
+		 *            The notifier to wrap.
+		 * @return The wrapped notifier.
+		 */
+		static Callable<Void> toCallable(Notifier notifier) {
+			return () -> {
+				try {
+					while (!interrupted()) {
+						notifier.waitAndNotify();
+					}
+				} catch (UnknownIOException e) {
+					// Nothing useful we can do here
+				} catch (DataAccessException e) {
+					log.error("SQL failure", e);
+				} catch (IOException e) {
+					log.warn("failed to notify", e);
+				} catch (InterruptedException ignored) {
+					// Nothing to do
+				} catch (RuntimeException e) {
+					log.error("unexpected exception", e);
+				}
+				return null;
+			};
+		}
 	}
 
 	/**

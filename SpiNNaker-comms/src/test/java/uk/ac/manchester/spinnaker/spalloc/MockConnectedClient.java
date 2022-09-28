@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.MustBeClosed;
+
 import uk.ac.manchester.spinnaker.spalloc.messages.Command;
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.GetBoardAtPositionCommand;
@@ -158,6 +160,7 @@ public class MockConnectedClient extends SpallocClient {
 
 	private static final int PORT = 22245;
 
+	@MustBeClosed
 	public MockConnectedClient(int timeout) {
 		// Main
 		//super("spinnaker.cs.man.ac.uk", 22244, timeout);

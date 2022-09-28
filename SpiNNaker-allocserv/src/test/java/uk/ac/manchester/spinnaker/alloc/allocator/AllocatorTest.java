@@ -109,6 +109,7 @@ class AllocatorTest extends TestSupport {
 		return alloc.getTestAPI(conn);
 	}
 
+	@SuppressWarnings("CompileTimeConstant")
 	private int countJobInTable(int job, String table) {
 		// Table names CANNOT be parameters; they're not values
 		return conn.query(format(

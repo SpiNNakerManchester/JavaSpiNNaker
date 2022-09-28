@@ -80,7 +80,7 @@ class SpiNNaker1 implements SpiNNakerControl {
 
 	/**
 	 * Factory for {@link FirmwareLoader}. Do not call directly; use
-	 * {@link #loadFirmware(BMPBoard)} instead.
+	 * {@link #loadFirmware(List)} instead.
 	 */
 	@Autowired
 	private ObjectProvider<FirmwareLoader> firmwareLoaderFactory;
@@ -202,8 +202,6 @@ class SpiNNaker1 implements SpiNNakerControl {
 	/**
 	 * Is a board new enough to be able to manage FPGAs?
 	 *
-	 * @param txrx
-	 *            Transceiver for talking to a BMP in a machine.
 	 * @param board
 	 *            The board number.
 	 * @return True if the board can manage FPGAs.

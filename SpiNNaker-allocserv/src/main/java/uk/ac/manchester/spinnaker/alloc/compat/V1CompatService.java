@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.SpallocProperties;
@@ -258,6 +259,8 @@ public class V1CompatService {
 	 * @deprecated Only for testing.
 	 */
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	public TestAPI getTestApi() {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

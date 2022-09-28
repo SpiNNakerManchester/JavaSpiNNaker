@@ -63,6 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<swagger.version>4.14.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
 		<jython.version>2.7.3</jython.version>
+		<error-prone.version>2.15.0</error-prone.version>
 	</properties>
 
 	<dependencyManagement>
@@ -326,6 +327,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<artifactId>Java-WebSocket</artifactId>
 				<version>1.5.3</version>
 			</dependency>
+			<dependency>
+				<groupId>com.google.errorprone</groupId>
+				<artifactId>error_prone_annotations</artifactId>
+				<version>${error-prone.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -566,6 +572,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						<excludes>
 							<!-- Files without comment formats should be excluded -->
 							<exclude>.github/*</exclude>
+							<exclude>.mvn/*</exclude>
 							<exclude>nbactions.xml</exclude>
 							<exclude>support/**</exclude>
 							<exclude>**/*.json</exclude>
@@ -987,6 +994,77 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 						</configuration>
 					</plugin>
 				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>ErrorProne</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>default-compile</id>
+									<configuration>
+										<compilerArgs>
+											<arg>-XDcompilePolicy=simple</arg>
+											<!-- Options to EP must go in same arg. Ugh. -->
+											<arg>
+												-Xplugin:ErrorProne
+												<!-- Disable the MissingSummary check; we use an abbreviated
+													 documentation for getters, and its suggested replacement
+													 is terrible. -->
+												-Xep:MissingSummary:OFF
+											</arg>
+										</compilerArgs>
+										<annotationProcessorPaths>
+											<path>
+												<groupId>com.google.errorprone</groupId>
+												<artifactId>error_prone_core</artifactId>
+												<version>${error-prone.version}</version>
+											</path>
+											<!-- Other annotation processors go here.
+
+											If 'annotationProcessorPaths' is set, processors will no longer be
+											discovered on the regular -classpath; see also 'Using Error Prone
+											together with other annotation processors' below. -->
+										</annotationProcessorPaths>
+									</configuration>
+								</execution>
+								<execution>
+									<id>default-testCompile</id>
+									<configuration>
+										<compilerArgs>
+											<arg>-XDcompilePolicy=simple</arg>
+											<!-- Options to EP must go in same arg. Ugh. -->
+											<arg>
+												-Xplugin:ErrorProne
+												<!-- Disable the MissingSummary check; we use an abbreviated
+													 documentation for getters, and its suggested replacement
+													 is terrible. -->
+												-Xep:MissingSummary:OFF
+											</arg>
+										</compilerArgs>
+										<annotationProcessorPaths>
+											<path>
+												<groupId>com.google.errorprone</groupId>
+												<artifactId>error_prone_core</artifactId>
+												<version>${error-prone.version}</version>
+											</path>
+											<!-- Other annotation processors go here.
+
+											If 'annotationProcessorPaths' is set, processors will no longer be
+											discovered on the regular -classpath; see also 'Using Error Prone
+											together with other annotation processors' below. -->
+										</annotationProcessorPaths>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
 			</build>
 		</profile>
 	</profiles>

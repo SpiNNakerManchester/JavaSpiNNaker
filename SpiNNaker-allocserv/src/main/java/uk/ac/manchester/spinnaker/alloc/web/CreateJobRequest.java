@@ -32,6 +32,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.errorprone.annotations.Keep;
 
 import uk.ac.manchester.spinnaker.alloc.model.IPAddress;
 
@@ -109,18 +110,21 @@ public class CreateJobRequest {
 
 	// Extended validation
 
+	@Keep
 	@JsonIgnore
 	@AssertTrue(message = "either machine-name or tags must be supplied")
 	private boolean isMachineNameAndTagsMutuallyExclusive() {
 		return nonNull(machineName) != nonNull(tags);
 	}
 
+	@Keep
 	@JsonIgnore
 	@AssertFalse(message = "machine-name, if given, must be non-blank")
 	private boolean isMachineNameInsane() {
 		return nonNull(machineName) && machineName.isBlank();
 	}
 
+	@Keep
 	@JsonIgnore
 	@AssertTrue(message = "only at most one of num-boards, dimensions and "
 			+ "board should be given")
@@ -142,6 +146,7 @@ public class CreateJobRequest {
 
 	private static final Duration MAX_KEEPALIVE = Duration.parse("PT300S");
 
+	@Keep
 	@JsonIgnore
 	@AssertTrue(message = "keepalive-interval must be 30 to 300 seconds")
 	private boolean isKeepaliveIntervalInRange() {
@@ -215,6 +220,7 @@ public class CreateJobRequest {
 		 *
 		 * @return Yes if at least one way of giving coordinates is valid.
 		 */
+		@Keep
 		@JsonIgnore
 		@AssertTrue(message = "at least one way of identifying a board "
 				+ "must be given")

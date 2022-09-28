@@ -46,9 +46,9 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -56,6 +56,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.Logger;
 
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
 
@@ -115,7 +116,7 @@ final class ClientSession implements Session {
 	/**
 	 * Create a session and log it in.
 	 *
-	 * @param baseURI
+	 * @param baseUri
 	 *            The service base URI. <em>Must</em> be absolute! <em>Must
 	 *            not</em> include a username or password!
 	 * @param username
@@ -125,9 +126,9 @@ final class ClientSession implements Session {
 	 * @throws IOException
 	 *             If things go wrong.
 	 */
-	ClientSession(URI baseURI, String username, String password)
+	ClientSession(URI baseUri, String username, String password)
 			throws IOException {
-		baseUri = asDir(baseURI);
+		this.baseUri = asDir(baseUri);
 		this.username = username;
 		this.password = password;
 		// This does the actual logging in process
@@ -284,8 +285,9 @@ final class ClientSession implements Session {
 
 		@Override
 		public ConnectedChannel openChannel(ChipLocation chip, int port,
-				Consumer<ByteBuffer> receiver) throws InterruptedException {
-			requireNonNull(receiver);
+				BlockingQueue<ByteBuffer> receiveQueue)
+				throws InterruptedException {
+			requireNonNull(receiveQueue);
 
 			var b = OPEN.allocate();
 			b.putInt(0); // dummy
@@ -296,13 +298,14 @@ final class ClientSession implements Session {
 
 			int channelId = call(b).getInt();
 
-			return new ConnectedChannelImpl(channelId, receiver);
+			return new ConnectedChannelImpl(channelId, receiveQueue);
 		}
 
 		@Override
 		public UnconnectedChannel openUnconnectedChannel(
-				Consumer<ByteBuffer> receiver) throws InterruptedException {
-			requireNonNull(receiver);
+				BlockingQueue<ByteBuffer> receiveQueue)
+				throws InterruptedException {
+			requireNonNull(receiveQueue);
 
 			var b = OPEN_U.allocate();
 			b.putInt(0); // dummy
@@ -315,7 +318,7 @@ final class ClientSession implements Session {
 			msg.get(addr);
 			int port = msg.getInt();
 			return new UnconnectedChannelImpl(channelId,
-					getByAddressQuietly(addr), port, receiver);
+					getByAddressQuietly(addr), port, receiveQueue);
 		}
 
 		@Override
@@ -337,18 +340,18 @@ final class ClientSession implements Session {
 			/** Whether this channel is closed. */
 			boolean closed;
 
-			private final Consumer<ByteBuffer> receiver;
+			/** Where we enqueue the received messages. */
+			private final BlockingQueue<ByteBuffer> receiveQueue;
 
 			/**
 			 * @param id
 			 *            The ID of the channel.
-			 * @param receiver
-			 *            Where to send received messages, which is probably an
-			 *            operation to enqueue them somewhere.
+			 * @param receiveQueue
+			 *            Where to enqueue received messages.
 			 */
-			ChannelBase(int id, Consumer<ByteBuffer> receiver) {
+			ChannelBase(int id, BlockingQueue<ByteBuffer> receiveQueue) {
 				this.id = id;
-				this.receiver = receiver;
+				this.receiveQueue = receiveQueue;
 				channels.put(id, this);
 			}
 
@@ -362,13 +365,14 @@ final class ClientSession implements Session {
 			private void receive(ByteBuffer msg) {
 				msg = msg.slice();
 				msg.order(LITTLE_ENDIAN);
-				receiver.accept(msg);
+				receiveQueue.add(msg);
 			}
 
 			/**
 			 * Close this channel.
 			 *
 			 * @throws IOException
+			 *             If things fail.
 			 */
 			@Override
 			public void close() throws IOException {
@@ -420,12 +424,12 @@ final class ClientSession implements Session {
 			/**
 			 * @param id
 			 *            The ID of the channel.
-			 * @param receiver
-			 *            Where to send received messages, which is probably an
-			 *            operation to enqueue them somewhere.
+			 * @param receiveQueue
+			 *            Where to enqueue received messages.
 			 */
-			ConnectedChannelImpl(int id, Consumer<ByteBuffer> receiver) {
-				super(id, receiver);
+			ConnectedChannelImpl(int id,
+					BlockingQueue<ByteBuffer> receiveQueue) {
+				super(id, receiveQueue);
 			}
 
 			@Override
@@ -455,17 +459,14 @@ final class ClientSession implements Session {
 			 *            The "local" address for this channel (on the server)
 			 * @param port
 			 *            The "local" port for this channel (on the server)
-			 * @param client
-			 *            The websocket.
-			 * @param receiver
-			 *            Where to send received messages, which is probably an
-			 *            operation to enqueue them somewhere.
+			 * @param receiveQueue
+			 *            Where to enqueue received messages.
 			 * @throws RuntimeException
 			 *             If the address can't be parsed. Really not expected!
 			 */
 			UnconnectedChannelImpl(int id, Inet4Address addr, int port,
-					Consumer<ByteBuffer> receiver) {
-				super(id, receiver);
+					BlockingQueue<ByteBuffer> receiveQueue) {
+				super(id, receiveQueue);
 				this.addr = addr;
 				this.port = port;
 			}
@@ -622,18 +623,23 @@ final class ClientSession implements Session {
 				ofEntries(entry("_csrf", tempCsrf), entry("submit", "submit"),
 						entry("username", username),
 						entry("password", password)));
-		checkForError(c, "login failed");
-		// There should be a new session cookie after login
-		if (!trackCookie(c)) {
-			throw new IOException("could not establish session");
+		try (var ignored = checkForError(c, "login failed")) {
+			/*
+			 * The result should be a redirect; the body is irrelevant but the
+			 * headers matter. In particular, there should be a new session
+			 * cookie after login.
+			 */
+			if (!trackCookie(c)) {
+				throw new IOException("could not establish session");
+			}
 		}
 	}
 
 	/**
 	 * Renew the session credentials.
 	 *
-	 * @param action
-	 *            How to renew the CSRF token, if that's desired.
+	 * @param postRenew
+	 *            Whether to rediscover the root data after session renewal.
 	 * @throws IOException
 	 *             If things go wrong.
 	 */
@@ -654,7 +660,7 @@ final class ClientSession implements Session {
 			throws Exn, IOException {
 		try {
 			return action.act();
-		} catch (SpallocClient.Exception e) {
+		} catch (SpallocException e) {
 			if (e.getResponseCode() == HTTP_UNAUTHORIZED) {
 				renew(true);
 				return action.act();

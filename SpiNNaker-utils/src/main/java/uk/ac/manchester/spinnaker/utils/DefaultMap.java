@@ -100,6 +100,7 @@ public class DefaultMap<K, V> extends HashMap<K, V> {
 	 *            Can be an Object of a Class that implement KeyAwareFactory.
 	 *            Can be a method expressed as a lambda.
 	 */
+	@SuppressWarnings("UnusedVariable")
 	private DefaultMap(Marker dummy,
 			KeyAwareFactory<? super K, ? extends V> defaultFactory) {
 		direct = false;

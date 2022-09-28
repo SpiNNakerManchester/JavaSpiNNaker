@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
  *
  * @author Donal Fellows
  */
+@SuppressWarnings("ForOverride")
 public class DelegatingSCPConnection extends SCPConnection {
 	private final SDPConnection delegate;
 
@@ -106,6 +107,7 @@ public class DelegatingSCPConnection extends SCPConnection {
 	 * be closed directly.
 	 */
 	@Override
+	@SuppressWarnings("MissingSuperCall")
 	public void close() throws IOException {
 		// Do nothing
 	}
