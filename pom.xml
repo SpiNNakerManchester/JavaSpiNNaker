@@ -35,16 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 		<spinnaker.version>6.0.1-SNAPSHOT</spinnaker.version>
 
-		<junit.version>5.9.0</junit.version>
+		<junit.version>5.9.1</junit.version>
 		<checkstyle.version>10.3.3</checkstyle.version>
 		<javadoc.version>3.4.1</javadoc.version>
 		<testing.version>3.0.0-M7</testing.version>
 
-		<slf4j.version>2.0.0</slf4j.version>
-		<log4j.version>2.18.0</log4j.version>
+		<slf4j.version>2.0.2</slf4j.version>
+		<log4j.version>2.19.0</log4j.version>
 
-		<spring.version>5.3.22</spring.version>
-		<spring.boot.version>2.7.3</spring.boot.version>
+		<spring.version>5.3.23</spring.version>
+		<spring.boot.version>2.7.4</spring.boot.version>
 		<!--
 		DKF: if you update spring.boot.version, also update the annotation
 		  processor binding in Eclipse for SpiNNaker-allocserv:
@@ -59,10 +59,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 		<cxf.version>3.5.3</cxf.version>
 		<jackson.version>2.13.4</jackson.version>
 		<sqlite.version>3.39.3.0</sqlite.version>
-		<keycloak.version>19.0.1</keycloak.version>
+		<keycloak.version>19.0.2</keycloak.version>
 		<swagger.version>4.14.0</swagger.version>
 		<jsontaglib.version>1.0.5</jsontaglib.version>
-		<jython.version>2.7.2</jython.version>
+		<jython.version>2.7.3</jython.version>
 	</properties>
 
 	<dependencyManagement>
@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
+				<artifactId>log4j-slf4j2-impl</artifactId>
 				<version>${log4j.version}</version>
 				<scope>runtime</scope>
 			</dependency>
@@ -213,7 +213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
-				<version>20220320</version>
+				<version>20220924</version>
 			</dependency>
 			<dependency>
 				<groupId>org.skyscreamer</groupId>
@@ -345,7 +345,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.2</version>
+					<version>3.3.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -362,7 +362,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.4.0</version>
 					<configuration>
 						<filters>
 							<filter>
@@ -561,7 +561,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 				<plugin>
 					<groupId>org.apache.rat</groupId>
 					<artifactId>apache-rat-plugin</artifactId>
-					<version>0.14</version>
+					<version>0.15</version>
 					<configuration>
 						<excludes>
 							<!-- Files without comment formats should be excluded -->
