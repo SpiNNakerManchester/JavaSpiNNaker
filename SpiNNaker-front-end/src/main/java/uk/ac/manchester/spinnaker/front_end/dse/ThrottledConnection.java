@@ -31,12 +31,15 @@ import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.nio.IntBuffer;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.slf4j.Logger;
+
+import com.google.errorprone.annotations.MustBeClosed;
 
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.UDPPacket;
@@ -97,6 +100,7 @@ class ThrottledConnection implements Closeable {
 	 * @throws ProcessException
 	 *             If SpiNNaker rejects the reprogramming.
 	 */
+	@MustBeClosed
 	ThrottledConnection(TransceiverInterface transceiver, Ethernet board,
 			IPTag iptag) throws IOException, ProcessException {
 		location = board.location;
@@ -139,12 +143,20 @@ class ThrottledConnection implements Closeable {
 			log.debug("message payload data: {}", range(0, payload.remaining())
 					.mapToObj(i -> hexbyte(payload.get(i))).collect(toList()));
 		}
-		waitUntil(lastSend + THROTTLE_NS);
+		throttledSend(message);
+	}
+
+	private void throttledSend(SDPMessage message) throws IOException {
+		if (waitUntil(lastSend + THROTTLE_NS)) {
+			throw new InterruptedIOException(
+					"interrupted while sending message");
+		}
 		connection.send(message);
 		lastSend = nanoTime();
 	}
 
 	@Override
+	@SuppressWarnings("FutureReturnValueIgnored")
 	public void close() {
 		var c = connection;
 		connection = null;

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
@@ -52,10 +54,22 @@ public class TestMockClient {
 
 	private static int timeout = SECOND;
 
-	private static MockConnectedClient client =
-			new MockConnectedClient(timeout);
+	private static MockConnectedClient client;
 
 	private static final Logger log = getLogger(TestMockClient.class);
+
+	private static final boolean PRINT_JOBS = false;
+
+	@BeforeAll
+	@SuppressWarnings("MustBeClosed")
+	static void makeMockClient() {
+		client = new MockConnectedClient(timeout);
+	}
+
+	@AfterAll
+	static void closeMockClient() throws IOException {
+		client.close();
+	}
 
 	@Test
 	void testListJobs() throws IOException, SpallocServerException, Exception {
@@ -65,7 +79,9 @@ public class TestMockClient {
 				// Don't know the jobids currently on the machine if any
 				jobs.forEach(d -> assertThat("Jobid > 0", d.getJobID(),
 						greaterThan(0)));
-				jobs.forEach(j -> System.out.println(j));
+				if (PRINT_JOBS) {
+					jobs.forEach(System.out::println);
+				}
 			} else {
 				int[] expectedIDs = {
 					47224, 47444
@@ -122,7 +138,7 @@ public class TestMockClient {
 		Notification notification = null;
 		try (var c = client.withConnection()) {
 			var args = new ArrayList<Integer>();
-			@SuppressWarnings("deprecation")
+			@SuppressWarnings("removal")
 			int jobId = client.createJob(args,
 					Map.of("owner", "Unittest. OK to kill after 1 minute."),
 					timeout);
@@ -149,7 +165,7 @@ public class TestMockClient {
 			var machineInfo = client.getJobMachineInfo(jobId, timeout);
 			var machineName = machineInfo.getMachineName();
 			if (client.isActual()) {
-				assert !machineName.isBlank() : "must have a machine name";
+				assertFalse(machineName.isBlank(), "must have a machine name");
 			} else {
 				assertEquals("Spin24b-223", machineName);
 			}
@@ -167,8 +183,11 @@ public class TestMockClient {
 				state = client.getJobState(jobId, timeout);
 			}
 			if (client.isActual()) {
+				// Drain any notification received
 				notification = client.waitForNotification(-1);
-				JobsChangedNotification.class.cast(notification);
+				if (notification != null) {
+					assertTrue(notification instanceof JobsChangedNotification);
+				}
 			}
 			assertEquals(State.POWER, state.getState());
 			if (client.isActual()) {

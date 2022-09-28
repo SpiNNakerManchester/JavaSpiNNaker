@@ -42,7 +42,7 @@ public class ReadADC extends BMPRequest<ReadADC.Response> {
 	}
 
 	/** An SCP response to a request for ADC information. */
-	public final class Response extends BMPRequest.BMPResponse {
+	public static final class Response extends BMPRequest.BMPResponse {
 		/** The ADC information. */
 		public final ADCInfo adcInfo;
 

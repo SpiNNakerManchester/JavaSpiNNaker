@@ -21,13 +21,15 @@ import static uk.ac.manchester.spinnaker.transceiver.ProcessException.makeInstan
 import java.io.IOException;
 import java.util.function.Consumer;
 
+import com.google.errorprone.annotations.ForOverride;
+
 import uk.ac.manchester.spinnaker.messages.scp.CheckOKResponse;
 import uk.ac.manchester.spinnaker.messages.scp.NoResponse;
 import uk.ac.manchester.spinnaker.messages.scp.SCPRequest;
 import uk.ac.manchester.spinnaker.utils.ValueHolder;
 
 /** An abstract process for talking to SpiNNaker efficiently. */
-abstract class Process {
+abstract class TxrxProcess {
 	private SCPRequest<?> errorRequest;
 
 	private Throwable exception;
@@ -56,24 +58,21 @@ abstract class Process {
 	}
 
 	/**
-	 * @return Whether an exception is waiting to be thrown.
-	 */
-	private boolean isError() {
-		return exception != null;
-	}
-
-	/**
-	 * Test if an error occurred, and throw it if it did.
+	 * Wait for all outstanding requests sent by this process to receive replies
+	 * or time out. Then test if an error occurred on the SpiNNaker side, and
+	 * throw a process exception it if it did.
 	 *
+	 * @throws IOException
+	 *             If communications fail.
 	 * @throws ProcessException
 	 *             an exception that wraps the original exception that occurred.
 	 */
-	public final void checkForError() throws ProcessException {
-		if (!isError()) {
-			return;
+	protected final void finishBatch() throws ProcessException, IOException {
+		finish();
+		if (exception != null) {
+			var hdr = errorRequest.sdpHeader;
+			throw makeInstance(hdr.getDestination(), exception);
 		}
-		var hdr = errorRequest.sdpHeader;
-		throw makeInstance(hdr.getDestination(), exception);
 	}
 
 	/**
@@ -114,6 +113,7 @@ abstract class Process {
 	 * @throws IOException
 	 *             If communications fail.
 	 */
+	@ForOverride
 	protected abstract void finish() throws IOException;
 
 	/**
@@ -135,8 +135,7 @@ abstract class Process {
 		var holder = new ValueHolder<T>();
 		resetState();
 		sendRequest(request, holder::setValue);
-		finish();
-		checkForError();
+		finishBatch();
 		return holder.getValue();
 	}
 

@@ -93,8 +93,8 @@ public class SpallocServiceImpl extends BackgroundSupport
 
 	/**
 	 * Factory for {@linkplain MachineAPI machines}. Only use via
-	 * {@link #getMachine(String, UriInfo) getMachine(...)}; this is because
-	 * we're dealing with prototype beans.
+	 * {@link #getMachine(String, UriInfo, SecurityContext) getMachine(...)};
+	 * this is because we're dealing with prototype beans.
 	 */
 	@Autowired
 	private ObjectProvider<MachineAPI> machineFactory;

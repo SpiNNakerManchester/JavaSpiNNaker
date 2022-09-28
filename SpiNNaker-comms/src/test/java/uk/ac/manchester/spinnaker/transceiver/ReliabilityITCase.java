@@ -62,9 +62,9 @@ class ReliabilityITCase {
 
 		for (int i = 0; i < REPETITIONS; i++) {
 			try (var txrx = new Transceiver(host, FIVE)) {
-				txrx.ensureBoardIsReady();
-				txrx.getMachineDimensions();
-				txrx.getScampVersion();
+				assertNotNull(txrx.ensureBoardIsReady());
+				assertNotNull(txrx.getMachineDimensions());
+				assertNotNull(txrx.getScampVersion());
 				var machine = txrx.getMachineDetails();
 				assertNull(jsonMachine.difference(machine));
 			} catch (ProcessException e) {

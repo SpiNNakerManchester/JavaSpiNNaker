@@ -60,6 +60,7 @@ import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.BoardLocation;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateDimensions;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.CreateNumBoards;
 import uk.ac.manchester.spinnaker.alloc.allocator.SpallocAPI.Job;
+import uk.ac.manchester.spinnaker.alloc.compat.Utils.Notifier;
 import uk.ac.manchester.spinnaker.alloc.db.DatabaseAwareBean;
 import uk.ac.manchester.spinnaker.alloc.model.PowerState;
 import uk.ac.manchester.spinnaker.alloc.model.Prototype;
@@ -539,10 +540,11 @@ class V1TaskImpl extends V1CompatTask {
 	}
 
 	private <T> void manageNotifier(Map<T, Future<Void>> notifiers, T key,
-			boolean wantNotify, Utils.Notifier notifier) {
+			boolean wantNotify, Notifier notifier) {
 		if (wantNotify) {
 			if (!notifiers.containsKey(key)) {
-				notifiers.put(key, getExecutor().submit(notifier));
+				notifiers.put(key,
+						getExecutor().submit(Notifier.toCallable(notifier)));
 			}
 		} else {
 			var n = notifiers.remove(key);

@@ -47,10 +47,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.allocator.AllocatedMachine.ConnectionInfo;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Job;
 import uk.ac.manchester.spinnaker.allocator.SpallocClient.Machine;
+import uk.ac.manchester.spinnaker.allocator.SpallocClient.SpallocException;
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
 import uk.ac.manchester.spinnaker.connections.SCPConnection;
 import uk.ac.manchester.spinnaker.connections.model.Connection;
@@ -202,9 +205,10 @@ public class SpallocClientFactory {
 	 *             If things go wrong with comms.
 	 * @throws FileNotFoundException
 	 *             on a {@link HttpURLConnection#HTTP_NOT_FOUND}
-	 * @throws SpallocClient.Exception
+	 * @throws SpallocException
 	 *             on other server errors
 	 */
+	@MustBeClosed
 	static InputStream checkForError(HttpURLConnection conn,
 			String errorMessage) throws IOException {
 		if (conn.getResponseCode() == HTTP_NOT_FOUND) {
@@ -212,7 +216,7 @@ public class SpallocClientFactory {
 			throw new FileNotFoundException(errorMessage);
 		}
 		if (conn.getResponseCode() >= HTTP_BAD_REQUEST) {
-			throw new SpallocClient.Exception(conn.getErrorStream(),
+			throw new SpallocException(conn.getErrorStream(),
 					conn.getResponseCode());
 		}
 		return conn.getInputStream();
@@ -420,9 +424,10 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private final class JobImpl extends Common implements Job {
+	private static final class JobImpl extends Common implements Job {
 		private final URI uri;
 
+		@GuardedBy("lock")
 		private ProxyProtocolClient proxy;
 
 		private final Object lock = new Object();
@@ -550,6 +555,7 @@ public class SpallocClientFactory {
 					format("chip?x=%d&y=%d", chip.getX(), chip.getY())));
 		}
 
+		@GuardedBy("lock")
 		private boolean haveProxy() {
 			return nonNull(proxy) && proxy.isOpen();
 		}
@@ -576,8 +582,8 @@ public class SpallocClientFactory {
 				if (!haveProxy()) {
 					proxy = s.withRenewal(() -> s.websocket(wssAddr));
 				}
+				return proxy;
 			}
-			return proxy;
 		}
 
 		@Override
@@ -610,7 +616,7 @@ public class SpallocClientFactory {
 		}
 	}
 
-	private final class MachineImpl extends Common implements Machine {
+	private static final class MachineImpl extends Common implements Machine {
 		private static final int TRIAD = 3;
 
 		private final BriefMachineDescription bmd;

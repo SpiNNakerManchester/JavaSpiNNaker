@@ -41,6 +41,10 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.errorprone.annotations.ForOverride;
+import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+
 import difflib.ChangeDelta;
 import difflib.Chunk;
 import difflib.DeleteDelta;
@@ -73,7 +77,8 @@ import uk.ac.manchester.spinnaker.utils.ValueHolder;
  * @author Donal Fellows
  * @author Alan Stokes
  */
-public abstract class DataGatherer extends BoardLocalSupport {
+public abstract class DataGatherer extends BoardLocalSupport
+		implements AutoCloseable {
 	/**
 	 * Logger for the gatherer.
 	 */
@@ -144,6 +149,8 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws IOException
 	 *             If we can't discover the machine details due to I/O problems
 	 */
+	@MustBeClosed
+	@SuppressWarnings("MustBeClosed")
 	public DataGatherer(TransceiverInterface transceiver, Machine machine)
 			throws IOException, ProcessException {
 		super(machine);
@@ -151,6 +158,12 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		this.machine = machine;
 		this.pool = new BasicExecutor(PARALLEL_SIZE);
 		this.missCount = 0;
+	}
+
+	@Override
+	@OverridingMethodsMustInvokeSuper
+	public void close() throws InterruptedException {
+		pool.close();
 	}
 
 	private static final String META_LABEL = "reading region metadata";
@@ -514,6 +527,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 *             If the database doesn't like something.
 	 */
 	@UsedInJavadocOnly(BufferManagerStorage.class)
+	@ForOverride
 	protected abstract List<Region> getRegion(Placement placement, int regionID)
 			throws IOException, ProcessException, StorageException;
 
@@ -530,6 +544,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 	 * @throws StorageException
 	 *             If the database refuses to do the store.
 	 */
+	@ForOverride
 	protected abstract void storeData(Region r, ByteBuffer data)
 			throws StorageException;
 
@@ -669,7 +684,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @param timeout
 		 *            How long to wait for the queue to deliver a packet, in
 		 *            milliseconds.
-		 * @param transactionID
+		 * @param transactionId
 		 *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
@@ -677,10 +692,9 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 * @throws TimeoutException
 		 *             If we have a full timeout, or if we are flailing around,
 		 *             making no progress.
-		 * @throws ProcessException
 		 */
 		private boolean processOnePacket(int timeout, int transactionId)
-				throws IOException, TimeoutException, ProcessException {
+				throws IOException, TimeoutException {
 			var p = conn.getNextPacket(timeout + INTERNAL_DELAY);
 			if (p.hasRemaining()) {
 				received = true;
@@ -697,7 +711,7 @@ public abstract class DataGatherer extends BoardLocalSupport {
 		 *
 		 * @param data
 		 *            The content of the packet.
-		 * @param transactionID
+		 * @param transactionId
 		 *            The transaction id of this stream.
 		 * @return True if we have finished.
 		 * @throws IOException
@@ -837,14 +851,12 @@ final class TimeoutException extends Exception {
 final class InsaneSequenceNumberException extends IllegalStateException {
 	private static final long serialVersionUID = 2L;
 
-	private static final String TMPL =
-			"got insane sequence number %d: expected maximum %d (%s)";
-
 	private static final String MID = "totally bad sequence";
 
 	private static final String END = "non-empty terminal-only packet";
 
 	InsaneSequenceNumberException(int maxNum, int seqNum) {
-		super(format(TMPL, seqNum, maxNum, (maxNum == seqNum ? END : MID)));
+		super(format("got insane sequence number %d: expected maximum %d (%s)",
+				seqNum, maxNum, (maxNum == seqNum ? END : MID)));
 	}
 }

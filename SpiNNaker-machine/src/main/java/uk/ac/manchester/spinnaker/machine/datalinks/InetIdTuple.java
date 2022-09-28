@@ -19,13 +19,16 @@ package uk.ac.manchester.spinnaker.machine.datalinks;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * A tuple of an IP address and a SpiNNaker link ID.
  *
  * @author Christian-B
  */
+@Immutable
 public final class InetIdTuple {
-	/** The IP address of this tuple, which may be {@code null}. */
+	/** The InetAddress of this tuple which may be {@code null}. */
 	public final InetAddress address;
 
 	/** The ID of this tuple. */
@@ -54,9 +57,6 @@ public final class InetIdTuple {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
 		if (obj instanceof InetIdTuple) {
 			var other = (InetIdTuple) obj;
 			return (id == other.id) && Objects.equals(address, other.address);

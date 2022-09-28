@@ -28,6 +28,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
+import com.google.errorprone.annotations.RestrictedApi;
+
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 
 /**
@@ -98,6 +100,8 @@ public interface LocalAuthenticationProvider<TestAPI>
 	 * @deprecated This interface is just for testing.
 	 */
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	TestAPI getTestAPI();
 }

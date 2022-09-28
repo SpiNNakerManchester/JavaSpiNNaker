@@ -17,7 +17,6 @@
 package uk.ac.manchester.spinnaker.data_spec;
 
 import static java.lang.System.arraycopy;
-import static java.util.Arrays.copyOf;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.IntStream.range;
 
@@ -27,6 +26,8 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.stream.Stream;
+
+import com.google.errorprone.annotations.DoNotCall;
 
 /**
  * A collection of memory regions. Note that the collection cannot be modified
@@ -183,7 +184,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	public <T> T[] toArray(T[] a) {
 		if (a.length < regions.length) {
 			// This line of code copied from ArrayList
-			return (T[]) copyOf(regions, regions.length, a.getClass());
+			return (T[]) Arrays.copyOf(regions, regions.length, a.getClass());
 		}
 		arraycopy(regions, 0, a, 0, regions.length);
 		if (a.length > regions.length) {
@@ -214,6 +215,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean add(MemoryRegion e) {
 		throw new UnsupportedOperationException();
@@ -226,6 +228,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
@@ -238,6 +241,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean addAll(Collection<? extends MemoryRegion> c) {
 		throw new UnsupportedOperationException();
@@ -250,6 +254,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
@@ -262,6 +267,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
@@ -274,6 +280,7 @@ public final class MemoryRegionCollection implements Collection<MemoryRegion> {
 	 *             support size-varying operations.
 	 */
 	@Override
+	@DoNotCall
 	@Deprecated
 	public void clear() {
 		throw new UnsupportedOperationException();

@@ -323,6 +323,7 @@ public abstract class TestSupport extends SQLQueries implements SupportQueries {
 					try {
 						c.rollback();
 					} catch (DataAccessException ignored) {
+						log.trace("ignoring DAE from rollback", ignored);
 					}
 					conn = null;
 				}

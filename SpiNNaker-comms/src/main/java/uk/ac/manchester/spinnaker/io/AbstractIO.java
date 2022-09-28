@@ -327,7 +327,7 @@ public interface AbstractIO extends AutoCloseable {
 					int before = tell();
 					seek(max((int) n, 0), CUR);
 					int after = tell();
-					return after - before;
+					return (long) after - (long) before;
 				} catch (ProcessException e) {
 					// CHECKSTYLE:OFF
 					throw new IOException(e);

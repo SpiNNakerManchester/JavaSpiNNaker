@@ -148,13 +148,12 @@ class GetMachineProcess extends MultiConnectionProcess<SCPConnection> {
 			sendRequest(new GetChipInfo(chip),
 					response -> chipInfo.put(chip, response.chipInfo));
 		}
-		finish();
 		try {
-			checkForError();
+			finishBatch();
 		} catch (ProcessException ignored) {
 			/*
-			 * Ignore errors so far, as any error here just means that a chip is
-			 * down that wasn't marked as down
+			 * Ignore errors from the SpiNNaker side, as any error here just
+			 * means that a chip is down that wasn't marked as down
 			 */
 		}
 

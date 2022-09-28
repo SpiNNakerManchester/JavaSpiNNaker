@@ -51,7 +51,8 @@ public enum TrustLevel {
 	 */
 	ADMIN(GRANT_READER, GRANT_USER, GRANT_ADMIN);
 
-	private List<String> grants;
+	@SuppressWarnings("ImmutableEnumChecker")
+	private final List<String> grants;
 
 	TrustLevel(String... grants) {
 		this.grants = List.of(grants);

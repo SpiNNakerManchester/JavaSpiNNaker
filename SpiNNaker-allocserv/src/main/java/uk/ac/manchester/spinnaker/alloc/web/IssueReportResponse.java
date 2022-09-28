@@ -16,11 +16,14 @@
  */
 package uk.ac.manchester.spinnaker.alloc.web;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * Describes whether an issue with a board was reported successfully.
  *
  * @author Donal Fellows
  */
+@Immutable
 public class IssueReportResponse {
 	/**
 	 * What immediate action will be taken. Typically "{@code noted}" or

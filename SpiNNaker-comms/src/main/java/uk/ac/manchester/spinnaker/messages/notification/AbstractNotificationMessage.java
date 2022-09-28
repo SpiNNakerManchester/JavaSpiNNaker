@@ -18,6 +18,8 @@ package uk.ac.manchester.spinnaker.messages.notification;
 
 import java.nio.ByteBuffer;
 
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+
 /**
  * An notification message.
  *
@@ -51,6 +53,7 @@ public abstract class AbstractNotificationMessage
 	}
 
 	@Override
+	@OverridingMethodsMustInvokeSuper
 	public void addToBuffer(ByteBuffer buffer) {
 		short value = (short) (0 << FLAG1_BIT | 1 << FLAG2_BIT
 				| command.getValue());

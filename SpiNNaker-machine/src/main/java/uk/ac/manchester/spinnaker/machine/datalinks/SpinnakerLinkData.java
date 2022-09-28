@@ -17,6 +17,9 @@
 package uk.ac.manchester.spinnaker.machine.datalinks;
 
 import java.net.InetAddress;
+
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
 
@@ -25,6 +28,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
+@Immutable
 public final class SpinnakerLinkData extends AbstractDataLink {
 
 	/** The link ID from the SpiNNaker perspective. */
@@ -50,16 +54,11 @@ public final class SpinnakerLinkData extends AbstractDataLink {
 
 	@Override
 	public int hashCode() {
-		int hash = super.hashCode();
-		hash = 53 * hash + spinnakerLinkId;
-		return hash;
+		return 53 * hash() + spinnakerLinkId;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
 		if (obj instanceof SpinnakerLinkData) {
 			var other = (SpinnakerLinkData) obj;
 			return sameAs(other) && (spinnakerLinkId == other.spinnakerLinkId);

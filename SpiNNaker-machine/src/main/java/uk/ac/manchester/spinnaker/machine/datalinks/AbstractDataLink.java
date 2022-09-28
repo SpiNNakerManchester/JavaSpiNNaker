@@ -21,6 +21,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.COORD_SHIFT;
 import java.net.InetAddress;
 import java.util.Objects;
 
+import com.google.errorprone.annotations.Immutable;
+
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 import uk.ac.manchester.spinnaker.machine.Direction;
 import uk.ac.manchester.spinnaker.machine.HasChipLocation;
@@ -30,6 +32,7 @@ import uk.ac.manchester.spinnaker.machine.HasChipLocation;
  *
  * @author Christian-B
  */
+@Immutable
 public abstract class AbstractDataLink implements HasChipLocation {
 	/** IP address of the Datalink on the board. */
 	public final InetAddress boardAddress;
@@ -79,26 +82,20 @@ public abstract class AbstractDataLink implements HasChipLocation {
 	}
 
 	@Override
-	public int hashCode() {
-		int hash = 41 * (getX() << COORD_SHIFT) ^ getY();
-		hash = 41 * hash + Objects.hashCode(boardAddress);
-		hash = 41 * hash + direction.hashCode();
+	public abstract int hashCode();
+
+	private static final int MAGIC = 41;
+
+	int hash() {
+		int hash = MAGIC * (getX() << COORD_SHIFT) ^ getY();
+		hash = MAGIC * hash + Objects.hashCode(boardAddress);
+		hash = MAGIC * hash + direction.hashCode();
 		return hash;
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		} else if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		var other = (AbstractDataLink) obj;
-		return sameAs(other);
-	}
+	public abstract boolean equals(Object obj);
 
 	/**
 	 * Determines if the Objects can be considered the same.

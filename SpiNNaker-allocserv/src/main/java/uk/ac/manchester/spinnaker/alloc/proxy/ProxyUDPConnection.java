@@ -232,7 +232,7 @@ public class ProxyUDPConnection extends UDPConnection<Optional<ByteBuffer>> {
 	/**
 	 * Loop at core of {@link #eieioReceiverTask(Set)}.
 	 *
-	 * @param msg
+	 * @param recvFrom
 	 *            What hosts we are allowed to receive messages from. Messages
 	 *            from elsewhere will be discarded.
 	 * @throws IOException

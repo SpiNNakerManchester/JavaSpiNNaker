@@ -407,11 +407,12 @@ public interface AdminAPI {
 	 *            The ID of the user
 	 * @param security
 	 *            Used to check who the current user actually is.
-	 * @return REST response
+	 * @return Description of what user was deleted.
 	 */
 	@DELETE
 	@Path(USER + "/{id}")
-	Response deleteUser(@PathParam("id") int id,
+	@Produces(TEXT_PLAIN)
+	String deleteUser(@PathParam("id") int id,
 			@Context SecurityContext security);
 
 	/**
@@ -477,15 +478,16 @@ public interface AdminAPI {
 			@Valid GroupRecord group, @Context UriInfo ui);
 
 	/**
-	 * Delete a user.
+	 * Delete a group.
 	 *
 	 * @param groupId
-	 *            The ID of the user
-	 * @return REST response
+	 *            The ID of the group
+	 * @return Description of what group was deleted
 	 */
 	@DELETE
 	@Path(GROUP + "/{groupId}")
-	Response deleteGroup(@PathParam("groupId") int groupId);
+	@Produces(TEXT_PLAIN)
+	String deleteGroup(@PathParam("groupId") int groupId);
 
 	/**
 	 * Add a user to a group.

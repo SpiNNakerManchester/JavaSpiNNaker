@@ -156,22 +156,23 @@ public abstract class CollectionUtils {
 	/**
 	 * Utility for making the backing maps for fast {@code enum}s. These are
 	 * expected to be used mainly to invert the trivial mapping from an
-	 * enumeration member to its {@code value} field, though this is not
-	 * assumed by this code.
+	 * enumeration member to its {@code value} field, though this is not assumed
+	 * by this code.
 	 *
 	 * @param <E>
 	 *            The type of the {@code enum}.
 	 * @param <K>
 	 *            The type of the value to use as the map key.
-	 * @param values
-	 *            The values in the {@code enum}.
+	 * @param enumMembers
+	 *            The values in the {@code enum}, as returned by the
+	 *            {@code values()} method.
 	 * @param valueExtractor
 	 *            How to get the value to use as the map key.
 	 * @return Unmodifiable map from the values to the {@code enum} members.
 	 */
 	public static <E extends Enum<E>, K> Map<K, E> makeEnumBackingMap(
-			E[] values, Function<E, K> valueExtractor) {
-		return stream(values)
+			E[] enumMembers, Function<E, K> valueExtractor) {
+		return stream(enumMembers)
 				.collect(toUnmodifiableMap(valueExtractor, v -> v));
 	}
 }

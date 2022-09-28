@@ -23,6 +23,8 @@ import static uk.ac.manchester.spinnaker.machine.MachineDefaults.PROCESSOR_CLOCK
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_HERTZ;
 import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_KILOHERTZ;
 
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * A processor object included in a SpiNNaker chip.
  * <p>
@@ -34,6 +36,7 @@ import static uk.ac.manchester.spinnaker.utils.UnitConstants.MEGAHERTZ_PER_KILOH
  *
  * @author Christian-B
  */
+@Immutable
 public final class Processor implements Comparable<Processor> {
 	private static final Processor[] NON_MONITOR =
 			new Processor[PROCESSORS_PER_CHIP];

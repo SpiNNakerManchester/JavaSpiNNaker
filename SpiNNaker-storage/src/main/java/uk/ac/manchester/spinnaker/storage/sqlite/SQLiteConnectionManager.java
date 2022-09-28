@@ -25,6 +25,8 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.sqlite.SQLiteException;
 
+import com.google.errorprone.annotations.concurrent.GuardedBy;
+
 import uk.ac.manchester.spinnaker.storage.ConnectionProvider;
 import uk.ac.manchester.spinnaker.storage.DatabaseAPI;
 import uk.ac.manchester.spinnaker.storage.StorageException;
@@ -40,6 +42,7 @@ import uk.ac.manchester.spinnaker.storage.StorageException;
 abstract class SQLiteConnectionManager<APIType extends DatabaseAPI> {
 	private static final Logger log = getLogger(SQLiteConnectionManager.class);
 
+	@GuardedBy("itself")
 	private final ConnectionProvider<APIType> connProvider;
 
 	/**

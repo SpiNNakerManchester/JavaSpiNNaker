@@ -16,8 +16,9 @@
  */
 package uk.ac.manchester.spinnaker.connections;
 
-import static java.util.Collections.synchronizedSet;
+import static java.util.Objects.isNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.Closeable;
@@ -25,11 +26,16 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.slf4j.Logger;
+
+import com.google.errorprone.annotations.MustBeClosed;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 
 import uk.ac.manchester.spinnaker.connections.model.MessageHandler;
 import uk.ac.manchester.spinnaker.connections.model.MessageReceiver;
@@ -58,9 +64,18 @@ public class ConnectionListener<MessageType> extends Thread
 
 	private ThreadPoolExecutor callbackPool;
 
-	private Set<MessageHandler<MessageType>> callbacks;
+	/** The callbacks we make on receiving a message. */
+	@GuardedBy("itself")
+	private final Set<MessageHandler<MessageType>> callbacks;
 
-	private MessageReceiver<MessageType> connection;
+	/**
+	 * Contents of {@link #callbacks} at the last time
+	 * {@link #checkpointCallbacks()} was called.
+	 */
+	@GuardedBy("callbacks")
+	private List<MessageHandler<MessageType>> callbacksCheckpointed;
+
+	private final MessageReceiver<MessageType> connection;
 
 	private volatile boolean done;
 
@@ -73,6 +88,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 * @param connection
 	 *            The connection to listen to.
 	 */
+	@MustBeClosed
 	public ConnectionListener(MessageReceiver<MessageType> connection) {
 		this(connection, POOL_SIZE, TIMEOUT);
 	}
@@ -88,6 +104,7 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            How long to wait in the OS for a message to arrive; if
 	 *            0, wait indefinitely.
 	 */
+	@MustBeClosed
 	public ConnectionListener(MessageReceiver<MessageType> connection,
 			int numProcesses, int timeout) {
 		super("Connection listener for connection " + connection);
@@ -97,7 +114,7 @@ public class ConnectionListener<MessageType> extends Thread
 		callbackPool = new ThreadPoolExecutor(1, numProcesses, POOL_TIMEOUT,
 				MILLISECONDS, new LinkedBlockingQueue<>());
 		done = false;
-		callbacks = synchronizedSet(new HashSet<>());
+		callbacks = new HashSet<>();
 	}
 
 	/**
@@ -126,16 +143,44 @@ public class ConnectionListener<MessageType> extends Thread
 		}
 	}
 
+	/**
+	 * Receive a message and fire it off into the registered callbacks.
+	 *
+	 * @throws SocketTimeoutException
+	 *             If the connection receive times out.
+	 * @throws IOException
+	 *             If other things go wrong with the comms, or if the callbacks
+	 *             throw it.
+	 */
 	private void runStep() throws IOException {
 		var message = connection.receiveMessage(timeout);
-		for (var callback : checkpointCallbacks()) {
-			callbackPool.submit(() -> callback.handle(message));
+		for (var future : checkpointCallbacks().stream().map(
+				callback -> callbackPool.submit(() -> callback.handle(message)))
+				.collect(toList())) {
+			try {
+				future.get();
+			} catch (InterruptedException e) {
+				log.warn("unexpected exception; not waiting for the future", e);
+				break;
+			} catch (ExecutionException ee) {
+				try {
+					throw ee.getCause();
+				} catch (IOException | RuntimeException | Error e) {
+					throw e;
+				} catch (Throwable e) {
+					log.warn("unexpected exception", e);
+				}
+			}
 		}
 	}
 
-	private Iterable<MessageHandler<MessageType>> checkpointCallbacks() {
+	/** @return The current contents of {@link #callbacks}. */
+	private List<MessageHandler<MessageType>> checkpointCallbacks() {
 		synchronized (callbacks) {
-			return new ArrayList<>(callbacks);
+			if (isNull(callbacksCheckpointed)) {
+				callbacksCheckpointed = new ArrayList<>(callbacks);
+			}
+			return callbacksCheckpointed;
 		}
 	}
 
@@ -146,7 +191,10 @@ public class ConnectionListener<MessageType> extends Thread
 	 *            The callback to add.
 	 */
 	public void addCallback(MessageHandler<MessageType> callback) {
-		callbacks.add(callback);
+		synchronized (callbacks) {
+			callbacksCheckpointed = null;
+			callbacks.add(callback);
+		}
 	}
 
 	/**

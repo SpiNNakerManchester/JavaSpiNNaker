@@ -228,9 +228,9 @@ class TestTransceiver {
 
 		for (int i = 0; i < REPETITIONS; i++) {
 			try (var txrx = new Transceiver(boardConfig.remotehost, FIVE)) {
-				txrx.ensureBoardIsReady();
-				txrx.getMachineDimensions();
-				txrx.getScampVersion();
+				assertNotNull(txrx.ensureBoardIsReady());
+				assertNotNull(txrx.getMachineDimensions());
+				assertNotNull(txrx.getScampVersion());
 				if (first == null) {
 					first = txrx.getMachineDetails();
 				} else {
@@ -263,9 +263,10 @@ class MockWriteTransceiver extends Transceiver {
 				ByteBuffer data) {
 			this.core = core.asCoreLocation();
 			this.address = baseAddress;
-			this.data = data.array().clone();
+			this.data = new byte[data.remaining()];
 			this.offset = data.position();
 			this.numBytes = data.remaining();
+			data.get(this.data);
 		}
 	}
 

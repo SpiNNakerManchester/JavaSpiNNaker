@@ -56,18 +56,7 @@ abstract class SupportUtils {
 	}
 
 	static Joinable backgroundAccept(MockServer s) throws Exception {
-		var t = new Daemon(() -> {
-			try {
-				s.connect();
-			} catch (IOException e) {
-				// Just totally ignore early closing of sockets
-				if (!e.getMessage().equals("Socket closed")) {
-					e.printStackTrace(System.err);
-				}
-			} catch (RuntimeException e) {
-				e.printStackTrace(System.err);
-			}
-		}, "background accept");
+		var t = new Daemon(s::connectQuietly, "background accept");
 		return () -> t.join();
 	}
 

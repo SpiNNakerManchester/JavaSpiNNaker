@@ -40,18 +40,30 @@ public class TestAbstractDataLink {
 
 	@Test
 	public void testEquals() throws UnknownHostException {
-		var link1 = new TestDataLink(ZERO_ZERO, NORTHEAST, localhost());
-		var link2 = new TestDataLink(ZERO_ZERO, NORTHEAST, localhost());
+		var link1 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
+		var link2 = new ADL(ZERO_ZERO, NORTHEAST, localhost());
 		assertEquals(link1, link2);
 		assertEquals(link1, link1);
 		assertNotEquals(link1, null);
 		assertNotEquals(link1, "link1");
 	}
 
-	private static class TestDataLink extends AbstractDataLink {
-		TestDataLink(HasChipLocation location, Direction linkId,
+	/** Can't use abstract class instances directly. */
+	static class ADL extends AbstractDataLink {
+		ADL(HasChipLocation location, Direction linkId,
 				InetAddress boardAddress) {
 			super(location, linkId, boardAddress);
+		}
+
+		@Override
+		public int hashCode() {
+			return hash();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return (obj instanceof AbstractDataLink)
+					&& sameAs((AbstractDataLink) obj);
 		}
 	}
 }

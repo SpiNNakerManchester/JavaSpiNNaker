@@ -16,7 +16,10 @@
  */
 package uk.ac.manchester.spinnaker.machine;
 
+import com.google.errorprone.annotations.Immutable;
+
 /** A multicast packet routing table entry. */
+@Immutable
 public class MulticastRoutingEntry extends RoutingEntry {
 	private final int key;
 

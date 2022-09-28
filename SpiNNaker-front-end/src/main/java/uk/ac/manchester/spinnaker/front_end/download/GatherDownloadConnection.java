@@ -23,6 +23,7 @@ import static uk.ac.manchester.spinnaker.messages.Constants.SCP_SCAMP_PORT;
 import static uk.ac.manchester.spinnaker.utils.WaitUtils.waitUntil;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 
@@ -69,7 +70,10 @@ final class GatherDownloadConnection extends SDPConnection {
 	}
 
 	private void sendMsg(SDPMessage msg) throws IOException {
-		waitUntil(lastSend + INTER_SEND_INTERVAL_NS);
+		if (waitUntil(lastSend + INTER_SEND_INTERVAL_NS)) {
+			throw new InterruptedIOException(
+					"interrupted while waiting to send");
+		}
 		send(msg);
 		lastSend = nanoTime();
 	}

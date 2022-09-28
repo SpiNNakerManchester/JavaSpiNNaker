@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
 import uk.ac.manchester.spinnaker.spalloc.messages.CreateJobCommand;
 import uk.ac.manchester.spinnaker.spalloc.messages.WhereIs;
 import uk.ac.manchester.spinnaker.utils.UsedInJavadocOnly;
@@ -120,6 +122,7 @@ public class CreateJob {
 	 *            The name of the owner of this job. <strong>Required.</strong>
 	 * @return {@code this} (fluent interface)
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob owner(String owner) {
 		kwargs.put(USER_PROPERTY, owner);
 		setOwner = true;
@@ -133,6 +136,7 @@ public class CreateJob {
 	 *            {@code null}, no timeout is used. (Default: 60.0)
 	 * @return {@code this} (fluent interface)
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob keepAlive(Double keepalive) {
 		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
 		return this;
@@ -145,6 +149,7 @@ public class CreateJob {
 	 *            60.0)
 	 * @return {@code this} (fluent interface)
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob keepAlive(double keepalive) {
 		kwargs.put(KEEPALIVE_PROPERTY, keepalive);
 		return this;
@@ -157,6 +162,7 @@ public class CreateJob {
 	 *            seconds)
 	 * @return {@code this} (fluent interface)
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob keepAlive(Duration keepalive) {
 		double t = keepalive.getSeconds();
 		t += keepalive.getNano() / (double) NSEC_PER_SEC;
@@ -174,6 +180,7 @@ public class CreateJob {
 	 * @throws IllegalStateException
 	 *             If tags are already given
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob machine(String machine) {
 		if (setTags) {
 			throw new IllegalStateException("tags already set");
@@ -193,6 +200,7 @@ public class CreateJob {
 	 * @throws IllegalStateException
 	 *             If machine is already given
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob tags(String... tags) {
 		if (setMachine) {
 			throw new IllegalStateException("machine already set");
@@ -210,6 +218,7 @@ public class CreateJob {
 	 *            allocating single boards or specific rectangles of triads.
 	 * @return {@code this} (fluent interface)
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob minRatio(double minRatio) {
 		kwargs.put(MIN_RATIO_PROPERTY, minRatio);
 		return this;
@@ -223,6 +232,7 @@ public class CreateJob {
 	 *            corner is alive.
 	 * @return {@code this} (fluent interface)
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob maxDeadBoards(int maxDeadBoards) {
 		kwargs.put(MAX_DEAD_BOARDS_PROPERTY, maxDeadBoards);
 		return this;
@@ -236,6 +246,7 @@ public class CreateJob {
 	 *            If unspecified, any number of broken links is allowed.
 	 * @return {@code this} (fluent interface)
 	 */
+	@CanIgnoreReturnValue
 	public CreateJob maxDeadLinks(int maxDeadLinks) {
 		kwargs.put(MAX_DEAD_LINKS_PROPERTY, maxDeadLinks);
 		return this;
@@ -249,6 +260,7 @@ public class CreateJob {
 	 *             deployed (or you automatically get it when meaningful). The
 	 *             default is fine.
 	 */
+	@CanIgnoreReturnValue
 	@Deprecated(forRemoval = true)
 	public CreateJob requireTorus() {
 		return requireTorus(true);
@@ -265,6 +277,7 @@ public class CreateJob {
 	 *             deployed (or you automatically get it when meaningful). The
 	 *             default is fine.
 	 */
+	@CanIgnoreReturnValue
 	@Deprecated(forRemoval = true)
 	public CreateJob requireTorus(boolean requireTorus) {
 		kwargs.put(REQUIRE_TORUS_PROPERTY, requireTorus);

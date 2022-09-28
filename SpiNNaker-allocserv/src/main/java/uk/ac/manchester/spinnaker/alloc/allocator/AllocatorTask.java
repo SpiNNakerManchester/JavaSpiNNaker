@@ -32,6 +32,7 @@ import static uk.ac.manchester.spinnaker.alloc.model.JobState.QUEUED;
 import static uk.ac.manchester.spinnaker.alloc.model.JobState.READY;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.OFF;
 import static uk.ac.manchester.spinnaker.alloc.model.PowerState.ON;
+import static uk.ac.manchester.spinnaker.utils.MathUtils.ceildiv;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -45,6 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import com.google.errorprone.annotations.RestrictedApi;
 
 import uk.ac.manchester.spinnaker.alloc.ForTestingOnly;
 import uk.ac.manchester.spinnaker.alloc.ServiceMasterControl;
@@ -602,8 +605,8 @@ public class AllocatorTask extends DatabaseAwareBean
 			if (numBoards % TRIAD_DEPTH > 0) {
 				numTriads++;
 			}
-			width = (int) min(ceil(sqrt(numTriads)), max.width);
-			height = (int) min(ceil(numTriads / width), max.height);
+			width = min((int) ceil(sqrt(numTriads)), max.width);
+			height = min(ceildiv(numTriads, width), max.height);
 			tolerance = (width * height * TRIAD_DEPTH) - numBoards;
 			if (width < 1 || height < 1) {
 				throw new IllegalArgumentException(
@@ -999,6 +1002,8 @@ public class AllocatorTask extends DatabaseAwareBean
 	 * @deprecated This interface is just for testing.
 	 */
 	@ForTestingOnly
+	@RestrictedApi(explanation = "just for testing", link = "index.html",
+			allowedOnPath = ".*/src/test/java/.*")
 	@Deprecated
 	TestAPI getTestAPI(Connection conn) {
 		ForTestingOnly.Utils.checkForTestClassOnStack();

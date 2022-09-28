@@ -27,13 +27,16 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.errorprone.annotations.DoNotCall;
+
 import uk.ac.manchester.spinnaker.connections.EIEIOConnection;
+import uk.ac.manchester.spinnaker.connections.UDPPacket;
 import uk.ac.manchester.spinnaker.machine.ChipLocation;
 
 final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	private final Map<Inet4Address, ChipLocation> hostToChip;
 
-	private final BlockingQueue<ByteBuffer> received;
+	private final BlockingQueue<ByteBuffer> receiveQueue;
 
 	private ProxyProtocolClient ws;
 
@@ -41,16 +44,15 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 
 	ProxiedEIEIOListenerConnection(Map<Inet4Address, ChipLocation> hostToChip,
 			ProxyProtocolClient proxy)
-			throws IOException, InterruptedException {
-		super(null);
-		super.close();
+			throws InterruptedException {
 		this.hostToChip = hostToChip;
 		this.ws = proxy;
-		received = new LinkedBlockingQueue<>();
-		channel = ws.openUnconnectedChannel(received::add);
+		receiveQueue = new LinkedBlockingQueue<>();
+		channel = ws.openUnconnectedChannel(receiveQueue);
 	}
 
 	@Override
+	@SuppressWarnings("MissingSuperCall")
 	public void close() throws IOException {
 		channel.close();
 		ws = null;
@@ -62,6 +64,12 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	}
 
 	@Override
+	public boolean isConnected() {
+		return !isClosed();
+	}
+
+	@Override
+	@DoNotCall
 	protected void doSend(ByteBuffer buffer) {
 		throw new UnsupportedOperationException();
 	}
@@ -75,9 +83,16 @@ final class ProxiedEIEIOListenerConnection extends EIEIOConnection {
 	@Override
 	protected ByteBuffer doReceive(int timeout)
 			throws IOException {
-		if (isClosed() && received.isEmpty()) {
+		if (isClosed() && receiveQueue.isEmpty()) {
 			throw new EOFException("connection closed");
 		}
-		return ClientUtils.receiveHelper(received, timeout);
+		return ClientUtils.receiveHelper(receiveQueue, timeout);
+	}
+
+	@Override
+	@DoNotCall
+	protected UDPPacket doReceiveWithAddress(int timeout) {
+		throw new UnsupportedOperationException(
+				"receiveWithAddress() not supported by this connection type");
 	}
 }

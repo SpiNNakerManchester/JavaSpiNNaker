@@ -57,7 +57,11 @@ public class DeadLink {
 	@JsonProperty
 	private DeadLink.End end2;
 
-	/** @return The ends of the link. */
+	/**
+	 * Get the two ends of the dead link.
+	 *
+	 * @return The ends of the link.
+	 */
 	public List<DeadLink.End> getEnds() {
 		return List.of(end1, end2);
 	}

@@ -43,6 +43,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.errorprone.annotations.Keep;
+
 import uk.ac.manchester.spinnaker.alloc.model.BoardRecord;
 import uk.ac.manchester.spinnaker.alloc.model.GroupRecord;
 import uk.ac.manchester.spinnaker.alloc.model.TagList;
@@ -561,6 +563,7 @@ public interface AdminController {
 			this.synched = synched;
 		}
 
+		@Keep
 		@AssertTrue(message = "blacklist must be validly formatted")
 		private boolean isValidBlacklist() {
 			if (present) {

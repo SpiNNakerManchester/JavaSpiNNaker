@@ -26,8 +26,8 @@ import static uk.ac.manchester.spinnaker.transceiver.Utils.getVcpuAddress;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
@@ -60,9 +60,9 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 
 	private static final int WORD = 4;
 
-	private final Queue<NextRead> nextReads = new LinkedList<>();
+	private final Queue<NextRead> nextReads = new ArrayDeque<>();
 
-	private final Queue<ExtraRead> extraReads = new LinkedList<>();
+	private final Queue<ExtraRead> extraReads = new ArrayDeque<>();
 
 	private final Map<CoreLocation, Map<Integer, ByteBuffer>> iobuf =
 			new DefaultMap<>(TreeMap::new);
@@ -110,8 +110,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 				"must have actual core subset to iterate over")) {
 			sendRequest(new ClearIOBUF(core));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -135,8 +134,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 				"must have actual core subset to iterate over")) {
 			sendRequest(new UpdateRuntime(core, runTime, infiniteRun));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 	}
 
 	/**
@@ -185,8 +183,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 							new MemoryLocation(response.data.getInt()),
 							chunk(size + BUF_HEADER_BYTES)));
 		}
-		finish();
-		checkForError();
+		finishBatch();
 
 		// Run rounds of the process until reading is complete
 		while (!nextReads.isEmpty() || !extraReads.isEmpty()) {
@@ -220,8 +217,7 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 				});
 			}
 
-			finish();
-			checkForError();
+			finishBatch();
 		}
 
 		return () -> new Iterator<IOBuffer>() {
@@ -252,14 +248,16 @@ class RuntimeControlProcess extends MultiConnectionProcess<SCPConnection> {
 			int bytesToRead) {
 		// Create a buffer for the data
 		var buffer = allocate(bytesToRead).order(LITTLE_ENDIAN);
-		iobuf.get(read.core).put(read.blockID, buffer);
+		synchronized (buffer) {
+			iobuf.get(read.core).put(read.blockID, buffer);
 
-		// Put the data from this packet into the buffer
-		int packetBytes = min(response.data.remaining(), bytesToRead);
-		if (packetBytes > 0) {
-			buffer.put(response.data);
+			// Put the data from this packet into the buffer
+			int packetBytes = min(response.data.remaining(), bytesToRead);
+			if (packetBytes > 0) {
+				buffer.put(response.data);
+			}
+			return packetBytes;
 		}
-		return packetBytes;
 	}
 
 	private void issueReadsForIOBufTail(NextRead read, int bytesToRead,
